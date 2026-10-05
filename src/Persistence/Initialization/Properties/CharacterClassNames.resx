@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="DarkWizard" xml:space="preserve"><value>Dark Wizard</value></data>
+  <data name="SoulMaster" xml:space="preserve"><value>Soul Master</value></data>
+  <data name="GrandMaster" xml:space="preserve"><value>Grand Master</value></data>
+  <data name="DarkKnight" xml:space="preserve"><value>Dark Knight</value></data>
+  <data name="BladeKnight" xml:space="preserve"><value>Blade Knight</value></data>
+  <data name="BladeMaster" xml:space="preserve"><value>Blade Master</value></data>
+  <data name="FairyElf" xml:space="preserve"><value>Fairy Elf</value></data>
+  <data name="MuseElf" xml:space="preserve"><value>Muse Elf</value></data>
+  <data name="HighElf" xml:space="preserve"><value>High Elf</value></data>
+  <data name="MagicGladiator" xml:space="preserve"><value>Magic Gladiator</value></data>
+  <data name="DuelMaster" xml:space="preserve"><value>Duel Master</value></data>
+  <data name="DarkLord" xml:space="preserve"><value>Dark Lord</value></data>
+  <data name="LordEmperor" xml:space="preserve"><value>Lord Emperor</value></data>
+  <data name="Summoner" xml:space="preserve"><value>Summoner</value></data>
+  <data name="BloodySummoner" xml:space="preserve"><value>Bloody Summoner</value></data>
+  <data name="DimensionMaster" xml:space="preserve"><value>Dimension Master</value></data>
+  <data name="RageFighter" xml:space="preserve"><value>Rage Fighter</value></data>
+  <data name="FistMaster" xml:space="preserve"><value>Fist Master</value></data>
+</root>

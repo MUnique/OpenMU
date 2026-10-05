@@ -328,6 +328,12 @@
   <data name="GuildPosition_BattleMaster_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="GuildPosition_AssistantMaster_Caption" xml:space="preserve">
+    <value>副盟主</value>
+  </data>
+  <data name="GuildPosition_AssistantMaster_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="LocalizableExceptionBase_TypeCaption" xml:space="preserve">
     <value>可本地化异常基类</value>
   </data>

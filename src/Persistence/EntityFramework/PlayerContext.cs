@@ -45,8 +45,19 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
             return false;
         }
 
-        persistentHeader.Receiver = await this.Context.Set<Character>().FirstOrDefaultAsync(c => c.Name == letterHeader.ReceiverName, cancellationToken).ConfigureAwait(false);
-        return persistentHeader.Receiver != null;
+        var receiverId = await this.Context.Set<Character>()
+            .Where(c => c.Name == letterHeader.ReceiverName)
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (receiverId is not { } id)
+        {
+            return false;
+        }
+
+        // Just the foreign key is required to save the letter, so we don't load and track the whole receiver.
+        persistentHeader.ReceiverId = id;
+        return true;
     }
 
     /// <inheritdoc />
@@ -144,6 +155,33 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
             return await this.Context.Set<CastleSiegePendingReward>()
                 .Where(reward => reward.CharacterId == characterId)
                 .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default)
+    {
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<GensMember>()
+                .FirstOrDefaultAsync(member => member.CharacterId == characterId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
+        Guid killerId,
+        Guid victimId,
+        CancellationToken cancellationToken = default)
+    {
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<GensAbuse>()
+                .FirstOrDefaultAsync(abuse => abuse.KillerId == killerId && abuse.VictimId == victimId, cancellationToken)
                 .ConfigureAwait(false);
         }
     }

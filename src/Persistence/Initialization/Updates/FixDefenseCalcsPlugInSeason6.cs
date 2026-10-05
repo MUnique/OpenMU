@@ -25,9 +25,6 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDefenseCalcsSeason6;
-
-    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Update Anonymous Leather ancient set obsolete option prior to its removal

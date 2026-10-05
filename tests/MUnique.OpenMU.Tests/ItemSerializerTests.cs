@@ -18,7 +18,24 @@ using MUnique.OpenMU.Persistence.InMemory;
 /// Unit tests for the <see cref="ItemSerializer"/>.
 /// </summary>
 [TestFixture]
-public class ItemSerializerTests : ItemSerializerTests<ItemSerializer>;
+public class ItemSerializerTests : ItemSerializerTests<ItemSerializer>
+{
+    /// <summary>
+    /// Tests if the options of a dinorant are serialized as bits of the option level, as the client expects it.
+    /// </summary>
+    /// <param name="optionBits">The bits of the dinorant options.</param>
+    [TestCase(1)]
+    [TestCase(4)]
+    [TestCase(3)]
+    [TestCase(6)]
+    public void DinorantOptionBits(int optionBits)
+    {
+        var array = this.SerializeDinorant(optionBits).Data;
+
+        var serializedBits = (array[1] & 0b11) | ((array[3] >> 4) & 0b100);
+        Assert.That(serializedBits, Is.EqualTo(optionBits));
+    }
+}
 
 /// <summary>
 /// Unit tests for the <see cref="ItemSerializerExtended"/>.
@@ -123,6 +140,28 @@ public class ItemSerializerTests<T>
     }
 
     /// <summary>
+    /// Tests if the options of a dinorant are correctly (de)serialized.
+    /// </summary>
+    /// <param name="optionBits">The bits of the dinorant options, which are the numbers of the options.</param>
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(4)]
+    [TestCase(3)]
+    [TestCase(5)]
+    [TestCase(6)]
+    public void DinorantOptions(int optionBits)
+    {
+        var (item, data) = this.SerializeDinorant(optionBits);
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+
+        var deserializedItem = this._itemSerializer.DeserializeItem(data, this._gameConfiguration, context);
+
+        Assert.That(
+            deserializedItem.ItemOptions.Select(link => link.ItemOption),
+            Is.EquivalentTo(item.ItemOptions.Select(link => link.ItemOption)));
+    }
+
+    /// <summary>
     /// Tests if ancient items are correctly (de)serialized.
     /// </summary>
     [Test]
@@ -196,6 +235,31 @@ public class ItemSerializerTests<T>
         Assert.That(deserializedItem.SocketCount, Is.EqualTo(item.SocketCount));
     }
 
+    /// <summary>
+    /// Serializes a dinorant with the options of the specified bits.
+    /// </summary>
+    /// <param name="optionBits">The bits of the dinorant options, which are the numbers of the options.</param>
+    /// <returns>The dinorant and its serialized data.</returns>
+    protected (Item Item, byte[] Data) SerializeDinorant(int optionBits)
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var item = context.CreateNew<Item>();
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Horn of Dinorant");
+        item.Durability = 255;
+        foreach (var option in item.Definition.PossibleItemOptions
+                     .SelectMany(def => def.PossibleOptions)
+                     .Where(o => o.OptionType == ItemOptionTypes.Option && (optionBits & o.Number) != 0))
+        {
+            var optionLink = context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option;
+            item.ItemOptions.Add(optionLink);
+        }
+
+        var array = new byte[this._itemSerializer.NeededSpace];
+        this._itemSerializer.SerializeItem(array, item);
+        return (item, array);
+    }
+
     private Tuple<Item, Item> SerializeAndDeserializeBraveHelm()
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
@@ -240,7 +304,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Lighting Sword");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Lighting Sword");
         item.Level = 15;
         item.Durability = 100;
         item.HasSkill = true;
@@ -264,7 +328,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Pendant of Ability");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Pendant of Ability");
         item.Durability = 10;
 
         var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name == "Gywen");
@@ -282,7 +346,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Blade");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Blade");
         item.Level = 15;
         item.Durability = 23;
         item.HasSkill = hasSkill;

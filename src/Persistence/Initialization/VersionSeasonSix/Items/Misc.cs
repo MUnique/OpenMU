@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializing of misc items which don't fit into the other categories.
@@ -35,7 +37,7 @@ public class Misc : InitializerBase
     private void CreateLostMap()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Lost Map";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.LostMap);
         itemDefinition.Number = 28;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -50,7 +52,7 @@ public class Misc : InitializerBase
     private void CreateRena()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Rena";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.Rena);
         itemDefinition.Number = 21;
         itemDefinition.Group = 14;
         itemDefinition.DropLevel = 0;
@@ -77,7 +79,7 @@ public class Misc : InitializerBase
     private void CreateSymbolOfKundun()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Symbol of Kundun";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.SymbolOfKundun);
         itemDefinition.Number = 29;
         itemDefinition.Group = 14;
         itemDefinition.DropLevel = 0;
@@ -117,7 +119,7 @@ public class Misc : InitializerBase
     private void CreateLifeStone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Life Stone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.LifeStone);
         itemDefinition.Number = 11;
         itemDefinition.Group = 13;
         itemDefinition.DropLevel = 75;
@@ -131,7 +133,7 @@ public class Misc : InitializerBase
     private void CreateGoldenCherryBlossomBranch()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Golden Cherry Blossom Branch";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.GoldenCherryBlossomBranch);
         itemDefinition.Number = 90;
         itemDefinition.Group = 14;
         itemDefinition.Durability = 255;

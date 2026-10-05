@@ -12,17 +12,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 /// <summary>
-/// The http endpoints which set and remove the authentication cookie.
+/// The http endpoints which set, remove and check the authentication cookie.
 /// </summary>
 /// <remarks>
 /// A cookie can only be set on a http response, which an interactive blazor component doesn't have.
 /// These endpoints are therefore called by the browser in the background, with a single use ticket
 /// the circuit issued after it validated the credentials.
+/// The check is called by a reverse proxy, see <see cref="ReverseProxyAuthenticationService"/>.
 /// </remarks>
 public static class AuthEndpoints
 {
     /// <summary>
-    /// Maps the endpoints which set and remove the authentication cookie.
+    /// Maps the endpoints which set, remove and check the authentication cookie.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <returns>The endpoint route builder.</returns>
@@ -66,6 +67,21 @@ public static class AuthEndpoints
                 })
             .AllowAnonymous()
             .DisableAntiforgery();
+
+        endpoints.MapGet(
+                AdminAuthenticationDefaults.ReverseProxyAuthenticationEndpointPath,
+                async (HttpContext httpContext, ReverseProxyAuthenticationService authenticationService) =>
+                {
+                    var result = await authenticationService.AuthenticateAsync(httpContext.User, httpContext.RequestAborted).ConfigureAwait(false);
+                    if (result is { UserName: { } userName, Role: { } role })
+                    {
+                        httpContext.Response.Headers[ReverseProxyAuthenticationService.UserHeaderName] = userName;
+                        httpContext.Response.Headers[ReverseProxyAuthenticationService.RoleHeaderName] = role;
+                    }
+
+                    return Results.StatusCode(result.StatusCode);
+                })
+            .AllowAnonymous();
 
         return endpoints;
     }

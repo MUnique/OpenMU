@@ -1,8 +1,7 @@
 volumes:
   adminpanel-keys:
   dbdata:
-  prometheus-data:
-  minio-data:
+  otel-lgtm-data:
 
 services:
   nginx-80:
@@ -14,62 +13,38 @@ services:
     volumes:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf
     depends_on:
-      - grafana
-      - zipkin
-      - prometheus
+      - otel-lgtm
 
-  grafana:
-    image: grafana/grafana:9.5.14
-    container_name: grafana
-    volumes:
-      - ./grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml
-    depends_on:
-      - loki
-      - prometheus
-    ports:
-      - 3000
-
-  prometheus:
-    image: prom/prometheus:v2.21.0
-    ports:
-      - 9090
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
-
-  loki:
-    image: grafana/loki:2.5.0
-    container_name: loki
-    command: "-config.file=/etc/loki/config.yaml -target=all"
-    ports:
-      - 3100
-      - 7946
-      - 9095
-    volumes:
-      - ./loki-config.yaml:/etc/loki/config.yaml
-    depends_on:
-      - minio
-
-  minio:
-    image: minio/minio
-    entrypoint:
-      - sh
-      - -euc
-      - |
-        mkdir -p /data/loki-data && \
-        mkdir -p /data/loki-ruler && \
-        minio server /data
+  otel-lgtm:
+    # OpenTelemetry collector, Loki (logs), Prometheus (metrics), Tempo (traces) and Grafana in one container.
+    # It's intended for development, demo and testing environments. For bigger production setups,
+    # replace it by dedicated deployments of these components - the OpenMU services just need the OTLP endpoint.
+    image: grafana/otel-lgtm:0.35.0
+    container_name: otel-lgtm
+    restart: always
+    expose:
+      - "3000" # Grafana, reachable through nginx
+      - "4317" # OTLP gRPC
+      - "4318" # OTLP HTTP
     environment:
-      - MINIO_ACCESS_KEY=loki
-      - MINIO_SECRET_KEY=supersecret
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
-      - MINIO_UPDATE=off
-    ports:
-      - 9000
+      GF_SERVER_ROOT_URL: http://localhost/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      # Grafana relies on the admin panel login: nginx asks the admin panel and passes
+      # the user and its role in the X-WEBAUTH-USER and X-WEBAUTH-ROLE headers.
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_BASIC_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_DISABLE_SIGNOUT_MENU: "true"
+      GF_AUTH_PROXY_ENABLED: "true"
+      GF_AUTH_PROXY_HEADER_NAME: X-WEBAUTH-USER
+      GF_AUTH_PROXY_HEADER_PROPERTY: username
+      GF_AUTH_PROXY_HEADERS: Role:X-WEBAUTH-ROLE
+      GF_AUTH_PROXY_SYNC_TTL: "1" # minutes until a changed role is applied
+      GF_USERS_AUTO_ASSIGN_ORG: "true"
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: Viewer
+      GF_USERS_VIEWERS_CAN_EDIT: "true" # allows the viewers to use Explore for logs and traces
     volumes:
-      - minio-data:/data
+      - otel-lgtm-data:/data
 
   redis-state:
     image: redis
@@ -106,29 +81,22 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql
 
-  zipkin:
-    image: openzipkin/zipkin
-    container_name: tracing_zipkin
-    restart: always
-    ports:
-      - "9411:9411"
-
   connectServer:
     image: munique/openmu-connect
     container_name: connectServer
     ports:
       - "50001"
       - "44405:44405"
-      - "9464" # Prometheus
     environment:
       APPID: connectServer
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - rabbit
-      - zipkin
+      - otel-lgtm
       - database
 
   connectServer-dapr:
@@ -149,14 +117,14 @@ services:
     container_name: loginServer
     ports:
       - "50001"
-      - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - zipkin
+      - otel-lgtm
       - database
 
   loginServer-dapr:
@@ -177,16 +145,16 @@ services:
     container_name: friendServer
     ports:
       - "50001"
-      - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - chatServer-dapr
       - database
-      - zipkin
+      - otel-lgtm
 
   friendServer-dapr:
     image: "daprio/daprd:latest"
@@ -206,15 +174,15 @@ services:
     container_name: guildServer
     ports:
       - "50001"
-      - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - database
-      - zipkin
+      - otel-lgtm
 
   guildServer-dapr:
     image: "daprio/daprd:latest"
@@ -235,16 +203,16 @@ services:
     environment:
       APPID: chatServer
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     ports:
       - "55980:55980"
       - "50001"
-      - "9464" # Prometheus
     depends_on:
       - database
-      - zipkin
+      - otel-lgtm
 
   chatServer-dapr:
     image: "daprio/daprd:latest"
@@ -267,9 +235,9 @@ services:
       - database
     ports:
       - "8080"
-      - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       PATH_BASE: /admin/
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
@@ -309,12 +277,12 @@ services:
       - "50001"
       - "55901:55901"
       - "55902:55902"
-      - "9464" # Prometheus
     environment:
       GS_ID: 0
       APPID: gameServer0
       PATH_BASE: /gameServer/0/
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
@@ -323,9 +291,8 @@ services:
       - loginServer-dapr
       - friendServer-dapr
       - rabbit
-      - zipkin
+      - otel-lgtm
       - database
-      - loki
 
   gameServer0-dapr:
     image: "daprio/daprd:latest"
@@ -351,12 +318,12 @@ services:
       - "50001"
       - "55903:55903"
       - "55904:55904"
-      - "9464" # Prometheus
     environment:
       GS_ID: 1
       APPID: gameServer1
       PATH_BASE: /gameServer/1/
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
@@ -365,9 +332,8 @@ services:
       - loginServer-dapr
       - friendServer-dapr
       - rabbit
-      - zipkin
+      - otel-lgtm
       - database
-      - loki
 
   gameServer1-dapr:
     image: "daprio/daprd:latest"

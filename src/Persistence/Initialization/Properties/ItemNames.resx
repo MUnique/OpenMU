@@ -1,0 +1,2064 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Kris" xml:space="preserve">
+    <value>Kris</value>
+  </data>
+  <data name="ShortSword" xml:space="preserve">
+    <value>Short Sword</value>
+  </data>
+  <data name="Rapier" xml:space="preserve">
+    <value>Rapier</value>
+  </data>
+  <data name="Katache" xml:space="preserve">
+    <value>Katache</value>
+  </data>
+  <data name="SwordOfAssassin" xml:space="preserve">
+    <value>Sword of Assassin</value>
+  </data>
+  <data name="Blade" xml:space="preserve">
+    <value>Blade</value>
+  </data>
+  <data name="Gladius" xml:space="preserve">
+    <value>Gladius</value>
+  </data>
+  <data name="Falchion" xml:space="preserve">
+    <value>Falchion</value>
+  </data>
+  <data name="SerpentSword" xml:space="preserve">
+    <value>Serpent Sword</value>
+  </data>
+  <data name="SwordOfSalamander" xml:space="preserve">
+    <value>Sword of Salamander</value>
+  </data>
+  <data name="LightSaber" xml:space="preserve">
+    <value>Light Saber</value>
+  </data>
+  <data name="LegendarySword" xml:space="preserve">
+    <value>Legendary Sword</value>
+  </data>
+  <data name="HeliacalSword" xml:space="preserve">
+    <value>Heliacal Sword</value>
+  </data>
+  <data name="DoubleBlade" xml:space="preserve">
+    <value>Double Blade</value>
+  </data>
+  <data name="LightingSword" xml:space="preserve">
+    <value>Lighting Sword</value>
+  </data>
+  <data name="GiantSword" xml:space="preserve">
+    <value>Giant Sword</value>
+  </data>
+  <data name="SwordOfDestruction" xml:space="preserve">
+    <value>Sword of Destruction</value>
+  </data>
+  <data name="DarkBreaker" xml:space="preserve">
+    <value>Dark Breaker</value>
+  </data>
+  <data name="ThunderBlade" xml:space="preserve">
+    <value>Thunder Blade</value>
+  </data>
+  <data name="DivineSwordOfArchangel" xml:space="preserve">
+    <value>Divine Sword of Archangel</value>
+  </data>
+  <data name="KnightBlade" xml:space="preserve">
+    <value>Knight Blade</value>
+  </data>
+  <data name="DarkReignBlade" xml:space="preserve">
+    <value>Dark Reign Blade</value>
+  </data>
+  <data name="BoneBlade" xml:space="preserve">
+    <value>Bone Blade</value>
+  </data>
+  <data name="ExplosionBlade" xml:space="preserve">
+    <value>Explosion Blade</value>
+  </data>
+  <data name="Daybreak" xml:space="preserve">
+    <value>Daybreak</value>
+  </data>
+  <data name="SwordDancer" xml:space="preserve">
+    <value>Sword Dancer</value>
+  </data>
+  <data name="Flamberge" xml:space="preserve">
+    <value>Flamberge</value>
+  </data>
+  <data name="SwordBreaker" xml:space="preserve">
+    <value>Sword Breaker</value>
+  </data>
+  <data name="ImperialSword" xml:space="preserve">
+    <value>Imperial Sword</value>
+  </data>
+  <data name="RuneBlade" xml:space="preserve">
+    <value>Rune Blade</value>
+  </data>
+  <data name="SacredGlove" xml:space="preserve">
+    <value>Sacred Glove</value>
+  </data>
+  <data name="StormHardGlove" xml:space="preserve">
+    <value>Storm Hard Glove</value>
+  </data>
+  <data name="PiercingBladeGlove" xml:space="preserve">
+    <value>Piercing Blade Glove</value>
+  </data>
+  <data name="PhoenixSoulStar" xml:space="preserve">
+    <value>Phoenix Soul Star</value>
+  </data>
+  <data name="SmallAxe" xml:space="preserve">
+    <value>Small Axe</value>
+  </data>
+  <data name="HandAxe" xml:space="preserve">
+    <value>Hand Axe</value>
+  </data>
+  <data name="DoubleAxe" xml:space="preserve">
+    <value>Double Axe</value>
+  </data>
+  <data name="Tomahawk" xml:space="preserve">
+    <value>Tomahawk</value>
+  </data>
+  <data name="ElvenAxe" xml:space="preserve">
+    <value>Elven Axe</value>
+  </data>
+  <data name="BattleAxe" xml:space="preserve">
+    <value>Battle Axe</value>
+  </data>
+  <data name="NikkeaAxe" xml:space="preserve">
+    <value>Nikkea Axe</value>
+  </data>
+  <data name="LarkanAxe" xml:space="preserve">
+    <value>Larkan Axe</value>
+  </data>
+  <data name="CrescentAxe" xml:space="preserve">
+    <value>Crescent Axe</value>
+  </data>
+  <data name="Mace" xml:space="preserve">
+    <value>Mace</value>
+  </data>
+  <data name="MorningStar" xml:space="preserve">
+    <value>Morning Star</value>
+  </data>
+  <data name="Flail" xml:space="preserve">
+    <value>Flail</value>
+  </data>
+  <data name="GreatHammer" xml:space="preserve">
+    <value>Great Hammer</value>
+  </data>
+  <data name="CrystalMorningStar" xml:space="preserve">
+    <value>Crystal Morning Star</value>
+  </data>
+  <data name="CrystalSword" xml:space="preserve">
+    <value>Crystal Sword</value>
+  </data>
+  <data name="ChaosDragonAxe" xml:space="preserve">
+    <value>Chaos Dragon Axe</value>
+  </data>
+  <data name="ElementalMace" xml:space="preserve">
+    <value>Elemental Mace</value>
+  </data>
+  <data name="BattleScepter" xml:space="preserve">
+    <value>Battle Scepter</value>
+  </data>
+  <data name="MasterScepter" xml:space="preserve">
+    <value>Master Scepter</value>
+  </data>
+  <data name="GreatScepter" xml:space="preserve">
+    <value>Great Scepter</value>
+  </data>
+  <data name="LordScepter" xml:space="preserve">
+    <value>Lord Scepter</value>
+  </data>
+  <data name="GreatLordScepter" xml:space="preserve">
+    <value>Great Lord Scepter</value>
+  </data>
+  <data name="DivineScepterOfArchangel" xml:space="preserve">
+    <value>Divine Scepter of Archangel</value>
+  </data>
+  <data name="SoleilScepter" xml:space="preserve">
+    <value>Soleil Scepter</value>
+  </data>
+  <data name="ShiningScepter" xml:space="preserve">
+    <value>Shining Scepter</value>
+  </data>
+  <data name="FrostMace" xml:space="preserve">
+    <value>Frost Mace</value>
+  </data>
+  <data name="AbsoluteScepter" xml:space="preserve">
+    <value>Absolute Scepter</value>
+  </data>
+  <data name="StrykerScepter" xml:space="preserve">
+    <value>Stryker Scepter</value>
+  </data>
+  <data name="LightSpear" xml:space="preserve">
+    <value>Light Spear</value>
+  </data>
+  <data name="Spear" xml:space="preserve">
+    <value>Spear</value>
+  </data>
+  <data name="DragonLance" xml:space="preserve">
+    <value>Dragon Lance</value>
+  </data>
+  <data name="GiantTrident" xml:space="preserve">
+    <value>Giant Trident</value>
+  </data>
+  <data name="SerpentSpear" xml:space="preserve">
+    <value>Serpent Spear</value>
+  </data>
+  <data name="DoublePoleaxe" xml:space="preserve">
+    <value>Double Poleaxe</value>
+  </data>
+  <data name="Halberd" xml:space="preserve">
+    <value>Halberd</value>
+  </data>
+  <data name="Berdysh" xml:space="preserve">
+    <value>Berdysh</value>
+  </data>
+  <data name="GreatScythe" xml:space="preserve">
+    <value>Great Scythe</value>
+  </data>
+  <data name="BillOfBalrog" xml:space="preserve">
+    <value>Bill of Balrog</value>
+  </data>
+  <data name="DragonSpear" xml:space="preserve">
+    <value>Dragon Spear</value>
+  </data>
+  <data name="Beuroba" xml:space="preserve">
+    <value>Beuroba</value>
+  </data>
+  <data name="ShortBow" xml:space="preserve">
+    <value>Short Bow</value>
+  </data>
+  <data name="Bow" xml:space="preserve">
+    <value>Bow</value>
+  </data>
+  <data name="ElvenBow" xml:space="preserve">
+    <value>Elven Bow</value>
+  </data>
+  <data name="BattleBow" xml:space="preserve">
+    <value>Battle Bow</value>
+  </data>
+  <data name="TigerBow" xml:space="preserve">
+    <value>Tiger Bow</value>
+  </data>
+  <data name="SilverBow" xml:space="preserve">
+    <value>Silver Bow</value>
+  </data>
+  <data name="ChaosNatureBow" xml:space="preserve">
+    <value>Chaos Nature Bow</value>
+  </data>
+  <data name="Bolt" xml:space="preserve">
+    <value>Bolt</value>
+  </data>
+  <data name="Crossbow" xml:space="preserve">
+    <value>Crossbow</value>
+  </data>
+  <data name="GoldenCrossbow" xml:space="preserve">
+    <value>Golden Crossbow</value>
+  </data>
+  <data name="Arquebus" xml:space="preserve">
+    <value>Arquebus</value>
+  </data>
+  <data name="LightCrossbow" xml:space="preserve">
+    <value>Light Crossbow</value>
+  </data>
+  <data name="SerpentCrossbow" xml:space="preserve">
+    <value>Serpent Crossbow</value>
+  </data>
+  <data name="BluewingCrossbow" xml:space="preserve">
+    <value>Bluewing Crossbow</value>
+  </data>
+  <data name="AquagoldCrossbow" xml:space="preserve">
+    <value>Aquagold Crossbow</value>
+  </data>
+  <data name="Arrows" xml:space="preserve">
+    <value>Arrows</value>
+  </data>
+  <data name="SaintCrossbow" xml:space="preserve">
+    <value>Saint Crossbow</value>
+  </data>
+  <data name="CelestialBow" xml:space="preserve">
+    <value>Celestial Bow</value>
+  </data>
+  <data name="DivineCrossbowOfArchangel" xml:space="preserve">
+    <value>Divine Crossbow of Archangel</value>
+  </data>
+  <data name="GreatReignCrossbow" xml:space="preserve">
+    <value>Great Reign Crossbow</value>
+  </data>
+  <data name="ArrowViperBow" xml:space="preserve">
+    <value>Arrow Viper Bow</value>
+  </data>
+  <data name="SylphWindBow" xml:space="preserve">
+    <value>Sylph Wind Bow</value>
+  </data>
+  <data name="AlbatrossBow" xml:space="preserve">
+    <value>Albatross Bow</value>
+  </data>
+  <data name="StingerBow" xml:space="preserve">
+    <value>Stinger Bow</value>
+  </data>
+  <data name="AirLynBow" xml:space="preserve">
+    <value>Air Lyn Bow</value>
+  </data>
+  <data name="SkullStaff" xml:space="preserve">
+    <value>Skull Staff</value>
+  </data>
+  <data name="AngelicStaff" xml:space="preserve">
+    <value>Angelic Staff</value>
+  </data>
+  <data name="SerpentStaff" xml:space="preserve">
+    <value>Serpent Staff</value>
+  </data>
+  <data name="ThunderStaff" xml:space="preserve">
+    <value>Thunder Staff</value>
+  </data>
+  <data name="GorgonStaff" xml:space="preserve">
+    <value>Gorgon Staff</value>
+  </data>
+  <data name="LegendaryStaff" xml:space="preserve">
+    <value>Legendary Staff</value>
+  </data>
+  <data name="StaffOfResurrection" xml:space="preserve">
+    <value>Staff of Resurrection</value>
+  </data>
+  <data name="ChaosLightningStaff" xml:space="preserve">
+    <value>Chaos Lightning Staff</value>
+  </data>
+  <data name="StaffOfDestruction" xml:space="preserve">
+    <value>Staff of Destruction</value>
+  </data>
+  <data name="DragonSoulStaff" xml:space="preserve">
+    <value>Dragon Soul Staff</value>
+  </data>
+  <data name="DivineStaffOfArchangel" xml:space="preserve">
+    <value>Divine Staff of Archangel</value>
+  </data>
+  <data name="StaffOfKundun" xml:space="preserve">
+    <value>Staff of Kundun</value>
+  </data>
+  <data name="GrandViperStaff" xml:space="preserve">
+    <value>Grand Viper Staff</value>
+  </data>
+  <data name="PlatinaStaff" xml:space="preserve">
+    <value>Platina Staff</value>
+  </data>
+  <data name="MisteryStick" xml:space="preserve">
+    <value>Mistery Stick</value>
+  </data>
+  <data name="ViolentWindStick" xml:space="preserve">
+    <value>Violent Wind Stick</value>
+  </data>
+  <data name="RedWingStick" xml:space="preserve">
+    <value>Red Wing Stick</value>
+  </data>
+  <data name="AncientStick" xml:space="preserve">
+    <value>Ancient Stick</value>
+  </data>
+  <data name="DemonicStick" xml:space="preserve">
+    <value>Demonic Stick</value>
+  </data>
+  <data name="StormBlitzStick" xml:space="preserve">
+    <value>Storm Blitz Stick</value>
+  </data>
+  <data name="EternalWingStick" xml:space="preserve">
+    <value>Eternal Wing Stick</value>
+  </data>
+  <data name="BookOfSahamutt" xml:space="preserve">
+    <value>Book of Sahamutt</value>
+  </data>
+  <data name="BookOfNeil" xml:space="preserve">
+    <value>Book of Neil</value>
+  </data>
+  <data name="BookOfLagle" xml:space="preserve">
+    <value>Book of Lagle</value>
+  </data>
+  <data name="DeadlyStaff" xml:space="preserve">
+    <value>Deadly Staff</value>
+  </data>
+  <data name="ImperialStaff" xml:space="preserve">
+    <value>Imperial Staff</value>
+  </data>
+  <data name="ChromaticStaff" xml:space="preserve">
+    <value>Chromatic Staff</value>
+  </data>
+  <data name="RavenStick" xml:space="preserve">
+    <value>Raven Stick</value>
+  </data>
+  <data name="DivineStickOfArchangel" xml:space="preserve">
+    <value>Divine Stick of Archangel</value>
+  </data>
+  <data name="SmallShield" xml:space="preserve">
+    <value>Small Shield</value>
+  </data>
+  <data name="HornShield" xml:space="preserve">
+    <value>Horn Shield</value>
+  </data>
+  <data name="KiteShield" xml:space="preserve">
+    <value>Kite Shield</value>
+  </data>
+  <data name="ElvenShield" xml:space="preserve">
+    <value>Elven Shield</value>
+  </data>
+  <data name="Buckler" xml:space="preserve">
+    <value>Buckler</value>
+  </data>
+  <data name="DragonSlayerShield" xml:space="preserve">
+    <value>Dragon Slayer Shield</value>
+  </data>
+  <data name="SkullShield" xml:space="preserve">
+    <value>Skull Shield</value>
+  </data>
+  <data name="SpikedShield" xml:space="preserve">
+    <value>Spiked Shield</value>
+  </data>
+  <data name="TowerShield" xml:space="preserve">
+    <value>Tower Shield</value>
+  </data>
+  <data name="PlateShield" xml:space="preserve">
+    <value>Plate Shield</value>
+  </data>
+  <data name="BigRoundShield" xml:space="preserve">
+    <value>Big Round Shield</value>
+  </data>
+  <data name="SerpentShield" xml:space="preserve">
+    <value>Serpent Shield</value>
+  </data>
+  <data name="BronzeShield" xml:space="preserve">
+    <value>Bronze Shield</value>
+  </data>
+  <data name="DragonShield" xml:space="preserve">
+    <value>Dragon Shield</value>
+  </data>
+  <data name="LegendaryShield" xml:space="preserve">
+    <value>Legendary Shield</value>
+  </data>
+  <data name="GrandSoulShield" xml:space="preserve">
+    <value>Grand Soul Shield</value>
+  </data>
+  <data name="ElementalShield" xml:space="preserve">
+    <value>Elemental Shield</value>
+  </data>
+  <data name="CrimsonGlory" xml:space="preserve">
+    <value>Crimson Glory</value>
+  </data>
+  <data name="SalamanderShield" xml:space="preserve">
+    <value>Salamander Shield</value>
+  </data>
+  <data name="FrostBarrier" xml:space="preserve">
+    <value>Frost Barrier</value>
+  </data>
+  <data name="GuardianShield" xml:space="preserve">
+    <value>Guardian Shield</value>
+  </data>
+  <data name="CrossShield" xml:space="preserve">
+    <value>Cross Shield</value>
+  </data>
+  <data name="BronzeHelm" xml:space="preserve">
+    <value>Bronze Helm</value>
+  </data>
+  <data name="DragonHelm" xml:space="preserve">
+    <value>Dragon Helm</value>
+  </data>
+  <data name="PadHelm" xml:space="preserve">
+    <value>Pad Helm</value>
+  </data>
+  <data name="LegendaryHelm" xml:space="preserve">
+    <value>Legendary Helm</value>
+  </data>
+  <data name="BoneHelm" xml:space="preserve">
+    <value>Bone Helm</value>
+  </data>
+  <data name="LeatherHelm" xml:space="preserve">
+    <value>Leather Helm</value>
+  </data>
+  <data name="ScaleHelm" xml:space="preserve">
+    <value>Scale Helm</value>
+  </data>
+  <data name="SphinxMask" xml:space="preserve">
+    <value>Sphinx Mask</value>
+  </data>
+  <data name="BrassHelm" xml:space="preserve">
+    <value>Brass Helm</value>
+  </data>
+  <data name="PlateHelm" xml:space="preserve">
+    <value>Plate Helm</value>
+  </data>
+  <data name="VineHelm" xml:space="preserve">
+    <value>Vine Helm</value>
+  </data>
+  <data name="SilkHelm" xml:space="preserve">
+    <value>Silk Helm</value>
+  </data>
+  <data name="WindHelm" xml:space="preserve">
+    <value>Wind Helm</value>
+  </data>
+  <data name="SpiritHelm" xml:space="preserve">
+    <value>Spirit Helm</value>
+  </data>
+  <data name="GuardianHelm" xml:space="preserve">
+    <value>Guardian Helm</value>
+  </data>
+  <data name="BlackDragonHelm" xml:space="preserve">
+    <value>Black Dragon Helm</value>
+  </data>
+  <data name="DarkPhoenixHelm" xml:space="preserve">
+    <value>Dark Phoenix Helm</value>
+  </data>
+  <data name="GrandSoulHelm" xml:space="preserve">
+    <value>Grand Soul Helm</value>
+  </data>
+  <data name="DivineHelm" xml:space="preserve">
+    <value>Divine Helm</value>
+  </data>
+  <data name="GreatDragonHelm" xml:space="preserve">
+    <value>Great Dragon Helm</value>
+  </data>
+  <data name="DarkSoulHelm" xml:space="preserve">
+    <value>Dark Soul Helm</value>
+  </data>
+  <data name="RedSpiritHelm" xml:space="preserve">
+    <value>Red Spirit Helm</value>
+  </data>
+  <data name="LightPlateMask" xml:space="preserve">
+    <value>Light Plate Mask</value>
+  </data>
+  <data name="AdamantineMask" xml:space="preserve">
+    <value>Adamantine Mask</value>
+  </data>
+  <data name="DarkSteelMask" xml:space="preserve">
+    <value>Dark Steel Mask</value>
+  </data>
+  <data name="DarkMasterMask" xml:space="preserve">
+    <value>Dark Master Mask</value>
+  </data>
+  <data name="DragonKnightHelm" xml:space="preserve">
+    <value>Dragon Knight Helm</value>
+  </data>
+  <data name="VenomMistHelm" xml:space="preserve">
+    <value>Venom Mist Helm</value>
+  </data>
+  <data name="SylphidRayHelm" xml:space="preserve">
+    <value>Sylphid Ray Helm</value>
+  </data>
+  <data name="SunlightMask" xml:space="preserve">
+    <value>Sunlight Mask</value>
+  </data>
+  <data name="AshcrowHelm" xml:space="preserve">
+    <value>Ashcrow Helm</value>
+  </data>
+  <data name="EclipseHelm" xml:space="preserve">
+    <value>Eclipse Helm</value>
+  </data>
+  <data name="IrisHelm" xml:space="preserve">
+    <value>Iris Helm</value>
+  </data>
+  <data name="GloriousMask" xml:space="preserve">
+    <value>Glorious Mask</value>
+  </data>
+  <data name="MisteryHelm" xml:space="preserve">
+    <value>Mistery Helm</value>
+  </data>
+  <data name="RedWingHelm" xml:space="preserve">
+    <value>Red Wing Helm</value>
+  </data>
+  <data name="AncientHelm" xml:space="preserve">
+    <value>Ancient Helm</value>
+  </data>
+  <data name="BlackRoseHelm" xml:space="preserve">
+    <value>Black Rose Helm</value>
+  </data>
+  <data name="AuraHelm" xml:space="preserve">
+    <value>Aura Helm</value>
+  </data>
+  <data name="LiliumHelm" xml:space="preserve">
+    <value>Lilium Helm</value>
+  </data>
+  <data name="TitanHelm" xml:space="preserve">
+    <value>Titan Helm</value>
+  </data>
+  <data name="BraveHelm" xml:space="preserve">
+    <value>Brave Helm</value>
+  </data>
+  <data name="SeraphimHelm" xml:space="preserve">
+    <value>Seraphim Helm</value>
+  </data>
+  <data name="FaithHelm" xml:space="preserve">
+    <value>Faith Helm</value>
+  </data>
+  <data name="PaewangMask" xml:space="preserve">
+    <value>Paewang Mask</value>
+  </data>
+  <data name="HadesHelm" xml:space="preserve">
+    <value>Hades Helm</value>
+  </data>
+  <data name="SacredHelm" xml:space="preserve">
+    <value>Sacred Helm</value>
+  </data>
+  <data name="StormHardHelm" xml:space="preserve">
+    <value>Storm Hard Helm</value>
+  </data>
+  <data name="PiercingHelm" xml:space="preserve">
+    <value>Piercing Helm</value>
+  </data>
+  <data name="PhoenixSoulHelmet" xml:space="preserve">
+    <value>Phoenix Soul Helmet</value>
+  </data>
+  <data name="BronzeArmor" xml:space="preserve">
+    <value>Bronze Armor</value>
+  </data>
+  <data name="DragonArmor" xml:space="preserve">
+    <value>Dragon Armor</value>
+  </data>
+  <data name="PadArmor" xml:space="preserve">
+    <value>Pad Armor</value>
+  </data>
+  <data name="LegendaryArmor" xml:space="preserve">
+    <value>Legendary Armor</value>
+  </data>
+  <data name="BoneArmor" xml:space="preserve">
+    <value>Bone Armor</value>
+  </data>
+  <data name="LeatherArmor" xml:space="preserve">
+    <value>Leather Armor</value>
+  </data>
+  <data name="ScaleArmor" xml:space="preserve">
+    <value>Scale Armor</value>
+  </data>
+  <data name="SphinxArmor" xml:space="preserve">
+    <value>Sphinx Armor</value>
+  </data>
+  <data name="BrassArmor" xml:space="preserve">
+    <value>Brass Armor</value>
+  </data>
+  <data name="PlateArmor" xml:space="preserve">
+    <value>Plate Armor</value>
+  </data>
+  <data name="VineArmor" xml:space="preserve">
+    <value>Vine Armor</value>
+  </data>
+  <data name="SilkArmor" xml:space="preserve">
+    <value>Silk Armor</value>
+  </data>
+  <data name="WindArmor" xml:space="preserve">
+    <value>Wind Armor</value>
+  </data>
+  <data name="SpiritArmor" xml:space="preserve">
+    <value>Spirit Armor</value>
+  </data>
+  <data name="GuardianArmor" xml:space="preserve">
+    <value>Guardian Armor</value>
+  </data>
+  <data name="StormCrowArmor" xml:space="preserve">
+    <value>Storm Crow Armor</value>
+  </data>
+  <data name="BlackDragonArmor" xml:space="preserve">
+    <value>Black Dragon Armor</value>
+  </data>
+  <data name="DarkPhoenixArmor" xml:space="preserve">
+    <value>Dark Phoenix Armor</value>
+  </data>
+  <data name="GrandSoulArmor" xml:space="preserve">
+    <value>Grand Soul Armor</value>
+  </data>
+  <data name="DivineArmor" xml:space="preserve">
+    <value>Divine Armor</value>
+  </data>
+  <data name="ThunderHawkArmor" xml:space="preserve">
+    <value>Thunder Hawk Armor</value>
+  </data>
+  <data name="GreatDragonArmor" xml:space="preserve">
+    <value>Great Dragon Armor</value>
+  </data>
+  <data name="DarkSoulArmor" xml:space="preserve">
+    <value>Dark Soul Armor</value>
+  </data>
+  <data name="HurricaneArmor" xml:space="preserve">
+    <value>Hurricane Armor</value>
+  </data>
+  <data name="RedSpritArmor" xml:space="preserve">
+    <value>Red Sprit Armor</value>
+  </data>
+  <data name="LightPlateArmor" xml:space="preserve">
+    <value>Light Plate Armor</value>
+  </data>
+  <data name="AdamantineArmor" xml:space="preserve">
+    <value>Adamantine Armor</value>
+  </data>
+  <data name="DarkSteelArmor" xml:space="preserve">
+    <value>Dark Steel Armor</value>
+  </data>
+  <data name="DarkMasterArmor" xml:space="preserve">
+    <value>Dark Master Armor</value>
+  </data>
+  <data name="DragonKnightArmor" xml:space="preserve">
+    <value>Dragon Knight Armor</value>
+  </data>
+  <data name="VenomMistArmor" xml:space="preserve">
+    <value>Venom Mist Armor</value>
+  </data>
+  <data name="SylphidRayArmor" xml:space="preserve">
+    <value>Sylphid Ray Armor</value>
+  </data>
+  <data name="VolcanoArmor" xml:space="preserve">
+    <value>Volcano Armor</value>
+  </data>
+  <data name="SunlightArmor" xml:space="preserve">
+    <value>Sunlight Armor</value>
+  </data>
+  <data name="AshcrowArmor" xml:space="preserve">
+    <value>Ashcrow Armor</value>
+  </data>
+  <data name="EclipseArmor" xml:space="preserve">
+    <value>Eclipse Armor</value>
+  </data>
+  <data name="IrisArmor" xml:space="preserve">
+    <value>Iris Armor</value>
+  </data>
+  <data name="ValiantArmor" xml:space="preserve">
+    <value>Valiant Armor</value>
+  </data>
+  <data name="GloriousArmor" xml:space="preserve">
+    <value>Glorious Armor</value>
+  </data>
+  <data name="MisteryArmor" xml:space="preserve">
+    <value>Mistery Armor</value>
+  </data>
+  <data name="RedWingArmor" xml:space="preserve">
+    <value>Red Wing Armor</value>
+  </data>
+  <data name="AncientArmor" xml:space="preserve">
+    <value>Ancient Armor</value>
+  </data>
+  <data name="BlackRoseArmor" xml:space="preserve">
+    <value>Black Rose Armor</value>
+  </data>
+  <data name="AuraArmor" xml:space="preserve">
+    <value>Aura Armor</value>
+  </data>
+  <data name="LiliumArmor" xml:space="preserve">
+    <value>Lilium Armor</value>
+  </data>
+  <data name="TitanArmor" xml:space="preserve">
+    <value>Titan Armor</value>
+  </data>
+  <data name="BraveArmor" xml:space="preserve">
+    <value>Brave Armor</value>
+  </data>
+  <data name="DestoryArmor" xml:space="preserve">
+    <value>Destory Armor</value>
+  </data>
+  <data name="PhantomArmor" xml:space="preserve">
+    <value>Phantom Armor</value>
+  </data>
+  <data name="SeraphimArmor" xml:space="preserve">
+    <value>Seraphim Armor</value>
+  </data>
+  <data name="FaithArmor" xml:space="preserve">
+    <value>Faith Armor</value>
+  </data>
+  <data name="PaewangArmor" xml:space="preserve">
+    <value>Paewang Armor</value>
+  </data>
+  <data name="HadesArmor" xml:space="preserve">
+    <value>Hades Armor</value>
+  </data>
+  <data name="SacredArmor" xml:space="preserve">
+    <value>Sacred Armor</value>
+  </data>
+  <data name="StormHardArmor" xml:space="preserve">
+    <value>Storm Hard Armor</value>
+  </data>
+  <data name="PiercingArmor" xml:space="preserve">
+    <value>Piercing Armor</value>
+  </data>
+  <data name="PhoenixSoulArmor" xml:space="preserve">
+    <value>Phoenix Soul Armor</value>
+  </data>
+  <data name="BronzePants" xml:space="preserve">
+    <value>Bronze Pants</value>
+  </data>
+  <data name="DragonPants" xml:space="preserve">
+    <value>Dragon Pants</value>
+  </data>
+  <data name="PadPants" xml:space="preserve">
+    <value>Pad Pants</value>
+  </data>
+  <data name="LegendaryPants" xml:space="preserve">
+    <value>Legendary Pants</value>
+  </data>
+  <data name="BonePants" xml:space="preserve">
+    <value>Bone Pants</value>
+  </data>
+  <data name="LeatherPants" xml:space="preserve">
+    <value>Leather Pants</value>
+  </data>
+  <data name="ScalePants" xml:space="preserve">
+    <value>Scale Pants</value>
+  </data>
+  <data name="SphinxPants" xml:space="preserve">
+    <value>Sphinx Pants</value>
+  </data>
+  <data name="BrassPants" xml:space="preserve">
+    <value>Brass Pants</value>
+  </data>
+  <data name="PlatePants" xml:space="preserve">
+    <value>Plate Pants</value>
+  </data>
+  <data name="VinePants" xml:space="preserve">
+    <value>Vine Pants</value>
+  </data>
+  <data name="SilkPants" xml:space="preserve">
+    <value>Silk Pants</value>
+  </data>
+  <data name="WindPants" xml:space="preserve">
+    <value>Wind Pants</value>
+  </data>
+  <data name="SpiritPants" xml:space="preserve">
+    <value>Spirit Pants</value>
+  </data>
+  <data name="GuardianPants" xml:space="preserve">
+    <value>Guardian Pants</value>
+  </data>
+  <data name="StormCrowPants" xml:space="preserve">
+    <value>Storm Crow Pants</value>
+  </data>
+  <data name="BlackDragonPants" xml:space="preserve">
+    <value>Black Dragon Pants</value>
+  </data>
+  <data name="DarkPhoenixPants" xml:space="preserve">
+    <value>Dark Phoenix Pants</value>
+  </data>
+  <data name="GrandSoulPants" xml:space="preserve">
+    <value>Grand Soul Pants</value>
+  </data>
+  <data name="DivinePants" xml:space="preserve">
+    <value>Divine Pants</value>
+  </data>
+  <data name="ThunderHawkPants" xml:space="preserve">
+    <value>Thunder Hawk Pants</value>
+  </data>
+  <data name="GreatDragonPants" xml:space="preserve">
+    <value>Great Dragon Pants</value>
+  </data>
+  <data name="DarkSoulPants" xml:space="preserve">
+    <value>Dark Soul Pants</value>
+  </data>
+  <data name="HurricanePants" xml:space="preserve">
+    <value>Hurricane Pants</value>
+  </data>
+  <data name="RedSpiritPants" xml:space="preserve">
+    <value>Red Spirit Pants</value>
+  </data>
+  <data name="LightPlatePants" xml:space="preserve">
+    <value>Light Plate Pants</value>
+  </data>
+  <data name="AdamantinePants" xml:space="preserve">
+    <value>Adamantine Pants</value>
+  </data>
+  <data name="DarkSteelPants" xml:space="preserve">
+    <value>Dark Steel Pants</value>
+  </data>
+  <data name="DarkMasterPants" xml:space="preserve">
+    <value>Dark Master Pants</value>
+  </data>
+  <data name="DragonKnightPants" xml:space="preserve">
+    <value>Dragon Knight Pants</value>
+  </data>
+  <data name="VenomMistPants" xml:space="preserve">
+    <value>Venom Mist Pants</value>
+  </data>
+  <data name="SylphidRayPants" xml:space="preserve">
+    <value>Sylphid Ray Pants</value>
+  </data>
+  <data name="VolcanoPants" xml:space="preserve">
+    <value>Volcano Pants</value>
+  </data>
+  <data name="SunlightPants" xml:space="preserve">
+    <value>Sunlight Pants</value>
+  </data>
+  <data name="AshcrowPants" xml:space="preserve">
+    <value>Ashcrow Pants</value>
+  </data>
+  <data name="EclipsePants" xml:space="preserve">
+    <value>Eclipse Pants</value>
+  </data>
+  <data name="IrisPants" xml:space="preserve">
+    <value>Iris Pants</value>
+  </data>
+  <data name="ValiantPants" xml:space="preserve">
+    <value>Valiant Pants</value>
+  </data>
+  <data name="GloriousPants" xml:space="preserve">
+    <value>Glorious Pants</value>
+  </data>
+  <data name="MisteryPants" xml:space="preserve">
+    <value>Mistery Pants</value>
+  </data>
+  <data name="RedWingPants" xml:space="preserve">
+    <value>Red Wing Pants</value>
+  </data>
+  <data name="AncientPants" xml:space="preserve">
+    <value>Ancient Pants</value>
+  </data>
+  <data name="BlackRosePants" xml:space="preserve">
+    <value>Black Rose Pants</value>
+  </data>
+  <data name="AuraPants" xml:space="preserve">
+    <value>Aura Pants</value>
+  </data>
+  <data name="LiliumPants" xml:space="preserve">
+    <value>Lilium Pants</value>
+  </data>
+  <data name="TitanPants" xml:space="preserve">
+    <value>Titan Pants</value>
+  </data>
+  <data name="BravePants" xml:space="preserve">
+    <value>Brave Pants</value>
+  </data>
+  <data name="DestoryPants" xml:space="preserve">
+    <value>Destory Pants</value>
+  </data>
+  <data name="PhantomPants" xml:space="preserve">
+    <value>Phantom Pants</value>
+  </data>
+  <data name="SeraphimPants" xml:space="preserve">
+    <value>Seraphim Pants</value>
+  </data>
+  <data name="FaithPants" xml:space="preserve">
+    <value>Faith Pants</value>
+  </data>
+  <data name="PaewangPants" xml:space="preserve">
+    <value>Paewang Pants</value>
+  </data>
+  <data name="HadesPants" xml:space="preserve">
+    <value>Hades Pants</value>
+  </data>
+  <data name="SacredPants" xml:space="preserve">
+    <value>Sacred Pants</value>
+  </data>
+  <data name="StormHardPants" xml:space="preserve">
+    <value>Storm Hard Pants</value>
+  </data>
+  <data name="PiercingPants" xml:space="preserve">
+    <value>Piercing Pants</value>
+  </data>
+  <data name="PhoenixSoulPants" xml:space="preserve">
+    <value>Phoenix Soul Pants</value>
+  </data>
+  <data name="BronzeGloves" xml:space="preserve">
+    <value>Bronze Gloves</value>
+  </data>
+  <data name="DragonGloves" xml:space="preserve">
+    <value>Dragon Gloves</value>
+  </data>
+  <data name="PadGloves" xml:space="preserve">
+    <value>Pad Gloves</value>
+  </data>
+  <data name="LegendaryGloves" xml:space="preserve">
+    <value>Legendary Gloves</value>
+  </data>
+  <data name="BoneGloves" xml:space="preserve">
+    <value>Bone Gloves</value>
+  </data>
+  <data name="LeatherGloves" xml:space="preserve">
+    <value>Leather Gloves</value>
+  </data>
+  <data name="ScaleGloves" xml:space="preserve">
+    <value>Scale Gloves</value>
+  </data>
+  <data name="SphinxGloves" xml:space="preserve">
+    <value>Sphinx Gloves</value>
+  </data>
+  <data name="BrassGloves" xml:space="preserve">
+    <value>Brass Gloves</value>
+  </data>
+  <data name="PlateGloves" xml:space="preserve">
+    <value>Plate Gloves</value>
+  </data>
+  <data name="VineGloves" xml:space="preserve">
+    <value>Vine Gloves</value>
+  </data>
+  <data name="SilkGloves" xml:space="preserve">
+    <value>Silk Gloves</value>
+  </data>
+  <data name="WindGloves" xml:space="preserve">
+    <value>Wind Gloves</value>
+  </data>
+  <data name="SpiritGloves" xml:space="preserve">
+    <value>Spirit Gloves</value>
+  </data>
+  <data name="GuardianGloves" xml:space="preserve">
+    <value>Guardian Gloves</value>
+  </data>
+  <data name="StormCrowGloves" xml:space="preserve">
+    <value>Storm Crow Gloves</value>
+  </data>
+  <data name="BlackDragonGloves" xml:space="preserve">
+    <value>Black Dragon Gloves</value>
+  </data>
+  <data name="DarkPhoenixGloves" xml:space="preserve">
+    <value>Dark Phoenix Gloves</value>
+  </data>
+  <data name="GrandSoulGloves" xml:space="preserve">
+    <value>Grand Soul Gloves</value>
+  </data>
+  <data name="DivineGloves" xml:space="preserve">
+    <value>Divine Gloves</value>
+  </data>
+  <data name="ThunderHawkGloves" xml:space="preserve">
+    <value>Thunder Hawk Gloves</value>
+  </data>
+  <data name="GreatDragonGloves" xml:space="preserve">
+    <value>Great Dragon Gloves</value>
+  </data>
+  <data name="DarkSoulGloves" xml:space="preserve">
+    <value>Dark Soul Gloves</value>
+  </data>
+  <data name="HurricaneGloves" xml:space="preserve">
+    <value>Hurricane Gloves</value>
+  </data>
+  <data name="RedSpiritGloves" xml:space="preserve">
+    <value>Red Spirit Gloves</value>
+  </data>
+  <data name="LightPlateGloves" xml:space="preserve">
+    <value>Light Plate Gloves</value>
+  </data>
+  <data name="AdamantineGloves" xml:space="preserve">
+    <value>Adamantine Gloves</value>
+  </data>
+  <data name="DarkSteelGloves" xml:space="preserve">
+    <value>Dark Steel Gloves</value>
+  </data>
+  <data name="DarkMasterGloves" xml:space="preserve">
+    <value>Dark Master Gloves</value>
+  </data>
+  <data name="DragonKnightGloves" xml:space="preserve">
+    <value>Dragon Knight Gloves</value>
+  </data>
+  <data name="VenomMistGloves" xml:space="preserve">
+    <value>Venom Mist Gloves</value>
+  </data>
+  <data name="SylphidRayGloves" xml:space="preserve">
+    <value>Sylphid Ray Gloves</value>
+  </data>
+  <data name="VolcanoGloves" xml:space="preserve">
+    <value>Volcano Gloves</value>
+  </data>
+  <data name="SunlightGloves" xml:space="preserve">
+    <value>Sunlight Gloves</value>
+  </data>
+  <data name="AshcrowGloves" xml:space="preserve">
+    <value>Ashcrow Gloves</value>
+  </data>
+  <data name="EclipseGloves" xml:space="preserve">
+    <value>Eclipse Gloves</value>
+  </data>
+  <data name="IrisGloves" xml:space="preserve">
+    <value>Iris Gloves</value>
+  </data>
+  <data name="ValiantGloves" xml:space="preserve">
+    <value>Valiant Gloves</value>
+  </data>
+  <data name="GloriousGloves" xml:space="preserve">
+    <value>Glorious Gloves</value>
+  </data>
+  <data name="MisteryGloves" xml:space="preserve">
+    <value>Mistery Gloves</value>
+  </data>
+  <data name="RedWingGloves" xml:space="preserve">
+    <value>Red Wing Gloves</value>
+  </data>
+  <data name="AncientGloves" xml:space="preserve">
+    <value>Ancient Gloves</value>
+  </data>
+  <data name="BlackRoseGloves" xml:space="preserve">
+    <value>Black Rose Gloves</value>
+  </data>
+  <data name="AuraGloves" xml:space="preserve">
+    <value>Aura Gloves</value>
+  </data>
+  <data name="LiliumGloves" xml:space="preserve">
+    <value>Lilium Gloves</value>
+  </data>
+  <data name="TitanGloves" xml:space="preserve">
+    <value>Titan Gloves</value>
+  </data>
+  <data name="BraveGloves" xml:space="preserve">
+    <value>Brave Gloves</value>
+  </data>
+  <data name="DestroyGloves" xml:space="preserve">
+    <value>Destroy Gloves</value>
+  </data>
+  <data name="PhantomGloves" xml:space="preserve">
+    <value>Phantom Gloves</value>
+  </data>
+  <data name="SeraphimGloves" xml:space="preserve">
+    <value>Seraphim Gloves</value>
+  </data>
+  <data name="FaithGloves" xml:space="preserve">
+    <value>Faith Gloves</value>
+  </data>
+  <data name="PaewangGloves" xml:space="preserve">
+    <value>Paewang Gloves</value>
+  </data>
+  <data name="HadesGloves" xml:space="preserve">
+    <value>Hades Gloves</value>
+  </data>
+  <data name="BronzeBoots" xml:space="preserve">
+    <value>Bronze Boots</value>
+  </data>
+  <data name="DragonBoots" xml:space="preserve">
+    <value>Dragon Boots</value>
+  </data>
+  <data name="PadBoots" xml:space="preserve">
+    <value>Pad Boots</value>
+  </data>
+  <data name="LegendaryBoots" xml:space="preserve">
+    <value>Legendary Boots</value>
+  </data>
+  <data name="BoneBoots" xml:space="preserve">
+    <value>Bone Boots</value>
+  </data>
+  <data name="LeatherBoots" xml:space="preserve">
+    <value>Leather Boots</value>
+  </data>
+  <data name="ScaleBoots" xml:space="preserve">
+    <value>Scale Boots</value>
+  </data>
+  <data name="SphinxBoots" xml:space="preserve">
+    <value>Sphinx Boots</value>
+  </data>
+  <data name="BrassBoots" xml:space="preserve">
+    <value>Brass Boots</value>
+  </data>
+  <data name="PlateBoots" xml:space="preserve">
+    <value>Plate Boots</value>
+  </data>
+  <data name="VineBoots" xml:space="preserve">
+    <value>Vine Boots</value>
+  </data>
+  <data name="SilkBoots" xml:space="preserve">
+    <value>Silk Boots</value>
+  </data>
+  <data name="WindBoots" xml:space="preserve">
+    <value>Wind Boots</value>
+  </data>
+  <data name="SpiritBoots" xml:space="preserve">
+    <value>Spirit Boots</value>
+  </data>
+  <data name="GuardianBoots" xml:space="preserve">
+    <value>Guardian Boots</value>
+  </data>
+  <data name="StormCrowBoots" xml:space="preserve">
+    <value>Storm Crow Boots</value>
+  </data>
+  <data name="BlackDragonBoots" xml:space="preserve">
+    <value>Black Dragon Boots</value>
+  </data>
+  <data name="DarkPhoenixBoots" xml:space="preserve">
+    <value>Dark Phoenix Boots</value>
+  </data>
+  <data name="GrandSoulBoots" xml:space="preserve">
+    <value>Grand Soul Boots</value>
+  </data>
+  <data name="DivineBoots" xml:space="preserve">
+    <value>Divine Boots</value>
+  </data>
+  <data name="ThunderHawkBoots" xml:space="preserve">
+    <value>Thunder Hawk Boots</value>
+  </data>
+  <data name="GreatDragonBoots" xml:space="preserve">
+    <value>Great Dragon Boots</value>
+  </data>
+  <data name="DarkSoulBoots" xml:space="preserve">
+    <value>Dark Soul Boots</value>
+  </data>
+  <data name="HurricaneBoots" xml:space="preserve">
+    <value>Hurricane Boots</value>
+  </data>
+  <data name="RedSpiritBoots" xml:space="preserve">
+    <value>Red Spirit Boots</value>
+  </data>
+  <data name="LightPlateBoots" xml:space="preserve">
+    <value>Light Plate Boots</value>
+  </data>
+  <data name="AdamantineBoots" xml:space="preserve">
+    <value>Adamantine Boots</value>
+  </data>
+  <data name="DarkSteelBoots" xml:space="preserve">
+    <value>Dark Steel Boots</value>
+  </data>
+  <data name="DarkMasterBoots" xml:space="preserve">
+    <value>Dark Master Boots</value>
+  </data>
+  <data name="DragonKnightBoots" xml:space="preserve">
+    <value>Dragon Knight Boots</value>
+  </data>
+  <data name="VenomMistBoots" xml:space="preserve">
+    <value>Venom Mist Boots</value>
+  </data>
+  <data name="SylphidRayBoots" xml:space="preserve">
+    <value>Sylphid Ray Boots</value>
+  </data>
+  <data name="VolcanoBoots" xml:space="preserve">
+    <value>Volcano Boots</value>
+  </data>
+  <data name="SunlightBoots" xml:space="preserve">
+    <value>Sunlight Boots</value>
+  </data>
+  <data name="AshcrowBoots" xml:space="preserve">
+    <value>Ashcrow Boots</value>
+  </data>
+  <data name="EclipseBoots" xml:space="preserve">
+    <value>Eclipse Boots</value>
+  </data>
+  <data name="IrisBoots" xml:space="preserve">
+    <value>Iris Boots</value>
+  </data>
+  <data name="ValiantBoots" xml:space="preserve">
+    <value>Valiant Boots</value>
+  </data>
+  <data name="GloriousBoots" xml:space="preserve">
+    <value>Glorious Boots</value>
+  </data>
+  <data name="MisteryBoots" xml:space="preserve">
+    <value>Mistery Boots</value>
+  </data>
+  <data name="RedWingBoots" xml:space="preserve">
+    <value>Red Wing Boots</value>
+  </data>
+  <data name="AncientBoots" xml:space="preserve">
+    <value>Ancient Boots</value>
+  </data>
+  <data name="BlackRoseBoots" xml:space="preserve">
+    <value>Black Rose Boots</value>
+  </data>
+  <data name="AuraBoots" xml:space="preserve">
+    <value>Aura Boots</value>
+  </data>
+  <data name="LiliumBoots" xml:space="preserve">
+    <value>Lilium Boots</value>
+  </data>
+  <data name="TitanBoots" xml:space="preserve">
+    <value>Titan Boots</value>
+  </data>
+  <data name="BraveBoots" xml:space="preserve">
+    <value>Brave Boots</value>
+  </data>
+  <data name="DestoryBoots" xml:space="preserve">
+    <value>Destory Boots</value>
+  </data>
+  <data name="PhantomBoots" xml:space="preserve">
+    <value>Phantom Boots</value>
+  </data>
+  <data name="SeraphimBoots" xml:space="preserve">
+    <value>Seraphim Boots</value>
+  </data>
+  <data name="FaithBoots" xml:space="preserve">
+    <value>Faith Boots</value>
+  </data>
+  <data name="PhaewangBoots" xml:space="preserve">
+    <value>Phaewang Boots</value>
+  </data>
+  <data name="HadesBoots" xml:space="preserve">
+    <value>Hades Boots</value>
+  </data>
+  <data name="SacredBoots" xml:space="preserve">
+    <value>Sacred Boots</value>
+  </data>
+  <data name="StormHardBoots" xml:space="preserve">
+    <value>Storm Hard Boots</value>
+  </data>
+  <data name="PiercingBoots" xml:space="preserve">
+    <value>Piercing Boots</value>
+  </data>
+  <data name="PhoenixSoulBoots" xml:space="preserve">
+    <value>Phoenix Soul Boots</value>
+  </data>
+  <data name="WingsOfElf" xml:space="preserve">
+    <value>Wings of Elf</value>
+  </data>
+  <data name="WingsOfHeaven" xml:space="preserve">
+    <value>Wings of Heaven</value>
+  </data>
+  <data name="WingsOfSatan" xml:space="preserve">
+    <value>Wings of Satan</value>
+  </data>
+  <data name="WingsOfSpirits" xml:space="preserve">
+    <value>Wings of Spirits</value>
+  </data>
+  <data name="WingsOfSoul" xml:space="preserve">
+    <value>Wings of Soul</value>
+  </data>
+  <data name="WingsOfDragon" xml:space="preserve">
+    <value>Wings of Dragon</value>
+  </data>
+  <data name="WingsOfDarkness" xml:space="preserve">
+    <value>Wings of Darkness</value>
+  </data>
+  <data name="OrbOfTwistingSlash" xml:space="preserve">
+    <value>Orb of Twisting Slash</value>
+  </data>
+  <data name="OrbOfHealing" xml:space="preserve">
+    <value>Orb of Healing</value>
+  </data>
+  <data name="OrbOfGreaterDefense" xml:space="preserve">
+    <value>Orb of Greater Defense</value>
+  </data>
+  <data name="OrbOfGreaterDamage" xml:space="preserve">
+    <value>Orb of Greater Damage</value>
+  </data>
+  <data name="OrbOfSummoning" xml:space="preserve">
+    <value>Orb of Summoning</value>
+  </data>
+  <data name="OrbOfRagefulBlow" xml:space="preserve">
+    <value>Orb of Rageful Blow</value>
+  </data>
+  <data name="OrbOfImpale" xml:space="preserve">
+    <value>Orb of Impale</value>
+  </data>
+  <data name="OrbOfGreaterFortitude" xml:space="preserve">
+    <value>Orb of Greater Fortitude</value>
+  </data>
+  <data name="JewelOfChaos" xml:space="preserve">
+    <value>Jewel of Chaos</value>
+  </data>
+  <data name="OrbOfFireSlash" xml:space="preserve">
+    <value>Orb of Fire Slash</value>
+  </data>
+  <data name="OrbOfPenetration" xml:space="preserve">
+    <value>Orb of Penetration</value>
+  </data>
+  <data name="OrbOfIceArrow" xml:space="preserve">
+    <value>Orb of Ice Arrow</value>
+  </data>
+  <data name="OrbOfDeathStab" xml:space="preserve">
+    <value>Orb of Death Stab</value>
+  </data>
+  <data name="ScrollOfFireBurst" xml:space="preserve">
+    <value>Scroll of FireBurst</value>
+  </data>
+  <data name="ScrollOfSummon" xml:space="preserve">
+    <value>Scroll of Summon</value>
+  </data>
+  <data name="ScrollOfCriticalDamage" xml:space="preserve">
+    <value>Scroll of Critical Damage</value>
+  </data>
+  <data name="ScrollOfElectricSpark" xml:space="preserve">
+    <value>Scroll of Electric Spark</value>
+  </data>
+  <data name="PackedJewelOfBless" xml:space="preserve">
+    <value>Packed Jewel of Bless</value>
+  </data>
+  <data name="PackedJewelOfSoul" xml:space="preserve">
+    <value>Packed Jewel of Soul</value>
+  </data>
+  <data name="RedRibbonBox" xml:space="preserve">
+    <value>Red Ribbon Box</value>
+  </data>
+  <data name="GreenRibbonBox" xml:space="preserve">
+    <value>Green Ribbon Box</value>
+  </data>
+  <data name="BlueRibbonBox" xml:space="preserve">
+    <value>Blue Ribbon Box</value>
+  </data>
+  <data name="ScrollOfFireScream" xml:space="preserve">
+    <value>Scroll of Fire Scream</value>
+  </data>
+  <data name="WingOfStorm" xml:space="preserve">
+    <value>Wing of Storm</value>
+  </data>
+  <data name="WingOfEternal" xml:space="preserve">
+    <value>Wing of Eternal</value>
+  </data>
+  <data name="WingOfIllusion" xml:space="preserve">
+    <value>Wing of Illusion</value>
+  </data>
+  <data name="WingOfRuin" xml:space="preserve">
+    <value>Wing of Ruin</value>
+  </data>
+  <data name="CapeOfEmperor" xml:space="preserve">
+    <value>Cape of Emperor</value>
+  </data>
+  <data name="WingsOfCurse" xml:space="preserve">
+    <value>Wings of Curse</value>
+  </data>
+  <data name="WingsOfDespair" xml:space="preserve">
+    <value>Wings of Despair</value>
+  </data>
+  <data name="WingOfDimension" xml:space="preserve">
+    <value>Wing of Dimension</value>
+  </data>
+  <data name="CrystalOfDestruction" xml:space="preserve">
+    <value>Crystal of Destruction</value>
+  </data>
+  <data name="CrystalOfMultiShot" xml:space="preserve">
+    <value>Crystal of Multi-Shot</value>
+  </data>
+  <data name="CrystalOfRecovery" xml:space="preserve">
+    <value>Crystal of Recovery</value>
+  </data>
+  <data name="CrystalOfFlameStrike" xml:space="preserve">
+    <value>Crystal of Flame Strike</value>
+  </data>
+  <data name="ScrollOfChaoticDiseier" xml:space="preserve">
+    <value>Scroll of Chaotic Diseier</value>
+  </data>
+  <data name="CapeOfFighter" xml:space="preserve">
+    <value>Cape of Fighter</value>
+  </data>
+  <data name="CapeOfOverrule" xml:space="preserve">
+    <value>Cape of Overrule</value>
+  </data>
+  <data name="SeedFire" xml:space="preserve">
+    <value>Seed (Fire)</value>
+  </data>
+  <data name="SeedWater" xml:space="preserve">
+    <value>Seed (Water)</value>
+  </data>
+  <data name="SeedIce" xml:space="preserve">
+    <value>Seed (Ice)</value>
+  </data>
+  <data name="SeedWind" xml:space="preserve">
+    <value>Seed (Wind)</value>
+  </data>
+  <data name="SeedLightning" xml:space="preserve">
+    <value>Seed (Lightning)</value>
+  </data>
+  <data name="SeedEarth" xml:space="preserve">
+    <value>Seed (Earth)</value>
+  </data>
+  <data name="SphereMono" xml:space="preserve">
+    <value>Sphere (Mono)</value>
+  </data>
+  <data name="SphereDi" xml:space="preserve">
+    <value>Sphere (Di)</value>
+  </data>
+  <data name="SphereTri" xml:space="preserve">
+    <value>Sphere (Tri)</value>
+  </data>
+  <data name="Sphere4" xml:space="preserve">
+    <value>Sphere (4)</value>
+  </data>
+  <data name="Sphere5" xml:space="preserve">
+    <value>Sphere (5)</value>
+  </data>
+  <data name="SeedSphereFire1" xml:space="preserve">
+    <value>Seed Sphere (Fire) (1)</value>
+  </data>
+  <data name="SeedSphereWater1" xml:space="preserve">
+    <value>Seed Sphere (Water) (1)</value>
+  </data>
+  <data name="SeedSphereIce1" xml:space="preserve">
+    <value>Seed Sphere (Ice) (1)</value>
+  </data>
+  <data name="SeedSphereWind1" xml:space="preserve">
+    <value>Seed Sphere (Wind) (1)</value>
+  </data>
+  <data name="SeedSphereLightning1" xml:space="preserve">
+    <value>Seed Sphere (Lightning) (1)</value>
+  </data>
+  <data name="SeedSphereEarth1" xml:space="preserve">
+    <value>Seed Sphere (Earth) (1)</value>
+  </data>
+  <data name="SeedSphereFire2" xml:space="preserve">
+    <value>Seed Sphere (Fire) (2)</value>
+  </data>
+  <data name="SeedSphereWater2" xml:space="preserve">
+    <value>Seed Sphere (Water) (2)</value>
+  </data>
+  <data name="SeedSphereIce2" xml:space="preserve">
+    <value>Seed Sphere (Ice) (2)</value>
+  </data>
+  <data name="SeedSphereWind2" xml:space="preserve">
+    <value>Seed Sphere (Wind) (2)</value>
+  </data>
+  <data name="SeedSphereLightning2" xml:space="preserve">
+    <value>Seed Sphere (Lightning) (2)</value>
+  </data>
+  <data name="SeedSphereEarth2" xml:space="preserve">
+    <value>Seed Sphere (Earth) (2)</value>
+  </data>
+  <data name="SeedSphereFire3" xml:space="preserve">
+    <value>Seed Sphere (Fire) (3)</value>
+  </data>
+  <data name="SeedSphereWater3" xml:space="preserve">
+    <value>Seed Sphere (Water) (3)</value>
+  </data>
+  <data name="SeedSphereIce3" xml:space="preserve">
+    <value>Seed Sphere (Ice) (3)</value>
+  </data>
+  <data name="SeedSphereWind3" xml:space="preserve">
+    <value>Seed Sphere (Wind) (3)</value>
+  </data>
+  <data name="SeedSphereLightning3" xml:space="preserve">
+    <value>Seed Sphere (Lightning) (3)</value>
+  </data>
+  <data name="SeedSphereEarth3" xml:space="preserve">
+    <value>Seed Sphere (Earth) (3)</value>
+  </data>
+  <data name="SeedSphereFire4" xml:space="preserve">
+    <value>Seed Sphere (Fire) (4)</value>
+  </data>
+  <data name="SeedSphereWater4" xml:space="preserve">
+    <value>Seed Sphere (Water) (4)</value>
+  </data>
+  <data name="SeedSphereIce4" xml:space="preserve">
+    <value>Seed Sphere (Ice) (4)</value>
+  </data>
+  <data name="SeedSphereWind4" xml:space="preserve">
+    <value>Seed Sphere (Wind) (4)</value>
+  </data>
+  <data name="SeedSphereLightning4" xml:space="preserve">
+    <value>Seed Sphere (Lightning) (4)</value>
+  </data>
+  <data name="SeedSphereEarth4" xml:space="preserve">
+    <value>Seed Sphere (Earth) (4)</value>
+  </data>
+  <data name="SeedSphereFire5" xml:space="preserve">
+    <value>Seed Sphere (Fire) (5)</value>
+  </data>
+  <data name="SeedSphereWater5" xml:space="preserve">
+    <value>Seed Sphere (Water) (5)</value>
+  </data>
+  <data name="SeedSphereIce5" xml:space="preserve">
+    <value>Seed Sphere (Ice) (5)</value>
+  </data>
+  <data name="SeedSphereWind5" xml:space="preserve">
+    <value>Seed Sphere (Wind) (5)</value>
+  </data>
+  <data name="SeedSphereLightning5" xml:space="preserve">
+    <value>Seed Sphere (Lightning) (5)</value>
+  </data>
+  <data name="SeedSphereEarth5" xml:space="preserve">
+    <value>Seed Sphere (Earth) (5)</value>
+  </data>
+  <data name="PackedJewelOfLife" xml:space="preserve">
+    <value>Packed Jewel of Life</value>
+  </data>
+  <data name="PackedJewelOfCreation" xml:space="preserve">
+    <value>Packed Jewel of Creation</value>
+  </data>
+  <data name="PackedJewelOfGuardian" xml:space="preserve">
+    <value>Packed Jewel of Guardian</value>
+  </data>
+  <data name="PackedGemstone" xml:space="preserve">
+    <value>Packed Gemstone</value>
+  </data>
+  <data name="PackedJewelOfHarmony" xml:space="preserve">
+    <value>Packed Jewel of Harmony</value>
+  </data>
+  <data name="PackedJewelOfChaos" xml:space="preserve">
+    <value>Packed Jewel of Chaos</value>
+  </data>
+  <data name="PackedLowerRefineStone" xml:space="preserve">
+    <value>Packed Lower refine stone</value>
+  </data>
+  <data name="PackedHigherRefineStone" xml:space="preserve">
+    <value>Packed Higher refine stone</value>
+  </data>
+  <data name="GuardianAngel" xml:space="preserve">
+    <value>Guardian Angel</value>
+  </data>
+  <data name="Imp" xml:space="preserve">
+    <value>Imp</value>
+  </data>
+  <data name="HornOfUniria" xml:space="preserve">
+    <value>Horn of Uniria</value>
+  </data>
+  <data name="HornOfDinorant" xml:space="preserve">
+    <value>Horn of Dinorant</value>
+  </data>
+  <data name="DarkHorse" xml:space="preserve">
+    <value>Dark Horse</value>
+  </data>
+  <data name="DarkRaven" xml:space="preserve">
+    <value>Dark Raven</value>
+  </data>
+  <data name="RingOfIce" xml:space="preserve">
+    <value>Ring of Ice</value>
+  </data>
+  <data name="RingOfPoison" xml:space="preserve">
+    <value>Ring of Poison</value>
+  </data>
+  <data name="TransformationRing" xml:space="preserve">
+    <value>Transformation Ring</value>
+  </data>
+  <data name="LifeStone" xml:space="preserve">
+    <value>Life Stone</value>
+  </data>
+  <data name="PendantOfLighting" xml:space="preserve">
+    <value>Pendant of Lighting</value>
+  </data>
+  <data name="PendantOfFire" xml:space="preserve">
+    <value>Pendant of Fire</value>
+  </data>
+  <data name="LochSFeather" xml:space="preserve">
+    <value>Loch's Feather</value>
+  </data>
+  <data name="Fruits" xml:space="preserve">
+    <value>Fruits</value>
+  </data>
+  <data name="ScrollOfArchangel" xml:space="preserve">
+    <value>Scroll of Archangel</value>
+  </data>
+  <data name="BloodBone" xml:space="preserve">
+    <value>Blood Bone</value>
+  </data>
+  <data name="InvisibilityCloak" xml:space="preserve">
+    <value>Invisibility Cloak</value>
+  </data>
+  <data name="WeaponOfArchangel" xml:space="preserve">
+    <value>Weapon of Archangel</value>
+  </data>
+  <data name="WizardSRing" xml:space="preserve">
+    <value>Wizard's Ring</value>
+  </data>
+  <data name="RingOfFire" xml:space="preserve">
+    <value>Ring of Fire</value>
+  </data>
+  <data name="RingOfEarth" xml:space="preserve">
+    <value>Ring of Earth</value>
+  </data>
+  <data name="RingOfWind" xml:space="preserve">
+    <value>Ring of Wind</value>
+  </data>
+  <data name="RingOfMagic" xml:space="preserve">
+    <value>Ring of Magic</value>
+  </data>
+  <data name="PendantOfIce" xml:space="preserve">
+    <value>Pendant of Ice</value>
+  </data>
+  <data name="PendantOfWind" xml:space="preserve">
+    <value>Pendant of Wind</value>
+  </data>
+  <data name="PendantOfWater" xml:space="preserve">
+    <value>Pendant of Water</value>
+  </data>
+  <data name="PendantOfAbility" xml:space="preserve">
+    <value>Pendant of Ability</value>
+  </data>
+  <data name="ArmorOfGuardsman" xml:space="preserve">
+    <value>Armor of Guardsman</value>
+  </data>
+  <data name="CapeOfLord" xml:space="preserve">
+    <value>Cape of Lord</value>
+  </data>
+  <data name="Spirit" xml:space="preserve">
+    <value>Spirit</value>
+  </data>
+  <data name="SplinterOfArmor" xml:space="preserve">
+    <value>Splinter of Armor</value>
+  </data>
+  <data name="BlessOfGuardian" xml:space="preserve">
+    <value>Bless of Guardian</value>
+  </data>
+  <data name="ClawOfBeast" xml:space="preserve">
+    <value>Claw of Beast</value>
+  </data>
+  <data name="FragmentOfHorn" xml:space="preserve">
+    <value>Fragment of Horn</value>
+  </data>
+  <data name="BrokenHorn" xml:space="preserve">
+    <value>Broken Horn</value>
+  </data>
+  <data name="HornOfFenrir" xml:space="preserve">
+    <value>Horn of Fenrir</value>
+  </data>
+  <data name="MoonstonePendant" xml:space="preserve">
+    <value>Moonstone Pendant</value>
+  </data>
+  <data name="EliteSkeletonTransformationRing" xml:space="preserve">
+    <value>Elite Skeleton Transformation Ring</value>
+  </data>
+  <data name="JackOLanternTransformationRing" xml:space="preserve">
+    <value>Jack O'lantern Transformation Ring</value>
+  </data>
+  <data name="ChristmasTransformationRing" xml:space="preserve">
+    <value>Christmas Transformation Ring</value>
+  </data>
+  <data name="GameMasterTransformationRing" xml:space="preserve">
+    <value>Game Master Transformation Ring</value>
+  </data>
+  <data name="OldScroll" xml:space="preserve">
+    <value>Old Scroll</value>
+  </data>
+  <data name="IllusionSorcererCovenant" xml:space="preserve">
+    <value>Illusion Sorcerer Covenant</value>
+  </data>
+  <data name="ScrollOfBlood" xml:space="preserve">
+    <value>Scroll of Blood</value>
+  </data>
+  <data name="FlameOfCondor" xml:space="preserve">
+    <value>Flame of Condor</value>
+  </data>
+  <data name="FeatherOfCondor" xml:space="preserve">
+    <value>Feather of Condor</value>
+  </data>
+  <data name="Demon" xml:space="preserve">
+    <value>Demon</value>
+  </data>
+  <data name="SpiritOfGuardian" xml:space="preserve">
+    <value>Spirit of Guardian</value>
+  </data>
+  <data name="PetRudolf" xml:space="preserve">
+    <value>Pet Rudolf</value>
+  </data>
+  <data name="SnowmanTransformationRing" xml:space="preserve">
+    <value>Snowman Transformation Ring</value>
+  </data>
+  <data name="PandaTransformationRing" xml:space="preserve">
+    <value>Panda Transformation Ring</value>
+  </data>
+  <data name="PetPanda" xml:space="preserve">
+    <value>Pet Panda</value>
+  </data>
+  <data name="PetUnicorn" xml:space="preserve">
+    <value>Pet Unicorn</value>
+  </data>
+  <data name="SkeletonTransformationRing" xml:space="preserve">
+    <value>Skeleton Transformation Ring</value>
+  </data>
+  <data name="PetSkeleton" xml:space="preserve">
+    <value>Pet Skeleton</value>
+  </data>
+  <data name="Apple" xml:space="preserve">
+    <value>Apple</value>
+  </data>
+  <data name="SmallHealingPotion" xml:space="preserve">
+    <value>Small Healing Potion</value>
+  </data>
+  <data name="MediumHealingPotion" xml:space="preserve">
+    <value>Medium Healing Potion</value>
+  </data>
+  <data name="LargeHealingPotion" xml:space="preserve">
+    <value>Large Healing Potion</value>
+  </data>
+  <data name="SmallManaPotion" xml:space="preserve">
+    <value>Small Mana Potion</value>
+  </data>
+  <data name="MediumManaPotion" xml:space="preserve">
+    <value>Medium Mana Potion</value>
+  </data>
+  <data name="LargeManaPotion" xml:space="preserve">
+    <value>Large Mana Potion</value>
+  </data>
+  <data name="PotionOfBlessPotionOfSoul" xml:space="preserve">
+    <value>Potion of Bless;Potion of Soul</value>
+  </data>
+  <data name="Antidote" xml:space="preserve">
+    <value>Antidote</value>
+  </data>
+  <data name="Ale" xml:space="preserve">
+    <value>Ale</value>
+  </data>
+  <data name="TownPortalScroll" xml:space="preserve">
+    <value>Town Portal Scroll</value>
+  </data>
+  <data name="BoxOfLuck" xml:space="preserve">
+    <value>Box of Luck</value>
+  </data>
+  <data name="JewelOfBless" xml:space="preserve">
+    <value>Jewel of Bless</value>
+  </data>
+  <data name="JewelOfSoul" xml:space="preserve">
+    <value>Jewel of Soul</value>
+  </data>
+  <data name="JewelOfLife" xml:space="preserve">
+    <value>Jewel of Life</value>
+  </data>
+  <data name="DevilSEye" xml:space="preserve">
+    <value>Devil's Eye</value>
+  </data>
+  <data name="DevilSKey" xml:space="preserve">
+    <value>Devil's Key</value>
+  </data>
+  <data name="DevilSInvitation" xml:space="preserve">
+    <value>Devil's Invitation</value>
+  </data>
+  <data name="Rena" xml:space="preserve">
+    <value>Rena</value>
+  </data>
+  <data name="JewelOfCreation" xml:space="preserve">
+    <value>Jewel of Creation</value>
+  </data>
+  <data name="ScrollOfEmperorRingOfHonor" xml:space="preserve">
+    <value>Scroll of Emperor;Ring of Honor</value>
+  </data>
+  <data name="BrokenSwordDarkStone" xml:space="preserve">
+    <value>Broken Sword;Dark Stone</value>
+  </data>
+  <data name="TearOfElf" xml:space="preserve">
+    <value>Tear of Elf</value>
+  </data>
+  <data name="SoulShardOfWizard" xml:space="preserve">
+    <value>Soul Shard of Wizard</value>
+  </data>
+  <data name="LostMap" xml:space="preserve">
+    <value>Lost Map</value>
+  </data>
+  <data name="SymbolOfKundun" xml:space="preserve">
+    <value>Symbol of Kundun</value>
+  </data>
+  <data name="JewelOfGuardian" xml:space="preserve">
+    <value>Jewel of Guardian</value>
+  </data>
+  <data name="PinkChocolateBox" xml:space="preserve">
+    <value>Pink Chocolate Box</value>
+  </data>
+  <data name="RedChocolateBox" xml:space="preserve">
+    <value>Red Chocolate Box</value>
+  </data>
+  <data name="BlueChocolateBox" xml:space="preserve">
+    <value>Blue Chocolate Box</value>
+  </data>
+  <data name="SmallShieldPotion" xml:space="preserve">
+    <value>Small Shield Potion</value>
+  </data>
+  <data name="MediumShieldPotion" xml:space="preserve">
+    <value>Medium Shield Potion</value>
+  </data>
+  <data name="LargeShieldPotion" xml:space="preserve">
+    <value>Large Shield Potion</value>
+  </data>
+  <data name="SmallComplexPotion" xml:space="preserve">
+    <value>Small Complex Potion</value>
+  </data>
+  <data name="MediumComplexPotion" xml:space="preserve">
+    <value>Medium Complex Potion</value>
+  </data>
+  <data name="LargeComplexPotion" xml:space="preserve">
+    <value>Large Complex Potion</value>
+  </data>
+  <data name="Gemstone" xml:space="preserve">
+    <value>Gemstone</value>
+  </data>
+  <data name="JewelOfHarmony" xml:space="preserve">
+    <value>Jewel of Harmony</value>
+  </data>
+  <data name="LowerRefineStone" xml:space="preserve">
+    <value>Lower refine stone</value>
+  </data>
+  <data name="HigherRefineStone" xml:space="preserve">
+    <value>Higher refine stone</value>
+  </data>
+  <data name="PumpkinOfLuck" xml:space="preserve">
+    <value>Pumpkin of Luck</value>
+  </data>
+  <data name="JackOLanternBlessings" xml:space="preserve">
+    <value>Jack O'Lantern Blessings</value>
+  </data>
+  <data name="JackOLanternWrath" xml:space="preserve">
+    <value>Jack O'Lantern Wrath</value>
+  </data>
+  <data name="JackOLanternCry" xml:space="preserve">
+    <value>Jack O'Lantern Cry</value>
+  </data>
+  <data name="JackOLanternFood" xml:space="preserve">
+    <value>Jack O'Lantern Food</value>
+  </data>
+  <data name="JackOLanternDrink" xml:space="preserve">
+    <value>Jack O'Lantern Drink</value>
+  </data>
+  <data name="ChristmasStar" xml:space="preserve">
+    <value>Christmas Star</value>
+  </data>
+  <data name="GMGift" xml:space="preserve">
+    <value>GM Gift</value>
+  </data>
+  <data name="Firecracker" xml:space="preserve">
+    <value>Firecracker</value>
+  </data>
+  <data name="FlameOfDeathBeamKnight" xml:space="preserve">
+    <value>Flame of Death Beam Knight</value>
+  </data>
+  <data name="HornOfHellMaine" xml:space="preserve">
+    <value>Horn of Hell Maine</value>
+  </data>
+  <data name="FeatherOfDarkPhoenix" xml:space="preserve">
+    <value>Feather of Dark Phoenix</value>
+  </data>
+  <data name="EyeOfAbyssal" xml:space="preserve">
+    <value>Eye of Abyssal</value>
+  </data>
+  <data name="CherryBlossomPlayBox" xml:space="preserve">
+    <value>Cherry Blossom Play-Box</value>
+  </data>
+  <data name="CherryBlossomWine" xml:space="preserve">
+    <value>Cherry Blossom Wine</value>
+  </data>
+  <data name="CherryBlossomRiceCake" xml:space="preserve">
+    <value>Cherry Blossom Rice Cake</value>
+  </data>
+  <data name="CherryBlossomFlowerPetal" xml:space="preserve">
+    <value>Cherry Blossom Flower Petal</value>
+  </data>
+  <data name="GoldenCherryBlossomBranch" xml:space="preserve">
+    <value>Golden Cherry Blossom Branch</value>
+  </data>
+  <data name="ChristmasFirecracker" xml:space="preserve">
+    <value>Christmas Firecracker</value>
+  </data>
+  <data name="SuspiciousScrapOfPaper" xml:space="preserve">
+    <value>Suspicious Scrap of Paper</value>
+  </data>
+  <data name="GaionSOrder" xml:space="preserve">
+    <value>Gaion's Order</value>
+  </data>
+  <data name="FirstSecromiconFragment" xml:space="preserve">
+    <value>First Secromicon Fragment</value>
+  </data>
+  <data name="SecondSecromiconFragment" xml:space="preserve">
+    <value>Second Secromicon Fragment</value>
+  </data>
+  <data name="ThirdSecromiconFragment" xml:space="preserve">
+    <value>Third Secromicon Fragment</value>
+  </data>
+  <data name="FourthSecromiconFragment" xml:space="preserve">
+    <value>Fourth Secromicon Fragment</value>
+  </data>
+  <data name="FifthSecromiconFragment" xml:space="preserve">
+    <value>Fifth Secromicon Fragment</value>
+  </data>
+  <data name="SixthSecromiconFragment" xml:space="preserve">
+    <value>Sixth Secromicon Fragment</value>
+  </data>
+  <data name="CompleteSecromicon" xml:space="preserve">
+    <value>Complete Secromicon</value>
+  </data>
+  <data name="ScrollOfPoison" xml:space="preserve">
+    <value>Scroll of Poison</value>
+  </data>
+  <data name="ScrollOfMeteorite" xml:space="preserve">
+    <value>Scroll of Meteorite</value>
+  </data>
+  <data name="ScrollOfLighting" xml:space="preserve">
+    <value>Scroll of Lighting</value>
+  </data>
+  <data name="ScrollOfFireBall" xml:space="preserve">
+    <value>Scroll of Fire Ball</value>
+  </data>
+  <data name="ScrollOfFlame" xml:space="preserve">
+    <value>Scroll of Flame</value>
+  </data>
+  <data name="ScrollOfTeleport" xml:space="preserve">
+    <value>Scroll of Teleport</value>
+  </data>
+  <data name="ScrollOfIce" xml:space="preserve">
+    <value>Scroll of Ice</value>
+  </data>
+  <data name="ScrollOfTwister" xml:space="preserve">
+    <value>Scroll of Twister</value>
+  </data>
+  <data name="ScrollOfEvilSpirit" xml:space="preserve">
+    <value>Scroll of Evil Spirit</value>
+  </data>
+  <data name="ScrollOfHellfire" xml:space="preserve">
+    <value>Scroll of Hellfire</value>
+  </data>
+  <data name="ScrollOfPowerWave" xml:space="preserve">
+    <value>Scroll of Power Wave</value>
+  </data>
+  <data name="ScrollOfAquaBeam" xml:space="preserve">
+    <value>Scroll of Aqua Beam</value>
+  </data>
+  <data name="ScrollOfCometfall" xml:space="preserve">
+    <value>Scroll of Cometfall</value>
+  </data>
+  <data name="ScrollOfInferno" xml:space="preserve">
+    <value>Scroll of Inferno</value>
+  </data>
+  <data name="ScrollOfTeleportAlly" xml:space="preserve">
+    <value>Scroll of Teleport Ally</value>
+  </data>
+  <data name="ScrollOfSoulBarrier" xml:space="preserve">
+    <value>Scroll of Soul Barrier</value>
+  </data>
+  <data name="ScrollOfDecay" xml:space="preserve">
+    <value>Scroll of Decay</value>
+  </data>
+  <data name="ScrollOfIceStorm" xml:space="preserve">
+    <value>Scroll of Ice Storm</value>
+  </data>
+  <data name="ScrollOfNova" xml:space="preserve">
+    <value>Scroll of Nova</value>
+  </data>
+  <data name="ChainLightningParchment" xml:space="preserve">
+    <value>Chain Lightning Parchment</value>
+  </data>
+  <data name="DrainLifeParchment" xml:space="preserve">
+    <value>Drain Life Parchment</value>
+  </data>
+  <data name="LightningShockParchment" xml:space="preserve">
+    <value>Lightning Shock Parchment</value>
+  </data>
+  <data name="DamageReflectionParchment" xml:space="preserve">
+    <value>Damage Reflection Parchment</value>
+  </data>
+  <data name="BerserkerParchment" xml:space="preserve">
+    <value>Berserker Parchment</value>
+  </data>
+  <data name="SleepParchment" xml:space="preserve">
+    <value>Sleep Parchment</value>
+  </data>
+  <data name="WeaknessParchment" xml:space="preserve">
+    <value>Weakness Parchment</value>
+  </data>
+  <data name="InnovationParchment" xml:space="preserve">
+    <value>Innovation Parchment</value>
+  </data>
+  <data name="ScrollOfWizardryEnhance" xml:space="preserve">
+    <value>Scroll of Wizardry Enhance</value>
+  </data>
+  <data name="ScrollOfGiganticStorm" xml:space="preserve">
+    <value>Scroll of Gigantic Storm</value>
+  </data>
+  <data name="ChainDriveParchment" xml:space="preserve">
+    <value>Chain Drive Parchment</value>
+  </data>
+  <data name="DarkSideParchment" xml:space="preserve">
+    <value>Dark Side Parchment</value>
+  </data>
+  <data name="DragonRoarParchment" xml:space="preserve">
+    <value>Dragon Roar Parchment</value>
+  </data>
+  <data name="DragonSlasherParchment" xml:space="preserve">
+    <value>Dragon Slasher Parchment</value>
+  </data>
+  <data name="IgnoreDefenseParchment" xml:space="preserve">
+    <value>Ignore Defense Parchment</value>
+  </data>
+  <data name="IncreaseHealthParchment" xml:space="preserve">
+    <value>Increase Health Parchment</value>
+  </data>
+  <data name="IncreaseBlockParchment" xml:space="preserve">
+    <value>Increase Block Parchment</value>
+  </data>
+  <data name="SmallCapeOfLord" xml:space="preserve">
+    <value>Small Cape of Lord</value>
+  </data>
+  <data name="SmallWingOfCurse" xml:space="preserve">
+    <value>Small Wing of Curse</value>
+  </data>
+  <data name="SmallWingsOfElf" xml:space="preserve">
+    <value>Small Wings of Elf</value>
+  </data>
+  <data name="SmallWingsOfHeaven" xml:space="preserve">
+    <value>Small Wings of Heaven</value>
+  </data>
+  <data name="SmallWingsOfSatan" xml:space="preserve">
+    <value>Small Wings of Satan</value>
+  </data>
+  <data name="LittleWarriorsCloak" xml:space="preserve">
+    <value>Little Warrior's Cloak</value>
+  </data>
+</root>

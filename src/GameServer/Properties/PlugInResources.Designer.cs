@@ -439,6 +439,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shows the gens mark and rank of the players in the view..
+        /// </summary>
+        public static string AssignPlayersToGensPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AssignPlayersToGensPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assign players to gens.
+        /// </summary>
+        public static string AssignPlayersToGensPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AssignPlayersToGensPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IAssignPlayersToGuildPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string AssignPlayersToGuildPlugIn_Description {
@@ -2572,6 +2590,114 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the gens system (0xF8)..
+        /// </summary>
+        public static string GensGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens group handler.
+        /// </summary>
+        public static string GensGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player to join a gens..
+        /// </summary>
+        public static string GensJoinRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensJoinRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens join request handler.
+        /// </summary>
+        public static string GensJoinRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensJoinRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player to leave the gens..
+        /// </summary>
+        public static string GensLeaveRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensLeaveRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens leave request handler.
+        /// </summary>
+        public static string GensLeaveRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensLeaveRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the gens ranking, which the client sends when it opens the gens info window..
+        /// </summary>
+        public static string GensRankingRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRankingRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens ranking request handler.
+        /// </summary>
+        public static string GensRankingRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRankingRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player for the gens ranking reward..
+        /// </summary>
+        public static string GensRewardRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRewardRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens reward request handler.
+        /// </summary>
+        public static string GensRewardRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRewardRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the results of the gens requests and the gens info of the own player..
+        /// </summary>
+        public static string GensViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens view.
+        /// </summary>
+        public static string GensViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for guild create packets..
         /// </summary>
         public static string GuildCreateHandlerPlugIn_Description {
@@ -2874,6 +3000,60 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string HitHandlerPlugIn075_Name {
             get {
                 return ResourceManager.GetString("HitHandlerPlugIn075_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request to enter the imperial guardian event, which is sent by the window of Jerint..
+        /// </summary>
+        public static string ImperialGuardianEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian Enter Request Handler.
+        /// </summary>
+        public static string ImperialGuardianEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the imperial guardian event (0xF7)..
+        /// </summary>
+        public static string ImperialGuardianGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian Group Handler.
+        /// </summary>
+        public static string ImperialGuardianGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the enter result, the timer and the result of the imperial guardian event to the client..
+        /// </summary>
+        public static string ImperialGuardianViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian View.
+        /// </summary>
+        public static string ImperialGuardianViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianViewPlugIn_Name", resourceCulture);
             }
         }
         

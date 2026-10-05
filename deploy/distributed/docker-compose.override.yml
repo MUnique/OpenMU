@@ -2,13 +2,12 @@ services:
   database:
     ports:
       - "5433:5432"
-  loki:
+  otel-lgtm:
     ports:
-      - "3100:3100"
-  prometheus:
-    ports:
-      - "9000:9090"
-      
+      # OTLP endpoints for services which are started from the IDE, outside of docker.
+      - "4317:4317"
+      - "4318:4318"
+
   redis-state:
     ports:
       - "6379:6379"

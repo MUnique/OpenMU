@@ -80,6 +80,9 @@ public static class EnumExtensions
             GuildRequestAnswerResult.AlreadyHaveGuild => GuildJoinRequestResult.AlreadyHaveGuild,
             GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy => GuildJoinRequestResult.GuildMasterOrRequesterIsBusy,
             GuildRequestAnswerResult.MinimumLevel6 => GuildJoinRequestResult.MinimumLevel6,
+            GuildRequestAnswerResult.GuildMasterNotInGens => GuildJoinRequestResult.GuildMasterNotInGens,
+            GuildRequestAnswerResult.GuildMasterInDifferentGens => GuildJoinRequestResult.GuildMasterInDifferentGens,
+            GuildRequestAnswerResult.NotInGensOfGuildMaster => GuildJoinRequestResult.NotInGensOfGuildMaster,
             _ => throw new NotImplementedException($"The case {result} is not implemented."),
         };
     }

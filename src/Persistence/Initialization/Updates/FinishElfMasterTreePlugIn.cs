@@ -34,9 +34,6 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishElfMasterTree;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 
     /// <inheritdoc />

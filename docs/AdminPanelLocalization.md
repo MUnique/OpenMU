@@ -1,8 +1,9 @@
 # Admin panel localization
 
 Select **简体中文** in the admin panel language selector to use the Simplified
-Chinese (`zh-CN`) resources. The selected culture is preserved by the existing
-culture cookie. English remains the neutral resource language and fallback.
+Chinese (`zh-CN`) resources, or **Deutsch** to use the German (`de`) resources.
+The selected culture is preserved by the existing culture cookie. English
+remains the neutral resource language and fallback.
 
 ## Coverage
 
@@ -38,6 +39,21 @@ Use `{Type}_{Property}_Name` / `_Description` for property metadata and
 
 Keep contribution descriptions, source comments, and documentation in English.
 Do not translate command syntax, packet identifiers, or authorization values.
+
+### German terminology
+
+The German texts (`*.de.resx`) use the same terms as the German translation of
+the open source game client ([sven-n/MuMain](https://github.com/sven-n/MuMain),
+`src/Localization/*.de.resx`), so players see the same words in server messages
+and in the client. They address the player formally ("Sie"), like the client.
+Map, class and event names follow the client (e.g. *Verlorener Turm*,
+*Dunkler Ritter*, *Lord-Imperator*, *Blutburg*, *Illusionstempel*,
+*Festung der Kaiserlichen Wächter*); the event names *Devil Square*,
+*Chaos Castle* and *Castle Siege* are not translated, like in the client. The
+client's `docs/translation-system.md` lists the shared terms. Monster and skill
+names stay English, because the client shows them in English. Item names are
+German, like in the client's item data (see
+[Item name localization](ItemNameLocalization.md)).
 
 Run the admin panel tests with:
 

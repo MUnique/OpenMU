@@ -7,6 +7,11 @@
 
     private string CurrentTheme =>
         ThemeController.NormalizeTheme(this.HttpContext?.Request.Cookies[ThemeController.CookieName]);
+
+    /// <summary>
+    /// Gets the base path of the panel, e.g. "/admin/" when it's hosted under a sub path behind a reverse proxy.
+    /// </summary>
+    private string BaseHref => $"{this.HttpContext?.Request.PathBase}/";
 }
 
 <!DOCTYPE html>
@@ -15,7 +20,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OpenMUAdminPanel</title>
-    <base href="/" />
+    <base href="@this.BaseHref" />
     <ResourcePreloader />
     <link href="@Assets["MUnique.OpenMU.Startup.styles.css"]" rel="stylesheet" />
     <link href="@Assets["_content/MUnique.OpenMU.Web.AdminPanel/MUnique.OpenMU.Web.AdminPanel.styles.css"]" rel="stylesheet" />

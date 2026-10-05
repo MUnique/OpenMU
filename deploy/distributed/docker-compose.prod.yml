@@ -31,9 +31,7 @@ services:
       - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - certificates:/etc/nginx/ssl/:ro
     depends_on:
-      - grafana
-      - zipkin
-      - prometheus 
+      - otel-lgtm
 
   certbot:
     image: certbot/certbot:latest
@@ -41,14 +39,10 @@ services:
       - certbot-www:/var/www/certbot/:rw
       - certificates:/etc/letsencrypt/:rw
 
-  grafana:
+  otel-lgtm:
     restart: "unless-stopped"
-  prometheus:
-    restart: "unless-stopped"
-  loki:
-    restart: "unless-stopped"
-  minio:
-    restart: "unless-stopped"
+    environment:
+      GF_SERVER_ROOT_URL: https://${DOMAIN_NAME}/grafana/
   redis-state:
     restart: "unless-stopped"
   dapr-placement:
@@ -56,8 +50,6 @@ services:
   rabbit:
     restart: "unless-stopped"
   database:
-    restart: "unless-stopped"
-  zipkin:
     restart: "unless-stopped"
 
   connectServer:

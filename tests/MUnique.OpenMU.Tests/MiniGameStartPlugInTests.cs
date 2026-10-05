@@ -387,6 +387,10 @@ public class MiniGameStartPlugInTests
             definition,
             gameContextMock.Object,
             mapInitializerMock.Object);
+
+        // Mirrors MiniGameManager.GetOrCreateAsync, which starts the loop after
+        // construction so overridden members read post-construction values.
+        game.EnsureGameLoopRunning();
         this._gamesToDispose.Add(game);
         return game;
     }

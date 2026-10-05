@@ -10,8 +10,15 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This adds the items required to enter the kalima map.
+/// This update adds the area skill settings for skills like evil spirit, so that they work properly again.
 /// </summary>
+/// <remarks>
+/// Version 2 additionally fixes the Hellfire, Decay and Ice Storm skills'
+/// range, effect radius and delay.
+/// Version 3 additionally sets the projectile count of the Triple Shot skill.
+/// Every step only fills in missing values or corrects seeded ones, so
+/// customized values are preserved and re-running stays a no-op.
+/// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddAreaSkillSettingsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddAreaSkillSettingsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D01DA745-BF72-40C4-BD90-D2D637AEDF99")]
@@ -28,9 +35,6 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "Adds the new area skill settings for skills like evil spirit, etc. to make them work properly again.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddAreaSkillSettings;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
@@ -43,7 +47,13 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => false;
 
     /// <inheritdoc />
+    public override int Version => 3;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2024, 10, 25, 19, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 09, 30, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -75,10 +85,85 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
                 continue;
             }
 
-            skill.AreaSkillSettings = context.CreateNew<AreaSkillSettings>();
-            var id = skill.AreaSkillSettings.GetId();
-            skill.AreaSkillSettings.AssignValuesOf(areaSkillSettings, gameConfiguration);
-            skill.AreaSkillSettings.SetGuid(id);
+            var targetSettings = skill.AreaSkillSettings ?? context.CreateNew<AreaSkillSettings>();
+            var id = targetSettings.GetId();
+            targetSettings.AssignValuesOf(areaSkillSettings, gameConfiguration);
+            targetSettings.SetGuid(id);
+            skill.AreaSkillSettings = targetSettings;
+        }
+
+        this.FixHellfireDecayAndIceStorm(context, gameConfiguration);
+        EnsureTripleShotProjectileCount(gameConfiguration);
+    }
+
+    /// <summary>
+    /// Sets the projectile count of the Triple Shot skill, so that arrow directions are handled properly.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    private static void EnsureTripleShotProjectileCount(GameConfiguration gameConfiguration)
+    {
+        var tripleShot = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.TripleShot);
+        if (tripleShot?.AreaSkillSettings is { } settings)
+        {
+            settings.ProjectileCount = 3;
+        }
+    }
+
+    /// <summary>
+    /// Fixes Hellfire, Decay and Ice Storm skills' range, effect radius and delay.
+    /// Hellfire, Decay and their strengthen versions had missing area skill settings,
+    /// causing an incorrect hit radius. Ice Storm had an incorrect 200ms delay between hits.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    private void FixHellfireDecayAndIceStorm(IContext context, GameConfiguration gameConfiguration)
+    {
+        // Fix Hellfire Strengthener
+        var hellfireStrengthener = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.HellfireStrengthener);
+        if (hellfireStrengthener != null)
+        {
+            hellfireStrengthener.Range = 4;
+            hellfireStrengthener.AttackDamage = 3;
+
+            if (hellfireStrengthener.AreaSkillSettings == null)
+            {
+                var areaSkillSettings = context.CreateNew<AreaSkillSettings>();
+                hellfireStrengthener.AreaSkillSettings = areaSkillSettings;
+                areaSkillSettings.EffectRange = 2;
+            }
+        }
+
+        // Fix Decay Strengthener
+        var decayStrengthener = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.DecayStrengthener);
+        if (decayStrengthener != null)
+        {
+            decayStrengthener.Range = 6;
+
+            if (decayStrengthener.AreaSkillSettings == null)
+            {
+                var areaSkillSettings = context.CreateNew<AreaSkillSettings>();
+                decayStrengthener.AreaSkillSettings = areaSkillSettings;
+                areaSkillSettings.EffectRange = 2;
+            }
+        }
+
+        // Fix base Decay skill
+        var decay = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Decay);
+        if (decay != null)
+        {
+            if (decay.AreaSkillSettings == null)
+            {
+                var areaSkillSettings = context.CreateNew<AreaSkillSettings>();
+                decay.AreaSkillSettings = areaSkillSettings;
+                areaSkillSettings.EffectRange = 2;
+            }
+        }
+
+        // Fix Ice Storm - remove incorrect 200ms delay
+        var iceStorm = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.IceStorm);
+        if (iceStorm?.AreaSkillSettings != null)
+        {
+            iceStorm.AreaSkillSettings.DelayBetweenHits = TimeSpan.Zero;
         }
     }
 
@@ -102,7 +187,7 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
         short? newRange = null)
     {
         var skill = gameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
-        var areaSkillSettings = context.CreateNew<AreaSkillSettings>();
+        var areaSkillSettings = skill.AreaSkillSettings ?? context.CreateNew<AreaSkillSettings>();
         skill.AreaSkillSettings = areaSkillSettings;
         skill.SkillType = SkillType.AreaSkillAutomaticHits;
 

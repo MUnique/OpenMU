@@ -32,65 +32,165 @@ public class DataUpdateService
     public event AsyncEventHandler? UpdatesInstalled;
 
     /// <summary>
-    /// Determines the available updates which are not installed yet.
+    /// Determines the available updates which are not installed yet,
+    /// or which are installed in a previous version.
     /// </summary>
     /// <returns>The available plugins.</returns>
     /// <exception cref="System.InvalidOperationException">The plugin manager is not initialized.</exception>
     public async ValueTask<IReadOnlyCollection<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync()
     {
         using var context = this._contextProvider.CreateNewContext();
-        var updates = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).ToList();
+        var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
 
-        var initializationKey = await this.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
-        var installedUpdates = updates
-            .Where(up => up.InstalledAt is not null)
-            .Select(up => (UpdateVersion)up.Version)
-            .ToHashSet();
+        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
 
-        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>();
+        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
         if (updateStrategyProvider is null)
         {
             // it's null when there are no plugins yet ...
             return [];
         }
 
-        var availableUpdates = updateStrategyProvider.AvailableStrategies
+        var pending = updateStrategyProvider.AvailableStrategies
             .Where(up => up.DataInitializationKey == initializationKey)
-            .Where(up => !installedUpdates.Contains(up.Version))
-            .OrderBy(up => up.Version)
+            .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
             .ToList();
 
-        return availableUpdates;
+        return OrderByDependencies(pending, installedVersions);
+    }
+
+    /// <summary>
+    /// Gets the installed versions and installation dates of all configuration updates, by update key.
+    /// </summary>
+    /// <returns>A dictionary of the installed versions and installation dates by update key.</returns>
+    public async ValueTask<IReadOnlyDictionary<Guid, (int Version, DateTime? InstalledAt)>> GetInstalledUpdatesAsync()
+    {
+        using var context = this._contextProvider.CreateNewContext();
+        return (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
+            .Where(up => up.InstalledAt is not null)
+            .GroupBy(up => up.Key)
+            .ToDictionary(group => group.Key, group => (group.Max(up => up.Version), group.Max(up => up.InstalledAt)));
     }
 
     /// <summary>
     /// Applies the updates asynchronous.
     /// </summary>
-    /// <param name="updates">The updates.</param>
+    /// <param name="updates">The updates. They are validated and ordered by their dependencies before anything is applied, so callers may pass a partial or unordered selection.</param>
     /// <param name="progress">The progress provider. Reports the progress back to the caller.</param>
-    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(UpdateVersion CurrentUpdatingVersion, bool IsCompleted)> progress)
+    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(Guid CurrentUpdatingKey, bool IsCompleted)> progress)
     {
         using var context = this._contextProvider.CreateNewContext();
+        var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+
+        var orderedUpdates = OrderByDependencies(updates, installedVersions);
         var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
         var updateState = updateStates.FirstOrDefault() ?? context.CreateNew<ConfigurationUpdateState>();
-        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
-        foreach (var update in updates)
+        foreach (var update in orderedUpdates)
         {
-            progress.Report((update.Version, false));
+            progress.Report((update.Key, false));
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-
-            updateState.CurrentInstalledVersion = Math.Max((int)update.Version, updateState.CurrentInstalledVersion);
             updateState.InitializationKey = update.DataInitializationKey;
-
             await context.SaveChangesAsync().ConfigureAwait(false);
-            progress.Report((update.Version, true));
+            progress.Report((update.Key, true));
         }
 
-        progress.Report((UpdateVersion.Undefined, true));
+        progress.Report((Guid.Empty, true));
         this.UpdatesInstalled?.SafeInvokeAsync();
     }
 
-    private async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
+    /// <summary>
+    /// Orders the pending updates by their dependencies. Independent updates are ordered by <see cref="IConfigurationUpdatePlugIn.UpdatedAt"/>.
+    /// </summary>
+    /// <remarks>
+    /// A version bump is ordered by its own <see cref="IConfigurationUpdatePlugIn.UpdatedAt"/>,
+    /// so it can run after a newer independent update it used to run before.
+    /// That is harmless as long as real dependencies are declared with
+    /// <see cref="IConfigurationUpdatePlugIn.DependsOn"/>.
+    /// </remarks>
+    /// <param name="pending">The pending updates.</param>
+    /// <param name="installedVersions">The installed versions by update key.</param>
+    /// <returns>The ordered updates.</returns>
+    internal static IReadOnlyList<IConfigurationUpdatePlugIn> OrderByDependencies(
+        IReadOnlyCollection<IConfigurationUpdatePlugIn> pending,
+        IReadOnlyDictionary<Guid, int> installedVersions)
+    {
+        var pendingByKey = pending.ToDictionary(p => p.Key);
+
+        foreach (var plugin in pending)
+        {
+            var missing = plugin.DependsOn
+                .Where(dep => !IsDependencySatisfied(dep, installedVersions, pendingByKey))
+                .Select(dep => dep.Key)
+                .Distinct()
+                .ToList();
+            if (missing.Count > 0)
+            {
+                throw new MissingUpdateDependencyException(plugin, missing);
+            }
+        }
+
+        var result = new List<IConfigurationUpdatePlugIn>();
+        var visited = new HashSet<Guid>();
+        var visiting = new HashSet<Guid>();
+
+        void Visit(IConfigurationUpdatePlugIn plugin)
+        {
+            if (visited.Contains(plugin.Key))
+            {
+                return;
+            }
+
+            if (!visiting.Add(plugin.Key))
+            {
+                throw new CircularUpdateDependencyException(plugin);
+            }
+
+            foreach (var depKey in plugin.DependsOn
+                .Select(dependency => dependency.Key)
+                .Where(pendingByKey.ContainsKey))
+            {
+                Visit(pendingByKey[depKey]);
+            }
+
+            visiting.Remove(plugin.Key);
+            visited.Add(plugin.Key);
+            result.Add(plugin);
+        }
+
+        foreach (var plugin in pending.OrderBy(p => p.UpdatedAt).ThenBy(p => p.Key))
+        {
+            Visit(plugin);
+        }
+
+        return result;
+    }
+
+    private static bool IsDependencySatisfied(
+        UpdateDependency dependency,
+        IReadOnlyDictionary<Guid, int> installedVersions,
+        IReadOnlyDictionary<Guid, IConfigurationUpdatePlugIn> pendingByKey)
+    {
+        return (installedVersions.TryGetValue(dependency.Key, out var installedVersion)
+                && (dependency.MinVersion is null || installedVersion >= dependency.MinVersion))
+            || (pendingByKey.TryGetValue(dependency.Key, out var pending)
+                && (dependency.MinVersion is null || pending.Version >= dependency.MinVersion));
+    }
+
+    private static async ValueTask<IReadOnlyDictionary<Guid, int>> GetInstalledVersionsAsync(IContext context)
+    {
+        return (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
+            .Where(up => up.InstalledAt is not null)
+            .GroupBy(up => up.Key)
+            .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
+    }
+
+    /// <summary>
+    /// Determines the key of the data initialization which created the configuration.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns>The key of the <see cref="IDataInitializationPlugIn"/>.</returns>
+    internal static async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
     {
         var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
         if (updateStates.FirstOrDefault() is { InitializationKey: not null } updateState)

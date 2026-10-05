@@ -35,7 +35,20 @@ public class KanturuPhaseDefinition
     /// <summary>
     /// Gets or sets the time limit which is shown in the client HUD when the phase starts.
     /// </summary>
+    /// <remarks>
+    /// When <see cref="TimeLimitGroup"/> is set, only the first phase of the group needs a
+    /// limit: it starts the shared wave clock, and the following phases of the group inherit
+    /// the remaining time instead of getting a fresh timer.
+    /// </remarks>
     public TimeSpan? TimeLimit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the wave whose shared countdown this phase belongs to, if any.
+    /// All phases of one wave (e.g. its monsters and its boss) share a single clock:
+    /// the first phase of the wave which carries a <see cref="TimeLimit"/> starts it, and
+    /// every later phase of the wave must finish before it expires.
+    /// </summary>
+    public KanturuWaveGroup? TimeLimitGroup { get; set; }
 
     /// <summary>
     /// Gets or sets the number of the spawn wave which is started with the phase. It refers to

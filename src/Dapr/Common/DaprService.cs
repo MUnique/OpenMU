@@ -7,15 +7,11 @@ namespace MUnique.OpenMU.Dapr.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.PlugIns;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 /// <summary>
 /// Helper class to create an <see cref="WebApplicationBuilder"/> which predefined common
@@ -26,7 +22,7 @@ public static class DaprService
     /// <summary>
     /// Initializes a new instance of the <see cref="WebApplicationBuilder" /> class with preconfigured defaults.
     /// </summary>
-    /// <param name="serviceName">Name of the service, used for the OpenAPI and OpenTelemetry tracing.</param>
+    /// <param name="serviceName">Name of the service, used for the OpenAPI and OpenTelemetry.</param>
     /// <param name="args">Command line arguments.</param>
     /// <returns>
     /// The <see cref="WebApplicationBuilder" />.
@@ -44,14 +40,6 @@ public static class DaprService
         services.AddControllers();
         services.AddDaprClient();
 
-        services.AddOpenTelemetry()
-            .WithTracing(t =>
-            {
-                t.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
-                    .AddAspNetCoreInstrumentation()
-                    .AddZipkinExporter(o => o.Endpoint = new Uri("http://zipkin:9411/api/v2/spans"));
-            });
-
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
@@ -61,9 +49,7 @@ public static class DaprService
 
         services.AddSingleton<IDatabaseConnectionSettingProvider, SecretStoreDatabaseConnectionSettingsProvider>();
 
-        // Logging:
-        builder.UseLoki(serviceName);
-        builder.Logging.AddOpenTelemetry(options => options.AddOtlpExporter());
+        builder.AddOpenTelemetry(serviceName);
 
         return builder;
     }

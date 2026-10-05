@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Map initialization for the Doppelgaenger 4 (a.k.a. "Double Gear", "Double Goer", etc.) event map.
@@ -17,11 +19,6 @@ internal class Doppelgaenger4 : BaseMapInitializer
     internal const byte Number = 68;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Doppelgaenger 4";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Doppelgaenger4"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -31,11 +28,16 @@ internal class Doppelgaenger4 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Doppelgaenger4);
+
     /// <inheritdoc />
     protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <summary>
     /// Gets the safezone map number. Players who die inside the doppelganger event map

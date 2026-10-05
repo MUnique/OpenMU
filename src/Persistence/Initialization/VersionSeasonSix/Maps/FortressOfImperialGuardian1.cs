@@ -8,7 +8,10 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 /// <summary>
 /// Map initialization for the Empire fortress 1 event map.
@@ -21,11 +24,6 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
     internal const byte Number = 69;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Fortress of Imperial Guardian 1";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="FortressOfImperialGuardian1"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -35,11 +33,19 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.FortressOfImperialGuardian1);
+
     /// <inheritdoc />
     protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
+
+    /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => Devias.Number;
 
     /// <inheritdoc />
     protected override void CreateMonsters()
@@ -775,124 +781,20 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
 
     /// <inheritdoc />
     /// <remarks>
-    /// The file from which I generated this code, included two additional values at the end of each spawn definition.
-    /// I guess this is some kind of event state under which the spawn is valid. Until I find out what they're good for,
-    /// I'll keep them as comment at the end of each line.
+    /// The monsters are spawned by the imperial guardian event, zone by zone.
     /// </remarks>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[520], 225, 40, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[520], 232, 40, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(102, this.NpcDictionary[520], 239, 40, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(103, this.NpcDictionary[519], 225, 48, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(104, this.NpcDictionary[519], 232, 48, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(105, this.NpcDictionary[519], 239, 48, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(106, this.NpcDictionary[512], 232, 45, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(107, this.NpcDictionary[518], 187, 21, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(108, this.NpcDictionary[518], 185, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(109, this.NpcDictionary[518], 187, 31, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[519], 179, 19, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(111, this.NpcDictionary[519], 177, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(112, this.NpcDictionary[519], 179, 33, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(113, this.NpcDictionary[513], 173, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(114, this.NpcDictionary[521], 174, 89, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(115, this.NpcDictionary[521], 186, 90, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(116, this.NpcDictionary[521], 180, 91, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(117, this.NpcDictionary[508], 180, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(118, this.NpcDictionary[519], 174, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(119, this.NpcDictionary[519], 178, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(120, this.NpcDictionary[519], 186, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(121, this.NpcDictionary[525], 234, 28, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(122, this.NpcDictionary[525], 216, 80, (Direction)3, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(123, this.NpcDictionary[524], 233, 55, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(124, this.NpcDictionary[526], 217, 72, (Direction)3, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(125, this.NpcDictionary[526], 218, 85, (Direction)3, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(126, this.NpcDictionary[525], 194, 25, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(127, this.NpcDictionary[525], 154, 53, (Direction)1, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(128, this.NpcDictionary[524], 166, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(129, this.NpcDictionary[526], 152, 30, (Direction)1, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(130, this.NpcDictionary[526], 157, 30, (Direction)1, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(131, this.NpcDictionary[525], 180, 79, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(132, this.NpcDictionary[526], 174, 99, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-        yield return this.CreateMonsterSpawn(133, this.NpcDictionary[526], 186, 100, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 2
-
-        yield return this.CreateMonsterSpawn(200, this.NpcDictionary[520], 225, 40, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(201, this.NpcDictionary[520], 232, 40, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(202, this.NpcDictionary[520], 239, 40, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(203, this.NpcDictionary[519], 225, 48, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(204, this.NpcDictionary[519], 232, 48, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(205, this.NpcDictionary[519], 239, 48, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(206, this.NpcDictionary[512], 232, 45, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(207, this.NpcDictionary[518], 187, 21, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(208, this.NpcDictionary[518], 185, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(209, this.NpcDictionary[518], 187, 31, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(210, this.NpcDictionary[519], 179, 19, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(211, this.NpcDictionary[519], 177, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(212, this.NpcDictionary[519], 179, 33, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(213, this.NpcDictionary[513], 173, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(214, this.NpcDictionary[521], 174, 89, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(215, this.NpcDictionary[521], 186, 90, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(216, this.NpcDictionary[521], 180, 91, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(217, this.NpcDictionary[511], 180, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(218, this.NpcDictionary[519], 174, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(219, this.NpcDictionary[519], 178, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(220, this.NpcDictionary[519], 186, 95, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(221, this.NpcDictionary[525], 234, 28, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(222, this.NpcDictionary[525], 216, 80, (Direction)3, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(223, this.NpcDictionary[524], 233, 55, (Direction)1, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(224, this.NpcDictionary[526], 217, 72, (Direction)3, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(225, this.NpcDictionary[526], 218, 85, (Direction)3, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(226, this.NpcDictionary[525], 194, 25, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(227, this.NpcDictionary[525], 154, 53, (Direction)1, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(228, this.NpcDictionary[524], 166, 26, (Direction)3, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(229, this.NpcDictionary[526], 152, 30, (Direction)1, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(230, this.NpcDictionary[526], 157, 30, (Direction)1, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(231, this.NpcDictionary[525], 180, 79, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(232, this.NpcDictionary[526], 174, 99, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-        yield return this.CreateMonsterSpawn(233, this.NpcDictionary[526], 186, 100, (Direction)1, SpawnTrigger.OnceAtEventStart); // 2 5
-
-        // Traps:
-        yield return this.CreateMonsterSpawn(300, this.NpcDictionary[523], 154, 48, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(301, this.NpcDictionary[523], 154, 44, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(302, this.NpcDictionary[523], 154, 40, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(303, this.NpcDictionary[523], 154, 36, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(304, this.NpcDictionary[523], 154, 32, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(305, this.NpcDictionary[523], 154, 28, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(306, this.NpcDictionary[523], 154, 24, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(307, this.NpcDictionary[523], 157, 26, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(308, this.NpcDictionary[523], 161, 26, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 2
-        yield return this.CreateMonsterSpawn(309, this.NpcDictionary[523], 233, 60, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(310, this.NpcDictionary[523], 233, 64, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(311, this.NpcDictionary[523], 233, 68, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(312, this.NpcDictionary[523], 230, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(313, this.NpcDictionary[523], 226, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(314, this.NpcDictionary[523], 222, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(315, this.NpcDictionary[523], 218, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(316, this.NpcDictionary[523], 220, 70, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(317, this.NpcDictionary[523], 220, 74, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(318, this.NpcDictionary[523], 220, 78, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(319, this.NpcDictionary[523], 220, 82, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(320, this.NpcDictionary[523], 220, 86, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 2
-        yield return this.CreateMonsterSpawn(321, this.NpcDictionary[523], 154, 48, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(322, this.NpcDictionary[523], 154, 44, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(323, this.NpcDictionary[523], 154, 40, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(324, this.NpcDictionary[523], 154, 36, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(325, this.NpcDictionary[523], 154, 32, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(326, this.NpcDictionary[523], 154, 28, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(327, this.NpcDictionary[523], 154, 24, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(328, this.NpcDictionary[523], 157, 26, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(329, this.NpcDictionary[523], 161, 26, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 1 5
-        yield return this.CreateMonsterSpawn(330, this.NpcDictionary[523], 233, 60, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(331, this.NpcDictionary[523], 233, 64, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(332, this.NpcDictionary[523], 233, 68, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(333, this.NpcDictionary[523], 230, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(334, this.NpcDictionary[523], 226, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(335, this.NpcDictionary[523], 222, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(336, this.NpcDictionary[523], 218, 66, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(337, this.NpcDictionary[523], 220, 70, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(338, this.NpcDictionary[523], 220, 74, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(339, this.NpcDictionary[523], 220, 78, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(340, this.NpcDictionary[523], 220, 82, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
-        yield return this.CreateMonsterSpawn(341, this.NpcDictionary[523], 220, 86, Direction.Undefined, SpawnTrigger.OnceAtEventStart); // 0 5
+        return ImperialGuardianSpawns.GetSpawns(Number).Select(spawn => this.CreateMonsterSpawn(
+            spawn.Number,
+            this.NpcDictionary[spawn.MonsterNumber],
+            spawn.X,
+            spawn.X,
+            spawn.Y,
+            spawn.Y,
+            1,
+            spawn.Direction,
+            SpawnTrigger.OnceAtWaveStart,
+            spawn.WaveNumber));
     }
 }

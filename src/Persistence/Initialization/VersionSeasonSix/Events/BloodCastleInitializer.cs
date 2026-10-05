@@ -325,7 +325,7 @@ internal class BloodCastleInitializer : InitializerBase
     {
         var rewardDropItemGroup = this.Context.CreateNew<DropItemGroup>();
         rewardDropItemGroup.Description = $"Rewarded items for Blood Castle {level}";
-        rewardDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        rewardDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         this.GameConfiguration.DropItemGroups.Add(rewardDropItemGroup);
 
         var rewardTableEntry = RewardTable.First(tuple => tuple.GameLevel == level);

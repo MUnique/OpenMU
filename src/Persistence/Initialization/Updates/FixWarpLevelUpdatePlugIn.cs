@@ -27,9 +27,6 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This plugin updates the LevelWarpRequirementReductionPercent for MG, DL, and RF.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixWarpLevelUpdate;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

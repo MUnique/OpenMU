@@ -9,7 +9,9 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for jewelery (rings and pendants).
@@ -31,18 +33,18 @@ internal class Jewelery : Version095d.Items.Jewelery
     {
         base.CreateItems();
 
-        this.CreateRing(21, "Ring of Fire", 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
-        this.CreateRing(22, "Ring of Earth", 38, 50, Stats.HealthRecoveryMultiplier, Stats.EarthResistance);
-        this.CreateRing(23, "Ring of Wind", 44, 50, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
-        this.CreateRing(24, "Ring of Magic", 47, 50, Stats.MaximumMana, null);
+        this.CreateRing(21, LocalizedString.FromResource(() => ItemNames.RingOfFire), 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
+        this.CreateRing(22, LocalizedString.FromResource(() => ItemNames.RingOfEarth), 38, 50, Stats.HealthRecoveryMultiplier, Stats.EarthResistance);
+        this.CreateRing(23, LocalizedString.FromResource(() => ItemNames.RingOfWind), 44, 50, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
+        this.CreateRing(24, LocalizedString.FromResource(() => ItemNames.RingOfMagic), 47, 50, Stats.MaximumMana, null);
 
-        this.CreatePendant(25, "Pendant of Ice", 34, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
-        this.CreatePendant(26, "Pendant of Wind", 42, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
-        this.CreatePendant(27, "Pendant of Water", 46, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.WaterResistance);
-        this.CreatePendant(28, "Pendant of Ability", 50, 50, DamageType.Physical, Stats.MaximumAbility, null);
+        this.CreatePendant(25, LocalizedString.FromResource(() => ItemNames.PendantOfIce), 34, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
+        this.CreatePendant(26, LocalizedString.FromResource(() => ItemNames.PendantOfWind), 42, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
+        this.CreatePendant(27, LocalizedString.FromResource(() => ItemNames.PendantOfWater), 46, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.WaterResistance);
+        this.CreatePendant(28, LocalizedString.FromResource(() => ItemNames.PendantOfAbility), 50, 50, DamageType.Physical, Stats.MaximumAbility, null);
 
         // Requirement for Kanturu Event:
-        var moonStonePendant = this.CreateJewelery(38, 10, false, "Moonstone Pendant", 21, 120, null, null, null);
+        var moonStonePendant = this.CreateJewelery(38, 10, false, LocalizedString.FromResource(() => ItemNames.MoonstonePendant), 21, 120, null, null, null);
         {
             var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
             powerUp.TargetAttribute = Stats.MoonstonePendantEquipped.GetPersistent(this.GameConfiguration);
@@ -64,16 +66,16 @@ internal class Jewelery : Version095d.Items.Jewelery
         */
 
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
-        var eliteSkeletonRing = this.CreateTransformationRing(39, "Elite Skeleton Transformation Ring", 10, 255, 10, CharacterTransformationSkin.EliteSkeleton,
+        var eliteSkeletonRing = this.CreateTransformationRing(39, LocalizedString.FromResource(() => ItemNames.EliteSkeletonTransformationRing), 10, 255, 10, CharacterTransformationSkin.EliteSkeleton,
             (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
         eliteSkeletonRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Elite Skeleton Transformation Ring", ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1))));
 
-        this.CreateTransformationRing(40, "Jack O'lantern Transformation Ring", 10, 100, 10, CharacterTransformationSkin.JackOlantern);
-        this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, 0, CharacterTransformationSkin.Christmas,
+        this.CreateTransformationRing(40, LocalizedString.FromResource(() => ItemNames.JackOLanternTransformationRing), 10, 100, 10, CharacterTransformationSkin.JackOlantern);
+        this.CreateTransformationRing(41, LocalizedString.FromResource(() => ItemNames.ChristmasTransformationRing), 1, 100, 0, CharacterTransformationSkin.Christmas,
             (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
-        this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, 0, CharacterTransformationSkin.GameMaster,
+        this.CreateTransformationRing(42, LocalizedString.FromResource(() => ItemNames.GameMasterTransformationRing), 0, 255, 0, CharacterTransformationSkin.GameMaster,
             (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
             (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
             (Stats.LightningDamageBonus, 255, AggregateType.AddRaw),
@@ -88,14 +90,14 @@ internal class Jewelery : Version095d.Items.Jewelery
             (Stats.EarthResistance, 255, AggregateType.Maximum),
             (Stats.WindResistance, 255, AggregateType.Maximum),
             (Stats.WaterResistance, 255, AggregateType.Maximum));
-        this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, 10, CharacterTransformationSkin.Snowman);
-        this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, 0, CharacterTransformationSkin.Panda,
+        this.CreateTransformationRing(68, LocalizedString.FromResource(() => ItemNames.SnowmanTransformationRing), 10, 100, 10, CharacterTransformationSkin.Snowman);
+        this.CreateTransformationRing(76, LocalizedString.FromResource(() => ItemNames.PandaTransformationRing), 28, 255, 0, CharacterTransformationSkin.Panda,
             (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.FinalDamageBonus, 30, AggregateType.AddRaw));
 
-        var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, 0, CharacterTransformationSkin.Skeleton,
+        var skeletonRing = this.CreateTransformationRing(122, LocalizedString.FromResource(() => ItemNames.SkeletonTransformationRing), 1, 255, 0, CharacterTransformationSkin.Skeleton,
             (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
         skeletonRing.PossibleItemOptions.Add(
@@ -117,7 +119,7 @@ internal class Jewelery : Version095d.Items.Jewelery
 #pragma warning restore SA1011
     }
 
-    private ItemOptionDefinition CreateItemOptionDefinition(string name, short number, params (AttributeDefinition TargetOption, float Value, AggregateType AggregateType, (AttributeDefinition? SourceAttribute, float Multiplier))[] options)
+    private ItemOptionDefinition CreateItemOptionDefinition(LocalizedString name, short number, params (AttributeDefinition TargetOption, float Value, AggregateType AggregateType, (AttributeDefinition? SourceAttribute, float Multiplier))[] options)
     {
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         optionDefinition.SetGuid(number);
@@ -172,7 +174,7 @@ internal class Jewelery : Version095d.Items.Jewelery
     /// </remarks>
     private void CreateWizardsRing()
     {
-        var ring = this.CreateJewelery(20, 10, false, "Wizard's Ring", 0, 250, null, null, null);
+        var ring = this.CreateJewelery(20, 10, false, LocalizedString.FromResource(() => ItemNames.WizardSRing), 0, 250, null, null, null);
         ring.MaximumItemLevel = 2;
         ring.IsBoundToCharacter = true;
         ring.StorageLimitPerCharacter = 1;
@@ -197,7 +199,7 @@ internal class Jewelery : Version095d.Items.Jewelery
     /// <remarks>
     /// Rings always have defensive excellent options.
     /// </remarks>
-    private void CreateRing(byte number, string name, byte level, byte durability, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
+    private void CreateRing(byte number, LocalizedString name, byte level, byte durability, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
     {
         this.CreateJewelery(number, 10, true, name, level, durability, this.GameConfiguration.ExcellentDefenseOptions(), optionTargetAttribute, resistanceAttribute);
     }
@@ -215,7 +217,7 @@ internal class Jewelery : Version095d.Items.Jewelery
     /// <remarks>
     /// Pendants always have offensive excellent options. If it's wizardry or physical depends on the specific item. I didn't find a pattern yet.
     /// </remarks>
-    private void CreatePendant(byte number, string name, byte level, byte durability, DamageType excellentOptionDamageType, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
+    private void CreatePendant(byte number, LocalizedString name, byte level, byte durability, DamageType excellentOptionDamageType, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
     {
         var excellentOption = excellentOptionDamageType == DamageType.Physical
             ? this.GameConfiguration.ExcellentPhysicalAttackOptions()
@@ -223,7 +225,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         this.CreateJewelery(number, 9, true, name, level, durability, excellentOption, optionTargetAttribute, resistanceAttribute);
     }
 
-    private ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
+    private ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, LocalizedString name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
     {
         var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, excellentOptionDefinition, resistanceAttribute, optionTargetAttribute == Stats.HealthRecoveryMultiplier);
 
@@ -249,7 +251,7 @@ internal class Jewelery : Version095d.Items.Jewelery
     /// <param name="transformationSkin">The transformation skin.</param>
     /// <param name="basePowerUps">The base power ups.</param>
     /// <returns>The definition of the created ring.</returns>
-    private ItemDefinition CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, byte requiredlevel, CharacterTransformationSkin transformationSkin, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
+    private ItemDefinition CreateTransformationRing(byte number, LocalizedString name, byte dropLevel, byte durability, byte requiredlevel, CharacterTransformationSkin transformationSkin, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
     {
         var ring = this.CreateTransformationRing(number, name, dropLevel, durability, requiredlevel, [transformationSkin]);
 

@@ -447,6 +447,9 @@
   <data name="PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage" xml:space="preserve">
     <value>Please, first install the database updates on the setup page.</value>
   </data>
+  <data name="InstalledOn" xml:space="preserve">
+    <value>Installed on {0}.</value>
+  </data>
   <data name="NoConfigurationDataUpdateAvailable" xml:space="preserve">
     <value>No configuration data update available.</value>
   </data>
@@ -1637,5 +1640,152 @@
   </data>
   <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
     <value>The drop chances of each monster which is spawned on a map, considering the monster level restrictions of the map drop groups and the monster specific drop groups. The chances apply to each drop roll, a monster rolls up to its maximum item drops. Quest item drops are not included. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop.</value>
+  </data>
+  <data name="Captions" xml:space="preserve">
+    <value>Captions</value>
+  </data>
+  <data name="CaptionsDescription" xml:space="preserve">
+    <value>Compares the captions of the configuration, e.g. the names of maps and monsters, with their built-in sources. New and updated translations are selected; customized texts are only changed if you select them.</value>
+  </data>
+  <data name="AllLocalizationsInPlace" xml:space="preserve">
+    <value>All available localizations are in place.</value>
+  </data>
+  <data name="CaptionsLoading" xml:space="preserve">
+    <value>Comparing the captions with their sources ...</value>
+  </data>
+  <data name="CaptionLanguageSummary" xml:space="preserve">
+    <value>{0}: {1} changes</value>
+  </data>
+  <data name="CaptionAllLanguages" xml:space="preserve">
+    <value>All languages</value>
+  </data>
+  <data name="CaptionAllKinds" xml:space="preserve">
+    <value>All kinds of changes</value>
+  </data>
+  <data name="CaptionNeutralText" xml:space="preserve">
+    <value>Neutral (English)</value>
+  </data>
+  <data name="CaptionObject" xml:space="preserve">
+    <value>Object</value>
+  </data>
+  <data name="CaptionProperty" xml:space="preserve">
+    <value>Property</value>
+  </data>
+  <data name="CaptionLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="CaptionChange" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="CaptionCurrentText" xml:space="preserve">
+    <value>Current text</value>
+  </data>
+  <data name="CaptionSourceText" xml:space="preserve">
+    <value>New text</value>
+  </data>
+  <data name="CaptionChangeKind_Missing" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="CaptionChangeKind_Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="CaptionChangeKind_Removed" xml:space="preserve">
+    <value>Removed</value>
+  </data>
+  <data name="CaptionChangeKind_Customized" xml:space="preserve">
+    <value>Customized</value>
+  </data>
+  <data name="SelectRecommended" xml:space="preserve">
+    <value>Select recommended</value>
+  </data>
+  <data name="SelectNone" xml:space="preserve">
+    <value>Select none</value>
+  </data>
+  <data name="ApplySelectedChanges" xml:space="preserve">
+    <value>Apply selected changes</value>
+  </data>
+  <data name="ApplyingChanges" xml:space="preserve">
+    <value>Applying changes ...</value>
+  </data>
+  <data name="AppliedCaptionChanges" xml:space="preserve">
+    <value>{0} changes have been applied.</value>
+  </data>
+  <data name="LinkBuiltInCaptions" xml:space="preserve">
+    <value>Link built-in captions</value>
+  </data>
+  <data name="LinkBuiltInCaptionsDescription" xml:space="preserve">
+    <value>Configurations which were created with an older version don't know the sources of their built-in captions yet, so they can't receive new translations. Linking executes the data initialization in memory and links the matching captions to their sources. No texts are changed.</value>
+  </data>
+  <data name="LinkingBuiltInCaptions" xml:space="preserve">
+    <value>Linking built-in captions ...</value>
+  </data>
+  <data name="LinkedBuiltInCaptions" xml:space="preserve">
+    <value>{0} captions have been linked to their sources. {1} captions were skipped because their neutral text was customized.</value>
+  </data>
+  <data name="CaptionsUnresolvedSources" xml:space="preserve">
+    <value>{0} sources of captions are not available in this version, so these captions can't be compared, e.g. {1}.</value>
+  </data>
+  <data name="CaptionsNotLinkedTitle" xml:space="preserve">
+    <value>Link the built-in captions</value>
+  </data>
+  <data name="CaptionsNotLinkedDescription" xml:space="preserve">
+    <value>The captions of this configuration don't know their sources yet. That's the case for configurations which were created with an older version of OpenMU. Linking is required once; afterwards this page shows which translations can be added or updated.</value>
+  </data>
+  <data name="CaptionsLinkedCount" xml:space="preserve">
+    <value>{0} captions are linked to their sources.</value>
+  </data>
+  <data name="CaptionsReviewTitle" xml:space="preserve">
+    <value>Review and apply the changes</value>
+  </data>
+  <data name="CaptionsReviewDescription" xml:space="preserve">
+    <value>The following captions differ from their sources. The recommended changes are already selected. Customized texts are only changed if you select them.</value>
+  </data>
+  <data name="CaptionChangeKind_Missing_Description" xml:space="preserve">
+    <value>A translation is available, but missing in the configuration, or it's just a copy of the English text.</value>
+  </data>
+  <data name="CaptionChangeKind_Updated_Description" xml:space="preserve">
+    <value>The built-in text was changed, and the configured text is still the one which was originally taken over.</value>
+  </data>
+  <data name="CaptionChangeKind_Removed_Description" xml:space="preserve">
+    <value>The built-in translation doesn't exist anymore, and the configured text is still the one which was originally taken over.</value>
+  </data>
+  <data name="CaptionChangeKind_Customized_Description" xml:space="preserve">
+    <value>The configured text differs, because it was changed or its origin is unknown. It's only overwritten if you select it.</value>
+  </data>
+  <data name="CaptionsLinkAgainTitle" xml:space="preserve">
+    <value>Link captions again</value>
+  </data>
+  <data name="CaptionsLinkAgainDescription" xml:space="preserve">
+    <value>Links the built-in captions which are not linked yet, for example after configuration updates added new objects. Linked captions and texts are not changed.</value>
+  </data>
+  <data name="CaptionsNextStepReview" xml:space="preserve">
+    <value>Review the changes below and apply the selected ones.</value>
+  </data>
+  <data name="CaptionLinkStep_LoadingConfiguration" xml:space="preserve">
+    <value>Loading the configuration</value>
+  </data>
+  <data name="CaptionLinkStep_CreatingReferenceConfiguration" xml:space="preserve">
+    <value>Creating the reference configuration (the data initialization is executed in memory)</value>
+  </data>
+  <data name="CaptionLinkStep_LinkingCaptions" xml:space="preserve">
+    <value>Linking the captions</value>
+  </data>
+  <data name="CaptionLinkStep_Saving" xml:space="preserve">
+    <value>Saving the changes</value>
+  </data>
+  <data name="CaptionsLinkingHint" xml:space="preserve">
+    <value>Linking can take a while, mainly because the data initialization is executed in memory. Please keep this page open.</value>
+  </data>
+  <data name="CaptionsLinkingElapsed" xml:space="preserve">
+    <value>Elapsed time: {0}</value>
+  </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>Link new built-in captions</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>{0} built-in captions are not linked to their sources yet, so their translations can't be reviewed here: {1}. That's usually the case after an update of OpenMU added translations, e.g. for item names. Linking doesn't change any texts.</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>Checking for built-in captions which are not linked yet ...</value>
   </data>
 </root>

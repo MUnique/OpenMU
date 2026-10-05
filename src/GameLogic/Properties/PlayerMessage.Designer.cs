@@ -178,6 +178,40 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account Name: {0}.
+        /// </summary>
+        public static string CharacterInfoAccountNameFormat {
+            get {
+                return ResourceManager.GetString("CharacterInfoAccountNameFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Id: {0}
+        ///Name: {1}
+        ///Class: {2}
+        ///Slot: {3}
+        ///Create Date: {4}
+        ///Exp: {5}
+        ///Level Up Points: {6}
+        ///Master Exp: {7}
+        ///Master Lv Up Points: {8}
+        ///Location: {9}({10}, {11})
+        ///Kill Count: {12}
+        ///State Remaining Seconds: {13}
+        ///State: {14}
+        ///Status: {15}
+        ///Used Fruit Points: {16}
+        ///Used Neg Fruit Points: {17}
+        ///Inventory Extensions: {18}.
+        /// </summary>
+        public static string CharacterInfoFormat {
+            get {
+                return ResourceManager.GetString("CharacterInfoFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
         /// </summary>
         public static string DoppelgangerIceWalkerAppeared {
@@ -201,6 +235,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DoppelgangerIceWalkerKilled {
             get {
                 return ResourceManager.GetString("DoppelgangerIceWalkerKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only members of a gens can enter the battle zone..
+        /// </summary>
+        public static string GensBattleZoneMembersOnly {
+            get {
+                return ResourceManager.GetString("GensBattleZoneMembersOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You gained {0} contribution points..
+        /// </summary>
+        public static string GensContributionGainedFormat {
+            get {
+                return ResourceManager.GetString("GensContributionGainedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You lost {0} contribution points..
+        /// </summary>
+        public static string GensContributionLostFormat {
+            get {
+                return ResourceManager.GetString("GensContributionLostFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You killed {0} too often recently, so you get no contribution points for it..
+        /// </summary>
+        public static string GensKillAbuseLimitFormat {
+            get {
+                return ResourceManager.GetString("GensKillAbuseLimitFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You killed {0} {1} times recently. From {2} kills, you get no contribution points for {0} anymore..
+        /// </summary>
+        public static string GensKillAbuseWarningFormat {
+            get {
+                return ResourceManager.GetString("GensKillAbuseWarningFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot form a party within a battle zone..
+        /// </summary>
+        public static string GensNoPartyInBattleZone {
+            get {
+                return ResourceManager.GetString("GensNoPartyInBattleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot form a party with a member of the opposing gens..
+        /// </summary>
+        public static string GensNoPartyWithOtherGens {
+            get {
+                return ResourceManager.GetString("GensNoPartyWithOtherGens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parties are not activated within a battle zone, so you left your party..
+        /// </summary>
+        public static string GensPartyLeftInBattleZone {
+            get {
+                return ResourceManager.GetString("GensPartyLeftInBattleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to be a member of a gens to create a guild..
+        /// </summary>
+        public static string GensRequiredToCreateGuild {
+            get {
+                return ResourceManager.GetString("GensRequiredToCreateGuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
+        /// </summary>
+        public static string ImperialGuardianLevelTooLow {
+            get {
+                return ResourceManager.GetString("ImperialGuardianLevelTooLow", resourceCulture);
             }
         }
         
@@ -636,6 +760,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment has been changed..
+        /// </summary>
+        public static string EquipmentHasChangedMessage {
+            get {
+                return ResourceManager.GetString("EquipmentHasChangedMessage", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Oops, some error happened during sending the Letter..
         /// </summary>
@@ -1906,6 +2039,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction..
+        /// </summary>
+        public static string SpeedHackWarning {
+            get {
+                return ResourceManager.GetString("SpeedHackWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stacked Jewel not found..
         /// </summary>
         public static string StackedJewelNotFound {
@@ -1920,6 +2062,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StatPointInfo {
             get {
                 return ResourceManager.GetString("StatPointInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summoning canceled..
+        /// </summary>
+        public static string SummonPartyCanceled {
+            get {
+                return ResourceManager.GetString("SummonPartyCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summoning in {0} second(s)....
+        /// </summary>
+        public static string SummonPartyCountdownFormat {
+            get {
+                return ResourceManager.GetString("SummonPartyCountdownFormat", resourceCulture);
             }
         }
         

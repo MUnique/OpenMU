@@ -1,4 +1,4 @@
-// <copyright file="IllusionTempleDataUpdatePlugIn.cs" company="MUnique">
+﻿// <copyright file="IllusionTempleDataUpdatePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -175,9 +175,6 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.IllusionTempleData;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
@@ -232,8 +229,11 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// </summary>
     private void FixTicketItemNumbers(GameConfiguration gameConfiguration)
     {
-        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Name == "Illusion Sorcerer Covenant");
-        var scrollOfBlood = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Name == "Scroll of Blood");
+        // The names are matched in the neutral language: item names became a LocalizedString, whose
+        // serialized value carries the translations and the resource metadata, so comparing it to a
+        // plain string would never match on a database which has been localized.
+        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Name.ValueInNeutralLanguage == "Illusion Sorcerer Covenant");
+        var scrollOfBlood = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Name.ValueInNeutralLanguage == "Scroll of Blood");
         if (covenant is { Number: 50 } && scrollOfBlood is { Number: 51 })
         {
             covenant.Number = 51;

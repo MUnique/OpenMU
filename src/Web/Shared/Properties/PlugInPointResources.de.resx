@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Sub-Packet Handlers" xml:space="preserve">
+    <value>Sub-Paket-Handler</value>
+  </data>
+  <data name="Plugin Container for sub packet handlers which belong to a group." xml:space="preserve">
+    <value>Plugin-Container für Sub-Paket-Handler, die zu einer Gruppe gehören.</value>
+  </data>
+  <data name="Packet Handlers" xml:space="preserve">
+    <value>Paket-Handler</value>
+  </data>
+  <data name="Plugin Container for packet handlers." xml:space="preserve">
+    <value>Plugin-Container für Paket-Handler.</value>
+  </data>
+  <data name="Network Encryption Factories" xml:space="preserve">
+    <value>Netzwerkverschlüsselungs-Factories</value>
+  </data>
+  <data name="Plugins which will be executed when a client connects to a server. It provides network packet encryptors and decryptors for a specific game client version." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn sich ein Client mit einem Server verbindet. Sie stellen Verschlüsseler und Entschlüsseler für Netzwerkpakete für eine bestimmte Spielclient-Version bereit.</value>
+  </data>
+  <data name="Data initialization" xml:space="preserve">
+    <value>Dateninitialisierung</value>
+  </data>
+  <data name="Provides an initialization for initial data." xml:space="preserve">
+    <value>Stellt eine Initialisierung der Ausgangsdaten bereit.</value>
+  </data>
+  <data name="Configuration update" xml:space="preserve">
+    <value>Konfigurationsaktualisierung</value>
+  </data>
+  <data name="Provides updates for initialized data." xml:space="preserve">
+    <value>Stellt Aktualisierungen für initialisierte Daten bereit.</value>
+  </data>
+  <data name="Feature Plugins" xml:space="preserve">
+    <value>Feature-Plugins</value>
+  </data>
+  <data name="Feature plugins can group other plugins and provide a configuration." xml:space="preserve">
+    <value>Feature-Plugins können andere Plugins gruppieren und eine Konfiguration bereitstellen.</value>
+  </data>
+  <data name="Object removed from map" xml:space="preserve">
+    <value>Objekt von Karte entfernt</value>
+  </data>
+  <data name="Plugins which will be executed when any object is removed from the game map." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein beliebiges Objekt von der Spielkarte entfernt wird.</value>
+  </data>
+  <data name="Item moving" xml:space="preserve">
+    <value>Gegenstand wird verschoben</value>
+  </data>
+  <data name="Plugins which are called when an item is about to be moved by the player." xml:space="preserve">
+    <value>Plugins, die aufgerufen werden, wenn ein Gegenstand vom Spieler verschoben werden soll.</value>
+  </data>
+  <data name="Targeted skill plugins" xml:space="preserve">
+    <value>Plugins für gezielte Fähigkeiten</value>
+  </data>
+  <data name="Is called when a target got attacked by a targeted skill." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Ziel von einer gezielten Fähigkeit angegriffen wurde.</value>
+  </data>
+  <data name="Area skill target filter" xml:space="preserve">
+    <value>Zielfilter für Flächenfähigkeiten</value>
+  </data>
+  <data name="Plugins which will be executed when an area skill is about to hit its targets. It allows to filter out targets which are out of range." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn eine Flächenfähigkeit ihre Ziele treffen soll. Damit können Ziele außerhalb der Reichweite herausgefiltert werden.</value>
+  </data>
+  <data name="Player spawn gate selection" xml:space="preserve">
+    <value>Auswahl des Spawn-Tors für Spieler</value>
+  </data>
+  <data name="Plugins which determine the gate at which a player is spawned." xml:space="preserve">
+    <value>Plugins, die das Tor bestimmen, an dem ein Spieler gespawnt wird.</value>
+  </data>
+  <data name="Item sold to merchant npc" xml:space="preserve">
+    <value>Gegenstand an Händler-NPC verkauft</value>
+  </data>
+  <data name="Is called when an item got sold to a merchant npc." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Gegenstand an einen Händler-NPC verkauft wurde.</value>
+  </data>
+  <data name="Character deleted" xml:space="preserve">
+    <value>Charakter gelöscht</value>
+  </data>
+  <data name="Is called when a character got deleted." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Charakter gelöscht wurde.</value>
+  </data>
+  <data name="Player talks to NPC" xml:space="preserve">
+    <value>Spieler spricht mit NPC</value>
+  </data>
+  <data name="Plugins which will be executed when a player talks to an npc." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein Spieler mit einem NPC spricht.</value>
+  </data>
+  <data name="Object added to map" xml:space="preserve">
+    <value>Objekt zur Karte hinzugefügt</value>
+  </data>
+  <data name="Plugins which will be executed when any object is added to the game map." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein beliebiges Objekt zur Spielkarte hinzugefügt wird.</value>
+  </data>
+  <data name="Chat message received" xml:space="preserve">
+    <value>Chatnachricht empfangen</value>
+  </data>
+  <data name="Plugins which will be executed when a chat message arrives." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn eine Chatnachricht eintrifft.</value>
+  </data>
+  <data name="Item sold to other player" xml:space="preserve">
+    <value>Gegenstand an anderen Spieler verkauft</value>
+  </data>
+  <data name="Is called when an item got sold to another player through the personal store." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Gegenstand über den persönlichen Laden an einen anderen Spieler verkauft wurde.</value>
+  </data>
+  <data name="Attackable moved" xml:space="preserve">
+    <value>Angreifbares Objekt bewegt</value>
+  </data>
+  <data name="Plugins which are called when an attackable object moved on the game map." xml:space="preserve">
+    <value>Plugins, die aufgerufen werden, wenn sich ein angreifbares Objekt auf der Spielkarte bewegt hat.</value>
+  </data>
+  <data name="Item consumed" xml:space="preserve">
+    <value>Gegenstand verbraucht</value>
+  </data>
+  <data name="Plugins which will be executed when an item got consumed." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein Gegenstand verbraucht wurde.</value>
+  </data>
+  <data name="Attackable got hit" xml:space="preserve">
+    <value>Angreifbares Objekt getroffen</value>
+  </data>
+  <data name="Plugins which will be executed when an attackable object got hit by an attacker." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein angreifbares Objekt von einem Angreifer getroffen wurde.</value>
+  </data>
+  <data name="Player gained master level" xml:space="preserve">
+    <value>Spieler hat Master-Level erreicht</value>
+  </data>
+  <data name="Plugins which will be executed when a player gained a master level." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein Spieler ein Master-Level erreicht hat.</value>
+  </data>
+  <data name="Attackable got killed" xml:space="preserve">
+    <value>Angreifbares Objekt getötet</value>
+  </data>
+  <data name="Plugins which will be executed when an attackable object got killed by an attacker." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein angreifbares Objekt von einem Angreifer getötet wurde.</value>
+  </data>
+  <data name="Area skill plugins" xml:space="preserve">
+    <value>Plugins für Flächenfähigkeiten</value>
+  </data>
+  <data name="Is called when a target got attacked by an area skill." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Ziel von einer Flächenfähigkeit angegriffen wurde.</value>
+  </data>
+  <data name="Player gained experience" xml:space="preserve">
+    <value>Spieler hat Erfahrung erhalten</value>
+  </data>
+  <data name="Plugins which are executed after a player gained experience for a kill." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, nachdem ein Spieler Erfahrung für einen Kill erhalten hat.</value>
+  </data>
+  <data name="Item dropping" xml:space="preserve">
+    <value>Gegenstand wird fallen gelassen</value>
+  </data>
+  <data name="Plugins which are called when an item has been dropped to the ground by the player." xml:space="preserve">
+    <value>Plugins, die aufgerufen werden, wenn ein Gegenstand vom Spieler auf den Boden fallen gelassen wurde.</value>
+  </data>
+  <data name="Item destroyed" xml:space="preserve">
+    <value>Gegenstand zerstört</value>
+  </data>
+  <data name="Is called when an item got destroyed, e.g. because it has been consumed or destroyed by the chaos machine or disappeared as item drop." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Gegenstand zerstört wurde, z. B. weil er verbraucht, von der Chaosmaschine zerstört wurde oder als Drop verschwunden ist.</value>
+  </data>
+  <data name="Player state changed" xml:space="preserve">
+    <value>Spielerstatus geändert</value>
+  </data>
+  <data name="Is called when a player state got changed." xml:space="preserve">
+    <value>Wird aufgerufen, wenn sich ein Spielerstatus geändert hat.</value>
+  </data>
+  <data name="Item bought from merchant npc" xml:space="preserve">
+    <value>Gegenstand von Händler-NPC gekauft</value>
+  </data>
+  <data name="Is called when an item got bought from a merchant npc." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Gegenstand von einem Händler-NPC gekauft wurde.</value>
+  </data>
+  <data name="Whisper chat message received" xml:space="preserve">
+    <value>Flüsternachricht empfangen</value>
+  </data>
+  <data name="Plugins which will be executed when a whispered chat message arrives." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn eine geflüsterte Chatnachricht eintrifft.</value>
+  </data>
+  <data name="Item stacked" xml:space="preserve">
+    <value>Gegenstand gestapelt</value>
+  </data>
+  <data name="Plugins which are called when an item has been stacked by the player." xml:space="preserve">
+    <value>Plugins, die aufgerufen werden, wenn ein Gegenstand vom Spieler gestapelt wurde.</value>
+  </data>
+  <data name="Item moved" xml:space="preserve">
+    <value>Gegenstand verschoben</value>
+  </data>
+  <data name="Plugins which are called when an item has been moved by the player." xml:space="preserve">
+    <value>Plugins, die aufgerufen werden, wenn ein Gegenstand vom Spieler verschoben wurde.</value>
+  </data>
+  <data name="Player leveled up" xml:space="preserve">
+    <value>Spieler hat ein Level aufgestiegen</value>
+  </data>
+  <data name="Plugins which will be executed when a player leveled up." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein Spieler ein Level aufgestiegen ist.</value>
+  </data>
+  <data name="Character created" xml:space="preserve">
+    <value>Charakter erstellt</value>
+  </data>
+  <data name="Is called when a character got created." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Charakter erstellt wurde.</value>
+  </data>
+  <data name="Speedhack Cheat Check" xml:space="preserve">
+    <value>Speedhack-Cheat-Prüfung</value>
+  </data>
+  <data name="Is called for walk/attack speedhack checks and movement state resets." xml:space="preserve">
+    <value>Wird für Speedhack-Prüfungen beim Laufen/Angreifen und für das Zurücksetzen des Bewegungsstatus aufgerufen.</value>
+  </data>
+  <data name="Item traded" xml:space="preserve">
+    <value>Gegenstand gehandelt</value>
+  </data>
+  <data name="Is called when an item got traded to another player." xml:space="preserve">
+    <value>Wird aufgerufen, wenn ein Gegenstand mit einem anderen Spieler gehandelt wurde.</value>
+  </data>
+  <data name="Item consuming" xml:space="preserve">
+    <value>Gegenstand wird verbraucht</value>
+  </data>
+  <data name="Plugins which will be executed when an item is about to get consumed." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein Gegenstand verbraucht werden soll.</value>
+  </data>
+  <data name="Periodic Tasks" xml:space="preserve">
+    <value>Periodische Aufgaben</value>
+  </data>
+  <data name="Is called in an periodic interval." xml:space="preserve">
+    <value>Wird in einem regelmäßigen Intervall aufgerufen.</value>
+  </data>
+  <data name="Player state changing" xml:space="preserve">
+    <value>Spielerstatus ändert sich</value>
+  </data>
+  <data name="Is called when a player state changes." xml:space="preserve">
+    <value>Wird aufgerufen, wenn sich ein Spielerstatus ändert.</value>
+  </data>
+  <data name="Experience calculation" xml:space="preserve">
+    <value>Erfahrungsberechnung</value>
+  </data>
+  <data name="Plugins which modify the amount of experience which a player gains for a kill." xml:space="preserve">
+    <value>Plugins, die die Menge an Erfahrung ändern, die ein Spieler für einen Kill erhält.</value>
+  </data>
+  <data name="Periodic Mini Game Start Plugins" xml:space="preserve">
+    <value>Plugins für den periodischen Minispielstart</value>
+  </data>
+  <data name="Plugin Container for mini game start plugins, e.g. for chaos castle." xml:space="preserve">
+    <value>Plugin-Container für Minispiel-Start-Plugins, z. B. für Chaos Castle.</value>
+  </data>
+  <data name="Chat commands" xml:space="preserve">
+    <value>Chatbefehle</value>
+  </data>
+  <data name="Plugins which will be executed when a chat message arrives with a slash prefix." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn eine Chatnachricht mit einem Schrägstrich-Präfix eintrifft.</value>
+  </data>
+  <data name="Item consume handlers" xml:space="preserve">
+    <value>Handler zum Verbrauchen von Gegenständen</value>
+  </data>
+  <data name="Plugins which will be executed to consume an item." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, um einen Gegenstand zu verbrauchen.</value>
+  </data>
+  <data name="Item Registration Strategies" xml:space="preserve">
+    <value>Strategien zur Gegenstandsregistrierung</value>
+  </data>
+  <data name="Plugins which implement item registration for specific NPCs." xml:space="preserve">
+    <value>Plugins, die die Gegenstandsregistrierung für bestimmte NPCs implementieren.</value>
+  </data>
+  <data name="View PlugIns" xml:space="preserve">
+    <value>View-Plugins</value>
+  </data>
+  <data name="This is a custom plugin point which collects all view plugins which are suitable for a specific game client version." xml:space="preserve">
+    <value>Dies ist ein benutzerdefinierter Plugin-Punkt, der alle View-Plugins sammelt, die für eine bestimmte Spielclient-Version geeignet sind.</value>
+  </data>
+</root>

@@ -465,12 +465,6 @@
   <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
   </data>
-  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
-    <value>Plasma Storm Skill</value>
-  </data>
-  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
-    <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
-  </data>
   <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
     <value>Pollution Skill</value>
   </data>
@@ -806,6 +800,12 @@
   </data>
   <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
     <value>Handle red dragon invasion event</value>
+  </data>
+    <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>Durability Decay</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>Updates the durabilty of time-decaying items.</value>
   </data>
   <data name="HappyHourPlugIn_Name" xml:space="preserve">
     <value>Happy Hour</value>
@@ -1224,6 +1224,18 @@
   <data name="MiniGameStartConfiguration_EntranceClosedMessage_Name" xml:space="preserve">
     <value>Entrance closed message</value>
   </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Name" xml:space="preserve">
+    <value>Tower open duration</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Description" xml:space="preserve">
+    <value>How long the Tower of Refinement stays open after the Nightmare boss has been defeated. While the window is open, scheduled event starts are skipped; a game master start still proceeds and ends the window.</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Name" xml:space="preserve">
+    <value>Tower open until (UTC)</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Description" xml:space="preserve">
+    <value>End of the current open window in UTC. Set automatically when Nightmare is defeated.</value>
+  </data>
   <data name="HappyHourConfiguration_ExperienceMultiplier_Name" xml:space="preserve">
     <value>Experience multiplier</value>
   </data>
@@ -1433,10 +1445,100 @@
   <data name="RaklionPlugIn_Description" xml:space="preserve">
     <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
   </data>
-  <data name="StartIllusionTempleEventChatCommandPlugIn_Name" xml:space="preserve">
-    <value>Start Illusion Temple Event Chat Command</value>
+  <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian event</value>
   </data>
-  <data name="StartIllusionTempleEventChatCommandPlugIn_Description" xml:space="preserve">
-    <value>Starts the Illusion Temple event.</value>
+  <data name="ImperialGuardianFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the run of the imperial guardian event, e.g. its times, the experience reward and the scaling of the monsters.</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Name" xml:space="preserve">
+    <value>Suspicious scrap of paper stack transformation</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Description" xml:space="preserve">
+    <value>Transforms a full stack of suspicious scraps of paper into a Gaion's Order.</value>
+  </data>
+  <data name="GensFeaturePlugIn_Name" xml:space="preserve">
+    <value>Gens system</value>
+  </data>
+  <data name="GensFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs.</value>
+  </data>
+  <data name="GensMembershipPlugIn_Name" xml:space="preserve">
+    <value>Gens membership</value>
+  </data>
+  <data name="GensMembershipPlugIn_Description" xml:space="preserve">
+    <value>Loads the gens membership of a character when it enters the game, and shows it to the player.</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Name" xml:space="preserve">
+    <value>Gens battle zone</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Description" xml:space="preserve">
+    <value>Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw.</value>
+  </data>
+  <data name="GensRankingPlugIn_Name" xml:space="preserve">
+    <value>Gens ranking</value>
+  </data>
+  <data name="GensRankingPlugIn_Description" xml:space="preserve">
+    <value>Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members.</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Name" xml:space="preserve">
+    <value>Gens relationship rules</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
+    <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Bless effect number</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Soul effect number</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Name" xml:space="preserve">
+    <value>Blood Castle Archangel</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event.</value>
+  </data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Stone Statue</value>
+  </data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Stone Statue in the illusion temple event, where players pick up the sacred relic.</value>
+  </data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Alliance Item Storage</value>
+  </data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Alliance Item Storage in the illusion temple event, to which the allied forces carry the sacred relic to score a point.</value>
+  </data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Illusion Item Storage</value>
+  </data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Illusion Item Storage in the illusion temple event, to which the illusion forces carry the sacred relic to score a point.</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Name" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
+    <value>The NPC which is handled by this plugin. If no NPC is set, the plugin doesn't handle any NPC.</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Twister animation counter</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Twister: every animation is counted, and the hits don't contain the animation counter.</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Evil Spirit animation counter</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Evil Spirit: every animation is counted.</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Multi-Shot animation counter</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Multi-Shot: the hits don't contain the animation counter.</value>
   </data>
 </root>

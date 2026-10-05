@@ -1,4 +1,4 @@
-// <copyright file="LocalizedStringTests.cs" company="MUnique">
+﻿// <copyright file="LocalizedStringTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -427,5 +427,123 @@ public class LocalizedStringTests
         var result = localized.ValueInNeutralLanguage;
 
         Assert.IsEmpty(result);
+    }
+
+    /// <summary>
+    /// Tests that <see cref="LocalizedString.WithTranslation"/> stores the full culture name for specific cultures.
+    /// </summary>
+    [Test]
+    public void WithTranslation_SpecificCulture_StoresFullCultureName()
+    {
+        var localized = new LocalizedString("Lorencia");
+
+        var result = localized
+            .WithTranslation(CultureInfo.GetCultureInfo("zh-CN"), "勇者大陆")
+            .WithTranslation(CultureInfo.GetCultureInfo("zh-TW"), "勇者大陸");
+
+        Assert.That(result.Value, Is.EqualTo("Lorencia||zh-CN=勇者大陆||zh-TW=勇者大陸"));
+    }
+
+    /// <summary>
+    /// Tests that translations of different cultures of the same language don't overwrite each other.
+    /// </summary>
+    [Test]
+    public void GetTranslation_DistinguishesCulturesOfSameLanguage()
+    {
+        var localized = new LocalizedString("Lorencia||zh-CN=勇者大陆||zh-TW=勇者大陸");
+
+        Assert.That(localized.GetTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("勇者大陆"));
+        Assert.That(localized.GetTranslation(CultureInfo.GetCultureInfo("zh-TW")), Is.EqualTo("勇者大陸"));
+    }
+
+    /// <summary>
+    /// Tests that a specific culture falls back to an existing translation of its language (e.g. de-AT to de).
+    /// </summary>
+    [Test]
+    public void GetTranslation_SpecificCulture_FallsBackToLanguageTranslation()
+    {
+        var localized = new LocalizedString("Some text||de=Etwas Text");
+
+        var result = localized.GetTranslation(CultureInfo.GetCultureInfo("de-AT"), fallbackToNeutral: false);
+
+        Assert.That(result, Is.EqualTo("Etwas Text"));
+    }
+
+    /// <summary>
+    /// Tests that the exact culture is preferred over the translation of its language.
+    /// </summary>
+    [Test]
+    public void GetTranslation_PrefersExactCultureOverLanguage()
+    {
+        var localized = new LocalizedString("Some text||de=Etwas Text||de-AT=Ein bisserl Text");
+
+        Assert.That(localized.GetTranslation(CultureInfo.GetCultureInfo("de-AT")), Is.EqualTo("Ein bisserl Text"));
+        Assert.That(localized.GetTranslation(CultureInfo.GetCultureInfo("de-DE")), Is.EqualTo("Etwas Text"));
+        Assert.That(localized.GetTranslation(CultureInfo.GetCultureInfo("de")), Is.EqualTo("Etwas Text"));
+    }
+
+    /// <summary>
+    /// Tests that a language-only culture finds the translation of a specific culture of the same language.
+    /// </summary>
+    [Test]
+    public void GetTranslation_LanguageCulture_FindsSpecificCultureTranslation()
+    {
+        var localized = new LocalizedString("Lorencia||zh-CN=勇者大陆");
+
+        var result = localized.GetTranslation(CultureInfo.GetCultureInfo("zh"), fallbackToNeutral: false);
+
+        Assert.That(result, Is.EqualTo("勇者大陆"));
+    }
+
+    /// <summary>
+    /// Tests that a translation of another language with a similar prefix is not returned.
+    /// </summary>
+    [Test]
+    public void GetTranslation_DoesNotMatchOtherLanguageWithSamePrefix()
+    {
+        var localized = new LocalizedString("Some text||zh-CN=文本");
+
+        var result = localized.GetTranslation(CultureInfo.GetCultureInfo("de"), fallbackToNeutral: false);
+
+        Assert.That(result, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that a specific english culture is treated as neutral language.
+    /// </summary>
+    [Test]
+    public void GetTranslation_SpecificEnglishCulture_ReturnsNeutral()
+    {
+        var localized = new LocalizedString("Some text||de=Etwas Text");
+
+        var result = localized.GetTranslation(CultureInfo.GetCultureInfo("en-US"));
+
+        Assert.That(result, Is.EqualTo("Some text"));
+    }
+
+    /// <summary>
+    /// Tests that updating a specific culture translation keeps the translation of its language untouched.
+    /// </summary>
+    [Test]
+    public void WithTranslation_SpecificCulture_KeepsLanguageTranslation()
+    {
+        var localized = new LocalizedString("Some text||de=Etwas Text||de-AT=Alt");
+
+        var result = localized.WithTranslation(CultureInfo.GetCultureInfo("de-AT"), "Neu");
+
+        Assert.That(result.Value, Is.EqualTo("Some text||de=Etwas Text||de-AT=Neu"));
+    }
+
+    /// <summary>
+    /// Tests that removing a specific culture translation keeps the translation of its language.
+    /// </summary>
+    [Test]
+    public void WithTranslation_RemovingSpecificCulture_KeepsLanguageTranslation()
+    {
+        var localized = new LocalizedString("Some text||de=Etwas Text||de-AT=Alt");
+
+        var result = localized.WithTranslation(CultureInfo.GetCultureInfo("de-AT"), null);
+
+        Assert.That(result.Value, Is.EqualTo("Some text||de=Etwas Text"));
     }
 }

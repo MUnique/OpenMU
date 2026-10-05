@@ -12,6 +12,8 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of seeds, spheres and seed spheres, their possible options, the adaption of the socket items
@@ -63,35 +65,83 @@ public class SocketSystem : InitializerBase
     public override void Initialize()
     {
         this.CreateSocketOptions();
-        var types = new[]
+        var types = new (LocalizedString SeedName, LocalizedString[] SphereNames, ItemOptionDefinition Options)[]
         {
-            ("Fire", this._fireOptions!),
-            ("Water", this._waterOptions!),
-            ("Ice", this._iceOptions!),
-            ("Wind", this._windOptions!),
-            ("Lightning", this._lightningOptions!),
-            ("Earth", this._earthOptions!),
+            (LocalizedString.FromResource(() => ItemNames.SeedFire),
+                [
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereFire1),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereFire2),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereFire3),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereFire4),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereFire5),
+                ],
+                this._fireOptions!),
+            (LocalizedString.FromResource(() => ItemNames.SeedWater),
+                [
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWater1),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWater2),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWater3),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWater4),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWater5),
+                ],
+                this._waterOptions!),
+            (LocalizedString.FromResource(() => ItemNames.SeedIce),
+                [
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereIce1),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereIce2),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereIce3),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereIce4),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereIce5),
+                ],
+                this._iceOptions!),
+            (LocalizedString.FromResource(() => ItemNames.SeedWind),
+                [
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWind1),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWind2),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWind3),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWind4),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereWind5),
+                ],
+                this._windOptions!),
+            (LocalizedString.FromResource(() => ItemNames.SeedLightning),
+                [
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereLightning1),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereLightning2),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereLightning3),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereLightning4),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereLightning5),
+                ],
+                this._lightningOptions!),
+            (LocalizedString.FromResource(() => ItemNames.SeedEarth),
+                [
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereEarth1),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereEarth2),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereEarth3),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereEarth4),
+                    LocalizedString.FromResource(() => ItemNames.SeedSphereEarth5),
+                ],
+                this._earthOptions!),
         };
 
         const int seedNumberStart = 60;
         for (byte number = seedNumberStart; number < seedNumberStart + types.Length; number++)
         {
             var type = types[number - 60];
-            this.CreateSeed(number, $"Seed ({type.Item1})", type.Item2!);
+            this.CreateSeed(number, type.SeedName, type.Options);
         }
 
-        this.CreateSphere(70, "Sphere (Mono)", 102);
-        this.CreateSphere(71, "Sphere (Di)", 122);
-        this.CreateSphere(72, "Sphere (Tri)", 132);
-        this.CreateSphere(73, "Sphere (4)", null);
-        this.CreateSphere(74, "Sphere (5)", null);
+        this.CreateSphere(70, LocalizedString.FromResource(() => ItemNames.SphereMono), 102);
+        this.CreateSphere(71, LocalizedString.FromResource(() => ItemNames.SphereDi), 122);
+        this.CreateSphere(72, LocalizedString.FromResource(() => ItemNames.SphereTri), 132);
+        this.CreateSphere(73, LocalizedString.FromResource(() => ItemNames.Sphere4), null);
+        this.CreateSphere(74, LocalizedString.FromResource(() => ItemNames.Sphere5), null);
 
         for (byte level = 0; level < SphereLevels; level++)
         {
             var number = SeedSphereNumberStart + (level * types.Length);
             foreach (var type in types)
             {
-                this.CreateSeedSphere((byte)number, $"Seed Sphere ({type.Item1}) ({level + 1})", level, type.Item2!);
+                this.CreateSeedSphere((byte)number, type.SphereNames[level], level, type.Options);
                 number++;
             }
         }
@@ -300,7 +350,7 @@ public class SocketSystem : InitializerBase
         definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Ice, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddRaw, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
         definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Ice, Stats.SkillDamageBonus, AggregateType.AddRaw, 37, 40, 45, 50, 60));
         definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Ice, Stats.AttackRatePvm, AggregateType.AddRaw, 25, 27, 30, 35, 40));
-        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Ice, Stats.ItemDurationIncrease, AggregateType.Multiplicate, 1.30f, 1.32f, 1.34f, 1.36f, 1.38f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Ice, Stats.WeaponDurationIncrease, AggregateType.AddRaw, 0.30f, 0.32f, 0.34f, 0.36f, 0.38f));
         return definition;
     }
 
@@ -478,7 +528,7 @@ public class SocketSystem : InitializerBase
         return itemOption;
     }
 
-    private void CreateSeed(byte number, string name, ItemOptionDefinition options)
+    private void CreateSeed(byte number, LocalizedString name, ItemOptionDefinition options)
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
         itemDefinition.Name = name;
@@ -494,7 +544,7 @@ public class SocketSystem : InitializerBase
         this.GameConfiguration.Items.Add(itemDefinition);
     }
 
-    private void CreateSphere(byte number, string name, byte? dropLevel)
+    private void CreateSphere(byte number, LocalizedString name, byte? dropLevel)
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
         itemDefinition.Name = name;
@@ -509,7 +559,7 @@ public class SocketSystem : InitializerBase
         this.GameConfiguration.Items.Add(itemDefinition);
     }
 
-    private void CreateSeedSphere(byte number, string name, byte level, ItemOptionDefinition options)
+    private void CreateSeedSphere(byte number, LocalizedString name, byte level, ItemOptionDefinition options)
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
         itemDefinition.Name = name;
@@ -558,19 +608,19 @@ public class SocketSystem : InitializerBase
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
         creation.MinimumAmount = 1;
         creation.MaximumAmount = 1;
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         craftingSettings.RequiredItems.Add(creation);
 
         var harmony = this.Context.CreateNew<ItemCraftingRequiredItem>();
         harmony.MinimumAmount = 1;
         harmony.MaximumAmount = 1;
-        harmony.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony"));
+        harmony.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Harmony"));
         craftingSettings.RequiredItems.Add(harmony);
 
         craftingSettings.ResultItemSelect = ResultItemSelection.Any;
@@ -602,13 +652,13 @@ public class SocketSystem : InitializerBase
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
         creation.MinimumAmount = 1;
         creation.MaximumAmount = 1;
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         craftingSettings.RequiredItems.Add(creation);
 
         var seed = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -700,13 +750,13 @@ public class SocketSystem : InitializerBase
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
         creation.MinimumAmount = 1;
         creation.MaximumAmount = 1;
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         craftingSettings.RequiredItems.Add(creation);
 
         return crafting;

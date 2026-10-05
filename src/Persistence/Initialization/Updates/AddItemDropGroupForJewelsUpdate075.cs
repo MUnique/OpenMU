@@ -35,9 +35,6 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddItemDropGroupForJewels075;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 
     /// <inheritdoc />

@@ -79,9 +79,6 @@ public class FixItemRequirementsPlugIn : UpdatePlugInBase
     ];
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixItemRequirements;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
@@ -94,14 +91,25 @@ public class FixItemRequirementsPlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2024, 11, 03, 18, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 09, 30, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         foreach (var reqUpdate in RequirementCorrections)
         {
-            var item = gameConfiguration.Items.First(x => x.Number == reqUpdate.Number && x.Group == reqUpdate.Group);
+            var item = gameConfiguration.Items.FirstOrDefault(x => x.Number == reqUpdate.Number && x.Group == reqUpdate.Group);
+            if (item is null)
+            {
+                continue;
+            }
+
             UpdateRequirement(Stats.TotalStrengthRequirementValue, reqUpdate.StrengthRequirement);
             UpdateRequirement(Stats.TotalAgilityRequirementValue, reqUpdate.AgilityRequirement);
             UpdateRequirement(Stats.TotalEnergyRequirementValue, reqUpdate.EnergyRequirement);

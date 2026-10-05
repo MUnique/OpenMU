@@ -15,6 +15,11 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 [TestFixture]
 public class MasterSystemTest
 {
+    /// <summary>
+    /// The master skill roots by their number. Like in the configuration, all skills of a root share the same instance.
+    /// </summary>
+    private readonly Dictionary<byte, MasterSkillRoot> _roots = [];
+
     private readonly int _skillIdRank1 = 1;
     private readonly int _skillIdRank2 = 2;
     private readonly int _skillIdRank3 = 3;
@@ -31,6 +36,7 @@ public class MasterSystemTest
     [SetUp]
     public async Task SetupAsync()
     {
+        this._roots.Clear();
         this._player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var context = this._player.GameContext;
         this._skillRank1 = this.CreateSkill(1, 1, 1, null, this._player.SelectedCharacter!.CharacterClass!);
@@ -229,6 +235,17 @@ public class MasterSystemTest
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
     }
 
+    private MasterSkillRoot GetRoot(byte rootId)
+    {
+        if (!this._roots.TryGetValue(rootId, out var root))
+        {
+            root = new MasterSkillRoot();
+            this._roots.Add(rootId, root);
+        }
+
+        return root;
+    }
+
     private Skill CreateSkill(short id, byte rank, byte rootId, Skill? requiredSkill, CharacterClass charClass)
     {
         var masterDef = new Mock<MasterSkillDefinition>();
@@ -236,7 +253,7 @@ public class MasterSystemTest
         masterDef.Object.Rank = rank;
         masterDef.Object.MaximumLevel = 20;
         masterDef.Object.MinimumLevel = 1;
-        masterDef.Object.Root = new MasterSkillRoot { Id = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, rootId) };
+        masterDef.Object.Root = this.GetRoot(rootId);
         masterDef.Setup(m => m.RequiredMasterSkills).Returns(new List<Skill>());
         if (requiredSkill != null)
         {

@@ -682,6 +682,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates the durabilty of time-decaying items..
+        /// </summary>
+        public static string DurabilityDecayPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DurabilityDecayPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Durability Decay.
+        /// </summary>
+        public static string DurabilityDecayPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DurabilityDecayPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker..
         /// </summary>
         public static string EarthShakeSkillPlugIn_Description {
@@ -804,6 +822,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GatekeeperNpcPlugin_Name {
             get {
                 return ResourceManager.GetString("GatekeeperNpcPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw..
+        /// </summary>
+        public static string GensBattleZonePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens battle zone.
+        /// </summary>
+        public static string GensBattleZonePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs..
+        /// </summary>
+        public static string GensFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens system.
+        /// </summary>
+        public static string GensFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loads the gens membership of a character when it enters the game, and shows it to the player..
+        /// </summary>
+        public static string GensMembershipPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens membership.
+        /// </summary>
+        public static string GensMembershipPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members..
+        /// </summary>
+        public static string GensRankingPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens ranking.
+        /// </summary>
+        public static string GensRankingPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens..
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens relationship rules.
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1141,6 +1249,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configures the run of the imperial guardian event, e.g. its times, the experience reward and the scaling of the monsters..
+        /// </summary>
+        public static string ImperialGuardianFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian event.
+        /// </summary>
+        public static string ImperialGuardianFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;&apos;. Drops a specific item next to the character..
         /// </summary>
         public static string ItemChatCommandPlugIn_Description {
@@ -1407,6 +1533,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MiniGameStartConfiguration_EntranceOpenedMessage_Name {
             get {
                 return ResourceManager.GetString("MiniGameStartConfiguration_EntranceOpenedMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tower open duration.
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenDuration_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How long the Tower of Refinement stays open after the Nightmare boss has been defeated. While the window is open, scheduled event starts are skipped; a game master start still proceeds and ends the window..
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenDuration_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tower open until (UTC).
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End of the current open window in UTC. Set automatically when Nightmare is defeated..
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Description", resourceCulture);
             }
         }
         
@@ -1920,24 +2082,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PkClearChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("PkClearChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target&apos;s equipped item..
-        /// </summary>
-        public static string PlasmaStormSkillPlugIn_Description {
-            get {
-                return ResourceManager.GetString("PlasmaStormSkillPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plasma Storm Skill.
-        /// </summary>
-        public static string PlasmaStormSkillPlugIn_Name {
-            get {
-                return ResourceManager.GetString("PlasmaStormSkillPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3132,6 +3276,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transforms a full stack of suspicious scraps of paper into a Gaion's Order..
+        /// </summary>
+        public static string SuspiciousScrapOfPaperStackedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SuspiciousScrapOfPaperStackedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspicious scrap of paper stack transformation.
+        /// </summary>
+        public static string SuspiciousScrapOfPaperStackedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SuspiciousScrapOfPaperStackedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default (catch-all) handler for targeted skills.
         /// </summary>
         public static string TargetedSkillDefaultPlugin_Description {
@@ -4008,6 +4170,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption text.</summary>
         public static string BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption => ResourceManager.GetString("BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name text.</summary>
+        public static string SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name text.</summary>
+        public static string SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Name text.</summary>
+        public static string BloodCastleArchangelTalkPlugIn_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
+        public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleStoneStatueTalkPlugIn_Name text.</summary>
+        public static string IllusionTempleStoneStatueTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleStoneStatueTalkPlugIn_Description text.</summary>
+        public static string IllusionTempleStoneStatueTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleAllianceStorageTalkPlugIn_Name text.</summary>
+        public static string IllusionTempleAllianceStorageTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleAllianceStorageTalkPlugIn_Description text.</summary>
+        public static string IllusionTempleAllianceStorageTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleIllusionStorageTalkPlugIn_Name text.</summary>
+        public static string IllusionTempleIllusionStorageTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleIllusionStorageTalkPlugIn_Description text.</summary>
+        public static string IllusionTempleIllusionStorageTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Name text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Name => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Description text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Description => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Name text.</summary>
+        public static string TwisterAnimationCounterStrategy_Name => ResourceManager.GetString("TwisterAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Description text.</summary>
+        public static string TwisterAnimationCounterStrategy_Description => ResourceManager.GetString("TwisterAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Name text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Name => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Description text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Description => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Name text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Name => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Description text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Description => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture)!;
 
     }
 }

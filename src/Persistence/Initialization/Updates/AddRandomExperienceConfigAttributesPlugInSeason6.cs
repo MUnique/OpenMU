@@ -16,8 +16,5 @@ using MUnique.OpenMU.PlugIns;
 public class AddRandomExperienceConfigAttributesPlugInSeason6 : AddRandomExperienceConfigAttributesPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddRandomExperienceConfigAttributesSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 }

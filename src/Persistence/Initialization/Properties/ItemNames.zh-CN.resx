@@ -1,0 +1,2064 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Kris" xml:space="preserve">
+    <value>波刃剑</value>
+  </data>
+  <data name="ShortSword" xml:space="preserve">
+    <value>短剑</value>
+  </data>
+  <data name="Rapier" xml:space="preserve">
+    <value>西洋剑</value>
+  </data>
+  <data name="Katache" xml:space="preserve">
+    <value>东洋刀</value>
+  </data>
+  <data name="SwordOfAssassin" xml:space="preserve">
+    <value>暗杀者</value>
+  </data>
+  <data name="Blade" xml:space="preserve">
+    <value>极光刀</value>
+  </data>
+  <data name="Gladius" xml:space="preserve">
+    <value>拉丁剑</value>
+  </data>
+  <data name="Falchion" xml:space="preserve">
+    <value>偃月刀</value>
+  </data>
+  <data name="SerpentSword" xml:space="preserve">
+    <value>巨蛇魔剑</value>
+  </data>
+  <data name="SwordOfSalamander" xml:space="preserve">
+    <value>背叛者</value>
+  </data>
+  <data name="LightSaber" xml:space="preserve">
+    <value>天行者</value>
+  </data>
+  <data name="LegendarySword" xml:space="preserve">
+    <value>传说之剑</value>
+  </data>
+  <data name="HeliacalSword" xml:space="preserve">
+    <value>太阳之剑</value>
+  </data>
+  <data name="DoubleBlade" xml:space="preserve">
+    <value>真红之剑</value>
+  </data>
+  <data name="LightingSword" xml:space="preserve">
+    <value>雷神之剑</value>
+  </data>
+  <data name="GiantSword" xml:space="preserve">
+    <value>帝王之剑</value>
+  </data>
+  <data name="SwordOfDestruction" xml:space="preserve">
+    <value>破坏之剑</value>
+  </data>
+  <data name="DarkBreaker" xml:space="preserve">
+    <value>屠龙刀</value>
+  </data>
+  <data name="ThunderBlade" xml:space="preserve">
+    <value>奔雷剑</value>
+  </data>
+  <data name="DivineSwordOfArchangel" xml:space="preserve">
+    <value>大天使之剑</value>
+  </data>
+  <data name="KnightBlade" xml:space="preserve">
+    <value>断月之光</value>
+  </data>
+  <data name="DarkReignBlade" xml:space="preserve">
+    <value>魔神剑</value>
+  </data>
+  <data name="BoneBlade" xml:space="preserve">
+    <value>龙骨巨晶剑</value>
+  </data>
+  <data name="ExplosionBlade" xml:space="preserve">
+    <value>傲天魔剑</value>
+  </data>
+  <data name="Daybreak" xml:space="preserve">
+    <value>暴风锯齿</value>
+  </data>
+  <data name="SwordDancer" xml:space="preserve">
+    <value>烈火巨刃</value>
+  </data>
+  <data name="Flamberge" xml:space="preserve">
+    <value>虚伪之剑</value>
+  </data>
+  <data name="SwordBreaker" xml:space="preserve">
+    <value>杀戮之剑</value>
+  </data>
+  <data name="ImperialSword" xml:space="preserve">
+    <value>双子之剑</value>
+  </data>
+  <data name="RuneBlade" xml:space="preserve">
+    <value>天雷剑</value>
+  </data>
+  <data name="SacredGlove" xml:space="preserve">
+    <value>神圣火焰拳刃</value>
+  </data>
+  <data name="StormHardGlove" xml:space="preserve">
+    <value>暴风毁灭拳刃</value>
+  </data>
+  <data name="PiercingBladeGlove" xml:space="preserve">
+    <value>刀锋拳刃</value>
+  </data>
+  <data name="PhoenixSoulStar" xml:space="preserve">
+    <value>凤魂之星</value>
+  </data>
+  <data name="SmallAxe" xml:space="preserve">
+    <value>短斧</value>
+  </data>
+  <data name="HandAxe" xml:space="preserve">
+    <value>手斧</value>
+  </data>
+  <data name="DoubleAxe" xml:space="preserve">
+    <value>双刃斧</value>
+  </data>
+  <data name="Tomahawk" xml:space="preserve">
+    <value>飞翔斧</value>
+  </data>
+  <data name="ElvenAxe" xml:space="preserve">
+    <value>精灵之斧</value>
+  </data>
+  <data name="BattleAxe" xml:space="preserve">
+    <value>战士之斧</value>
+  </data>
+  <data name="NikkeaAxe" xml:space="preserve">
+    <value>斗士之斧</value>
+  </data>
+  <data name="LarkanAxe" xml:space="preserve">
+    <value>斗神之斧</value>
+  </data>
+  <data name="CrescentAxe" xml:space="preserve">
+    <value>末日之斧</value>
+  </data>
+  <data name="Mace" xml:space="preserve">
+    <value>石槌</value>
+  </data>
+  <data name="MorningStar" xml:space="preserve">
+    <value>流星槌</value>
+  </data>
+  <data name="Flail" xml:space="preserve">
+    <value>破坏之槌</value>
+  </data>
+  <data name="GreatHammer" xml:space="preserve">
+    <value>白金之槌</value>
+  </data>
+  <data name="CrystalMorningStar" xml:space="preserve">
+    <value>水晶流星</value>
+  </data>
+  <data name="CrystalSword" xml:space="preserve">
+    <value>玄冰剑</value>
+  </data>
+  <data name="ChaosDragonAxe" xml:space="preserve">
+    <value>玛雅龙斧</value>
+  </data>
+  <data name="ElementalMace" xml:space="preserve">
+    <value>精灵之槌</value>
+  </data>
+  <data name="BattleScepter" xml:space="preserve">
+    <value>战斗权杖</value>
+  </data>
+  <data name="MasterScepter" xml:space="preserve">
+    <value>征服权杖</value>
+  </data>
+  <data name="GreatScepter" xml:space="preserve">
+    <value>圣剑权杖</value>
+  </data>
+  <data name="LordScepter" xml:space="preserve">
+    <value>王者权杖</value>
+  </data>
+  <data name="GreatLordScepter" xml:space="preserve">
+    <value>至尊权杖</value>
+  </data>
+  <data name="DivineScepterOfArchangel" xml:space="preserve">
+    <value>大天使权杖</value>
+  </data>
+  <data name="SoleilScepter" xml:space="preserve">
+    <value>圣尊天使之杖</value>
+  </data>
+  <data name="ShiningScepter" xml:space="preserve">
+    <value>弹奏权杖</value>
+  </data>
+  <data name="FrostMace" xml:space="preserve">
+    <value>巨毒之刺</value>
+  </data>
+  <data name="AbsoluteScepter" xml:space="preserve">
+    <value>独裁权杖</value>
+  </data>
+  <data name="StrykerScepter" xml:space="preserve">
+    <value>圣光权杖</value>
+  </data>
+  <data name="LightSpear" xml:space="preserve">
+    <value>黑武士</value>
+  </data>
+  <data name="Spear" xml:space="preserve">
+    <value>鹤嘴矛</value>
+  </data>
+  <data name="DragonLance" xml:space="preserve">
+    <value>战矛</value>
+  </data>
+  <data name="GiantTrident" xml:space="preserve">
+    <value>双鹤矛</value>
+  </data>
+  <data name="SerpentSpear" xml:space="preserve">
+    <value>巨蛇镰刀</value>
+  </data>
+  <data name="DoublePoleaxe" xml:space="preserve">
+    <value>双刃矛</value>
+  </data>
+  <data name="Halberd" xml:space="preserve">
+    <value>斧刃矛</value>
+  </data>
+  <data name="Berdysh" xml:space="preserve">
+    <value>巴迪之矛</value>
+  </data>
+  <data name="GreatScythe" xml:space="preserve">
+    <value>帝王镰刀</value>
+  </data>
+  <data name="BillOfBalrog" xml:space="preserve">
+    <value>死神镰刀</value>
+  </data>
+  <data name="DragonSpear" xml:space="preserve">
+    <value>青龙刀</value>
+  </data>
+  <data name="Beuroba" xml:space="preserve">
+    <value>铰刀</value>
+  </data>
+  <data name="ShortBow" xml:space="preserve">
+    <value>短弓</value>
+  </data>
+  <data name="Bow" xml:space="preserve">
+    <value>长弓</value>
+  </data>
+  <data name="ElvenBow" xml:space="preserve">
+    <value>精灵之弓</value>
+  </data>
+  <data name="BattleBow" xml:space="preserve">
+    <value>巴特之弓</value>
+  </data>
+  <data name="TigerBow" xml:space="preserve">
+    <value>黄金之虎</value>
+  </data>
+  <data name="SilverBow" xml:space="preserve">
+    <value>银翼之弓</value>
+  </data>
+  <data name="ChaosNatureBow" xml:space="preserve">
+    <value>玛雅神弓</value>
+  </data>
+  <data name="Bolt" xml:space="preserve">
+    <value>弩箭</value>
+  </data>
+  <data name="Crossbow" xml:space="preserve">
+    <value>石弩</value>
+  </data>
+  <data name="GoldenCrossbow" xml:space="preserve">
+    <value>黄金石弩</value>
+  </data>
+  <data name="Arquebus" xml:space="preserve">
+    <value>火神弩</value>
+  </data>
+  <data name="LightCrossbow" xml:space="preserve">
+    <value>巨人弩</value>
+  </data>
+  <data name="SerpentCrossbow" xml:space="preserve">
+    <value>诱惑之弩</value>
+  </data>
+  <data name="BluewingCrossbow" xml:space="preserve">
+    <value>蓝翎弩</value>
+  </data>
+  <data name="AquagoldCrossbow" xml:space="preserve">
+    <value>温蒂妮</value>
+  </data>
+  <data name="Arrows" xml:space="preserve">
+    <value>弓箭</value>
+  </data>
+  <data name="SaintCrossbow" xml:space="preserve">
+    <value>圣者之弩</value>
+  </data>
+  <data name="CelestialBow" xml:space="preserve">
+    <value>圣灵之弓</value>
+  </data>
+  <data name="DivineCrossbowOfArchangel" xml:space="preserve">
+    <value>大天使之弓</value>
+  </data>
+  <data name="GreatReignCrossbow" xml:space="preserve">
+    <value>追月神弩</value>
+  </data>
+  <data name="ArrowViperBow" xml:space="preserve">
+    <value>红羽神弓</value>
+  </data>
+  <data name="SylphWindBow" xml:space="preserve">
+    <value>紫焰之弓</value>
+  </data>
+  <data name="AlbatrossBow" xml:space="preserve">
+    <value>神羽之弓</value>
+  </data>
+  <data name="StingerBow" xml:space="preserve">
+    <value>傲视魔弓</value>
+  </data>
+  <data name="AirLynBow" xml:space="preserve">
+    <value>圣天使之弓</value>
+  </data>
+  <data name="SkullStaff" xml:space="preserve">
+    <value>骷髅杖</value>
+  </data>
+  <data name="AngelicStaff" xml:space="preserve">
+    <value>天使杖</value>
+  </data>
+  <data name="SerpentStaff" xml:space="preserve">
+    <value>毒蛇杖</value>
+  </data>
+  <data name="ThunderStaff" xml:space="preserve">
+    <value>闪电杖</value>
+  </data>
+  <data name="GorgonStaff" xml:space="preserve">
+    <value>戈登之杖</value>
+  </data>
+  <data name="LegendaryStaff" xml:space="preserve">
+    <value>传说之杖</value>
+  </data>
+  <data name="StaffOfResurrection" xml:space="preserve">
+    <value>复活之杖</value>
+  </data>
+  <data name="ChaosLightningStaff" xml:space="preserve">
+    <value>玛雅雷杖</value>
+  </data>
+  <data name="StaffOfDestruction" xml:space="preserve">
+    <value>毁灭之杖</value>
+  </data>
+  <data name="DragonSoulStaff" xml:space="preserve">
+    <value>麒麟之杖</value>
+  </data>
+  <data name="DivineStaffOfArchangel" xml:space="preserve">
+    <value>大天使之杖</value>
+  </data>
+  <data name="StaffOfKundun" xml:space="preserve">
+    <value>昆顿之杖</value>
+  </data>
+  <data name="GrandViperStaff" xml:space="preserve">
+    <value>死神之杖</value>
+  </data>
+  <data name="PlatinaStaff" xml:space="preserve">
+    <value>幻月雷杖</value>
+  </data>
+  <data name="MisteryStick" xml:space="preserve">
+    <value>迷之杖</value>
+  </data>
+  <data name="ViolentWindStick" xml:space="preserve">
+    <value>飓风之杖</value>
+  </data>
+  <data name="RedWingStick" xml:space="preserve">
+    <value>红翼之杖</value>
+  </data>
+  <data name="AncientStick" xml:space="preserve">
+    <value>远古之杖</value>
+  </data>
+  <data name="DemonicStick" xml:space="preserve">
+    <value>魔灵之杖</value>
+  </data>
+  <data name="StormBlitzStick" xml:space="preserve">
+    <value>风影之杖</value>
+  </data>
+  <data name="EternalWingStick" xml:space="preserve">
+    <value>恒翼之杖</value>
+  </data>
+  <data name="BookOfSahamutt" xml:space="preserve">
+    <value>火龙兽之书</value>
+  </data>
+  <data name="BookOfNeil" xml:space="preserve">
+    <value>异灵之书</value>
+  </data>
+  <data name="BookOfLagle" xml:space="preserve">
+    <value>污灵之书</value>
+  </data>
+  <data name="DeadlyStaff" xml:space="preserve">
+    <value>致命魔杖</value>
+  </data>
+  <data name="ImperialStaff" xml:space="preserve">
+    <value>魔狱之杖</value>
+  </data>
+  <data name="ChromaticStaff" xml:space="preserve">
+    <value>多彩魔杖</value>
+  </data>
+  <data name="RavenStick" xml:space="preserve">
+    <value>乌鸦之杖</value>
+  </data>
+  <data name="DivineStickOfArchangel" xml:space="preserve">
+    <value>大天使绝对魔杖</value>
+  </data>
+  <data name="SmallShield" xml:space="preserve">
+    <value>圆盾</value>
+  </data>
+  <data name="HornShield" xml:space="preserve">
+    <value>战士之盾</value>
+  </data>
+  <data name="KiteShield" xml:space="preserve">
+    <value>风之盾</value>
+  </data>
+  <data name="ElvenShield" xml:space="preserve">
+    <value>魔法之盾</value>
+  </data>
+  <data name="Buckler" xml:space="preserve">
+    <value>钢铁之盾</value>
+  </data>
+  <data name="DragonSlayerShield" xml:space="preserve">
+    <value>龙之盾</value>
+  </data>
+  <data name="SkullShield" xml:space="preserve">
+    <value>骷髅之盾</value>
+  </data>
+  <data name="SpikedShield" xml:space="preserve">
+    <value>尖刺之盾</value>
+  </data>
+  <data name="TowerShield" xml:space="preserve">
+    <value>失落之盾</value>
+  </data>
+  <data name="PlateShield" xml:space="preserve">
+    <value>远古之盾</value>
+  </data>
+  <data name="BigRoundShield" xml:space="preserve">
+    <value>自由之盾</value>
+  </data>
+  <data name="SerpentShield" xml:space="preserve">
+    <value>毒蛇之盾</value>
+  </data>
+  <data name="BronzeShield" xml:space="preserve">
+    <value>布朗司</value>
+  </data>
+  <data name="DragonShield" xml:space="preserve">
+    <value>火龙之盾</value>
+  </data>
+  <data name="LegendaryShield" xml:space="preserve">
+    <value>传说之盾</value>
+  </data>
+  <data name="GrandSoulShield" xml:space="preserve">
+    <value>麒麟之盾</value>
+  </data>
+  <data name="ElementalShield" xml:space="preserve">
+    <value>精灵之盾</value>
+  </data>
+  <data name="CrimsonGlory" xml:space="preserve">
+    <value>荣誉之盾</value>
+  </data>
+  <data name="SalamanderShield" xml:space="preserve">
+    <value>火蛇之盾</value>
+  </data>
+  <data name="FrostBarrier" xml:space="preserve">
+    <value>寒冰之盾</value>
+  </data>
+  <data name="GuardianShield" xml:space="preserve">
+    <value>亡魂之盾</value>
+  </data>
+  <data name="CrossShield" xml:space="preserve">
+    <value>十字架之盾</value>
+  </data>
+  <data name="BronzeHelm" xml:space="preserve">
+    <value>青铜盔</value>
+  </data>
+  <data name="DragonHelm" xml:space="preserve">
+    <value>龙王之盔</value>
+  </data>
+  <data name="PadHelm" xml:space="preserve">
+    <value>革盔</value>
+  </data>
+  <data name="LegendaryHelm" xml:space="preserve">
+    <value>传说之盔</value>
+  </data>
+  <data name="BoneHelm" xml:space="preserve">
+    <value>骷髅之盔</value>
+  </data>
+  <data name="LeatherHelm" xml:space="preserve">
+    <value>皮盔</value>
+  </data>
+  <data name="ScaleHelm" xml:space="preserve">
+    <value>翡翠盔</value>
+  </data>
+  <data name="SphinxMask" xml:space="preserve">
+    <value>魔王之盔</value>
+  </data>
+  <data name="BrassHelm" xml:space="preserve">
+    <value>黄金盔</value>
+  </data>
+  <data name="PlateHelm" xml:space="preserve">
+    <value>白金盔</value>
+  </data>
+  <data name="VineHelm" xml:space="preserve">
+    <value>藤盔</value>
+  </data>
+  <data name="SilkHelm" xml:space="preserve">
+    <value>天蚕之盔</value>
+  </data>
+  <data name="WindHelm" xml:space="preserve">
+    <value>风之盔</value>
+  </data>
+  <data name="SpiritHelm" xml:space="preserve">
+    <value>精灵之盔</value>
+  </data>
+  <data name="GuardianHelm" xml:space="preserve">
+    <value>女神之盔</value>
+  </data>
+  <data name="BlackDragonHelm" xml:space="preserve">
+    <value>黑龙王之盔</value>
+  </data>
+  <data name="DarkPhoenixHelm" xml:space="preserve">
+    <value>黑凤凰之盔</value>
+  </data>
+  <data name="GrandSoulHelm" xml:space="preserve">
+    <value>火麒麟之盔</value>
+  </data>
+  <data name="DivineHelm" xml:space="preserve">
+    <value>圣灵之盔</value>
+  </data>
+  <data name="GreatDragonHelm" xml:space="preserve">
+    <value>龙炎之盔</value>
+  </data>
+  <data name="DarkSoulHelm" xml:space="preserve">
+    <value>黑炎之盔</value>
+  </data>
+  <data name="RedSpiritHelm" xml:space="preserve">
+    <value>红羽之盔</value>
+  </data>
+  <data name="LightPlateMask" xml:space="preserve">
+    <value>圣元之盔</value>
+  </data>
+  <data name="AdamantineMask" xml:space="preserve">
+    <value>圣魂之盔</value>
+  </data>
+  <data name="DarkSteelMask" xml:space="preserve">
+    <value>神圣之盔</value>
+  </data>
+  <data name="DarkMasterMask" xml:space="preserve">
+    <value>至尊之盔</value>
+  </data>
+  <data name="DragonKnightHelm" xml:space="preserve">
+    <value>暗黑斗神之盔</value>
+  </data>
+  <data name="VenomMistHelm" xml:space="preserve">
+    <value>法魂玄灵之盔</value>
+  </data>
+  <data name="SylphidRayHelm" xml:space="preserve">
+    <value>紫灵之盔</value>
+  </data>
+  <data name="SunlightMask" xml:space="preserve">
+    <value>宙斯之盔</value>
+  </data>
+  <data name="AshcrowHelm" xml:space="preserve">
+    <value>暴风之盔</value>
+  </data>
+  <data name="EclipseHelm" xml:space="preserve">
+    <value>幻月之盔</value>
+  </data>
+  <data name="IrisHelm" xml:space="preserve">
+    <value>碧影之盔</value>
+  </data>
+  <data name="GloriousMask" xml:space="preserve">
+    <value>圣光之盔</value>
+  </data>
+  <data name="MisteryHelm" xml:space="preserve">
+    <value>飓风之盔</value>
+  </data>
+  <data name="RedWingHelm" xml:space="preserve">
+    <value>红翼之盔</value>
+  </data>
+  <data name="AncientHelm" xml:space="preserve">
+    <value>远古之盔</value>
+  </data>
+  <data name="BlackRoseHelm" xml:space="preserve">
+    <value>魔灵之盔</value>
+  </data>
+  <data name="AuraHelm" xml:space="preserve">
+    <value>风影之盔</value>
+  </data>
+  <data name="LiliumHelm" xml:space="preserve">
+    <value>恒翼之盔</value>
+  </data>
+  <data name="TitanHelm" xml:space="preserve">
+    <value>泰坦之盔</value>
+  </data>
+  <data name="BraveHelm" xml:space="preserve">
+    <value>勇气之盔</value>
+  </data>
+  <data name="SeraphimHelm" xml:space="preserve">
+    <value>恐惧之盔</value>
+  </data>
+  <data name="FaithHelm" xml:space="preserve">
+    <value>灵光之盔</value>
+  </data>
+  <data name="PaewangMask" xml:space="preserve">
+    <value>霸王之盔</value>
+  </data>
+  <data name="HadesHelm" xml:space="preserve">
+    <value>冥王之盔</value>
+  </data>
+  <data name="SacredHelm" xml:space="preserve">
+    <value>神圣火焰之盔</value>
+  </data>
+  <data name="StormHardHelm" xml:space="preserve">
+    <value>暴风毁灭之盔</value>
+  </data>
+  <data name="PiercingHelm" xml:space="preserve">
+    <value>刀锋之盔</value>
+  </data>
+  <data name="PhoenixSoulHelmet" xml:space="preserve">
+    <value>凤魂之盔</value>
+  </data>
+  <data name="BronzeArmor" xml:space="preserve">
+    <value>青铜铠</value>
+  </data>
+  <data name="DragonArmor" xml:space="preserve">
+    <value>龙王之铠</value>
+  </data>
+  <data name="PadArmor" xml:space="preserve">
+    <value>革铠</value>
+  </data>
+  <data name="LegendaryArmor" xml:space="preserve">
+    <value>传说之铠</value>
+  </data>
+  <data name="BoneArmor" xml:space="preserve">
+    <value>骷髅铠</value>
+  </data>
+  <data name="LeatherArmor" xml:space="preserve">
+    <value>皮铠</value>
+  </data>
+  <data name="ScaleArmor" xml:space="preserve">
+    <value>翡翠铠</value>
+  </data>
+  <data name="SphinxArmor" xml:space="preserve">
+    <value>魔王铠</value>
+  </data>
+  <data name="BrassArmor" xml:space="preserve">
+    <value>黄金铠</value>
+  </data>
+  <data name="PlateArmor" xml:space="preserve">
+    <value>白金铠</value>
+  </data>
+  <data name="VineArmor" xml:space="preserve">
+    <value>藤铠</value>
+  </data>
+  <data name="SilkArmor" xml:space="preserve">
+    <value>天蚕铠</value>
+  </data>
+  <data name="WindArmor" xml:space="preserve">
+    <value>风之铠</value>
+  </data>
+  <data name="SpiritArmor" xml:space="preserve">
+    <value>精灵之铠</value>
+  </data>
+  <data name="GuardianArmor" xml:space="preserve">
+    <value>女神之铠</value>
+  </data>
+  <data name="StormCrowArmor" xml:space="preserve">
+    <value>亚特兰蒂斯之铠</value>
+  </data>
+  <data name="BlackDragonArmor" xml:space="preserve">
+    <value>黑龙王铠</value>
+  </data>
+  <data name="DarkPhoenixArmor" xml:space="preserve">
+    <value>黑凤凰之铠</value>
+  </data>
+  <data name="GrandSoulArmor" xml:space="preserve">
+    <value>火麒麟之铠</value>
+  </data>
+  <data name="DivineArmor" xml:space="preserve">
+    <value>圣灵之铠</value>
+  </data>
+  <data name="ThunderHawkArmor" xml:space="preserve">
+    <value>奔雷之铠</value>
+  </data>
+  <data name="GreatDragonArmor" xml:space="preserve">
+    <value>龙炎之铠</value>
+  </data>
+  <data name="DarkSoulArmor" xml:space="preserve">
+    <value>黑炎之铠</value>
+  </data>
+  <data name="HurricaneArmor" xml:space="preserve">
+    <value>魔神之铠</value>
+  </data>
+  <data name="RedSpritArmor" xml:space="preserve">
+    <value>红羽之铠</value>
+  </data>
+  <data name="LightPlateArmor" xml:space="preserve">
+    <value>圣元之铠</value>
+  </data>
+  <data name="AdamantineArmor" xml:space="preserve">
+    <value>圣魂之铠</value>
+  </data>
+  <data name="DarkSteelArmor" xml:space="preserve">
+    <value>神圣之铠</value>
+  </data>
+  <data name="DarkMasterArmor" xml:space="preserve">
+    <value>至尊之铠</value>
+  </data>
+  <data name="DragonKnightArmor" xml:space="preserve">
+    <value>暗黑斗神之铠</value>
+  </data>
+  <data name="VenomMistArmor" xml:space="preserve">
+    <value>法魂玄灵之铠</value>
+  </data>
+  <data name="SylphidRayArmor" xml:space="preserve">
+    <value>紫灵之铠</value>
+  </data>
+  <data name="VolcanoArmor" xml:space="preserve">
+    <value>天魔斗神之铠</value>
+  </data>
+  <data name="SunlightArmor" xml:space="preserve">
+    <value>宙斯之铠</value>
+  </data>
+  <data name="AshcrowArmor" xml:space="preserve">
+    <value>暴风之铠</value>
+  </data>
+  <data name="EclipseArmor" xml:space="preserve">
+    <value>幻月之铠</value>
+  </data>
+  <data name="IrisArmor" xml:space="preserve">
+    <value>碧影之铠</value>
+  </data>
+  <data name="ValiantArmor" xml:space="preserve">
+    <value>烈火之铠</value>
+  </data>
+  <data name="GloriousArmor" xml:space="preserve">
+    <value>圣光之铠</value>
+  </data>
+  <data name="MisteryArmor" xml:space="preserve">
+    <value>飓风之铠</value>
+  </data>
+  <data name="RedWingArmor" xml:space="preserve">
+    <value>红翼之铠</value>
+  </data>
+  <data name="AncientArmor" xml:space="preserve">
+    <value>远古之铠</value>
+  </data>
+  <data name="BlackRoseArmor" xml:space="preserve">
+    <value>魔灵之铠</value>
+  </data>
+  <data name="AuraArmor" xml:space="preserve">
+    <value>风影之铠</value>
+  </data>
+  <data name="LiliumArmor" xml:space="preserve">
+    <value>恒翼之铠</value>
+  </data>
+  <data name="TitanArmor" xml:space="preserve">
+    <value>泰坦之铠</value>
+  </data>
+  <data name="BraveArmor" xml:space="preserve">
+    <value>勇气之铠</value>
+  </data>
+  <data name="DestoryArmor" xml:space="preserve">
+    <value>巨石之铠</value>
+  </data>
+  <data name="PhantomArmor" xml:space="preserve">
+    <value>破灭之铠</value>
+  </data>
+  <data name="SeraphimArmor" xml:space="preserve">
+    <value>恐惧之铠</value>
+  </data>
+  <data name="FaithArmor" xml:space="preserve">
+    <value>灵光之铠</value>
+  </data>
+  <data name="PaewangArmor" xml:space="preserve">
+    <value>霸王之铠</value>
+  </data>
+  <data name="HadesArmor" xml:space="preserve">
+    <value>冥王之铠</value>
+  </data>
+  <data name="SacredArmor" xml:space="preserve">
+    <value>神圣火焰之铠</value>
+  </data>
+  <data name="StormHardArmor" xml:space="preserve">
+    <value>暴风毁灭之铠</value>
+  </data>
+  <data name="PiercingArmor" xml:space="preserve">
+    <value>刀锋之铠</value>
+  </data>
+  <data name="PhoenixSoulArmor" xml:space="preserve">
+    <value>凤魂之铠</value>
+  </data>
+  <data name="BronzePants" xml:space="preserve">
+    <value>青铜护腿</value>
+  </data>
+  <data name="DragonPants" xml:space="preserve">
+    <value>龙王护腿</value>
+  </data>
+  <data name="PadPants" xml:space="preserve">
+    <value>革护腿</value>
+  </data>
+  <data name="LegendaryPants" xml:space="preserve">
+    <value>传说护腿</value>
+  </data>
+  <data name="BonePants" xml:space="preserve">
+    <value>骷髅护腿</value>
+  </data>
+  <data name="LeatherPants" xml:space="preserve">
+    <value>皮护腿</value>
+  </data>
+  <data name="ScalePants" xml:space="preserve">
+    <value>翡翠护腿</value>
+  </data>
+  <data name="SphinxPants" xml:space="preserve">
+    <value>魔王护腿</value>
+  </data>
+  <data name="BrassPants" xml:space="preserve">
+    <value>黄金护腿</value>
+  </data>
+  <data name="PlatePants" xml:space="preserve">
+    <value>白金护腿</value>
+  </data>
+  <data name="VinePants" xml:space="preserve">
+    <value>藤护腿</value>
+  </data>
+  <data name="SilkPants" xml:space="preserve">
+    <value>天蚕护腿</value>
+  </data>
+  <data name="WindPants" xml:space="preserve">
+    <value>风之护腿</value>
+  </data>
+  <data name="SpiritPants" xml:space="preserve">
+    <value>精灵之护腿</value>
+  </data>
+  <data name="GuardianPants" xml:space="preserve">
+    <value>女神护腿</value>
+  </data>
+  <data name="StormCrowPants" xml:space="preserve">
+    <value>亚特兰蒂斯之护腿</value>
+  </data>
+  <data name="BlackDragonPants" xml:space="preserve">
+    <value>黑龙王护腿</value>
+  </data>
+  <data name="DarkPhoenixPants" xml:space="preserve">
+    <value>黑凤凰护腿</value>
+  </data>
+  <data name="GrandSoulPants" xml:space="preserve">
+    <value>火麒麟护腿</value>
+  </data>
+  <data name="DivinePants" xml:space="preserve">
+    <value>圣灵护腿</value>
+  </data>
+  <data name="ThunderHawkPants" xml:space="preserve">
+    <value>奔雷护腿</value>
+  </data>
+  <data name="GreatDragonPants" xml:space="preserve">
+    <value>龙炎护腿</value>
+  </data>
+  <data name="DarkSoulPants" xml:space="preserve">
+    <value>黑炎护腿</value>
+  </data>
+  <data name="HurricanePants" xml:space="preserve">
+    <value>魔神护腿</value>
+  </data>
+  <data name="RedSpiritPants" xml:space="preserve">
+    <value>红羽护腿</value>
+  </data>
+  <data name="LightPlatePants" xml:space="preserve">
+    <value>圣元护腿</value>
+  </data>
+  <data name="AdamantinePants" xml:space="preserve">
+    <value>圣魂护腿</value>
+  </data>
+  <data name="DarkSteelPants" xml:space="preserve">
+    <value>神圣护腿</value>
+  </data>
+  <data name="DarkMasterPants" xml:space="preserve">
+    <value>至尊护腿</value>
+  </data>
+  <data name="DragonKnightPants" xml:space="preserve">
+    <value>暗黑斗神护腿</value>
+  </data>
+  <data name="VenomMistPants" xml:space="preserve">
+    <value>法魂玄灵护腿</value>
+  </data>
+  <data name="SylphidRayPants" xml:space="preserve">
+    <value>紫灵护腿</value>
+  </data>
+  <data name="VolcanoPants" xml:space="preserve">
+    <value>天魔斗神护腿</value>
+  </data>
+  <data name="SunlightPants" xml:space="preserve">
+    <value>宙斯护腿</value>
+  </data>
+  <data name="AshcrowPants" xml:space="preserve">
+    <value>暴风护腿</value>
+  </data>
+  <data name="EclipsePants" xml:space="preserve">
+    <value>幻月护腿</value>
+  </data>
+  <data name="IrisPants" xml:space="preserve">
+    <value>碧影护腿</value>
+  </data>
+  <data name="ValiantPants" xml:space="preserve">
+    <value>烈火护腿</value>
+  </data>
+  <data name="GloriousPants" xml:space="preserve">
+    <value>圣光护腿</value>
+  </data>
+  <data name="MisteryPants" xml:space="preserve">
+    <value>飓风之护腿</value>
+  </data>
+  <data name="RedWingPants" xml:space="preserve">
+    <value>红翼之护腿</value>
+  </data>
+  <data name="AncientPants" xml:space="preserve">
+    <value>远古之护腿</value>
+  </data>
+  <data name="BlackRosePants" xml:space="preserve">
+    <value>魔灵护腿</value>
+  </data>
+  <data name="AuraPants" xml:space="preserve">
+    <value>风影护腿</value>
+  </data>
+  <data name="LiliumPants" xml:space="preserve">
+    <value>恒翼护腿</value>
+  </data>
+  <data name="TitanPants" xml:space="preserve">
+    <value>泰坦之护腿</value>
+  </data>
+  <data name="BravePants" xml:space="preserve">
+    <value>勇气之护腿</value>
+  </data>
+  <data name="DestoryPants" xml:space="preserve">
+    <value>巨石之护腿</value>
+  </data>
+  <data name="PhantomPants" xml:space="preserve">
+    <value>破灭之护腿</value>
+  </data>
+  <data name="SeraphimPants" xml:space="preserve">
+    <value>恐惧之护腿</value>
+  </data>
+  <data name="FaithPants" xml:space="preserve">
+    <value>灵光之护腿</value>
+  </data>
+  <data name="PaewangPants" xml:space="preserve">
+    <value>霸王之护腿</value>
+  </data>
+  <data name="HadesPants" xml:space="preserve">
+    <value>冥王之护腿</value>
+  </data>
+  <data name="SacredPants" xml:space="preserve">
+    <value>神圣火焰护腿</value>
+  </data>
+  <data name="StormHardPants" xml:space="preserve">
+    <value>暴风毁灭护腿</value>
+  </data>
+  <data name="PiercingPants" xml:space="preserve">
+    <value>刀锋护腿</value>
+  </data>
+  <data name="PhoenixSoulPants" xml:space="preserve">
+    <value>凤魂护腿</value>
+  </data>
+  <data name="BronzeGloves" xml:space="preserve">
+    <value>青铜护手</value>
+  </data>
+  <data name="DragonGloves" xml:space="preserve">
+    <value>龙王护手</value>
+  </data>
+  <data name="PadGloves" xml:space="preserve">
+    <value>革护手</value>
+  </data>
+  <data name="LegendaryGloves" xml:space="preserve">
+    <value>传说护手</value>
+  </data>
+  <data name="BoneGloves" xml:space="preserve">
+    <value>骷髅护手</value>
+  </data>
+  <data name="LeatherGloves" xml:space="preserve">
+    <value>皮护手</value>
+  </data>
+  <data name="ScaleGloves" xml:space="preserve">
+    <value>翡翠护手</value>
+  </data>
+  <data name="SphinxGloves" xml:space="preserve">
+    <value>魔王护手</value>
+  </data>
+  <data name="BrassGloves" xml:space="preserve">
+    <value>黄金护手</value>
+  </data>
+  <data name="PlateGloves" xml:space="preserve">
+    <value>白金护手</value>
+  </data>
+  <data name="VineGloves" xml:space="preserve">
+    <value>藤护手</value>
+  </data>
+  <data name="SilkGloves" xml:space="preserve">
+    <value>天蚕护手</value>
+  </data>
+  <data name="WindGloves" xml:space="preserve">
+    <value>风之护手</value>
+  </data>
+  <data name="SpiritGloves" xml:space="preserve">
+    <value>精灵之护手</value>
+  </data>
+  <data name="GuardianGloves" xml:space="preserve">
+    <value>女神护手</value>
+  </data>
+  <data name="StormCrowGloves" xml:space="preserve">
+    <value>亚特兰蒂斯之护手</value>
+  </data>
+  <data name="BlackDragonGloves" xml:space="preserve">
+    <value>黑龙王护手</value>
+  </data>
+  <data name="DarkPhoenixGloves" xml:space="preserve">
+    <value>黑凤凰护手</value>
+  </data>
+  <data name="GrandSoulGloves" xml:space="preserve">
+    <value>火麒麟护手</value>
+  </data>
+  <data name="DivineGloves" xml:space="preserve">
+    <value>圣灵护手</value>
+  </data>
+  <data name="ThunderHawkGloves" xml:space="preserve">
+    <value>奔雷护手</value>
+  </data>
+  <data name="GreatDragonGloves" xml:space="preserve">
+    <value>龙炎护手</value>
+  </data>
+  <data name="DarkSoulGloves" xml:space="preserve">
+    <value>黑炎护手</value>
+  </data>
+  <data name="HurricaneGloves" xml:space="preserve">
+    <value>魔神护手</value>
+  </data>
+  <data name="RedSpiritGloves" xml:space="preserve">
+    <value>红羽护手</value>
+  </data>
+  <data name="LightPlateGloves" xml:space="preserve">
+    <value>圣元护手</value>
+  </data>
+  <data name="AdamantineGloves" xml:space="preserve">
+    <value>圣魂护手</value>
+  </data>
+  <data name="DarkSteelGloves" xml:space="preserve">
+    <value>神圣护手</value>
+  </data>
+  <data name="DarkMasterGloves" xml:space="preserve">
+    <value>至尊护手</value>
+  </data>
+  <data name="DragonKnightGloves" xml:space="preserve">
+    <value>暗黑斗神护手</value>
+  </data>
+  <data name="VenomMistGloves" xml:space="preserve">
+    <value>法魂玄灵护手</value>
+  </data>
+  <data name="SylphidRayGloves" xml:space="preserve">
+    <value>紫灵护手</value>
+  </data>
+  <data name="VolcanoGloves" xml:space="preserve">
+    <value>天魔斗神护手</value>
+  </data>
+  <data name="SunlightGloves" xml:space="preserve">
+    <value>宙斯护手</value>
+  </data>
+  <data name="AshcrowGloves" xml:space="preserve">
+    <value>暴风护手</value>
+  </data>
+  <data name="EclipseGloves" xml:space="preserve">
+    <value>幻月护手</value>
+  </data>
+  <data name="IrisGloves" xml:space="preserve">
+    <value>碧影护手</value>
+  </data>
+  <data name="ValiantGloves" xml:space="preserve">
+    <value>烈火护手</value>
+  </data>
+  <data name="GloriousGloves" xml:space="preserve">
+    <value>圣光护手</value>
+  </data>
+  <data name="MisteryGloves" xml:space="preserve">
+    <value>飓风之护手</value>
+  </data>
+  <data name="RedWingGloves" xml:space="preserve">
+    <value>红翼之护手</value>
+  </data>
+  <data name="AncientGloves" xml:space="preserve">
+    <value>远古之护手</value>
+  </data>
+  <data name="BlackRoseGloves" xml:space="preserve">
+    <value>魔灵之护手</value>
+  </data>
+  <data name="AuraGloves" xml:space="preserve">
+    <value>风影护手</value>
+  </data>
+  <data name="LiliumGloves" xml:space="preserve">
+    <value>恒翼护手</value>
+  </data>
+  <data name="TitanGloves" xml:space="preserve">
+    <value>泰坦之护手</value>
+  </data>
+  <data name="BraveGloves" xml:space="preserve">
+    <value>勇气之护手</value>
+  </data>
+  <data name="DestroyGloves" xml:space="preserve">
+    <value>巨石之护手</value>
+  </data>
+  <data name="PhantomGloves" xml:space="preserve">
+    <value>破灭之护手</value>
+  </data>
+  <data name="SeraphimGloves" xml:space="preserve">
+    <value>恐惧之护手</value>
+  </data>
+  <data name="FaithGloves" xml:space="preserve">
+    <value>灵光之护手</value>
+  </data>
+  <data name="PaewangGloves" xml:space="preserve">
+    <value>霸王之护手</value>
+  </data>
+  <data name="HadesGloves" xml:space="preserve">
+    <value>冥王之护手</value>
+  </data>
+  <data name="BronzeBoots" xml:space="preserve">
+    <value>青铜靴</value>
+  </data>
+  <data name="DragonBoots" xml:space="preserve">
+    <value>龙王之靴</value>
+  </data>
+  <data name="PadBoots" xml:space="preserve">
+    <value>革靴</value>
+  </data>
+  <data name="LegendaryBoots" xml:space="preserve">
+    <value>传说之靴</value>
+  </data>
+  <data name="BoneBoots" xml:space="preserve">
+    <value>骷髅靴</value>
+  </data>
+  <data name="LeatherBoots" xml:space="preserve">
+    <value>皮靴</value>
+  </data>
+  <data name="ScaleBoots" xml:space="preserve">
+    <value>翡翠靴</value>
+  </data>
+  <data name="SphinxBoots" xml:space="preserve">
+    <value>魔王靴</value>
+  </data>
+  <data name="BrassBoots" xml:space="preserve">
+    <value>黄金靴</value>
+  </data>
+  <data name="PlateBoots" xml:space="preserve">
+    <value>白金靴</value>
+  </data>
+  <data name="VineBoots" xml:space="preserve">
+    <value>藤靴</value>
+  </data>
+  <data name="SilkBoots" xml:space="preserve">
+    <value>天蚕之靴</value>
+  </data>
+  <data name="WindBoots" xml:space="preserve">
+    <value>风之靴</value>
+  </data>
+  <data name="SpiritBoots" xml:space="preserve">
+    <value>精灵之靴</value>
+  </data>
+  <data name="GuardianBoots" xml:space="preserve">
+    <value>女神之靴</value>
+  </data>
+  <data name="StormCrowBoots" xml:space="preserve">
+    <value>亚特兰蒂斯之靴</value>
+  </data>
+  <data name="BlackDragonBoots" xml:space="preserve">
+    <value>黑龙王之靴</value>
+  </data>
+  <data name="DarkPhoenixBoots" xml:space="preserve">
+    <value>黑凤凰之靴</value>
+  </data>
+  <data name="GrandSoulBoots" xml:space="preserve">
+    <value>火麒麟靴</value>
+  </data>
+  <data name="DivineBoots" xml:space="preserve">
+    <value>圣灵之靴</value>
+  </data>
+  <data name="ThunderHawkBoots" xml:space="preserve">
+    <value>奔雷之靴</value>
+  </data>
+  <data name="GreatDragonBoots" xml:space="preserve">
+    <value>龙炎之靴</value>
+  </data>
+  <data name="DarkSoulBoots" xml:space="preserve">
+    <value>黑炎之靴</value>
+  </data>
+  <data name="HurricaneBoots" xml:space="preserve">
+    <value>魔神之靴</value>
+  </data>
+  <data name="RedSpiritBoots" xml:space="preserve">
+    <value>红羽之靴</value>
+  </data>
+  <data name="LightPlateBoots" xml:space="preserve">
+    <value>圣元之靴</value>
+  </data>
+  <data name="AdamantineBoots" xml:space="preserve">
+    <value>圣魂之靴</value>
+  </data>
+  <data name="DarkSteelBoots" xml:space="preserve">
+    <value>神圣之靴</value>
+  </data>
+  <data name="DarkMasterBoots" xml:space="preserve">
+    <value>至尊之靴</value>
+  </data>
+  <data name="DragonKnightBoots" xml:space="preserve">
+    <value>暗黑斗神之靴</value>
+  </data>
+  <data name="VenomMistBoots" xml:space="preserve">
+    <value>法魂玄灵之靴</value>
+  </data>
+  <data name="SylphidRayBoots" xml:space="preserve">
+    <value>紫灵之靴</value>
+  </data>
+  <data name="VolcanoBoots" xml:space="preserve">
+    <value>天魔斗神之靴</value>
+  </data>
+  <data name="SunlightBoots" xml:space="preserve">
+    <value>宙斯之靴</value>
+  </data>
+  <data name="AshcrowBoots" xml:space="preserve">
+    <value>暴风之靴</value>
+  </data>
+  <data name="EclipseBoots" xml:space="preserve">
+    <value>幻月之靴</value>
+  </data>
+  <data name="IrisBoots" xml:space="preserve">
+    <value>碧影之靴</value>
+  </data>
+  <data name="ValiantBoots" xml:space="preserve">
+    <value>烈火之靴</value>
+  </data>
+  <data name="GloriousBoots" xml:space="preserve">
+    <value>圣光之靴</value>
+  </data>
+  <data name="MisteryBoots" xml:space="preserve">
+    <value>飓风之靴</value>
+  </data>
+  <data name="RedWingBoots" xml:space="preserve">
+    <value>红翼之靴</value>
+  </data>
+  <data name="AncientBoots" xml:space="preserve">
+    <value>远古之靴</value>
+  </data>
+  <data name="BlackRoseBoots" xml:space="preserve">
+    <value>魔灵之靴</value>
+  </data>
+  <data name="AuraBoots" xml:space="preserve">
+    <value>风影之靴</value>
+  </data>
+  <data name="LiliumBoots" xml:space="preserve">
+    <value>恒翼之靴</value>
+  </data>
+  <data name="TitanBoots" xml:space="preserve">
+    <value>泰坦之靴</value>
+  </data>
+  <data name="BraveBoots" xml:space="preserve">
+    <value>勇气之靴</value>
+  </data>
+  <data name="DestoryBoots" xml:space="preserve">
+    <value>巨石之靴</value>
+  </data>
+  <data name="PhantomBoots" xml:space="preserve">
+    <value>破灭之靴</value>
+  </data>
+  <data name="SeraphimBoots" xml:space="preserve">
+    <value>恐惧之靴</value>
+  </data>
+  <data name="FaithBoots" xml:space="preserve">
+    <value>灵光之靴</value>
+  </data>
+  <data name="PhaewangBoots" xml:space="preserve">
+    <value>霸王之靴</value>
+  </data>
+  <data name="HadesBoots" xml:space="preserve">
+    <value>冥王之靴</value>
+  </data>
+  <data name="SacredBoots" xml:space="preserve">
+    <value>神圣火焰之靴</value>
+  </data>
+  <data name="StormHardBoots" xml:space="preserve">
+    <value>暴风毁灭之靴</value>
+  </data>
+  <data name="PiercingBoots" xml:space="preserve">
+    <value>刀锋之靴</value>
+  </data>
+  <data name="PhoenixSoulBoots" xml:space="preserve">
+    <value>凤魂之靴</value>
+  </data>
+  <data name="WingsOfElf" xml:space="preserve">
+    <value>精灵翅膀</value>
+  </data>
+  <data name="WingsOfHeaven" xml:space="preserve">
+    <value>天使翅膀</value>
+  </data>
+  <data name="WingsOfSatan" xml:space="preserve">
+    <value>恶魔翅膀</value>
+  </data>
+  <data name="WingsOfSpirits" xml:space="preserve">
+    <value>圣灵之翼</value>
+  </data>
+  <data name="WingsOfSoul" xml:space="preserve">
+    <value>魔魂之翼</value>
+  </data>
+  <data name="WingsOfDragon" xml:space="preserve">
+    <value>飞龙之翼</value>
+  </data>
+  <data name="WingsOfDarkness" xml:space="preserve">
+    <value>暗黑之翼</value>
+  </data>
+  <data name="OrbOfTwistingSlash" xml:space="preserve">
+    <value>玄月斩之石</value>
+  </data>
+  <data name="OrbOfHealing" xml:space="preserve">
+    <value>治疗之石</value>
+  </data>
+  <data name="OrbOfGreaterDefense" xml:space="preserve">
+    <value>防御之石</value>
+  </data>
+  <data name="OrbOfGreaterDamage" xml:space="preserve">
+    <value>攻击之石</value>
+  </data>
+  <data name="OrbOfSummoning" xml:space="preserve">
+    <value>召唤魔石</value>
+  </data>
+  <data name="OrbOfRagefulBlow" xml:space="preserve">
+    <value>霹雳回旋斩之石</value>
+  </data>
+  <data name="OrbOfImpale" xml:space="preserve">
+    <value>钻云枪之石</value>
+  </data>
+  <data name="OrbOfGreaterFortitude" xml:space="preserve">
+    <value>生命之光之石</value>
+  </data>
+  <data name="JewelOfChaos" xml:space="preserve">
+    <value>玛雅宝石</value>
+  </data>
+  <data name="OrbOfFireSlash" xml:space="preserve">
+    <value>玄月斩之石</value>
+  </data>
+  <data name="OrbOfPenetration" xml:space="preserve">
+    <value>穿透箭之石</value>
+  </data>
+  <data name="OrbOfIceArrow" xml:space="preserve">
+    <value>冰封箭之石</value>
+  </data>
+  <data name="OrbOfDeathStab" xml:space="preserve">
+    <value>袭风刺之石</value>
+  </data>
+  <data name="ScrollOfFireBurst" xml:space="preserve">
+    <value>星云火链卷轴</value>
+  </data>
+  <data name="ScrollOfSummon" xml:space="preserve">
+    <value>星云召唤卷轴</value>
+  </data>
+  <data name="ScrollOfCriticalDamage" xml:space="preserve">
+    <value>致命圣印卷轴</value>
+  </data>
+  <data name="ScrollOfElectricSpark" xml:space="preserve">
+    <value>圣极光卷轴</value>
+  </data>
+  <data name="PackedJewelOfBless" xml:space="preserve">
+    <value>祝福宝石组合</value>
+  </data>
+  <data name="PackedJewelOfSoul" xml:space="preserve">
+    <value>灵魂宝石组合</value>
+  </data>
+  <data name="RedRibbonBox" xml:space="preserve">
+    <value>红色圣诞箱</value>
+  </data>
+  <data name="GreenRibbonBox" xml:space="preserve">
+    <value>绿色圣诞箱</value>
+  </data>
+  <data name="BlueRibbonBox" xml:space="preserve">
+    <value>蓝色圣诞箱</value>
+  </data>
+  <data name="ScrollOfFireScream" xml:space="preserve">
+    <value>火舞旋风卷轴</value>
+  </data>
+  <data name="WingOfStorm" xml:space="preserve">
+    <value>暴风之翼</value>
+  </data>
+  <data name="WingOfEternal" xml:space="preserve">
+    <value>时空之翼</value>
+  </data>
+  <data name="WingOfIllusion" xml:space="preserve">
+    <value>幻影之翼</value>
+  </data>
+  <data name="WingOfRuin" xml:space="preserve">
+    <value>破灭之翼</value>
+  </data>
+  <data name="CapeOfEmperor" xml:space="preserve">
+    <value>帝王披风</value>
+  </data>
+  <data name="WingsOfCurse" xml:space="preserve">
+    <value>灾难之翼</value>
+  </data>
+  <data name="WingsOfDespair" xml:space="preserve">
+    <value>绝望之翼</value>
+  </data>
+  <data name="WingOfDimension" xml:space="preserve">
+    <value>次元之翼</value>
+  </data>
+  <data name="CrystalOfDestruction" xml:space="preserve">
+    <value>破坏一击之石</value>
+  </data>
+  <data name="CrystalOfMultiShot" xml:space="preserve">
+    <value>五重箭之石</value>
+  </data>
+  <data name="CrystalOfRecovery" xml:space="preserve">
+    <value>防护值恢复之石</value>
+  </data>
+  <data name="CrystalOfFlameStrike" xml:space="preserve">
+    <value>火剑袭之石</value>
+  </data>
+  <data name="ScrollOfChaoticDiseier" xml:space="preserve">
+    <value>黑暗之力卷轴</value>
+  </data>
+  <data name="CapeOfFighter" xml:space="preserve">
+    <value>武者披风</value>
+  </data>
+  <data name="CapeOfOverrule" xml:space="preserve">
+    <value>斗皇披风</value>
+  </data>
+  <data name="SeedFire" xml:space="preserve">
+    <value>荧之石（火）</value>
+  </data>
+  <data name="SeedWater" xml:space="preserve">
+    <value>荧之石（水）</value>
+  </data>
+  <data name="SeedIce" xml:space="preserve">
+    <value>荧之石（冰）</value>
+  </data>
+  <data name="SeedWind" xml:space="preserve">
+    <value>荧之石（风）</value>
+  </data>
+  <data name="SeedLightning" xml:space="preserve">
+    <value>荧之石（雷）</value>
+  </data>
+  <data name="SeedEarth" xml:space="preserve">
+    <value>荧之石（土）</value>
+  </data>
+  <data name="SphereMono" xml:space="preserve">
+    <value>光之石（1阶）</value>
+  </data>
+  <data name="SphereDi" xml:space="preserve">
+    <value>光之石（2阶）</value>
+  </data>
+  <data name="SphereTri" xml:space="preserve">
+    <value>光之石（3阶）</value>
+  </data>
+  <data name="Sphere4" xml:space="preserve">
+    <value>光之石（4阶）</value>
+  </data>
+  <data name="Sphere5" xml:space="preserve">
+    <value>光之石（5阶）</value>
+  </data>
+  <data name="SeedSphereFire1" xml:space="preserve">
+    <value>荧光宝石（火，1阶）</value>
+  </data>
+  <data name="SeedSphereWater1" xml:space="preserve">
+    <value>荧光宝石（水，1阶）</value>
+  </data>
+  <data name="SeedSphereIce1" xml:space="preserve">
+    <value>荧光宝石（冰，1阶）</value>
+  </data>
+  <data name="SeedSphereWind1" xml:space="preserve">
+    <value>荧光宝石（风，1阶）</value>
+  </data>
+  <data name="SeedSphereLightning1" xml:space="preserve">
+    <value>荧光宝石（雷，1阶）</value>
+  </data>
+  <data name="SeedSphereEarth1" xml:space="preserve">
+    <value>荧光宝石（土，1阶）</value>
+  </data>
+  <data name="SeedSphereFire2" xml:space="preserve">
+    <value>荧光宝石（火，2阶）</value>
+  </data>
+  <data name="SeedSphereWater2" xml:space="preserve">
+    <value>荧光宝石（水，2阶）</value>
+  </data>
+  <data name="SeedSphereIce2" xml:space="preserve">
+    <value>荧光宝石（冰，2阶）</value>
+  </data>
+  <data name="SeedSphereWind2" xml:space="preserve">
+    <value>荧光宝石（风，2阶）</value>
+  </data>
+  <data name="SeedSphereLightning2" xml:space="preserve">
+    <value>荧光宝石（雷，2阶）</value>
+  </data>
+  <data name="SeedSphereEarth2" xml:space="preserve">
+    <value>荧光宝石（土，2阶）</value>
+  </data>
+  <data name="SeedSphereFire3" xml:space="preserve">
+    <value>荧光宝石（火，3阶）</value>
+  </data>
+  <data name="SeedSphereWater3" xml:space="preserve">
+    <value>荧光宝石（水，3阶）</value>
+  </data>
+  <data name="SeedSphereIce3" xml:space="preserve">
+    <value>荧光宝石（冰，3阶）</value>
+  </data>
+  <data name="SeedSphereWind3" xml:space="preserve">
+    <value>荧光宝石（风，3阶）</value>
+  </data>
+  <data name="SeedSphereLightning3" xml:space="preserve">
+    <value>荧光宝石（雷，3阶）</value>
+  </data>
+  <data name="SeedSphereEarth3" xml:space="preserve">
+    <value>荧光宝石（土，3阶）</value>
+  </data>
+  <data name="SeedSphereFire4" xml:space="preserve">
+    <value>荧光宝石（火，4阶）</value>
+  </data>
+  <data name="SeedSphereWater4" xml:space="preserve">
+    <value>荧光宝石（水，4阶）</value>
+  </data>
+  <data name="SeedSphereIce4" xml:space="preserve">
+    <value>荧光宝石（冰，4阶）</value>
+  </data>
+  <data name="SeedSphereWind4" xml:space="preserve">
+    <value>荧光宝石（风，4阶）</value>
+  </data>
+  <data name="SeedSphereLightning4" xml:space="preserve">
+    <value>荧光宝石（雷，4阶）</value>
+  </data>
+  <data name="SeedSphereEarth4" xml:space="preserve">
+    <value>荧光宝石（土，4阶）</value>
+  </data>
+  <data name="SeedSphereFire5" xml:space="preserve">
+    <value>荧光宝石（火，5阶）</value>
+  </data>
+  <data name="SeedSphereWater5" xml:space="preserve">
+    <value>荧光宝石（水，5阶）</value>
+  </data>
+  <data name="SeedSphereIce5" xml:space="preserve">
+    <value>荧光宝石（冰，5阶）</value>
+  </data>
+  <data name="SeedSphereWind5" xml:space="preserve">
+    <value>荧光宝石（风，5阶）</value>
+  </data>
+  <data name="SeedSphereLightning5" xml:space="preserve">
+    <value>荧光宝石（雷，5阶）</value>
+  </data>
+  <data name="SeedSphereEarth5" xml:space="preserve">
+    <value>荧光宝石（土，5阶）</value>
+  </data>
+  <data name="PackedJewelOfLife" xml:space="preserve">
+    <value>生命宝石组合</value>
+  </data>
+  <data name="PackedJewelOfCreation" xml:space="preserve">
+    <value>创造宝石组合</value>
+  </data>
+  <data name="PackedJewelOfGuardian" xml:space="preserve">
+    <value>守护宝石组合</value>
+  </data>
+  <data name="PackedGemstone" xml:space="preserve">
+    <value>再生原石组合</value>
+  </data>
+  <data name="PackedJewelOfHarmony" xml:space="preserve">
+    <value>再生宝石组合</value>
+  </data>
+  <data name="PackedJewelOfChaos" xml:space="preserve">
+    <value>玛雅宝石组合</value>
+  </data>
+  <data name="PackedLowerRefineStone" xml:space="preserve">
+    <value>低级进化宝石组合</value>
+  </data>
+  <data name="PackedHigherRefineStone" xml:space="preserve">
+    <value>高级进化宝石组合</value>
+  </data>
+  <data name="GuardianAngel" xml:space="preserve">
+    <value>守护天使</value>
+  </data>
+  <data name="Imp" xml:space="preserve">
+    <value>小恶魔</value>
+  </data>
+  <data name="HornOfUniria" xml:space="preserve">
+    <value>兽角</value>
+  </data>
+  <data name="HornOfDinorant" xml:space="preserve">
+    <value>彩云兽</value>
+  </data>
+  <data name="DarkHorse" xml:space="preserve">
+    <value>黑王马</value>
+  </data>
+  <data name="DarkRaven" xml:space="preserve">
+    <value>天鹰</value>
+  </data>
+  <data name="RingOfIce" xml:space="preserve">
+    <value>冰之指环</value>
+  </data>
+  <data name="RingOfPoison" xml:space="preserve">
+    <value>毒之指环</value>
+  </data>
+  <data name="TransformationRing" xml:space="preserve">
+    <value>变身指环</value>
+  </data>
+  <data name="LifeStone" xml:space="preserve">
+    <value>生命之石</value>
+  </data>
+  <data name="PendantOfLighting" xml:space="preserve">
+    <value>雷之项链</value>
+  </data>
+  <data name="PendantOfFire" xml:space="preserve">
+    <value>火之项链</value>
+  </data>
+  <data name="LochSFeather" xml:space="preserve">
+    <value>洛克之羽</value>
+  </data>
+  <data name="Fruits" xml:space="preserve">
+    <value>果实</value>
+  </data>
+  <data name="ScrollOfArchangel" xml:space="preserve">
+    <value>血灵之书</value>
+  </data>
+  <data name="BloodBone" xml:space="preserve">
+    <value>血灵之骷</value>
+  </data>
+  <data name="InvisibilityCloak" xml:space="preserve">
+    <value>透明披风</value>
+  </data>
+  <data name="WeaponOfArchangel" xml:space="preserve">
+    <value>大天使武器</value>
+  </data>
+  <data name="WizardSRing" xml:space="preserve">
+    <value>战士指环</value>
+  </data>
+  <data name="RingOfFire" xml:space="preserve">
+    <value>火之指环</value>
+  </data>
+  <data name="RingOfEarth" xml:space="preserve">
+    <value>地之指环</value>
+  </data>
+  <data name="RingOfWind" xml:space="preserve">
+    <value>风之指环</value>
+  </data>
+  <data name="RingOfMagic" xml:space="preserve">
+    <value>魔法戒指</value>
+  </data>
+  <data name="PendantOfIce" xml:space="preserve">
+    <value>冰之项链</value>
+  </data>
+  <data name="PendantOfWind" xml:space="preserve">
+    <value>风之项链</value>
+  </data>
+  <data name="PendantOfWater" xml:space="preserve">
+    <value>水之项链</value>
+  </data>
+  <data name="PendantOfAbility" xml:space="preserve">
+    <value>紫晶项链</value>
+  </data>
+  <data name="ArmorOfGuardsman" xml:space="preserve">
+    <value>卫兵铠甲</value>
+  </data>
+  <data name="CapeOfLord" xml:space="preserve">
+    <value>王者披风</value>
+  </data>
+  <data name="Spirit" xml:space="preserve">
+    <value>宠物灵魂</value>
+  </data>
+  <data name="SplinterOfArmor" xml:space="preserve">
+    <value>破烂的铠甲片</value>
+  </data>
+  <data name="BlessOfGuardian" xml:space="preserve">
+    <value>女神的智慧</value>
+  </data>
+  <data name="ClawOfBeast" xml:space="preserve">
+    <value>猛兽的脚甲</value>
+  </data>
+  <data name="FragmentOfHorn" xml:space="preserve">
+    <value>碎角片</value>
+  </data>
+  <data name="BrokenHorn" xml:space="preserve">
+    <value>折断的角</value>
+  </data>
+  <data name="HornOfFenrir" xml:space="preserve">
+    <value>炎狼兽的角</value>
+  </data>
+  <data name="MoonstonePendant" xml:space="preserve">
+    <value>悬石</value>
+  </data>
+  <data name="EliteSkeletonTransformationRing" xml:space="preserve">
+    <value>骷髅战士变身指环</value>
+  </data>
+  <data name="JackOLanternTransformationRing" xml:space="preserve">
+    <value>南瓜变身指环</value>
+  </data>
+  <data name="ChristmasTransformationRing" xml:space="preserve">
+    <value>圣诞变身指环</value>
+  </data>
+  <data name="GameMasterTransformationRing" xml:space="preserve">
+    <value>GM变身指环</value>
+  </data>
+  <data name="OldScroll" xml:space="preserve">
+    <value>旧卷纸</value>
+  </data>
+  <data name="IllusionSorcererCovenant" xml:space="preserve">
+    <value>幻影教药水</value>
+  </data>
+  <data name="ScrollOfBlood" xml:space="preserve">
+    <value>血的卷纸</value>
+  </data>
+  <data name="FlameOfCondor" xml:space="preserve">
+    <value>神鹰火种</value>
+  </data>
+  <data name="FeatherOfCondor" xml:space="preserve">
+    <value>神鹰之羽</value>
+  </data>
+  <data name="Demon" xml:space="preserve">
+    <value>恶魔</value>
+  </data>
+  <data name="SpiritOfGuardian" xml:space="preserve">
+    <value>守护精灵</value>
+  </data>
+  <data name="PetRudolf" xml:space="preserve">
+    <value>鲁道夫</value>
+  </data>
+  <data name="SnowmanTransformationRing" xml:space="preserve">
+    <value>雪人变身指环</value>
+  </data>
+  <data name="PandaTransformationRing" xml:space="preserve">
+    <value>熊猫变身指环</value>
+  </data>
+  <data name="PetPanda" xml:space="preserve">
+    <value>熊猫</value>
+  </data>
+  <data name="PetUnicorn" xml:space="preserve">
+    <value>独角兽</value>
+  </data>
+  <data name="SkeletonTransformationRing" xml:space="preserve">
+    <value>骨架变身指环</value>
+  </data>
+  <data name="PetSkeleton" xml:space="preserve">
+    <value>幼龙骨架</value>
+  </data>
+  <data name="Apple" xml:space="preserve">
+    <value>苹果</value>
+  </data>
+  <data name="SmallHealingPotion" xml:space="preserve">
+    <value>小瓶治疗药水</value>
+  </data>
+  <data name="MediumHealingPotion" xml:space="preserve">
+    <value>中瓶治疗药水</value>
+  </data>
+  <data name="LargeHealingPotion" xml:space="preserve">
+    <value>大瓶治疗药水</value>
+  </data>
+  <data name="SmallManaPotion" xml:space="preserve">
+    <value>小瓶魔力药水</value>
+  </data>
+  <data name="MediumManaPotion" xml:space="preserve">
+    <value>中瓶魔力药水</value>
+  </data>
+  <data name="LargeManaPotion" xml:space="preserve">
+    <value>大瓶魔力药水</value>
+  </data>
+  <data name="PotionOfBlessPotionOfSoul" xml:space="preserve">
+    <value>祝福药水;灵魂药水</value>
+  </data>
+  <data name="Antidote" xml:space="preserve">
+    <value>解毒剂</value>
+  </data>
+  <data name="Ale" xml:space="preserve">
+    <value>酒</value>
+  </data>
+  <data name="TownPortalScroll" xml:space="preserve">
+    <value>回城卷轴</value>
+  </data>
+  <data name="BoxOfLuck" xml:space="preserve">
+    <value>幸运宝箱</value>
+  </data>
+  <data name="JewelOfBless" xml:space="preserve">
+    <value>祝福宝石</value>
+  </data>
+  <data name="JewelOfSoul" xml:space="preserve">
+    <value>灵魂宝石</value>
+  </data>
+  <data name="JewelOfLife" xml:space="preserve">
+    <value>生命宝石</value>
+  </data>
+  <data name="DevilSEye" xml:space="preserve">
+    <value>恶魔之眼</value>
+  </data>
+  <data name="DevilSKey" xml:space="preserve">
+    <value>恶魔之钥</value>
+  </data>
+  <data name="DevilSInvitation" xml:space="preserve">
+    <value>恶魔广场入场券</value>
+  </data>
+  <data name="Rena" xml:space="preserve">
+    <value>蕾娜</value>
+  </data>
+  <data name="JewelOfCreation" xml:space="preserve">
+    <value>创造宝石</value>
+  </data>
+  <data name="ScrollOfEmperorRingOfHonor" xml:space="preserve">
+    <value>帝王之书;荣誉戒指</value>
+  </data>
+  <data name="BrokenSwordDarkStone" xml:space="preserve">
+    <value>断魂之剑;暗黑之石</value>
+  </data>
+  <data name="TearOfElf" xml:space="preserve">
+    <value>精灵之泪</value>
+  </data>
+  <data name="SoulShardOfWizard" xml:space="preserve">
+    <value>先知之魂</value>
+  </data>
+  <data name="LostMap" xml:space="preserve">
+    <value>失落地图</value>
+  </data>
+  <data name="SymbolOfKundun" xml:space="preserve">
+    <value>昆顿印记</value>
+  </data>
+  <data name="JewelOfGuardian" xml:space="preserve">
+    <value>守护宝石</value>
+  </data>
+  <data name="PinkChocolateBox" xml:space="preserve">
+    <value>粉色巧克力盒</value>
+  </data>
+  <data name="RedChocolateBox" xml:space="preserve">
+    <value>红色巧克力盒</value>
+  </data>
+  <data name="BlueChocolateBox" xml:space="preserve">
+    <value>蓝色巧克力盒</value>
+  </data>
+  <data name="SmallShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（小）</value>
+  </data>
+  <data name="MediumShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（中）</value>
+  </data>
+  <data name="LargeShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（大）</value>
+  </data>
+  <data name="SmallComplexPotion" xml:space="preserve">
+    <value>小瓶复合药水</value>
+  </data>
+  <data name="MediumComplexPotion" xml:space="preserve">
+    <value>中瓶复合药水</value>
+  </data>
+  <data name="LargeComplexPotion" xml:space="preserve">
+    <value>大瓶复合药水</value>
+  </data>
+  <data name="Gemstone" xml:space="preserve">
+    <value>再生原石</value>
+  </data>
+  <data name="JewelOfHarmony" xml:space="preserve">
+    <value>再生宝石</value>
+  </data>
+  <data name="LowerRefineStone" xml:space="preserve">
+    <value>低级进化宝石</value>
+  </data>
+  <data name="HigherRefineStone" xml:space="preserve">
+    <value>高级进化宝石</value>
+  </data>
+  <data name="PumpkinOfLuck" xml:space="preserve">
+    <value>幸运南瓜</value>
+  </data>
+  <data name="JackOLanternBlessings" xml:space="preserve">
+    <value>南瓜灯的祝福</value>
+  </data>
+  <data name="JackOLanternWrath" xml:space="preserve">
+    <value>南瓜灯的愤怒</value>
+  </data>
+  <data name="JackOLanternCry" xml:space="preserve">
+    <value>南瓜灯的呐喊</value>
+  </data>
+  <data name="JackOLanternFood" xml:space="preserve">
+    <value>南瓜灯的食物</value>
+  </data>
+  <data name="JackOLanternDrink" xml:space="preserve">
+    <value>南瓜灯的饮料</value>
+  </data>
+  <data name="ChristmasStar" xml:space="preserve">
+    <value>圣诞之星</value>
+  </data>
+  <data name="GMGift" xml:space="preserve">
+    <value>GM礼物宝箱</value>
+  </data>
+  <data name="Firecracker" xml:space="preserve">
+    <value>烟花</value>
+  </data>
+  <data name="FlameOfDeathBeamKnight" xml:space="preserve">
+    <value>天魔菲尼斯的火种</value>
+  </data>
+  <data name="HornOfHellMaine" xml:space="preserve">
+    <value>炽炎魔的角</value>
+  </data>
+  <data name="FeatherOfDarkPhoenix" xml:space="preserve">
+    <value>丛林召唤者的羽毛</value>
+  </data>
+  <data name="EyeOfAbyssal" xml:space="preserve">
+    <value>深渊之眼</value>
+  </data>
+  <data name="CherryBlossomPlayBox" xml:space="preserve">
+    <value>樱花游戏箱</value>
+  </data>
+  <data name="CherryBlossomWine" xml:space="preserve">
+    <value>樱花酒</value>
+  </data>
+  <data name="CherryBlossomRiceCake" xml:space="preserve">
+    <value>樱花年糕</value>
+  </data>
+  <data name="CherryBlossomFlowerPetal" xml:space="preserve">
+    <value>樱花花瓣</value>
+  </data>
+  <data name="GoldenCherryBlossomBranch" xml:space="preserve">
+    <value>黄色樱花树枝</value>
+  </data>
+  <data name="ChristmasFirecracker" xml:space="preserve">
+    <value>圣诞烟花</value>
+  </data>
+  <data name="SuspiciousScrapOfPaper" xml:space="preserve">
+    <value>奇怪的小纸条</value>
+  </data>
+  <data name="GaionSOrder" xml:space="preserve">
+    <value>凯文的指令</value>
+  </data>
+  <data name="FirstSecromiconFragment" xml:space="preserve">
+    <value>希克拉碎片1</value>
+  </data>
+  <data name="SecondSecromiconFragment" xml:space="preserve">
+    <value>希克拉碎片2</value>
+  </data>
+  <data name="ThirdSecromiconFragment" xml:space="preserve">
+    <value>希克拉碎片3</value>
+  </data>
+  <data name="FourthSecromiconFragment" xml:space="preserve">
+    <value>希克拉碎片4</value>
+  </data>
+  <data name="FifthSecromiconFragment" xml:space="preserve">
+    <value>希克拉碎片5</value>
+  </data>
+  <data name="SixthSecromiconFragment" xml:space="preserve">
+    <value>希克拉碎片6</value>
+  </data>
+  <data name="CompleteSecromicon" xml:space="preserve">
+    <value>完整的希克拉</value>
+  </data>
+  <data name="ScrollOfPoison" xml:space="preserve">
+    <value>毒咒术</value>
+  </data>
+  <data name="ScrollOfMeteorite" xml:space="preserve">
+    <value>陨石术</value>
+  </data>
+  <data name="ScrollOfLighting" xml:space="preserve">
+    <value>掌心雷术</value>
+  </data>
+  <data name="ScrollOfFireBall" xml:space="preserve">
+    <value>火球术</value>
+  </data>
+  <data name="ScrollOfFlame" xml:space="preserve">
+    <value>火龙术</value>
+  </data>
+  <data name="ScrollOfTeleport" xml:space="preserve">
+    <value>瞬间移动术</value>
+  </data>
+  <data name="ScrollOfIce" xml:space="preserve">
+    <value>冰封术</value>
+  </data>
+  <data name="ScrollOfTwister" xml:space="preserve">
+    <value>龙卷风术</value>
+  </data>
+  <data name="ScrollOfEvilSpirit" xml:space="preserve">
+    <value>黑龙波术</value>
+  </data>
+  <data name="ScrollOfHellfire" xml:space="preserve">
+    <value>地狱火术</value>
+  </data>
+  <data name="ScrollOfPowerWave" xml:space="preserve">
+    <value>真空波术</value>
+  </data>
+  <data name="ScrollOfAquaBeam" xml:space="preserve">
+    <value>极光术</value>
+  </data>
+  <data name="ScrollOfCometfall" xml:space="preserve">
+    <value>爆炎术</value>
+  </data>
+  <data name="ScrollOfInferno" xml:space="preserve">
+    <value>毁灭烈焰术</value>
+  </data>
+  <data name="ScrollOfTeleportAlly" xml:space="preserve">
+    <value>小挪移术</value>
+  </data>
+  <data name="ScrollOfSoulBarrier" xml:space="preserve">
+    <value>守护之魂术</value>
+  </data>
+  <data name="ScrollOfDecay" xml:space="preserve">
+    <value>单毒炎术</value>
+  </data>
+  <data name="ScrollOfIceStorm" xml:space="preserve">
+    <value>暴风雪术</value>
+  </data>
+  <data name="ScrollOfNova" xml:space="preserve">
+    <value>星辰一怒术</value>
+  </data>
+  <data name="ChainLightningParchment" xml:space="preserve">
+    <value>链雷咒羊皮纸</value>
+  </data>
+  <data name="DrainLifeParchment" xml:space="preserve">
+    <value>摄魂咒羊皮纸</value>
+  </data>
+  <data name="LightningShockParchment" xml:space="preserve">
+    <value>烈光闪羊皮纸</value>
+  </data>
+  <data name="DamageReflectionParchment" xml:space="preserve">
+    <value>伤害反射羊皮纸</value>
+  </data>
+  <data name="BerserkerParchment" xml:space="preserve">
+    <value>狂暴术羊皮纸</value>
+  </data>
+  <data name="SleepParchment" xml:space="preserve">
+    <value>昏睡术羊皮纸</value>
+  </data>
+  <data name="WeaknessParchment" xml:space="preserve">
+    <value>虚弱阵羊皮纸</value>
+  </data>
+  <data name="InnovationParchment" xml:space="preserve">
+    <value>破御阵羊皮纸</value>
+  </data>
+  <data name="ScrollOfWizardryEnhance" xml:space="preserve">
+    <value>法神附体术</value>
+  </data>
+  <data name="ScrollOfGiganticStorm" xml:space="preserve">
+    <value>闪电轰顶术</value>
+  </data>
+  <data name="ChainDriveParchment" xml:space="preserve">
+    <value>回旋踢羊皮纸</value>
+  </data>
+  <data name="DarkSideParchment" xml:space="preserve">
+    <value>幽冥光速拳羊皮纸</value>
+  </data>
+  <data name="DragonRoarParchment" xml:space="preserve">
+    <value>炎龙拳羊皮纸</value>
+  </data>
+  <data name="DragonSlasherParchment" xml:space="preserve">
+    <value>嗜血之龙羊皮纸</value>
+  </data>
+  <data name="IgnoreDefenseParchment" xml:space="preserve">
+    <value>斗神-破羊皮纸</value>
+  </data>
+  <data name="IncreaseHealthParchment" xml:space="preserve">
+    <value>斗神-命羊皮纸</value>
+  </data>
+  <data name="IncreaseBlockParchment" xml:space="preserve">
+    <value>斗神-御羊皮纸</value>
+  </data>
+  <data name="SmallCapeOfLord" xml:space="preserve">
+    <value>小王者披风</value>
+  </data>
+  <data name="SmallWingOfCurse" xml:space="preserve">
+    <value>小灾难之翼</value>
+  </data>
+  <data name="SmallWingsOfElf" xml:space="preserve">
+    <value>小精灵之翼</value>
+  </data>
+  <data name="SmallWingsOfHeaven" xml:space="preserve">
+    <value>小天使之翼</value>
+  </data>
+  <data name="SmallWingsOfSatan" xml:space="preserve">
+    <value>小恶魔之翼</value>
+  </data>
+  <data name="LittleWarriorsCloak" xml:space="preserve">
+    <value>小武者披风</value>
+  </data>
+</root>

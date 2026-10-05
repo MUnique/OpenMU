@@ -35,9 +35,6 @@ public class FixMaxManaAndAbilityJewelryOptionsUpdateSeason6 : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixMaxManaAndAbilityJewelryOptionsSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

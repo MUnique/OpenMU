@@ -34,6 +34,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CharacterQuestState>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensAbuse>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Item>();
@@ -196,6 +198,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<MagicEffectDefinition>().HasOne(entity => entity.RawDurationPvp).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasMany(entity => entity.RawPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasMany(entity => entity.RawPowerUpDefinitionsPvp).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MasterSkillDefinition>().HasMany(entity => entity.RawPassivePowerUps).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameChangeEvent>().HasOne(entity => entity.RawSpawnArea).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameChangeEvent>().HasMany(entity => entity.RawTerrainChanges).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameDefinition>().HasMany(entity => entity.RawRewards).WithOne().OnDelete(DeleteBehavior.Cascade);
