@@ -1,10 +1,9 @@
-// <copyright file="Program.cs" company="MUnique">
+﻿// <copyright file="Program.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.CentralServer.Host;
-using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
@@ -12,11 +11,10 @@ using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 using ChatServer = MUnique.OpenMU.ChatServer.ChatServer;
-using ConnectServer = MUnique.OpenMU.ConnectServer.ConnectServer;
 using FriendServer = MUnique.OpenMU.FriendServer.FriendServer;
 using GuildServer = MUnique.OpenMU.GuildServer.GuildServer;
 
-// The central server hosts the login, guild, friend, chat and connect server of the distributed deployment.
+// The central server hosts the login, guild, friend, chat and connect servers of the distributed deployment.
 // They all exist just once per deployment and keep their state in memory, so they wouldn't scale
 // with additional instances anyway - but they would cost a process and a dapr sidecar each.
 var plugInConfigurations = new List<PlugInConfiguration>();
@@ -47,13 +45,11 @@ services.AddSingleton<ChatServer>()
     .AddHostedService<ChatServerHostedServiceWrapper>()
     .PublishManageableServer<ChatServer>();
 
-// Connect server
-services.AddSingleton<ConnectServer>()
-    .AddSingleton<IConnectServer>(s => s.GetRequiredService<ConnectServer>())
-    .AddPersistentSingleton<IConnectServerSettings, ConnectServerDefinition>()
+// Connect servers, one for each connect server definition, i.e. for each client version
+services.AddSingleton<ConnectServerCollection>()
     .AddHostedService<ConnectServerHostedServiceWrapper>()
     .AddHostedService<ConnectServerListUpdater>()
-    .PublishManageableServer<IConnectServer>();
+    .PublishManageableServers<ConnectServerCollection>();
 
 var metricsRegistry = new MetricsRegistry();
 metricsRegistry.AddNetworkMeters();

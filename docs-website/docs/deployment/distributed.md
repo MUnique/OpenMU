@@ -20,7 +20,7 @@ handled with [Dapr](https://dapr.io/):
 
 | Container | Subsystems | Instances |
 |---|---|---|
-| `centralServer` | Connect server, login server, guild server, friend server, chat server | One |
+| `centralServer` | Connect servers (one per client version), login server, guild server, friend server, chat server | One |
 | `gameServer0`, `gameServer1`, … | One game server each | One per game server |
 | `adminPanel` | Admin panel | One |
 
@@ -145,8 +145,6 @@ its own process:
 
 ## Known limitations
 
-* The connect server of the central server only serves the first connect server
-  definition, so only clients of one version can connect.
 * Each game server is a separate service in the compose file, with its own id
   (`GS_ID`). To add a game server, create it in the admin panel, and copy a game
   server service and its sidecar service in the compose file. Give them the next

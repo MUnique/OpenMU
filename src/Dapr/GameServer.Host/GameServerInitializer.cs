@@ -20,7 +20,7 @@ public class GameServerInitializer
     private readonly GameServerDefinition _definition;
     private readonly IIpAddressResolver _ipResolver;
     private readonly ILoggerFactory _loggerFactory;
-    private readonly IGameServerStateObserver _stateObserver;
+    private readonly GameServerStatePublisher _statePublisher;
     private readonly IPersistenceContextProvider _contextProvider;
 
     /// <summary>
@@ -30,15 +30,15 @@ public class GameServerInitializer
     /// <param name="definition">The definition.</param>
     /// <param name="ipResolver">The ip resolver.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="stateObserver">The state observer.</param>
+    /// <param name="statePublisher">The state publisher.</param>
     /// <param name="contextProvider">The context provider.</param>
-    public GameServerInitializer(GameServer gameServer, GameServerDefinition definition, IIpAddressResolver ipResolver, ILoggerFactory loggerFactory, IGameServerStateObserver stateObserver, IPersistenceContextProvider contextProvider)
+    public GameServerInitializer(GameServer gameServer, GameServerDefinition definition, IIpAddressResolver ipResolver, ILoggerFactory loggerFactory, GameServerStatePublisher statePublisher, IPersistenceContextProvider contextProvider)
     {
         this._gameServer = gameServer;
         this._definition = definition;
         this._ipResolver = ipResolver;
         this._loggerFactory = loggerFactory;
-        this._stateObserver = stateObserver;
+        this._statePublisher = statePublisher;
         this._contextProvider = contextProvider;
     }
 
@@ -53,7 +53,7 @@ public class GameServerInitializer
                 endpoint,
                 this._gameServer.CreateServerInfo(),
                 this._gameServer.Context,
-                this._stateObserver,
+                this._statePublisher.ForEndpoint(endpoint),
                 this._ipResolver,
                 this._loggerFactory));
         }

@@ -121,7 +121,7 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
         {
             try
             {
-                var servers = this._serviceProvider.GetServices<IManageableServer>().ToList();
+                var servers = this._serviceProvider.GetManageableServers().ToList();
                 foreach (var server in servers)
                 {
                     server.PropertyChanged -= this.OnPropertyChanged; // Ensure single subscription in case of retry

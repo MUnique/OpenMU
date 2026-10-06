@@ -127,7 +127,8 @@ services:
       context: ../../src
       dockerfile: Dapr/CentralServer.Host/Dockerfile
     ports:
-      - "44405:44405" # connect server
+      - "44405:44405" # connect server of the first client version
+      - "44406:44406" # connect server of the second client version, e.g. of season 6
       - "55980:55980" # chat server
     environment:
       DAPR_HTTP_ENDPOINT: http://centralServer-dapr:3500
