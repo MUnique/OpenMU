@@ -9,8 +9,8 @@ The deployment guides moved to the documentation website:
 * [All-in-one with Traefik](../docs-website/docs/deployment/all-in-one-traefik.md)
   — when you host your website on the same machine; the compose files are in
   [all-in-one-traefik](all-in-one-traefik)
-* [Distributed](../docs-website/docs/deployment/distributed.md) — currently
-  broken and unsupported; the compose files are in [distributed](distributed)
+* [Distributed](../docs-website/docs/deployment/distributed.md) — experimental;
+  the compose files are in [distributed](distributed)
 * [Startup parameters and environment variables](../docs-website/docs/deployment/startup-parameters.md)
 
 The website is built from the [docs-website](../docs-website) folder of this

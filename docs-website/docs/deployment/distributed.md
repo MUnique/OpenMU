@@ -6,10 +6,9 @@ description: Hosting OpenMU as multiple containers which communicate through Dap
 
 # Distributed deployment
 
-:::danger[Currently broken and unsupported]
-This way of hosting OpenMU is currently unsupported due to several issues which
-have to be resolved first, and the documentation is out of date. Feel free to
-contribute — see the
+:::warning[Experimental]
+This way of hosting OpenMU works, but it's experimental and has some
+[known limitations](#known-limitations). Feel free to contribute — see the
 [open issues with the `distributed-deployment` label](https://github.com/MUnique/OpenMU/issues?q=is%3Aissue%20state%3Aopen%20label%3Adistributed-deployment).
 
 It also requires a good understanding of distributed systems and more resources
@@ -57,8 +56,12 @@ cd OpenMU/deploy/distributed
 ### Option A — for local testing
 
 ```bash
-docker compose up -d --no-build
+docker compose up -d --build
 ```
+
+There are no up-to-date images of the distributed deployment published yet, so
+`--build` builds them from the sources of the cloned repository. The first build
+takes a while.
 
 It's then available on your local computer through a loopback IP.
 
@@ -71,7 +74,7 @@ e.g. by editing `docker-compose.prod.yml` or setting it in your shell. The
 variable is replaced in the nginx template config files.
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
 Run certbot explicitly (replace `example.org` with your domain):
@@ -131,6 +134,21 @@ its own process:
   to the all-in-one startup. The distributed processes always start their
   listeners automatically, and the schema update has to be started manually over
   the admin panel.
+
+## Known limitations
+
+* The connect server of the central server only serves the first connect server
+  definition, so only clients of one version can connect.
+* Each game server is a separate service in the compose file, with a fixed id
+  (`GS_ID`) and Dapr app id (`gameServer` + id). To add a game server, create it
+  in the admin panel and add a game server service and its sidecar service to
+  the compose file, with the next id.
+* The compose file publishes the ports 55901–55902 of `gameServer0` and
+  55903–55904 of `gameServer1`. That matches the endpoints which the setup
+  creates when there are two client versions. With one client version, the setup
+  assigns 55901 to server 0 and 55902 to server 1, so adjust the published ports
+  to the endpoints of the game servers in the admin panel.
+* Everything runs on the same machine, see above.
 
 ## Environment variables
 

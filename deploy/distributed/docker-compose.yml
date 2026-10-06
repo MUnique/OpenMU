@@ -120,6 +120,9 @@ services:
     image: munique/openmu-central
     container_name: centralServer
     restart: unless-stopped
+    build:
+      context: ../../src
+      dockerfile: Dapr/CentralServer.Host/Dockerfile
     ports:
       - "44405:44405" # connect server
       - "55980:55980" # chat server
@@ -154,6 +157,9 @@ services:
     image: munique/openmu-admin
     container_name: adminPanel
     restart: unless-stopped
+    build:
+      context: ../../src
+      dockerfile: Dapr/AdminPanel.Host/Dockerfile
     depends_on:
       adminPanel-dapr:
         condition: service_started
