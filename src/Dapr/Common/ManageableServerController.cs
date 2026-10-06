@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Dapr.Common;
 
+using global::Dapr;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Interfaces;
 
@@ -14,6 +15,11 @@ using MUnique.OpenMU.Interfaces;
 [Route("manageable-servers/{serverId:int}")]
 public class ManageableServerController : ControllerBase
 {
+    /// <summary>
+    /// The topic of the <see cref="ManageableServerCommandArguments"/>.
+    /// </summary>
+    public const string CommandTopic = "ManageableServerCommand";
+
     private readonly IEnumerable<IManageableServer> _manageableServers;
 
     /// <summary>
@@ -56,6 +62,36 @@ public class ManageableServerController : ControllerBase
         }
 
         await server.StartAsync().ConfigureAwait(false);
+        return this.NoContent();
+    }
+
+    /// <summary>
+    /// Handles a command which got published to all processes. It's executed when the server is hosted by this process.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    /// <returns>The result of the request.</returns>
+    [HttpPost("~/manageable-servers/commands")]
+    [Topic(DaprClientExtensions.PubSubName, CommandTopic)]
+    public async Task<IActionResult> HandleCommandAsync([FromBody] ManageableServerCommandArguments command)
+    {
+        if (this._manageableServers.FirstOrDefault(server => server.Id == command.ServerId) is not { } server)
+        {
+            // It's hosted by another process.
+            return this.NoContent();
+        }
+
+        switch (command.Command)
+        {
+            case nameof(IManageableServer.StartAsync):
+                await server.StartAsync().ConfigureAwait(false);
+                break;
+            case nameof(IManageableServer.ShutdownAsync):
+                await server.ShutdownAsync().ConfigureAwait(false);
+                break;
+            default:
+                return this.BadRequest();
+        }
+
         return this.NoContent();
     }
 }

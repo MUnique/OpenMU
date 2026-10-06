@@ -10,14 +10,22 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 
 /// <summary>
-/// A client of a game server of another process, which calls it through dapr.
+/// A client of a game server of another process, which publishes its calls to all game servers through dapr.
 /// </summary>
 /// <remarks>
 /// It's created by the <see cref="ManagableServerRegistry"/> when a game server publishes its state,
 /// so that e.g. the admin panel can disconnect a player or send a global message.
+/// The calls aren't addressed to the dapr app id of the game server, so game servers don't need a
+/// unique app id. Calls which concern a player are handled by the game server which hosts the player,
+/// the other calls carry the id of the game server, and the other game servers ignore them.
 /// </remarks>
 public sealed class GameServerClient : ManageableServerClient, IGameServer
 {
+    /// <summary>
+    /// The topic of the <see cref="RestartAsync"/> command.
+    /// </summary>
+    public const string RestartTopic = "RestartAsync";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerClient"/> class.
     /// </summary>
@@ -35,90 +43,102 @@ public sealed class GameServerClient : ManageableServerClient, IGameServer
     /// <remarks>
     /// The process ends, so it has to be started again by its host, e.g. by the restart policy of its container.
     /// </remarks>
-    public async Task RestartAsync(CancellationToken cancellationToken = default)
+    public Task RestartAsync(CancellationToken cancellationToken = default)
     {
-        await this.DaprClient.InvokeMethodAsync(this.TargetAppId, "RestartAsync", cancellationToken).ConfigureAwait(false);
+        return this.DaprClient.PublishCommandAsync(RestartTopic, this.Id, cancellationToken);
     }
 
     /// <inheritdoc />
     public ValueTask GuildChatMessageAsync(uint guildId, string sender, string message)
-        => this.InvokeAsync(nameof(this.GuildChatMessageAsync), new GuildMessageArguments(guildId, sender, message));
+        => this.PublishAsync(nameof(this.GuildChatMessageAsync), new GuildMessageArguments(guildId, sender, message));
 
     /// <inheritdoc />
     public ValueTask GuildDeletedAsync(uint guildId)
-        => this.InvokeAsync(nameof(this.GuildDeletedAsync), guildId);
+        => this.PublishAsync(nameof(this.GuildDeletedAsync), guildId);
 
     /// <inheritdoc />
     public ValueTask GuildPlayerKickedAsync(string playerName)
-        => this.InvokeAsync(nameof(this.GuildPlayerKickedAsync), playerName);
+        => this.PublishAsync(nameof(this.GuildPlayerKickedAsync), playerName);
 
     /// <inheritdoc />
     public ValueTask AllianceChatMessageAsync(uint guildId, string sender, string message)
-        => this.InvokeAsync(nameof(this.AllianceChatMessageAsync), new GuildMessageArguments(guildId, sender, message));
+        => this.PublishAsync(nameof(this.AllianceChatMessageAsync), new GuildMessageArguments(guildId, sender, message));
 
     /// <inheritdoc />
     public ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
-        => this.InvokeAsync(nameof(this.SendGlobalMessageAsync), new MessageArguments(message, messageType));
+        => this.PublishCommandAsync(nameof(this.SendGlobalMessageAsync), new MessageArguments(this.Id, message, messageType));
 
     /// <inheritdoc />
-    public ValueTask<bool> DisconnectPlayerAsync(string playerName)
-        => this.InvokeAsync<string, bool>(nameof(this.DisconnectPlayerAsync), playerName);
+    /// <returns><c>true</c>, when the request got published. The result of the game server which hosts the player is unknown.</returns>
+    public async ValueTask<bool> DisconnectPlayerAsync(string playerName)
+    {
+        await this.PublishCommandAsync(nameof(this.DisconnectPlayerAsync), playerName).ConfigureAwait(false);
+        return true;
+    }
 
     /// <inheritdoc />
-    public ValueTask<bool> DisconnectAccountAsync(string accountName)
-        => this.InvokeAsync<string, bool>(nameof(this.DisconnectAccountAsync), accountName);
+    /// <returns><c>true</c>, when the request got published. The result of the game server which hosts the account is unknown.</returns>
+    public async ValueTask<bool> DisconnectAccountAsync(string accountName)
+    {
+        await this.PublishCommandAsync(nameof(this.DisconnectAccountAsync), accountName).ConfigureAwait(false);
+        return true;
+    }
 
     /// <inheritdoc />
-    public ValueTask<bool> BanPlayerAsync(string playerName)
-        => this.InvokeAsync<string, bool>(nameof(this.BanPlayerAsync), playerName);
+    /// <returns><c>true</c>, when the request got published. The result of the game server which hosts the player is unknown.</returns>
+    public async ValueTask<bool> BanPlayerAsync(string playerName)
+    {
+        await this.PublishCommandAsync(nameof(this.BanPlayerAsync), playerName).ConfigureAwait(false);
+        return true;
+    }
 
     /// <inheritdoc />
     public ValueTask AssignGuildToPlayerAsync(string characterName, GuildMemberStatus guildStatus)
-        => this.InvokeAsync(nameof(this.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, guildStatus));
+        => this.PublishAsync(nameof(this.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, guildStatus));
 
     /// <inheritdoc />
     public ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
-        => this.InvokeAsync(nameof(this.PlayerAlreadyLoggedInAsync), new PlayerLoggedInArguments(serverId, loginName));
+        => this.PublishAsync(nameof(this.PlayerAlreadyLoggedInAsync), new PlayerLoggedInArguments(serverId, loginName));
 
     /// <inheritdoc />
     public ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
-        => this.InvokeAsync(nameof(this.AllianceCreatedAsync), new AllianceChangedArguments(masterGuildId, memberGuildId));
+        => this.PublishAsync(nameof(this.AllianceCreatedAsync), new AllianceChangedArguments(masterGuildId, memberGuildId));
 
     /// <inheritdoc />
     public ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
-        => this.InvokeAsync(nameof(this.AllianceDisbandedAsync), new AllianceChangedArguments(masterGuildId, memberGuildId));
+        => this.PublishAsync(nameof(this.AllianceDisbandedAsync), new AllianceChangedArguments(masterGuildId, memberGuildId));
 
     /// <inheritdoc />
     public ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
-        => this.InvokeAsync(nameof(this.GuildHostilityChangedAsync), new GuildHostilityChangedArguments(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created));
+        => this.PublishAsync(nameof(this.GuildHostilityChangedAsync), new GuildHostilityChangedArguments(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created));
 
     /// <inheritdoc />
     public ValueTask LetterReceivedAsync(LetterHeader letter)
-        => this.InvokeAsync(nameof(this.LetterReceivedAsync), letter);
+        => this.PublishAsync(nameof(this.LetterReceivedAsync), letter);
 
     /// <inheritdoc />
     public ValueTask FriendRequestAsync(string requester, string receiver)
-        => this.InvokeAsync(nameof(this.FriendRequestAsync), new RequestArguments(requester, receiver));
+        => this.PublishAsync(nameof(this.FriendRequestAsync), new RequestArguments(requester, receiver));
 
     /// <inheritdoc />
     public ValueTask FriendOnlineStateChangedAsync(string player, string friend, int serverId)
-        => this.InvokeAsync(nameof(this.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, serverId));
+        => this.PublishAsync(nameof(this.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, serverId));
 
     /// <inheritdoc />
     public ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo playerAuthenticationInfo, string friendName)
-        => this.InvokeAsync(nameof(this.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName));
+        => this.PublishAsync(nameof(this.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName));
 
     /// <inheritdoc />
     public ValueTask InitializeMessengerAsync(MessengerInitializationData initializationData)
-        => this.InvokeAsync(nameof(this.InitializeMessengerAsync), initializationData);
+        => this.PublishAsync(nameof(this.InitializeMessengerAsync), initializationData);
 
-    private async ValueTask InvokeAsync<TRequest>(string methodName, TRequest data)
+    private async ValueTask PublishAsync<TData>(string topicName, TData data)
     {
-        await this.DaprClient.InvokeMethodAsync(this.TargetAppId, methodName, data).ConfigureAwait(false);
+        await this.DaprClient.PublishEventAsync(DaprClientExtensions.PubSubName, topicName, data).ConfigureAwait(false);
     }
 
-    private async ValueTask<TResponse> InvokeAsync<TRequest, TResponse>(string methodName, TRequest data)
+    private async ValueTask PublishCommandAsync<TData>(string topicName, TData data)
     {
-        return await this.DaprClient.InvokeMethodAsync<TRequest, TResponse>(this.TargetAppId, methodName, data).ConfigureAwait(false);
+        await this.DaprClient.PublishCommandAsync(topicName, data).ConfigureAwait(false);
     }
 }

@@ -7,6 +7,9 @@ volumes:
 # through the DAPR_HTTP_ENDPOINT and DAPR_GRPC_ENDPOINT, the sidecar reaches the service through
 # its -app-channel-address. This way, each of them can be restarted without breaking the other one,
 # e.g. when a game server process ends to apply a changed configuration.
+# The game servers share the app id "gameServer": nothing addresses a game server by its app id,
+# the calls to game servers are published to all of them. The POD_NAME of a sidecar names its
+# queues in RabbitMQ (see dapr-components/pubsub.yaml), so it must be unique.
 x-dapr-sidecar: &dapr-sidecar
   image: "daprio/daprd:latest"
   restart: unless-stopped
@@ -120,11 +123,13 @@ services:
     image: munique/openmu-central
     container_name: centralServer
     restart: unless-stopped
+    build:
+      context: ../../src
+      dockerfile: Dapr/CentralServer.Host/Dockerfile
     ports:
       - "44405:44405" # connect server
       - "55980:55980" # chat server
     environment:
-      APPID: centralServer
       DAPR_HTTP_ENDPOINT: http://centralServer-dapr:3500
       DAPR_GRPC_ENDPOINT: http://centralServer-dapr:50001
       ASPNETCORE_URLS: http://+:8080
@@ -143,6 +148,8 @@ services:
   centralServer-dapr:
     <<: *dapr-sidecar
     container_name: centralServer_dapr
+    environment:
+      POD_NAME: centralServer
     command: [ "./daprd", "-app-id", "centralServer", "-app-port", "8080",
                 "-app-channel-address", "centralServer",
                 "-dapr-listen-addresses", "0.0.0.0",
@@ -154,6 +161,9 @@ services:
     image: munique/openmu-admin
     container_name: adminPanel
     restart: unless-stopped
+    build:
+      context: ../../src
+      dockerfile: Dapr/AdminPanel.Host/Dockerfile
     depends_on:
       adminPanel-dapr:
         condition: service_started
@@ -183,6 +193,8 @@ services:
   adminPanel-dapr:
     <<: *dapr-sidecar
     container_name: adminPanel_dapr
+    environment:
+      POD_NAME: adminPanel
     command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "8080",
                 "-app-channel-address", "adminPanel",
                 "-dapr-listen-addresses", "0.0.0.0",
@@ -203,7 +215,6 @@ services:
       - "55902:55902"
     environment:
       GS_ID: 0
-      APPID: gameServer0
       DAPR_HTTP_ENDPOINT: http://gameServer0-dapr:3500
       DAPR_GRPC_ENDPOINT: http://gameServer0-dapr:50001
       PATH_BASE: /gameServer/0/
@@ -225,7 +236,9 @@ services:
   gameServer0-dapr:
     <<: *dapr-sidecar
     container_name: gameserver0_dapr
-    command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "8080",
+    environment:
+      POD_NAME: gameServer0
+    command: [ "./daprd", "-app-id", "gameServer", "-app-port", "8080",
                 "-app-channel-address", "gameServer0",
                 "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
@@ -245,7 +258,6 @@ services:
       - "55904:55904"
     environment:
       GS_ID: 1
-      APPID: gameServer1
       DAPR_HTTP_ENDPOINT: http://gameServer1-dapr:3500
       DAPR_GRPC_ENDPOINT: http://gameServer1-dapr:50001
       PATH_BASE: /gameServer/1/
@@ -267,7 +279,9 @@ services:
   gameServer1-dapr:
     <<: *dapr-sidecar
     container_name: gameserver1_dapr
-    command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "8080",
+    environment:
+      POD_NAME: gameServer1
+    command: [ "./daprd", "-app-id", "gameServer", "-app-port", "8080",
                 "-app-channel-address", "gameServer1",
                 "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",

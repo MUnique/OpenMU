@@ -13,6 +13,9 @@ using MUnique.OpenMU.Interfaces;
 /// <summary>
 /// A client to control a <seealso cref="IManageableServer"/>.
 /// </summary>
+/// <remarks>
+/// The commands are published to all processes, and only the process which hosts the server executes them.
+/// </remarks>
 /// <seealso cref="MUnique.OpenMU.Interfaces.IManageableServer" />
 public class ManageableServerClient : IManageableServer
 {
@@ -27,7 +30,6 @@ public class ManageableServerClient : IManageableServer
     public ManageableServerClient(DaprClient daprClient, ServerStateData serverData)
     {
         this.DaprClient = daprClient;
-        this.TargetAppId = serverData.AppId;
         this.Id = serverData.Id;
         this.Description = serverData.Description;
         this.ConfigurationId = serverData.ConfigurationId;
@@ -98,15 +100,10 @@ public class ManageableServerClient : IManageableServer
     /// </summary>
     protected DaprClient DaprClient { get; }
 
-    /// <summary>
-    /// Gets the dapr app id of the process which hosts the server.
-    /// </summary>
-    protected string TargetAppId { get; }
-
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return this.DaprClient.InvokeMethodAsync(this.TargetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.StartAsync)}", cancellationToken);
+        return this.DaprClient.PublishCommandAsync(ManageableServerController.CommandTopic, new ManageableServerCommandArguments(this.Id, nameof(IManageableServer.StartAsync)), cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -118,7 +115,7 @@ public class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return this.DaprClient.InvokeMethodAsync(this.TargetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.ShutdownAsync)}", cancellationToken);
+        return this.DaprClient.PublishCommandAsync(ManageableServerController.CommandTopic, new ManageableServerCommandArguments(this.Id, nameof(IManageableServer.ShutdownAsync)), cancellationToken);
     }
 
     /// <inheritdoc/>

@@ -25,16 +25,10 @@ services:
       - "82:8080"
 
   centralServer:
-    build:
-      context: ../../src
-      dockerfile: Dapr/CentralServer.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
   adminPanel:
-    build:
-      context: ../../src
-      dockerfile: Dapr/AdminPanel.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
