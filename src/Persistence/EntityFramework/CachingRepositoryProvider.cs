@@ -32,14 +32,30 @@ internal class CachingRepositoryProvider : RepositoryProvider
     }
 
     /// <summary>
+    /// Gets the resolver of the references to the cached configuration objects, which is used when loading accounts.
+    /// </summary>
+    public ConfigurationIdReferenceResolver ConfigurationReferences { get; } = new();
+
+    /// <summary>
     /// Ensures the caches for current game configuration.
-    /// It's meant to fill the caches also in <see cref="ConfigurationIdReferenceResolver"/>.
+    /// It's meant to fill the caches also in <see cref="ConfigurationReferences"/>.
     /// </summary>
     public void EnsureCachesForCurrentGameConfiguration()
     {
         foreach (var repository in this.Repositories.Values.OfType<IConfigurationTypeRepository>())
         {
             repository.EnsureCacheForCurrentConfiguration();
+        }
+    }
+
+    /// <summary>
+    /// Refreshes the caches of the configuration types, after objects were added to or removed from the cached configuration.
+    /// </summary>
+    public void RefreshConfigurationCaches()
+    {
+        foreach (var repository in this.Repositories.Values.OfType<IConfigurationTypeRepository>())
+        {
+            repository.RefreshCaches();
         }
     }
 
@@ -57,30 +73,31 @@ internal class CachingRepositoryProvider : RepositoryProvider
         this.RegisterRepository(new CachingGenericRepository<GameServerEndpoint>(this._parent, this.LoggerFactory));
         this.RegisterRepository(new GameServerDefinitionRepository(this._parent, this.LoggerFactory));
 
-        this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this._parent, this.LoggerFactory, config => config.RawItemOptions));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemOptions));
         this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(
             this._parent,
             this.LoggerFactory,
+            this.ConfigurationReferences,
             config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Distinct().ToList()));
-        this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this._parent, this.LoggerFactory, config => config.RawAttributes));
-        this.RegisterRepository(new ConfigurationTypeRepository<AttributeRelationship>(this._parent, this.LoggerFactory, config => config.RawGlobalAttributeCombinations));
-        this.RegisterRepository(new ConfigurationTypeRepository<ConstValueAttribute>(this._parent, this.LoggerFactory, config => config.RawGlobalBaseAttributeValues));
-        this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(this._parent, this.LoggerFactory, config => config.RawDropItemGroups));
-        this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(this._parent, this.LoggerFactory, config => config.RawCharacterClasses));
-        this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionType>(this._parent, this.LoggerFactory, config => config.RawItemOptionTypes));
-        this.RegisterRepository(new ConfigurationTypeRepository<ItemSetGroup>(this._parent, this.LoggerFactory, config => config.RawItemSetGroups));
-        this.RegisterRepository(new ConfigurationTypeRepository<ItemOfItemSet>(this._parent, this.LoggerFactory, config => config.RawItemSetGroups.SelectMany(g => g.RawItems).ToList()));
-        this.RegisterRepository(new ConfigurationTypeRepository<ItemSlotType>(this._parent, this.LoggerFactory, config => config.RawItemSlotTypes));
-        this.RegisterRepository(new ConfigurationTypeRepository<ItemDefinition>(this._parent, this.LoggerFactory, config => config.RawItems));
-        this.RegisterRepository(new ConfigurationTypeRepository<JewelMix>(this._parent, this.LoggerFactory, config => config.RawJewelMixes));
-        this.RegisterRepository(new ConfigurationTypeRepository<MagicEffectDefinition>(this._parent, this.LoggerFactory, config => config.RawMagicEffects));
-        this.RegisterRepository(new ConfigurationTypeRepository<GameMapDefinition>(this._parent, this.LoggerFactory, config => config.RawMaps));
-        this.RegisterRepository(new ConfigurationTypeRepository<MasterSkillRoot>(this._parent, this.LoggerFactory, config => config.RawMasterSkillRoots));
-        this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(this._parent, this.LoggerFactory, config => config.RawMonsters));
-        this.RegisterRepository(new ConfigurationTypeRepository<Skill>(this._parent, this.LoggerFactory, config => config.RawSkills));
-        this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(this._parent, this.LoggerFactory, config => config.RawPlugInConfigurations));
-        this.RegisterRepository(new ConfigurationTypeRepository<QuestDefinition>(this._parent, this.LoggerFactory, config => config.RawMonsters.SelectMany(m => m.RawQuests).ToList()));
-        this.RegisterRepository(new ConfigurationTypeRepository<Item>(this._parent, this.LoggerFactory, config => config.RawMonsters.SelectMany(m => m.RawMerchantStore?.RawItems ?? Enumerable.Empty<Item>()).ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawAttributes));
+        this.RegisterRepository(new ConfigurationTypeRepository<AttributeRelationship>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawGlobalAttributeCombinations));
+        this.RegisterRepository(new ConfigurationTypeRepository<ConstValueAttribute>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawGlobalBaseAttributeValues));
+        this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawDropItemGroups));
+        this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawCharacterClasses));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionType>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemOptionTypes));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemSetGroup>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemSetGroups));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemOfItemSet>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemSetGroups.SelectMany(g => g.RawItems).ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemSlotType>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemSlotTypes));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItems));
+        this.RegisterRepository(new ConfigurationTypeRepository<JewelMix>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawJewelMixes));
+        this.RegisterRepository(new ConfigurationTypeRepository<MagicEffectDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMagicEffects));
+        this.RegisterRepository(new ConfigurationTypeRepository<GameMapDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMaps));
+        this.RegisterRepository(new ConfigurationTypeRepository<MasterSkillRoot>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMasterSkillRoots));
+        this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMonsters));
+        this.RegisterRepository(new ConfigurationTypeRepository<Skill>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawSkills));
+        this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawPlugInConfigurations));
+        this.RegisterRepository(new ConfigurationTypeRepository<QuestDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMonsters.SelectMany(m => m.RawQuests).ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<Item>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMonsters.SelectMany(m => m.RawMerchantStore?.RawItems ?? Enumerable.Empty<Item>()).ToList()));
 
         base.Initialize();
     }
