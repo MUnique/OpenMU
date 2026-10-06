@@ -66,4 +66,14 @@ public class LoginServerController : ControllerBase
             this._logger.LogError(ex, "Unexpected error when calling LogOff on the login server. Data: {0}", data);
         }
     }
+
+    /// <summary>
+    /// Gets a snapshot of the logged in accounts.
+    /// </summary>
+    /// <returns>The logged in accounts with the identifier of the game server they're logged in.</returns>
+    [HttpPost(nameof(ILoginServer.GetSnapshotAsync))]
+    public ValueTask<Dictionary<string, byte>> GetSnapshotAsync()
+    {
+        return this._loginServer.GetSnapshotAsync();
+    }
 }

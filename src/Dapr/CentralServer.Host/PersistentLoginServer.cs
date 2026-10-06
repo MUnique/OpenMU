@@ -38,7 +38,7 @@ public sealed class PersistentLoginServer : ILoginServer
     /// <param name="serverId">The server identifier.</param>
     public async Task RemoveServerAsync(byte serverId)
     {
-        var indexName = $"serverindex-{serverId}";
+        var indexName = GetIndexName(serverId);
         var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
         if (serverIndex is null || serverIndex.Count == 0)
         {
@@ -78,9 +78,14 @@ public sealed class PersistentLoginServer : ILoginServer
                 return await this.TryLoginAsync(accountName, serverId).ConfigureAwait(false);
             }
 
-            var success = await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag).ConfigureAwait(false);
+            if (!await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag).ConfigureAwait(false))
+            {
+                // Another server changed the state of the account in the meantime.
+                return false;
+            }
+
             await this.AddToIndexAsync(accountName, serverId).ConfigureAwait(false);
-            return success;
+            return true;
         }
         catch (Exception ex)
         {
@@ -107,28 +112,30 @@ public sealed class PersistentLoginServer : ILoginServer
     public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()
     {
         var result = new Dictionary<string, byte>();
-        for (int i = 0; i < 20; i++)
+        var indexNames = Enumerable.Range(byte.MinValue, byte.MaxValue + 1).Select(GetIndexName).ToList();
+        var serverIndexes = await this._daprClient.GetBulkStateAsync<HashSet<string>>(StoreName, indexNames, parallelism: null).ConfigureAwait(false);
+        foreach (var serverIndex in serverIndexes)
         {
-            var indexName = $"serverindex-{i}";
-
-            var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
-            if (serverIndex is null)
+            if (serverIndex.Value is null)
             {
                 continue;
             }
 
-            foreach (var accountName in serverIndex)
+            var serverId = (byte)indexNames.IndexOf(serverIndex.Key);
+            foreach (var accountName in serverIndex.Value)
             {
-                result[accountName] = (byte)i;
+                result[accountName] = serverId;
             }
         }
 
         return result;
     }
 
+    private static string GetIndexName(int serverId) => $"serverindex-{serverId}";
+
     private async Task AddToIndexAsync(string accountName, byte serverId)
     {
-        var indexName = $"serverindex-{serverId}";
+        var indexName = GetIndexName(serverId);
         var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
         if (serverIndex is null)
         {
@@ -150,7 +157,7 @@ public sealed class PersistentLoginServer : ILoginServer
 
     private async Task RemoveFromIndexAsync(string accountName, byte serverId)
     {
-        var indexName = $"serverindex-{serverId}";
+        var indexName = GetIndexName(serverId);
         var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
         if (serverIndex is null)
         {

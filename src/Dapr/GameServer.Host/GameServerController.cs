@@ -22,7 +22,7 @@ public class GameServerController : ControllerBase
     /// Initializes a new instance of the <see cref="GameServerController"/> class.
     /// </summary>
     /// <param name="gameServer">The game server.</param>
-    public GameServerController(GameServer gameServer)
+    public GameServerController(IGameServer gameServer)
     {
         this._gameServer = gameServer;
     }
@@ -79,6 +79,39 @@ public class GameServerController : ControllerBase
     public ValueTask GuildPlayerKickedAsync([FromBody] string playerName)
     {
         return this._gameServer.GuildPlayerKickedAsync(playerName);
+    }
+
+    /// <summary>
+    /// Notifies the game server that a guild joined an alliance.
+    /// </summary>
+    /// <param name="data">The guilds of the alliance.</param>
+    [HttpPost(nameof(IGameServer.AllianceCreatedAsync))]
+    [Topic("pubsub", nameof(IGameServer.AllianceCreatedAsync))]
+    public ValueTask AllianceCreatedAsync([FromBody] AllianceChangedArguments data)
+    {
+        return this._gameServer.AllianceCreatedAsync(data.MasterGuildId, data.MemberGuildId);
+    }
+
+    /// <summary>
+    /// Notifies the game server that a guild left an alliance.
+    /// </summary>
+    /// <param name="data">The guilds of the alliance.</param>
+    [HttpPost(nameof(IGameServer.AllianceDisbandedAsync))]
+    [Topic("pubsub", nameof(IGameServer.AllianceDisbandedAsync))]
+    public ValueTask AllianceDisbandedAsync([FromBody] AllianceChangedArguments data)
+    {
+        return this._gameServer.AllianceDisbandedAsync(data.MasterGuildId, data.MemberGuildId);
+    }
+
+    /// <summary>
+    /// Notifies the game server that a hostility between two guilds was created or removed.
+    /// </summary>
+    /// <param name="data">The guilds and alliances of the hostility.</param>
+    [HttpPost(nameof(IGameServer.GuildHostilityChangedAsync))]
+    [Topic("pubsub", nameof(IGameServer.GuildHostilityChangedAsync))]
+    public ValueTask GuildHostilityChangedAsync([FromBody] GuildHostilityChangedArguments data)
+    {
+        return this._gameServer.GuildHostilityChangedAsync(data.GuildIdA, data.AllianceGuildIdsA, data.GuildIdB, data.AllianceGuildIdsB, data.Created);
     }
 
     /// <summary>
@@ -168,7 +201,7 @@ public class GameServerController : ControllerBase
     /// </summary>
     /// <param name="accountName">Name of the account.</param>
     /// <returns>True, if the player has been disconnected; False, otherwise.</returns>
-    [HttpPost(nameof(IGameServer.DisconnectPlayerAsync))]
+    [HttpPost(nameof(IGameServer.DisconnectAccountAsync))]
     public ValueTask<bool> DisconnectAccountAsync([FromBody] string accountName)
     {
         return this._gameServer.DisconnectAccountAsync(accountName);
