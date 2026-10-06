@@ -47,7 +47,12 @@ public class GameServerInitializer
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        foreach (var endpoint in this._definition.Endpoints)
+        // When GS_LISTENER_PORT is set, the game server listens on this port for the first client version,
+        // on the next port for the second one, and so on - regardless of the configured ports. This way,
+        // every game server container can use the same ports, e.g. all pods of a Kubernetes StatefulSet.
+        var listenerPortBase = int.TryParse(Environment.GetEnvironmentVariable("GS_LISTENER_PORT"), out var port) ? port : (int?)null;
+        var index = 0;
+        foreach (var endpoint in this._definition.Endpoints.OrderBy(ep => ep.NetworkPort))
         {
             this._gameServer.AddListener(new DefaultTcpGameServerListener(
                 endpoint,
@@ -55,7 +60,9 @@ public class GameServerInitializer
                 this._gameServer.Context,
                 this._statePublisher.ForEndpoint(endpoint),
                 this._ipResolver,
-                this._loggerFactory));
+                this._loggerFactory,
+                listenerPortBase + index));
+            index++;
         }
 
         using var context = this._contextProvider.CreateNewConfigurationContext();
