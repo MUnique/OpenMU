@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -49,6 +50,10 @@ services.AddSingleton<GameServer>()
     .AddNetworkObservation()
     .AddHostedService<GameServerHostedServiceWrapper>()
     .PublishManageableServer<IGameServer>();
+
+// On shutdown, the game server saves and disconnects all players, which may take longer than the
+// default of 30 seconds. The container runtime should wait longer than that, e.g. 60 seconds.
+services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(50));
 
 builder.AddMapApp();
 

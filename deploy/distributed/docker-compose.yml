@@ -219,6 +219,8 @@ services:
     container_name: gameServer0
     restart: unless-stopped
     healthcheck: *openmu-healthcheck
+    # The game server saves and disconnects its players when it stops, which may take a while.
+    stop_grace_period: 60s
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
@@ -263,6 +265,8 @@ services:
     container_name: gameServer1
     restart: unless-stopped
     healthcheck: *openmu-healthcheck
+    # The game server saves and disconnects its players when it stops, which may take a while.
+    stop_grace_period: 60s
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
