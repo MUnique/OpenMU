@@ -35,6 +35,14 @@ restarted without affecting the other. All containers have a restart policy,
 which starts them again when they crash, or when a game server ends itself to
 apply a changed configuration.
 
+Nothing addresses a game server by its Dapr app id: the calls to game servers,
+e.g. a friend request or a global message from the admin panel, are published to
+all game servers. The game server which hosts the affected player handles it, or
+the one whose id is in the message, and the others ignore it. So all game
+servers share the app id `gameServer`. Each process still needs its own queues
+in RabbitMQ to receive every message; they are named after the `POD_NAME` of its
+sidecar, which therefore has to be unique.
+
 For observability, all subsystems and their Dapr sidecars send logs, metrics and traces with
 [OpenTelemetry](https://opentelemetry.io/) to the `otel-lgtm` container, which
 bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
@@ -139,10 +147,10 @@ its own process:
 
 * The connect server of the central server only serves the first connect server
   definition, so only clients of one version can connect.
-* Each game server is a separate service in the compose file, with a fixed id
-  (`GS_ID`) and Dapr app id (`gameServer` + id). To add a game server, create it
-  in the admin panel and add a game server service and its sidecar service to
-  the compose file, with the next id.
+* Each game server is a separate service in the compose file, with its own id
+  (`GS_ID`). To add a game server, create it in the admin panel, and copy a game
+  server service and its sidecar service in the compose file. Give them the next
+  id, their own names, `POD_NAME` and ports.
 * The compose file publishes the ports 55901–55902 of `gameServer0` and
   55903–55904 of `gameServer1`. That matches the endpoints which the setup
   creates when there are two client versions. With one client version, the setup
@@ -177,6 +185,12 @@ The defaults usually work fine, so you should try not to set this variable.
 Usually specified correctly in the docker compose files for each game server. It
 specifies the id of a game server and is used to retrieve the
 `GameServerConfiguration` from the database.
+
+When it's not set, the id is the number at the end of the host name, e.g. `3` for
+`gameserver-3`. That's the name of a pod of a Kubernetes StatefulSet, so the game
+servers can be one StatefulSet with a number of replicas. To use a range which
+doesn't start at 0, add an offset with `GS_ID_OFFSET`. Without both, the id is
+`0`.
 
 ### `DAPR_HTTP_ENDPOINT` and `DAPR_GRPC_ENDPOINT`
 
