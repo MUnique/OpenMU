@@ -272,6 +272,20 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     /// <summary>
+    /// Locks this context for an operation which uses the <see cref="Context"/> directly,
+    /// because a <see cref="DbContext"/> doesn't support concurrent operations.
+    /// </summary>
+    /// <remarks>
+    /// The lock is not reentrant, so the locked operation must not call other locking methods of this context.
+    /// </remarks>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The disposable which releases the lock.</returns>
+    protected AwaitableDisposable<IDisposable> LockAsync(CancellationToken cancellationToken)
+    {
+        return this._lock.LockAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Determines whether the exception is a transient conflict caused by a concurrent entity mutation
     /// racing this save, and is therefore worth retrying.
     /// </summary>
@@ -499,6 +513,15 @@ internal class EntityFrameworkContextBase : IContext
                 .FirstOrDefault(c => c.Metadata.IsCollection
                                      && (c.Metadata as INavigation)?.ForeignKey == propertyToParent.Metadata.GetContainingForeignKeys().FirstOrDefault());
             parentCollectionNavigation = parentCollection?.Metadata;
+        }
+
+        if (parentCollectionNavigation is null && propertyToParent is not null)
+        {
+            // The parent isn't tracked, e.g. the game configuration when an object is added in a typed context.
+            // Its collection is still known by the relationship, so that the change can be applied to the cached parent.
+            parentCollectionNavigation = propertyToParent.Metadata.GetContainingForeignKeys()
+                .Select(foreignKey => foreignKey.PrincipalToDependent)
+                .FirstOrDefault(navigation => navigation?.IsCollection is true);
         }
 
         return (parent ?? parentId, parentCollectionNavigation);
