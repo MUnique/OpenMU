@@ -19,7 +19,7 @@ using GameServer = MUnique.OpenMU.GameServer.GameServer;
 _ = MUnique.OpenMU.GameLogic.Rand.NextInt(1, 2);
 _ = MUnique.OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
-var gameServerId = byte.Parse(Environment.GetEnvironmentVariable("GS_ID") ?? "0");
+var gameServerId = GameServerIdResolver.Determine();
 var serviceName = $"GameServer{gameServerId}";
 var builder = DaprService.CreateBuilder(serviceName, args);
 var plugInConfigurations = new List<PlugInConfiguration>();

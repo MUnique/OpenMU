@@ -61,7 +61,8 @@ public class GuildChangePublisher : IGuildChangePublisher
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, status)).ConfigureAwait(false);
+            // It's published to all game servers, and the one which hosts the player handles it.
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, status)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
