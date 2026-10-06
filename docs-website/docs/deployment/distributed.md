@@ -49,10 +49,9 @@ bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
 
 ## Deployment with docker compose
 
-Currently there is only a docker compose file for the deployment, which has the
-limitation that everything runs on the same physical machine. For a truly
-distributed environment with multiple machines, Kubernetes can be used — but
-there is no finished Kubernetes configuration yet. Contributions are welcome.
+The docker compose file has the limitation that everything runs on the same
+physical machine. For a truly distributed environment with multiple machines,
+see [Kubernetes](kubernetes.md).
 
 ### Clone the repository and navigate to the compose files
 

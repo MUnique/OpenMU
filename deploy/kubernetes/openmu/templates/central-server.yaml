@@ -1,0 +1,102 @@
+{{- $component := "central-server" }}
+# The central server keeps the state of the login, guild, friend and chat server in memory,
+# so there must never be two of them. A StatefulSet with one replica stops the old pod before it
+# starts the new one, and its stable pod name keeps the names of its pub/sub queues stable.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+spec:
+  serviceName: {{ include "openmu.fullname" . }}-{{ $component }}-http
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 8 }}
+      annotations:
+        {{- include "openmu.daprAnnotations" (dict "root" . "appId" "central-server") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "openmu.fullname" . }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: central-server
+          image: {{ include "openmu.image" (dict "root" . "image" .Values.centralServer.image) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- include "openmu.commonEnv" . | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8080
+            {{- range $index, $port := .Values.centralServer.service.connectServerPorts }}
+            - name: connect-{{ $index }}
+              containerPort: {{ $port }}
+            {{- end }}
+            - name: chat
+              containerPort: {{ .Values.centralServer.service.chatServerPort }}
+          {{- include "openmu.probes" . | nindent 10 }}
+          {{- with .Values.centralServer.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.centralServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.centralServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.centralServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+# The connect servers and the chat server, which the game clients connect to.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+  {{- with .Values.centralServer.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.centralServer.service.type }}
+  selector:
+    {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 4 }}
+  ports:
+    {{- range $index, $port := .Values.centralServer.service.connectServerPorts }}
+    - name: connect-{{ $index }}
+      port: {{ $port }}
+      targetPort: {{ $port }}
+    {{- end }}
+    - name: chat
+      port: {{ .Values.centralServer.service.chatServerPort }}
+      targetPort: {{ .Values.centralServer.service.chatServerPort }}
+---
+# The HTTP API of the central server, e.g. /serverInfo.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}-http
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
