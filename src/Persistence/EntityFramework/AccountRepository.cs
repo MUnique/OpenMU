@@ -47,7 +47,7 @@ internal class AccountRepository : CachingGenericRepository<Account>
                     context.Detach(account);
                 }
 
-                var objectLoader = new AccountJsonObjectLoader();
+                var objectLoader = new AccountJsonObjectLoader((this.RepositoryProvider as CacheAwareRepositoryProvider)?.ConfigurationReferences);
                 account = await objectLoader.LoadObjectAsync<Account>(id, context.Context, cancellationToken).ConfigureAwait(false);
                 if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
                 {

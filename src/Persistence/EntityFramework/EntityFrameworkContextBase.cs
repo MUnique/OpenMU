@@ -515,6 +515,15 @@ internal class EntityFrameworkContextBase : IContext
             parentCollectionNavigation = parentCollection?.Metadata;
         }
 
+        if (parentCollectionNavigation is null && propertyToParent is not null)
+        {
+            // The parent isn't tracked, e.g. the game configuration when an object is added in a typed context.
+            // Its collection is still known by the relationship, so that the change can be applied to the cached parent.
+            parentCollectionNavigation = propertyToParent.Metadata.GetContainingForeignKeys()
+                .Select(foreignKey => foreignKey.PrincipalToDependent)
+                .FirstOrDefault(navigation => navigation?.IsCollection is true);
+        }
+
         return (parent ?? parentId, parentCollectionNavigation);
     }
 
