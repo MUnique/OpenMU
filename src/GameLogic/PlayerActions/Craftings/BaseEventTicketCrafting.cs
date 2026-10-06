@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
+using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
@@ -35,6 +36,11 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     /// Gets the <see cref="CraftingResult"/> for a incorrect mix items result.
     /// </summary>
     protected virtual CraftingResult IncorrectMixItemsResult => CraftingResult.IncorrectMixItems;
+
+    /// <summary>
+    /// Gets the maximum success rate, which also limits the additional success rate of a defended crywolf fortress.
+    /// </summary>
+    protected virtual byte MaximumSuccessRate => 100;
 
     /// <inheritdoc />
     public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> itemLinks, out byte successRate)
@@ -75,7 +81,8 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
                 MinimumAmount = 1,
             }));
 
-        successRate = this.GetSuccessRate(item1.Level);
+        var crywolfBenefit = CrywolfPlugIn.GetContext(player.GameContext)?.ChaosRateBenefit ?? 0;
+        successRate = (byte)Math.Min(this.GetSuccessRate(item1.Level) + crywolfBenefit, this.MaximumSuccessRate);
         return default;
     }
 

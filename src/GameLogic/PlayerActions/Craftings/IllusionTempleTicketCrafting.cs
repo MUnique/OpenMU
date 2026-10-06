@@ -20,6 +20,9 @@ public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
     }
 
     /// <inheritdoc />
+    protected override byte MaximumSuccessRate => 80;
+
+    /// <inheritdoc />
     protected override int GetPrice(int eventLevel)
     {
         return eventLevel switch

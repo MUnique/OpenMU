@@ -1208,6 +1208,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ConstValueAttribute", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CrywolfData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsOccupied")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsWarRunning")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastBattleEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("WarStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CrywolfData", "data");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1621,6 +1644,32 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("DropItemGroupId");
 
                     b.ToTable("GameMapDefinitionDropItemGroup", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapTerrainVariant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("GameMapDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("Number")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte[]>("TerrainData")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameMapDefinitionId");
+
+                    b.ToTable("GameMapTerrainVariant", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
@@ -4629,6 +4678,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("GameMapDefinition");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapTerrainVariant", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", null)
+                        .WithMany("RawTerrainVariants")
+                        .HasForeignKey("GameMapDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfigurationGameMapDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "GameMapDefinition")
@@ -5874,6 +5931,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawMapRequirements");
 
                     b.Navigation("RawMonsterSpawns");
+
+                    b.Navigation("RawTerrainVariants");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
