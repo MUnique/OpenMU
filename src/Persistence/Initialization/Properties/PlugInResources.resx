@@ -366,4 +366,6 @@
   <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve"><value>This update gives each Dinorant option a distinct number, which is its bit in the option field the client expects.</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve"><value>Configure NPCs of talk plugins</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
+  <data name="AddItemPriceDefinitionsPlugIn_Name" xml:space="preserve"><value>Add item price definitions</value></data>
+  <data name="AddItemPriceDefinitionsPlugIn_Description" xml:space="preserve"><value>This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment.</value></data>
 </root>

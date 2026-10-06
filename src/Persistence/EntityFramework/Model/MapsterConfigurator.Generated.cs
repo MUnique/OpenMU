@@ -288,6 +288,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable, MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable>()
             .Include<ItemLevelBonusTable, BasicModel.ItemLevelBonusTable>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelPrice, MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelPrice>()
+            .Include<ItemLevelPrice, BasicModel.ItemLevelPrice>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet>()
             .Include<ItemOfItemSet, BasicModel.ItemOfItemSet>();
 
@@ -305,6 +308,9 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType>()
             .Include<ItemOptionType, BasicModel.ItemOptionType>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition, MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition>()
+            .Include<ItemPriceDefinition, BasicModel.ItemPriceDefinition>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup>()
             .Include<ItemSetGroup, BasicModel.ItemSetGroup>();

@@ -136,6 +136,12 @@ public partial class ItemDefinition
     public int Value { get; set; }
 
     /// <summary>
+    /// Gets or sets the definition of how the price of this item is calculated.
+    /// When it's <c>null</c>, the price is calculated automatically, like for usual equipment.
+    /// </summary>
+    public virtual ItemPriceDefinition? PriceDefinition { get; set; }
+
+    /// <summary>
     /// Gets or sets the formula to calculate the required experience for a specific pet level.
     /// Only applies, if this item is actually a trainable pet.
     /// The variable for the pet level is "level".

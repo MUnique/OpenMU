@@ -51,6 +51,15 @@ internal static class ItemExtensions
     }
 
     /// <summary>
+    /// Applies the settings for the <see cref="ItemPriceDefinition"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemPriceDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="ItemDropItemGroup"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>

@@ -102,12 +102,14 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelPrice>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus>();
@@ -170,6 +172,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawCharacterClasses).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemLevelBonusTables).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemPriceDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemSlotTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemOptionTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -230,6 +233,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<ItemOptionCombinationBonus>().HasOne(entity => entity.RawBonus).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionDefinition>().HasMany(entity => entity.RawPossibleOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionOfLevel>().HasOne(entity => entity.RawPowerUpDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ItemPriceDefinition>().HasMany(entity => entity.RawPricePerLevel).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemCrafting>().HasOne(entity => entity.RawSimpleCraftingSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SimpleCraftingSettings>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);

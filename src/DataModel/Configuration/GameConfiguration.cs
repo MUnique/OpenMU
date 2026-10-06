@@ -245,6 +245,12 @@ public partial class GameConfiguration
     public virtual ICollection<ItemLevelBonusTable> ItemLevelBonusTables { get; protected set; } = null!;
 
     /// <summary>
+    /// Gets or sets the item price definitions, which are referenced by <see cref="ItemDefinition.PriceDefinition"/>.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemPriceDefinition> ItemPriceDefinitions { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the item slot types.
     /// </summary>
     [MemberOfAggregate]

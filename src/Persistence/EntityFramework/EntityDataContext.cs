@@ -123,6 +123,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();
+        modelBuilder.Entity<ItemPriceDefinition>().Apply();
         modelBuilder.Entity<ItemDropItemGroup>().Apply();
         modelBuilder.Entity<ItemOptionCombinationBonus>().Apply();
         modelBuilder.Entity<ItemOptionDefinition>().Apply();
