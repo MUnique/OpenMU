@@ -43,31 +43,19 @@ services:
     restart: "unless-stopped"
     environment:
       GF_SERVER_ROOT_URL: https://${DOMAIN_NAME}/grafana/
-  redis-state:
-    restart: "unless-stopped"
-  dapr-placement:
-    restart: "unless-stopped"
-  rabbit:
-    restart: "unless-stopped"
-  database:
-    restart: "unless-stopped"
 
   centralServer:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   adminPanel:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-  
+
   gameServer0:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   gameServer1:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production

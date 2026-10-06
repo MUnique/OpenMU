@@ -3,6 +3,23 @@ volumes:
   dbdata:
   otel-lgtm-data:
 
+# Every OpenMU service gets a dapr sidecar in its own container. The service reaches its sidecar
+# through the DAPR_HTTP_ENDPOINT and DAPR_GRPC_ENDPOINT, the sidecar reaches the service through
+# its -app-channel-address. This way, each of them can be restarted without breaking the other one,
+# e.g. when a game server process ends to apply a changed configuration.
+x-dapr-sidecar: &dapr-sidecar
+  image: "daprio/daprd:latest"
+  restart: unless-stopped
+  depends_on:
+    dapr-placement:
+      condition: service_started
+    rabbit:
+      condition: service_healthy
+    redis-state:
+      condition: service_healthy
+  volumes:
+    - "./dapr-components/:/components"
+
 services:
   nginx-80:
     image: nginx:alpine
@@ -48,15 +65,21 @@ services:
 
   redis-state:
     image: redis
-    restart: always
+    restart: unless-stopped
     ports:
       - 6379
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
   dapr-placement:
     image: "daprio/dapr"
     container_name: dapr_placement
+    restart: unless-stopped
     command: ["./placement", "-port", "50006"]
     ports:
       - "50006"
@@ -64,14 +87,20 @@ services:
   rabbit:
     image: rabbitmq:3-management-alpine
     container_name: pubsub_rabbitmq
-    restart: always
+    restart: unless-stopped
     ports:
       - "5672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 5s
+      timeout: 10s
+      retries: 24
+      start_period: 10s
 
   database:
     image: postgres
     container_name: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}
       POSTGRES_DB: ${DB_NAME:-openmu}
@@ -80,49 +109,61 @@ services:
       - "5432"
     volumes:
       - dbdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
   centralServer:
     # Hosts the connect, login, guild, friend and chat server.
     image: munique/openmu-central
     container_name: centralServer
+    restart: unless-stopped
     ports:
-      - "50001"
       - "44405:44405" # connect server
       - "55980:55980" # chat server
     environment:
       APPID: centralServer
+      DAPR_HTTP_ENDPOINT: http://centralServer-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://centralServer-dapr:50001
       ASPNETCORE_URLS: http://+:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - rabbit
-      - redis-state
-      - otel-lgtm
-      - database
+      centralServer-dapr:
+        condition: service_started
+      database:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
 
   centralServer-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: centralServer_dapr
     command: [ "./daprd", "-app-id", "centralServer", "-app-port", "8080",
+                "-app-channel-address", "centralServer",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - centralServer
-    network_mode: "service:centralServer"
-    volumes:
-      - "./dapr-components/:/components"
 
   adminPanel:
     image: munique/openmu-admin
     container_name: adminPanel
+    restart: unless-stopped
     depends_on:
-      - database
+      adminPanel-dapr:
+        condition: service_started
+      database:
+        condition: service_healthy
     ports:
       - "8080"
     environment:
+      DAPR_HTTP_ENDPOINT: http://adminPanel-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://adminPanel-dapr:50001
       ASPNETCORE_URLS: http://+:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       PATH_BASE: /admin/
@@ -140,33 +181,31 @@ services:
       - adminpanel-keys:/app/data-protection-keys
 
   adminPanel-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: adminPanel_dapr
     command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "8080",
+                "-app-channel-address", "adminPanel",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
 
-    depends_on:
-      - adminPanel
-    network_mode: "service:adminPanel"
-    volumes:
-      - "./dapr-components/:/components"
-
   gameServer0:
     image: munique/openmu-game
     container_name: gameServer0
+    restart: unless-stopped
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "8080"
-      - "50001"
       - "55901:55901"
       - "55902:55902"
     environment:
       GS_ID: 0
       APPID: gameServer0
+      DAPR_HTTP_ENDPOINT: http://gameServer0-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://gameServer0-dapr:50001
       PATH_BASE: /gameServer/0/
       ASPNETCORE_URLS: http://+:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
@@ -174,38 +213,41 @@ services:
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - centralServer-dapr
-      - rabbit
-      - otel-lgtm
-      - database
+      gameServer0-dapr:
+        condition: service_started
+      centralServer:
+        condition: service_started
+      database:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
 
   gameServer0-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: gameserver0_dapr
     command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "8080",
+                "-app-channel-address", "gameServer0",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - gameServer0
-    network_mode: "service:gameServer0"
-    volumes:
-      - "./dapr-components/:/components"
-  
+
   gameServer1:
     image: munique/openmu-game
     container_name: gameServer1
+    restart: unless-stopped
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "8080"
-      - "50001"
       - "55903:55903"
       - "55904:55904"
     environment:
       GS_ID: 1
       APPID: gameServer1
+      DAPR_HTTP_ENDPOINT: http://gameServer1-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://gameServer1-dapr:50001
       PATH_BASE: /gameServer/1/
       ASPNETCORE_URLS: http://+:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
@@ -213,20 +255,21 @@ services:
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - centralServer-dapr
-      - rabbit
-      - otel-lgtm
-      - database
+      gameServer1-dapr:
+        condition: service_started
+      centralServer:
+        condition: service_started
+      database:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
 
   gameServer1-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: gameserver1_dapr
     command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "8080",
+                "-app-channel-address", "gameServer1",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - gameServer1
-    network_mode: "service:gameServer1"
-    volumes:
-      - "./dapr-components/:/components"
