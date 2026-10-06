@@ -190,6 +190,21 @@ servers can be one StatefulSet with a number of replicas. To use a range which
 doesn't start at 0, add an offset with `GS_ID_OFFSET`. Without both, the id is
 `0`.
 
+### `GS_LISTENER_PORT`
+
+Optional. By default, a game server listens on the ports which are configured for
+its endpoints in the admin panel, e.g. 55901 and 55902 for server 0 with two
+client versions, and 55903 and 55904 for server 1. When `GS_LISTENER_PORT` is
+set, the game server listens on this port for its first endpoint, on the next
+port for the second, and so on (in the order of the configured ports) — the same
+ports in every container. That's useful when all game servers share one
+template, like the pods of a Kubernetes StatefulSet.
+
+The game server then also announces these ports to the clients, unless an
+*alternative published port* is configured for the endpoint. So each game server
+needs its own public IP (see `RESOLVE_IP`), or its own alternative published
+ports when they share one IP.
+
 ### `DAPR_HTTP_ENDPOINT` and `DAPR_GRPC_ENDPOINT`
 
 Usually specified correctly in the docker compose files. They specify the
