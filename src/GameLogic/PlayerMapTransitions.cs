@@ -1,4 +1,4 @@
-// <copyright file="PlayerMapTransitions.cs" company="MUnique">
+﻿// <copyright file="PlayerMapTransitions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -332,6 +332,15 @@ internal sealed class PlayerMapTransitions
     {
         var player = this._player;
         var mapNumber = mapDefinition.Number.ToUnsigned();
+
+        // A mini game runs on its own instance of the map, which can't be resolved by the map number -
+        // that one always returns the regular instance. Without this, a player who respawns during a
+        // mini game lands on an empty copy of the map, invisible to the other participants.
+        if (player.CurrentMiniGame?.Map is { } miniGameMap && miniGameMap.Definition.Number == mapDefinition.Number)
+        {
+            return miniGameMap;
+        }
+
         if (await player.GameContext.GetMapAsync(mapNumber).ConfigureAwait(false) is { } hostedMap)
         {
             return hostedMap;

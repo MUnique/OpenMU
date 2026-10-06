@@ -3112,7 +3112,25 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("StartChaosCastleEventChatCommandPlugIn_Name", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startit&apos;. Starts the illusion temple event at the next possible time..
+        /// </summary>
+        public static string StartIllusionTempleEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Start Illusion Temple Event Chat Command.
+        /// </summary>
+        public static string StartIllusionTempleEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/startds&apos;. Starts the devil square event at the next possible time..
         /// </summary>
@@ -4164,6 +4182,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
         public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleStoneStatueTalkPlugIn_Name text.</summary>
+        public static string IllusionTempleStoneStatueTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleStoneStatueTalkPlugIn_Description text.</summary>
+        public static string IllusionTempleStoneStatueTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleAllianceStorageTalkPlugIn_Name text.</summary>
+        public static string IllusionTempleAllianceStorageTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleAllianceStorageTalkPlugIn_Description text.</summary>
+        public static string IllusionTempleAllianceStorageTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleIllusionStorageTalkPlugIn_Name text.</summary>
+        public static string IllusionTempleIllusionStorageTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleIllusionStorageTalkPlugIn_Description text.</summary>
+        public static string IllusionTempleIllusionStorageTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Description", resourceCulture)!;
 
         /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Name text.</summary>
         public static string NpcTalkPlugInConfiguration_Npc_Name => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture)!;

@@ -729,6 +729,12 @@
   <data name="StartChaosCastleEventChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.</value>
   </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Illusion Temple Event Chat Command</value>
+  </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startit'. Starts the illusion temple event at the next possible time.</value>
+  </data>
   <data name="StartDevilSquareEventChatCommandPlugIn_Name" xml:space="preserve">
     <value>Start Devil Square Event Chat Command</value>
   </data>
@@ -1492,6 +1498,24 @@
   </data>
   <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
     <value>Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event.</value>
+  </data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Stone Statue</value>
+  </data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Stone Statue in the illusion temple event, where players pick up the sacred relic.</value>
+  </data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Alliance Item Storage</value>
+  </data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Alliance Item Storage in the illusion temple event, to which the allied forces carry the sacred relic to score a point.</value>
+  </data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Illusion Item Storage</value>
+  </data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Illusion Item Storage in the illusion temple event, to which the illusion forces carry the sacred relic to score a point.</value>
   </data>
   <data name="NpcTalkPlugInConfiguration_Npc_Name" xml:space="preserve">
     <value>NPC</value>
