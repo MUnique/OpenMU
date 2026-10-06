@@ -14,8 +14,14 @@ using MUnique.OpenMU.ServerClients;
 /// Implementation of a <see cref="IFriendNotifier"/> which notifies the game server
 /// about notifications for a player about changes in the friend system.
 /// </summary>
+/// <remarks>
+/// The notifications are published to all game servers, and the game server which hosts the player handles them.
+/// This way, game servers don't need a unique dapr app id.
+/// </remarks>
 public class FriendNotifier : IFriendNotifier
 {
+    private const string PubSubName = "pubsub";
+
     private readonly DaprClient _daprClient;
     private readonly ILogger<FriendNotifier> _logger;
 
@@ -35,7 +41,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.FriendRequestAsync), new RequestArguments(requester, receiver)).ConfigureAwait(false);
+            await this._daprClient.PublishEventAsync(PubSubName, nameof(IGameServer.FriendRequestAsync), new RequestArguments(requester, receiver)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -49,7 +55,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceivedAsync), letter).ConfigureAwait(false);
+            await this._daprClient.PublishEventAsync(PubSubName, nameof(IGameServer.LetterReceivedAsync), letter).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -63,9 +69,9 @@ public class FriendNotifier : IFriendNotifier
         try
         {
             // todo: find out if this is correct when logging out
-            if (GameServerAppId.IsValid(playerServerId))
+            if (IsOnGameServer(playerServerId))
             {
-                await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(playerServerId), nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId)).ConfigureAwait(false);
+                await this._daprClient.PublishEventAsync(PubSubName, nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId)).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -79,7 +85,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName)).ConfigureAwait(false);
+            await this._daprClient.PublishEventAsync(PubSubName, nameof(IGameServer.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -92,9 +98,9 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            if (GameServerAppId.IsValid(serverId))
+            if (IsOnGameServer(serverId))
             {
-                await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.InitializeMessengerAsync), initializationData).ConfigureAwait(false);
+                await this._daprClient.PublishEventAsync(PubSubName, nameof(IGameServer.InitializeMessengerAsync), initializationData).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -102,4 +108,9 @@ public class FriendNotifier : IFriendNotifier
             this._logger.LogError(ex, nameof(this.FriendRequestAsync));
         }
     }
+
+    /// <summary>
+    /// Determines whether the server id is the id of a game server, and not e.g. the id which means that the player is offline.
+    /// </summary>
+    private static bool IsOnGameServer(int serverId) => serverId is >= 0 and <= byte.MaxValue;
 }

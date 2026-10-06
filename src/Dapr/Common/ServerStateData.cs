@@ -25,10 +25,8 @@ public class ServerStateData
     /// Initializes a new instance of the <see cref="ServerStateData"/> class.
     /// </summary>
     /// <param name="server">The server.</param>
-    /// <exception cref="System.InvalidOperationException">Add the environment variable 'APPID' with the app-id of this dapr app.</exception>
     public ServerStateData(IManageableServer server)
     {
-        this.AppId = Environment.GetEnvironmentVariable("APPID") ?? throw new InvalidOperationException("Add the environment variable 'APPID' with the app-id of this dapr app.");
         this.Id = server.Id;
         this.Description = server.Description;
         this.ConfigurationId = server.ConfigurationId;
@@ -37,11 +35,6 @@ public class ServerStateData
         this._stopwatch.Start();
         this.UpdateState(server);
     }
-
-    /// <summary>
-    /// Gets or sets the (dapr) application identifier.
-    /// </summary>
-    public string AppId { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the identifier of the server.
