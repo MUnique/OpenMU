@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer;
@@ -42,6 +43,7 @@ services.AddSingleton<GameServer>()
     .AddSingleton<IObservableGameServer, ObservableGameServerAdapter>()
     .AddPersistentSingleton<GameServerDefinition>(def => def.ServerID == gameServerId)
     .AddPeristenceProvider()
+    .AddDatabaseHealthCheck()
     .AddPlugInManager(plugInConfigurations)
     .AddIpResolver(args)
     .AddNetworkObservation()

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
@@ -48,6 +49,8 @@ public static class DaprService
         });
 
         services.AddSingleton<IDatabaseConnectionSettingProvider, SecretStoreDatabaseConnectionSettingsProvider>();
+
+        services.AddDaprServiceHealthChecks();
 
         builder.AddOpenTelemetry(serviceName);
 

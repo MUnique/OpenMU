@@ -23,6 +23,15 @@ x-dapr-sidecar: &dapr-sidecar
   volumes:
     - "./dapr-components/:/components"
 
+# The OpenMU services report on /health/ready whether they can do their work, e.g. that the database is
+# installed. Nothing waits for it, because the central and game servers aren't ready before the setup.
+x-openmu-healthcheck: &openmu-healthcheck
+  test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health/ready"]
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 60s
+
 services:
   nginx-80:
     image: nginx:alpine
@@ -119,10 +128,11 @@ services:
       retries: 12
 
   centralServer:
-    # Hosts the connect, login, guild, friend and chat server.
+    # Hosts the connect, login, guild, friend and chat servers.
     image: munique/openmu-central
     container_name: centralServer
     restart: unless-stopped
+    healthcheck: *openmu-healthcheck
     build:
       context: ../../src
       dockerfile: Dapr/CentralServer.Host/Dockerfile
@@ -162,6 +172,7 @@ services:
     image: munique/openmu-admin
     container_name: adminPanel
     restart: unless-stopped
+    healthcheck: *openmu-healthcheck
     build:
       context: ../../src
       dockerfile: Dapr/AdminPanel.Host/Dockerfile
@@ -207,6 +218,7 @@ services:
     image: munique/openmu-game
     container_name: gameServer0
     restart: unless-stopped
+    healthcheck: *openmu-healthcheck
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
@@ -250,6 +262,7 @@ services:
     image: munique/openmu-game
     container_name: gameServer1
     restart: unless-stopped
+    healthcheck: *openmu-healthcheck
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile

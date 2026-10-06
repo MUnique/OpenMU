@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
@@ -328,6 +329,7 @@ public static class Extensions
         app.UseCloudEvents();
         app.MapControllers();
         app.MapSubscribeHandler();
+        app.MapDaprServiceHealthChecks();
 
         return app;
     }
