@@ -147,15 +147,15 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
         {
             if (!cache.TryGetValue(changedInstance.GetId(), out var cachedInstance))
             {
-                this._logger.LogDebug("Cached instance '{cachedInstance}' couldn't be updated because it wasn't found.", cachedInstance);
-                return;
+                this._logger.LogDebug("Cached instance '{changedInstance}' couldn't be updated because it wasn't found.", changedInstance);
+                continue;
             }
 
             if (cachedInstance is not IAssignable<T> assignable)
             {
                 // todo: implement this for all types
                 this._logger.LogWarning("Cached instance '{cachedInstance}' couldn't be updated because it doesn't implement {IAssignable}.", cachedInstance, typeof(IAssignable<T>));
-                return;
+                continue;
             }
 
             assignable.AssignValuesOf((T)changedInstance, gameConfiguration);

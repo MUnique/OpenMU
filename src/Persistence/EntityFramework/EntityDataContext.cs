@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.Persistence.EntityFramework.Extensions;
 using MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
@@ -15,6 +17,23 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 public class EntityDataContext : ExtendedTypeContext
 {
+    private static readonly Lazy<IModel> CompleteModelValue = new(
+        () =>
+        {
+            using var context = new EntityDataContext();
+            return context.Model;
+        },
+        LazyThreadSafetyMode.PublicationOnly);
+
+    /// <summary>
+    /// Gets the model of the <see cref="EntityDataContext"/>, which includes all entity types.
+    /// </summary>
+    /// <remarks>
+    /// The model is the same for every instance, so it's created once instead of instantiating
+    /// a throwaway context every time a complete meta model is needed.
+    /// </remarks>
+    internal static IModel CompleteModel => CompleteModelValue.Value;
+
     /// <summary>
     /// Gets or sets the current game configuration.
     /// This is used by the <see cref="ConfigurationTypeRepository{T}"/> which gets its data from the current game configuration.

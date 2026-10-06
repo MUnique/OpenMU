@@ -62,6 +62,30 @@ involves initialization logic which the web interface does not run yet. Create
 characters in the game client.
 :::
 
+### Editing skills and the master skill tree
+
+The **Learned Skills** of a character are split into two parts:
+
+* The **regular skills** are listed with a **Remove** button each. **Add Skill**
+  offers the skills which the character class can learn.
+* The **master skill tree** looks like the one in the game: one column per master
+  skill root and one row per rank. Enter the level of a master skill in its
+  field — `0` removes it. A level is limited to the range the skill allows.
+
+Below each master skill name you see the skills it requires (`↑`). Like in the
+game, a master skill needs its required skills and a skill of the previous rank
+at level 10 or higher. Skills whose requirements are not met yet are dimmed; a
+skill which has a level although its requirements are not met gets a red dashed
+border. The admin panel doesn't prevent this, so you can fix inconsistent data
+in any order.
+
+Changing a level by hand does not change the character's **Master Level Up
+Points**. **Reset Master Skill Tree** removes all master skills after a
+confirmation and adds the spent points (the sum of all master skill levels) back
+to the master level up points, so the player can distribute them again.
+
+All changes are stored when you save the page.
+
 ### Changing a password
 
 Passwords are stored as a hash, so they cannot be read back. To give a player a

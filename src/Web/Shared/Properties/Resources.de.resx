@@ -471,4 +471,35 @@
   <data name="MapsLabel" xml:space="preserve">
     <value>Karten</value>
   </data>
+  <data name="UnknownSkill" xml:space="preserve">
+    <value>Unbekannte Fertigkeit</value>
+  </data>
+  <data name="AddSkill" xml:space="preserve">
+    <value>Fertigkeit hinzufügen</value>
+  </data>
+  <data name="MasterSkillTree" xml:space="preserve">
+    <value>Meisterfertigkeitsbaum</value>
+  </data>
+  <data name="SpentMasterPoints" xml:space="preserve">
+    <value>Vergebene Punkte: {0}</value>
+  </data>
+  <data name="ResetMasterSkillTree" xml:space="preserve">
+    <value>Meisterfertigkeitsbaum zurücksetzen</value>
+  </data>
+  <data name="ResetMasterSkillTreeQuestion" xml:space="preserve">
+    <value>Möchtest du wirklich alle Meisterfertigkeiten des Charakters entfernen?</value>
+  </data>
+  <data name="ResetMasterSkillTreeAndRefundQuestion" xml:space="preserve">
+    <value>Möchtest du wirklich alle Meisterfertigkeiten des Charakters entfernen? Die {0} vergebenen Punkte werden den Meisterstufenpunkten gutgeschrieben.</value>
+  </data>
+  <data name="MasterSkillTooltip" xml:space="preserve">
+    <value>{0} (#{1})
+Stufe: {2} - {3}</value>
+  </data>
+  <data name="MasterSkillRequirementsNotFulfilled" xml:space="preserve">
+    <value>Warnung: Die Voraussetzungen für diese Fertigkeit sind nicht erfüllt. Die benötigten Fertigkeiten und eine Fertigkeit des vorherigen Rangs benötigen mindestens Stufe {0}.</value>
+  </data>
+  <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
+    <value>Benötigt die erforderlichen Fertigkeiten und eine Fertigkeit des vorherigen Rangs mit mindestens Stufe {0}.</value>
+  </data>
 </root>
