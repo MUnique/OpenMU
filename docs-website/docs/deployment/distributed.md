@@ -39,7 +39,7 @@ Nothing addresses a game server by its Dapr app id: the calls to game servers,
 e.g. a friend request or a global message from the admin panel, are published to
 all game servers. The game server which hosts the affected player handles it, or
 the one whose id is in the message, and the others ignore it. So all game
-servers share the app id `gameServer`. Each process still needs its own queues
+servers share the app id `game-server`. Each process still needs its own queues
 in RabbitMQ to receive every message; they are named after the `POD_NAME` of its
 sidecar, which therefore has to be unique.
 

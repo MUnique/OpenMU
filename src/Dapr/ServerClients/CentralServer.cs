@@ -1,4 +1,4 @@
-// <copyright file="CentralServer.cs" company="MUnique">
+﻿// <copyright file="CentralServer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,10 @@ public static class CentralServer
     /// <summary>
     /// The dapr app id of the central server.
     /// </summary>
-    public const string AppId = "centralServer";
+    /// <remarks>
+    /// On Kubernetes, dapr creates a service named after the app id, so it has to be a lowercase DNS label.
+    /// </remarks>
+    public const string AppId = "central-server";
 
     /// <summary>
     /// The route prefix of the methods of the login server.
