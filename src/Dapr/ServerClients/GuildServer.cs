@@ -27,7 +27,7 @@ public class GuildServer : IGuildServer
     {
         this._daprClient = daprClient;
         this._logger = logger;
-        this._targetAppId = "guildServer";
+        this._targetAppId = CentralServer.AppId;
     }
 
     /// <inheritdoc />
@@ -35,7 +35,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.GuildExistsAsync), guildName).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, GetMethodName(nameof(this.GuildExistsAsync)), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -49,7 +49,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(this.GetGuildAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, GetMethodName(nameof(this.GetGuildAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -63,7 +63,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, Guid?>(this._targetAppId, nameof(this.GetPersistentGuildIdAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, Guid?>(this._targetAppId, GetMethodName(nameof(this.GetPersistentGuildIdAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<string, Guid?>(this._targetAppId, nameof(this.GetPersistentGuildIdByNameAsync), guildName).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<string, Guid?>(this._targetAppId, GetMethodName(nameof(this.GetPersistentGuildIdByNameAsync)), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -91,7 +91,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<Guid, string?>(this._targetAppId, nameof(this.GetPersistentGuildNameAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<Guid, string?>(this._targetAppId, GetMethodName(nameof(this.GetPersistentGuildNameAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -108,7 +108,7 @@ public class GuildServer : IGuildServer
             return await this._daprClient
                 .InvokeMethodAsync<Guid[], Dictionary<Guid, string>>(
                     this._targetAppId,
-                    nameof(this.GetPersistentGuildNamesAsync),
+                    GetMethodName(nameof(this.GetPersistentGuildNamesAsync)),
                     guildIds.ToArray())
                 .ConfigureAwait(false);
         }
@@ -124,7 +124,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<Guid, uint>(this._targetAppId, nameof(this.GetGuildIdAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<Guid, uint>(this._targetAppId, GetMethodName(nameof(this.GetGuildIdAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -138,7 +138,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, Guid?>(this._targetAppId, nameof(this.GetPersistentAllianceMasterGuildIdAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, Guid?>(this._targetAppId, GetMethodName(nameof(this.GetPersistentAllianceMasterGuildIdAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -152,7 +152,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(this.GetGuildIdByNameAsync), guildName).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, GetMethodName(nameof(this.GetGuildIdByNameAsync)), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -166,7 +166,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(this.CreateGuildAsync), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, GetMethodName(nameof(this.CreateGuildAsync)), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -180,7 +180,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateGuildMemberAsync), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, GetMethodName(nameof(this.CreateGuildMemberAsync)), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -193,7 +193,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.ChangeGuildMemberPositionAsync), new GuildMemberRoleChangeArguments(guildId, characterId, role)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, GetMethodName(nameof(this.ChangeGuildMemberPositionAsync)), new GuildMemberRoleChangeArguments(guildId, characterId, role)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -206,7 +206,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<GuildMemberRoleChangeByNameArguments, bool>(this._targetAppId, nameof(this.ChangeGuildMemberPositionByNameAsync), new GuildMemberRoleChangeByNameArguments(guildId, characterName, role, masterTotalLevel)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<GuildMemberRoleChangeByNameArguments, bool>(this._targetAppId, GetMethodName(nameof(this.ChangeGuildMemberPositionByNameAsync)), new GuildMemberRoleChangeByNameArguments(guildId, characterName, role, masterTotalLevel)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -234,7 +234,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<GuildListEntry>>(this._targetAppId, nameof(this.GetGuildListAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<GuildListEntry>>(this._targetAppId, GetMethodName(nameof(this.GetGuildListAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -248,7 +248,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.KickMemberAsync), new GuildMemberArguments(guildId, playerName)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, GetMethodName(nameof(this.KickMemberAsync)), new GuildMemberArguments(guildId, playerName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -261,7 +261,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(this.GetGuildPositionAsync), characterId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, GetMethodName(nameof(this.GetGuildPositionAsync)), characterId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -277,7 +277,7 @@ public class GuildServer : IGuildServer
         {
             await this._daprClient.InvokeMethodAsync(
                     this._targetAppId,
-                    nameof(this.IncreaseGuildScoreAsync),
+                    GetMethodName(nameof(this.IncreaseGuildScoreAsync)),
                     new GuildScoreIncreaseArguments(guildId, amount))
                 .ConfigureAwait(false);
         }
@@ -292,7 +292,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint), AllianceCreationResult>(this._targetAppId, nameof(this.CreateAllianceAsync), (masterGuildId, targetGuildId)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<(uint, uint), AllianceCreationResult>(this._targetAppId, GetMethodName(nameof(this.CreateAllianceAsync)), (masterGuildId, targetGuildId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -306,7 +306,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.RemoveAllianceAsync), targetGuildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, GetMethodName(nameof(this.RemoveAllianceAsync)), targetGuildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -320,7 +320,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<AllianceGuildEntry>>(this._targetAppId, nameof(this.GetAllianceGuildsAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<AllianceGuildEntry>>(this._targetAppId, GetMethodName(nameof(this.GetAllianceGuildsAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -334,7 +334,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.IsAllianceMasterAsync), guildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, GetMethodName(nameof(this.IsAllianceMasterAsync)), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -348,7 +348,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint, bool), bool>(this._targetAppId, nameof(this.SetHostilityAsync), (guildIdA, guildIdB, create)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<(uint, uint, bool), bool>(this._targetAppId, GetMethodName(nameof(this.SetHostilityAsync)), (guildIdA, guildIdB, create)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -362,7 +362,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint), GuildRelationship>(this._targetAppId, nameof(this.GetGuildRelationshipAsync), (guild1, guild2)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<(uint, uint), GuildRelationship>(this._targetAppId, GetMethodName(nameof(this.GetGuildRelationshipAsync)), (guild1, guild2)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -370,4 +370,6 @@ public class GuildServer : IGuildServer
             return GuildRelationship.None;
         }
     }
+
+    private static string GetMethodName(string name) => $"{CentralServer.GuildServerRoute}/{name}";
 }

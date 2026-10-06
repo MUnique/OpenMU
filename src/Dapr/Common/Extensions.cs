@@ -15,9 +15,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
-using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
 using OpenTelemetry;
@@ -52,12 +50,7 @@ public static class Extensions
             .AddSingleton<IMigratableDatabaseContextProvider, PersistenceContextProvider>()
             .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
-            .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>))
-            .AddAdminUserRepository()
-            .AddSingleton<IBackupService>(s => new BackupService(
-                s.GetRequiredService<IPersistenceContextProvider>(),
-                s.GetRequiredService<IAdminUserRepository>()))
-            .AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
+            .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>));
     }
 
     /// <summary>
@@ -165,6 +158,7 @@ public static class Extensions
 
     /// <summary>
     /// Publishes the server to other daprized services by registering a <see cref="ManagableServerStatePublisher"/>.
+    /// It can be called for multiple servers of the same process.
     /// </summary>
     /// <typeparam name="TServer">The type of the server.</typeparam>
     /// <param name="services">The service collection.</param>

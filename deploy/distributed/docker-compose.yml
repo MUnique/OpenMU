@@ -81,14 +81,16 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql
 
-  connectServer:
-    image: munique/openmu-connect
-    container_name: connectServer
+  centralServer:
+    # Hosts the connect, login, guild, friend and chat server.
+    image: munique/openmu-central
+    container_name: centralServer
     ports:
       - "50001"
-      - "44405:44405"
+      - "44405:44405" # connect server
+      - "55980:55980" # chat server
     environment:
-      APPID: connectServer
+      APPID: centralServer
       ASPNETCORE_URLS: http://+:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
@@ -96,137 +98,22 @@ services:
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - rabbit
+      - redis-state
       - otel-lgtm
       - database
 
-  connectServer-dapr:
+  centralServer-dapr:
     image: "daprio/daprd:latest"
-    container_name: connectServer_dapr
-    command: [ "./daprd", "-app-id", "connectServer", "-app-port", "8080",
+    container_name: centralServer_dapr
+    command: [ "./daprd", "-app-id", "centralServer", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
     depends_on:
-      - connectServer
-    network_mode: "service:connectServer"
+      - centralServer
+    network_mode: "service:centralServer"
     volumes:
       - "./dapr-components/:/components"
-
-  loginServer:
-    image: munique/openmu-login
-    container_name: loginServer
-    ports:
-      - "50001"
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    depends_on:
-      - otel-lgtm
-      - database
-
-  loginServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: loginServer_dapr
-    command: [ "./daprd", "-app-id", "loginServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - loginServer
-    network_mode: "service:loginServer"
-    volumes:
-      - "./dapr-components/:/components"
-
-  friendServer:
-    image: munique/openmu-friend
-    container_name: friendServer
-    ports:
-      - "50001"
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    depends_on:
-      - chatServer-dapr
-      - database
-      - otel-lgtm
-
-  friendServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: friendServer_dapr
-    command: [ "./daprd", "-app-id", "friendServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - friendServer
-    network_mode: "service:friendServer"
-    volumes:
-      - "./dapr-components/:/components"
-  
-  guildServer:
-    image: munique/openmu-guild
-    container_name: guildServer
-    ports:
-      - "50001"
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    depends_on:
-      - database
-      - otel-lgtm
-
-  guildServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: guildServer_dapr
-    command: [ "./daprd", "-app-id", "guildServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - guildServer
-    network_mode: "service:guildServer"
-    volumes:
-      - "./dapr-components/:/components"
-
-  chatServer:
-    image: munique/openmu-chat
-    container_name: chatServer
-    environment:
-      APPID: chatServer
-      ASPNETCORE_URLS: http://+:8080
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    ports:
-      - "55980:55980"
-      - "50001"
-    depends_on:
-      - database
-      - otel-lgtm
-
-  chatServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: chatServer_dapr
-    command: [ "./daprd", "-app-id", "chatServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - chatServer
-    network_mode: "service:chatServer"
-    volumes:
-      - "./dapr-components/:/components"
-
 
   adminPanel:
     image: munique/openmu-admin
@@ -287,9 +174,7 @@ services:
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - connectServer-dapr
-      - loginServer-dapr
-      - friendServer-dapr
+      - centralServer-dapr
       - rabbit
       - otel-lgtm
       - database
@@ -328,9 +213,7 @@ services:
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - connectServer-dapr
-      - loginServer-dapr
-      - friendServer-dapr
+      - centralServer-dapr
       - rabbit
       - otel-lgtm
       - database

@@ -99,7 +99,7 @@ internal class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.StartAsync), cancellationToken);
+        return this._daprClient.InvokeMethodAsync(this._targetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.StartAsync)}", cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -111,7 +111,7 @@ internal class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.ShutdownAsync), cancellationToken);
+        return this._daprClient.InvokeMethodAsync(this._targetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.ShutdownAsync)}", cancellationToken);
     }
 
     /// <inheritdoc/>

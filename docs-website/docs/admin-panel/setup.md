@@ -73,7 +73,7 @@ existing data**, so every account, character and configuration change is lost.
 
 :::note[Distributed deployment]
 In a [distributed deployment](../deployment/distributed.md) you have to restart
-the connect server and game server containers after the installation has
+the central server and game server containers after the installation has
 finished. The panel reminds you of that.
 :::
 

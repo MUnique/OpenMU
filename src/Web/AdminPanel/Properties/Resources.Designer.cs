@@ -2575,7 +2575,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please restart the connect and game server containers..
+        ///   Looks up a localized string similar to Please restart the central server and game server containers..
         /// </summary>
         public static string PleaseRestartTheConnectAndGameServerContainers {
             get {

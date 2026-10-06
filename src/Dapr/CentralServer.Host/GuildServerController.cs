@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GuildServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using System.Collections.Immutable;
-using global::Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
@@ -16,7 +15,7 @@ using MUnique.OpenMU.ServerClients;
 /// most probably <see cref="MUnique.OpenMU.ServerClients.GuildServer"/>.
 /// </summary>
 [ApiController]
-[Route("")]
+[Route(CentralServer.GuildServerRoute)]
 public class GuildServerController : ControllerBase
 {
     private readonly IGuildServer _guildServer;
@@ -134,7 +133,7 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
-    /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGameAsync" /> is not required.
+    /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="EventController.PlayerEnteredGameAsync" /> is not required.
     /// </summary>
     /// <param name="data">The guild creation arguments.</param>
     [HttpPost(nameof(IGuildServer.CreateGuildAsync))]
@@ -144,7 +143,7 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
-    /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGameAsync" /> is not required.
+    /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="EventController.PlayerEnteredGameAsync" /> is not required.
     /// </summary>
     /// <param name="data">The guild member creation arguments.</param>
     [HttpPost(nameof(IGuildServer.CreateGuildMemberAsync))]
@@ -171,28 +170,6 @@ public class GuildServerController : ControllerBase
     public ValueTask<bool> ChangeGuildMemberPositionByNameAsync([FromBody] GuildMemberRoleChangeByNameArguments data)
     {
         return this._guildServer.ChangeGuildMemberPositionByNameAsync(data.GuildId, data.CharacterName, data.NewRole, data.MasterTotalLevel);
-    }
-
-    /// <summary>
-    /// Notifies the guild server that a player (potential guild member) entered the game.
-    /// </summary>
-    /// <param name="data">The arguments of the changed player.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGameAsync))]
-    [HttpPost(nameof(IEventPublisher.PlayerEnteredGameAsync))]
-    public ValueTask PlayerEnteredGameAsync([FromBody] PlayerOnlineStateArguments data)
-    {
-        return this._guildServer.PlayerEnteredGameAsync(data.CharacterId, data.CharacterName, data.ServerId);
-    }
-
-    /// <summary>
-    /// Notifies the guild server that a guild member left the game.
-    /// </summary>
-    /// <param name="data">The arguments of the changed player.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerLeftGameAsync))]
-    [HttpPost(nameof(IEventPublisher.PlayerLeftGameAsync))]
-    public ValueTask PlayerLeftGameAsync([FromBody] PlayerOnlineStateArguments data)
-    {
-        return this._guildServer.GuildMemberLeftGameAsync(data.GuildId, data.CharacterId, data.ServerId);
     }
 
     /// <summary>

@@ -52,27 +52,7 @@ services:
   database:
     restart: "unless-stopped"
 
-  connectServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  loginServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  friendServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  guildServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  chatServer:
+  centralServer:
     restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production

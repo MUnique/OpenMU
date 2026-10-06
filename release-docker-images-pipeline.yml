@@ -60,42 +60,16 @@ steps:
         --push \
         .
 - task: CmdLine@2
-  displayName: "Build and Push ChatServer Image"
+  displayName: "Build and Push CentralServer Image (openmu-central)"
   condition: eq(variables.tagExists, 'false')
   inputs:
     script: |
       cd src
       docker buildx create --use
       docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 \
-        --file Dapr/ChatServer.Host/Dockerfile \
-        -t munique/openmu-chat:latest \
-        -t munique/openmu-chat:$(projectVersion) \
-        --push \
-        .
-- task: CmdLine@2
-  displayName: "Build and Push ConnectServer Image (openmu-connect)"
-  condition: eq(variables.tagExists, 'false')
-  inputs:
-    script: |
-      cd src
-      docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 \
-        --file Dapr/ConnectServer.Host/Dockerfile \
-        -t munique/openmu-connect:latest \
-        -t munique/openmu-connect:$(projectVersion) \
-        --push \
-        .
-- task: CmdLine@2
-  displayName: "Build and Push FriendServer Image (openmu-friend)"
-  condition: eq(variables.tagExists, 'false')
-  inputs:
-    script: |
-      cd src
-      docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 \
-        --file Dapr/FriendServer.Host/Dockerfile \
-        -t munique/openmu-friend:latest \
-        -t munique/openmu-friend:$(projectVersion) \
+        --file Dapr/CentralServer.Host/Dockerfile \
+        -t munique/openmu-central:latest \
+        -t munique/openmu-central:$(projectVersion) \
         --push \
         .
 - task: CmdLine@2
@@ -109,31 +83,5 @@ steps:
         --file Dapr/GameServer.Host/Dockerfile \
         -t munique/openmu-game:latest \
         -t munique/openmu-game:$(projectVersion) \
-        --push \
-        .
-- task: CmdLine@2
-  displayName: "Build and Push GuildServer Image (openmu-guild)"
-  condition: eq(variables.tagExists, 'false')
-  inputs:
-    script: |
-      cd src
-      docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 \
-        --file Dapr/GuildServer.Host/Dockerfile \
-        -t munique/openmu-guild:latest \
-        -t munique/openmu-guild:$(projectVersion) \
-        --push \
-        .
-- task: CmdLine@2
-  displayName: "Build and Push LoginServer Image (openmu-login)"
-  condition: eq(variables.tagExists, 'false')
-  inputs:
-    script: |
-      cd src
-      docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 \
-        --file Dapr/LoginServer.Host/Dockerfile \
-        -t munique/openmu-login:latest \
-        -t munique/openmu-login:$(projectVersion) \
         --push \
         .

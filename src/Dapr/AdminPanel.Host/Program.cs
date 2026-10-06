@@ -8,9 +8,10 @@ using MUnique.OpenMU.AdminPanel.Host;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
-using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 
@@ -27,6 +28,7 @@ services.AddPeristenceProvider(true)
     .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
     .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>()
     .AddSingleton<IBackupService, BackupService>()
+    .AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>()
     .AddAdminUserRepository();
 
 builder.AddAdminPanel();

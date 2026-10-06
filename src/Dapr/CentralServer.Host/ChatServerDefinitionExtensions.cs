@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.ChatServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.DataModel.Configuration;

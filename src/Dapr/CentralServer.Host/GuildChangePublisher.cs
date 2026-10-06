@@ -2,10 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GuildServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 using MUnique.OpenMU.ServerClients;

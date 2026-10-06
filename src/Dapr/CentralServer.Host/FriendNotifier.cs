@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.FriendServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using System.Collections.ObjectModel;
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 
@@ -53,7 +54,7 @@ public class FriendNotifier : IFriendNotifier
     }
 
     /// <inheritdoc />
-    /// <remarks>It's usually never called here, but at <see cref="FriendServer.ForwardLetterAsync"/>.</remarks>
+    /// <remarks>It's usually never called here, but at <see cref="MUnique.OpenMU.FriendServer.FriendServer.ForwardLetterAsync"/>.</remarks>
     public async ValueTask LetterReceivedAsync(LetterHeader letter)
     {
         try
