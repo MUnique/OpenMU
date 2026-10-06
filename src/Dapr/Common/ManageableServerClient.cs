@@ -14,11 +14,8 @@ using MUnique.OpenMU.Interfaces;
 /// A client to control a <seealso cref="IManageableServer"/>.
 /// </summary>
 /// <seealso cref="MUnique.OpenMU.Interfaces.IManageableServer" />
-internal class ManageableServerClient : IManageableServer
+public class ManageableServerClient : IManageableServer
 {
-    private readonly DaprClient _daprClient;
-
-    private readonly string _targetAppId;
     private ServerState _serverState;
     private int _currentConnections;
 
@@ -29,8 +26,8 @@ internal class ManageableServerClient : IManageableServer
     /// <param name="serverData">The server data.</param>
     public ManageableServerClient(DaprClient daprClient, ServerStateData serverData)
     {
-        this._daprClient = daprClient;
-        this._targetAppId = serverData.AppId;
+        this.DaprClient = daprClient;
+        this.TargetAppId = serverData.AppId;
         this.Id = serverData.Id;
         this.Description = serverData.Description;
         this.ConfigurationId = serverData.ConfigurationId;
@@ -96,10 +93,20 @@ internal class ManageableServerClient : IManageableServer
         }
     }
 
+    /// <summary>
+    /// Gets the dapr client.
+    /// </summary>
+    protected DaprClient DaprClient { get; }
+
+    /// <summary>
+    /// Gets the dapr app id of the process which hosts the server.
+    /// </summary>
+    protected string TargetAppId { get; }
+
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.StartAsync)}", cancellationToken);
+        return this.DaprClient.InvokeMethodAsync(this.TargetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.StartAsync)}", cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -111,7 +118,7 @@ internal class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.ShutdownAsync)}", cancellationToken);
+        return this.DaprClient.InvokeMethodAsync(this.TargetAppId, $"manageable-servers/{this.Id}/{nameof(IManageableServer.ShutdownAsync)}", cancellationToken);
     }
 
     /// <inheritdoc/>
