@@ -203,6 +203,11 @@ public class CastleSiegeContext : IEventStateProvider
     internal DateTime NextParticipantUpdateUtc { get; set; } = DateTime.MaxValue;
 
     /// <summary>
+    /// Gets or sets the next mini-map broadcast time.
+    /// </summary>
+    internal DateTime NextMiniMapUpdateUtc { get; set; } = DateTime.MaxValue;
+
+    /// <summary>
     /// Gets the Ready-state countdown values which have already been sent.
     /// </summary>
     internal HashSet<int> SentReadyCountdownMinutes { get; } = new();
