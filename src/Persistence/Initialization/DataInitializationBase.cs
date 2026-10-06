@@ -256,16 +256,21 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     private async ValueTask CreateConnectServerDefinitionAsync()
     {
         var port = 44405;
+        byte serverId = 0;
         var clients = await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false);
         foreach (var client in clients.OrderBy(c => c.Season))
         {
             var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
             connectServer.InitializeDefaults();
             connectServer.SetGuid(client.Season, client.Episode);
+
+            // The server id is part of the id of the manageable server, so it has to be unique.
+            connectServer.ServerId = serverId;
             connectServer.Client = client;
             connectServer.ClientListenerPort = port;
             connectServer.Description = $"Connect Server ({client.Description})";
             port++;
+            serverId++;
         }
     }
 

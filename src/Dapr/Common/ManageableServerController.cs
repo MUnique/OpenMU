@@ -20,16 +20,18 @@ public class ManageableServerController : ControllerBase
     /// </summary>
     public const string CommandTopic = "ManageableServerCommand";
 
-    private readonly IEnumerable<IManageableServer> _manageableServers;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ManageableServerController"/> class.
     /// </summary>
-    /// <param name="manageableServers">The manageable servers of this process.</param>
-    public ManageableServerController(IEnumerable<IManageableServer> manageableServers)
+    /// <param name="serviceProvider">The service provider, which provides the manageable servers of this process.</param>
+    public ManageableServerController(IServiceProvider serviceProvider)
     {
-        this._manageableServers = manageableServers;
+        this._serviceProvider = serviceProvider;
     }
+
+    private IEnumerable<IManageableServer> ManageableServers => this._serviceProvider.GetManageableServers();
 
     /// <summary>
     /// Shuts the manageable server down.
@@ -39,7 +41,7 @@ public class ManageableServerController : ControllerBase
     [HttpPost(nameof(IManageableServer.ShutdownAsync))]
     public async Task<IActionResult> ShutdownAsync(int serverId)
     {
-        if (this._manageableServers.FirstOrDefault(server => server.Id == serverId) is not { } server)
+        if (this.ManageableServers.FirstOrDefault(server => server.Id == serverId) is not { } server)
         {
             return this.NotFound();
         }
@@ -56,7 +58,7 @@ public class ManageableServerController : ControllerBase
     [HttpPost(nameof(IManageableServer.StartAsync))]
     public async Task<IActionResult> StartAsync(int serverId)
     {
-        if (this._manageableServers.FirstOrDefault(server => server.Id == serverId) is not { } server)
+        if (this.ManageableServers.FirstOrDefault(server => server.Id == serverId) is not { } server)
         {
             return this.NotFound();
         }
@@ -74,7 +76,7 @@ public class ManageableServerController : ControllerBase
     [Topic(DaprClientExtensions.PubSubName, CommandTopic)]
     public async Task<IActionResult> HandleCommandAsync([FromBody] ManageableServerCommandArguments command)
     {
-        if (this._manageableServers.FirstOrDefault(server => server.Id == command.ServerId) is not { } server)
+        if (this.ManageableServers.FirstOrDefault(server => server.Id == command.ServerId) is not { } server)
         {
             // It's hosted by another process.
             return this.NoContent();

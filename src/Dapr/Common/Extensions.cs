@@ -189,6 +189,35 @@ public static class Extensions
     }
 
     /// <summary>
+    /// Publishes multiple servers, whose number is known at runtime only, to other daprized services
+    /// by registering a <see cref="ManagableServerStatePublisher"/>.
+    /// </summary>
+    /// <typeparam name="TServers">The type of the collection of the servers.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The modified service collection.</returns>
+    public static IServiceCollection PublishManageableServers<TServers>(this IServiceCollection services)
+        where TServers : class, IEnumerable<IManageableServer>
+    {
+        services.AddSingleton(s => new ManageableServerGroup(s.GetRequiredService<TServers>()))
+            .AddHostedService<ManagableServerStatePublisher>()
+            .AddControllers().AddApplicationPart(typeof(ManageableServerController).Assembly);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Gets all <see cref="IManageableServer"/>s of this process, which got registered with
+    /// <see cref="PublishManageableServer{TServer}"/> or <see cref="PublishManageableServers{TServers}"/>.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <returns>The manageable servers of this process.</returns>
+    public static IEnumerable<IManageableServer> GetManageableServers(this IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetServices<IManageableServer>()
+            .Concat(serviceProvider.GetServices<ManageableServerGroup>().SelectMany(group => group.Servers));
+    }
+
+    /// <summary>
     /// Configures logging, tracing and the export of all telemetry signals over OTLP.
     /// </summary>
     /// <param name="builder">The web application builder.</param>
