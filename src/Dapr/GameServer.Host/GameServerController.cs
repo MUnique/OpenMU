@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.Host;
 
 using global::Dapr;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 
@@ -28,13 +29,17 @@ public class GameServerController : ControllerBase
     }
 
     /// <summary>
-    /// Shuts down the server gracefully.
+    /// Shuts down the server gracefully and then ends the process, e.g. to apply a changed configuration.
     /// </summary>
-    [HttpPost(nameof(IGameServer.ShutdownAsync))]
-    public async ValueTask ShutdownAsync()
+    /// <param name="applicationLifetime">The application lifetime.</param>
+    /// <remarks>
+    /// The process has to be started again by its host, e.g. by the restart policy of its container.
+    /// </remarks>
+    [HttpPost("RestartAsync")]
+    public async ValueTask RestartAsync([FromServices] IHostApplicationLifetime applicationLifetime)
     {
         await this._gameServer.ShutdownAsync().ConfigureAwait(false);
-        Environment.Exit(0);
+        applicationLifetime.StopApplication();
     }
 
     /// <summary>
@@ -79,6 +84,17 @@ public class GameServerController : ControllerBase
     public ValueTask GuildPlayerKickedAsync([FromBody] string playerName)
     {
         return this._gameServer.GuildPlayerKickedAsync(playerName);
+    }
+
+    /// <summary>
+    /// Notifies the game server that someone tried to log in with an account which is already logged in.
+    /// </summary>
+    /// <param name="data">The arguments of the login attempt.</param>
+    [HttpPost(nameof(IGameServer.PlayerAlreadyLoggedInAsync))]
+    [Topic("pubsub", nameof(IGameServer.PlayerAlreadyLoggedInAsync))]
+    public ValueTask PlayerAlreadyLoggedInAsync([FromBody] PlayerLoggedInArguments data)
+    {
+        return this._gameServer.PlayerAlreadyLoggedInAsync(data.ServerId, data.LoginName);
     }
 
     /// <summary>

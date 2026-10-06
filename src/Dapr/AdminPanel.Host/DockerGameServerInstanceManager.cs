@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel.Host;
 
+using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -25,12 +26,11 @@ public class DockerGameServerInstanceManager : IGameServerInstanceManager
     /// <inheritdoc />
     public async ValueTask RestartAllAsync(bool onDatabaseInit)
     {
-        var gameServers = this._serverProvider.Servers.Where(server => server.Type == ServerType.GameServer).ToList();
+        var gameServers = this._serverProvider.Servers.OfType<GameServerClient>().ToList();
         foreach (var gameServer in gameServers)
         {
-            await gameServer.ShutdownAsync().ConfigureAwait(false);
-
-            // It's started again automatically by the docker host.
+            // The process ends, and it's started again by the restart policy of its container.
+            await gameServer.RestartAsync().ConfigureAwait(false);
         }
     }
 

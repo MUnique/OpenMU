@@ -28,6 +28,14 @@ handled with [Dapr](https://dapr.io/):
 The subsystems of the central server exist just once per deployment and keep
 their state in memory, so they run together in one process.
 
+Each of these containers has a Dapr sidecar in its own container, e.g.
+`gameServer0-dapr`. A subsystem reaches its sidecar through the
+`DAPR_HTTP_ENDPOINT` and `DAPR_GRPC_ENDPOINT` environment variables, and the
+sidecar reaches the subsystem by its container name. So either one can be
+restarted without affecting the other. All containers have a restart policy,
+which starts them again when they crash, or when a game server ends itself to
+apply a changed configuration.
+
 For observability, all subsystems and their Dapr sidecars send logs, metrics and traces with
 [OpenTelemetry](https://opentelemetry.io/) to the `otel-lgtm` container, which
 bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
@@ -93,10 +101,16 @@ number of game servers (just the data of it), and whether test accounts should b
 created. Click *Install* and wait until the database is set up and filled with
 the data.
 
-:::note[Restart the containers after an installation]
-In a distributed deployment, the central server and game server containers have
-to be restarted after the installation finished. The admin panel tells you so
-when it is done.
+:::note[Starting after an installation]
+Until the database is installed, the central server container fails to start and
+gets restarted by Docker, and the game servers wait for their configuration. So
+a short while after the installation finished, all of them should be running.
+The admin panel tells you to restart the central server and game server
+containers — that's only required when one of them doesn't come up:
+
+```bash
+docker compose restart centralServer gameServer0 gameServer1
+```
 :::
 
 ## Differences to the all-in-one deployment
@@ -109,6 +123,9 @@ its own process:
   [Logs and monitoring](../admin-panel/logs-and-monitoring.md).
 * **Live map** links point to the reverse-proxied map application of the
   respective game server container.
+* **Reload configuration and restart all game servers** on the
+  [Servers page](../admin-panel/servers.md) ends the game server processes.
+  Docker starts them again, because of the restart policy of their containers.
 * **Auto start** and **auto update schema** of the
   [System configuration](../admin-panel/game-configuration.md#system) only apply
   to the all-in-one startup. The distributed processes always start their
@@ -142,6 +159,13 @@ The defaults usually work fine, so you should try not to set this variable.
 Usually specified correctly in the docker compose files for each game server. It
 specifies the id of a game server and is used to retrieve the
 `GameServerConfiguration` from the database.
+
+### `DAPR_HTTP_ENDPOINT` and `DAPR_GRPC_ENDPOINT`
+
+Usually specified correctly in the docker compose files. They specify the
+address of the Dapr sidecar of a subsystem, e.g. `http://gameServer0-dapr:3500`
+and `http://gameServer0-dapr:50001`. Without them, the subsystem expects its
+sidecar on `localhost`.
 
 ### `OTEL_EXPORTER_OTLP_ENDPOINT`
 

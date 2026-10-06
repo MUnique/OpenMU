@@ -24,6 +24,7 @@ var services = builder.Services;
 services.AddPeristenceProvider(true)
     .AddPlugInManager(plugInConfigurations)
     .AddManageableServerRegistry()
+    .AddTransient<IDictionary<int, IGameServer>>(s => s.GetRequiredService<IServerProvider>().Servers.OfType<IGameServer>().ToDictionary(server => server.Id))
     .AddSingleton<ILoginServer, LoginServer>()
     .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
     .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>()
