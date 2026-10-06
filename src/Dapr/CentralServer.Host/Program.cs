@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.CentralServer.Host;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GuildServer;
@@ -22,6 +23,7 @@ var builder = DaprService.CreateBuilder("CentralServer", args);
 
 var services = builder.Services;
 services.AddPeristenceProvider()
+    .AddDatabaseHealthCheck()
     .AddPlugInManager(plugInConfigurations)
     .AddIpResolver(args)
     .AddSingleton<GameServerRegistry>();

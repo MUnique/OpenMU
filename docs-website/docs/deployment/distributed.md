@@ -143,6 +143,22 @@ its own process:
   listeners automatically, and the schema update has to be started manually over
   the admin panel.
 
+## Health endpoints
+
+Every OpenMU container answers on port 8080:
+
+* `/health/live` — healthy as long as the process runs. Use it for liveness
+  probes, which restart a process. It doesn't depend on the database, because a
+  restart wouldn't fix that.
+* `/health/ready` — whether the process can do its work, with the result of each
+  check as JSON. The central and game servers are not ready until the database is
+  installed and up to date. A server which is stopped, e.g. in the admin panel,
+  is reported as *degraded*, which still counts as ready. The admin panel is
+  always ready, because the database gets installed through it.
+
+The compose file uses `/health/ready` for the health status of the containers,
+which `docker compose ps` shows.
+
 ## Known limitations
 
 * Each game server is a separate service in the compose file, with its own id
