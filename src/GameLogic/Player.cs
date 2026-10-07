@@ -106,6 +106,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     private string? _loginServerRegistration;
 
+    /// <summary>
+    /// The UTC ticks of the last time the client reported that it's alive, or 0, if it didn't yet.
+    /// </summary>
+    private long _lastAliveReportTicks;
+
     private SkillHitValidator? _skillHitValidator;
 
     private IPetCommandManager? _petCommandManager;
@@ -247,6 +252,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets a custom login result to override the default when login fails.
     /// </summary>
     public Views.Login.LoginResult? LoginResultOverride { get; set; }
+
+    /// <summary>
+    /// Gets the point in time (UTC) when the client of this player reported the last time that it's alive,
+    /// e.g. by its periodic ping. It's <c>null</c>, if the client didn't report it yet, e.g. because it doesn't
+    /// support it, or because this player has no client at all.
+    /// </summary>
+    public DateTime? LastAliveReport => Interlocked.Read(ref this._lastAliveReportTicks) is var ticks and > 0
+        ? new DateTime(ticks, DateTimeKind.Utc)
+        : null;
 
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
@@ -627,6 +641,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this.Account = account;
         await this.PlayerLoggedIn.SafeInvokeAsync(this).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Remembers that the client of this player reported that it's alive.
+    /// </summary>
+    public void ReportAlive()
+    {
+        Interlocked.Exchange(ref this._lastAliveReportTicks, DateTime.UtcNow.Ticks);
     }
 
     /// <summary>

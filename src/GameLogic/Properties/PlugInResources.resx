@@ -1517,4 +1517,16 @@
   <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
     <value>Describes how the game client counts the animations of Multi-Shot: the hits don't contain the animation counter.</value>
   </data>
+  <data name="LostConnectionDetectionPlugIn_Name" xml:space="preserve">
+    <value>Lost connection detection</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Description" xml:space="preserve">
+    <value>Disconnects players whose client stopped to report that it's alive, because their connection got lost without being closed. Otherwise, they would stay connected, and further logins of their account would be rejected.</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Name" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
+    <value>The time after which a connection is considered lost, when its client didn't report that it's alive. The game client reports it every 20 seconds. Zero disables the detection.</value>
+  </data>
 </root>
