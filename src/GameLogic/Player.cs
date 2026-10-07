@@ -486,6 +486,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool IsVaultLocked { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the cash shop is opened by the player.
+    /// </summary>
+    public bool IsCashShopOpen { get; set; }
+
+    /// <summary>
     /// Gets the shop storage.
     /// </summary>
     public IShopStorage? ShopStorage => this._storages.ShopStorage;

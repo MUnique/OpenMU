@@ -286,6 +286,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size..
+        /// </summary>
+        public static string CashShopFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop.
+        /// </summary>
+        public static string CashShopFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the versions of the cash shop script and banner to the player when it enters the game..
+        /// </summary>
+        public static string CashShopVersionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopVersionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop version.
+        /// </summary>
+        public static string CashShopVersionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopVersionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
         /// </summary>
         public static string CastleSiegeGuardsmanTalkPlugIn_Description {
@@ -1042,6 +1078,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gives players Goblin Points of the cash shop for their play time..
+        /// </summary>
+        public static string GoblinPointsForPlayTimePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTimePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Goblin Points for play time.
+        /// </summary>
+        public static string GoblinPointsForPlayTimePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTimePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Golden Invasion event.
         /// </summary>
         public static string GoldenInvasionPlugIn_Description {
@@ -1263,6 +1317,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ImperialGuardianFeaturePlugIn_Name {
             get {
                 return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds an inventory extension to the character when a player uses the Magic Backpack from the cash shop storage..
+        /// </summary>
+        public static string InventoryExtensionDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryExtensionDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Magic Backpack.
+        /// </summary>
+        public static string InventoryExtensionDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryExtensionDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2284,6 +2356,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage..
+        /// </summary>
+        public static string RageFighterCharacterCardDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCardDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Rage Fighter Character Card.
+        /// </summary>
+        public static string RageFighterCharacterCardDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCardDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time..
         /// </summary>
         public static string RaklionPlugIn_Description {
@@ -3222,6 +3312,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage..
+        /// </summary>
+        public static string SummonerCharacterCardDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCardDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Summoner Character Card.
+        /// </summary>
+        public static string SummonerCharacterCardDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCardDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the summoning orb consumption..
         /// </summary>
         public static string SummoningOrbConsumeHandlerPlugIn_Description {
@@ -3704,6 +3812,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string UpgradeItemLevelConfiguration_SuccessRatePercentage_Name {
             get {
                 return ResourceManager.GetString("UpgradeItemLevelConfiguration_SuccessRatePercentage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extends the vault of the account when a player uses the Vault Expansion Certificate from the cash shop storage..
+        /// </summary>
+        public static string VaultExtensionDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("VaultExtensionDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Vault Expansion Certificate.
+        /// </summary>
+        public static string VaultExtensionDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("VaultExtensionDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
