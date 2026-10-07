@@ -105,7 +105,33 @@ internal class CachingRepositoryProvider : RepositoryProvider
     /// <inheritdoc/>
     protected override IRepository CreateGenericRepository(Type entityType, IContextAwareRepositoryProvider repositoryProvider)
     {
+        if (entityType.Assembly.FindPersistentType(entityType) is { } persistentType)
+        {
+            return persistentType.Accept(new CachingGenericRepositoryFactory(this._parent, this.LoggerFactory));
+        }
+
         var repositoryType = typeof(CachingGenericRepository<>).MakeGenericType(entityType);
         return (IRepository)Activator.CreateInstance(repositoryType, this._parent, this.LoggerFactory)!;
+    }
+
+    /// <summary>
+    /// Creates the <see cref="CachingGenericRepository{T}"/> of a persistent type.
+    /// </summary>
+    private sealed class CachingGenericRepositoryFactory : IPersistentTypeVisitor<IRepository>
+    {
+        private readonly IContextAwareRepositoryProvider _repositoryProvider;
+        private readonly ILoggerFactory _loggerFactory;
+
+        public CachingGenericRepositoryFactory(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
+        {
+            this._repositoryProvider = repositoryProvider;
+            this._loggerFactory = loggerFactory;
+        }
+
+        public IRepository Visit<T>()
+            where T : class
+        {
+            return new CachingGenericRepository<T>(this._repositoryProvider, this._loggerFactory);
+        }
     }
 }
