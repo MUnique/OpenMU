@@ -15,4 +15,28 @@
   <data name="ThisOptionIsAddedByTheChaosMachineWithAJewelOfGuardianOnLevel380Items" xml:space="preserve">
     <value>用于380级装备的特殊属性，通过玛雅合成使用守护宝石追加。</value>
   </data>
+  <data name="BlackFenrirMovementSpeed" xml:space="preserve">
+    <value>黑色炎狼兽属性：移动速度</value>
+  </data>
+  <data name="BlackFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>黑色炎狼兽属性：水下移动速度</value>
+  </data>
+  <data name="BlueFenrirMovementSpeed" xml:space="preserve">
+    <value>蓝色炎狼兽属性：移动速度</value>
+  </data>
+  <data name="BlueFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>蓝色炎狼兽属性：水下移动速度</value>
+  </data>
+  <data name="GoldFenrirMovementSpeed" xml:space="preserve">
+    <value>金色炎狼兽属性：移动速度</value>
+  </data>
+  <data name="GoldFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>金色炎狼兽属性：水下移动速度</value>
+  </data>
+  <data name="SocketPackageDoubleDamageChance" xml:space="preserve">
+    <value>镶嵌组合属性：双倍伤害概率 3%</value>
+  </data>
+  <data name="SocketPackageIgnoreDefenseChance" xml:space="preserve">
+    <value>镶嵌组合属性：无视防御概率 1%</value>
+  </data>
 </root>
