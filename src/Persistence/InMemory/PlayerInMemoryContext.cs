@@ -83,6 +83,13 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<Guid?> GetAccountIdByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        var account = await this.GetAccountByCharacterNameAsync(characterName, cancellationToken).ConfigureAwait(false);
+        return account?.GetId();
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<DataModel.Entities.CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)
@@ -91,6 +98,62 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .GetAllAsync(cancellationToken)
             .ConfigureAwait(false);
         return pendingRewards.Where(reward => reward.CharacterId == characterId).ToList();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CashShopStorageItem>> GetCashShopStorageItemsAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await this.Provider.GetRepository<CashShopStorageItem>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return items
+            .Where(item => item.AccountId == accountId)
+            .OrderBy(item => item.AddedAt)
+            .ThenBy(item => item.Id)
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CashShopCoinGrant>> GetPendingCashShopCoinGrantsAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var grants = await this.Provider.GetRepository<CashShopCoinGrant>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return grants
+            .Where(grant => grant.AccountId == accountId && grant.AppliedAt is null)
+            .OrderBy(grant => grant.CreatedAt)
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CashShopCoinGrant>> GetLatestCashShopCoinGrantsAsync(
+        Guid accountId,
+        int maximumCount,
+        CancellationToken cancellationToken = default)
+    {
+        var grants = await this.Provider.GetRepository<CashShopCoinGrant>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return grants
+            .Where(grant => grant.AccountId == accountId)
+            .OrderByDescending(grant => grant.CreatedAt)
+            .Take(maximumCount)
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.CashShopCoinGrant?> GetCashShopCoinGrantByReferenceAsync(
+        string reference,
+        CancellationToken cancellationToken = default)
+    {
+        var grants = await this.Provider.GetRepository<CashShopCoinGrant>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return grants.FirstOrDefault(grant => grant.Reference == reference);
     }
 
     /// <inheritdoc />

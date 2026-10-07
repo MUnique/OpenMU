@@ -910,4 +910,16 @@ Used Fruit Points: {16}
 Used Neg Fruit Points: {17}
 Inventory Extensions: {18}</value>
   </data>
+  <data name="GoblinPointsForPlayTime" xml:space="preserve">
+    <value>You received {0} Goblin Points for your play time.</value>
+  </data>
+  <data name="CashShopVaultExtended" xml:space="preserve">
+    <value>Your vault has been extended.</value>
+  </data>
+  <data name="CashShopInventoryExtended" xml:space="preserve">
+    <value>Your inventory has been extended. Select your character again to use the new space.</value>
+  </data>
+  <data name="CashShopCharacterClassUnlocked" xml:space="preserve">
+    <value>You can now create a character of the class {0}.</value>
+  </data>
 </root>

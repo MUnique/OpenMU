@@ -2559,4 +2559,10 @@
   <data name="GensRewardRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Verarbeitet die Anfrage eines Spielers nach der Belohnung der Gens-Rangliste.</value>
   </data>
+  <data name="PingHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ping-Handler</value>
+  </data>
+  <data name="PingHandlerPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Ping, den der Client periodisch sendet, und der meldet, dass er aktiv ist.</value>
+  </data>
 </root>

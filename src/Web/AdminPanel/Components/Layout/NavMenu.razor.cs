@@ -41,10 +41,14 @@ public partial class NavMenu : IDisposable
     private IServiceProvider ServiceProvider { get; set; } = null!;
 
     /// <summary>
-    /// Gets a value indicating whether the network analyzer is available. It needs the
+    /// Gets or sets a value indicating whether the network analyzer is available. It needs the
     /// servers in the same process, so it's only registered in the all-in-one deployment.
     /// </summary>
-    private bool IsNetworkAnalyzerAvailable => this.ServiceProvider.GetService(typeof(IPacketCaptureService)) is not null;
+    /// <remarks>
+    /// It's determined once, because the menu also renders when its background loading completes,
+    /// which can be after the services of the closed connection were disposed.
+    /// </remarks>
+    private bool IsNetworkAnalyzerAvailable { get; set; }
 
     private Guid? GameConfigurationId { get; set; }
 
@@ -65,6 +69,7 @@ public partial class NavMenu : IDisposable
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
+        this.IsNetworkAnalyzerAvailable = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) is not null;
         await base.OnInitializedAsync().ConfigureAwait(false);
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
         this.UpdateService.UpdatesInstalled += this.OnUpdatesInstalledAsync;

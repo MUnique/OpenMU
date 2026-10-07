@@ -15,4 +15,28 @@
   <data name="ThisOptionIsAddedByTheChaosMachineWithAJewelOfGuardianOnLevel380Items" xml:space="preserve">
     <value>This option is added by the chaos machine with a jewel of guardian on level 380 items.</value>
   </data>
+  <data name="BlackFenrirMovementSpeed" xml:space="preserve">
+    <value>Black Fenrir Option: Movement Speed</value>
+  </data>
+  <data name="BlackFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>Black Fenrir Option: Underwater Movement Speed</value>
+  </data>
+  <data name="BlueFenrirMovementSpeed" xml:space="preserve">
+    <value>Blue Fenrir Option: Movement Speed</value>
+  </data>
+  <data name="BlueFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>Blue Fenrir Option: Underwater Movement Speed</value>
+  </data>
+  <data name="GoldFenrirMovementSpeed" xml:space="preserve">
+    <value>Gold Fenrir Option: Movement Speed</value>
+  </data>
+  <data name="GoldFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>Gold Fenrir Option: Underwater Movement Speed</value>
+  </data>
+  <data name="SocketPackageDoubleDamageChance" xml:space="preserve">
+    <value>Socket package option: Double Damage Chance 3%</value>
+  </data>
+  <data name="SocketPackageIgnoreDefenseChance" xml:space="preserve">
+    <value>Socket package option: Ignore Defense Chance 1%</value>
+  </data>
 </root>

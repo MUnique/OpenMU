@@ -101,3 +101,8 @@ rather than the replacements in the later
 [Season X renaming notice](https://mu.zhaouc.com/news/Notice/1265.html).
 Technical option and armor-bonus labels describe the server configuration;
 they are not presented as verbatim client UI text.
+
+Item option combination bonus descriptions (Fenrir movement bonuses and socket
+package bonuses) also use built-in resources. For an existing configuration, link
+the names and review the translations on this page before applying them. Custom
+descriptions are preserved unless explicitly selected.

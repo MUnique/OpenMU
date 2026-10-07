@@ -27,7 +27,16 @@ public static class AdminRoles
     public static string Administrator => nameof(AdminRole.Administrator);
 
     /// <summary>
-    /// Gets all defined roles, from the least to the most privileged one.
+    /// Gets the role which is allowed to grant cash shop coins to accounts.
+    /// </summary>
+    /// <remarks>
+    /// It's not one of the <see cref="AdminRole"/>s which build up on each other, so that it can be given
+    /// alone, e.g. to the API key of a payment provider. An <see cref="Administrator"/> has it implicitly.
+    /// </remarks>
+    public static string CashShop => "CashShop";
+
+    /// <summary>
+    /// Gets all defined roles which build up on each other, from the least to the most privileged one.
     /// </summary>
     public static IReadOnlyList<string> All { get; } = Enum.GetNames<AdminRole>();
 
@@ -38,10 +47,16 @@ public static class AdminRoles
     /// <returns>The role itself and all roles which are implied by it.</returns>
     /// <remarks>
     /// The roles build up on each other, so an <see cref="Administrator"/> is implicitly
-    /// an <see cref="Operator"/> and a <see cref="Viewer"/> as well.
+    /// an <see cref="Operator"/> and a <see cref="Viewer"/> as well, and has the <see cref="CashShop"/> role.
     /// </remarks>
     public static IEnumerable<string> GetEffectiveRoles(string role)
     {
+        if (string.Equals(role, CashShop, StringComparison.OrdinalIgnoreCase))
+        {
+            yield return CashShop;
+            yield break;
+        }
+
         if (!Enum.TryParse<AdminRole>(role, out var parsedRole) || !Enum.IsDefined(parsedRole))
         {
             yield break;
@@ -53,6 +68,11 @@ public static class AdminRoles
             {
                 yield return candidate.ToString();
             }
+        }
+
+        if (parsedRole == AdminRole.Administrator)
+        {
+            yield return CashShop;
         }
     }
 }
