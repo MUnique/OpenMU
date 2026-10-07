@@ -30,6 +30,36 @@ public class LostConnectionDetectionPlugInTest
     }
 
     /// <summary>
+    /// Tests that the ping isn't remembered while the player is not in the world, because not every client
+    /// sends it there, e.g. at the character selection.
+    /// </summary>
+    [Test]
+    public async ValueTask PingOutsideOfTheWorldIsIgnoredAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        await player.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        await new PingHandlerPlugIn().HandlePacketAsync(player, new byte[Ping.Length]).ConfigureAwait(false);
+
+        Assert.That(player.LastAliveReport, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that leaving the world resets the last report, so that a player whose client stops to report it
+    /// at the character selection isn't considered as lost.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavingTheWorldResetsTheReportAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.ReportAlive();
+
+        await player.RemoveFromGameAsync().ConfigureAwait(false);
+
+        Assert.That(player.LastAliveReport, Is.Null);
+    }
+
+    /// <summary>
     /// Tests that only a player whose client stopped to report that it's alive is disconnected.
     /// A player whose client never reported it, e.g. because it doesn't support it, stays connected.
     /// </summary>

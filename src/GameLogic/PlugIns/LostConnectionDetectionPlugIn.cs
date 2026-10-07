@@ -15,9 +15,10 @@ using MUnique.OpenMU.PlugIns;
 /// browser tab is frozen. The server doesn't notice that by itself, so the player would stay connected, and its
 /// account would stay registered at the login server - every further login of the account would be rejected.
 /// The game client reports periodically that it's alive (the ping, every 20 seconds), even when the player
-/// doesn't do anything. When these reports stop for longer than the configured timeout, the connection is
-/// considered lost and the player is disconnected.
-/// Players whose client never reported it, e.g. because it doesn't support it, are not affected.
+/// doesn't do anything. When these reports stop for longer than the configured timeout while the player is in
+/// the world, the connection is considered lost and the player is disconnected.
+/// Players whose client didn't report it since entering the world, e.g. because it doesn't support it, are not
+/// affected. Neither are players outside of the world, because not every client reports it there.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.LostConnectionDetectionPlugIn_Name), Description = nameof(PlugInResources.LostConnectionDetectionPlugIn_Description), ResourceType = typeof(PlugInResources))]

@@ -255,8 +255,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Gets the point in time (UTC) when the client of this player reported the last time that it's alive,
-    /// e.g. by its periodic ping. It's <c>null</c>, if the client didn't report it yet, e.g. because it doesn't
-    /// support it, or because this player has no client at all.
+    /// e.g. by its periodic ping, while the player is in the world. It's <c>null</c>, if the client didn't report
+    /// it since the player entered the world, e.g. because it doesn't support it, or because this player has no
+    /// client at all.
     /// </summary>
     public DateTime? LastAliveReport => Interlocked.Read(ref this._lastAliveReportTicks) is var ticks and > 0
         ? new DateTime(ticks, DateTimeKind.Utc)
@@ -644,10 +645,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Remembers that the client of this player reported that it's alive.
+    /// Remembers that the client of this player reported that it's alive, if the player is in the world.
     /// </summary>
+    /// <remarks>
+    /// Outside of the world, it's not remembered, because not every client reports it there. E.g. the web client
+    /// only sends its ping while a character is in the world - a player which waits at the character selection
+    /// would otherwise be considered as lost.
+    /// </remarks>
     public void ReportAlive()
     {
+        if (this.SelectedCharacter is null)
+        {
+            return;
+        }
+
         Interlocked.Exchange(ref this._lastAliveReportTicks, DateTime.UtcNow.Ticks);
     }
 
@@ -1321,6 +1332,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.OpenedNpc = null;
 
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
+        Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
+
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
         try
