@@ -416,21 +416,22 @@ public class PlugInManager
     private IPlugInContainer<TPlugInInterface> CreateProxy<TPlugInInterface>()
         where TPlugInInterface : class
     {
-        IPlugInContainer<TPlugInInterface> proxy;
         var strategyPlugInInterface = typeof(TPlugInInterface).GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IStrategyPlugIn<>));
         if (strategyPlugInInterface != null)
         {
             var keyType = strategyPlugInInterface.GetGenericArguments()[0];
             var providerType = typeof(StrategyPlugInProvider<,>).MakeGenericType(keyType, typeof(TPlugInInterface));
-            proxy = (IPlugInContainer<TPlugInInterface>)ActivatorUtilities.CreateInstance(this._serviceContainer, providerType);
-        }
-        else
-        {
-            var proxyGenerator = new PlugInProxyTypeGenerator();
-            proxy = proxyGenerator.GenerateProxy<TPlugInInterface>(this);
+            return (IPlugInContainer<TPlugInInterface>)ActivatorUtilities.CreateInstance(this._serviceContainer, providerType);
         }
 
-        return proxy;
+        if (PlugInProxyRegistry.TryCreate<TPlugInInterface>(this, out var generatedProxy))
+        {
+            return generatedProxy;
+        }
+
+        // Without a proxy which has been generated at compile time, we generate it now.
+        var proxyGenerator = new PlugInProxyTypeGenerator();
+        return proxyGenerator.GenerateProxy<TPlugInInterface>(this);
     }
 
     private TPlugInClass CreatePlugInInstance<TPlugInClass>()
