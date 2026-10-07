@@ -321,4 +321,10 @@
       <DependentUpon>ArmorSetNames.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\PlugIns.Generators\MUnique.OpenMU.PlugIns.Generators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>
