@@ -101,6 +101,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Account? _account;
 
+    /// <summary>
+    /// The login name with which this player is registered at the login server, until it's released.
+    /// </summary>
+    private string? _loginServerRegistration;
+
     private SkillHitValidator? _skillHitValidator;
 
     private IPetCommandManager? _petCommandManager;
@@ -622,6 +627,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this.Account = account;
         await this.PlayerLoggedIn.SafeInvokeAsync(this).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Remembers that the login server accepted the login of this player with the specified login name.
+    /// </summary>
+    /// <remarks>
+    /// It's remembered right when the login server accepted it, before the account is assigned, so that
+    /// the registration is released at the login server even when the player disconnects in between.
+    /// Otherwise, the account would stay registered as connected, and every further login would be rejected.
+    /// </remarks>
+    /// <param name="loginName">The login name.</param>
+    public void SetLoginServerRegistration(string loginName)
+    {
+        Volatile.Write(ref this._loginServerRegistration, loginName);
+    }
+
+    /// <summary>
+    /// Releases the registration of this player at the login server. The returned login name has to be logged off there.
+    /// </summary>
+    /// <returns>The login name with which this player was registered at the login server, or <c>null</c>, if it isn't registered (anymore).
+    /// Each registration is returned only once, so it's logged off only once.</returns>
+    public string? ReleaseLoginServerRegistration()
+    {
+        return Interlocked.Exchange(ref this._loginServerRegistration, null);
     }
 
     /// <summary>
