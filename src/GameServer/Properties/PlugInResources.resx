@@ -2561,6 +2561,12 @@
   <data name="GensRewardRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of a player for the gens ranking reward.</value>
   </data>
+  <data name="PingHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ping Handler</value>
+  </data>
+  <data name="PingHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the ping which the client sends periodically, which reports that it's alive.</value>
+  </data>
   <data name="CashShopGroupHandlerPlugIn_Name" xml:space="preserve">
     <value>Cash shop group handler</value>
   </data>

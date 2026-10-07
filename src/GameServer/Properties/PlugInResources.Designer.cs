@@ -7535,5 +7535,10 @@ namespace MUnique.OpenMU.GameServer.Properties {
         /// <summary>Gets the localized EnterMarketPlace_Description text.</summary>
         public static string EnterMarketPlace_Description => ResourceManager.GetString("EnterMarketPlace_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized PingHandlerPlugIn_Name text.</summary>
+        public static string PingHandlerPlugIn_Name => ResourceManager.GetString("PingHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
+        public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
     }
 }

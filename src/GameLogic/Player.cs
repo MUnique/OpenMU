@@ -101,6 +101,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Account? _account;
 
+    /// <summary>
+    /// The login name with which this player is registered at the login server, until it's released.
+    /// </summary>
+    private string? _loginServerRegistration;
+
+    /// <summary>
+    /// The UTC ticks of the last time the client reported that it's alive, or 0, if it didn't yet.
+    /// </summary>
+    private long _lastAliveReportTicks;
+
     private SkillHitValidator? _skillHitValidator;
 
     private IPetCommandManager? _petCommandManager;
@@ -242,6 +252,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets a custom login result to override the default when login fails.
     /// </summary>
     public Views.Login.LoginResult? LoginResultOverride { get; set; }
+
+    /// <summary>
+    /// Gets the point in time (UTC) when the client of this player reported the last time that it's alive,
+    /// e.g. by its periodic ping, while the player is in the world. It's <c>null</c>, if the client didn't report
+    /// it since the player entered the world, e.g. because it doesn't support it, or because this player has no
+    /// client at all.
+    /// </summary>
+    public DateTime? LastAliveReport => Interlocked.Read(ref this._lastAliveReportTicks) is var ticks and > 0
+        ? new DateTime(ticks, DateTimeKind.Utc)
+        : null;
 
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
@@ -627,6 +647,48 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this.Account = account;
         await this.PlayerLoggedIn.SafeInvokeAsync(this).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Remembers that the client of this player reported that it's alive, if the player is in the world.
+    /// </summary>
+    /// <remarks>
+    /// Outside of the world, it's not remembered, because not every client reports it there. E.g. the web client
+    /// only sends its ping while a character is in the world - a player which waits at the character selection
+    /// would otherwise be considered as lost.
+    /// </remarks>
+    public void ReportAlive()
+    {
+        if (this.SelectedCharacter is null)
+        {
+            return;
+        }
+
+        Interlocked.Exchange(ref this._lastAliveReportTicks, DateTime.UtcNow.Ticks);
+    }
+
+    /// <summary>
+    /// Remembers that the login server accepted the login of this player with the specified login name.
+    /// </summary>
+    /// <remarks>
+    /// It's remembered right when the login server accepted it, before the account is assigned, so that
+    /// the registration is released at the login server even when the player disconnects in between.
+    /// Otherwise, the account would stay registered as connected, and every further login would be rejected.
+    /// </remarks>
+    /// <param name="loginName">The login name.</param>
+    public void SetLoginServerRegistration(string loginName)
+    {
+        Volatile.Write(ref this._loginServerRegistration, loginName);
+    }
+
+    /// <summary>
+    /// Releases the registration of this player at the login server. The returned login name has to be logged off there.
+    /// </summary>
+    /// <returns>The login name with which this player was registered at the login server, or <c>null</c>, if it isn't registered (anymore).
+    /// Each registration is returned only once, so it's logged off only once.</returns>
+    public string? ReleaseLoginServerRegistration()
+    {
+        return Interlocked.Exchange(ref this._loginServerRegistration, null);
     }
 
     /// <summary>
@@ -1275,6 +1337,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.OpenedNpc = null;
 
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
+        Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
+
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
         try

@@ -4315,5 +4315,16 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Description text.</summary>
         public static string MultiShotAnimationCounterStrategy_Description => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Name text.</summary>
+        public static string LostConnectionDetectionPlugIn_Name => ResourceManager.GetString("LostConnectionDetectionPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Description text.</summary>
+        public static string LostConnectionDetectionPlugIn_Description => ResourceManager.GetString("LostConnectionDetectionPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Name text.</summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Name => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
     }
 }

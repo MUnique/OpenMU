@@ -1716,4 +1716,16 @@
   <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
     <value>Der NPC, der von diesem Plugin verarbeitet wird. Wenn kein NPC festgelegt ist, verarbeitet das Plugin keinen NPC.</value>
   </data>
+  <data name="LostConnectionDetectionPlugIn_Name" xml:space="preserve">
+    <value>Erkennung verlorener Verbindungen</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Description" xml:space="preserve">
+    <value>Trennt Spieler, deren Client nicht mehr meldet, dass er aktiv ist, weil ihre Verbindung verloren ging, ohne geschlossen zu werden. Sonst blieben sie verbunden, und weitere Anmeldungen ihres Kontos würden abgelehnt.</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Name" xml:space="preserve">
+    <value>Zeitlimit</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
+    <value>Die Zeit, nach der eine Verbindung als verloren gilt, wenn ihr Client nicht gemeldet hat, dass er aktiv ist. Der Spielclient meldet es alle 20 Sekunden. Null deaktiviert die Erkennung.</value>
+  </data>
 </root>
