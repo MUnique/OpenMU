@@ -2061,4 +2061,16 @@
   <data name="LittleWarriorsCloak" xml:space="preserve">
     <value>小武者披风</value>
   </data>
+  <data name="MagicBackpack" xml:space="preserve">
+    <value>魔法背包</value>
+  </data>
+  <data name="VaultExpansionCertificate" xml:space="preserve">
+    <value>仓库扩展证书</value>
+  </data>
+  <data name="SummonerCharacterCard" xml:space="preserve">
+    <value>召唤术师角色卡</value>
+  </data>
+  <data name="RageFighterCharacterCard" xml:space="preserve">
+    <value>格斗家角色卡</value>
+  </data>
 </root>

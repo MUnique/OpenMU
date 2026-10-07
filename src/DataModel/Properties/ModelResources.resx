@@ -100,6 +100,24 @@
   <data name="Account_IsVaultExtended_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="Account_WCoinC_Caption" xml:space="preserve">
+    <value>WCoin (C)</value>
+  </data>
+  <data name="Account_WCoinC_Description" xml:space="preserve">
+    <value>The available WCoin (C) of the cash shop.</value>
+  </data>
+  <data name="Account_WCoinP_Caption" xml:space="preserve">
+    <value>WCoin (P)</value>
+  </data>
+  <data name="Account_WCoinP_Description" xml:space="preserve">
+    <value>The available WCoin (P) of the cash shop.</value>
+  </data>
+  <data name="Account_GoblinPoints_Caption" xml:space="preserve">
+    <value>Goblin Points</value>
+  </data>
+  <data name="Account_GoblinPoints_Description" xml:space="preserve">
+    <value>The available Goblin Points of the cash shop.</value>
+  </data>
   <data name="Account_IsTemplate_Caption" xml:space="preserve">
     <value>Is template account</value>
   </data>

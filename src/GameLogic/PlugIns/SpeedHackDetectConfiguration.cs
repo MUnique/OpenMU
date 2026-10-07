@@ -14,9 +14,13 @@ public class SpeedHackDetectConfiguration
     /// <summary>
     /// Gets or sets a value indicating whether to auto-ban players that are cheating with speedhacks.
     /// </summary>
-    [DefaultValue(true)]
+    /// <remarks>
+    /// The checks are heuristics based on the time when the server processes the packets, so they
+    /// can be affected by network jitter. Because a ban is a heavy action, it's disabled by default.
+    /// </remarks>
+    [DefaultValue(false)]
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_AutoBan_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
-    public bool AutoBan { get; set; } = true;
+    public bool AutoBan { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to disconnect players that are cheating with speedhacks.
@@ -51,10 +55,13 @@ public class SpeedHackDetectConfiguration
     /// <summary>
     /// Gets or sets the walk speed check tolerance threshold in milliseconds.
     /// Represents the maximum deficits allowed compared to expectations before a violation is flagged.
+    /// It's also the maximum walking time which is credited while no walk packets arrive, so it defines
+    /// how many tiles may arrive in a burst (e.g. after a network stall) without being flagged.
+    /// The value is scaled by the step delay of the player, relative to the normal step delay of 300 ms.
     /// </summary>
-    [DefaultValue(900)]
+    [DefaultValue(2000)]
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
-    public int WalkSpeedToleranceMs { get; set; } = 900;
+    public int WalkSpeedToleranceMs { get; set; } = 2000;
 
     /// <summary>
     /// Gets or sets the maximum distance offset between client walk start position and server position

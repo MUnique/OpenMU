@@ -162,7 +162,7 @@ public class SocketSystem : InitializerBase
     {
         var doubleDamageChance = this.Context.CreateNew<ItemOptionCombinationBonus>();
         doubleDamageChance.Number = 1;
-        doubleDamageChance.Description = "Socket package option: Double Damage Chance 3%";
+        doubleDamageChance.Description = LocalizedString.FromResource(() => ItemOptionDescriptions.SocketPackageDoubleDamageChance);
         doubleDamageChance.AppliesMultipleTimes = false;
         doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Fire, 1));
         doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Lightning, 1));
@@ -180,7 +180,7 @@ public class SocketSystem : InitializerBase
 
         var ignoreDamageChance = this.Context.CreateNew<ItemOptionCombinationBonus>();
         ignoreDamageChance.Number = 2;
-        ignoreDamageChance.Description = "Socket package option: Ignore Defense Chance 1%";
+        ignoreDamageChance.Description = LocalizedString.FromResource(() => ItemOptionDescriptions.SocketPackageIgnoreDefenseChance);
         ignoreDamageChance.AppliesMultipleTimes = false;
         ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Fire, 1));
         ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Lightning, 1));

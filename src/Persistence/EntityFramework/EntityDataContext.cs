@@ -61,6 +61,16 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<CastleSiegePendingReward> CastleSiegePendingRewards => this.Set<CastleSiegePendingReward>();
 
     /// <summary>
+    /// Gets the items of the cash shop storages of the accounts.
+    /// </summary>
+    internal DbSet<CashShopStorageItem> CashShopStorageItems => this.Set<CashShopStorageItem>();
+
+    /// <summary>
+    /// Gets the grants of cash shop coins to the accounts.
+    /// </summary>
+    internal DbSet<CashShopCoinGrant> CashShopCoinGrants => this.Set<CashShopCoinGrant>();
+
+    /// <summary>
     /// Gets the gens memberships of the characters.
     /// </summary>
     internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
@@ -114,6 +124,8 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CastleSiegePendingReward>().Apply();
         modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
         modelBuilder.Entity<CastleSiegeNpcState>().Apply();
+        modelBuilder.Entity<CashShopStorageItem>().Apply();
+        modelBuilder.Entity<CashShopCoinGrant>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();

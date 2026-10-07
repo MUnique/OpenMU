@@ -55,5 +55,61 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ThisOptionIsAddedByTheChaosMachineWithAJewelOfGuardianOnLevel380Items", resourceCulture);
             }
         }
+
+        /// <summary>Gets BlackFenrirMovementSpeed from the configuration name resources.</summary>
+        public static string BlackFenrirMovementSpeed {
+            get {
+                return ResourceManager.GetString("BlackFenrirMovementSpeed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BlackFenrirUnderwaterMovementSpeed from the configuration name resources.</summary>
+        public static string BlackFenrirUnderwaterMovementSpeed {
+            get {
+                return ResourceManager.GetString("BlackFenrirUnderwaterMovementSpeed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BlueFenrirMovementSpeed from the configuration name resources.</summary>
+        public static string BlueFenrirMovementSpeed {
+            get {
+                return ResourceManager.GetString("BlueFenrirMovementSpeed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BlueFenrirUnderwaterMovementSpeed from the configuration name resources.</summary>
+        public static string BlueFenrirUnderwaterMovementSpeed {
+            get {
+                return ResourceManager.GetString("BlueFenrirUnderwaterMovementSpeed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldFenrirMovementSpeed from the configuration name resources.</summary>
+        public static string GoldFenrirMovementSpeed {
+            get {
+                return ResourceManager.GetString("GoldFenrirMovementSpeed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldFenrirUnderwaterMovementSpeed from the configuration name resources.</summary>
+        public static string GoldFenrirUnderwaterMovementSpeed {
+            get {
+                return ResourceManager.GetString("GoldFenrirUnderwaterMovementSpeed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SocketPackageDoubleDamageChance from the configuration name resources.</summary>
+        public static string SocketPackageDoubleDamageChance {
+            get {
+                return ResourceManager.GetString("SocketPackageDoubleDamageChance", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SocketPackageIgnoreDefenseChance from the configuration name resources.</summary>
+        public static string SocketPackageIgnoreDefenseChance {
+            get {
+                return ResourceManager.GetString("SocketPackageIgnoreDefenseChance", resourceCulture);
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A deserializer which parses the json retrieved from the postgres database by using a query built by the <see cref="JsonQueryBuilder"/>.
-/// We need to register a special binary converter, because postgres provides binary data in a non-standard format.
+/// We need to register special converters, because postgres provides binary data and intervals in non-standard formats.
 /// </summary>
 public class JsonObjectDeserializer : MUnique.OpenMU.Persistence.Json.JsonObjectDeserializer
 {
@@ -17,6 +17,7 @@ public class JsonObjectDeserializer : MUnique.OpenMU.Persistence.Json.JsonObject
     protected override void BeforeDeserialize(JsonSerializerOptions options)
     {
         base.BeforeDeserialize(options);
+        options.Converters.Add(new IntervalAsTimeSpanJsonConverter());
         foreach (var converter in JsonConverterRegistry.Converters)
         {
             options.Converters.Add(converter);

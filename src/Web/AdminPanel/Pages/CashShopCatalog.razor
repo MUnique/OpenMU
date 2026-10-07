@@ -1,0 +1,203 @@
+﻿@page "/cash-shop-catalog"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration.Items
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+<PageTitle>OpenMU: @Resources.CashShopCatalog</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.CashShopCatalog" />
+<h1>@Resources.CashShopCatalog</h1>
+
+<div class="alert alert-info">@Resources.CashShopCatalogDescription</div>
+
+@if (this._isLoading)
+{
+    <p>@Resources.Loading</p>
+}
+else if (this._configuration is not { } configuration)
+{
+    <p>@Resources.CashShopNotConfigured</p>
+    <NavLink class="btn btn-primary" href="config-updates">@Resources.Updates</NavLink>
+}
+else if (this._selectedPackage is not { } package)
+{
+    <CascadingValue TValue="IContext" Value="this._persistenceContext">
+        <EditForm Model="configuration" OnValidSubmit="this.OnSaveAsync" Context="editContext">
+            <h2>@Resources.CashShopVersions</h2>
+            <table class="table table-sm w-auto">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>@Resources.CashShopSaleZone</th>
+                    <th>@Resources.CashShopYear</th>
+                    <th>@Resources.CashShopYearId</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th>@Resources.CashShopScriptVersion</th>
+                    <td><InputShort class="form-control" id="scriptSaleZone" @bind-Value="configuration.ScriptSaleZone" /></td>
+                    <td><InputShort class="form-control" id="scriptYear" @bind-Value="configuration.ScriptYear" /></td>
+                    <td><InputShort class="form-control" id="scriptYearId" @bind-Value="configuration.ScriptYearId" /></td>
+                </tr>
+                <tr>
+                    <th>@Resources.CashShopBannerVersion</th>
+                    <td><InputShort class="form-control" id="bannerSaleZone" @bind-Value="configuration.BannerSaleZone" /></td>
+                    <td><InputShort class="form-control" id="bannerYear" @bind-Value="configuration.BannerYear" /></td>
+                    <td><InputShort class="form-control" id="bannerYearId" @bind-Value="configuration.BannerYearId" /></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h2>@Resources.CashShopPackages</h2>
+            <div class="row g-2 mb-2 align-items-center">
+                <div class="col-auto">
+                    <input type="search" class="form-control" id="packageSearch" placeholder="@Resources.Search" @bind="this._searchText" @bind:event="oninput" />
+                </div>
+                <div class="col-auto form-check">
+                    <input type="checkbox" class="form-check-input" id="onlyForSale" @bind="this._onlyForSale" />
+                    <label class="form-check-label" for="onlyForSale">@Resources.CashShopOnlyForSale</label>
+                </div>
+            </div>
+            @* Every cell needs content: the shared grid style hides rows with an empty cell, which are QuickGrid's filler rows. *@
+            <div class="table-responsive">
+            <QuickGrid Items="@this.FilteredPackages" Pagination="@this._pagination" Theme="none" Class="table table-striped table-sm">
+                <PropertyColumn Title="@Resources.CashShopPackageSequence" Property="@(p => p.PackageSequence)" Sortable="true" />
+                <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(p => string.IsNullOrEmpty(p.Name) ? NoValue : p.Name)" Sortable="true" />
+                <TemplateColumn Title="@Resources.CashShopCoinType">@CashShopCoinCaption.Get(context.CoinType)</TemplateColumn>
+                <TemplateColumn Title="@Resources.CashShopPrice">@GetPriceText(context)</TemplateColumn>
+                <TemplateColumn Title="@Resources.CashShopForSale">@GetFlagText(context.IsForSale)</TemplateColumn>
+                <TemplateColumn Title="@Resources.CashShopGiftable">@GetFlagText(context.IsGiftable)</TemplateColumn>
+                <TemplateColumn Title="@Resources.CashShopBundle">@GetFlagText(context.IsBundle)</TemplateColumn>
+                <TemplateColumn Title="@Resources.CashShopSellable">
+                    @if (CashShopCatalogCheck.IsSellable(context))
+                    {
+                        <span class="text-success">✓</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">@string.Join(" ", CashShopCatalogCheck.GetIssues(configuration, context))</span>
+                    }
+                </TemplateColumn>
+                <TemplateColumn>
+                    <button type="button" class="btn btn-sm btn-primary" @onclick="@(() => this.OnEditPackage(context))"><span class="oi oi-pencil" aria-hidden="true"></span> @Resources.Edit</button>
+                </TemplateColumn>
+            </QuickGrid>
+            </div>
+            <LocalizedPaginator State="@this._pagination" />
+
+            <div class="mt-3">
+                <button type="button" class="btn btn-success me-1" @onclick="this.OnAddPackage">@Resources.CashShopAddPackage</button>
+                <button type="submit" class="btn btn-primary me-1">@Resources.SaveChanges</button>
+                <button type="button" class="btn btn-secondary" @onclick="this.OnDiscardAsync">@Resources.DiscardChanges</button>
+            </div>
+        </EditForm>
+    </CascadingValue>
+}
+else
+{
+    <div class="d-flex flex-row">
+        <button type="button" class="btn btn-secondary me-3" @onclick="this.OnBackToList">&lt; @Resources.Back</button>
+        <h2>@(string.IsNullOrEmpty(package.Name) ? package.PackageSequence.ToString() : $"{package.PackageSequence}: {package.Name}")</h2>
+    </div>
+    <hr />
+    @foreach (var issue in CashShopCatalogCheck.GetIssues(configuration, package))
+    {
+        <div class="alert alert-warning py-1">@issue</div>
+    }
+
+    <CascadingValue TValue="IContext" Value="this._persistenceContext">
+        <EditForm Model="package" OnValidSubmit="this.OnSaveAsync" Context="editContext">
+            <div class="row g-2 mb-3">
+                <div class="col-md-2">
+                    <label class="form-label" for="packageSequence">@Resources.CashShopPackageSequence</label>
+                    <InputNumber class="form-control" id="packageSequence" @bind-Value="package.PackageSequence" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="packageName">@Resources.ConfigurationEntryName</label>
+                    <InputText class="form-control" id="packageName" @bind-Value="package.Name" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="coinType">@Resources.CashShopCoinType</label>
+                    <InputSelect class="form-select" id="coinType" @bind-Value="package.CoinType">
+                        @foreach (var coinType in Enum.GetValues<CashShopCoinType>())
+                        {
+                            <option value="@coinType">@CashShopCoinCaption.Get(coinType)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="packagePrice">@Resources.CashShopBundlePrice</label>
+                    <InputNumber class="form-control" id="packagePrice" min="0" @bind-Value="package.Price" disabled="@(!package.IsBundle)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <InputCheckbox class="form-check-input" id="isForSale" @bind-Value="package.IsForSale" />
+                    <label class="form-check-label" for="isForSale">@Resources.CashShopForSale</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <InputCheckbox class="form-check-input" id="isGiftable" @bind-Value="package.IsGiftable" />
+                    <label class="form-check-label" for="isGiftable">@Resources.CashShopGiftable</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <InputCheckbox class="form-check-input" id="isBundle" @bind-Value="package.IsBundle" />
+                    <label class="form-check-label" for="isBundle">@Resources.CashShopBundle</label>
+                </div>
+            </div>
+
+            <h3>@Resources.CashShopProducts</h3>
+            <p class="text-muted">@(package.IsBundle ? Resources.CashShopBundleProductsDescription : Resources.CashShopPriceOptionsDescription)</p>
+            <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                <tr>
+                    <th>@Resources.CashShopProductSequence</th>
+                    <th>@Resources.CashShopPriceSequence</th>
+                    <th>@Resources.CashShopPrice</th>
+                    <th class="w-25">@Resources.CashShopItem</th>
+                    <th>@Resources.CashShopItemLevel</th>
+                    <th>@Resources.CashShopQuantity</th>
+                    <th>@Resources.CashShopDurationHours</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var product in package.Products.OrderBy(p => p.PriceSequence).ToList())
+                {
+                    <tr @key="product">
+                        <td><InputNumber class="form-control form-control-sm" @bind-Value="product.ProductSequence" /></td>
+                        <td><InputNumber class="form-control form-control-sm" @bind-Value="product.PriceSequence" /></td>
+                        <td><InputNumber class="form-control form-control-sm" min="0" @bind-Value="product.Price" disabled="@package.IsBundle" /></td>
+                        <td>
+                            <Typeahead TItem="ItemDefinition" TValue="ItemDefinition"
+                                       @bind-Value="product.ItemDefinition"
+                                       SearchMethod="@((text, _) => this.LookupController.GetSuggestionsAsync<ItemDefinition>(text, this._persistenceContext))"
+                                       EnableDropDown="true"
+                                       MaximumSuggestions="20"
+                                       Placeholder="@Resources.Search">
+                                <SelectedTemplate Context="item">@GetItemCaption(item)</SelectedTemplate>
+                                <ResultTemplate Context="item">@GetItemCaption(item)</ResultTemplate>
+                            </Typeahead>
+                        </td>
+                        <td><InputByte class="form-control form-control-sm" @bind-Value="product.ItemLevel" /></td>
+                        <td><InputNumber class="form-control form-control-sm" min="1" @bind-Value="product.Quantity" /></td>
+                        <td><input type="number" class="form-control form-control-sm" min="0" value="@((int)product.Duration.TotalHours)" @onchange="@(e => SetDurationHours(product, e.Value))" /></td>
+                        <td><button type="button" class="btn btn-sm btn-danger" @onclick="@(() => this.OnRemoveProductAsync(package, product))">@Resources.Delete</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+            <button type="button" class="btn btn-sm btn-success mb-3" @onclick="@(() => this.OnAddProduct(package))">@Resources.CashShopAddProduct</button>
+            <hr />
+            <button type="submit" class="btn btn-primary me-1">@Resources.SaveChanges</button>
+            <button type="button" class="btn btn-secondary me-1" @onclick="this.OnDiscardAsync">@Resources.DiscardChanges</button>
+            <button type="button" class="btn btn-danger" @onclick="@(() => this.OnDeletePackageAsync(package))">@Resources.CashShopDeletePackage</button>
+        </EditForm>
+    </CascadingValue>
+}

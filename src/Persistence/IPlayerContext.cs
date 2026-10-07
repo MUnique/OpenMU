@@ -102,6 +102,14 @@ public interface IPlayerContext : IContext
     ValueTask<Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the identifier of the account of a character, without loading the account.
+    /// </summary>
+    /// <param name="characterName">The character name.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The identifier of the account; Otherwise, null, if the character doesn't exist.</returns>
+    ValueTask<Guid?> GetAccountIdByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets pending Castle Siege rewards for a character.
     /// </summary>
     /// <param name="characterId">The persistent character identifier.</param>
@@ -109,6 +117,48 @@ public interface IPlayerContext : IContext
     /// <returns>The pending Castle Siege rewards.</returns>
     ValueTask<IReadOnlyList<CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
         Guid characterId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the items of the cash shop storage of an account, ordered by the time they were added.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The items of the cash shop storage.</returns>
+    ValueTask<IReadOnlyList<CashShopStorageItem>> GetCashShopStorageItemsAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the grants of cash shop coins to an account which are not applied yet, ordered by the time they were granted.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The pending grants.</returns>
+    ValueTask<IReadOnlyList<CashShopCoinGrant>> GetPendingCashShopCoinGrantsAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the latest grants of cash shop coins to an account, including the applied ones, ordered from the newest to the oldest.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="maximumCount">The maximum number of grants.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The latest grants.</returns>
+    ValueTask<IReadOnlyList<CashShopCoinGrant>> GetLatestCashShopCoinGrantsAsync(
+        Guid accountId,
+        int maximumCount,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the grant of cash shop coins with the specified reference.
+    /// </summary>
+    /// <param name="reference">The reference of the granting system.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The grant; Otherwise, null, if no grant has the reference.</returns>
+    ValueTask<CashShopCoinGrant?> GetCashShopCoinGrantByReferenceAsync(
+        string reference,
         CancellationToken cancellationToken = default);
 
     /// <summary>
