@@ -75,6 +75,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new AncientSets(this.Context, this.GameConfiguration).Initialize();
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
+        new GensRewardItems(this.Context, this.GameConfiguration).Initialize();
         this.CreateJewelMixes();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
