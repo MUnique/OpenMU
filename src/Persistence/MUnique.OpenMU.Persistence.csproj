@@ -18,14 +18,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="EntityFramework\**" />
+    <Compile Remove="EntityFramework.DesignTime\**" />
     <Compile Remove="Initialization\**" />
     <Compile Remove="InMemory\**" />
     <Compile Remove="SourceGenerator\**" />
     <EmbeddedResource Remove="EntityFramework\**" />
+    <EmbeddedResource Remove="EntityFramework.DesignTime\**" />
     <EmbeddedResource Remove="Initialization\**" />
     <EmbeddedResource Remove="InMemory\**" />
     <EmbeddedResource Remove="SourceGenerator\**" />
     <None Remove="EntityFramework\**" />
+    <None Remove="EntityFramework.DesignTime\**" />
     <None Remove="Initialization\**" />
     <None Remove="InMemory\**" />
     <None Remove="SourceGenerator\**" />
