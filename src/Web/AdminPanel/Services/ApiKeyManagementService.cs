@@ -150,6 +150,6 @@ public class ApiKeyManagementService
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Role))]
         [Required]
-        public AdminRole Role { get; set; } = AdminRole.Viewer;
+        public ApiKeyRole Role { get; set; } = ApiKeyRole.Viewer;
     }
 }
