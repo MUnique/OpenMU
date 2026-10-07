@@ -34,7 +34,7 @@ public sealed class CaptionLinkReference
     {
         var entries = LocalizedCaption.FindAll(referenceConfiguration)
             .Where(caption => caption.Value.SourceKey is not null)
-            .Select(caption => new Entry(caption.Key, ConfigurationCaptions.GetNumberKey(caption), caption.Value))
+            .Select(caption => new Entry(caption.Key, ConfigurationCaptions.GetNumberKey(caption), ConfigurationCaptions.GetOptionNameKey(caption), caption.Value))
             .ToList();
         return new CaptionLinkReference(entries.AsReadOnly());
     }
@@ -44,6 +44,7 @@ public sealed class CaptionLinkReference
     /// </summary>
     /// <param name="Key">The key of the caption, see <see cref="LocalizedCaption.Key"/>.</param>
     /// <param name="NumberKey">The key of the caption by the type and number of its owner, if the owner has a number.</param>
+    /// <param name="OptionNameKey">The exact neutral-name fallback key for option definitions.</param>
     /// <param name="Value">The value of the caption.</param>
-    internal sealed record Entry((Guid OwnerId, string PropertyName) Key, (string OwnerType, long Number, string PropertyName)? NumberKey, LocalizedString Value);
+    internal sealed record Entry((Guid OwnerId, string PropertyName) Key, (string OwnerType, long Number, string PropertyName)? NumberKey, (string OwnerType, string NeutralText, string PropertyName)? OptionNameKey, LocalizedString Value);
 }

@@ -36,7 +36,7 @@ internal class Jewelery : InitializerBase
     /// <inheritdoc/>
     public sealed override void Initialize()
     {
-        this._healthRecoverOptionDefinition = this.CreateOption("Health recover for jewelery", Stats.HealthRecoveryMultiplier, 0.01f, ItemOptionDefinitionNumbers.JeweleryHealth);
+        this._healthRecoverOptionDefinition = this.CreateOption(LocalizedString.FromResource(() => ItemOptionNames.HealthRecoverForJewelery), Stats.HealthRecoveryMultiplier, 0.01f, ItemOptionDefinitionNumbers.JeweleryHealth);
         this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 1 per item level.");
         this.CreateItems();
     }

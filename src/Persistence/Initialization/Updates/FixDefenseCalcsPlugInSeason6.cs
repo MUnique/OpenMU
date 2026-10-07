@@ -109,7 +109,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
             excellentDamageChanceOpt.PowerUpDefinition!.TargetAttribute = excellentDamageBonus;
         }
 
-        var pantsGuardianOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Guardian Option (Pants)");
+        var pantsGuardianOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name.ValueInNeutralLanguage == "Guardian Option (Pants)");
         if (pantsGuardianOptions is not null
             && pantsGuardianOptions.PossibleOptions.FirstOrDefault(o => o.PowerUpDefinition?.TargetAttribute == defenseBase) is { } defenseOpt)
         {
@@ -117,7 +117,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
             defenseOpt.PowerUpDefinition.Boost!.ConstantValue.Value = 200 / 2;
         }
 
-        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Harmony Defense Options");
+        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name.ValueInNeutralLanguage == "Harmony Defense Options");
         if (harmonyDefOptions is not null
             && harmonyDefOptions.PossibleOptions.FirstOrDefault(o => o.Number == 1) is { } defenseBaseOpt)
         {

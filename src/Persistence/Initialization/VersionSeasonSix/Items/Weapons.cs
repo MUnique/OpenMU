@@ -401,8 +401,8 @@ internal class Weapons : InitializerBase
 
         if (magicPower == 0 || darkLordClass > 0 || group == (int)ItemGroups.Swords)
         {
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.PhysicalAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.PhysicalAttackOptionsName));
 
             if (skillNumber == (int)SkillNumber.PowerSlash)
             {
@@ -427,8 +427,8 @@ internal class Weapons : InitializerBase
         }
         else
         {
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName));
 
             if (summonerClass > 0 && slot == 1)
             {

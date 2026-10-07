@@ -70,3 +70,34 @@ process afterwards. Linking alone does not apply translations.
 The Chinese Fenrir material labels reuse the item-name resources. The Selupan
 skill labels are descriptive translations of the internal English skill names;
 they are not asserted to be official Chinese client skill names.
+
+Localized name editors show full culture codes, such as `zh-CN`, for each input.
+Regional translations have separate fields and validation messages, even when
+they share a language. Each field edits only the translation for its exact culture.
+
+## Item option and set captions
+
+Built-in item option types, their guardian-option description, item option
+names, ancient set names and ordinary full-armor bonus names include Simplified
+Chinese (`zh-CN`) resources. Fresh configurations include these translations.
+For an existing configuration, link the names again on this page, review the
+Chinese changes and apply the recommended entries. Customized text remains
+unselected unless you explicitly choose to replace it.
+
+Ordinary armor sets are matched by armor number and minimum equipment level,
+since their existing IDs are not deterministic. Older wing option definitions
+without stable IDs can be linked by their exact neutral name when unique in both
+configurations. Ambiguous matches are skipped.
+The neutral English names are retained, including names shared by different
+armor families; separate source keys provide the appropriate Chinese names.
+The level in a name such as `Adamantine Defense Bonus (Level 10)` refers to
+item enhancement (+10), not character level. Names do not change bonus values,
+requirements or equipment membership.
+
+Ancient set terminology follows the older names documented in the official
+[Season 4.5 set guide](https://mu.zhaouc.com/01_news/updatecn/s4_5/s4_5_3.htm)
+and [set introduction](https://mu.zhaouc.com/01_news/updatecn/newitem/newitem.htm),
+rather than the replacements in the later
+[Season X renaming notice](https://mu.zhaouc.com/news/Notice/1265.html).
+Technical option and armor-bonus labels describe the server configuration;
+they are not presented as verbatim client UI text.

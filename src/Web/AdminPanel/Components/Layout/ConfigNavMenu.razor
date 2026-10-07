@@ -1,4 +1,5 @@
-﻿@using MUnique.OpenMU.DataModel.Configuration
+﻿@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Configuration.Items
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
@@ -16,6 +17,9 @@
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.CharacterClasses</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(Skill).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Skills</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Items</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemOptionDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@(ModelResourceProvider.GetPluralizedTypeCaption<ItemOptionDefinition>())</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemOptionType).FullName}/")" @onclick="() => NavigationHistory.Clear()">@(ModelResourceProvider.GetPluralizedTypeCaption<ItemOptionType>())</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemSetGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()">@(ModelResourceProvider.GetPluralizedTypeCaption<ItemSetGroup>())</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.DropItemGroups</NavLink>
         <NavLink class="dropdown-item" href="edit-item-drops" @onclick="() => NavigationHistory.Clear()">@Resources.ItemDrops</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
