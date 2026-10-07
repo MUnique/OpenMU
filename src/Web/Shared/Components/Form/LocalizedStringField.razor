@@ -11,7 +11,7 @@
 <div class="mb-3">
   <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
-  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
+  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures ?? [])
   {
     <div class="mb-1 localized-value">
       <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
