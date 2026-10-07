@@ -151,5 +151,21 @@ public class CompiledModelTests
             .SetArgDisplayNames(nameof(AccountContext));
         yield return new TestCaseData(new Func<DbContext>(() => new TradeContext()), Persistence.EntityFramework.CompiledModels.ForTradeContext.TradeContextModel.Instance)
             .SetArgDisplayNames(nameof(TradeContext));
+
+        foreach (var (editType, compiledModel) in new (Type, IModel)[]
+                 {
+                     (typeof(DataModel.Entities.CastleSiegeData), Persistence.EntityFramework.CompiledModels.ForCastleSiegeDataTypedContext.CastleSiegeDataTypedContextModel.Instance),
+                     (typeof(DataModel.Entities.CastleSiegeGuildRegistration), Persistence.EntityFramework.CompiledModels.ForCastleSiegeGuildRegistrationTypedContext.CastleSiegeGuildRegistrationTypedContextModel.Instance),
+                     (typeof(DataModel.Entities.CastleSiegePendingReward), Persistence.EntityFramework.CompiledModels.ForCastleSiegePendingRewardTypedContext.CastleSiegePendingRewardTypedContextModel.Instance),
+                     (typeof(DataModel.Entities.GensAbuse), Persistence.EntityFramework.CompiledModels.ForGensAbuseTypedContext.GensAbuseTypedContextModel.Instance),
+                     (typeof(DataModel.Entities.GensMember), Persistence.EntityFramework.CompiledModels.ForGensMemberTypedContext.GensMemberTypedContextModel.Instance),
+                     (typeof(DataModel.Statistics.MiniGameRankingEntry), Persistence.EntityFramework.CompiledModels.ForMiniGameRankingEntryTypedContext.MiniGameRankingEntryTypedContextModel.Instance),
+                     (typeof(PlugIns.PlugInConfiguration), Persistence.EntityFramework.CompiledModels.ForPlugInConfigurationTypedContext.PlugInConfigurationTypedContextModel.Instance),
+                     (typeof(DataModel.Configuration.SystemConfiguration), Persistence.EntityFramework.CompiledModels.ForSystemConfigurationTypedContext.SystemConfigurationTypedContextModel.Instance),
+                 })
+        {
+            yield return new TestCaseData(new Func<DbContext>(() => TypedContext.Create(editType)), compiledModel)
+                .SetArgDisplayNames($"{nameof(TypedContext)}({editType.Name})");
+        }
     }
 }
