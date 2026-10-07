@@ -24,6 +24,12 @@ public static class JsonConverterRegistry
     public static IEnumerable<JsonConverter> Converters => _converters;
 
     /// <summary>
+    /// Gets the version of the registered converters, which changes with every registration or clearing.
+    /// It allows to cache <see cref="JsonSerializerOptions" /> as long as the registered converters didn't change.
+    /// </summary>
+    public static int Version { get; private set; }
+
+    /// <summary>
     /// Registers the specified <paramref name="converter" /> so that it can be
     /// reused wherever custom <see cref="JsonSerializerOptions" /> are created.
     /// </summary>
@@ -31,6 +37,7 @@ public static class JsonConverterRegistry
     public static void RegisterConverter(JsonConverter converter)
     {
         _converters.Add(converter);
+        Version++;
     }
 
     /// <summary>
@@ -39,5 +46,6 @@ public static class JsonConverterRegistry
     public static void ClearConverters()
     {
         _converters.Clear();
+        Version++;
     }
 }

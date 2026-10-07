@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("f29ed7c6-362a-4728-8e67-8fd13ebbf60d"), entityTypeCount: 114)
+            : base(skipDetectChanges: false, modelId: new Guid("4a60a1d5-f676-4193-90ba-ccdedaa4b496"), entityTypeCount: 119)
         {
         }
 
@@ -27,6 +27,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var attributeRequirement = AttributeRequirementEntityType.Create(this);
             var battleZoneDefinition = BattleZoneDefinitionEntityType.Create(this);
             var buff = BuffEntityType.Create(this);
+            var cashShopCoinGrant = CashShopCoinGrantEntityType.Create(this);
+            var cashShopConfiguration = CashShopConfigurationEntityType.Create(this);
+            var cashShopPackage = CashShopPackageEntityType.Create(this);
+            var cashShopProduct = CashShopProductEntityType.Create(this);
+            var cashShopStorageItem = CashShopStorageItemEntityType.Create(this);
             var castleSiegeConfiguration = CastleSiegeConfigurationEntityType.Create(this);
             var castleSiegeData = CastleSiegeDataEntityType.Create(this);
             var castleSiegeGuild = CastleSiegeGuildEntityType.Create(this);
@@ -155,6 +160,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             BattleZoneDefinitionEntityType.CreateForeignKey3(battleZoneDefinition, rectangle);
             BuffEntityType.CreateForeignKey1(buff, magicEffectDefinition);
             BuffEntityType.CreateForeignKey2(buff, monsterDefinition);
+            CashShopCoinGrantEntityType.CreateForeignKey1(cashShopCoinGrant, account);
+            CashShopPackageEntityType.CreateForeignKey1(cashShopPackage, cashShopConfiguration);
+            CashShopProductEntityType.CreateForeignKey1(cashShopProduct, cashShopPackage);
+            CashShopProductEntityType.CreateForeignKey2(cashShopProduct, itemDefinition);
+            CashShopStorageItemEntityType.CreateForeignKey1(cashShopStorageItem, account);
             CastleSiegeConfigurationEntityType.CreateForeignKey1(castleSiegeConfiguration, castleSiegeZoneDefinition);
             CastleSiegeConfigurationEntityType.CreateForeignKey2(castleSiegeConfiguration, gameMapDefinition);
             CastleSiegeConfigurationEntityType.CreateForeignKey3(castleSiegeConfiguration, castleSiegeZoneDefinition);
@@ -211,8 +221,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             EnterGateEntityType.CreateForeignKey1(enterGate, gameMapDefinition);
             EnterGateEntityType.CreateForeignKey2(enterGate, exitGate);
             ExitGateEntityType.CreateForeignKey1(exitGate, gameMapDefinition);
-            GameConfigurationEntityType.CreateForeignKey1(gameConfiguration, castleSiegeConfiguration);
-            GameConfigurationEntityType.CreateForeignKey2(gameConfiguration, duelConfiguration);
+            GameConfigurationEntityType.CreateForeignKey1(gameConfiguration, cashShopConfiguration);
+            GameConfigurationEntityType.CreateForeignKey2(gameConfiguration, castleSiegeConfiguration);
+            GameConfigurationEntityType.CreateForeignKey3(gameConfiguration, duelConfiguration);
             GameMapDefinitionEntityType.CreateForeignKey1(gameMapDefinition, battleZoneDefinition);
             GameMapDefinitionEntityType.CreateForeignKey2(gameMapDefinition, gameConfiguration);
             GameMapDefinitionEntityType.CreateForeignKey3(gameMapDefinition, gameMapDefinition);
@@ -374,6 +385,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AttributeRequirementEntityType.CreateAnnotations(attributeRequirement);
             BattleZoneDefinitionEntityType.CreateAnnotations(battleZoneDefinition);
             BuffEntityType.CreateAnnotations(buff);
+            CashShopCoinGrantEntityType.CreateAnnotations(cashShopCoinGrant);
+            CashShopConfigurationEntityType.CreateAnnotations(cashShopConfiguration);
+            CashShopPackageEntityType.CreateAnnotations(cashShopPackage);
+            CashShopProductEntityType.CreateAnnotations(cashShopProduct);
+            CashShopStorageItemEntityType.CreateAnnotations(cashShopStorageItem);
             CastleSiegeConfigurationEntityType.CreateAnnotations(castleSiegeConfiguration);
             CastleSiegeDataEntityType.CreateAnnotations(castleSiegeData);
             CastleSiegeGuildEntityType.CreateAnnotations(castleSiegeGuild);

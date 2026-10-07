@@ -2561,4 +2561,58 @@
   <data name="GensRewardRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of a player for the gens ranking reward.</value>
   </data>
+  <data name="PingHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ping Handler</value>
+  </data>
+  <data name="PingHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the ping which the client sends periodically, which reports that it's alive.</value>
+  </data>
+  <data name="CashShopGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop group handler</value>
+  </data>
+  <data name="CashShopGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for cash shop packets (0xD2 identifier).</value>
+  </data>
+  <data name="CashShopOpenStateHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop open state handler</value>
+  </data>
+  <data name="CashShopOpenStateHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for opening and closing the cash shop (0xD2, 0x02 identifier).</value>
+  </data>
+  <data name="CashShopPointInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop point info request handler</value>
+  </data>
+  <data name="CashShopPointInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for cash shop point information requests (0xD2, 0x01 identifier).</value>
+  </data>
+  <data name="CashShopStorageListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop storage list request handler</value>
+  </data>
+  <data name="CashShopStorageListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for cash shop storage list requests (0xD2, 0x05 identifier).</value>
+  </data>
+  <data name="CashShopViewPlugIn_Name" xml:space="preserve">
+    <value>Cash shop view</value>
+  </data>
+  <data name="CashShopViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ICashShopViewPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="CashShopItemBuyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop buy request handler</value>
+  </data>
+  <data name="CashShopItemBuyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for cash shop buy requests (0xD2, 0x03 identifier).</value>
+  </data>
+  <data name="CashShopStorageItemConsumeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop storage item use request handler</value>
+  </data>
+  <data name="CashShopStorageItemConsumeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for requests to use an item of the cash shop storage (0xD2, 0x0B identifier).</value>
+  </data>
+  <data name="CashShopItemGiftRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cash shop gift request handler</value>
+  </data>
+  <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for cash shop gift requests (0xD2, 0x04 identifier).</value>
+  </data>
 </root>

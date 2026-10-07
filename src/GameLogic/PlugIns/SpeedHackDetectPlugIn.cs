@@ -56,76 +56,56 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         {
             if (isSafezone)
             {
-                state.RecentWalks.Clear();
-                state.LastWalkStartTime = DateTime.MinValue;
+                state.ResetWalk();
             }
             else
             {
                 var now = DateTime.UtcNow;
-                if (state.LastWalkStartTime > DateTime.MinValue)
+                double stepDelayMs = player.StepDelay.TotalMilliseconds;
+                double scalingFactor = stepDelayMs / NormalStepDelayMs;
+                double maxCreditMs = config.WalkSpeedToleranceMs * scalingFactor;
+
+                // The walk check works like a token bucket of walking time: passed time adds credit,
+                // walked tiles consume it. This way, only the average speed matters. When walk packets
+                // are delayed by the network and then arrive in a burst, the time of the delay is
+                // credited (up to the tolerance) and covers the tiles which arrive in the burst.
+                // A speed hack, however, consumes more than it earns and drains the credit over time.
+                var elapsed = now - (state.LastWalkTime ?? now);
+                state.WalkCreditMs = state.LastWalkTime is null
+                    ? maxCreditMs
+                    : Math.Min(maxCreditMs, state.WalkCreditMs + elapsed.TotalMilliseconds);
+
+                if (state.LastWalkStartPoint is { } lastStartPoint)
                 {
-                    if (now - state.LastWalkStartTime > TimeSpan.FromSeconds(2))
+                    var tiles = Math.Max(
+                        Math.Abs(startPoint.X - lastStartPoint.X),
+                        Math.Abs(startPoint.Y - lastStartPoint.Y));
+
+                    const double BaseStepDelayMarginMs = 50.0;
+                    const double MinStepDelayMs = 50.0;
+                    double stepDelayMarginMs = BaseStepDelayMarginMs * scalingFactor;
+                    double checkStepDelayMs = Math.Max(Math.Min(MinStepDelayMs, stepDelayMs), stepDelayMs - stepDelayMarginMs);
+                    var expectedTimeMs = tiles * checkStepDelayMs;
+
+                    state.WalkCreditMs -= expectedTimeMs;
+                    if (state.WalkCreditMs < 0)
                     {
-                        state.RecentWalks.Clear();
+                        player.Logger.LogWarning(
+                            "Speedhack detected on walk for player {0}: traveled {1} tiles in {2}ms (expected at least {3}ms), exceeding the tolerance of {4}ms.",
+                            player.Name,
+                            tiles,
+                            elapsed.TotalMilliseconds,
+                            expectedTimeMs,
+                            maxCreditMs);
+                        shouldRecordViolation = true;
+
+                        // The deficit is not carried over, so a single violation doesn't cause a chain of follow-up violations.
+                        state.WalkCreditMs = 0;
                     }
                 }
 
-                state.RecentWalks.Enqueue(new WalkHistoryEntry { Time = now, StartPoint = startPoint });
-                state.LastWalkStartTime = now;
-
-                while (state.RecentWalks.Count > 5)
-                {
-                    state.RecentWalks.Dequeue();
-                }
-
-                if (state.RecentWalks.Count >= 3)
-                {
-                    var first = state.RecentWalks.Peek();
-                    var elapsed = now - first.Time;
-
-                    // Compute cumulative Chebyshev path length between consecutive start positions.
-                    var cumulativeTiles = 0;
-                    Point? prevPoint = null;
-                    foreach (var entry in state.RecentWalks)
-                    {
-                        if (prevPoint.HasValue)
-                        {
-                            cumulativeTiles += Math.Max(
-                                Math.Abs((int)entry.StartPoint.X - prevPoint.Value.X),
-                                Math.Abs((int)entry.StartPoint.Y - prevPoint.Value.Y));
-                        }
-
-                        prevPoint = entry.StartPoint;
-                    }
-
-                    if (cumulativeTiles > 0)
-                    {
-                        double stepDelayMs = player.StepDelay.TotalMilliseconds;
-                        double scalingFactor = stepDelayMs / NormalStepDelayMs;
-
-                        const double BaseStepDelayMarginMs = 50.0;
-                        const double MinStepDelayMs = 50.0;
-                        double stepDelayMarginMs = BaseStepDelayMarginMs * scalingFactor;
-                        double checkStepDelayMs = Math.Max(Math.Min(MinStepDelayMs, stepDelayMs), stepDelayMs - stepDelayMarginMs);
-                        var expectedTime = TimeSpan.FromMilliseconds(cumulativeTiles * checkStepDelayMs);
-                        var deficit = expectedTime - elapsed;
-                        var tolerance = TimeSpan.FromMilliseconds(config.WalkSpeedToleranceMs * scalingFactor);
-
-                        if (deficit > tolerance)
-                        {
-                            player.Logger.LogWarning(
-                                "Speedhack detected on walk for player {0}: traveled {1} tiles in {2}ms (expected at least {3}ms). Deficit: {4}ms.",
-                                player.Name,
-                                cumulativeTiles,
-                                elapsed.TotalMilliseconds,
-                                expectedTime.TotalMilliseconds,
-                                deficit.TotalMilliseconds);
-                            shouldRecordViolation = true;
-                            state.RecentWalks.Clear(); // Clear to avoid double triggers
-                            state.LastWalkStartTime = DateTime.MinValue; // Reset tracker
-                        }
-                    }
-                }
+                state.LastWalkTime = now;
+                state.LastWalkStartPoint = startPoint;
             }
         }
 
@@ -194,8 +174,9 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         var state = this.GetState(player);
         lock (state.Lock)
         {
-            state.LastWalkStartTime = DateTime.MinValue;
-            state.RecentWalks.Clear();
+            // The position changed without walking, so the next walk can't be compared to the last one.
+            // The credit is kept on purpose, so that a forced position resync doesn't refill it.
+            state.LastWalkStartPoint = null;
         }
 
         return ValueTask.CompletedTask;
@@ -318,13 +299,6 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         }
     }
 
-    private readonly record struct WalkHistoryEntry
-    {
-        public DateTime Time { get; init; }
-
-        public Point StartPoint { get; init; }
-    }
-
     private class SpeedHackState
     {
         public SpeedHackState(double maxAttackTokens)
@@ -342,8 +316,17 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
 
         public Queue<DateTime> AlertTimes { get; } = new();
 
-        public Queue<WalkHistoryEntry> RecentWalks { get; } = new();
+        public DateTime? LastWalkTime { get; set; }
 
-        public DateTime LastWalkStartTime { get; set; } = DateTime.MinValue;
+        public Point? LastWalkStartPoint { get; set; }
+
+        public double WalkCreditMs { get; set; }
+
+        public void ResetWalk()
+        {
+            this.LastWalkTime = null;
+            this.LastWalkStartPoint = null;
+            this.WalkCreditMs = 0;
+        }
     }
 }

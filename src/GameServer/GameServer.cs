@@ -558,7 +558,9 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     {
         try
         {
-            if (player.Account?.LoginName is { } loginName)
+            // The registration is used instead of the account, because the player may be disconnected
+            // after the login server accepted its login, but before the account was assigned.
+            if (player.ReleaseLoginServerRegistration() is { } loginName)
             {
                 await this.Context.LoginServer.LogOffAsync(loginName, this.Id).ConfigureAwait(false);
             }

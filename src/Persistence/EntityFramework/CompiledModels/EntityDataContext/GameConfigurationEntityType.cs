@@ -22,10 +22,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration),
                 baseEntityType,
-                propertyCount: 30,
-                navigationCount: 23,
-                foreignKeyCount: 2,
-                unnamedIndexCount: 2,
+                propertyCount: 31,
+                navigationCount: 24,
+                foreignKeyCount: 3,
+                unnamedIndexCount: 3,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -46,6 +46,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration).GetField("<AreaSkillHitsPlayer>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: false);
             areaSkillHitsPlayer.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var cashShopConfigurationId = runtimeEntityType.AddProperty(
+                "CashShopConfigurationId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetProperty("CashShopConfigurationId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetField("<CashShopConfigurationId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            cashShopConfigurationId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var castleSiegeConfigurationId = runtimeEntityType.AddProperty(
                 "CastleSiegeConfigurationId",
@@ -284,10 +292,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             runtimeEntityType.SetPrimaryKey(key);
 
             var index = runtimeEntityType.AddIndex(
-                new[] { castleSiegeConfigurationId },
+                new[] { cashShopConfigurationId },
                 unique: true);
 
             var index0 = runtimeEntityType.AddIndex(
+                new[] { castleSiegeConfigurationId },
+                unique: true);
+
+            var index1 = runtimeEntityType.AddIndex(
                 new[] { duelConfigurationId },
                 unique: true);
 
@@ -295,6 +307,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
         }
 
         public static RuntimeForeignKey CreateForeignKey1(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("CashShopConfigurationId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Cascade,
+                unique: true);
+
+            var rawCashShopConfiguration = declaringEntityType.AddNavigation("RawCashShopConfiguration",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopConfiguration),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetProperty("RawCashShopConfiguration", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("CastleSiegeConfigurationId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
@@ -311,7 +340,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             return runtimeForeignKey;
         }
 
-        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("DuelConfigurationId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),

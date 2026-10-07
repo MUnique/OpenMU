@@ -105,6 +105,11 @@ public class TypeHelperTests
                 option.Name = option.Name.WithSourceKey(null);
             }
 
+            foreach (var combination in configuration.ItemOptionCombinationBonuses)
+            {
+                combination.Description = combination.Description.WithSourceKey(null);
+            }
+
             foreach (var set in configuration.ItemSetGroups)
             {
                 set.Name = set.Name.WithSourceKey(null);

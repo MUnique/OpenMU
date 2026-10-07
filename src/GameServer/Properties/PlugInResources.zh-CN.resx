@@ -2424,4 +2424,10 @@
   </data>
   <data name="EnterMarketPlace_Name" xml:space="preserve"><value>进入罗兰市场处理器</value></data>
   <data name="EnterMarketPlace_Description" xml:space="preserve"><value>处理市场联盟成员茱莉娅的传送请求，让玩家在勇者大陆与罗兰市场之间传送。</value></data>
+  <data name="PingHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ping 处理器</value>
+  </data>
+  <data name="PingHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理客户端定期发送的 Ping，用于报告客户端仍在线。</value>
+  </data>
 </root>
