@@ -39,7 +39,7 @@ Nothing addresses a game server by its Dapr app id: the calls to game servers,
 e.g. a friend request or a global message from the admin panel, are published to
 all game servers. The game server which hosts the affected player handles it, or
 the one whose id is in the message, and the others ignore it. So all game
-servers share the app id `gameServer`. Each process still needs its own queues
+servers share the app id `game-server`. Each process still needs its own queues
 in RabbitMQ to receive every message; they are named after the `POD_NAME` of its
 sidecar, which therefore has to be unique.
 
@@ -49,10 +49,9 @@ bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
 
 ## Deployment with docker compose
 
-Currently there is only a docker compose file for the deployment, which has the
-limitation that everything runs on the same physical machine. For a truly
-distributed environment with multiple machines, Kubernetes can be used — but
-there is no finished Kubernetes configuration yet. Contributions are welcome.
+The docker compose file has the limitation that everything runs on the same
+physical machine. For a truly distributed environment with multiple machines,
+see [Kubernetes](kubernetes.md).
 
 ### Clone the repository and navigate to the compose files
 
