@@ -70,3 +70,7 @@ process afterwards. Linking alone does not apply translations.
 The Chinese Fenrir material labels reuse the item-name resources. The Selupan
 skill labels are descriptive translations of the internal English skill names;
 they are not asserted to be official Chinese client skill names.
+
+Localized name editors show full culture codes, such as `zh-CN`, for each input.
+Regional translations have separate fields and validation messages, even when
+they share a language. Each field edits only the translation for its exact culture.
