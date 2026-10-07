@@ -162,7 +162,7 @@ public class SocketSystem : InitializerBase
     {
         var doubleDamageChance = this.Context.CreateNew<ItemOptionCombinationBonus>();
         doubleDamageChance.Number = 1;
-        doubleDamageChance.Description = "Socket package option: Double Damage Chance 3%";
+        doubleDamageChance.Description = LocalizedString.FromResource(() => ItemOptionDescriptions.SocketPackageDoubleDamageChance);
         doubleDamageChance.AppliesMultipleTimes = false;
         doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Fire, 1));
         doubleDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Lightning, 1));
@@ -180,7 +180,7 @@ public class SocketSystem : InitializerBase
 
         var ignoreDamageChance = this.Context.CreateNew<ItemOptionCombinationBonus>();
         ignoreDamageChance.Number = 2;
-        ignoreDamageChance.Description = "Socket package option: Ignore Defense Chance 1%";
+        ignoreDamageChance.Description = LocalizedString.FromResource(() => ItemOptionDescriptions.SocketPackageIgnoreDefenseChance);
         ignoreDamageChance.AppliesMultipleTimes = false;
         ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Fire, 1));
         ignoreDamageChance.Requirements.Add(this.CreateBonusRequirement(SocketSubOptionType.Lightning, 1));
@@ -326,7 +326,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketFire);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Options (Fire)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketOptionsFire);
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateRelatedSocketOption(0, SocketSubOptionType.Fire, Stats.BaseDamageBonus, Stats.TotalLevel, 1f / 20f, 1f / 19f, 1f / 18f, 1f / 17f, 1f / 14f));
@@ -343,7 +343,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketIce);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Options (Ice)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketOptionsIce);
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Ice, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddRaw, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
@@ -359,7 +359,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketLightning);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Options (Lightning)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketOptionsLightning);
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Lightning, Stats.ExcellentDamageBonus, AggregateType.AddRaw, 15, 20, 25, 30, 40));
@@ -374,7 +374,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketWind);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Options (Wind)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketOptionsWind);
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Wind, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 8, 10, 13, 16, 20));
@@ -391,7 +391,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketWater);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Options (Water)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketOptionsWater);
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Water, Stats.DefenseRatePvm, AggregateType.Multiplicate, 1.10f, 1.11f, 1.12f, 1.13f, 1.14f));
@@ -407,7 +407,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketEarth);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Options (Earth)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketOptionsEarth);
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Earth, Stats.MaximumHealth, AggregateType.AddRaw, 30, 32, 34, 36, 38));
@@ -419,7 +419,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, 1);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Bonus Options (Physical)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketBonusOptionsPhysical);
         definition.MaximumOptionsPerItem = 1;
         definition.AddChance = 0.30f;
         definition.PossibleOptions.Add(this.CreateSocketBonusOption(0, Stats.BaseDamageBonus, 11));
@@ -432,7 +432,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, 2);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Bonus Options (Wizardry)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketBonusOptionsWizardry);
         definition.MaximumOptionsPerItem = 1;
         definition.AddChance = 0.30f;
         definition.PossibleOptions.Add(this.CreateSocketBonusOption(2, Stats.BaseDamageBonus, 5));
@@ -445,7 +445,7 @@ public class SocketSystem : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, 3);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Socket Bonus Options (Armors)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.SocketBonusOptionsArmors);
         definition.MaximumOptionsPerItem = 1;
         definition.AddChance = 0.30f;
         definition.PossibleOptions.Add(this.CreateSocketBonusOption(4, Stats.DefenseFinal, 24));

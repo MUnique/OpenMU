@@ -80,7 +80,7 @@ public static class OptionExtensions
     /// <returns>The excellent defense options.</returns>
     public static ItemOptionDefinition ExcellentDefenseOptions(this GameConfiguration gameConfiguration)
     {
-        return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.DefenseOptionsName);
+        return gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.DefenseOptionsName);
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public static class OptionExtensions
     /// <returns>The excellent physical attack options.</returns>
     public static ItemOptionDefinition ExcellentPhysicalAttackOptions(this GameConfiguration gameConfiguration)
     {
-        return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName);
+        return gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.PhysicalAttackOptionsName);
     }
 
     /// <summary>
@@ -100,6 +100,6 @@ public static class OptionExtensions
     /// <returns>The excellent wizardry attack options.</returns>
     public static ItemOptionDefinition ExcellentWizardryAttackOptions(this GameConfiguration gameConfiguration)
     {
-        return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.WizardryAttackOptionsName);
+        return gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName);
     }
 }

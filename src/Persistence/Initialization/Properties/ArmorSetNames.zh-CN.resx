@@ -1,0 +1,1212 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="BronzeArmorDefenseRateBonus" xml:space="preserve">
+    <value>青铜套装防御成功率加成</value>
+  </data>
+  <data name="BronzeArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>青铜套装防御力加成（+10）</value>
+  </data>
+  <data name="BronzeArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>青铜套装防御力加成（+11）</value>
+  </data>
+  <data name="BronzeArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>青铜套装防御力加成（+12）</value>
+  </data>
+  <data name="BronzeArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>青铜套装防御力加成（+13）</value>
+  </data>
+  <data name="BronzeArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>青铜套装防御力加成（+14）</value>
+  </data>
+  <data name="BronzeArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>青铜套装防御力加成（+15）</value>
+  </data>
+  <data name="DragonArmorDefenseRateBonus" xml:space="preserve">
+    <value>龙王套装防御成功率加成</value>
+  </data>
+  <data name="DragonArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>龙王套装防御力加成（+10）</value>
+  </data>
+  <data name="DragonArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>龙王套装防御力加成（+11）</value>
+  </data>
+  <data name="DragonArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>龙王套装防御力加成（+12）</value>
+  </data>
+  <data name="DragonArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>龙王套装防御力加成（+13）</value>
+  </data>
+  <data name="DragonArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>龙王套装防御力加成（+14）</value>
+  </data>
+  <data name="DragonArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>龙王套装防御力加成（+15）</value>
+  </data>
+  <data name="PadArmorDefenseRateBonus" xml:space="preserve">
+    <value>革套装防御成功率加成</value>
+  </data>
+  <data name="PadArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>革套装防御力加成（+10）</value>
+  </data>
+  <data name="PadArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>革套装防御力加成（+11）</value>
+  </data>
+  <data name="PadArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>革套装防御力加成（+12）</value>
+  </data>
+  <data name="PadArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>革套装防御力加成（+13）</value>
+  </data>
+  <data name="PadArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>革套装防御力加成（+14）</value>
+  </data>
+  <data name="PadArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>革套装防御力加成（+15）</value>
+  </data>
+  <data name="LegendaryArmorDefenseRateBonus" xml:space="preserve">
+    <value>传说套装防御成功率加成</value>
+  </data>
+  <data name="LegendaryArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>传说套装防御力加成（+10）</value>
+  </data>
+  <data name="LegendaryArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>传说套装防御力加成（+11）</value>
+  </data>
+  <data name="LegendaryArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>传说套装防御力加成（+12）</value>
+  </data>
+  <data name="LegendaryArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>传说套装防御力加成（+13）</value>
+  </data>
+  <data name="LegendaryArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>传说套装防御力加成（+14）</value>
+  </data>
+  <data name="LegendaryArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>传说套装防御力加成（+15）</value>
+  </data>
+  <data name="BoneArmorDefenseRateBonus" xml:space="preserve">
+    <value>骷髅套装防御成功率加成</value>
+  </data>
+  <data name="BoneArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>骷髅套装防御力加成（+10）</value>
+  </data>
+  <data name="BoneArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>骷髅套装防御力加成（+11）</value>
+  </data>
+  <data name="BoneArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>骷髅套装防御力加成（+12）</value>
+  </data>
+  <data name="BoneArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>骷髅套装防御力加成（+13）</value>
+  </data>
+  <data name="BoneArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>骷髅套装防御力加成（+14）</value>
+  </data>
+  <data name="BoneArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>骷髅套装防御力加成（+15）</value>
+  </data>
+  <data name="LeatherArmorDefenseRateBonus" xml:space="preserve">
+    <value>皮套装防御成功率加成</value>
+  </data>
+  <data name="LeatherArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>皮套装防御力加成（+10）</value>
+  </data>
+  <data name="LeatherArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>皮套装防御力加成（+11）</value>
+  </data>
+  <data name="LeatherArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>皮套装防御力加成（+12）</value>
+  </data>
+  <data name="LeatherArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>皮套装防御力加成（+13）</value>
+  </data>
+  <data name="LeatherArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>皮套装防御力加成（+14）</value>
+  </data>
+  <data name="LeatherArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>皮套装防御力加成（+15）</value>
+  </data>
+  <data name="ScaleArmorDefenseRateBonus" xml:space="preserve">
+    <value>翡翠套装防御成功率加成</value>
+  </data>
+  <data name="ScaleArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>翡翠套装防御力加成（+10）</value>
+  </data>
+  <data name="ScaleArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>翡翠套装防御力加成（+11）</value>
+  </data>
+  <data name="ScaleArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>翡翠套装防御力加成（+12）</value>
+  </data>
+  <data name="ScaleArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>翡翠套装防御力加成（+13）</value>
+  </data>
+  <data name="ScaleArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>翡翠套装防御力加成（+14）</value>
+  </data>
+  <data name="ScaleArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>翡翠套装防御力加成（+15）</value>
+  </data>
+  <data name="SphinxArmorDefenseRateBonus" xml:space="preserve">
+    <value>魔王套装防御成功率加成</value>
+  </data>
+  <data name="SphinxArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>魔王套装防御力加成（+10）</value>
+  </data>
+  <data name="SphinxArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>魔王套装防御力加成（+11）</value>
+  </data>
+  <data name="SphinxArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>魔王套装防御力加成（+12）</value>
+  </data>
+  <data name="SphinxArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>魔王套装防御力加成（+13）</value>
+  </data>
+  <data name="SphinxArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>魔王套装防御力加成（+14）</value>
+  </data>
+  <data name="SphinxArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>魔王套装防御力加成（+15）</value>
+  </data>
+  <data name="BrassArmorDefenseRateBonus" xml:space="preserve">
+    <value>黄金套装防御成功率加成</value>
+  </data>
+  <data name="BrassArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>黄金套装防御力加成（+10）</value>
+  </data>
+  <data name="BrassArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>黄金套装防御力加成（+11）</value>
+  </data>
+  <data name="BrassArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>黄金套装防御力加成（+12）</value>
+  </data>
+  <data name="BrassArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>黄金套装防御力加成（+13）</value>
+  </data>
+  <data name="BrassArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>黄金套装防御力加成（+14）</value>
+  </data>
+  <data name="BrassArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>黄金套装防御力加成（+15）</value>
+  </data>
+  <data name="PlateArmorDefenseRateBonus" xml:space="preserve">
+    <value>白金套装防御成功率加成</value>
+  </data>
+  <data name="PlateArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>白金套装防御力加成（+10）</value>
+  </data>
+  <data name="PlateArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>白金套装防御力加成（+11）</value>
+  </data>
+  <data name="PlateArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>白金套装防御力加成（+12）</value>
+  </data>
+  <data name="PlateArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>白金套装防御力加成（+13）</value>
+  </data>
+  <data name="PlateArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>白金套装防御力加成（+14）</value>
+  </data>
+  <data name="PlateArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>白金套装防御力加成（+15）</value>
+  </data>
+  <data name="VineArmorDefenseRateBonus" xml:space="preserve">
+    <value>藤套装防御成功率加成</value>
+  </data>
+  <data name="VineArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>藤套装防御力加成（+10）</value>
+  </data>
+  <data name="VineArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>藤套装防御力加成（+11）</value>
+  </data>
+  <data name="VineArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>藤套装防御力加成（+12）</value>
+  </data>
+  <data name="VineArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>藤套装防御力加成（+13）</value>
+  </data>
+  <data name="VineArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>藤套装防御力加成（+14）</value>
+  </data>
+  <data name="VineArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>藤套装防御力加成（+15）</value>
+  </data>
+  <data name="SilkArmorDefenseRateBonus" xml:space="preserve">
+    <value>天蚕套装防御成功率加成</value>
+  </data>
+  <data name="SilkArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>天蚕套装防御力加成（+10）</value>
+  </data>
+  <data name="SilkArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>天蚕套装防御力加成（+11）</value>
+  </data>
+  <data name="SilkArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>天蚕套装防御力加成（+12）</value>
+  </data>
+  <data name="SilkArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>天蚕套装防御力加成（+13）</value>
+  </data>
+  <data name="SilkArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>天蚕套装防御力加成（+14）</value>
+  </data>
+  <data name="SilkArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>天蚕套装防御力加成（+15）</value>
+  </data>
+  <data name="WindArmorDefenseRateBonus" xml:space="preserve">
+    <value>风套装防御成功率加成</value>
+  </data>
+  <data name="WindArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>风套装防御力加成（+10）</value>
+  </data>
+  <data name="WindArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>风套装防御力加成（+11）</value>
+  </data>
+  <data name="WindArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>风套装防御力加成（+12）</value>
+  </data>
+  <data name="WindArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>风套装防御力加成（+13）</value>
+  </data>
+  <data name="WindArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>风套装防御力加成（+14）</value>
+  </data>
+  <data name="WindArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>风套装防御力加成（+15）</value>
+  </data>
+  <data name="SpiritArmorDefenseRateBonus" xml:space="preserve">
+    <value>精灵套装防御成功率加成</value>
+  </data>
+  <data name="SpiritArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>精灵套装防御力加成（+10）</value>
+  </data>
+  <data name="SpiritArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>精灵套装防御力加成（+11）</value>
+  </data>
+  <data name="SpiritArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>精灵套装防御力加成（+12）</value>
+  </data>
+  <data name="SpiritArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>精灵套装防御力加成（+13）</value>
+  </data>
+  <data name="SpiritArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>精灵套装防御力加成（+14）</value>
+  </data>
+  <data name="SpiritArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>精灵套装防御力加成（+15）</value>
+  </data>
+  <data name="GuardianArmorDefenseRateBonus" xml:space="preserve">
+    <value>女神套装防御成功率加成</value>
+  </data>
+  <data name="GuardianArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>女神套装防御力加成（+10）</value>
+  </data>
+  <data name="GuardianArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>女神套装防御力加成（+11）</value>
+  </data>
+  <data name="GuardianArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>女神套装防御力加成（+12）</value>
+  </data>
+  <data name="GuardianArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>女神套装防御力加成（+13）</value>
+  </data>
+  <data name="GuardianArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>女神套装防御力加成（+14）</value>
+  </data>
+  <data name="GuardianArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>女神套装防御力加成（+15）</value>
+  </data>
+  <data name="StormCrowArmorDefenseRateBonus" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御成功率加成</value>
+  </data>
+  <data name="StormCrowArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御力加成（+10）</value>
+  </data>
+  <data name="StormCrowArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御力加成（+11）</value>
+  </data>
+  <data name="StormCrowArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御力加成（+12）</value>
+  </data>
+  <data name="StormCrowArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御力加成（+13）</value>
+  </data>
+  <data name="StormCrowArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御力加成（+14）</value>
+  </data>
+  <data name="StormCrowArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>亚特兰蒂斯套装防御力加成（+15）</value>
+  </data>
+  <data name="BlackDragonArmorDefenseRateBonus" xml:space="preserve">
+    <value>黑龙王套装防御成功率加成</value>
+  </data>
+  <data name="BlackDragonArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>黑龙王套装防御力加成（+10）</value>
+  </data>
+  <data name="BlackDragonArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>黑龙王套装防御力加成（+11）</value>
+  </data>
+  <data name="BlackDragonArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>黑龙王套装防御力加成（+12）</value>
+  </data>
+  <data name="BlackDragonArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>黑龙王套装防御力加成（+13）</value>
+  </data>
+  <data name="BlackDragonArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>黑龙王套装防御力加成（+14）</value>
+  </data>
+  <data name="BlackDragonArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>黑龙王套装防御力加成（+15）</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseRateBonus" xml:space="preserve">
+    <value>黑凤凰套装防御成功率加成</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>黑凤凰套装防御力加成（+10）</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>黑凤凰套装防御力加成（+11）</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>黑凤凰套装防御力加成（+12）</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>黑凤凰套装防御力加成（+13）</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>黑凤凰套装防御力加成（+14）</value>
+  </data>
+  <data name="DarkPhoenixArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>黑凤凰套装防御力加成（+15）</value>
+  </data>
+  <data name="GrandSoulArmorDefenseRateBonus" xml:space="preserve">
+    <value>火麒麟套装防御成功率加成</value>
+  </data>
+  <data name="GrandSoulArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>火麒麟套装防御力加成（+10）</value>
+  </data>
+  <data name="GrandSoulArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>火麒麟套装防御力加成（+11）</value>
+  </data>
+  <data name="GrandSoulArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>火麒麟套装防御力加成（+12）</value>
+  </data>
+  <data name="GrandSoulArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>火麒麟套装防御力加成（+13）</value>
+  </data>
+  <data name="GrandSoulArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>火麒麟套装防御力加成（+14）</value>
+  </data>
+  <data name="GrandSoulArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>火麒麟套装防御力加成（+15）</value>
+  </data>
+  <data name="DivineArmorDefenseRateBonus" xml:space="preserve">
+    <value>圣灵套装防御成功率加成</value>
+  </data>
+  <data name="DivineArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>圣灵套装防御力加成（+10）</value>
+  </data>
+  <data name="DivineArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>圣灵套装防御力加成（+11）</value>
+  </data>
+  <data name="DivineArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>圣灵套装防御力加成（+12）</value>
+  </data>
+  <data name="DivineArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>圣灵套装防御力加成（+13）</value>
+  </data>
+  <data name="DivineArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>圣灵套装防御力加成（+14）</value>
+  </data>
+  <data name="DivineArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>圣灵套装防御力加成（+15）</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseRateBonus" xml:space="preserve">
+    <value>奔雷套装防御成功率加成</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>奔雷套装防御力加成（+10）</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>奔雷套装防御力加成（+11）</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>奔雷套装防御力加成（+12）</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>奔雷套装防御力加成（+13）</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>奔雷套装防御力加成（+14）</value>
+  </data>
+  <data name="ThunderHawkArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>奔雷套装防御力加成（+15）</value>
+  </data>
+  <data name="GreatDragonArmorDefenseRateBonus" xml:space="preserve">
+    <value>龙炎套装防御成功率加成</value>
+  </data>
+  <data name="GreatDragonArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>龙炎套装防御力加成（+10）</value>
+  </data>
+  <data name="GreatDragonArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>龙炎套装防御力加成（+11）</value>
+  </data>
+  <data name="GreatDragonArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>龙炎套装防御力加成（+12）</value>
+  </data>
+  <data name="GreatDragonArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>龙炎套装防御力加成（+13）</value>
+  </data>
+  <data name="GreatDragonArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>龙炎套装防御力加成（+14）</value>
+  </data>
+  <data name="GreatDragonArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>龙炎套装防御力加成（+15）</value>
+  </data>
+  <data name="DarkSoulArmorDefenseRateBonus" xml:space="preserve">
+    <value>黑炎套装防御成功率加成</value>
+  </data>
+  <data name="DarkSoulArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>黑炎套装防御力加成（+10）</value>
+  </data>
+  <data name="DarkSoulArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>黑炎套装防御力加成（+11）</value>
+  </data>
+  <data name="DarkSoulArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>黑炎套装防御力加成（+12）</value>
+  </data>
+  <data name="DarkSoulArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>黑炎套装防御力加成（+13）</value>
+  </data>
+  <data name="DarkSoulArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>黑炎套装防御力加成（+14）</value>
+  </data>
+  <data name="DarkSoulArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>黑炎套装防御力加成（+15）</value>
+  </data>
+  <data name="HurricaneArmorDefenseRateBonus" xml:space="preserve">
+    <value>魔神套装防御成功率加成</value>
+  </data>
+  <data name="HurricaneArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>魔神套装防御力加成（+10）</value>
+  </data>
+  <data name="HurricaneArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>魔神套装防御力加成（+11）</value>
+  </data>
+  <data name="HurricaneArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>魔神套装防御力加成（+12）</value>
+  </data>
+  <data name="HurricaneArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>魔神套装防御力加成（+13）</value>
+  </data>
+  <data name="HurricaneArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>魔神套装防御力加成（+14）</value>
+  </data>
+  <data name="HurricaneArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>魔神套装防御力加成（+15）</value>
+  </data>
+  <data name="RedSpritArmorDefenseRateBonus" xml:space="preserve">
+    <value>红羽套装防御成功率加成</value>
+  </data>
+  <data name="RedSpritArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>红羽套装防御力加成（+10）</value>
+  </data>
+  <data name="RedSpritArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>红羽套装防御力加成（+11）</value>
+  </data>
+  <data name="RedSpritArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>红羽套装防御力加成（+12）</value>
+  </data>
+  <data name="RedSpritArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>红羽套装防御力加成（+13）</value>
+  </data>
+  <data name="RedSpritArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>红羽套装防御力加成（+14）</value>
+  </data>
+  <data name="RedSpritArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>红羽套装防御力加成（+15）</value>
+  </data>
+  <data name="LightPlateArmorDefenseRateBonus" xml:space="preserve">
+    <value>圣元套装防御成功率加成</value>
+  </data>
+  <data name="LightPlateArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>圣元套装防御力加成（+10）</value>
+  </data>
+  <data name="LightPlateArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>圣元套装防御力加成（+11）</value>
+  </data>
+  <data name="LightPlateArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>圣元套装防御力加成（+12）</value>
+  </data>
+  <data name="LightPlateArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>圣元套装防御力加成（+13）</value>
+  </data>
+  <data name="LightPlateArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>圣元套装防御力加成（+14）</value>
+  </data>
+  <data name="LightPlateArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>圣元套装防御力加成（+15）</value>
+  </data>
+  <data name="AdamantineArmorDefenseRateBonus" xml:space="preserve">
+    <value>圣魂套装防御成功率加成</value>
+  </data>
+  <data name="AdamantineArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>圣魂套装防御力加成（+10）</value>
+  </data>
+  <data name="AdamantineArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>圣魂套装防御力加成（+11）</value>
+  </data>
+  <data name="AdamantineArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>圣魂套装防御力加成（+12）</value>
+  </data>
+  <data name="AdamantineArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>圣魂套装防御力加成（+13）</value>
+  </data>
+  <data name="AdamantineArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>圣魂套装防御力加成（+14）</value>
+  </data>
+  <data name="AdamantineArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>圣魂套装防御力加成（+15）</value>
+  </data>
+  <data name="DarkSteelArmorDefenseRateBonus" xml:space="preserve">
+    <value>神圣套装防御成功率加成</value>
+  </data>
+  <data name="DarkSteelArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>神圣套装防御力加成（+10）</value>
+  </data>
+  <data name="DarkSteelArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>神圣套装防御力加成（+11）</value>
+  </data>
+  <data name="DarkSteelArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>神圣套装防御力加成（+12）</value>
+  </data>
+  <data name="DarkSteelArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>神圣套装防御力加成（+13）</value>
+  </data>
+  <data name="DarkSteelArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>神圣套装防御力加成（+14）</value>
+  </data>
+  <data name="DarkSteelArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>神圣套装防御力加成（+15）</value>
+  </data>
+  <data name="DarkMasterArmorDefenseRateBonus" xml:space="preserve">
+    <value>至尊套装防御成功率加成</value>
+  </data>
+  <data name="DarkMasterArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>至尊套装防御力加成（+10）</value>
+  </data>
+  <data name="DarkMasterArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>至尊套装防御力加成（+11）</value>
+  </data>
+  <data name="DarkMasterArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>至尊套装防御力加成（+12）</value>
+  </data>
+  <data name="DarkMasterArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>至尊套装防御力加成（+13）</value>
+  </data>
+  <data name="DarkMasterArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>至尊套装防御力加成（+14）</value>
+  </data>
+  <data name="DarkMasterArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>至尊套装防御力加成（+15）</value>
+  </data>
+  <data name="DragonKnightArmorDefenseRateBonus" xml:space="preserve">
+    <value>暗黑斗神套装防御成功率加成</value>
+  </data>
+  <data name="DragonKnightArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>暗黑斗神套装防御力加成（+10）</value>
+  </data>
+  <data name="DragonKnightArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>暗黑斗神套装防御力加成（+11）</value>
+  </data>
+  <data name="DragonKnightArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>暗黑斗神套装防御力加成（+12）</value>
+  </data>
+  <data name="DragonKnightArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>暗黑斗神套装防御力加成（+13）</value>
+  </data>
+  <data name="DragonKnightArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>暗黑斗神套装防御力加成（+14）</value>
+  </data>
+  <data name="DragonKnightArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>暗黑斗神套装防御力加成（+15）</value>
+  </data>
+  <data name="VenomMistArmorDefenseRateBonus" xml:space="preserve">
+    <value>法魂玄灵套装防御成功率加成</value>
+  </data>
+  <data name="VenomMistArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>法魂玄灵套装防御力加成（+10）</value>
+  </data>
+  <data name="VenomMistArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>法魂玄灵套装防御力加成（+11）</value>
+  </data>
+  <data name="VenomMistArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>法魂玄灵套装防御力加成（+12）</value>
+  </data>
+  <data name="VenomMistArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>法魂玄灵套装防御力加成（+13）</value>
+  </data>
+  <data name="VenomMistArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>法魂玄灵套装防御力加成（+14）</value>
+  </data>
+  <data name="VenomMistArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>法魂玄灵套装防御力加成（+15）</value>
+  </data>
+  <data name="SylphidRayArmorDefenseRateBonus" xml:space="preserve">
+    <value>紫灵套装防御成功率加成</value>
+  </data>
+  <data name="SylphidRayArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>紫灵套装防御力加成（+10）</value>
+  </data>
+  <data name="SylphidRayArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>紫灵套装防御力加成（+11）</value>
+  </data>
+  <data name="SylphidRayArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>紫灵套装防御力加成（+12）</value>
+  </data>
+  <data name="SylphidRayArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>紫灵套装防御力加成（+13）</value>
+  </data>
+  <data name="SylphidRayArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>紫灵套装防御力加成（+14）</value>
+  </data>
+  <data name="SylphidRayArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>紫灵套装防御力加成（+15）</value>
+  </data>
+  <data name="VolcanoArmorDefenseRateBonus" xml:space="preserve">
+    <value>天魔斗神套装防御成功率加成</value>
+  </data>
+  <data name="VolcanoArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>天魔斗神套装防御力加成（+10）</value>
+  </data>
+  <data name="VolcanoArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>天魔斗神套装防御力加成（+11）</value>
+  </data>
+  <data name="VolcanoArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>天魔斗神套装防御力加成（+12）</value>
+  </data>
+  <data name="VolcanoArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>天魔斗神套装防御力加成（+13）</value>
+  </data>
+  <data name="VolcanoArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>天魔斗神套装防御力加成（+14）</value>
+  </data>
+  <data name="VolcanoArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>天魔斗神套装防御力加成（+15）</value>
+  </data>
+  <data name="SunlightArmorDefenseRateBonus" xml:space="preserve">
+    <value>宙斯套装防御成功率加成</value>
+  </data>
+  <data name="SunlightArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>宙斯套装防御力加成（+10）</value>
+  </data>
+  <data name="SunlightArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>宙斯套装防御力加成（+11）</value>
+  </data>
+  <data name="SunlightArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>宙斯套装防御力加成（+12）</value>
+  </data>
+  <data name="SunlightArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>宙斯套装防御力加成（+13）</value>
+  </data>
+  <data name="SunlightArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>宙斯套装防御力加成（+14）</value>
+  </data>
+  <data name="SunlightArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>宙斯套装防御力加成（+15）</value>
+  </data>
+  <data name="AshcrowArmorDefenseRateBonus" xml:space="preserve">
+    <value>暴风套装防御成功率加成</value>
+  </data>
+  <data name="AshcrowArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>暴风套装防御力加成（+10）</value>
+  </data>
+  <data name="AshcrowArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>暴风套装防御力加成（+11）</value>
+  </data>
+  <data name="AshcrowArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>暴风套装防御力加成（+12）</value>
+  </data>
+  <data name="AshcrowArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>暴风套装防御力加成（+13）</value>
+  </data>
+  <data name="AshcrowArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>暴风套装防御力加成（+14）</value>
+  </data>
+  <data name="AshcrowArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>暴风套装防御力加成（+15）</value>
+  </data>
+  <data name="EclipseArmorDefenseRateBonus" xml:space="preserve">
+    <value>幻月套装防御成功率加成</value>
+  </data>
+  <data name="EclipseArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>幻月套装防御力加成（+10）</value>
+  </data>
+  <data name="EclipseArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>幻月套装防御力加成（+11）</value>
+  </data>
+  <data name="EclipseArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>幻月套装防御力加成（+12）</value>
+  </data>
+  <data name="EclipseArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>幻月套装防御力加成（+13）</value>
+  </data>
+  <data name="EclipseArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>幻月套装防御力加成（+14）</value>
+  </data>
+  <data name="EclipseArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>幻月套装防御力加成（+15）</value>
+  </data>
+  <data name="IrisArmorDefenseRateBonus" xml:space="preserve">
+    <value>碧影套装防御成功率加成</value>
+  </data>
+  <data name="IrisArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>碧影套装防御力加成（+10）</value>
+  </data>
+  <data name="IrisArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>碧影套装防御力加成（+11）</value>
+  </data>
+  <data name="IrisArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>碧影套装防御力加成（+12）</value>
+  </data>
+  <data name="IrisArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>碧影套装防御力加成（+13）</value>
+  </data>
+  <data name="IrisArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>碧影套装防御力加成（+14）</value>
+  </data>
+  <data name="IrisArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>碧影套装防御力加成（+15）</value>
+  </data>
+  <data name="ValiantArmorDefenseRateBonus" xml:space="preserve">
+    <value>烈火套装防御成功率加成</value>
+  </data>
+  <data name="ValiantArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>烈火套装防御力加成（+10）</value>
+  </data>
+  <data name="ValiantArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>烈火套装防御力加成（+11）</value>
+  </data>
+  <data name="ValiantArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>烈火套装防御力加成（+12）</value>
+  </data>
+  <data name="ValiantArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>烈火套装防御力加成（+13）</value>
+  </data>
+  <data name="ValiantArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>烈火套装防御力加成（+14）</value>
+  </data>
+  <data name="ValiantArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>烈火套装防御力加成（+15）</value>
+  </data>
+  <data name="GloriousArmorDefenseRateBonus" xml:space="preserve">
+    <value>圣光套装防御成功率加成</value>
+  </data>
+  <data name="GloriousArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>圣光套装防御力加成（+10）</value>
+  </data>
+  <data name="GloriousArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>圣光套装防御力加成（+11）</value>
+  </data>
+  <data name="GloriousArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>圣光套装防御力加成（+12）</value>
+  </data>
+  <data name="GloriousArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>圣光套装防御力加成（+13）</value>
+  </data>
+  <data name="GloriousArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>圣光套装防御力加成（+14）</value>
+  </data>
+  <data name="GloriousArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>圣光套装防御力加成（+15）</value>
+  </data>
+  <data name="MisteryArmorDefenseRateBonus" xml:space="preserve">
+    <value>飓风套装防御成功率加成</value>
+  </data>
+  <data name="MisteryArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>飓风套装防御力加成（+10）</value>
+  </data>
+  <data name="MisteryArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>飓风套装防御力加成（+11）</value>
+  </data>
+  <data name="MisteryArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>飓风套装防御力加成（+12）</value>
+  </data>
+  <data name="MisteryArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>飓风套装防御力加成（+13）</value>
+  </data>
+  <data name="MisteryArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>飓风套装防御力加成（+14）</value>
+  </data>
+  <data name="MisteryArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>飓风套装防御力加成（+15）</value>
+  </data>
+  <data name="RedWingArmorDefenseRateBonus" xml:space="preserve">
+    <value>红翼套装防御成功率加成</value>
+  </data>
+  <data name="RedWingArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>红翼套装防御力加成（+10）</value>
+  </data>
+  <data name="RedWingArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>红翼套装防御力加成（+11）</value>
+  </data>
+  <data name="RedWingArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>红翼套装防御力加成（+12）</value>
+  </data>
+  <data name="RedWingArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>红翼套装防御力加成（+13）</value>
+  </data>
+  <data name="RedWingArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>红翼套装防御力加成（+14）</value>
+  </data>
+  <data name="RedWingArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>红翼套装防御力加成（+15）</value>
+  </data>
+  <data name="AncientArmorDefenseRateBonus" xml:space="preserve">
+    <value>远古套装防御成功率加成</value>
+  </data>
+  <data name="AncientArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>远古套装防御力加成（+10）</value>
+  </data>
+  <data name="AncientArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>远古套装防御力加成（+11）</value>
+  </data>
+  <data name="AncientArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>远古套装防御力加成（+12）</value>
+  </data>
+  <data name="AncientArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>远古套装防御力加成（+13）</value>
+  </data>
+  <data name="AncientArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>远古套装防御力加成（+14）</value>
+  </data>
+  <data name="AncientArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>远古套装防御力加成（+15）</value>
+  </data>
+  <data name="BlackRoseArmorDefenseRateBonus" xml:space="preserve">
+    <value>魔灵套装防御成功率加成</value>
+  </data>
+  <data name="BlackRoseArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>魔灵套装防御力加成（+10）</value>
+  </data>
+  <data name="BlackRoseArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>魔灵套装防御力加成（+11）</value>
+  </data>
+  <data name="BlackRoseArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>魔灵套装防御力加成（+12）</value>
+  </data>
+  <data name="BlackRoseArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>魔灵套装防御力加成（+13）</value>
+  </data>
+  <data name="BlackRoseArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>魔灵套装防御力加成（+14）</value>
+  </data>
+  <data name="BlackRoseArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>魔灵套装防御力加成（+15）</value>
+  </data>
+  <data name="AuraArmorDefenseRateBonus" xml:space="preserve">
+    <value>风影套装防御成功率加成</value>
+  </data>
+  <data name="AuraArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>风影套装防御力加成（+10）</value>
+  </data>
+  <data name="AuraArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>风影套装防御力加成（+11）</value>
+  </data>
+  <data name="AuraArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>风影套装防御力加成（+12）</value>
+  </data>
+  <data name="AuraArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>风影套装防御力加成（+13）</value>
+  </data>
+  <data name="AuraArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>风影套装防御力加成（+14）</value>
+  </data>
+  <data name="AuraArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>风影套装防御力加成（+15）</value>
+  </data>
+  <data name="LiliumArmorDefenseRateBonus" xml:space="preserve">
+    <value>恒翼套装防御成功率加成</value>
+  </data>
+  <data name="LiliumArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>恒翼套装防御力加成（+10）</value>
+  </data>
+  <data name="LiliumArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>恒翼套装防御力加成（+11）</value>
+  </data>
+  <data name="LiliumArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>恒翼套装防御力加成（+12）</value>
+  </data>
+  <data name="LiliumArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>恒翼套装防御力加成（+13）</value>
+  </data>
+  <data name="LiliumArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>恒翼套装防御力加成（+14）</value>
+  </data>
+  <data name="LiliumArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>恒翼套装防御力加成（+15）</value>
+  </data>
+  <data name="TitanArmorDefenseRateBonus" xml:space="preserve">
+    <value>泰坦套装防御成功率加成</value>
+  </data>
+  <data name="TitanArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>泰坦套装防御力加成（+10）</value>
+  </data>
+  <data name="TitanArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>泰坦套装防御力加成（+11）</value>
+  </data>
+  <data name="TitanArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>泰坦套装防御力加成（+12）</value>
+  </data>
+  <data name="TitanArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>泰坦套装防御力加成（+13）</value>
+  </data>
+  <data name="TitanArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>泰坦套装防御力加成（+14）</value>
+  </data>
+  <data name="TitanArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>泰坦套装防御力加成（+15）</value>
+  </data>
+  <data name="BraveArmorDefenseRateBonus" xml:space="preserve">
+    <value>勇气套装防御成功率加成</value>
+  </data>
+  <data name="BraveArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>勇气套装防御力加成（+10）</value>
+  </data>
+  <data name="BraveArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>勇气套装防御力加成（+11）</value>
+  </data>
+  <data name="BraveArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>勇气套装防御力加成（+12）</value>
+  </data>
+  <data name="BraveArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>勇气套装防御力加成（+13）</value>
+  </data>
+  <data name="BraveArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>勇气套装防御力加成（+14）</value>
+  </data>
+  <data name="BraveArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>勇气套装防御力加成（+15）</value>
+  </data>
+  <data name="DestoryArmorDefenseRateBonus" xml:space="preserve">
+    <value>巨石套装防御成功率加成</value>
+  </data>
+  <data name="DestoryArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>巨石套装防御力加成（+10）</value>
+  </data>
+  <data name="DestoryArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>巨石套装防御力加成（+11）</value>
+  </data>
+  <data name="DestoryArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>巨石套装防御力加成（+12）</value>
+  </data>
+  <data name="DestoryArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>巨石套装防御力加成（+13）</value>
+  </data>
+  <data name="DestoryArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>巨石套装防御力加成（+14）</value>
+  </data>
+  <data name="DestoryArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>巨石套装防御力加成（+15）</value>
+  </data>
+  <data name="PhantomArmorDefenseRateBonus" xml:space="preserve">
+    <value>破灭套装防御成功率加成</value>
+  </data>
+  <data name="PhantomArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>破灭套装防御力加成（+10）</value>
+  </data>
+  <data name="PhantomArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>破灭套装防御力加成（+11）</value>
+  </data>
+  <data name="PhantomArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>破灭套装防御力加成（+12）</value>
+  </data>
+  <data name="PhantomArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>破灭套装防御力加成（+13）</value>
+  </data>
+  <data name="PhantomArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>破灭套装防御力加成（+14）</value>
+  </data>
+  <data name="PhantomArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>破灭套装防御力加成（+15）</value>
+  </data>
+  <data name="SeraphimArmorDefenseRateBonus" xml:space="preserve">
+    <value>恐惧套装防御成功率加成</value>
+  </data>
+  <data name="SeraphimArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>恐惧套装防御力加成（+10）</value>
+  </data>
+  <data name="SeraphimArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>恐惧套装防御力加成（+11）</value>
+  </data>
+  <data name="SeraphimArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>恐惧套装防御力加成（+12）</value>
+  </data>
+  <data name="SeraphimArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>恐惧套装防御力加成（+13）</value>
+  </data>
+  <data name="SeraphimArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>恐惧套装防御力加成（+14）</value>
+  </data>
+  <data name="SeraphimArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>恐惧套装防御力加成（+15）</value>
+  </data>
+  <data name="FaithArmorDefenseRateBonus" xml:space="preserve">
+    <value>灵光套装防御成功率加成</value>
+  </data>
+  <data name="FaithArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>灵光套装防御力加成（+10）</value>
+  </data>
+  <data name="FaithArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>灵光套装防御力加成（+11）</value>
+  </data>
+  <data name="FaithArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>灵光套装防御力加成（+12）</value>
+  </data>
+  <data name="FaithArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>灵光套装防御力加成（+13）</value>
+  </data>
+  <data name="FaithArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>灵光套装防御力加成（+14）</value>
+  </data>
+  <data name="FaithArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>灵光套装防御力加成（+15）</value>
+  </data>
+  <data name="PaewangArmorDefenseRateBonus" xml:space="preserve">
+    <value>霸王套装防御成功率加成</value>
+  </data>
+  <data name="PaewangArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>霸王套装防御力加成（+10）</value>
+  </data>
+  <data name="PaewangArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>霸王套装防御力加成（+11）</value>
+  </data>
+  <data name="PaewangArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>霸王套装防御力加成（+12）</value>
+  </data>
+  <data name="PaewangArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>霸王套装防御力加成（+13）</value>
+  </data>
+  <data name="PaewangArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>霸王套装防御力加成（+14）</value>
+  </data>
+  <data name="PaewangArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>霸王套装防御力加成（+15）</value>
+  </data>
+  <data name="HadesArmorDefenseRateBonus" xml:space="preserve">
+    <value>冥王套装防御成功率加成</value>
+  </data>
+  <data name="HadesArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>冥王套装防御力加成（+10）</value>
+  </data>
+  <data name="HadesArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>冥王套装防御力加成（+11）</value>
+  </data>
+  <data name="HadesArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>冥王套装防御力加成（+12）</value>
+  </data>
+  <data name="HadesArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>冥王套装防御力加成（+13）</value>
+  </data>
+  <data name="HadesArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>冥王套装防御力加成（+14）</value>
+  </data>
+  <data name="HadesArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>冥王套装防御力加成（+15）</value>
+  </data>
+  <data name="SacredArmorDefenseRateBonus" xml:space="preserve">
+    <value>神圣火焰套装防御成功率加成</value>
+  </data>
+  <data name="SacredArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>神圣火焰套装防御力加成（+10）</value>
+  </data>
+  <data name="SacredArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>神圣火焰套装防御力加成（+11）</value>
+  </data>
+  <data name="SacredArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>神圣火焰套装防御力加成（+12）</value>
+  </data>
+  <data name="SacredArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>神圣火焰套装防御力加成（+13）</value>
+  </data>
+  <data name="SacredArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>神圣火焰套装防御力加成（+14）</value>
+  </data>
+  <data name="SacredArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>神圣火焰套装防御力加成（+15）</value>
+  </data>
+  <data name="StormHardArmorDefenseRateBonus" xml:space="preserve">
+    <value>暴风毁灭套装防御成功率加成</value>
+  </data>
+  <data name="StormHardArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>暴风毁灭套装防御力加成（+10）</value>
+  </data>
+  <data name="StormHardArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>暴风毁灭套装防御力加成（+11）</value>
+  </data>
+  <data name="StormHardArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>暴风毁灭套装防御力加成（+12）</value>
+  </data>
+  <data name="StormHardArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>暴风毁灭套装防御力加成（+13）</value>
+  </data>
+  <data name="StormHardArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>暴风毁灭套装防御力加成（+14）</value>
+  </data>
+  <data name="StormHardArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>暴风毁灭套装防御力加成（+15）</value>
+  </data>
+  <data name="PiercingArmorDefenseRateBonus" xml:space="preserve">
+    <value>刀锋套装防御成功率加成</value>
+  </data>
+  <data name="PiercingArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>刀锋套装防御力加成（+10）</value>
+  </data>
+  <data name="PiercingArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>刀锋套装防御力加成（+11）</value>
+  </data>
+  <data name="PiercingArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>刀锋套装防御力加成（+12）</value>
+  </data>
+  <data name="PiercingArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>刀锋套装防御力加成（+13）</value>
+  </data>
+  <data name="PiercingArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>刀锋套装防御力加成（+14）</value>
+  </data>
+  <data name="PiercingArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>刀锋套装防御力加成（+15）</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseRateBonus" xml:space="preserve">
+    <value>凤魂套装防御成功率加成</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>凤魂套装防御力加成（+10）</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>凤魂套装防御力加成（+11）</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>凤魂套装防御力加成（+12）</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>凤魂套装防御力加成（+13）</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>凤魂套装防御力加成（+14）</value>
+  </data>
+  <data name="PhoenixSoulArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>凤魂套装防御力加成（+15）</value>
+  </data>
+</root>

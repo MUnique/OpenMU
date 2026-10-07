@@ -86,6 +86,21 @@ to the master level up points, so the player can distribute them again.
 
 All changes are stored when you save the page.
 
+### Granting cash shop coins
+
+**Coins** next to an account opens its [cash shop](../server-features/cash-shop.md)
+coins: the balances of **WCoin (C)**, **WCoin (P)** and **Goblin Points**, and the
+latest grants. Below the balances you grant coins to the account; a negative
+amount takes coins again, but never below zero. It needs the administrator role.
+API keys with the cash shop role grant coins through the
+[API](authentication.md#granting-cash-shop-coins) instead.
+
+A grant doesn't change the balance right away, it's *pending* until the game
+server applies it — the next time the player opens the cash shop, even when the
+player is online. That's why the balances can't be edited directly: the game
+server keeps the account of an online player in memory and would overwrite such a
+change.
+
 ### Changing a password
 
 Passwords are stored as a hash, so they cannot be read back. To give a player a

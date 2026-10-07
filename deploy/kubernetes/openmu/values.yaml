@@ -1,0 +1,113 @@
+# Default values of the OpenMU chart.
+# Requirements: Dapr is installed in the cluster, see README.md.
+
+image:
+  # There are no up-to-date published images yet: build them from the sources and push them to your
+  # registry, see README.md.
+  registry: docker.io
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# The OTLP endpoint for logs, metrics and traces of the OpenMU services and their sidecars,
+# e.g. "http://otel-collector.monitoring:4317". Empty disables the export.
+otlpEndpoint: ""
+
+database:
+  # Empty uses the database of the bundled infrastructure.
+  host: ""
+  port: 5432
+  name: openmu
+  adminUser: postgres
+  adminPassword: admin
+
+rabbitmq:
+  # Empty uses the RabbitMQ of the bundled infrastructure, e.g. "amqp://user:password@rabbitmq:5672".
+  connectionString: ""
+
+redis:
+  # Empty uses the Redis of the bundled infrastructure, e.g. "redis:6379".
+  host: ""
+  password: ""
+
+centralServer:
+  # Hosts the connect servers (one per client version), the login, guild, friend and chat server.
+  # It keeps its state in memory, so there is always exactly one, which is replaced on updates.
+  image: munique/openmu-central
+  resources: {}
+  # The service through which the game clients reach the connect servers and the chat server.
+  service:
+    type: LoadBalancer
+    annotations: {}
+    # One port for each connect server definition, i.e. client version.
+    connectServerPorts: [44405, 44406]
+    chatServerPort: 55980
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+adminPanel:
+  image: munique/openmu-admin
+  resources: {}
+  # Optional bootstrap user. Without it, the admin panel is reachable without a login until the
+  # first user has been created within the panel itself.
+  bootstrapUser:
+    name: ""
+    password: ""
+  # The keys which protect the login cookies. Without persistence, every restart logs everyone out.
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: ""
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+gameServer:
+  image: munique/openmu-game
+  # The number of game servers. Pod N runs the game server with the id idOffset + N, so for each of
+  # them, a game server definition has to exist (see the setup and the servers page of the admin panel).
+  replicas: 2
+  idOffset: 0
+  # Every game server listens on this port for its first client version, on the next one for the
+  # second client version, and so on.
+  listenerPort: 55901
+  clientVersions: 2
+  # How the game clients reach the game servers:
+  #   hostPort: on the listener ports of the node the pod runs on. Kubernetes schedules at most one
+  #             game server per node, because they use the same ports.
+  #   none:     not at all from outside the cluster, e.g. for tests or a custom TCP proxy.
+  exposure: hostPort
+  # The IP which a game server announces to the clients:
+  #   hostIP:  the IP of its node, as Kubernetes knows it (status.hostIP).
+  #   public:  the public IP of the outgoing traffic, determined by an external service.
+  #   local:   a local IP of the pod.
+  #   any other value is used as it is.
+  resolveIp: hostIP
+  # The time a game server gets to save and disconnect its players when it stops.
+  terminationGracePeriodSeconds: 60
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+ingress:
+  # Routes /admin to the admin panel and /serverInfo to the central server.
+  enabled: false
+  className: ""
+  annotations: {}
+  host: ""
+  tls: []
+
+# A PostgreSQL, RabbitMQ and Redis for development and testing. For production, use your own
+# instances, e.g. installed with an operator, and configure them above.
+infrastructure:
+  enabled: true
+  postgres:
+    image: postgres:17
+    storageSize: 5Gi
+    storageClass: ""
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+  redis:
+    image: redis:7
