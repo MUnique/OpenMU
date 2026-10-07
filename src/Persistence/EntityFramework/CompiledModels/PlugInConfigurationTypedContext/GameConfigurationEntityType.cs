@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForPlugInCon
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration),
                 baseEntityType,
-                propertyCount: 30,
+                propertyCount: 31,
                 navigationCount: 1,
                 keyCount: 1);
 
@@ -43,6 +43,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForPlugInCon
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration).GetField("<AreaSkillHitsPlayer>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: false);
             areaSkillHitsPlayer.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var cashShopConfigurationId = runtimeEntityType.AddProperty(
+                "CashShopConfigurationId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetProperty("CashShopConfigurationId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetField("<CashShopConfigurationId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            cashShopConfigurationId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var castleSiegeConfigurationId = runtimeEntityType.AddProperty(
                 "CastleSiegeConfigurationId",
