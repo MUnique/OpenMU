@@ -1,4 +1,4 @@
-# Compiled models
+﻿# Compiled models
 
 This folder contains the [compiled models](https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-models)
 of the entity framework core contexts. With them, the models don't need to be built
@@ -48,6 +48,11 @@ Optimize-DbContext -Context AccountContext -StartupProject MUnique.OpenMU.Persis
 Optimize-DbContext -Context TradeContext -StartupProject MUnique.OpenMU.Persistence.EntityFramework.DesignTime -OutputDir CompiledModels/TradeContext -Namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeContext
 ```
 
-Delete the old files before, so that the files of removed entity types don't stay.
+Files of entity types which were removed from the model are not deleted by the tools.
+With the .NET CLI, delete the subfolders of the compiled models after the build and before
+generating them. Don't delete them before the build: the `ConfigurationContext` references the
+compiled model of the `EntityDataContext`, so the project doesn't compile without it.
+`Optimize-DbContext` builds the project itself, so in the Package Manager Console, delete
+the files of removed entity types afterwards.
 The namespaces start with `For`, because a namespace which is named like the context class,
 or like an entity type, would hide these types in the generated code.
