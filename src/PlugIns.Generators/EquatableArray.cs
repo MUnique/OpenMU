@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.SourceGenerators;
+namespace MUnique.OpenMU.PlugIns.Generators;
 
 using System.Collections;
 using System.Collections.Immutable;

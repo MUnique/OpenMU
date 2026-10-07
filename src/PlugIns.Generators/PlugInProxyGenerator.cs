@@ -1,8 +1,8 @@
-// <copyright file="PlugInProxyGenerator.cs" company="MUnique">
+﻿// <copyright file="PlugInProxyGenerator.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.SourceGenerators;
+namespace MUnique.OpenMU.PlugIns.Generators;
 
 using System.Collections.Immutable;
 using System.Linq;
@@ -183,7 +183,7 @@ public class PlugInProxyGenerator : IIncrementalGenerator
         builder.AppendLine("/// <summary>");
         builder.Append("/// The generated proxy of the plugin point <see cref=\"").Append(model.InterfaceName.Replace('<', '{').Replace('>', '}')).AppendLine("\"/>.");
         builder.AppendLine("/// </summary>");
-        builder.AppendLine("[global::System.CodeDom.Compiler.GeneratedCode(\"MUnique.OpenMU.SourceGenerators.PlugInProxyGenerator\", \"1.0\")]");
+        builder.AppendLine("[global::System.CodeDom.Compiler.GeneratedCode(\"MUnique.OpenMU.PlugIns.Generators.PlugInProxyGenerator\", \"1.0\")]");
         builder.Append("internal sealed class ").Append(model.ProxyName)
             .Append(" : global::MUnique.OpenMU.PlugIns.PlugInContainerBase<").Append(model.InterfaceName).Append(">, ")
             .AppendLine(model.InterfaceName);
