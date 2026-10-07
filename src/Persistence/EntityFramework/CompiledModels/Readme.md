@@ -1,0 +1,53 @@
+# Compiled models
+
+This folder contains the [compiled models](https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-models)
+of the entity framework core contexts. With them, the models don't need to be built
+at runtime, which saves several seconds when the server starts.
+
+| Context | Compiled model |
+|---|---|
+| `EntityDataContext` | `EntityDataContext` |
+| `ConfigurationContext` | uses the one of the `EntityDataContext`, because the model is the same |
+| `AccountContext` | `AccountContext` |
+| `TradeContext` | `TradeContext` |
+
+The other contexts build their models at runtime: the models of the `GuildContext` and
+`FriendContext` are small, and the `TypedContext` builds a model per edited type.
+
+## When to generate them again
+
+Whenever the model changes, i.e. when the data model or the `OnModelCreating` methods of the
+contexts change. That's usually also the case when a migration is added.
+
+The `CompiledModelTests` in `tests/MUnique.OpenMU.Tests` fail when a compiled model doesn't
+match the model which is built by `OnModelCreating`.
+
+## How to generate them
+
+Use the project `MUnique.OpenMU.Persistence.EntityFramework.DesignTime` as startup project.
+It contains design time services which make sure that the generated code references the
+types of OpenMU by their full name. Without it, the generated code doesn't compile, because
+the entity types of this project have the same names as their base types in the data model.
+
+With the .NET CLI and the [dotnet-ef tool](https://learn.microsoft.com/ef/core/cli/dotnet),
+in the folder `src/Persistence/EntityFramework`:
+
+```
+dotnet build ../EntityFramework.DesignTime -c Release -p:ci=true
+dotnet ef dbcontext optimize --no-build --configuration Release --project . --startup-project ../EntityFramework.DesignTime --context EntityDataContext --output-dir CompiledModels/EntityDataContext --namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDataContext
+dotnet ef dbcontext optimize --no-build --configuration Release --project . --startup-project ../EntityFramework.DesignTime --context AccountContext --output-dir CompiledModels/AccountContext --namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountContext
+dotnet ef dbcontext optimize --no-build --configuration Release --project . --startup-project ../EntityFramework.DesignTime --context TradeContext --output-dir CompiledModels/TradeContext --namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeContext
+```
+
+In the Package Manager Console of Visual Studio, select *MUnique.OpenMU.Persistence.EntityFramework*
+as default project and run:
+
+```
+Optimize-DbContext -Context EntityDataContext -StartupProject MUnique.OpenMU.Persistence.EntityFramework.DesignTime -OutputDir CompiledModels/EntityDataContext -Namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDataContext
+Optimize-DbContext -Context AccountContext -StartupProject MUnique.OpenMU.Persistence.EntityFramework.DesignTime -OutputDir CompiledModels/AccountContext -Namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountContext
+Optimize-DbContext -Context TradeContext -StartupProject MUnique.OpenMU.Persistence.EntityFramework.DesignTime -OutputDir CompiledModels/TradeContext -Namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeContext
+```
+
+Delete the old files before, so that the files of removed entity types don't stay.
+The namespaces start with `For`, because a namespace which is named like the context class,
+or like an entity type, would hide these types in the generated code.
