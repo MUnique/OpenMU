@@ -78,7 +78,9 @@ public class JsonQueryBuilder
             return;
         }
 
-        var navigations = this.GetNavigations(entityType);
+        // The order of the navigations differs between a model which is built at runtime and a compiled model,
+        // so we sort them to get the same query for both.
+        var navigations = this.GetNavigations(entityType).OrderBy(navigation => navigation.Name, StringComparer.Ordinal);
 
         foreach (var navigation in navigations)
         {
