@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.Persistence.Json;
 
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A json deserializer which is able to resolve circular references.
@@ -16,6 +18,24 @@ using MUnique.OpenMU.Interfaces;
 public class JsonObjectDeserializer
 {
     private static readonly Type[] IgnoredTypes = { typeof(ConstantElement) };
+
+    /// <summary>
+    /// The serializer options per type of deserializer and version of the <see cref="JsonConverterRegistry"/>.
+    /// </summary>
+    /// <remarks>
+    /// The serializer caches the metadata of the types per options instance. Creating new options for
+    /// each deserialization would build this metadata again every time, so the options are reused.
+    /// Because the reference handler differs per deserialization, the options get a
+    /// <see cref="DelegatingReferenceHandler"/>, which uses the reference handler of the current deserialization.
+    /// </remarks>
+    private static readonly ConcurrentDictionary<(Type DeserializerType, int RegistryVersion), JsonSerializerOptions> OptionsCache = new();
+
+    /// <summary>
+    /// The reference handler of the deserialization which is currently running on this thread.
+    /// The deserialization is synchronous, so it's not shared between different deserializations.
+    /// </summary>
+    [ThreadStatic]
+    private static ReferenceHandler? _currentReferenceHandler;
 
     /// <summary>
     /// Deserializes the json string to an object of <typeparamref name="T" />.
@@ -28,9 +48,37 @@ public class JsonObjectDeserializer
     /// </returns>
     public T? Deserialize<T>(Stream textReader, ReferenceHandler referenceHandler)
     {
+        var options = OptionsCache.GetOrAdd((this.GetType(), JsonConverterRegistry.Version), _ => this.CreateOptions());
+        var previousReferenceHandler = _currentReferenceHandler;
+        _currentReferenceHandler = referenceHandler;
+        try
+        {
+            return JsonSerializer.Deserialize<T>(textReader, options);
+        }
+        finally
+        {
+            _currentReferenceHandler = previousReferenceHandler;
+        }
+    }
+
+    /// <summary>
+    /// Called before the deserialization happens. Can be overwritten to apply additional settings.
+    /// </summary>
+    /// <remarks>
+    /// The options are reused for all deserializations of this type of deserializer,
+    /// as long as the <see cref="JsonConverterRegistry"/> doesn't change.
+    /// </remarks>
+    /// <param name="options">The serializer options.</param>
+    protected virtual void BeforeDeserialize(JsonSerializerOptions options)
+    {
+        // can be overwritten to apply additional settings.
+    }
+
+    private JsonSerializerOptions CreateOptions()
+    {
         var options = new JsonSerializerOptions
         {
-            ReferenceHandler = referenceHandler,
+            ReferenceHandler = new DelegatingReferenceHandler(),
             Converters =
             {
                 new LocalizedStringJsonConverter(),
@@ -39,17 +87,21 @@ public class JsonObjectDeserializer
         };
 
         this.BeforeDeserialize(options);
-
-        var result = JsonSerializer.Deserialize<T>(textReader, options);
-        return result;
+        return options;
     }
 
     /// <summary>
-    /// Called before the deserialization happens. Can be overwritten to apply additional settings.
+    /// A reference handler which delegates to the reference handler of the current deserialization.
     /// </summary>
-    /// <param name="options">The serializer options.</param>
-    protected virtual void BeforeDeserialize(JsonSerializerOptions options)
+    private sealed class DelegatingReferenceHandler : ReferenceHandler, IIdReferenceHandler
     {
-        // can be overwritten to apply additional settings.
+        /// <inheritdoc />
+        public ReferenceResolver? Current => (_currentReferenceHandler as IIdReferenceHandler)?.Current;
+
+        /// <inheritdoc />
+        public override ReferenceResolver CreateResolver()
+        {
+            return (_currentReferenceHandler ?? throw new InvalidOperationException("No deserialization is running.")).CreateResolver();
+        }
     }
 }
