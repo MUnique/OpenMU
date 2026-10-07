@@ -2061,4 +2061,16 @@
   <data name="LittleWarriorsCloak" xml:space="preserve">
     <value>Little Warrior's Cloak</value>
   </data>
+  <data name="MagicBackpack" xml:space="preserve">
+    <value>Magic Backpack</value>
+  </data>
+  <data name="VaultExpansionCertificate" xml:space="preserve">
+    <value>Vault Expansion Certificate</value>
+  </data>
+  <data name="SummonerCharacterCard" xml:space="preserve">
+    <value>Summoner Character Card</value>
+  </data>
+  <data name="RageFighterCharacterCard" xml:space="preserve">
+    <value>Rage Fighter Character Card</value>
+  </data>
 </root>

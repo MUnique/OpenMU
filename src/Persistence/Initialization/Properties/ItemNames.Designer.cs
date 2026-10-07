@@ -4829,5 +4829,33 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("LittleWarriorsCloak", resourceCulture);
             }
         }
+
+        /// <summary>Gets MagicBackpack from the item name resources.</summary>
+        public static string MagicBackpack {
+            get {
+                return ResourceManager.GetString("MagicBackpack", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets VaultExpansionCertificate from the item name resources.</summary>
+        public static string VaultExpansionCertificate {
+            get {
+                return ResourceManager.GetString("VaultExpansionCertificate", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SummonerCharacterCard from the item name resources.</summary>
+        public static string SummonerCharacterCard {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCard", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets RageFighterCharacterCard from the item name resources.</summary>
+        public static string RageFighterCharacterCard {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCard", resourceCulture);
+            }
+        }
     }
 }
