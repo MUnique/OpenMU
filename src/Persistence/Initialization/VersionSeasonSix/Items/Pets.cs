@@ -274,7 +274,7 @@ public class Pets : InitializerBase
         dinoOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Dino);
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
-        dinoOptionDefinition.Name = "Dinorant Options";
+        dinoOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.DinorantOptions);
         dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
         dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first
@@ -293,7 +293,7 @@ public class Pets : InitializerBase
         horseOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Horse);
         this.GameConfiguration.ItemOptions.Add(horseOptionDefinition);
 
-        horseOptionDefinition.Name = "Dark Horse Options";
+        horseOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.DarkHorseOptions);
 
         horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 1, Stats.DamageReceiveHorseDecrement, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Horse, -0.15f, (Stats.HorseLevel, -0.005f)));
         horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 2, Stats.DefenseBase, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Horse, 5, (Stats.HorseLevel, 2), (Stats.TotalAgility, 1f / 20)));
@@ -314,7 +314,7 @@ public class Pets : InitializerBase
         fenrirOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Fenrir);
         this.GameConfiguration.ItemOptions.Add(fenrirOptionDefinition);
 
-        fenrirOptionDefinition.Name = "Fenrir Options";
+        fenrirOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.FenrirOptions);
 
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.AttackDamageIncrease, 1.1f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.DamageReceiveDecrement, 0.90f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));

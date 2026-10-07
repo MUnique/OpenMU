@@ -9,7 +9,9 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for the Level 380 Options which can be added to Level 380 Set Items
@@ -42,7 +44,7 @@ internal class GuardianOptions : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Guardian Option (Weapon)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.GuardianOptionWeapon);
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Weapon, Stats.AttackRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
@@ -53,7 +55,7 @@ internal class GuardianOptions : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Guardian Option (Pants)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.GuardianOptionPants);
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
@@ -64,7 +66,7 @@ internal class GuardianOptions : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Guardian Option (Armor)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.GuardianOptionArmor);
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Armor, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
@@ -75,7 +77,7 @@ internal class GuardianOptions : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Guardian Option (Helm)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.GuardianOptionHelm);
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
@@ -86,7 +88,7 @@ internal class GuardianOptions : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Guardian Option (Gloves)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.GuardianOptionGloves);
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Gloves, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
@@ -97,7 +99,7 @@ internal class GuardianOptions : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "Guardian Option (Boots)";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.GuardianOptionBoots);
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Boots, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));

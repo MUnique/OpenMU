@@ -90,7 +90,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
         // Fix Group 5 weapons (Skull & Divine Staves, sticks, and books)
         var weaponsG5 = gameConfiguration.Items.Where(i => i.Group == 5);
-        var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included at this point
+        var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included at this point
         var staffEvenTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (even)");
         var staffOddTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (odd)");
 
@@ -98,8 +98,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         if (weaponsG5.FirstOrDefault(e => e.Number == 0) is { } skullStaff)
         {
             skullStaff.PossibleItemOptions.Clear();
-            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.WizardryAttackOptionsName));
-            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == HarmonyOptions.WizardryAttackOptionsName));
+            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName));
+            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName));
             skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck)));
             skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)));
 
@@ -156,8 +156,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         foreach (var stick in sticks)
         {
             stick.PossibleItemOptions.Clear();
-            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.WizardryAttackOptionsName));
-            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == HarmonyOptions.WizardryAttackOptionsName));
+            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName));
+            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName));
             stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck)));
             stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)));
             if (sticksMagicPower.ContainsKey(stick.Number))
@@ -204,8 +204,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         foreach (var book in books)
         {
             book.PossibleItemOptions.Clear();
-            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.WizardryAttackOptionsName));
-            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == HarmonyOptions.WizardryAttackOptionsName));
+            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName));
+            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName));
             book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck)));
             book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg)));
             if (booksMagicPower.ContainsKey(book.Number))
@@ -229,7 +229,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         if (wingsOfCurse is not null)
         {
             wingsOfCurse.Name = "Wings of Curse";
-            var wingOpts = wingsOfCurse.PossibleItemOptions.First(o => o.Name == "Wing of Curse Options");
+            var wingOpts = wingsOfCurse.PossibleItemOptions.First(o => o.Name.ValueInNeutralLanguage == "Wing of Curse Options");
 
             var wizOption = wingOpts.PossibleOptions.First();
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
@@ -252,7 +252,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         var wingsOfDespair = gameConfiguration.Items.FirstOrDefault(i => i.GetId() == new Guid("00000080-000c-002a-0000-000000000000"));
         if (wingsOfDespair is not null)
         {
-            var wingOpts = wingsOfDespair.PossibleItemOptions.First(o => o.Name == "Wings of Despair Options");
+            var wingOpts = wingsOfDespair.PossibleItemOptions.First(o => o.Name.ValueInNeutralLanguage == "Wings of Despair Options");
 
             var curseOption = wingOpts.PossibleOptions.First(o => o.Number == 0);
             curseOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
@@ -291,7 +291,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         var wingsOfDimension = gameConfiguration.Items.FirstOrDefault(i => i.GetId() == new Guid("00000080-000c-002b-0000-000000000000"));
         if (wingsOfDimension is not null)
         {
-            var wingOpts = wingsOfDimension.PossibleItemOptions.First(o => o.Name == "Wing of Dimension Options");
+            var wingOpts = wingsOfDimension.PossibleItemOptions.First(o => o.Name.ValueInNeutralLanguage == "Wing of Dimension Options");
 
             var wizOption = wingOpts.PossibleOptions.First(o => o.Number == 3);
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);

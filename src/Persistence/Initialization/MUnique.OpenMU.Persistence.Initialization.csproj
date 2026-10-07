@@ -274,4 +274,51 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\ItemOptionNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemOptionNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemOptionNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemOptionNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\ItemOptionTypeNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemOptionTypeNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemOptionTypeNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemOptionTypeNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\ItemOptionDescriptions.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemOptionDescriptions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemOptionDescriptions.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemOptionDescriptions.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\ItemSetNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemSetNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemSetNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemSetNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\ArmorSetNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ArmorSetNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ArmorSetNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ArmorSetNames.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
