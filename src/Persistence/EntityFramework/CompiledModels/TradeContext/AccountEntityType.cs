@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Account",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Account),
                 baseEntityType,
-                propertyCount: 16,
+                propertyCount: 19,
                 navigationCount: 3,
                 unnamedIndexCount: 1,
                 keyCount: 1);
@@ -51,6 +51,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetProperty("EMail", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetField("<EMail>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             eMail.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var goblinPoints = runtimeEntityType.AddProperty(
+                "GoblinPoints",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetProperty("GoblinPoints", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetField("<GoblinPoints>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            goblinPoints.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var isBot = runtimeEntityType.AddProperty(
                 "IsBot",
@@ -154,6 +162,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetProperty("VaultPassword", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetField("<VaultPassword>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             vaultPassword.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var wCoinC = runtimeEntityType.AddProperty(
+                "WCoinC",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetProperty("WCoinC", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetField("<WCoinC>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            wCoinC.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var wCoinP = runtimeEntityType.AddProperty(
+                "WCoinP",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetProperty("WCoinP", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetField("<WCoinP>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            wCoinP.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var key = runtimeEntityType.AddKey(
                 new[] { id });

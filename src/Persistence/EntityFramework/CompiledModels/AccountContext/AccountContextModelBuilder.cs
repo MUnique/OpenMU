@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("b14e6d59-b5fd-4117-821e-d29c5400e74c"), entityTypeCount: 43)
+            : base(skipDetectChanges: false, modelId: new Guid("8b99359b-a111-4b0d-b8f0-fca6f18076e4"), entityTypeCount: 45)
         {
         }
 
@@ -22,6 +22,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var attributeRelationship = AttributeRelationshipEntityType.Create(this);
+            var cashShopCoinGrant = CashShopCoinGrantEntityType.Create(this);
+            var cashShopStorageItem = CashShopStorageItemEntityType.Create(this);
             var castleSiegeData = CastleSiegeDataEntityType.Create(this);
             var castleSiegeGuild = CastleSiegeGuildEntityType.Create(this);
             var castleSiegeGuildRegistration = CastleSiegeGuildRegistrationEntityType.Create(this);
@@ -65,6 +67,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, powerUpDefinitionValue);
+            CashShopCoinGrantEntityType.CreateForeignKey1(cashShopCoinGrant, account);
+            CashShopStorageItemEntityType.CreateForeignKey1(cashShopStorageItem, account);
             CastleSiegeGuildEntityType.CreateForeignKey1(castleSiegeGuild, castleSiegeData);
             CastleSiegeNpcStateEntityType.CreateForeignKey1(castleSiegeNpcState, castleSiegeData);
             CastleSiegePendingRewardEntityType.CreateForeignKey1(castleSiegePendingReward, character);
@@ -94,6 +98,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AttributeRelationshipEntityType.CreateAnnotations(attributeRelationship);
+            CashShopCoinGrantEntityType.CreateAnnotations(cashShopCoinGrant);
+            CashShopStorageItemEntityType.CreateAnnotations(cashShopStorageItem);
             CastleSiegeDataEntityType.CreateAnnotations(castleSiegeData);
             CastleSiegeGuildEntityType.CreateAnnotations(castleSiegeGuild);
             CastleSiegeGuildRegistrationEntityType.CreateAnnotations(castleSiegeGuildRegistration);

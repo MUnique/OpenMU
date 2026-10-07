@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
     public partial class TradeContextModel
     {
         private TradeContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("39930277-6667-43d9-9a9b-f90217f79b85"), entityTypeCount: 42)
+            : base(skipDetectChanges: false, modelId: new Guid("e017e9d8-60cc-47ee-be81-ee7a7352c760"), entityTypeCount: 44)
         {
         }
 
@@ -22,6 +22,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var attributeRelationship = AttributeRelationshipEntityType.Create(this);
+            var cashShopCoinGrant = CashShopCoinGrantEntityType.Create(this);
+            var cashShopStorageItem = CashShopStorageItemEntityType.Create(this);
             var castleSiegeData = CastleSiegeDataEntityType.Create(this);
             var castleSiegeGuild = CastleSiegeGuildEntityType.Create(this);
             var castleSiegeGuildRegistration = CastleSiegeGuildRegistrationEntityType.Create(this);
@@ -63,6 +65,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
 
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, powerUpDefinitionValue);
+            CashShopCoinGrantEntityType.CreateForeignKey1(cashShopCoinGrant, account);
+            CashShopStorageItemEntityType.CreateForeignKey1(cashShopStorageItem, account);
             CastleSiegeGuildEntityType.CreateForeignKey1(castleSiegeGuild, castleSiegeData);
             CastleSiegeNpcStateEntityType.CreateForeignKey1(castleSiegeNpcState, castleSiegeData);
             CastleSiegePendingRewardEntityType.CreateForeignKey1(castleSiegePendingReward, character);
@@ -90,6 +94,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AttributeRelationshipEntityType.CreateAnnotations(attributeRelationship);
+            CashShopCoinGrantEntityType.CreateAnnotations(cashShopCoinGrant);
+            CashShopStorageItemEntityType.CreateAnnotations(cashShopStorageItem);
             CastleSiegeDataEntityType.CreateAnnotations(castleSiegeData);
             CastleSiegeGuildEntityType.CreateAnnotations(castleSiegeGuild);
             CastleSiegeGuildRegistrationEntityType.CreateAnnotations(castleSiegeGuildRegistration);
