@@ -87,7 +87,7 @@ public class Pets : InitializerBase
         var dinoOptionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
-        dinoOptionDefinition.Name = "Dinorant Options";
+        dinoOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.DinorantOptions);
         dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
         dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first

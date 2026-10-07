@@ -1529,4 +1529,46 @@
   <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
     <value>The time after which a connection is considered lost, when its client didn't report that it's alive. The game client reports it every 20 seconds. Zero disables the detection.</value>
   </data>
+  <data name="CashShopVersionPlugIn_Name" xml:space="preserve">
+    <value>Cash shop version</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Description" xml:space="preserve">
+    <value>Sends the versions of the cash shop script and banner to the player when it enters the game.</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Name" xml:space="preserve">
+    <value>Cash shop</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Description" xml:space="preserve">
+    <value>The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size.</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Name" xml:space="preserve">
+    <value>Goblin Points for play time</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Description" xml:space="preserve">
+    <value>Gives players Goblin Points of the cash shop for their play time.</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Vault Expansion Certificate</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Extends the vault of the account when a player uses the Vault Expansion Certificate from the cash shop storage.</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Magic Backpack</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Adds an inventory extension to the character when a player uses the Magic Backpack from the cash shop storage.</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Summoner Character Card</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage.</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Rage Fighter Character Card</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage.</value>
+  </data>
 </root>

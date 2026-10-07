@@ -1,0 +1,96 @@
+{{- $component := "game-server" }}
+{{- $gs := .Values.gameServer }}
+# All game servers are one StatefulSet: pod N runs the game server with the id idOffset + N, taken
+# from the ordinal at the end of its host name. They share the dapr app id, because nothing addresses
+# a game server by its app id, and they listen on the same ports.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+spec:
+  serviceName: {{ include "openmu.fullname" . }}-{{ $component }}
+  replicas: {{ $gs.replicas }}
+  # The game servers don't depend on each other, so they can start and stop in parallel.
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 8 }}
+      annotations:
+        {{- /* The game server saves and disconnects its players on shutdown, and logs them off at the
+               central server through its sidecar, so the sidecar has to stay up meanwhile. The game
+               server keeps answering its health endpoint until it's done. */}}
+        {{- include "openmu.daprAnnotations" (dict "root" . "appId" "game-server" "blockShutdownDuration" (printf "%ds" (sub (int $gs.terminationGracePeriodSeconds) 5))) | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "openmu.fullname" . }}
+      terminationGracePeriodSeconds: {{ $gs.terminationGracePeriodSeconds }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: game-server
+          image: {{ include "openmu.image" (dict "root" . "image" $gs.image) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- include "openmu.commonEnv" . | nindent 12 }}
+            - name: GS_ID_OFFSET
+              value: {{ $gs.idOffset | quote }}
+            - name: GS_LISTENER_PORT
+              value: {{ $gs.listenerPort | quote }}
+            - name: RESOLVE_IP
+            {{- if eq $gs.resolveIp "hostIP" }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            {{- else }}
+              value: {{ $gs.resolveIp | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+            {{- range $index := until (int $gs.clientVersions) }}
+            - name: game-{{ $index }}
+              containerPort: {{ add $gs.listenerPort $index }}
+              {{- if eq $gs.exposure "hostPort" }}
+              hostPort: {{ add $gs.listenerPort $index }}
+              {{- end }}
+            {{- end }}
+          {{- include "openmu.probes" . | nindent 10 }}
+          {{- with $gs.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $gs.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $gs.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $gs.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

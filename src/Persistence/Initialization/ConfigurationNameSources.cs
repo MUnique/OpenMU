@@ -28,6 +28,11 @@ public static class ConfigurationNameSources
         RegisterIfNeeded(nameof(MiniGameNames), MiniGameNames.ResourceManager);
         RegisterIfNeeded(nameof(MiniGameDescriptions), MiniGameDescriptions.ResourceManager);
         RegisterIfNeeded(nameof(SkillNames), SkillNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemOptionNames), ItemOptionNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemOptionTypeNames), ItemOptionTypeNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemOptionDescriptions), ItemOptionDescriptions.ResourceManager);
+        RegisterIfNeeded(nameof(ItemSetNames), ItemSetNames.ResourceManager);
+        RegisterIfNeeded(nameof(ArmorSetNames), ArmorSetNames.ResourceManager);
     }
 
     /// <summary>

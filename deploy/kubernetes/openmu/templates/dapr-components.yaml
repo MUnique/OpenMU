@@ -1,0 +1,71 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  type: pubsub.rabbitmq
+  version: v1
+  metadata:
+    - name: connectionString
+      value: {{ include "openmu.rabbitmqConnectionString" . | quote }}
+    - name: durable
+      value: "true"
+    - name: deletedWhenUnused
+      value: "false"
+    - name: autoAck
+      value: "false"
+    - name: reconnectWait
+      value: "0"
+    - name: concurrency
+      value: parallel
+    # Each pod needs its own queues to receive every message, also when pods share an app id,
+    # like the game servers.
+    - name: consumerID
+      value: "{podName}"
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: login-state
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  type: state.redis
+  version: v1
+  metadata:
+    - name: redisHost
+      value: {{ include "openmu.redisHost" . | quote }}
+    - name: redisPassword
+      value: {{ .Values.redis.password | quote }}
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: secrets
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  type: secretstores.kubernetes
+  version: v1
+  metadata: []
+---
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: {{ include "openmu.fullname" . }}-dapr
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.otlpEndpoint }}
+  tracing:
+    samplingRate: "1"
+    otel:
+      endpointAddress: {{ .Values.otlpEndpoint | trimPrefix "http://" | trimPrefix "https://" | quote }}
+      isSecure: {{ hasPrefix "https://" .Values.otlpEndpoint }}
+      protocol: grpc
+  {{- else }}
+  tracing:
+    samplingRate: "0"
+  {{- end }}
