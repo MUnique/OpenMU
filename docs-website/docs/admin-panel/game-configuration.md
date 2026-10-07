@@ -108,11 +108,11 @@ graphical representation instead of the plain generic form.
 
 The game configuration menu provides separate entries for these lists:
 
-- **Item options** (`edit-config-grid/…ItemOptionDefinition/`): available item
+* **Item options** (`edit-config-grid/…ItemOptionDefinition/`): available item
   bonuses, their effects and level-dependent values.
-- **Item option types** (`edit-config-grid/…ItemOptionType/`): categories such as
+* **Item option types** (`edit-config-grid/…ItemOptionType/`): categories such as
   excellent or ancient options.
-- **Item set groups** (`edit-config-grid/…ItemSetGroup/`): item set names, member
+* **Item set groups** (`edit-config-grid/…ItemSetGroup/`): item set names, member
   items and set bonuses.
 
 Each entry opens the existing configuration grid, where entries can be inspected
