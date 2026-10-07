@@ -269,6 +269,32 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CashShopConfiguration"/>.
+    /// </summary>
+    public Guid? CashShopConfigurationId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CashShopConfiguration" />.
+    /// </summary>
+    [ForeignKey(nameof(CashShopConfigurationId))]
+    public CashShopConfiguration RawCashShopConfiguration
+    {
+        get => base.CashShopConfiguration as CashShopConfiguration;
+        set => base.CashShopConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.CashShopConfiguration CashShopConfiguration
+    {
+        get => base.CashShopConfiguration;set
+        {
+            base.CashShopConfiguration = value;
+            this.CashShopConfigurationId = this.RawCashShopConfiguration?.Id;
+        }
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

@@ -57,6 +57,12 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.AppearanceData, MUnique.OpenMU.DataModel.Entities.AppearanceData>()
             .Include<AppearanceData, BasicModel.AppearanceData>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CashShopCoinGrant, MUnique.OpenMU.DataModel.Entities.CashShopCoinGrant>()
+            .Include<CashShopCoinGrant, BasicModel.CashShopCoinGrant>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CashShopStorageItem, MUnique.OpenMU.DataModel.Entities.CashShopStorageItem>()
+            .Include<CashShopStorageItem, BasicModel.CashShopStorageItem>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeData, MUnique.OpenMU.DataModel.Entities.CastleSiegeData>()
             .Include<CastleSiegeData, BasicModel.CastleSiegeData>();
 
@@ -122,6 +128,15 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Buff, MUnique.OpenMU.DataModel.Configuration.Buff>()
             .Include<Buff, BasicModel.Buff>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CashShopConfiguration, MUnique.OpenMU.DataModel.Configuration.CashShopConfiguration>()
+            .Include<CashShopConfiguration, BasicModel.CashShopConfiguration>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CashShopPackage, MUnique.OpenMU.DataModel.Configuration.CashShopPackage>()
+            .Include<CashShopPackage, BasicModel.CashShopPackage>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CashShopProduct, MUnique.OpenMU.DataModel.Configuration.CashShopProduct>()
+            .Include<CashShopProduct, BasicModel.CashShopProduct>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration, MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration>()
             .Include<CastleSiegeConfiguration, BasicModel.CastleSiegeConfiguration>();
