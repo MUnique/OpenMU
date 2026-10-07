@@ -342,7 +342,16 @@ public class Pets : InitializerBase
     {
         var combinationBonus = this.Context.CreateNew<ItemOptionCombinationBonus>();
         combinationBonus.Number = number;
-        combinationBonus.Description = $"{optionType.Name}: {targetAttribute.Designation}";
+        combinationBonus.Description = number switch
+        {
+            BlackFenrirMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlackFenrirMovementSpeed),
+            BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlackFenrirUnderwaterMovementSpeed),
+            BlueFenrirMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlueFenrirMovementSpeed),
+            BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlueFenrirUnderwaterMovementSpeed),
+            GoldFenrirMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.GoldFenrirMovementSpeed),
+            GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.GoldFenrirUnderwaterMovementSpeed),
+            _ => new LocalizedString($"{optionType.Name.ValueInNeutralLanguage}: {targetAttribute.Designation}"),
+        };
         combinationBonus.AppliesMultipleTimes = false;
         combinationBonus.Requirements.Add(this.CreateFenrirMovementSpeedRequirement(optionType));
         combinationBonus.Bonus = this.CreatePowerUpDefinition(targetAttribute, MovementSpeedConstants.UpgradedFenrirMovementSpeed, AggregateType.Maximum);

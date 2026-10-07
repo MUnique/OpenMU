@@ -105,7 +105,8 @@ internal class ConfigurationNameResourcesTests
                 .Concat(configuration.ItemOptions.Select(option => option.Name))
                 .Concat(configuration.ItemOptionTypes.Select(type => type.Name))
                 .Concat(configuration.ItemOptionTypes.Select(type => type.Description))
-                .Concat(configuration.ItemSetGroups.Select(set => set.Name));
+                .Concat(configuration.ItemSetGroups.Select(set => set.Name))
+                .Concat(configuration.ItemOptionCombinationBonuses.Select(bonus => bonus.Description));
             foreach (var name in names.Where(n => n.SourceKey is not null))
             {
                 usedSourceKeys.Add(name.SourceKey!);
