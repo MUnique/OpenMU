@@ -10,7 +10,9 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
@@ -111,7 +113,16 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(number);
-        definition.Name = attributeDefinition.Designation + " Option";
+        definition.Name = attributeDefinition.Designation switch
+        {
+            "Base Damage Bonus (physical and wizardry, min and max)" => LocalizedString.FromResource(() => ItemOptionNames.BaseDamageBonusPhysicalAndWizardryMinAndMaxOption),
+            "Base Defense" => LocalizedString.FromResource(() => ItemOptionNames.BaseDefenseOption),
+            "Curse Base Damage (min and max)" => LocalizedString.FromResource(() => ItemOptionNames.CurseBaseDamageMinAndMaxOption),
+            "Defense Rate (PvM)" => LocalizedString.FromResource(() => ItemOptionNames.DefenseRatePvMOption),
+            "Physical Base Damage (min and max)" => LocalizedString.FromResource(() => ItemOptionNames.PhysicalBaseDamageMinAndMaxOption),
+            "Wizardry Base Damage (min and max)" => LocalizedString.FromResource(() => ItemOptionNames.WizardryBaseDamageMinAndMaxOption),
+            _ => new LocalizedString(attributeDefinition.Designation + " Option"),
+        };
         definition.AddChance = 0.25f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 1;
@@ -215,7 +226,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.Luck);
-        definition.Name = "Luck";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.Luck);
         definition.AddChance = 0.25f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 1;
@@ -239,9 +250,28 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         foreach (var optionType in this.OptionTypes)
         {
             var persistentOptionType = this.Context.CreateNew<ItemOptionType>();
-            persistentOptionType.Description = optionType.Description;
+            persistentOptionType.Description = optionType == ItemOptionTypes.GuardianOption
+                ? LocalizedString.FromResource(() => ItemOptionDescriptions.ThisOptionIsAddedByTheChaosMachineWithAJewelOfGuardianOnLevel380Items)
+                : optionType.Description;
             persistentOptionType.Id = optionType.Id;
-            persistentOptionType.Name = optionType.Name;
+            persistentOptionType.Name = optionType.Name.ValueInNeutralLanguage switch
+            {
+                "Ancient Bonus Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.AncientBonusOption),
+                "Ancient Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.AncientOption),
+                "Black Fenrir Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.BlackFenrirOption),
+                "Blue Fenrir Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.BlueFenrirOption),
+                "Dark Horse Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.DarkHorseOption),
+                "Excellent Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.ExcellentOption),
+                "Gold Fenrir Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.GoldFenrirOption),
+                "Guardian Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.GuardianOption),
+                "Jewel of Harmony Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.JewelOfHarmonyOption),
+                "Luck (Critical Damage Chance 5%)" => LocalizedString.FromResource(() => ItemOptionTypeNames.LuckCriticalDamageChance5),
+                "Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.Option),
+                "Socket Bonus Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.SocketBonusOption),
+                "Socket Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.SocketOption),
+                "Wing Option" => LocalizedString.FromResource(() => ItemOptionTypeNames.WingOption),
+                _ => optionType.Name,
+            };
             persistentOptionType.IsVisible = optionType.IsVisible;
             this.GameConfiguration.ItemOptionTypes.Add(persistentOptionType);
         }

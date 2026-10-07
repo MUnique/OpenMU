@@ -700,7 +700,7 @@ internal abstract class AccountInitializerBase : InitializerBase
             ancient.ItemOptions.Add(luck);
         }
 
-        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name == ancientName);
+        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name.ValueInNeutralLanguage == ancientName);
         var itemOfSet = set.Items.First(i => i.ItemDefinition == ancient.Definition);
         if (itemOfSet.BonusOption is { })
         {

@@ -329,12 +329,12 @@ internal class Weapons : InitializerBase
         if (magicPower == 0)
         {
             item.PossibleItemOptions.Add(this.PhysicalDamageOption);
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.PhysicalAttackOptionsName));
         }
         else
         {
             item.PossibleItemOptions.Add(this.WizardryDamageOption);
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName));
 
             var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
             staffRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
