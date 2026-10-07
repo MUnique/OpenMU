@@ -11,6 +11,9 @@ The deployment guides moved to the documentation website:
   [all-in-one-traefik](all-in-one-traefik)
 * [Distributed](../docs-website/docs/deployment/distributed.md) — experimental;
   the compose files are in [distributed](distributed)
+* [Kubernetes](../docs-website/docs/deployment/kubernetes.md) — the distributed
+  deployment on Kubernetes, experimental; the Helm chart is in
+  [kubernetes/openmu](kubernetes/openmu)
 * [Startup parameters and environment variables](../docs-website/docs/deployment/startup-parameters.md)
 
 The website is built from the [docs-website](../docs-website) folder of this

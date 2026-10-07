@@ -43,9 +43,7 @@ public class SpeedHackAntiCheatTests
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
 
         // Perform rapid walks to exceed the 3-warnings limit.
-        // We need 12 iterations because speedhack detection uses a rolling history of recent walks
-        // which requires 3 walks to trigger the first warning. Since the history is cleared on violation,
-        // we need 3 walks * 4 warnings = 12 iterations to trigger account ban.
+        // The first walks are covered by the walk tolerance; after that, each rapid walk triggers a warning.
         for (int i = 0; i < 12; i++)
         {
             var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
@@ -325,6 +323,42 @@ public class SpeedHackAntiCheatTests
     }
 
     /// <summary>
+    /// Tests that walk packets which arrive in a burst after a network stall don't trigger violations (issue #1119).
+    /// </summary>
+    [Test]
+    public async Task TestWalkPacketBurstAfterStallDoesNotTriggerFalsePositivesAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var stepDelay = player.StepDelay;
+
+        for (int i = 0; i < 10; i++)
+        {
+            var nextFrom = new Point((byte)(StartPoint.X + i), StartPoint.Y);
+            var nextTo = new Point((byte)(StartPoint.X + i + 1), StartPoint.Y);
+            player.Position = nextFrom;
+            plugin.SetLastAlertTime(player, DateTime.MinValue);
+
+            if (i < 3)
+            {
+                // Walking normally at first.
+                await Task.Delay(stepDelay).ConfigureAwait(false);
+            }
+            else if (i == 3)
+            {
+                // The connection stalls, then all following walk packets arrive at once.
+                await Task.Delay(stepDelay * 7).ConfigureAwait(false);
+            }
+
+            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
+            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
+        }
+
+        Assert.That(plugin.GetWarningCount(player), Is.EqualTo(0));
+        Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
+    }
+
+    /// <summary>
     /// Tests that the speed check is bypassed when the plugin is disabled.
     /// </summary>
     [Test]
@@ -541,7 +575,8 @@ public class SpeedHackAntiCheatTests
         var account = new TestAccount { State = AccountState.Normal };
 
         var player = new TestPlayer(gameContext) { Account = account };
-        var speedHackDetectPlugIn = new SpeedHackDetectPlugIn { Configuration = new SpeedHackDetectConfiguration() };
+        // Auto-ban is disabled by default, but enabled here so that the tests can verify the ban.
+        var speedHackDetectPlugIn = new SpeedHackDetectPlugIn { Configuration = new SpeedHackDetectConfiguration { AutoBan = true } };
         player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(speedHackDetectPlugIn);
         player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<ISpeedHackCheatCheckPlugIn>(speedHackDetectPlugIn);
         player.GameContext.FeaturePlugIns.AddPlugIn(speedHackDetectPlugIn, true);

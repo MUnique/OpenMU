@@ -69,7 +69,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         var eliteSkeletonRing = this.CreateTransformationRing(39, LocalizedString.FromResource(() => ItemNames.EliteSkeletonTransformationRing), 10, 255, 10, CharacterTransformationSkin.EliteSkeleton,
             (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
         eliteSkeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Elite Skeleton Transformation Ring", ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
+            this.CreateItemOptionDefinition(LocalizedString.FromResource(() => ItemOptionNames.EliteSkeletonTransformationRing), ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1))));
 
         this.CreateTransformationRing(40, LocalizedString.FromResource(() => ItemNames.JackOLanternTransformationRing), 10, 100, 10, CharacterTransformationSkin.JackOlantern);
@@ -101,7 +101,7 @@ internal class Jewelery : Version095d.Items.Jewelery
             (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
         skeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Skeleton Transformation Ring", ItemOptionDefinitionNumbers.SkeletonTransformationRing,
+            this.CreateItemOptionDefinition(LocalizedString.FromResource(() => ItemOptionNames.SkeletonTransformationRing), ItemOptionDefinitionNumbers.SkeletonTransformationRing,
                 (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f))));
 
         /* Next season xfm rings
@@ -232,7 +232,12 @@ internal class Jewelery : Version095d.Items.Jewelery
         if (optionTargetAttribute != Stats.HealthRecoveryMultiplier && optionTargetAttribute is not null)
         {
             // Then it's either maximum mana or ability increase by 1% for each option level
-            var option = this.CreateOption("Jewelery option " + optionTargetAttribute.Designation, optionTargetAttribute, 0.01f, item.GetItemId(), AggregateType.Multiplicate);
+            var optionName = optionTargetAttribute == Stats.MaximumMana
+                ? LocalizedString.FromResource(() => ItemOptionNames.JeweleryOptionMaximumMana)
+                : optionTargetAttribute == Stats.MaximumAbility
+                    ? LocalizedString.FromResource(() => ItemOptionNames.JeweleryOptionMaximumAbility)
+                    : new LocalizedString("Jewelery option " + optionTargetAttribute.Designation);
+            var option = this.CreateOption(optionName, optionTargetAttribute, 0.01f, item.GetItemId(), AggregateType.Multiplicate);
 
             item.PossibleItemOptions.Add(option);
         }

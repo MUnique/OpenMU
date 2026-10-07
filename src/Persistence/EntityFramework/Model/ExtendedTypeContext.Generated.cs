@@ -27,6 +27,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CashShopCoinGrant>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CashShopStorageItem>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeData>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration>();
@@ -48,6 +50,9 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Buff>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CashShopConfiguration>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CashShopPackage>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CashShopProduct>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeNpcDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeStateScheduleEntry>();
@@ -145,6 +150,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawLeftGoal).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawRightGoal).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Buff>().HasOne(entity => entity.RawMagicEffectDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CashShopConfiguration>().HasMany(entity => entity.RawPackages).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CashShopPackage>().HasMany(entity => entity.RawProducts).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawStateSchedule).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawNpcDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawGateDefenseUpgrades).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -185,6 +192,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawPlugInConfigurations).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawMiniGameDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawCastleSiegeConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawCashShopConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawMonsterSpawns).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawEnterGates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasOne(entity => entity.RawBattleZone).WithOne().OnDelete(DeleteBehavior.Cascade);

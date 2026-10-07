@@ -45,7 +45,7 @@ public class FixWarriorMorningStarPlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var warriorSet = gameConfiguration.ItemSetGroups.First(set => set.Name == "Warrior");
+        var warriorSet = gameConfiguration.ItemSetGroups.First(set => set.Name.ValueInNeutralLanguage == "Warrior");
         var itemSet = warriorSet.Items.FirstOrDefault(item => item.ItemDefinition?.Group == (byte)ItemGroups.Axes);
         if (itemSet != null)
         {

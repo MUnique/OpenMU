@@ -47,7 +47,7 @@ public sealed class PersistentLoginServer : ILoginServer
 
         foreach (var accountName in serverIndex)
         {
-            await this.SetAccountOfflineAsync(accountName).ConfigureAwait(false);
+            await this.SetAccountOfflineAsync(accountName, serverId).ConfigureAwait(false);
         }
 
         serverIndex.Clear();
@@ -99,7 +99,7 @@ public sealed class PersistentLoginServer : ILoginServer
     {
         try
         {
-            await this.SetAccountOfflineAsync(accountName).ConfigureAwait(false);
+            await this.SetAccountOfflineAsync(accountName, serverId).ConfigureAwait(false);
             await this.RemoveFromIndexAsync(accountName, serverId).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -174,13 +174,14 @@ public sealed class PersistentLoginServer : ILoginServer
         }
     }
 
-    private async Task SetAccountOfflineAsync(string accountName)
+    private async Task SetAccountOfflineAsync(string accountName, byte serverId)
     {
         try
         {
             var (currentServerId, eTag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
-            if (currentServerId == OfflineServerId)
+            if (currentServerId != serverId)
             {
+                // It's already offline, or logged in at another server, e.g. when this is a late log off.
                 return;
             }
 

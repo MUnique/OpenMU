@@ -1,7 +1,7 @@
 ---
 title: Startup parameters and environment variables
 sidebar_label: Startup parameters
-sidebar_position: 5
+sidebar_position: 6
 description: Command line parameters, environment variables and their priority.
 ---
 
