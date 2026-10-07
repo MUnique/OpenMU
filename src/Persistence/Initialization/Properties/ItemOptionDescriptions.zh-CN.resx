@@ -34,9 +34,9 @@
     <value>金色炎狼兽属性：水下移动速度</value>
   </data>
   <data name="SocketPackageDoubleDamageChance" xml:space="preserve">
-    <value>镶嵌组合属性：双倍伤害概率 3%</value>
+    <value>组合荧光属性：双倍攻击概率 +3%</value>
   </data>
   <data name="SocketPackageIgnoreDefenseChance" xml:space="preserve">
-    <value>镶嵌组合属性：无视防御概率 1%</value>
+    <value>组合荧光属性：无视对方防御攻击 +1%</value>
   </data>
 </root>

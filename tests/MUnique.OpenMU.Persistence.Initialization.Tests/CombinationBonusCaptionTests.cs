@@ -58,7 +58,7 @@ internal class CombinationBonusCaptionTests
         Assert.That(changes, Has.Length.EqualTo(7));
         Assert.That(ConfigurationCaptions.ApplyChanges(existing, changes.Select(change => change.Id)), Is.EqualTo(7));
         Assert.That(customized.Description.GetOwnTranslation(chinese), Is.EqualTo("自定义组合加成"));
-        Assert.That(bonuses[1].Description.GetOwnTranslation(chinese), Is.EqualTo("镶嵌组合属性：无视防御概率 1%"));
+        Assert.That(bonuses[1].Description.GetOwnTranslation(chinese), Is.EqualTo("组合荧光属性：无视对方防御攻击 +1%"));
         Assert.That(bonuses[3].Description.GetOwnTranslation(chinese), Is.EqualTo("黑色炎狼兽属性：水下移动速度"));
         Assert.That(ConfigurationCaptions.LinkSourceKeys(existing, reference).Linked, Is.Zero);
         Assert.That(ConfigurationCaptions.DetermineChanges(existing).Any(change => change.CultureName == chinese.Name && change.IsRecommended), Is.False);
