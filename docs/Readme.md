@@ -46,6 +46,9 @@ can be searched and navigated.
 * [Player refactoring plan](PlayerRefactoringPlan.md): an internal plan for the
   refactoring of the player class
 
+* [Cash shop](CashShop.md): the design and implementation of the in-game cash
+  shop, the facts about the game client it's based on, and what's left to do
+
 * [architecture overview.png](architecture%20overview.png): the big picture,
   explained on the
   [architecture page](../docs-website/docs/development/architecture.md) of the

@@ -617,6 +617,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddCastleSiegeDataUpdatePlugIn_Description text.</summary>
         public static string AddCastleSiegeDataUpdatePlugIn_Description => ResourceManager.GetString("AddCastleSiegeDataUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddCashShopUpdatePlugIn_Name text.</summary>
+        public static string AddCashShopUpdatePlugIn_Name => ResourceManager.GetString("AddCashShopUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCashShopUpdatePlugIn_Description text.</summary>
+        public static string AddCashShopUpdatePlugIn_Description => ResourceManager.GetString("AddCashShopUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FixAttackSpeedCalculationUpdate_Name text.</summary>
         public static string FixAttackSpeedCalculationUpdate_Name => ResourceManager.GetString("FixAttackSpeedCalculationUpdate_Name", resourceCulture)!;
 

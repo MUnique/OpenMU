@@ -486,6 +486,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool IsVaultLocked { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the cash shop is opened by the player.
+    /// </summary>
+    public bool IsCashShopOpen { get; set; }
+
+    /// <summary>
     /// Gets the shop storage.
     /// </summary>
     public IShopStorage? ShopStorage => this._storages.ShopStorage;
@@ -1826,17 +1831,49 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character {this.SelectedCharacter} has no assigned character class.");
         }
 
+        this.RemoveStatAttributesWithoutDefinition(character);
         this.RemoveDuplicateStatAttributes(character);
+
+        // A class stat without an attribute would be saved as a stat without a definition. This happens
+        // when a running server applies a data update whose attribute isn't in its cached configuration yet.
+        if (characterClass.StatAttributes.Any(a => a.Attribute is null))
+        {
+            this.Logger.LogWarning(
+                "The character class '{CharacterClass}' has stat attributes without an attribute definition; they're not added to character '{Character}'. Restart the server after installing data updates.",
+                characterClass,
+                character.Name);
+        }
 
         // The character class itself may define a stat attribute more than once (a data update which
         // added an attribute the class already had), so the missing ones are taken distinctly - otherwise
         // we would create the duplicates we just removed all over again.
         var missingStats = characterClass.StatAttributes
+            .Where(a => a.Attribute is not null)
             .DistinctBy(a => a.Attribute)
             .Where(a => character.Attributes.All(c => c.Definition != a.Attribute));
 
-        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute!, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
+    }
+
+    /// <summary>
+    /// Removes stat attributes without a definition. They have no meaning, and an attribute system
+    /// can't hold them, so the character would be unable to enter the game at all.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void RemoveStatAttributesWithoutDefinition(Character character)
+    {
+        var invalid = character.Attributes.Where(a => a.Definition is null).ToList();
+        if (invalid.Count == 0)
+        {
+            return;
+        }
+
+        invalid.ForEach(attribute => character.Attributes.Remove(attribute));
+        this.Logger.LogWarning(
+            "Removed {Count} stat attribute(s) without a definition of character '{Character}'.",
+            invalid.Count,
+            character.Name);
     }
 
     /// <summary>

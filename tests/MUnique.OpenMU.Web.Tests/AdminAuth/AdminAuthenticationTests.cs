@@ -286,10 +286,21 @@ public class AdminAuthenticationTests
     [Test]
     public void EffectiveRolesIncludeTheLessPrivilegedOnes()
     {
-        Assert.That(AdminRoles.GetEffectiveRoles(AdminRoles.Administrator), Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator, AdminRoles.Administrator }));
+        Assert.That(AdminRoles.GetEffectiveRoles(AdminRoles.Administrator), Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator, AdminRoles.Administrator, AdminRoles.CashShop }));
         Assert.That(AdminRoles.GetEffectiveRoles(AdminRoles.Operator), Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator }));
         Assert.That(AdminRoles.GetEffectiveRoles(AdminRoles.Viewer), Is.EquivalentTo(new[] { AdminRoles.Viewer }));
         Assert.That(AdminRoles.GetEffectiveRoles("Unknown"), Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that the cash shop role doesn't imply any other role, so that it can be given alone,
+    /// e.g. to the API key of a payment provider.
+    /// </summary>
+    [Test]
+    public void CashShopRoleDoesNotImplyOtherRoles()
+    {
+        Assert.That(AdminRoles.GetEffectiveRoles(AdminRoles.CashShop), Is.EquivalentTo(new[] { AdminRoles.CashShop }));
+        Assert.That(AdminRoles.All, Does.Not.Contain(AdminRoles.CashShop));
     }
 
     /// <summary>
@@ -442,7 +453,7 @@ public class AdminAuthenticationTests
             .Select(c => c.Value)
             .ToList();
 
-        Assert.That(roles, Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator, AdminRoles.Administrator }));
+        Assert.That(roles, Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator, AdminRoles.Administrator, AdminRoles.CashShop }));
         Assert.That(
             claims.Any(c => c.Type == AdminAuthenticationDefaults.AuthenticationMethodClaimType
                             && c.Value == AdminAuthenticationDefaults.MultiFactorAuthenticationMethod),
