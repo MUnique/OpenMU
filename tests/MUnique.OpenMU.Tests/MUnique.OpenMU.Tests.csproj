@@ -49,6 +49,7 @@
     <ProjectReference Include="..\..\src\LoginServer\MUnique.OpenMU.LoginServer.csproj" />
     <ProjectReference Include="..\..\src\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
     <ProjectReference Include="..\..\src\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\EntityFramework.DesignTime\MUnique.OpenMU.Persistence.EntityFramework.DesignTime.csproj" />
     <ProjectReference Include="..\..\src\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj" />

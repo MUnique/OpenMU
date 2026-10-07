@@ -38,6 +38,8 @@ contexts change. That's usually also the case when a migration is added.
 The `CompiledModelTests` in `tests/MUnique.OpenMU.Tests` fail when a compiled model doesn't
 match the model which is built by `OnModelCreating`.
 
+The generated code of the `GameConfigurationLoader` has to be updated, too, see `../Loading/Readme.md`.
+
 ## How to generate them
 
 Use the project `MUnique.OpenMU.Persistence.EntityFramework.DesignTime` as startup project.

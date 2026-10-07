@@ -8,6 +8,7 @@ using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
+using MUnique.OpenMU.Persistence.EntityFramework.Loading;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -40,6 +41,12 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
+            if (GameConfigurationLoader.IsEnabled)
+            {
+                var configurations = await new GameConfigurationLoader().LoadAsync(database.GetDbConnection(), cancellationToken).ConfigureAwait(false);
+                return configurations.FirstOrDefault(configuration => configuration.Id == id);
+            }
+
             return await CreateObjectLoader().LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false);
         }
         finally
@@ -60,7 +67,9 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var configs = (await CreateObjectLoader().LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
+            var configs = GameConfigurationLoader.IsEnabled
+                ? (await new GameConfigurationLoader().LoadAsync(database.GetDbConnection(), cancellationToken).ConfigureAwait(false)).ToList()
+                : (await CreateObjectLoader().LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
 
             var oldConfig = ((EntityDataContext)currentContext.Context).CurrentGameConfiguration;
             try
