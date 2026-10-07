@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -37,6 +38,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     private readonly ICollection<IGameServerListener> _listeners = new List<IGameServerListener>();
 
     private readonly NetworkObservationHandler? _observationHandler;
+
+    private readonly ConnectedAccountLoginAttemptAction _connectedAccountLoginAttemptAction = new();
 
     private ServerState _serverState;
 
@@ -353,13 +356,7 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     /// <inheritdoc />
     public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
     {
-        var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
-        var affectedPlayer = players.FirstOrDefault(p => p.Account?.LoginName == loginName);
-
-        if (affectedPlayer is not null)
-        {
-            await affectedPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LoginAttemptWarning)).ConfigureAwait(false);
-        }
+        await this._connectedAccountLoginAttemptAction.HandleAsync(this._gameContext, loginName).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

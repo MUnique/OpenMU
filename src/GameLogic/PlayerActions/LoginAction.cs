@@ -192,7 +192,11 @@ public class LoginAction
         var result = player.LoginResultOverride ?? LoginResult.AccountAlreadyConnected;
         player.LoginResultOverride = null;
         await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(result)).ConfigureAwait(false);
-        if (player.GameContext is IGameServerContext gameServerContext)
+
+        // When this player is already logged in with the same account, e.g. because the client sent
+        // the login request twice, there is no other session to report, which would be disconnected.
+        if (player.GameContext is IGameServerContext gameServerContext
+            && player.Account?.LoginName != username)
         {
             await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
         }

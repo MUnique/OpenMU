@@ -125,8 +125,8 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     ValueTask AssignGuildToPlayerAsync(string characterName, GuildMemberStatus guildStatus);
 
     /// <summary>
-    /// Notifies that a client tried to log into an already logged-in account.
-    /// The connected player can be notified about that.
+    /// Notifies that a client tried to log into an already logged-in account with the correct password.
+    /// The connected player is warned and disconnected, so that the next attempt succeeds.
     /// </summary>
     /// <param name="serverId">The identifier of the server on which the client tried to enter.</param>
     /// <param name="loginName">The login name.</param>
