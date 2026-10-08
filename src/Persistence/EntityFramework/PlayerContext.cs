@@ -262,6 +262,46 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        int count,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var entries = await CreateCharacterRankingQuery(this.Context.Set<Account>(), levelAttributeId, masterLevelAttributeId, resetsAttributeId, count)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return entries
+                .Select(entry => new CharacterSummary(entry.Name, entry.ClassName, (int)entry.Level, (int)entry.MasterLevel, (int)entry.Resets))
+                .ToList();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CharacterSummary?> GetCharacterSummaryAsync(
+        string characterName,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var entry = await CreateCharacterSummaryQuery(this.Context.Set<Character>().Where(character => character.Name == characterName), levelAttributeId, masterLevelAttributeId, resetsAttributeId)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return entry is null ? null : new CharacterSummary(entry.Name, entry.ClassName, (int)entry.Level, (int)entry.MasterLevel, (int)entry.Resets);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
         Guid killerId,
         Guid victimId,
@@ -274,5 +314,58 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
                 .FirstOrDefaultAsync(abuse => abuse.KillerId == killerId && abuse.VictimId == victimId, cancellationToken)
                 .ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Creates the query of the character ranking.
+    /// </summary>
+    /// <param name="accounts">The accounts.</param>
+    /// <param name="levelAttributeId">The identifier of the attribute definition of the level.</param>
+    /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
+    /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
+    /// <param name="count">The maximum number of entries.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<CharacterRankingRow> CreateCharacterRankingQuery(
+        IQueryable<Account> accounts,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        int count)
+    {
+        // EF can't order by the members of the projected record, so the ordering happens before the projection.
+        var characters = accounts
+            .Where(account => !account.IsBot && !account.IsTemplate)
+            .SelectMany(account => account.RawCharacters)
+            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal)
+            .OrderByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == resetsAttributeId).Select(a => a.Value).FirstOrDefault())
+            .ThenByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == masterLevelAttributeId).Select(a => a.Value).FirstOrDefault())
+            .ThenByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == levelAttributeId).Select(a => a.Value).FirstOrDefault())
+            .ThenByDescending(character => character.MasterExperience)
+            .ThenByDescending(character => character.Experience)
+            .Take(count);
+
+        return CreateCharacterSummaryQuery(characters, levelAttributeId, masterLevelAttributeId, resetsAttributeId);
+    }
+
+    /// <summary>
+    /// Creates the query which projects the characters to their summary.
+    /// </summary>
+    /// <param name="characters">The characters.</param>
+    /// <param name="levelAttributeId">The identifier of the attribute definition of the level.</param>
+    /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
+    /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<CharacterRankingRow> CreateCharacterSummaryQuery(
+        IQueryable<Character> characters,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId)
+    {
+        return characters.Select(character => new CharacterRankingRow(
+            character.Name,
+            character.RawCharacterClass!.Name,
+            character.RawAttributes.Where(a => a.DefinitionId == levelAttributeId).Select(a => a.Value).FirstOrDefault(),
+            character.RawAttributes.Where(a => a.DefinitionId == masterLevelAttributeId).Select(a => a.Value).FirstOrDefault(),
+            character.RawAttributes.Where(a => a.DefinitionId == resetsAttributeId).Select(a => a.Value).FirstOrDefault()));
     }
 }
