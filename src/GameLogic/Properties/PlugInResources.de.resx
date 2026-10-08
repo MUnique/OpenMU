@@ -1752,4 +1752,19 @@
   <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
     <value>Antike Gegenstände veröffentlichen</value>
   </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Getötete Bossmonster veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Nummern der Bossmonster</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Erreichte Level-Meilensteine veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level-Meilensteine</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Meisterlevel-Meilensteine</value>
+  </data>
 </root>

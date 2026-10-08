@@ -1595,4 +1595,19 @@
   <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
     <value>Publish ancient item drops</value>
   </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Publish boss kills</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Boss monster numbers</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Publish level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Master level milestones</value>
+  </data>
 </root>
