@@ -310,6 +310,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
+            .AddDiscordWebhookNotifier(builder.Configuration, this._gameServers)
             .AddSingleton<ChatServer>()
             .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
             .AddSingleton<ConnectServerFactory>()
