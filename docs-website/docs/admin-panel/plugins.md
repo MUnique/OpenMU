@@ -66,6 +66,23 @@ documented separately:
 
 * [Server-side AI bots](../server-features/bots.md)
 
+## Game event publisher
+
+The *Game Event Publisher* plugin publishes notable events of the game to the
+whole server, so that external systems can react on them, for example a Discord
+integration. It's disabled by default; activate it when such a system is
+connected.
+
+It publishes:
+
+* the opening, start and end of mini games, like Blood Castle, with the winner,
+* the start and end of invasions, with the invaded maps,
+* the state changes of the castle siege, with the owner of the castle,
+* excellent and ancient items which are dropped by monsters,
+* global notices which game masters send with the `!` chat prefix.
+
+Each kind of event can be switched off in the plugin configuration.
+
 ## Writing your own plugin
 
 Implementing a plugin is documented next to the code, in the

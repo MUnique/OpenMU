@@ -119,4 +119,21 @@ public class EventPublisher : IEventPublisher
             this._logger.LogError(ex, "Unexpected error when publishing an alliance message");
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask GameEventAsync(GameEvent gameEvent)
+    {
+        try
+        {
+            await this._daprClient
+                .PublishEventAsync(
+                    PubSubName,
+                    nameof(IEventPublisher.GameEventAsync),
+                    gameEvent).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when publishing the game event {gameEvent}", gameEvent);
+        }
+    }
 }

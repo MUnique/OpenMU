@@ -98,6 +98,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public MiniGameDefinition Definition { get; }
 
     /// <summary>
+    /// Gets the game context to which this game belongs.
+    /// </summary>
+    public IGameContext GameContext => this._gameContext;
+
+    /// <summary>
     /// Gets the UTC time when the entering phase ends. It's derived from the creation
     /// time and the configured <see cref="MiniGameDefinition.EnterDuration"/> and is used
     /// for the entrance announcements.

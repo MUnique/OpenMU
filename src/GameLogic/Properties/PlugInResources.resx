@@ -1571,4 +1571,28 @@
   <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
     <value>Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage.</value>
   </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>Game Event Publisher</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>Publish mini game events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>Publish invasion events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>Publish castle siege events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>Publish global notices of game masters</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>Publish excellent item drops</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>Publish ancient item drops</value>
+  </data>
 </root>

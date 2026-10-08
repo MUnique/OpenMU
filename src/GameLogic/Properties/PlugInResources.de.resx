@@ -1728,4 +1728,28 @@
   <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
     <value>Die Zeit, nach der eine Verbindung als verloren gilt, wenn ihr Client nicht gemeldet hat, dass er aktiv ist. Der Spielclient meldet es alle 20 Sekunden. Null deaktiviert die Erkennung.</value>
   </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>Veröffentlichung von Spielereignissen</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>Veröffentlicht Ereignisse des Spiels, wie Minispiele, Invasionen, Zustandsänderungen der Burgbelagerung und seltene Gegenstände, an den ganzen Server, z.B. für eine Discord-Integration.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>Minispiel-Ereignisse veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>Invasions-Ereignisse veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>Burgbelagerungs-Ereignisse veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>Globale Ankündigungen von Spielleitern veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>Exzellente Gegenstände veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>Antike Gegenstände veröffentlichen</value>
+  </data>
 </root>

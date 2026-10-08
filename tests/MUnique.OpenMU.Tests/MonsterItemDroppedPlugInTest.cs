@@ -7,12 +7,12 @@ namespace MUnique.OpenMU.Tests;
 using System.Runtime.InteropServices;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
 using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
 
@@ -31,7 +31,7 @@ public class MonsterItemDroppedPlugInTest
         var gameContext = GameContextTestHelper.CreateGameContext();
         var plugIn = new RecordingPlugIn();
         gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IMonsterItemDroppedPlugIn>(plugIn);
-        var item = new Item { Definition = new ItemDefinition() };
+        var item = new BasicModel.Item { Definition = new BasicModel.ItemDefinition() };
         var dropGenerator = new Mock<IDropGenerator>();
         dropGenerator.Setup(g => g.GenerateItemDropsAsync(It.IsAny<DataModel.Configuration.MonsterDefinition>(), It.IsAny<int>(), It.IsAny<Player>()))
             .Returns(ValueTask.FromResult<(IEnumerable<Item> Items, uint? Money)>((new[] { item }, null)));

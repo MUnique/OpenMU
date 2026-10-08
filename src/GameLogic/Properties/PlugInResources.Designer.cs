@@ -844,6 +844,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publish ancient item drops.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishAncientItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishAncientItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish castle siege events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish excellent item drops.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishExcellentItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishExcellentItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish global notices of game masters.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishGlobalNotices_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishGlobalNotices_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish invasion events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishInvasionEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishInvasionEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish mini game events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishMiniGameEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishMiniGameEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration..
+        /// </summary>
+        public static string GameEventPublisherPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GameEventPublisherPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game Event Publisher.
+        /// </summary>
+        public static string GameEventPublisherPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Gatekeeper NPC Request.
         /// </summary>
         public static string GatekeeperNpcPlugin_Description {
