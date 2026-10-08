@@ -612,6 +612,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Logger.LogDebug("{context}: Running the game ...", this);
         try
         {
+            await this.NotifyPlugInsAsync<IMiniGameEntranceOpenedPlugIn>(p => p.MiniGameEntranceOpenedAsync(this)).ConfigureAwait(false);
+
             var enterDuration = this.Definition.EnterDuration.AtLeast(this.MinimumEnterDuration);
             var gameDuration = this.Definition.GameDuration.AtLeast(CountdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(CountdownMessageDuration).AtLeast(CountdownMessageDuration);
@@ -708,6 +710,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.OnGameStartAsync(players).ConfigureAwait(false);
         await this._mapInitializer.InitializeNpcsOnEventStartAsync(this.Map, this).ConfigureAwait(false);
         _ = Task.Run(() => this._spawnWaves.RunAsync(this.GameEndedToken), this.GameEndedToken);
+        await this.NotifyPlugInsAsync<IMiniGameStartedPlugIn>(p => p.MiniGameStartedAsync(this, players)).ConfigureAwait(false);
     }
 
     private async ValueTask ShowCountdownMessageAsync()
@@ -736,6 +739,31 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         var players = await this._players.GetSnapshotAsync().ConfigureAwait(false);
 
         await this.GameEndedAsync(players).ConfigureAwait(false);
+
+        // Notified after GameEndedAsync, because some games determine their winner there.
+        await this.NotifyPlugInsAsync<IMiniGameEndedPlugIn>(p => p.MiniGameEndedAsync(this, this.Winner, players)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Notifies the plugins of a plugin point about a change of this game.
+    /// Errors of the plugins are logged, so that they can't break the game loop.
+    /// </summary>
+    /// <typeparam name="TPlugIn">The type of the plugin point.</typeparam>
+    /// <param name="notify">The function which notifies the plugin point.</param>
+    private async ValueTask NotifyPlugInsAsync<TPlugIn>(Func<TPlugIn, ValueTask> notify)
+        where TPlugIn : class
+    {
+        try
+        {
+            if (this._gameContext.PlugInManager.GetPlugInPoint<TPlugIn>() is { } plugInPoint)
+            {
+                await notify(plugInPoint).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "{context}: Error when notifying the plugins of {plugInPoint}", this, typeof(TPlugIn).Name);
+        }
     }
 
     private GameMap CreateMap()
