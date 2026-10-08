@@ -529,6 +529,501 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add package.
+        /// </summary>
+        public static string CashShopAddPackage {
+            get {
+                return ResourceManager.GetString("CashShopAddPackage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add product.
+        /// </summary>
+        public static string CashShopAddProduct {
+            get {
+                return ResourceManager.GetString("CashShopAddProduct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string CashShopAmount {
+            get {
+                return ResourceManager.GetString("CashShopAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount must not be zero. Use a negative amount to take coins..
+        /// </summary>
+        public static string CashShopAmountMustNotBeZero {
+            get {
+                return ResourceManager.GetString("CashShopAmountMustNotBeZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applied.
+        /// </summary>
+        public static string CashShopAppliedAt {
+            get {
+                return ResourceManager.GetString("CashShopAppliedAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Banner.
+        /// </summary>
+        public static string CashShopBannerVersion {
+            get {
+                return ResourceManager.GetString("CashShopBannerVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bundle.
+        /// </summary>
+        public static string CashShopBundle {
+            get {
+                return ResourceManager.GetString("CashShopBundle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bundle price.
+        /// </summary>
+        public static string CashShopBundlePrice {
+            get {
+                return ResourceManager.GetString("CashShopBundlePrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A bundle delivers all of its products for the bundle price..
+        /// </summary>
+        public static string CashShopBundleProductsDescription {
+            get {
+                return ResourceManager.GetString("CashShopBundleProductsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop.
+        /// </summary>
+        public static string CashShopCatalog {
+            get {
+                return ResourceManager.GetString("CashShopCatalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The game client shows the packages, names, prices and periods of its own cash shop script. Here you edit the server side of it: which packages are for sale, which items are delivered and which prices are charged. Packages and products are identified by the numbers of the client script, so keep them the same as in the script of the configured version; a different price isn't shown by the client..
+        /// </summary>
+        public static string CashShopCatalogDescription {
+            get {
+                return ResourceManager.GetString("CashShopCatalogDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coins.
+        /// </summary>
+        public static string CashShopCoins {
+            get {
+                return ResourceManager.GetString("CashShopCoins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The account doesn't exist..
+        /// </summary>
+        public static string CashShopCoinsAccountNotFound {
+            get {
+                return ResourceManager.GetString("CashShopCoinsAccountNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The balances are the ones which were saved last. Granted coins are pending until the game server applies them, which it does the next time the player opens the cash shop..
+        /// </summary>
+        public static string CashShopCoinsDescription {
+            get {
+                return ResourceManager.GetString("CashShopCoinsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The coins were granted..
+        /// </summary>
+        public static string CashShopCoinsGranted {
+            get {
+                return ResourceManager.GetString("CashShopCoinsGranted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop coins of {0}.
+        /// </summary>
+        public static string CashShopCoinsOf {
+            get {
+                return ResourceManager.GetString("CashShopCoinsOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coin.
+        /// </summary>
+        public static string CashShopCoinType {
+            get {
+                return ResourceManager.GetString("CashShopCoinType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete package.
+        /// </summary>
+        public static string CashShopDeletePackage {
+            get {
+                return ResourceManager.GetString("CashShopDeletePackage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you really want to delete this package?.
+        /// </summary>
+        public static string CashShopDeletePackageQuestion {
+            get {
+                return ResourceManager.GetString("CashShopDeletePackageQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration (hours).
+        /// </summary>
+        public static string CashShopDurationHours {
+            get {
+                return ResourceManager.GetString("CashShopDurationHours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For sale.
+        /// </summary>
+        public static string CashShopForSale {
+            get {
+                return ResourceManager.GetString("CashShopForSale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Giftable.
+        /// </summary>
+        public static string CashShopGiftable {
+            get {
+                return ResourceManager.GetString("CashShopGiftable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grant coins.
+        /// </summary>
+        public static string CashShopGrantCoins {
+            get {
+                return ResourceManager.GetString("CashShopGrantCoins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Granted by.
+        /// </summary>
+        public static string CashShopGrantedBy {
+            get {
+                return ResourceManager.GetString("CashShopGrantedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grants.
+        /// </summary>
+        public static string CashShopGrants {
+            get {
+                return ResourceManager.GetString("CashShopGrants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another package has the number {0}..
+        /// </summary>
+        public static string CashShopIssueDuplicatePackageSequence {
+            get {
+                return ResourceManager.GetString("CashShopIssueDuplicatePackageSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Several products have the price number {0}..
+        /// </summary>
+        public static string CashShopIssueDuplicatePriceSequence {
+            get {
+                return ResourceManager.GetString("CashShopIssueDuplicatePriceSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product {0} has a quantity below 1..
+        /// </summary>
+        public static string CashShopIssueInvalidQuantity {
+            get {
+                return ResourceManager.GetString("CashShopIssueInvalidQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product {0} has no item..
+        /// </summary>
+        public static string CashShopIssueMissingItem {
+            get {
+                return ResourceManager.GetString("CashShopIssueMissingItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bundle price is negative..
+        /// </summary>
+        public static string CashShopIssueNegativeBundlePrice {
+            get {
+                return ResourceManager.GetString("CashShopIssueNegativeBundlePrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product {0} has a negative price..
+        /// </summary>
+        public static string CashShopIssueNegativePrice {
+            get {
+                return ResourceManager.GetString("CashShopIssueNegativePrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The package has no products..
+        /// </summary>
+        public static string CashShopIssueNoProducts {
+            get {
+                return ResourceManager.GetString("CashShopIssueNoProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product {0} is time-limited, which isn't supported yet..
+        /// </summary>
+        public static string CashShopIssueTimeLimited {
+            get {
+                return ResourceManager.GetString("CashShopIssueTimeLimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item.
+        /// </summary>
+        public static string CashShopItem {
+            get {
+                return ResourceManager.GetString("CashShopItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string CashShopItemLevel {
+            get {
+                return ResourceManager.GetString("CashShopItemLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No coins were granted yet..
+        /// </summary>
+        public static string CashShopNoGrants {
+            get {
+                return ResourceManager.GetString("CashShopNoGrants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cash shop isn't configured. Install the configuration update 'Add cash shop' to add the catalog of the game client..
+        /// </summary>
+        public static string CashShopNotConfigured {
+            get {
+                return ResourceManager.GetString("CashShopNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only packages for sale.
+        /// </summary>
+        public static string CashShopOnlyForSale {
+            get {
+                return ResourceManager.GetString("CashShopOnlyForSale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packages.
+        /// </summary>
+        public static string CashShopPackages {
+            get {
+                return ResourceManager.GetString("CashShopPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package number.
+        /// </summary>
+        public static string CashShopPackageSequence {
+            get {
+                return ResourceManager.GetString("CashShopPackageSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string CashShopPending {
+            get {
+                return ResourceManager.GetString("CashShopPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} pending.
+        /// </summary>
+        public static string CashShopPendingAmount {
+            get {
+                return ResourceManager.GetString("CashShopPendingAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Price.
+        /// </summary>
+        public static string CashShopPrice {
+            get {
+                return ResourceManager.GetString("CashShopPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The products are price options, of which the player buys one for its price..
+        /// </summary>
+        public static string CashShopPriceOptionsDescription {
+            get {
+                return ResourceManager.GetString("CashShopPriceOptionsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Price number.
+        /// </summary>
+        public static string CashShopPriceSequence {
+            get {
+                return ResourceManager.GetString("CashShopPriceSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products.
+        /// </summary>
+        public static string CashShopProducts {
+            get {
+                return ResourceManager.GetString("CashShopProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product number.
+        /// </summary>
+        public static string CashShopProductSequence {
+            get {
+                return ResourceManager.GetString("CashShopProductSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity.
+        /// </summary>
+        public static string CashShopQuantity {
+            get {
+                return ResourceManager.GetString("CashShopQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference.
+        /// </summary>
+        public static string CashShopReference {
+            get {
+                return ResourceManager.GetString("CashShopReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sale zone.
+        /// </summary>
+        public static string CashShopSaleZone {
+            get {
+                return ResourceManager.GetString("CashShopSaleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Script.
+        /// </summary>
+        public static string CashShopScriptVersion {
+            get {
+                return ResourceManager.GetString("CashShopScriptVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sellable.
+        /// </summary>
+        public static string CashShopSellable {
+            get {
+                return ResourceManager.GetString("CashShopSellable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Versions of the client script.
+        /// </summary>
+        public static string CashShopVersions {
+            get {
+                return ResourceManager.GetString("CashShopVersions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Year.
+        /// </summary>
+        public static string CashShopYear {
+            get {
+                return ResourceManager.GetString("CashShopYear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Id within the year.
+        /// </summary>
+        public static string CashShopYearId {
+            get {
+                return ResourceManager.GetString("CashShopYearId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chance that this group is selected for a drop, from 0 to 100 %. A chance of 100 % means that the group drops always, in addition to the chance based groups..
         /// </summary>
         public static string ChanceHint {
@@ -2728,7 +3223,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please restart the connect and game server containers..
+        ///   Looks up a localized string similar to Please restart the central server and game server containers..
         /// </summary>
         public static string PleaseRestartTheConnectAndGameServerContainers {
             get {
@@ -4609,6 +5104,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
 
         /// <summary>Gets the localized RoleViewer text.</summary>
         public static string RoleViewer => ResourceManager.GetString("RoleViewer", resourceCulture);
+
+        /// <summary>Gets the localized RoleCashShop text.</summary>
+        public static string RoleCashShop => ResourceManager.GetString("RoleCashShop", resourceCulture);
         
         /// <summary>
         ///   Looks up a localized string similar to Captions.
@@ -5021,6 +5519,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string CaptionsLinkingElapsed {
             get {
                 return ResourceManager.GetString("CaptionsLinkingElapsed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Link new built-in captions.
+        /// </summary>
+        public static string CaptionsLinkableTitle {
+            get {
+                return ResourceManager.GetString("CaptionsLinkableTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} built-in captions are not linked to their sources yet, so their translations can't be reviewed here: {1}. That's usually the case after an update of OpenMU added translations, e.g. for item names. Linking doesn't change any texts..
+        /// </summary>
+        public static string CaptionsLinkableDescription {
+            get {
+                return ResourceManager.GetString("CaptionsLinkableDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Checking for built-in captions which are not linked yet ....
+        /// </summary>
+        public static string CaptionsCheckingLinkable {
+            get {
+                return ResourceManager.GetString("CaptionsCheckingLinkable", resourceCulture);
             }
         }
     }

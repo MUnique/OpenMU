@@ -9,9 +9,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>
 /// The authentication state provider of the admin panel.
@@ -24,23 +22,17 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 /// </remarks>
 public class AdminAuthenticationStateProvider : RevalidatingServerAuthenticationStateProvider
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<AdminAuthenticationStateProvider> _logger;
+    private readonly AdminPrincipalValidator _principalValidator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AdminAuthenticationStateProvider"/> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="scopeFactory">The service scope factory.</param>
-    /// <param name="logger">The logger.</param>
-    public AdminAuthenticationStateProvider(
-        ILoggerFactory loggerFactory,
-        IServiceScopeFactory scopeFactory,
-        ILogger<AdminAuthenticationStateProvider> logger)
+    /// <param name="principalValidator">The validator of the authenticated principals.</param>
+    public AdminAuthenticationStateProvider(ILoggerFactory loggerFactory, AdminPrincipalValidator principalValidator)
         : base(loggerFactory)
     {
-        this._scopeFactory = scopeFactory;
-        this._logger = logger;
+        this._principalValidator = principalValidator;
     }
 
     /// <inheritdoc />
@@ -67,43 +59,6 @@ public class AdminAuthenticationStateProvider : RevalidatingServerAuthentication
     /// <inheritdoc />
     protected override async Task<bool> ValidateAuthenticationStateAsync(AuthenticationState authenticationState, CancellationToken cancellationToken)
     {
-        var principal = authenticationState.User;
-        if (principal.Identity?.IsAuthenticated is not true)
-        {
-            return false;
-        }
-
-        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        var securityStamp = principal.FindFirstValue(AdminAuthenticationDefaults.SecurityStampClaimType);
-        if (!Guid.TryParse(userId, out var id) || securityStamp is null)
-        {
-            return false;
-        }
-
-        try
-        {
-            await using var scope = this._scopeFactory.CreateAsyncScope();
-            var bootstrapUserProvider = scope.ServiceProvider.GetRequiredService<BootstrapAdminUserProvider>();
-            AdminUser? user;
-            if (bootstrapUserProvider.User is { } bootstrapUser && bootstrapUser.Id == id)
-            {
-                user = bootstrapUser;
-            }
-            else
-            {
-                var repository = scope.ServiceProvider.GetRequiredService<IAdminUserRepository>();
-                user = await repository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
-            }
-
-            return user is { IsDisabled: false }
-                   && string.Equals(user.SecurityStamp, securityStamp, StringComparison.Ordinal);
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogWarning(ex, "The authentication state of an admin panel user couldn't be revalidated.");
-
-            // Don't kick the user out just because the database hiccuped.
-            return true;
-        }
+        return await this._principalValidator.IsValidAsync(authenticationState.User, cancellationToken).ConfigureAwait(false);
     }
 }

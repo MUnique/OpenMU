@@ -54,6 +54,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     /// <param name="changeMediator"> The change mediatior.</param>
     /// <param name="packetArchive">The archive for the traffic of observed accounts. It's only
     /// available when the network observation is configured.</param>
+    /// <param name="mapHostLocator">The locator for the maps which are hosted by other game servers.
+    /// It's only available when the maps can be shared between game servers.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -64,7 +66,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
         IConfigurationChangeMediator changeMediator,
-        IPacketArchive? packetArchive = null)
+        IPacketArchive? packetArchive = null,
+        IMapHostLocator? mapHostLocator = null)
     {
         this.Id = gameServerDefinition.ServerID;
         this.Description = gameServerDefinition.Description;
@@ -78,7 +81,7 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
             var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
             var dropGenerator = new DefaultDropGenerator(gameConfiguration, Rand.GetRandomizer());
             var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>(), dropGenerator, changeMediator);
-            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator, changeMediator);
+            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator, changeMediator, mapHostLocator);
             this._gameContext.GameMapCreated += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             this._gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             mapInitializer.PlugInManager = this._gameContext.PlugInManager;
@@ -209,6 +212,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         // Because disconnecting might directly change the internal player list, we first collect all players.
         var playerList = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         await playerList.Select(player => player.DisconnectAsync().AsTask()).WhenAll().ConfigureAwait(false);
+
+        await this.MoveGuestPlayersOffMapsAsync().ConfigureAwait(false);
 
         this.ServerState = ServerState.Stopped;
         this._logger.LogInformation("Server shutted down.");
@@ -489,6 +494,32 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         }
     }
 
+    /// <summary>
+    /// Moves the players of other game servers off the maps of this game server, which they entered
+    /// because their own game server doesn't host these maps (see <see cref="IMapHostLocator"/>).
+    /// They stay connected to their own game server, so they're just warped to their safezone.
+    /// Since this game server is not available anymore, they end up on a map of another one.
+    /// </summary>
+    private async ValueTask MoveGuestPlayersOffMapsAsync()
+    {
+        var maps = await this._gameContext.GetMapsAsync().ConfigureAwait(false);
+        var guestPlayers = maps
+            .SelectMany(map => map.GetPlayers())
+            .Where(player => player.GameContext != this._gameContext)
+            .ToList();
+        foreach (var guestPlayer in guestPlayers)
+        {
+            try
+            {
+                await guestPlayer.WarpToSafezoneAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error while moving player {0} of another game server off the maps of this game server.", guestPlayer);
+            }
+        }
+    }
+
     private async ValueTask RemovePlayerFromGuildAsync(Player player, bool unregisterFromContext = true)
     {
         if (unregisterFromContext && player.GuildStatus?.GuildId is not null)
@@ -527,7 +558,9 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     {
         try
         {
-            if (player.Account?.LoginName is { } loginName)
+            // The registration is used instead of the account, because the player may be disconnected
+            // after the login server accepted its login, but before the account was assigned.
+            if (player.ReleaseLoginServerRegistration() is { } loginName)
             {
                 await this.Context.LoginServer.LogOffAsync(loginName, this.Id).ConfigureAwait(false);
             }

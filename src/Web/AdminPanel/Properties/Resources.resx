@@ -502,7 +502,7 @@
     <value>Installing, please wait ...</value>
   </data>
   <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
-    <value>Please restart the connect and game server containers.</value>
+    <value>Please restart the central server and game server containers.</value>
   </data>
   <data name="FinishedHaveFun" xml:space="preserve">
     <value>Finished! Have fun :)</value>
@@ -1353,6 +1353,7 @@
   <data name="RoleAdministrator" xml:space="preserve"><value>Administrator</value></data>
   <data name="RoleOperator" xml:space="preserve"><value>Operator</value></data>
   <data name="RoleViewer" xml:space="preserve"><value>Read only</value></data>
+  <data name="RoleCashShop" xml:space="preserve"><value>Cash shop coins only</value></data>
   <data name="Guilds" xml:space="preserve">
     <value>Guilds</value>
   </data>
@@ -1835,5 +1836,179 @@
   </data>
   <data name="CaptionsLinkingElapsed" xml:space="preserve">
     <value>Elapsed time: {0}</value>
+  </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>Link new built-in captions</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>{0} built-in captions are not linked to their sources yet, so their translations can't be reviewed here: {1}. That's usually the case after an update of OpenMU added translations, e.g. for item names. Linking doesn't change any texts.</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>Checking for built-in captions which are not linked yet ...</value>
+  </data>
+  <data name="CashShopCoinsOf" xml:space="preserve">
+    <value>Cash shop coins of {0}</value>
+  </data>
+  <data name="CashShopCoinsDescription" xml:space="preserve">
+    <value>The balances are the ones which were saved last. Granted coins are pending until the game server applies them, which it does the next time the player opens the cash shop.</value>
+  </data>
+  <data name="CashShopCoinsAccountNotFound" xml:space="preserve">
+    <value>The account doesn't exist.</value>
+  </data>
+  <data name="CashShopGrantCoins" xml:space="preserve">
+    <value>Grant coins</value>
+  </data>
+  <data name="CashShopCoinType" xml:space="preserve">
+    <value>Coin</value>
+  </data>
+  <data name="CashShopAmount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="CashShopGrants" xml:space="preserve">
+    <value>Grants</value>
+  </data>
+  <data name="CashShopGrantedBy" xml:space="preserve">
+    <value>Granted by</value>
+  </data>
+  <data name="CashShopReference" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="CashShopAppliedAt" xml:space="preserve">
+    <value>Applied</value>
+  </data>
+  <data name="CashShopPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="CashShopPendingAmount" xml:space="preserve">
+    <value>{0} pending</value>
+  </data>
+  <data name="CashShopNoGrants" xml:space="preserve">
+    <value>No coins were granted yet.</value>
+  </data>
+  <data name="CashShopAmountMustNotBeZero" xml:space="preserve">
+    <value>The amount must not be zero. Use a negative amount to take coins.</value>
+  </data>
+  <data name="CashShopCoinsGranted" xml:space="preserve">
+    <value>The coins were granted.</value>
+  </data>
+  <data name="CashShopCoins" xml:space="preserve">
+    <value>Coins</value>
+  </data>
+  <data name="CashShopCatalog" xml:space="preserve">
+    <value>Cash shop</value>
+  </data>
+  <data name="CashShopCatalogDescription" xml:space="preserve">
+    <value>The game client shows the packages, names, prices and periods of its own cash shop script. Here you edit the server side of it: which packages are for sale, which items are delivered and which prices are charged. Packages and products are identified by the numbers of the client script, so keep them the same as in the script of the configured version; a different price isn't shown by the client.</value>
+  </data>
+  <data name="CashShopNotConfigured" xml:space="preserve">
+    <value>The cash shop isn't configured. Install the configuration update 'Add cash shop' to add the catalog of the game client.</value>
+  </data>
+  <data name="CashShopVersions" xml:space="preserve">
+    <value>Versions of the client script</value>
+  </data>
+  <data name="CashShopScriptVersion" xml:space="preserve">
+    <value>Script</value>
+  </data>
+  <data name="CashShopBannerVersion" xml:space="preserve">
+    <value>Banner</value>
+  </data>
+  <data name="CashShopSaleZone" xml:space="preserve">
+    <value>Sale zone</value>
+  </data>
+  <data name="CashShopYear" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="CashShopYearId" xml:space="preserve">
+    <value>Id within the year</value>
+  </data>
+  <data name="CashShopPackages" xml:space="preserve">
+    <value>Packages</value>
+  </data>
+  <data name="CashShopOnlyForSale" xml:space="preserve">
+    <value>Only packages for sale</value>
+  </data>
+  <data name="CashShopPackageSequence" xml:space="preserve">
+    <value>Package number</value>
+  </data>
+  <data name="CashShopProductSequence" xml:space="preserve">
+    <value>Product number</value>
+  </data>
+  <data name="CashShopPriceSequence" xml:space="preserve">
+    <value>Price number</value>
+  </data>
+  <data name="CashShopPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CashShopBundlePrice" xml:space="preserve">
+    <value>Bundle price</value>
+  </data>
+  <data name="CashShopForSale" xml:space="preserve">
+    <value>For sale</value>
+  </data>
+  <data name="CashShopGiftable" xml:space="preserve">
+    <value>Giftable</value>
+  </data>
+  <data name="CashShopBundle" xml:space="preserve">
+    <value>Bundle</value>
+  </data>
+  <data name="CashShopSellable" xml:space="preserve">
+    <value>Sellable</value>
+  </data>
+  <data name="CashShopProducts" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="CashShopBundleProductsDescription" xml:space="preserve">
+    <value>A bundle delivers all of its products for the bundle price.</value>
+  </data>
+  <data name="CashShopPriceOptionsDescription" xml:space="preserve">
+    <value>The products are price options, of which the player buys one for its price.</value>
+  </data>
+  <data name="CashShopItem" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="CashShopItemLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="CashShopQuantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="CashShopDurationHours" xml:space="preserve">
+    <value>Duration (hours)</value>
+  </data>
+  <data name="CashShopAddPackage" xml:space="preserve">
+    <value>Add package</value>
+  </data>
+  <data name="CashShopAddProduct" xml:space="preserve">
+    <value>Add product</value>
+  </data>
+  <data name="CashShopDeletePackage" xml:space="preserve">
+    <value>Delete package</value>
+  </data>
+  <data name="CashShopDeletePackageQuestion" xml:space="preserve">
+    <value>Do you really want to delete this package?</value>
+  </data>
+  <data name="CashShopIssueNoProducts" xml:space="preserve">
+    <value>The package has no products.</value>
+  </data>
+  <data name="CashShopIssueDuplicatePackageSequence" xml:space="preserve">
+    <value>Another package has the number {0}.</value>
+  </data>
+  <data name="CashShopIssueDuplicatePriceSequence" xml:space="preserve">
+    <value>Several products have the price number {0}.</value>
+  </data>
+  <data name="CashShopIssueMissingItem" xml:space="preserve">
+    <value>Product {0} has no item.</value>
+  </data>
+  <data name="CashShopIssueTimeLimited" xml:space="preserve">
+    <value>Product {0} is time-limited, which isn't supported yet.</value>
+  </data>
+  <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
+    <value>The bundle price is negative.</value>
+  </data>
+  <data name="CashShopIssueNegativePrice" xml:space="preserve">
+    <value>Product {0} has a negative price.</value>
+  </data>
+  <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
+    <value>Product {0} has a quantity below 1.</value>
   </data>
 </root>

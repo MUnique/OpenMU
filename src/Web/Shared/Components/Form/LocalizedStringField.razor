@@ -11,15 +11,15 @@
 <div class="mb-3">
   <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
-  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
+  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures ?? [])
   {
     <div class="mb-1 localized-value">
-      <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.TwoLetterISOLanguageName)"
+      <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
              class="@(this.GetInputClass(culture))"
              value="@GetValueForCulture(culture)"
              @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))"
       />
-      <span class="badge @(this.GetBadge(culture))">@culture.TwoLetterISOLanguageName</span>
+      <span class="badge @(this.GetBadge(culture))">@culture.Name</span>
     </div>
   }
     
@@ -77,7 +77,7 @@
 
     private void SetValueForCulture(CultureInfo culture, string? newValue)
     {
-        var existingError = this._validationMessageStore?[this.FieldIdentifier].FirstOrDefault(message => message.StartsWith(culture.TwoLetterISOLanguageName + ":"));
+        var existingError = this._validationMessageStore?[this.FieldIdentifier].FirstOrDefault(message => message.StartsWith(culture.Name + ":"));
 
       if (this.EditContext is not null
           && this._validationMessageStore is not null
@@ -87,7 +87,7 @@
       {
             this._validationMessageStore.Add(
               this.FieldIdentifier,
-              string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culture.TwoLetterISOLanguageName, MUnique.OpenMU.Interfaces.LocalizedString.Separator));
+              string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culture.Name, MUnique.OpenMU.Interfaces.LocalizedString.Separator));
 
         // Notify the EditContext that validation state changed
         this.EditContext.NotifyValidationStateChanged();
@@ -108,7 +108,7 @@
     
     private bool HasErrors(CultureInfo culture)
     {
-      return this._validationMessageStore?[this.FieldIdentifier].Any(message => message.StartsWith(culture.TwoLetterISOLanguageName + ":")) is true;
+      return this._validationMessageStore?[this.FieldIdentifier].Any(message => message.StartsWith(culture.Name + ":")) is true;
     }
 
     private string GetInputClass(CultureInfo culture)

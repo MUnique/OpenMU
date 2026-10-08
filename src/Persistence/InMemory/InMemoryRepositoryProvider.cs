@@ -44,10 +44,33 @@ public class InMemoryRepositoryProvider : BaseRepositoryProvider
     {
         var baseModelAssembly = typeof(GameConfiguration).Assembly;
         var persistentType = baseModelAssembly.GetPersistentTypeOf(type) ?? type;
-        var repositoryType = typeof(MemoryRepository<>).MakeGenericType(persistentType);
-        var repository = (IRepository)Activator.CreateInstance(repositoryType)!;
+        IRepository repository;
+        if (baseModelAssembly.FindPersistentType(persistentType) is { } registeredType)
+        {
+            repository = registeredType.Accept(MemoryRepositoryFactory.Instance);
+        }
+        else
+        {
+            var repositoryType = typeof(MemoryRepository<>).MakeGenericType(persistentType);
+            repository = (IRepository)Activator.CreateInstance(repositoryType)!;
+        }
+
         var baseType = type.Assembly == baseModelAssembly ? type.BaseType ?? type : type;
         this.RegisterRepository(baseType, repository!);
         return repository;
+    }
+
+    /// <summary>
+    /// Creates the <see cref="MemoryRepository{TValue}"/> of a persistent type.
+    /// </summary>
+    private sealed class MemoryRepositoryFactory : IPersistentTypeVisitor<IRepository>
+    {
+        public static readonly MemoryRepositoryFactory Instance = new();
+
+        public IRepository Visit<T>()
+            where T : class
+        {
+            return new MemoryRepository<T>();
+        }
     }
 }

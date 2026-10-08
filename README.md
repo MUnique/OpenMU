@@ -7,8 +7,8 @@
 
 | Platform       |Build Status          |
 |----------------|----------------------|
-| Windows        | ![Windows Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU?branchName=master) |
-| Linux (Docker) | [![Docker Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU%20Docker?branchName=master)](https://hub.docker.com/r/munique/openmu)  |
+| Linux          | [![Build Status](https://github.com/MUnique/OpenMU/actions/workflows/dotnetcore.yml/badge.svg?branch=master)](https://github.com/MUnique/OpenMU/actions/workflows/dotnetcore.yml) |
+| Linux (Docker) | [![Docker Build Status](https://github.com/MUnique/OpenMU/actions/workflows/docker.yml/badge.svg?branch=master)](https://hub.docker.com/r/munique/openmu)  |
 
 | NuGet Packages |   |
 |----------------|---|

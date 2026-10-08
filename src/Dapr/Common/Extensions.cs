@@ -7,26 +7,22 @@ namespace MUnique.OpenMU.Dapr.Common;
 using System.Text.Json.Serialization;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
-using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
-using OpenTelemetry.Exporter;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using Prometheus;
-using Serilog;
-using Serilog.Debugging;
-using Serilog.Events;
-using Serilog.Filters;
-using Serilog.Sinks.Grafana.Loki;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 /// <summary>
 /// Common extensions for the building of daprized services.
@@ -55,12 +51,7 @@ public static class Extensions
             .AddSingleton<IMigratableDatabaseContextProvider, PersistenceContextProvider>()
             .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
-            .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>))
-            .AddAdminUserRepository()
-            .AddSingleton<IBackupService>(s => new BackupService(
-                s.GetRequiredService<IPersistenceContextProvider>(),
-                s.GetRequiredService<IAdminUserRepository>()))
-            .AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
+            .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>));
     }
 
     /// <summary>
@@ -77,11 +68,26 @@ public static class Extensions
             .AddTransient<ReferenceHandler, ByDataSourceReferenceHandler>(provider =>
             {
                 var persistenceContextProvider = provider.GetService<IPersistenceContextProvider>();
-                var dataSource = new GameConfigurationDataSource(
-                    provider.GetService<ILogger<GameConfigurationDataSource>>()!,
-                    persistenceContextProvider!);
-                var configId = persistenceContextProvider!.CreateNewConfigurationContext().GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException();
-                dataSource.GetOwnerAsync(configId!.Value).AsTask().WaitAndUnwrapException();
+                var logger = provider.GetService<ILogger<GameConfigurationDataSource>>()!;
+                var dataSource = new GameConfigurationDataSource(logger, persistenceContextProvider!);
+
+                // Before the installation through the admin panel, the database (or even its users)
+                // and the game configuration may not exist yet. As the handler is transient,
+                // the data source is loaded as soon as the configuration exists.
+                try
+                {
+                    using var configurationContext = persistenceContextProvider!.CreateNewConfigurationContext();
+                    var configId = configurationContext.GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException();
+                    if (configId is { } gameConfigurationId)
+                    {
+                        dataSource.GetOwnerAsync(gameConfigurationId).AsTask().WaitAndUnwrapException();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogDebug(ex, "The game configuration couldn't be loaded, probably because the database isn't installed yet.");
+                }
+
                 var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
                 return referenceHandler;
             });
@@ -168,6 +174,7 @@ public static class Extensions
 
     /// <summary>
     /// Publishes the server to other daprized services by registering a <see cref="ManagableServerStatePublisher"/>.
+    /// It can be called for multiple servers of the same process.
     /// </summary>
     /// <typeparam name="TServer">The type of the server.</typeparam>
     /// <param name="services">The service collection.</param>
@@ -183,33 +190,84 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Configures the usage of logging to loki.
+    /// Publishes multiple servers, whose number is known at runtime only, to other daprized services
+    /// by registering a <see cref="ManagableServerStatePublisher"/>.
+    /// </summary>
+    /// <typeparam name="TServers">The type of the collection of the servers.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The modified service collection.</returns>
+    public static IServiceCollection PublishManageableServers<TServers>(this IServiceCollection services)
+        where TServers : class, IEnumerable<IManageableServer>
+    {
+        services.AddSingleton(s => new ManageableServerGroup(s.GetRequiredService<TServers>()))
+            .AddHostedService<ManagableServerStatePublisher>()
+            .AddControllers().AddApplicationPart(typeof(ManageableServerController).Assembly);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Gets all <see cref="IManageableServer"/>s of this process, which got registered with
+    /// <see cref="PublishManageableServer{TServer}"/> or <see cref="PublishManageableServers{TServers}"/>.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <returns>The manageable servers of this process.</returns>
+    public static IEnumerable<IManageableServer> GetManageableServers(this IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetServices<IManageableServer>()
+            .Concat(serviceProvider.GetServices<ManageableServerGroup>().SelectMany(group => group.Servers));
+    }
+
+    /// <summary>
+    /// Configures logging, tracing and the export of all telemetry signals over OTLP.
     /// </summary>
     /// <param name="builder">The web application builder.</param>
     /// <param name="serviceName">Name of the service.</param>
     /// <returns>The configured web application builder.</returns>
-    public static WebApplicationBuilder UseLoki(this WebApplicationBuilder builder, string serviceName)
+    /// <remarks>
+    /// The export is only enabled when an OTLP endpoint is configured, e.g. by the standard
+    /// environment variable <c>OTEL_EXPORTER_OTLP_ENDPOINT</c>. All other standard OTEL_* environment
+    /// variables apply as well, e.g. <c>OTEL_EXPORTER_OTLP_PROTOCOL</c> or <c>OTEL_RESOURCE_ATTRIBUTES</c>.
+    /// Log levels are configured as usual through the <c>Logging</c> configuration section,
+    /// e.g. by the environment variable <c>Logging__LogLevel__Default</c>.
+    /// </remarks>
+    public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder, string serviceName)
     {
-        // We just want to transmit some static labels, as suggested in the best practice in the Loki documentation
-        var includeLabels = new[] { "Account", "Character", "Connection", "ServiceName", "SourceContext" };
+        // Defaults with the lowest precedence, so that every other configuration source can overwrite them.
+        // We don't want all of the ASP.NET logging, because that really keeps the log storage and the console pretty busy.
+        builder.Configuration.Sources.Insert(0, new MemoryConfigurationSource
+        {
+            InitialData = new Dictionary<string, string?>
+            {
+                ["Logging:LogLevel:Default"] = nameof(LogLevel.Debug),
+                ["Logging:LogLevel:Microsoft"] = nameof(LogLevel.Warning),
+                ["Logging:LogLevel:Microsoft.Hosting.Lifetime"] = nameof(LogLevel.Information),
+                ["Logging:Console:LogLevel:Default"] = nameof(LogLevel.Information),
+                ["Logging:Console:LogLevel:Microsoft"] = nameof(LogLevel.Warning),
+                ["Logging:Console:LogLevel:Microsoft.Hosting.Lifetime"] = nameof(LogLevel.Information),
+            },
+        });
 
-        var logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .Enrich.WithProperty("ServiceName", serviceName)
-            .Enrich.FromLogContext()
-            .WriteTo
-            .GrafanaLoki(
-                uri: "http://loki:3100",
-                propertiesAsLabels: includeLabels)
-            .WriteTo
-            .Console(LogEventLevel.Information)
-            .Filter.ByExcluding(Matching.FromSource("Microsoft")) // We don't want all of the ASP.NET logging, because that really keeps loki and the console pretty busy
-            .CreateLogger();
+        var openTelemetry = builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(serviceName))
+            .WithLogging(
+                configureBuilder: null,
+                configureOptions: options =>
+                {
+                    // The scopes contain the account, character and connection of a log entry.
+                    options.IncludeScopes = true;
+                    options.IncludeFormattedMessage = true;
+                })
+            .WithTracing(tracing => tracing
+                .AddAspNetCoreInstrumentation()
+                .AddSource("System.Net.Http") // the outgoing calls to the dapr sidecar
+                .AddSource("Npgsql"));
 
-        SelfLog.Enable(Console.Error);
+        if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+        {
+            openTelemetry.UseOtlpExporter();
+        }
 
-        builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.ClearProviders());
-        builder.Host.UseSerilog(logger);
         return builder;
     }
 
@@ -222,13 +280,10 @@ public static class Extensions
     public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
     {
         builder.Services.AddOpenTelemetry()
-            .WithMetrics(x =>
-            {
-                x.AddMeter(registry.Meters.ToArray());
-                x.AddPrometheusExporter();
-                x.AddOtlpExporter();
-            });
-        builder.Services.AddHealthChecks().ForwardToPrometheus();
+            .WithMetrics(metrics => metrics
+                .AddMeter(registry.Meters.ToArray())
+                .AddAspNetCoreInstrumentation()
+                .AddMeter("System.Runtime", "System.Net.Http", "Npgsql"));
 
         return builder;
     }
@@ -253,7 +308,6 @@ public static class Extensions
         }
 
         app.ConfigureDaprService(addBlazor);
-        app.MapPrometheusScrapingEndpoint();
 
         return app;
     }
@@ -275,6 +329,7 @@ public static class Extensions
         app.UseCloudEvents();
         app.MapControllers();
         app.MapSubscribeHandler();
+        app.MapDaprServiceHealthChecks();
 
         return app;
     }

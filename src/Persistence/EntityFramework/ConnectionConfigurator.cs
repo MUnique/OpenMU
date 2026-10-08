@@ -118,7 +118,8 @@ public static class ConnectionConfigurator
         // see https://github.com/dotnet/efcore/issues/34431
         optionsBuilder.ConfigureWarnings(a => a.Ignore(RelationalEventId.PendingModelChangesWarning));
 
-        var type = context.GetType();
+        // The subclasses of the TypedContext, which just exist to have a compiled model, use its connection settings.
+        var type = context is TypedContext ? typeof(TypedContext) : context.GetType();
         if (type.IsGenericType)
         {
             type = type.GetGenericTypeDefinition();

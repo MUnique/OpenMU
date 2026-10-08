@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Collections;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.DataModel;
@@ -46,7 +47,7 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
     public async ValueTask ConfigurationAddedAsync(Type type, Guid id, object configuration, object? parent, INavigationBase? parentCollectionNavigation)
     {
         if (parentCollectionNavigation?.GetCollectionAccessor() is { } collectionAccessor
-            && (parent?.GetId() ?? parent as Guid?) is { } parentId)
+            && (parent as Guid? ?? parent?.GetId()) is { } parentId)
         {
             using var configContext = this._contextProvider.Value.CreateNewConfigurationContext();
             var gameConfiguration = (await configContext.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();
@@ -58,7 +59,9 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
             using var context = this._contextProvider.Value.CreateNewContext(gameConfiguration);
             var cachedParent = await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false);
 
-            if (cachedParent is not null)
+            // The cached parent may contain it already, when it was added together with its new parent,
+            // because the values of the parent are assigned including its children.
+            if (cachedParent is not null && !collectionAccessor.Contains(cachedParent, configuration))
             {
                 var cachedConfiguration = configContext.CreateNew(type);
                 if (cachedConfiguration is IAssignable assignable)
@@ -71,6 +74,7 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
                 }
 
                 collectionAccessor.Add(cachedParent, cachedConfiguration, false);
+                this.RefreshConfigurationCaches();
             }
         }
 
@@ -85,13 +89,24 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
         using var context = this._contextProvider.Value.CreateNewContext(gameConfiguration);
 
         if (parentCollectionNavigation?.GetCollectionAccessor() is { } collectionAccessor
-            && (parent?.GetId() ?? parent as Guid?) is { } parentId
+            && (parent as Guid? ?? parent?.GetId()) is { } parentId
             && await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false) is { } cachedParent
-            && await context.GetByIdAsync(id, type).ConfigureAwait(false) is { } cachedEntity)
+            && collectionAccessor.GetOrCreate(cachedParent, false) is IEnumerable cachedCollection
+            && cachedCollection.Cast<object>().FirstOrDefault(cachedObject => cachedObject.GetId() == id) is { } cachedEntity)
         {
             collectionAccessor.Remove(cachedParent, cachedEntity);
+            this.RefreshConfigurationCaches();
         }
 
         await this._changePublisher.ConfigurationRemovedAsync(type, id).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Refreshes the caches of the configuration types, so that the objects which were added to or removed from
+    /// the cached configuration are found, e.g. when accounts which reference them are loaded.
+    /// </summary>
+    private void RefreshConfigurationCaches()
+    {
+        (this._contextProvider.Value.RepositoryProvider as CacheAwareRepositoryProvider)?.RefreshConfigurationCaches();
     }
 }

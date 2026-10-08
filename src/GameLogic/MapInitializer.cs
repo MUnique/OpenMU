@@ -366,6 +366,12 @@ public class MapInitializer : IMapInitializer
 
         try
         {
+            if (NpcIntelligenceFactory.Create(monsterDefinition.IntelligenceTypeName, createdMap) is { } intelligence)
+            {
+                return intelligence;
+            }
+
+            // Not an intelligence of this assembly, e.g. an assembly qualified type name of another assembly.
             var type = Type.GetType(monsterDefinition.IntelligenceTypeName);
             if (type is null)
             {

@@ -7,5 +7,7 @@ spec:
   tracing:
     enabled: true
     samplingRate: "1"
-    zipkin:
-      endpointAddress: "http://zipkin:9411/api/v2/spans"
+    otel:
+      endpointAddress: "otel-lgtm:4317"
+      isSecure: false
+      protocol: grpc

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
+using System.Collections.Concurrent;
 using System.Data;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -16,6 +17,25 @@ using Microsoft.EntityFrameworkCore.Metadata;
 /// </summary>
 public class JsonObjectLoader
 {
+    /// <summary>
+    /// The statement which disables the JIT compilation of PostgreSQL for the query which follows it in the same command.
+    /// </summary>
+    /// <remarks>
+    /// The json queries consist of hundreds of small correlated sub queries. Their cost estimate is so high,
+    /// that PostgreSQL compiles them with LLVM, which took about 7 seconds for the game configuration query,
+    /// while the execution itself just takes about half a second. The compiled code isn't cached,
+    /// not even for prepared statements, so this happens on every execution.
+    /// The statements of one command run in one (implicit) transaction, so the setting is just effective for
+    /// the query. When the command runs in an explicit transaction, it's effective until the end of the transaction.
+    /// </remarks>
+    private const string DisableJitStatement = "SET LOCAL jit = off;";
+
+    /// <summary>
+    /// The cache of the built queries. Building a query walks the whole navigation tree of the entity type
+    /// and results in a large string, so it's done only once per query builder and entity type.
+    /// </summary>
+    private static readonly ConcurrentDictionary<(Type QueryBuilderType, IEntityType EntityType, bool ById), string> QueryCache = new();
+
     private readonly JsonQueryBuilder _queryBuilder;
     private readonly JsonObjectDeserializer _deserializer;
     private readonly ReferenceHandler _referenceHandler;
@@ -48,7 +68,7 @@ public class JsonObjectLoader
 
         var result = new List<T>();
         var type = context.Model.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
-        var queryString = this._queryBuilder.BuildJsonQueryForEntity(type);
+        var queryString = this.GetQuery(type, false);
         await using var command = context.Database.GetDbConnection().CreateCommand();
         command.CommandText = queryString;
         await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken).ConfigureAwait(false);
@@ -82,14 +102,8 @@ public class JsonObjectLoader
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        IEntityType type;
-        await using (var completeContext = new EntityDataContext())
-        {
-            type = completeContext.Model.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
-        }
-
-        var queryString = this._queryBuilder.BuildJsonQueryForEntity(type);
-        queryString += " where result.\"Id\" = @id;";
+        var type = EntityDataContext.CompleteModel.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
+        var queryString = this.GetQuery(type, true);
         await using var command = context.Database.GetDbConnection().CreateCommand();
         command.CommandText = queryString;
         var idParameter = command.CreateParameter();
@@ -105,5 +119,17 @@ public class JsonObjectLoader
         }
 
         return default;
+    }
+
+    private string GetQuery(IEntityType entityType, bool byId)
+    {
+        return QueryCache.GetOrAdd(
+            (this._queryBuilder.GetType(), entityType, byId),
+            static (key, queryBuilder) =>
+            {
+                var query = DisableJitStatement + Environment.NewLine + queryBuilder.BuildJsonQueryForEntity(key.EntityType);
+                return key.ById ? query + " where result.\"Id\" = @id;" : query;
+            },
+            this._queryBuilder);
     }
 }

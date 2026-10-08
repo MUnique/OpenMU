@@ -64,13 +64,13 @@ public class AddHarmonyOptionWeightsUpdateSeason6 : UpdatePlugInBase
         byte[] physAttackOptWeights = [40, 40, 40, 40, 30, 30, 20, 20, 20, 10];
         byte[] magicOptWeights = [40, 40, 40, 30, 30, 20, 20, 10];
 
-        var defOptions = gameConfiguration.ItemOptions.Where(io => io.Name == HarmonyOptions.DefenseOptionsName)
+        var defOptions = gameConfiguration.ItemOptions.Where(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.DefenseOptionsName)
             .FirstOrDefault()?.PossibleOptions.OrderBy(o => o.Number);
-        var physAttackOptions = gameConfiguration.ItemOptions.Where(io => io.Name == HarmonyOptions.PhysicalAttackOptionsName)
+        var physAttackOptions = gameConfiguration.ItemOptions.Where(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.PhysicalAttackOptionsName)
             .FirstOrDefault()?.PossibleOptions.OrderBy(o => o.Number);
-        var wizAttackOptions = gameConfiguration.ItemOptions.Where(io => io.Name == HarmonyOptions.WizardryAttackOptionsName)
+        var wizAttackOptions = gameConfiguration.ItemOptions.Where(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName)
             .FirstOrDefault()?.PossibleOptions.OrderBy(o => o.Number);
-        var curseAttackOptions = gameConfiguration.ItemOptions.Where(io => io.Name == HarmonyOptions.CurseAttackOptionsName)
+        var curseAttackOptions = gameConfiguration.ItemOptions.Where(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.CurseAttackOptionsName)
             .FirstOrDefault()?.PossibleOptions.OrderBy(o => o.Number);
 
         if (defOptions?.Count() == defOptWeights.Length)

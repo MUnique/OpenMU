@@ -58,11 +58,26 @@ menu therefore links to the tools instead of showing a log file page:
 |---|---|---|
 | **Logs** | Grafana / Loki | Search the log entries of all containers |
 | **Metrics** | Grafana dashboards (Prometheus) | Player counts, resource usage, throughput |
-| **Tracing** | Zipkin | Follow one request through the subsystems |
+| **Tracing** | Grafana / Tempo | Follow one request through the subsystems |
 
-These tools are part of the distributed docker compose file and are served by the
-same reverse proxy as the admin panel, protected by the same basic
-authentication.
+All subsystems send their logs, metrics and traces with
+[OpenTelemetry](https://opentelemetry.io/) (OTLP) to one backend container, which
+is part of the distributed docker compose file. Grafana is served by the same
+reverse proxy as the admin panel, under `/grafana/`.
+
+Grafana uses the admin panel login: without being signed in to the admin panel,
+you're sent to its login page first, and signing out of the admin panel signs you
+out of Grafana, too. The role of the admin panel user decides what you may do in
+Grafana:
+
+| Admin panel role | Grafana role |
+|---|---|
+| Administrator | Admin |
+| Operator | Editor |
+| Viewer | Viewer — can still search logs and traces |
+
+Like the admin panel itself, Grafana is reachable without a login until the
+[first user](authentication.md#the-first-user) exists.
 
 ## What to include in a bug report
 

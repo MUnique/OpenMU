@@ -486,7 +486,10 @@ public static class IntroducedGameVersions
         (14, 63, 63, GameVersion.Version089c), // Firecracker
         (14, 65, 67, GameVersion.Season2), // Flame of Death Beam Knight - Feather of Dark Phoenix
         (14, 68, 68, GameVersion.Season3Episode1), // Eye of Abyssal
+        (14, 91, 91, GameVersion.Season5Episode2), // Summoner Character Card
         (14, 101, 111, GameVersion.Season5Episode1), // Suspicious Scrap of Paper - Mirror of Dimensions
+        (14, 162, 163, GameVersion.Season6Episode2), // Magic Backpack - Vault Expansion Certificate
+        (14, 169, 169, GameVersion.Season6Episode1), // Rage Fighter Character Card
         (15, 0, 8, GameVersion.Version075), // Scroll of Poison - Scroll of Evil Spirit
         (15, 9, 9, GameVersion.Version045), // Scroll of Hellfire
         (15, 10, 10, GameVersion.Version075), // Scroll of Power Wave

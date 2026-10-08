@@ -68,7 +68,13 @@ public class Wings : WingsInitializerBase
 
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
-        optionDefinition.Name = $"{name} Options";
+        optionDefinition.Name = number switch
+        {
+            0 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfElfOptions),
+            1 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfHeavenOptions),
+            2 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfSatanOptions),
+            _ => new LocalizedString($"{name.ValueInNeutralLanguage} Options"),
+        };
         optionDefinition.AddChance = 0.25f;
         optionDefinition.AddsRandomly = true;
         optionDefinition.MaximumOptionsPerItem = 1;

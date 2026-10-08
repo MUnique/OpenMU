@@ -52,6 +52,7 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     public async ValueTask<IEnumerable<FriendViewItem>> GetFriendsAsync(Guid characterId)
     {
         return await (from friend in this.Context.Set<Model.Friend>()
+                      where friend.CharacterId == characterId
                       join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
                       join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
                       select new FriendViewItem(character.Name, friendCharacter.Name)

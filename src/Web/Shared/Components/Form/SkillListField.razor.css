@@ -1,0 +1,116 @@
+.master-skill-tree-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+}
+
+.master-skill-spent-points {
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: var(--bs-secondary-color);
+}
+
+.master-skill-tree {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    overflow-x: auto;
+}
+
+.master-skill-root {
+    flex: 1 1 0;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+}
+
+.master-skill-root-header {
+    font-weight: bold;
+    text-align: center;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.master-skill-rank {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: var(--bs-border-width) dashed var(--bs-border-color);
+}
+
+.master-skill-rank-label {
+    flex: 0 0 1.5rem;
+    align-self: center;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+}
+
+.master-skill-rank-skills {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.master-skill-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 7.5rem;
+    padding: 0.25rem 0.4rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+}
+
+.master-skill-entry.master-skill-locked {
+    opacity: 0.6;
+}
+
+.master-skill-entry.master-skill-active {
+    border-color: var(--bs-warning-border-subtle);
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.master-skill-entry.master-skill-invalid {
+    border-color: var(--bs-danger);
+    border-style: dashed;
+}
+
+.master-skill-name {
+    font-size: 0.75rem;
+    line-height: 1.2em;
+    min-height: 2.4em;
+    max-height: 2.4em;
+    overflow: hidden;
+    text-align: center;
+    word-break: break-word;
+}
+
+.master-skill-requires {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.65rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--bs-secondary-color);
+}
+
+.master-skill-level-input {
+    width: 4rem;
+    margin-top: 0.2rem;
+    padding: 0 0.25rem;
+    text-align: center;
+}
+
+.master-skill-maximum {
+    font-size: 0.65rem;
+    color: var(--bs-secondary-color);
+}

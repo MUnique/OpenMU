@@ -284,6 +284,8 @@
   <data name="FixItemRequirementsPlugIn_Description" xml:space="preserve"><value>Updates some item requirements for elf bows which were initialized wrongly.</value></data>
   <data name="AddCastleSiegeDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Castle Siege data</value></data>
   <data name="AddCastleSiegeDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Castle Siege configuration and persistent state.</value></data>
+  <data name="AddCashShopUpdatePlugIn_Name" xml:space="preserve"><value>Add cash shop</value></data>
+  <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the cash shop configuration with the packages of the cash shop script 512.2012.084 of the game client, and the items which are applied when they're used from the cash shop storage (character cards, vault and inventory extension).</value></data>
   <data name="FixAttackSpeedCalculationUpdate_Name" xml:space="preserve"><value>Fix Attack Speed Calculation</value></data>
   <data name="FixAttackSpeedCalculationUpdate_Description" xml:space="preserve"><value>Adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul.</value></data>
   <data name="FixItemOptionsAndAttackSpeedPlugInBase_Name" xml:space="preserve"><value>Fix Item Options And Attack Speed</value></data>
