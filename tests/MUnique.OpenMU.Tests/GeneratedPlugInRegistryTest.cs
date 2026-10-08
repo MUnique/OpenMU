@@ -74,6 +74,36 @@ public class GeneratedPlugInRegistryTest
         TestContext.Out.WriteLine($"{plugInPoints.Count} plugin points, {registeredPlugIns} registered plugins, {generated.ActivatedPlugIns.Count} activations.");
     }
 
+    /// <summary>
+    /// Tests that <see cref="PlugInConfiguration.Name"/> returns the same names with the registries as by searching the assemblies.
+    /// </summary>
+    [Test]
+    public void PlugInConfigurationNamesAreEqual()
+    {
+        // Every 4th plugin, because searching the assemblies takes ~25 ms per name.
+        var plugInTypes = PlugInAssemblies
+            .SelectMany(assembly => assembly.DefinedTypes)
+            .Where(type => type.GetCustomAttribute<PlugInAttribute>() != null)
+            .Where((_, index) => index % 4 == 0)
+            .ToList();
+        var configurations = plugInTypes.Select(type => new PlugInConfiguration { TypeId = type.GUID }).ToList();
+
+        var generated = configurations.Select(configuration => configuration.Name).ToList();
+        AppContext.SetSwitch(PlugInManager.DisableGeneratedRegistriesSwitch, true);
+        List<string> reflected;
+        try
+        {
+            reflected = configurations.Select(configuration => configuration.Name).ToList();
+        }
+        finally
+        {
+            AppContext.SetSwitch(PlugInManager.DisableGeneratedRegistriesSwitch, false);
+        }
+
+        Assert.That(generated, Is.EqualTo(reflected));
+        Assert.That(generated.Count(name => !Guid.TryParse(name, out _)), Is.GreaterThan(100), "Most plugins have a display name.");
+    }
+
     private static (PlugInManager Manager, List<Type> ActivatedPlugIns) Register(bool useGeneratedRegistries)
     {
         var manager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
