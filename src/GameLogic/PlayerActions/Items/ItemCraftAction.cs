@@ -89,6 +89,12 @@ public class ItemCraftAction
     {
         if (!string.IsNullOrWhiteSpace(crafting.ItemCraftingHandlerClassName))
         {
+            if (ItemCraftingHandlerFactory.Create(crafting.ItemCraftingHandlerClassName, crafting.SimpleCraftingSettings) is { } handler)
+            {
+                return handler;
+            }
+
+            // Not a handler of this assembly, e.g. an assembly qualified type name of another assembly.
             var type = Type.GetType(crafting.ItemCraftingHandlerClassName);
             if (type != null)
             {
