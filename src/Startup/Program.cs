@@ -52,12 +52,6 @@ internal sealed class Program : IDisposable
     private static bool _confirmExit;
     private static SystemConfiguration? _systemConfiguration;
 
-    /// <summary>
-    /// Gets the resolved server time zone (from <see cref="SystemConfiguration.TimeZoneId"/>),
-    /// used to interpret the times of periodic event schedules. Defaults to <see cref="TimeZoneInfo.Utc"/>.
-    /// </summary>
-    internal static TimeZoneInfo ServerTimeZone { get; private set; } = TimeZoneInfo.Utc;
-
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
     private readonly Serilog.ILogger _logger;
@@ -84,6 +78,12 @@ internal sealed class Program : IDisposable
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
     }
+
+    /// <summary>
+    /// Gets the resolved server time zone (from <see cref="SystemConfiguration.TimeZoneId"/>),
+    /// used to interpret the times of periodic event schedules. Defaults to <see cref="TimeZoneInfo.Utc"/>.
+    /// </summary>
+    internal static TimeZoneInfo ServerTimeZone { get; private set; } = TimeZoneInfo.Utc;
 
     /// <summary>
     /// The main method.
