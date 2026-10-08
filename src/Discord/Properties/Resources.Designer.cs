@@ -232,11 +232,29 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Administrates the OpenMU integration of this Discord server..
+        /// </summary>
+        public static string Command_OpenMu_Description {
+            get {
+                return ResourceManager.GetString("Command_OpenMu_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows the best characters..
         /// </summary>
         public static string Command_Rank_Description {
             get {
                 return ResourceManager.GetString("Command_Rank_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates the missing channels and roles of this Discord server..
+        /// </summary>
+        public static string Command_Setup_Description {
+            get {
+                return ResourceManager.GetString("Command_Setup_Description", resourceCulture);
             }
         }
         
@@ -498,6 +516,60 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string ServerFooter {
             get {
                 return ResourceManager.GetString("ServerFooter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only administrators can set up this Discord server..
+        /// </summary>
+        public static string Setup_AdministratorRequired {
+            get {
+                return ResourceManager.GetString("Setup_AdministratorRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **Already existing:** {0}.
+        /// </summary>
+        public static string Setup_Adopted {
+            get {
+                return ResourceManager.GetString("Setup_Adopted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **Created:** {0}.
+        /// </summary>
+        public static string Setup_Created {
+            get {
+                return ResourceManager.GetString("Setup_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **Failed:** {0}.
+        /// </summary>
+        public static string Setup_Failed {
+            get {
+                return ResourceManager.GetString("Setup_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please check that the bot has the permissions "Manage Channels" and "Manage Roles", and that its role is above the roles which it should manage..
+        /// </summary>
+        public static string Setup_FailedHint {
+            get {
+                return ResourceManager.GetString("Setup_FailedHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setup of the Discord server.
+        /// </summary>
+        public static string Setup_Title {
+            get {
+                return ResourceManager.GetString("Setup_Title", resourceCulture);
             }
         }
         

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Discord;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -22,7 +23,7 @@ public static class DiscordServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the Discord bot, if a token is configured, and the <see cref="DiscordNotifier"/> as <see cref="IGameEventListener"/>,
-    /// if webhooks or channels of the bot are configured.
+    /// if webhooks or the bot are configured.
     /// </summary>
     /// <param name="services">The services to which the Discord integration is added.</param>
     /// <param name="settings">The settings.</param>
@@ -43,11 +44,15 @@ public static class DiscordServiceCollectionExtensions
                     getServerTimeZone))
                 .AddSingleton(provider => new DiscordCommands(provider.GetRequiredService<IDiscordGameDataProvider>(), culture, provider.GetRequiredService<ILogger<DiscordCommands>>()))
                 .AddSingleton(new DiscordStatusFormatter(culture))
+                .AddSingleton(settings.Bot.LayoutFile is { Length: > 0 } layoutFile ? DiscordServerLayout.Load(layoutFile) : DiscordServerLayout.LoadDefault())
+                .AddSingleton(provider => new DiscordServerProvisioner(provider.GetRequiredService<ILogger<DiscordServerProvisioner>>()))
                 .AddSingleton(provider => new DiscordBot(
                     settings.Bot,
                     provider.GetRequiredService<DiscordCommands>(),
                     provider.GetRequiredService<DiscordStatusFormatter>(),
                     provider.GetRequiredService<IDiscordGameDataProvider>(),
+                    provider.GetRequiredService<DiscordServerLayout>(),
+                    provider.GetRequiredService<DiscordServerProvisioner>(),
                     provider.GetRequiredService<ILogger<DiscordBot>>()))
                 .AddHostedService(provider => provider.GetRequiredService<DiscordBot>());
         }

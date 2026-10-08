@@ -155,8 +155,14 @@
   <data name="Command_Online_Description" xml:space="preserve">
     <value>Zeigt, wie viele Spieler online sind.</value>
   </data>
+  <data name="Command_OpenMu_Description" xml:space="preserve">
+    <value>Verwaltet die OpenMU-Integration dieses Discord-Servers.</value>
+  </data>
   <data name="Command_Rank_Description" xml:space="preserve">
     <value>Zeigt die besten Charaktere.</value>
+  </data>
+  <data name="Command_Setup_Description" xml:space="preserve">
+    <value>Erstellt die fehlenden Kanäle und Rollen dieses Discord-Servers.</value>
   </data>
   <data name="Command_Who_CharacterOption" xml:space="preserve">
     <value>Der Name des Charakters.</value>
@@ -244,6 +250,24 @@
   </data>
   <data name="ServerFooter" xml:space="preserve">
     <value>Server: {0}</value>
+  </data>
+  <data name="Setup_AdministratorRequired" xml:space="preserve">
+    <value>Nur Administratoren können diesen Discord-Server einrichten.</value>
+  </data>
+  <data name="Setup_Adopted" xml:space="preserve">
+    <value>**Bereits vorhanden:** {0}</value>
+  </data>
+  <data name="Setup_Created" xml:space="preserve">
+    <value>**Erstellt:** {0}</value>
+  </data>
+  <data name="Setup_Failed" xml:space="preserve">
+    <value>**Fehlgeschlagen:** {0}</value>
+  </data>
+  <data name="Setup_FailedHint" xml:space="preserve">
+    <value>Bitte prüfe, ob der Bot die Berechtigungen "Kanäle verwalten" und "Rollen verwalten" hat, und ob seine Rolle über den Rollen steht, die er verwalten soll.</value>
+  </data>
+  <data name="Setup_Title" xml:space="preserve">
+    <value>Einrichtung des Discord-Servers</value>
   </data>
   <data name="Status_NoServers" xml:space="preserve">
     <value>Es läuft kein Spielserver.</value>

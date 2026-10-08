@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Discord.Properties;
+using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -27,6 +28,11 @@ public sealed class DiscordCommands
     /// A message of Discord has a limited length, so the ranking can't be arbitrarily long.
     /// </remarks>
     internal const int RankingSize = 10;
+
+    /// <summary>
+    /// The maximum length of the description of an embed, which Discord accepts.
+    /// </summary>
+    private const int MaximumDescriptionLength = 4096;
 
     private readonly IDiscordGameDataProvider _data;
     private readonly CultureInfo _culture;
@@ -99,6 +105,49 @@ public sealed class DiscordCommands
     {
         var text = Resources.ResourceManager.GetString(resourceKey, this._culture) ?? resourceKey;
         return args.Length == 0 ? text : string.Format(this._culture, text, args);
+    }
+
+    /// <summary>
+    /// Creates the answer to the setup of the Discord server.
+    /// </summary>
+    /// <param name="result">The result of the setup.</param>
+    /// <returns>The answer.</returns>
+    internal DiscordEmbed CreateSetupReport(DiscordProvisioningResult result)
+    {
+        var description = new StringBuilder();
+        if (result.Created.Count > 0)
+        {
+            description.AppendLine(this.Text(nameof(Resources.Setup_Created), string.Join(", ", result.Created.Select(DiscordMessageFormatter.Escape))));
+        }
+
+        if (result.Adopted.Count > 0)
+        {
+            description.AppendLine(this.Text(nameof(Resources.Setup_Adopted), string.Join(", ", result.Adopted.Select(DiscordMessageFormatter.Escape))));
+        }
+
+        if (result.Failed.Count > 0)
+        {
+            description
+                .AppendLine(this.Text(nameof(Resources.Setup_Failed), string.Join(", ", result.Failed.Select(failure => $"{DiscordMessageFormatter.Escape(failure.Name)} ({DiscordMessageFormatter.Escape(failure.Reason)})"))))
+                .AppendLine(this.Text(nameof(Resources.Setup_FailedHint)));
+        }
+
+        var text = description.ToString().TrimEnd();
+        if (text.Length > MaximumDescriptionLength)
+        {
+            text = text[..(MaximumDescriptionLength - 1)] + "…";
+        }
+
+        return this.Answer(this.Text(nameof(Resources.Setup_Title)), text);
+    }
+
+    /// <summary>
+    /// Creates the answer to somebody who isn't allowed to set up the Discord server.
+    /// </summary>
+    /// <returns>The answer.</returns>
+    internal DiscordEmbed CreateAdministratorRequiredAnswer()
+    {
+        return this.Answer(this.Text(nameof(Resources.Setup_Title)), this.Text(nameof(Resources.Setup_AdministratorRequired)));
     }
 
     private DiscordEmbed Online()

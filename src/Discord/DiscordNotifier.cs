@@ -21,7 +21,10 @@ public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
 
     private readonly DiscordSettings _settings;
     private readonly DiscordMessageFormatter _formatter;
-    private readonly IReadOnlyDictionary<DiscordChannelCategory, DiscordMessageQueue> _senders;
+    private readonly IReadOnlyDictionary<DiscordChannelCategory, DiscordWebhookSender> _webhookSenders;
+    private readonly ConcurrentDictionary<ulong, DiscordBotChannelSender> _botSenders = new();
+    private readonly IDiscordMessenger? _botMessenger;
+    private readonly ILogger<DiscordBotChannelSender> _botSenderLogger;
     private readonly ILogger<DiscordNotifier> _logger;
     private readonly ConcurrentDictionary<(byte ServerId, string MiniGameType, DateTime EnterEndsAt), DateTime> _announcedOpenings = new();
 
@@ -48,21 +51,14 @@ public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
         this._logger = loggerFactory.CreateLogger<DiscordNotifier>();
         this._formatter = new DiscordMessageFormatter(settings.GetCulture(), getServerName, getGuildName);
 
-        var senders = new Dictionary<DiscordChannelCategory, DiscordMessageQueue>();
-        if (botMessenger is not null)
-        {
-            var botLogger = loggerFactory.CreateLogger<DiscordBotChannelSender>();
-            foreach (var (category, channelId) in settings.Bot.Channels)
-            {
-                senders[category] = new DiscordBotChannelSender(channelId, botMessenger, botLogger, settings.MaximumQueuedMessages);
-            }
-        }
+        this._botMessenger = botMessenger;
+        this._botSenderLogger = loggerFactory.CreateLogger<DiscordBotChannelSender>();
 
+        var senders = new Dictionary<DiscordChannelCategory, DiscordWebhookSender>();
         var senderLogger = loggerFactory.CreateLogger<DiscordWebhookSender>();
         foreach (var (category, url) in settings.Webhooks)
         {
-            // A category which the bot posts doesn't need the webhook.
-            if (string.IsNullOrWhiteSpace(url) || senders.ContainsKey(category))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 continue;
             }
@@ -76,29 +72,43 @@ public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
             senders[category] = new DiscordWebhookSender(uri, httpClient, senderLogger, settings.MaximumQueuedMessages, timeProvider);
         }
 
-        this._senders = senders;
+        this._webhookSenders = senders;
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// A category which has a channel of the bot is posted by the bot, otherwise by its webhook.
+    /// </remarks>
     public async ValueTask OnGameEventAsync(GameEvent gameEvent)
     {
         if (!this.ShouldAnnounce(gameEvent)
-            || await this._formatter.FormatAsync(gameEvent).ConfigureAwait(false) is not { } message
-            || !this._senders.TryGetValue(message.Category, out var sender))
+            || await this._formatter.FormatAsync(gameEvent).ConfigureAwait(false) is not { } message)
         {
             return;
         }
 
-        sender.Enqueue(message.Embed);
+        if (this._botMessenger?.GetChannelId(message.Category) is { } channelId)
+        {
+            this._botSenders.GetOrAdd(channelId, this.CreateBotSender).Enqueue(message.Embed);
+        }
+        else if (this._webhookSenders.TryGetValue(message.Category, out var webhookSender))
+        {
+            webhookSender.Enqueue(message.Embed);
+        }
     }
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        foreach (var sender in this._senders.Values)
+        foreach (var sender in this._webhookSenders.Values.Concat<DiscordMessageQueue>(this._botSenders.Values))
         {
             await sender.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    private DiscordBotChannelSender CreateBotSender(ulong channelId)
+    {
+        return new DiscordBotChannelSender(channelId, this._botMessenger!, this._botSenderLogger, this._settings.MaximumQueuedMessages);
     }
 
     private bool ShouldAnnounce(GameEvent gameEvent)

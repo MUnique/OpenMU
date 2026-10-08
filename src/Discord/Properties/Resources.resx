@@ -155,8 +155,14 @@
   <data name="Command_Online_Description" xml:space="preserve">
     <value>Shows how many players are online.</value>
   </data>
+  <data name="Command_OpenMu_Description" xml:space="preserve">
+    <value>Administrates the OpenMU integration of this Discord server.</value>
+  </data>
   <data name="Command_Rank_Description" xml:space="preserve">
     <value>Shows the best characters.</value>
+  </data>
+  <data name="Command_Setup_Description" xml:space="preserve">
+    <value>Creates the missing channels and roles of this Discord server.</value>
   </data>
   <data name="Command_Who_CharacterOption" xml:space="preserve">
     <value>The name of the character.</value>
@@ -244,6 +250,24 @@
   </data>
   <data name="ServerFooter" xml:space="preserve">
     <value>Server: {0}</value>
+  </data>
+  <data name="Setup_AdministratorRequired" xml:space="preserve">
+    <value>Only administrators can set up this Discord server.</value>
+  </data>
+  <data name="Setup_Adopted" xml:space="preserve">
+    <value>**Already existing:** {0}</value>
+  </data>
+  <data name="Setup_Created" xml:space="preserve">
+    <value>**Created:** {0}</value>
+  </data>
+  <data name="Setup_Failed" xml:space="preserve">
+    <value>**Failed:** {0}</value>
+  </data>
+  <data name="Setup_FailedHint" xml:space="preserve">
+    <value>Please check that the bot has the permissions "Manage Channels" and "Manage Roles", and that its role is above the roles which it should manage.</value>
+  </data>
+  <data name="Setup_Title" xml:space="preserve">
+    <value>Setup of the Discord server</value>
   </data>
   <data name="Status_NoServers" xml:space="preserve">
     <value>No game server is running.</value>
