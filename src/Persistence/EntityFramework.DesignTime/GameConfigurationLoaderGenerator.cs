@@ -424,6 +424,7 @@ public sealed class GameConfigurationLoaderGenerator
 
             code.AppendLine("));");
         }
+
         code.AppendLine("        }");
         code.AppendLine("    }");
     }
