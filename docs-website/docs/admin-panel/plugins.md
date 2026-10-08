@@ -70,7 +70,7 @@ documented separately:
 
 The *Game Event Publisher* plugin publishes notable events of the game to the
 whole server, so that external systems can react on them, for example a Discord
-integration (see [Discord notifications](../server-features/discord.md)). It's
+integration (see [Discord](../server-features/discord.md)). It's
 disabled by default; activate it when such a system is connected.
 
 It publishes:

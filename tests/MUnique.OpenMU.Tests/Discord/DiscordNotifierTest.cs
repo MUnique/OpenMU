@@ -1,4 +1,4 @@
-﻿// <copyright file="DiscordWebhookNotifierTest.cs" company="MUnique">
+﻿// <copyright file="DiscordNotifierTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,10 +10,10 @@ using MUnique.OpenMU.Discord;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Tests for the <see cref="DiscordWebhookNotifier"/>.
+/// Tests for the <see cref="DiscordNotifier"/>.
 /// </summary>
 [TestFixture]
-public class DiscordWebhookNotifierTest
+public class DiscordNotifierTest
 {
     /// <summary>
     /// Tests that a mini game which opens several levels at the same time is announced just once.
@@ -22,7 +22,7 @@ public class DiscordWebhookNotifierTest
     public async Task MiniGameOpeningIsAnnouncedOnceAsync()
     {
         var handler = new RecordingHttpMessageHandler();
-        await using var notifier = CreateNotifier(handler, new DiscordWebhookSettings());
+        await using var notifier = CreateNotifier(handler, new DiscordSettings());
         var closesAt = DateTime.UtcNow.AddMinutes(5);
 
         for (byte level = 1; level <= 7; level++)
@@ -42,7 +42,7 @@ public class DiscordWebhookNotifierTest
     public async Task EventsOfOtherServersAreNotAnnouncedAsync()
     {
         var handler = new RecordingHttpMessageHandler();
-        await using var notifier = CreateNotifier(handler, new DiscordWebhookSettings { EventAnnouncingServerIds = { 0 } });
+        await using var notifier = CreateNotifier(handler, new DiscordSettings { EventAnnouncingServerIds = { 0 } });
 
         await notifier.OnGameEventAsync(new InvasionStartedEvent(1, DateTime.UtcNow, Guid.Empty, "Golden Invasion", new[] { "Lorencia" })).ConfigureAwait(false);
         await notifier.OnGameEventAsync(new InvasionStartedEvent(0, DateTime.UtcNow, Guid.Empty, "Golden Invasion", new[] { "Devias" })).ConfigureAwait(false);
@@ -60,7 +60,7 @@ public class DiscordWebhookNotifierTest
     public async Task CategoryWithoutWebhookIsNotPostedAsync()
     {
         var handler = new RecordingHttpMessageHandler();
-        await using var notifier = CreateNotifier(handler, new DiscordWebhookSettings());
+        await using var notifier = CreateNotifier(handler, new DiscordSettings());
 
         await notifier.OnGameEventAsync(new GlobalNoticeEvent(0, DateTime.UtcNow, "GM", "Hello")).ConfigureAwait(false);
         await notifier.OnGameEventAsync(new BossKilledEvent(0, DateTime.UtcNow, "Hero", "Kundun", "Kalima 7")).ConfigureAwait(false);
@@ -71,14 +71,37 @@ public class DiscordWebhookNotifierTest
         Assert.That(titles, Is.EqualTo(new[] { "Boss defeated" }));
     }
 
-    private static DiscordWebhookNotifier CreateNotifier(RecordingHttpMessageHandler handler, DiscordWebhookSettings settings)
+    /// <summary>
+    /// Tests that a category which has a channel of the bot is posted by the bot instead of the webhook.
+    /// </summary>
+    [Test]
+    public async Task BotChannelIsPreferredToWebhookAsync()
+    {
+        var handler = new RecordingHttpMessageHandler();
+        var messenger = new RecordingMessenger();
+        var settings = new DiscordSettings();
+        settings.Bot.Token = "token";
+        settings.Bot.Channels[DiscordChannelCategory.WorldNews] = 42;
+        await using (var notifier = CreateNotifier(handler, settings, messenger))
+        {
+            await notifier.OnGameEventAsync(new BossKilledEvent(0, DateTime.UtcNow, "Hero", "Kundun", "Kalima 7")).ConfigureAwait(false);
+        }
+
+        Assert.That(messenger.Messages, Has.Count.EqualTo(1));
+        Assert.That(messenger.Messages[0].ChannelId, Is.EqualTo(42));
+        Assert.That(messenger.Messages[0].Embeds[0].Title, Is.EqualTo("Boss defeated"));
+        Assert.That(handler.Requests, Is.Empty);
+    }
+
+    private static DiscordNotifier CreateNotifier(RecordingHttpMessageHandler handler, DiscordSettings settings, IDiscordMessenger? botMessenger = null)
     {
         // There is no webhook for the notices, so they aren't posted.
         settings.Webhooks[DiscordChannelCategory.Events] = "https://discord.example/api/webhooks/1/events";
         settings.Webhooks[DiscordChannelCategory.WorldNews] = "https://discord.example/api/webhooks/2/news";
-        return new DiscordWebhookNotifier(
+        return new DiscordNotifier(
             settings,
             new HttpClient(handler),
+            botMessenger,
             _ => null,
             _ => ValueTask.FromResult<string?>(null),
             NullLoggerFactory.Instance);

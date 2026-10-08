@@ -182,4 +182,40 @@ public interface IPlayerContext : IContext
         Guid killerId,
         Guid victimId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the ranking of the characters of players, ordered by resets, master level, level and experience.
+    /// Characters of bots, templates and game masters are not ranked.
+    /// </summary>
+    /// <remarks>
+    /// The levels are attributes of the characters; their definitions are passed, because they are defined by the game logic.
+    /// </remarks>
+    /// <param name="levelAttributeId">The identifier of the attribute definition of the level.</param>
+    /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
+    /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
+    /// <param name="count">The maximum number of entries.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The best characters.</returns>
+    ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        int count,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the summary of a character.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="levelAttributeId">The identifier of the attribute definition of the level.</param>
+    /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
+    /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The summary of the character; or <see langword="null"/>, if it doesn't exist.</returns>
+    ValueTask<CharacterSummary?> GetCharacterSummaryAsync(
+        string characterName,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        CancellationToken cancellationToken = default);
 }

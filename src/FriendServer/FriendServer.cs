@@ -85,6 +85,15 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc/>
+    public ValueTask<byte?> GetOnlineServerIdAsync(string characterName)
+    {
+        return ValueTask.FromResult(
+            this.OnlineFriends.TryGetValue(characterName, out var onlineFriend) && !onlineFriend.IsInvisibleOrOffline
+                ? (byte?)onlineFriend.ServerId
+                : null);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<bool> IsFriendAsync(string characterName, string friendName)
     {
         if (this.OnlineFriends.TryGetValue(characterName, out var player)

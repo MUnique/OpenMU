@@ -122,8 +122,68 @@
   <data name="CastleSiegeStarted_Description" xml:space="preserve">
     <value>The battle for the castle started! It ends {0}.</value>
   </data>
+  <data name="Character_Level" xml:space="preserve">
+    <value>Level {0}</value>
+  </data>
+  <data name="Character_MasterLevel" xml:space="preserve">
+    <value>Master level {0}</value>
+  </data>
+  <data name="Character_NotFound" xml:space="preserve">
+    <value>There is no character with the name **{0}**.</value>
+  </data>
+  <data name="Character_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Character_OnlineOn" xml:space="preserve">
+    <value>Online on {0}</value>
+  </data>
+  <data name="Character_Resets" xml:space="preserve">
+    <value>Resets {0}</value>
+  </data>
+  <data name="Command_Events_Description" xml:space="preserve">
+    <value>Shows the events of the next 24 hours.</value>
+  </data>
+  <data name="Command_Failed" xml:space="preserve">
+    <value>Sorry, that didn't work. Please try again later.</value>
+  </data>
+  <data name="Command_Guild_Description" xml:space="preserve">
+    <value>Shows information about a guild.</value>
+  </data>
+  <data name="Command_Guild_GuildOption" xml:space="preserve">
+    <value>The name of the guild.</value>
+  </data>
+  <data name="Command_Online_Description" xml:space="preserve">
+    <value>Shows how many players are online.</value>
+  </data>
+  <data name="Command_Rank_Description" xml:space="preserve">
+    <value>Shows the best characters.</value>
+  </data>
+  <data name="Command_Who_CharacterOption" xml:space="preserve">
+    <value>The name of the character.</value>
+  </data>
+  <data name="Command_Who_Description" xml:space="preserve">
+    <value>Shows information about a character.</value>
+  </data>
+  <data name="Events_None" xml:space="preserve">
+    <value>There are no events in the next 24 hours.</value>
+  </data>
+  <data name="Events_Title" xml:space="preserve">
+    <value>Upcoming events</value>
+  </data>
   <data name="GlobalNotice_Title" xml:space="preserve">
     <value>Notice</value>
+  </data>
+  <data name="Guild_Master" xml:space="preserve">
+    <value>Guild master: {0}</value>
+  </data>
+  <data name="Guild_Members" xml:space="preserve">
+    <value>Members: {0}</value>
+  </data>
+  <data name="Guild_NotFound" xml:space="preserve">
+    <value>There is no guild with the name **{0}**.</value>
+  </data>
+  <data name="Guild_OnlineMembers" xml:space="preserve">
+    <value>Online: {0}</value>
   </data>
   <data name="InvasionEnded_Description" xml:space="preserve">
     <value>The invasion is over.</value>
@@ -161,7 +221,40 @@
   <data name="MiniGameWon_Description" xml:space="preserve">
     <value>**{0}** won {1}!</value>
   </data>
+  <data name="Online_ServerLine" xml:space="preserve">
+    <value>{0}: **{1}** / {2}</value>
+  </data>
+  <data name="Online_ServerOffline" xml:space="preserve">
+    <value>{0}: offline</value>
+  </data>
+  <data name="Online_Title" xml:space="preserve">
+    <value>Online players</value>
+  </data>
+  <data name="Online_Total" xml:space="preserve">
+    <value>Total: **{0}** players</value>
+  </data>
+  <data name="Presence" xml:space="preserve">
+    <value>{0} players online</value>
+  </data>
+  <data name="Rank_Empty" xml:space="preserve">
+    <value>There are no characters yet.</value>
+  </data>
+  <data name="Rank_Title" xml:space="preserve">
+    <value>Ranking</value>
+  </data>
   <data name="ServerFooter" xml:space="preserve">
     <value>Server: {0}</value>
+  </data>
+  <data name="Status_NoServers" xml:space="preserve">
+    <value>No game server is running.</value>
+  </data>
+  <data name="Status_Offline" xml:space="preserve">
+    <value>🔴 **{0}**: offline</value>
+  </data>
+  <data name="Status_Online" xml:space="preserve">
+    <value>🟢 **{0}**: {1} / {2} players</value>
+  </data>
+  <data name="Status_Title" xml:space="preserve">
+    <value>Server status</value>
   </data>
 </root>

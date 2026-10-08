@@ -133,11 +133,191 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Level {0}.
+        /// </summary>
+        public static string Character_Level {
+            get {
+                return ResourceManager.GetString("Character_Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master level {0}.
+        /// </summary>
+        public static string Character_MasterLevel {
+            get {
+                return ResourceManager.GetString("Character_MasterLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no character with the name **{0}**..
+        /// </summary>
+        public static string Character_NotFound {
+            get {
+                return ResourceManager.GetString("Character_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline.
+        /// </summary>
+        public static string Character_Offline {
+            get {
+                return ResourceManager.GetString("Character_Offline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online on {0}.
+        /// </summary>
+        public static string Character_OnlineOn {
+            get {
+                return ResourceManager.GetString("Character_OnlineOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resets {0}.
+        /// </summary>
+        public static string Character_Resets {
+            get {
+                return ResourceManager.GetString("Character_Resets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the events of the next 24 hours..
+        /// </summary>
+        public static string Command_Events_Description {
+            get {
+                return ResourceManager.GetString("Command_Events_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, that didn't work. Please try again later..
+        /// </summary>
+        public static string Command_Failed {
+            get {
+                return ResourceManager.GetString("Command_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows information about a guild..
+        /// </summary>
+        public static string Command_Guild_Description {
+            get {
+                return ResourceManager.GetString("Command_Guild_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the guild..
+        /// </summary>
+        public static string Command_Guild_GuildOption {
+            get {
+                return ResourceManager.GetString("Command_Guild_GuildOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows how many players are online..
+        /// </summary>
+        public static string Command_Online_Description {
+            get {
+                return ResourceManager.GetString("Command_Online_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the best characters..
+        /// </summary>
+        public static string Command_Rank_Description {
+            get {
+                return ResourceManager.GetString("Command_Rank_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the character..
+        /// </summary>
+        public static string Command_Who_CharacterOption {
+            get {
+                return ResourceManager.GetString("Command_Who_CharacterOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows information about a character..
+        /// </summary>
+        public static string Command_Who_Description {
+            get {
+                return ResourceManager.GetString("Command_Who_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no events in the next 24 hours..
+        /// </summary>
+        public static string Events_None {
+            get {
+                return ResourceManager.GetString("Events_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upcoming events.
+        /// </summary>
+        public static string Events_Title {
+            get {
+                return ResourceManager.GetString("Events_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Notice.
         /// </summary>
         public static string GlobalNotice_Title {
             get {
                 return ResourceManager.GetString("GlobalNotice_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild master: {0}.
+        /// </summary>
+        public static string Guild_Master {
+            get {
+                return ResourceManager.GetString("Guild_Master", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Members: {0}.
+        /// </summary>
+        public static string Guild_Members {
+            get {
+                return ResourceManager.GetString("Guild_Members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no guild with the name **{0}**..
+        /// </summary>
+        public static string Guild_NotFound {
+            get {
+                return ResourceManager.GetString("Guild_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online: {0}.
+        /// </summary>
+        public static string Guild_OnlineMembers {
+            get {
+                return ResourceManager.GetString("Guild_OnlineMembers", resourceCulture);
             }
         }
         
@@ -250,11 +430,110 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}: **{1}** / {2}.
+        /// </summary>
+        public static string Online_ServerLine {
+            get {
+                return ResourceManager.GetString("Online_ServerLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: offline.
+        /// </summary>
+        public static string Online_ServerOffline {
+            get {
+                return ResourceManager.GetString("Online_ServerOffline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online players.
+        /// </summary>
+        public static string Online_Title {
+            get {
+                return ResourceManager.GetString("Online_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total: **{0}** players.
+        /// </summary>
+        public static string Online_Total {
+            get {
+                return ResourceManager.GetString("Online_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} players online.
+        /// </summary>
+        public static string Presence {
+            get {
+                return ResourceManager.GetString("Presence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no characters yet..
+        /// </summary>
+        public static string Rank_Empty {
+            get {
+                return ResourceManager.GetString("Rank_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranking.
+        /// </summary>
+        public static string Rank_Title {
+            get {
+                return ResourceManager.GetString("Rank_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server: {0}.
         /// </summary>
         public static string ServerFooter {
             get {
                 return ResourceManager.GetString("ServerFooter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No game server is running..
+        /// </summary>
+        public static string Status_NoServers {
+            get {
+                return ResourceManager.GetString("Status_NoServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🔴 **{0}**: offline.
+        /// </summary>
+        public static string Status_Offline {
+            get {
+                return ResourceManager.GetString("Status_Offline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🟢 **{0}**: {1} / {2} players.
+        /// </summary>
+        public static string Status_Online {
+            get {
+                return ResourceManager.GetString("Status_Online", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server status.
+        /// </summary>
+        public static string Status_Title {
+            get {
+                return ResourceManager.GetString("Status_Title", resourceCulture);
             }
         }
     }

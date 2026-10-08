@@ -168,6 +168,51 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        int count,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return accounts
+            .Where(account => !account.IsBot && !account.IsTemplate)
+            .SelectMany(account => account.Characters)
+            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal)
+            .OrderByDescending(character => GetValue(character, resetsAttributeId))
+            .ThenByDescending(character => GetValue(character, masterLevelAttributeId))
+            .ThenByDescending(character => GetValue(character, levelAttributeId))
+            .ThenByDescending(character => character.MasterExperience)
+            .ThenByDescending(character => character.Experience)
+            .Take(count)
+            .Select(character => ToSummary(character, levelAttributeId, masterLevelAttributeId, resetsAttributeId))
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CharacterSummary?> GetCharacterSummaryAsync(
+        string characterName,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return accounts
+            .SelectMany(account => account.Characters)
+            .Where(character => character.Name == characterName)
+            .Select(character => ToSummary(character, levelAttributeId, masterLevelAttributeId, resetsAttributeId))
+            .FirstOrDefault();
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
         Guid killerId,
         Guid victimId,
@@ -178,4 +223,15 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .ConfigureAwait(false);
         return abuses.FirstOrDefault(abuse => abuse.KillerId == killerId && abuse.VictimId == victimId);
     }
+
+    private static float GetValue(DataModel.Entities.Character character, Guid attributeId)
+        => character.Attributes.FirstOrDefault(a => a.Definition?.Id == attributeId)?.Value ?? 0;
+
+    private static CharacterSummary ToSummary(DataModel.Entities.Character character, Guid levelAttributeId, Guid masterLevelAttributeId, Guid resetsAttributeId)
+        => new(
+            character.Name,
+            (string?)character.CharacterClass?.Name ?? string.Empty,
+            (int)GetValue(character, levelAttributeId),
+            (int)GetValue(character, masterLevelAttributeId),
+            (int)GetValue(character, resetsAttributeId));
 }
