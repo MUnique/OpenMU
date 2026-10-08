@@ -28,6 +28,9 @@ public class MaximumConnectionsPerIpPlugInTests
     private GameContext _gameContext = null!;
     private MaximumConnectionsPerIpPlugIn _plugin = null!;
 
+    /// <summary>
+    /// Sets up the game context and the plug-in with a limit of three connections per IP address.
+    /// </summary>
     [SetUp]
     public async Task SetUp()
     {
@@ -42,6 +45,9 @@ public class MaximumConnectionsPerIpPlugInTests
         };
     }
 
+    /// <summary>
+    /// Tests that a joining player below the connection limit is not cancelled.
+    /// </summary>
     [Test]
     public async ValueTask UnderLimitSucceedsAsync()
     {
@@ -71,6 +77,9 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(eventArgs.Cancel, Is.False);
     }
 
+    /// <summary>
+    /// Tests that a joining player at the connection limit is cancelled.
+    /// </summary>
     [Test]
     public async ValueTask AtLimitCancelsTransitionAsync()
     {
@@ -107,6 +116,9 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(joiningPlayer.LoginResultOverride, Is.EqualTo(GameLogic.Views.Login.LoginResult.ServerIsFull));
     }
 
+    /// <summary>
+    /// Tests that players with a different IP address don't count toward the connection limit.
+    /// </summary>
     [Test]
     public async ValueTask DifferentIpDoesNotCountAsync()
     {
@@ -142,6 +154,9 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(eventArgs.Cancel, Is.False);
     }
 
+    /// <summary>
+    /// Tests that players which are still at the login screen don't count toward the connection limit.
+    /// </summary>
     [Test]
     public async ValueTask LoginScreenAndInitialPlayersDoNotCountAsync()
     {
