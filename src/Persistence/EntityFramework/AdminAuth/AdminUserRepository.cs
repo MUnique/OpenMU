@@ -33,9 +33,9 @@ public sealed class AdminUserRepository : IAdminUserRepository, IDisposable
 
     private readonly ILogger<AdminUserRepository> _logger;
     private readonly AsyncLock _storageLock = new();
+    private readonly SetupService _setupService;
     private bool _isStorageReady;
     private DateTime _nextProbeAt = DateTime.MinValue;
-    private readonly SetupService _setupService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AdminUserRepository"/> class.

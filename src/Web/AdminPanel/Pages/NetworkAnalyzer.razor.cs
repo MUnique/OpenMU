@@ -165,7 +165,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private string TableColClass => this._isSidebarCollapsed ? "col-12" : "col-10";
 
-
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
