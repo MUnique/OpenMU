@@ -144,14 +144,14 @@ public static class AdminPanelAuthExtensions
     {
         if (app.ApplicationServices.GetService<DataProtectionKeyStorageStatus>() is { Error: { } error } status)
         {
+            const string keysOnlyInMemoryMessage =
+                "The data protection keys can't be stored at '{Path}', so they are only kept in memory: "
+                + "everybody is signed out when the application restarts, and stored authenticator keys "
+                + "become unreadable. Make sure the directory exists and is writable by the user which runs the application.";
+
             app.ApplicationServices.GetRequiredService<ILoggerFactory>()
                 .CreateLogger(typeof(AdminPanelAuthExtensions))
-                .LogWarning(
-                    error,
-                    "The data protection keys can't be stored at '{Path}', so they are only kept in memory: "
-                    + "everybody is signed out when the application restarts, and stored authenticator keys "
-                    + "become unreadable. Make sure the directory exists and is writable by the user which runs the application.",
-                    status.Path);
+                .LogWarning(error, keysOnlyInMemoryMessage, status.Path);
         }
 
         app.UseAuthentication();

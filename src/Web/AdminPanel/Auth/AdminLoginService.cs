@@ -54,16 +54,15 @@ public class AdminLoginService
     /// <returns>The claims of the user.</returns>
     public static IReadOnlyList<Claim> CreateClaims(AdminUser user, bool usedSecondFactor)
     {
+        var authenticationMethod = usedSecondFactor
+            ? AdminAuthenticationDefaults.MultiFactorAuthenticationMethod
+            : AdminAuthenticationDefaults.PasswordAuthenticationMethod;
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.LoginName),
             new(AdminAuthenticationDefaults.SecurityStampClaimType, user.SecurityStamp),
-            new(
-                AdminAuthenticationDefaults.AuthenticationMethodClaimType,
-                usedSecondFactor
-                    ? AdminAuthenticationDefaults.MultiFactorAuthenticationMethod
-                    : AdminAuthenticationDefaults.PasswordAuthenticationMethod),
+            new(AdminAuthenticationDefaults.AuthenticationMethodClaimType, authenticationMethod),
         };
 
         var assignedRoles = (user.Roles ?? string.Empty)
