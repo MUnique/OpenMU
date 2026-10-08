@@ -113,8 +113,8 @@ public static class AdminPanelAuthExtensions
 
                 // An API client can't do anything with the login page, so it gets a status code
                 // instead of a redirect to it.
-                options.Events.OnRedirectToLogin = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status401Unauthorized);
-                options.Events.OnRedirectToAccessDenied = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status403Forbidden);
+                options.Events.OnRedirectToLogin = context => RespondWithStatusCodeOnApiPathAsync(context, StatusCodes.Status401Unauthorized);
+                options.Events.OnRedirectToAccessDenied = context => RespondWithStatusCodeOnApiPathAsync(context, StatusCodes.Status403Forbidden);
             })
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
                 ApiKeyAuthenticationDefaults.AuthenticationScheme,
@@ -193,7 +193,7 @@ public static class AdminPanelAuthExtensions
         });
     }
 
-    private static Task RespondWithStatusCodeOnApiPath(RedirectContext<CookieAuthenticationOptions> context, int statusCode)
+    private static Task RespondWithStatusCodeOnApiPathAsync(RedirectContext<CookieAuthenticationOptions> context, int statusCode)
     {
         if (context.Request.Path.StartsWithSegments(ApiKeyAuthenticationDefaults.ApiPathPrefix, StringComparison.OrdinalIgnoreCase))
         {
