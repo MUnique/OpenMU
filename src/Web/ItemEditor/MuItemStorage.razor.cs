@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Components;
 public partial class MuItemStorage
 {
     private StorageViewModel? _viewModel;
-    private Item? _selectedItem;
 
     /// <summary>
     /// Gets or sets the selected item.
@@ -66,11 +65,6 @@ public partial class MuItemStorage
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        if (this._selectedItem != this.SelectedItem)
-        {
-            this._selectedItem = this.SelectedItem;
-        }
-
         if (this.Value is { } value)
         {
             this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
@@ -89,7 +83,7 @@ public partial class MuItemStorage
     {
         if (this.SelectedItemChanged.HasDelegate)
         {
-            await this.SelectedItemChanged.InvokeAsync(this._selectedItem).ConfigureAwait(true);
+            await this.SelectedItemChanged.InvokeAsync(this.SelectedItem).ConfigureAwait(true);
         }
     }
 }
