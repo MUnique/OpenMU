@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
 /// A chat message processor which sends the message to the party.
@@ -25,6 +26,7 @@ public class ChatMessagePartyProcessor : BannableChatMessageBaseProcessor
         if (sender.Party is { } party)
         {
             await party.SendChatMessageAsync(content.Message, sender.SelectedCharacter!.Name).ConfigureAwait(false);
+            await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Party).ConfigureAwait(false);
         }
     }
 }

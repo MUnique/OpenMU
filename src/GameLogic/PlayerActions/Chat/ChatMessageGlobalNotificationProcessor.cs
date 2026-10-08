@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
 /// A chat message processor which sends a global notification.
@@ -29,5 +30,6 @@ public class ChatMessageGlobalNotificationProcessor : IChatMessageProcessor
         }
 
         await sender.GameContext.SendGlobalNotificationAsync(content.Message).ConfigureAwait(false);
+        await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.GlobalNotification).ConfigureAwait(false);
     }
 }
