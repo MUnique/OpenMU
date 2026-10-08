@@ -18,19 +18,7 @@ public partial class MuItemStorage
     /// Gets or sets the selected item.
     /// </summary>
     [Parameter]
-    public Item? SelectedItem
-    {
-        get => this._selectedItem;
-        set
-        {
-            if (this._selectedItem == value)
-            {
-                return;
-            }
-
-            this._selectedItem = value;
-        }
-    }
+    public Item? SelectedItem { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the storage.
@@ -78,6 +66,11 @@ public partial class MuItemStorage
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (this._selectedItem != this.SelectedItem)
+        {
+            this._selectedItem = this.SelectedItem;
+        }
+
         if (this.Value is { } value)
         {
             this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
@@ -96,7 +89,7 @@ public partial class MuItemStorage
     {
         if (this.SelectedItemChanged.HasDelegate)
         {
-            await this.SelectedItemChanged.InvokeAsync(this.SelectedItem).ConfigureAwait(true);
+            await this.SelectedItemChanged.InvokeAsync(this._selectedItem).ConfigureAwait(true);
         }
     }
 }
