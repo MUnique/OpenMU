@@ -369,5 +369,4 @@ internal enum MagicEffectNumber : short
     /// The alcohol effect number.
     /// </summary>
     Alcohol = 201,
-
 }
