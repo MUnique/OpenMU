@@ -41,6 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
     <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\..\src\Discord\MUnique.OpenMU.Discord.csproj" />
     <ProjectReference Include="..\..\src\FriendServer\MUnique.OpenMU.FriendServer.csproj" />
     <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\src\GameServer\MUnique.OpenMU.GameServer.csproj" />
