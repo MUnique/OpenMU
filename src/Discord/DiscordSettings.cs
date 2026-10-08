@@ -1,17 +1,17 @@
-﻿// <copyright file="DiscordWebhookSettings.cs" company="MUnique">
+﻿// <copyright file="DiscordSettings.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Discord;
 
 /// <summary>
-/// The settings of the Discord webhook notifications.
+/// The settings of the Discord integration.
 /// </summary>
 /// <remarks>
-/// The webhook URLs are secrets: everybody who knows them can post into the channel.
+/// The webhook URLs and the bot token are secrets: everybody who knows them can post into the channels.
 /// So they are part of the application configuration (e.g. environment variables), not of the game configuration in the database.
 /// </remarks>
-public class DiscordWebhookSettings
+public class DiscordSettings
 {
     /// <summary>
     /// The name of the configuration section.
@@ -20,7 +20,7 @@ public class DiscordWebhookSettings
 
     /// <summary>
     /// Gets or sets the webhook URLs per <see cref="DiscordChannelCategory"/>.
-    /// A category without URL isn't posted.
+    /// A category without URL isn't posted, unless the bot posts it, see <see cref="DiscordBotSettings.Channels"/>.
     /// </summary>
     public Dictionary<DiscordChannelCategory, string> Webhooks { get; set; } = new();
 
@@ -37,13 +37,19 @@ public class DiscordWebhookSettings
     public List<byte> EventAnnouncingServerIds { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the maximum number of messages per webhook which wait to be sent.
+    /// Gets or sets the maximum number of messages per channel which wait to be sent.
     /// When there are more, the oldest ones are dropped.
     /// </summary>
     public int MaximumQueuedMessages { get; set; } = 100;
 
     /// <summary>
-    /// Gets a value indicating whether at least one webhook is configured.
+    /// Gets or sets the settings of the bot.
     /// </summary>
-    public bool IsEnabled => this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url));
+    public DiscordBotSettings Bot { get; set; } = new();
+
+    /// <summary>
+    /// Gets a value indicating whether game events are posted, through webhooks or the bot.
+    /// </summary>
+    public bool IsNotificationEnabled => this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url))
+                                         || (this.Bot.IsEnabled && this.Bot.Channels.Count > 0);
 }

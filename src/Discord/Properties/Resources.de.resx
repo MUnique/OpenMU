@@ -122,8 +122,68 @@
   <data name="CastleSiegeStarted_Description" xml:space="preserve">
     <value>Die Schlacht um die Burg hat begonnen! Sie endet {0}.</value>
   </data>
+  <data name="Character_Level" xml:space="preserve">
+    <value>Level {0}</value>
+  </data>
+  <data name="Character_MasterLevel" xml:space="preserve">
+    <value>Meisterlevel {0}</value>
+  </data>
+  <data name="Character_NotFound" xml:space="preserve">
+    <value>Es gibt keinen Charakter mit dem Namen **{0}**.</value>
+  </data>
+  <data name="Character_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Character_OnlineOn" xml:space="preserve">
+    <value>Online auf {0}</value>
+  </data>
+  <data name="Character_Resets" xml:space="preserve">
+    <value>Resets {0}</value>
+  </data>
+  <data name="Command_Events_Description" xml:space="preserve">
+    <value>Zeigt die Ereignisse der nächsten 24 Stunden.</value>
+  </data>
+  <data name="Command_Failed" xml:space="preserve">
+    <value>Das hat leider nicht funktioniert. Bitte versuche es später noch einmal.</value>
+  </data>
+  <data name="Command_Guild_Description" xml:space="preserve">
+    <value>Zeigt Informationen über eine Gilde.</value>
+  </data>
+  <data name="Command_Guild_GuildOption" xml:space="preserve">
+    <value>Der Name der Gilde.</value>
+  </data>
+  <data name="Command_Online_Description" xml:space="preserve">
+    <value>Zeigt, wie viele Spieler online sind.</value>
+  </data>
+  <data name="Command_Rank_Description" xml:space="preserve">
+    <value>Zeigt die besten Charaktere.</value>
+  </data>
+  <data name="Command_Who_CharacterOption" xml:space="preserve">
+    <value>Der Name des Charakters.</value>
+  </data>
+  <data name="Command_Who_Description" xml:space="preserve">
+    <value>Zeigt Informationen über einen Charakter.</value>
+  </data>
+  <data name="Events_None" xml:space="preserve">
+    <value>In den nächsten 24 Stunden gibt es keine Ereignisse.</value>
+  </data>
+  <data name="Events_Title" xml:space="preserve">
+    <value>Kommende Ereignisse</value>
+  </data>
   <data name="GlobalNotice_Title" xml:space="preserve">
     <value>Ankündigung</value>
+  </data>
+  <data name="Guild_Master" xml:space="preserve">
+    <value>Gildenmeister: {0}</value>
+  </data>
+  <data name="Guild_Members" xml:space="preserve">
+    <value>Mitglieder: {0}</value>
+  </data>
+  <data name="Guild_NotFound" xml:space="preserve">
+    <value>Es gibt keine Gilde mit dem Namen **{0}**.</value>
+  </data>
+  <data name="Guild_OnlineMembers" xml:space="preserve">
+    <value>Online: {0}</value>
   </data>
   <data name="InvasionEnded_Description" xml:space="preserve">
     <value>Die Invasion ist vorbei.</value>
@@ -161,7 +221,40 @@
   <data name="MiniGameWon_Description" xml:space="preserve">
     <value>**{0}** hat {1} gewonnen!</value>
   </data>
+  <data name="Online_ServerLine" xml:space="preserve">
+    <value>{0}: **{1}** / {2}</value>
+  </data>
+  <data name="Online_ServerOffline" xml:space="preserve">
+    <value>{0}: offline</value>
+  </data>
+  <data name="Online_Title" xml:space="preserve">
+    <value>Spieler online</value>
+  </data>
+  <data name="Online_Total" xml:space="preserve">
+    <value>Gesamt: **{0}** Spieler</value>
+  </data>
+  <data name="Presence" xml:space="preserve">
+    <value>{0} Spieler online</value>
+  </data>
+  <data name="Rank_Empty" xml:space="preserve">
+    <value>Es gibt noch keine Charaktere.</value>
+  </data>
+  <data name="Rank_Title" xml:space="preserve">
+    <value>Rangliste</value>
+  </data>
   <data name="ServerFooter" xml:space="preserve">
     <value>Server: {0}</value>
+  </data>
+  <data name="Status_NoServers" xml:space="preserve">
+    <value>Es läuft kein Spielserver.</value>
+  </data>
+  <data name="Status_Offline" xml:space="preserve">
+    <value>🔴 **{0}**: offline</value>
+  </data>
+  <data name="Status_Online" xml:space="preserve">
+    <value>🟢 **{0}**: {1} / {2} Spieler</value>
+  </data>
+  <data name="Status_Title" xml:space="preserve">
+    <value>Serverstatus</value>
   </data>
 </root>

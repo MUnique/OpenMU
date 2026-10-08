@@ -1,4 +1,4 @@
-﻿// <copyright file="DiscordWebhookNotifier.cs" company="MUnique">
+﻿// <copyright file="DiscordNotifier.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,47 +11,59 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Posts <see cref="GameEvent"/>s as messages to Discord channels, through webhooks.
+/// Posts <see cref="GameEvent"/>s as messages to Discord channels, through webhooks or the bot.
 /// </summary>
-public sealed class DiscordWebhookNotifier : IGameEventListener, IAsyncDisposable
+public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
 {
     /// <summary>
     /// The time after which the remembered mini game openings are forgotten.
     /// </summary>
     private static readonly TimeSpan AnnouncedOpeningRetention = TimeSpan.FromHours(1);
 
-    private readonly DiscordWebhookSettings _settings;
+    private readonly DiscordSettings _settings;
     private readonly DiscordMessageFormatter _formatter;
-    private readonly IReadOnlyDictionary<DiscordChannelCategory, DiscordWebhookSender> _senders;
-    private readonly ILogger<DiscordWebhookNotifier> _logger;
+    private readonly IReadOnlyDictionary<DiscordChannelCategory, DiscordMessageQueue> _senders;
+    private readonly ILogger<DiscordNotifier> _logger;
     private readonly ConcurrentDictionary<(byte ServerId, string MiniGameType, DateTime EnterEndsAt), DateTime> _announcedOpenings = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DiscordWebhookNotifier"/> class.
+    /// Initializes a new instance of the <see cref="DiscordNotifier"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    /// <param name="httpClient">The HTTP client.</param>
+    /// <param name="httpClient">The HTTP client for the webhooks.</param>
+    /// <param name="botMessenger">The messenger of the bot, if the bot posts into channels.</param>
     /// <param name="getServerName">The function which gets the name of a game server by its identifier.</param>
     /// <param name="getGuildName">The function which gets the name of a guild by its persistent identifier.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="timeProvider">The time provider.</param>
-    public DiscordWebhookNotifier(
-        DiscordWebhookSettings settings,
+    public DiscordNotifier(
+        DiscordSettings settings,
         HttpClient httpClient,
+        IDiscordMessenger? botMessenger,
         Func<byte, string?> getServerName,
         Func<Guid, ValueTask<string?>> getGuildName,
         ILoggerFactory loggerFactory,
         TimeProvider? timeProvider = null)
     {
         this._settings = settings;
-        this._logger = loggerFactory.CreateLogger<DiscordWebhookNotifier>();
+        this._logger = loggerFactory.CreateLogger<DiscordNotifier>();
         this._formatter = new DiscordMessageFormatter(GetCulture(settings.Language), getServerName, getGuildName);
 
-        var senders = new Dictionary<DiscordChannelCategory, DiscordWebhookSender>();
+        var senders = new Dictionary<DiscordChannelCategory, DiscordMessageQueue>();
+        if (botMessenger is not null)
+        {
+            var botLogger = loggerFactory.CreateLogger<DiscordBotChannelSender>();
+            foreach (var (category, channelId) in settings.Bot.Channels)
+            {
+                senders[category] = new DiscordBotChannelSender(channelId, botMessenger, botLogger, settings.MaximumQueuedMessages);
+            }
+        }
+
         var senderLogger = loggerFactory.CreateLogger<DiscordWebhookSender>();
         foreach (var (category, url) in settings.Webhooks)
         {
-            if (string.IsNullOrWhiteSpace(url))
+            // A category which the bot posts doesn't need the webhook.
+            if (string.IsNullOrWhiteSpace(url) || senders.ContainsKey(category))
             {
                 continue;
             }

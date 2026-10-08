@@ -11,30 +11,17 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
-using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Sends <see cref="DiscordEmbed"/>s to one Discord webhook, in the background.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Discord limits the number of messages per webhook (about 30 per minute). So the embeds are queued,
-/// and the queued embeds are combined into one message (up to <see cref="MaximumEmbedsPerMessage"/>)
-/// while waiting for the rate limit. When the queue is full, the oldest embed is dropped.
-/// </para>
-/// <para>
 /// The rate limit is respected by evaluating the rate limit headers of the responses and,
-/// when it was hit anyway, the <c>Retry-After</c> header.
-/// </para>
+/// when it was hit anyway, the delay which Discord returns.
 /// </remarks>
-public sealed class DiscordWebhookSender : IAsyncDisposable
+public sealed class DiscordWebhookSender : DiscordMessageQueue
 {
-    /// <summary>
-    /// The maximum number of embeds which Discord accepts in one message.
-    /// </summary>
-    internal const int MaximumEmbedsPerMessage = 10;
-
     /// <summary>
     /// The maximum number of attempts to send a message, when Discord isn't available or returns an error.
     /// </summary>
@@ -46,15 +33,9 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(5);
-
     private readonly Uri _webhookUrl;
     private readonly HttpClient _httpClient;
-    private readonly ILogger _logger;
     private readonly TimeProvider _timeProvider;
-    private readonly Channel<DiscordEmbed> _queue;
-    private readonly CancellationTokenSource _cancellation = new();
-    private readonly Task _worker;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordWebhookSender"/> class.
@@ -65,46 +46,70 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
     /// <param name="capacity">The maximum number of queued embeds.</param>
     /// <param name="timeProvider">The time provider, which is used to wait for the rate limits.</param>
     public DiscordWebhookSender(Uri webhookUrl, HttpClient httpClient, ILogger logger, int capacity, TimeProvider? timeProvider = null)
+        : base(logger, capacity)
     {
         this._webhookUrl = webhookUrl;
         this._httpClient = httpClient;
-        this._logger = logger;
         this._timeProvider = timeProvider ?? TimeProvider.System;
-        this._queue = Channel.CreateBounded<DiscordEmbed>(
-            new BoundedChannelOptions(Math.Max(capacity, 1))
-            {
-                FullMode = BoundedChannelFullMode.DropOldest,
-                SingleReader = true,
-            },
-            dropped => this._logger.LogWarning("The Discord message queue is full, dropped the message {title}.", dropped.Title));
-        this._worker = Task.Run(this.RunAsync);
     }
 
-    /// <summary>
-    /// Queues the embed for sending.
-    /// </summary>
-    /// <param name="embed">The embed.</param>
-    /// <returns><see langword="true"/>, if the embed was queued; <see langword="false"/>, if the sender is shutting down.</returns>
-    public bool Enqueue(DiscordEmbed embed) => this._queue.Writer.TryWrite(embed);
-
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    protected override async Task SendAsync(IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
     {
-        // The queued messages are still sent, but the shutdown doesn't wait forever.
-        this._queue.Writer.TryComplete();
-        try
+        var message = new WebhookMessage(
+            embeds.Select(embed => new WebhookEmbed(
+                embed.Title,
+                embed.Description,
+                embed.Color,
+                embed.TimestampUtc.ToString("O", CultureInfo.InvariantCulture),
+                embed.Footer is { } footer ? new WebhookFooter(footer) : null)).ToList(),
+            new WebhookAllowedMentions([]));
+
+        for (var attempt = 1; attempt <= MaximumAttempts; attempt++)
         {
-            await this._worker.WaitAsync(ShutdownTimeout).ConfigureAwait(false);
+            TimeSpan delay;
+            try
+            {
+                using var response = await this._httpClient.PostAsJsonAsync(this._webhookUrl, message, SerializerOptions, cancellationToken).ConfigureAwait(false);
+                if (response.IsSuccessStatusCode)
+                {
+                    // When the rate limit is exhausted, we wait until it resets, before sending the next message.
+                    if (response.Headers.TryGetValues("X-RateLimit-Remaining", out var remaining) && remaining.FirstOrDefault() == "0"
+                        && GetDelay(response, "X-RateLimit-Reset-After") is { } resetAfter)
+                    {
+                        await Task.Delay(resetAfter, this._timeProvider, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    return;
+                }
+
+                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    delay = await GetRetryDelayAsync(response, cancellationToken).ConfigureAwait(false);
+                    this.Logger.LogDebug("Discord rate limit hit, retrying after {delay}.", delay);
+                }
+                else if ((int)response.StatusCode >= 500)
+                {
+                    delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
+                    this.Logger.LogWarning("Discord returned {statusCode}, retrying after {delay}.", response.StatusCode, delay);
+                }
+                else
+                {
+                    // E.g. the webhook was deleted. Retrying wouldn't help.
+                    this.Logger.LogError("Discord rejected the message with {statusCode}. Is the webhook URL valid?", response.StatusCode);
+                    return;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
+                this.Logger.LogWarning(ex, "Discord isn't reachable, retrying after {delay}.", delay);
+            }
+
+            await Task.Delay(delay, this._timeProvider, cancellationToken).ConfigureAwait(false);
         }
-        catch (TimeoutException)
-        {
-            this._logger.LogWarning("Not all Discord messages could be sent before the shutdown.");
-        }
-        finally
-        {
-            await this._cancellation.CancelAsync().ConfigureAwait(false);
-            this._cancellation.Dispose();
-        }
+
+        this.Logger.LogError("Couldn't send {count} message(s) to Discord after {attempts} attempts; they are dropped.", embeds.Count, MaximumAttempts);
     }
 
     private static TimeSpan? GetDelay(HttpResponseMessage response, string headerName)
@@ -138,95 +143,6 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
         }
 
         return response.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(1);
-    }
-
-    private async Task RunAsync()
-    {
-        var reader = this._queue.Reader;
-        var cancellationToken = this._cancellation.Token;
-        try
-        {
-            while (await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
-            {
-                var batch = new List<DiscordEmbed>(MaximumEmbedsPerMessage);
-                while (batch.Count < MaximumEmbedsPerMessage && reader.TryRead(out var embed))
-                {
-                    batch.Add(embed);
-                }
-
-                try
-                {
-                    await this.SendAsync(batch, cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception ex) when (ex is not OperationCanceledException)
-                {
-                    // One faulty message must not stop the whole queue.
-                    this._logger.LogError(ex, "Unexpected error when sending {count} message(s) to Discord; they are dropped.", batch.Count);
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // shutting down
-        }
-    }
-
-    private async Task SendAsync(IReadOnlyList<DiscordEmbed> batch, CancellationToken cancellationToken)
-    {
-        var message = new WebhookMessage(
-            batch.Select(embed => new WebhookEmbed(
-                embed.Title,
-                embed.Description,
-                embed.Color,
-                embed.TimestampUtc.ToString("O", CultureInfo.InvariantCulture),
-                embed.Footer is { } footer ? new WebhookFooter(footer) : null)).ToList(),
-            new WebhookAllowedMentions([]));
-
-        for (var attempt = 1; attempt <= MaximumAttempts; attempt++)
-        {
-            TimeSpan delay;
-            try
-            {
-                using var response = await this._httpClient.PostAsJsonAsync(this._webhookUrl, message, SerializerOptions, cancellationToken).ConfigureAwait(false);
-                if (response.IsSuccessStatusCode)
-                {
-                    // When the rate limit is exhausted, we wait until it resets, before sending the next message.
-                    if (response.Headers.TryGetValues("X-RateLimit-Remaining", out var remaining) && remaining.FirstOrDefault() == "0"
-                        && GetDelay(response, "X-RateLimit-Reset-After") is { } resetAfter)
-                    {
-                        await Task.Delay(resetAfter, this._timeProvider, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    return;
-                }
-
-                if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    delay = await GetRetryDelayAsync(response, cancellationToken).ConfigureAwait(false);
-                    this._logger.LogDebug("Discord rate limit hit, retrying after {delay}.", delay);
-                }
-                else if ((int)response.StatusCode >= 500)
-                {
-                    delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
-                    this._logger.LogWarning("Discord returned {statusCode}, retrying after {delay}.", response.StatusCode, delay);
-                }
-                else
-                {
-                    // E.g. the webhook was deleted. Retrying wouldn't help.
-                    this._logger.LogError("Discord rejected the message with {statusCode}. Is the webhook URL valid?", response.StatusCode);
-                    return;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
-                this._logger.LogWarning(ex, "Discord isn't reachable, retrying after {delay}.", delay);
-            }
-
-            await Task.Delay(delay, this._timeProvider, cancellationToken).ConfigureAwait(false);
-        }
-
-        this._logger.LogError("Couldn't send {count} message(s) to Discord after {attempts} attempts; they are dropped.", batch.Count, MaximumAttempts);
     }
 
     private sealed record RateLimitResponse(double? RetryAfter);

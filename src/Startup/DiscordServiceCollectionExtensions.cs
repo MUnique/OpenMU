@@ -17,8 +17,8 @@ using MUnique.OpenMU.Interfaces;
 internal static class DiscordServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the <see cref="DiscordWebhookNotifier"/> as <see cref="IGameEventListener"/>,
-    /// if at least one webhook is configured in the <see cref="DiscordWebhookSettings.SectionName"/> section.
+    /// Adds the <see cref="DiscordNotifier"/> as <see cref="IGameEventListener"/>,
+    /// if at least one webhook is configured in the <see cref="DiscordSettings.SectionName"/> section.
     /// </summary>
     /// <param name="services">The services to which the notifier is added.</param>
     /// <param name="configuration">The configuration, e.g. with the environment variable <c>Discord__Webhooks__Events</c>.</param>
@@ -26,15 +26,16 @@ internal static class DiscordServiceCollectionExtensions
     /// <returns>The same services, for chaining.</returns>
     public static IServiceCollection AddDiscordWebhookNotifier(this IServiceCollection services, IConfiguration configuration, IDictionary<int, IGameServer> gameServers)
     {
-        var settings = configuration.GetSection(DiscordWebhookSettings.SectionName).Get<DiscordWebhookSettings>();
-        if (settings?.IsEnabled is not true)
+        var settings = configuration.GetSection(DiscordSettings.SectionName).Get<DiscordSettings>();
+        if (settings?.IsNotificationEnabled is not true)
         {
             return services;
         }
 
-        return services.AddSingleton<IGameEventListener>(provider => new DiscordWebhookNotifier(
+        return services.AddSingleton<IGameEventListener>(provider => new DiscordNotifier(
             settings,
             new HttpClient(),
+            null,
             serverId => gameServers.Values.FirstOrDefault(server => server.Id == serverId)?.Description,
             guildId => provider.GetRequiredService<IGuildServer>().GetPersistentGuildNameAsync(guildId),
             provider.GetRequiredService<ILoggerFactory>()));

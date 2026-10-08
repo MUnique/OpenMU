@@ -28,4 +28,9 @@ public enum ServerType
     /// A chat server.
     /// </summary>
     ChatServer = 3,
+
+    /// <summary>
+    /// The Discord bot.
+    /// </summary>
+    Discord = 4,
 }
