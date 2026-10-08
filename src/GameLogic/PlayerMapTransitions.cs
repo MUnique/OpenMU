@@ -295,6 +295,7 @@ internal sealed class PlayerMapTransitions
     public async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
     {
         var player = this._player;
+
         // While a map change waits for the client's acknowledgement (F3 12), CurrentMap is null;
         // the character's map is then the one being entered. A disconnect or the end of a mini game
         // in that moment still needs the spawn gate.
@@ -319,6 +320,24 @@ internal sealed class PlayerMapTransitions
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()
                ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
+    }
+
+    /// <summary>
+    /// Places the player (and its summon) at the specified gate.
+    /// </summary>
+    /// <param name="gate">The gate.</param>
+    internal async ValueTask PlaceAtGateAsync(ExitGate gate)
+    {
+        var player = this._player;
+        var landingPoint = gate.GetRandomPoint();
+        player.SelectedCharacter!.PositionX = landingPoint.X;
+        player.SelectedCharacter.PositionY = landingPoint.Y;
+        player.SelectedCharacter.CurrentMap = gate.Map;
+        player.Rotation = gate.Direction;
+
+        await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
+
+        this._summon.PlaceAtGate(gate);
     }
 
     /// <summary>
@@ -396,24 +415,6 @@ internal sealed class PlayerMapTransitions
         await this._summon.RemoveFromMapAsync(currentMap).ConfigureAwait(false);
 
         return true;
-    }
-
-    /// <summary>
-    /// Places the player (and its summon) at the specified gate.
-    /// </summary>
-    /// <param name="gate">The gate.</param>
-    internal async ValueTask PlaceAtGateAsync(ExitGate gate)
-    {
-        var player = this._player;
-        var landingPoint = gate.GetRandomPoint();
-        player.SelectedCharacter!.PositionX = landingPoint.X;
-        player.SelectedCharacter.PositionY = landingPoint.Y;
-        player.SelectedCharacter.CurrentMap = gate.Map;
-        player.Rotation = gate.Direction;
-
-        await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
-
-        this._summon.PlaceAtGate(gate);
     }
 
     /// <summary>

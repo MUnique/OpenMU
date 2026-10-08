@@ -9,8 +9,8 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
-using MachineType = MUnique.OpenMU.GameLogic.CastleSiege.CastleSiegeMachineType;
 using MachinePacketType = MUnique.OpenMU.Network.Packets.ServerToClient.CastleSiegeMachineType;
+using MachineType = MUnique.OpenMU.GameLogic.CastleSiege.CastleSiegeMachineType;
 
 /// <summary>
 /// The default implementation of the <see cref="ICastleSiegeMachineRegionNotifyPlugIn"/>

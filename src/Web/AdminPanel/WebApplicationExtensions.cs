@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,6 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
-using System.IO;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.

@@ -294,40 +294,6 @@ internal sealed class BotGenerator
     }
 
     /// <summary>
-    /// Draws a name with the wanted elf variant. Other classes keep any name.
-    /// </summary>
-    private async ValueTask<string> GenerateBuildNameAsync(
-        IPlayerContext context,
-        ISet<string> reservedNames,
-        CharacterClass characterClass,
-        bool wantSupport,
-        CancellationToken cancellationToken)
-    {
-        var rejected = new List<string>();
-        var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-        if (BotBuild.IsElf(characterClass))
-        {
-            var wantVariant = BotBuild.WantedVariant(wantSupport);
-            for (var attempt = 0; attempt < 50 && BotBuild.GetVariant(name) != wantVariant; attempt++)
-            {
-                rejected.Add(name);
-                name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-            }
-        }
-
-        // Rejected names were verified free, so hand them back for later draws.
-        foreach (var free in rejected)
-        {
-            if (free != name)
-            {
-                reservedNames.Remove(free);
-            }
-        }
-
-        return name;
-    }
-
-    /// <summary>
     /// Builds a shuffled queue of character classes with even quotas across <paramref name="classes"/>,
     /// so the generated population is balanced instead of relying on the variance of independent random
     /// draws. The order is randomized so accounts do not get a predictable class pattern.
@@ -440,6 +406,40 @@ internal sealed class BotGenerator
         var firstCyclePoints = Math.Max(0, resetConfiguration.RequiredLevel - 1) * pointsPerLevel;
         var laterCyclesPoints = (seededResets - 1) * Math.Max(0, resetConfiguration.RequiredLevel - resetConfiguration.LevelAfterReset) * pointsPerLevel;
         return resetPoints + firstCyclePoints + laterCyclesPoints + currentCyclePoints;
+    }
+
+    /// <summary>
+    /// Draws a name with the wanted elf variant. Other classes keep any name.
+    /// </summary>
+    private async ValueTask<string> GenerateBuildNameAsync(
+        IPlayerContext context,
+        ISet<string> reservedNames,
+        CharacterClass characterClass,
+        bool wantSupport,
+        CancellationToken cancellationToken)
+    {
+        var rejected = new List<string>();
+        var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+        if (BotBuild.IsElf(characterClass))
+        {
+            var wantVariant = BotBuild.WantedVariant(wantSupport);
+            for (var attempt = 0; attempt < 50 && BotBuild.GetVariant(name) != wantVariant; attempt++)
+            {
+                rejected.Add(name);
+                name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        // Rejected names were verified free, so hand them back for later draws.
+        foreach (var free in rejected)
+        {
+            if (free != name)
+            {
+                reservedNames.Remove(free);
+            }
+        }
+
+        return name;
     }
 
     /// <summary>

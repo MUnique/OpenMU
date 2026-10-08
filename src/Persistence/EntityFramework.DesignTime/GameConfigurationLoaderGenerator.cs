@@ -52,6 +52,17 @@ public sealed class GameConfigurationLoaderGenerator
     }
 
     /// <summary>
+    /// The kind of a json property handler.
+    /// </summary>
+    private enum HandlerKind
+    {
+        Setter,
+        RawAdder,
+        JoinedAdder,
+        CollectionAdder,
+    }
+
+    /// <summary>
     /// Generates the code of the loader for the specified model.
     /// </summary>
     /// <param name="model">The complete model of the <see cref="EntityDataContext"/>.</param>
@@ -90,6 +101,24 @@ public sealed class GameConfigurationLoaderGenerator
     private static string Quote(string identifier) => "\"" + identifier + "\"";
 
     private static string ToLiteral(string value) => "\"" + value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal) + "\"";
+
+    private static void AppendAdd(StringBuilder code, LoadedType parent, string name, JsonPropertyHandler handler, string target, string item)
+    {
+        var collectionType = GetCSharpName(handler.CollectionInterface ?? throw new NotSupportedException($"The collection {parent.EntityType.Name}.{name} has a json property handler of kind {handler.Kind}."));
+        code.Append("                var collection = (").Append(collectionType).Append(')').Append(target).Append('.').Append(handler.Property.Name).AppendLine(";");
+        code.Append("                var item = ").Append(item).AppendLine(";");
+        if (handler.Kind == HandlerKind.CollectionAdder)
+        {
+            code.AppendLine("                collection.Add(item);");
+        }
+        else
+        {
+            code.AppendLine("                if (!collection.Contains(item))");
+            code.AppendLine("                {");
+            code.AppendLine("                    collection.Add(item);");
+            code.AppendLine("                }");
+        }
+    }
 
     /// <summary>
     /// Visits the entity type like the <see cref="Json.JsonQueryBuilder"/> does it, when it builds the json query.
@@ -395,6 +424,7 @@ public sealed class GameConfigurationLoaderGenerator
 
             code.AppendLine("));");
         }
+
         code.AppendLine("        }");
         code.AppendLine("    }");
     }
@@ -536,24 +566,6 @@ public sealed class GameConfigurationLoaderGenerator
         code.AppendLine("    }");
     }
 
-    private static void AppendAdd(StringBuilder code, LoadedType parent, string name, JsonPropertyHandler handler, string target, string item)
-    {
-        var collectionType = GetCSharpName(handler.CollectionInterface ?? throw new NotSupportedException($"The collection {parent.EntityType.Name}.{name} has a json property handler of kind {handler.Kind}."));
-        code.Append("                var collection = (").Append(collectionType).Append(')').Append(target).Append('.').Append(handler.Property.Name).AppendLine(";");
-        code.Append("                var item = ").Append(item).AppendLine(";");
-        if (handler.Kind == HandlerKind.CollectionAdder)
-        {
-            code.AppendLine("                collection.Add(item);");
-        }
-        else
-        {
-            code.AppendLine("                if (!collection.Contains(item))");
-            code.AppendLine("                {");
-            code.AppendLine("                    collection.Add(item);");
-            code.AppendLine("                }");
-        }
-    }
-
     private void AppendRootsProperty(StringBuilder code)
     {
         code.AppendLine();
@@ -638,17 +650,6 @@ public sealed class GameConfigurationLoaderGenerator
     /// A reference of the parent to another entity.
     /// </summary>
     private sealed record ReferenceEdge(LoadedType Parent, string Name, IEntityType TargetType, int ForeignKeyIndex, bool IsReference);
-
-    /// <summary>
-    /// The kind of a json property handler.
-    /// </summary>
-    private enum HandlerKind
-    {
-        Setter,
-        RawAdder,
-        JoinedAdder,
-        CollectionAdder,
-    }
 
     /// <summary>
     /// The handler of a json property, determined with the same rules as the <c>ReferenceResolvingConverter</c>.

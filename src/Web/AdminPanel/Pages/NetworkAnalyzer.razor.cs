@@ -19,7 +19,6 @@ using MUnique.OpenMU.Web.Shared.Components.Modal;
 public partial class NetworkAnalyzer : IAsyncDisposable
 {
     /// <summary>
-/// <summary>
     /// The route to this page for a player of a server. The identifier of the server and the
     /// name of the account or character are appended to it.
     /// </summary>
@@ -114,7 +113,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     public Guid? ConnectionId { get; set; }
 
     /// <summary>
-/// <summary>
     /// Gets or sets the identifier of the server whose connection should be selected
     /// initially. It's used together with the <see cref="PlayerName"/>.
     /// </summary>
@@ -166,7 +164,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._capture?.ConnectionInfo.ClientVersion ?? this._selectedSession?.Metadata.ClientVersion ?? default;
 
     private string TableColClass => this._isSidebarCollapsed ? "col-12" : "col-10";
-
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()

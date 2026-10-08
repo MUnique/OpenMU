@@ -12,25 +12,12 @@ using Microsoft.AspNetCore.Components;
 public partial class MuItemStorage
 {
     private StorageViewModel? _viewModel;
-    private Item? _selectedItem;
 
     /// <summary>
     /// Gets or sets the selected item.
     /// </summary>
     [Parameter]
-    public Item? SelectedItem
-    {
-        get => this._selectedItem;
-        set
-        {
-            if (this._selectedItem == value)
-            {
-                return;
-            }
-
-            this._selectedItem = value;
-        }
-    }
+    public Item? SelectedItem { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the storage.

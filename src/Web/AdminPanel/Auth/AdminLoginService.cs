@@ -9,42 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
-/// <summary>
-/// The result status of a login attempt.
-/// </summary>
-public enum AdminLoginStatus
-{
     /// <summary>
-    /// The credentials were wrong or the user is not allowed to log in.
-    /// </summary>
-    Failed,
-
-    /// <summary>
-    /// The user is locked out because of too many failed attempts.
-    /// </summary>
-    LockedOut,
-
-    /// <summary>
-    /// The password was correct, but a second factor is required now.
-    /// </summary>
-    TwoFactorRequired,
-
-    /// <summary>
-    /// The login succeeded.
-    /// </summary>
-    Succeeded,
-}
-
-/// <summary>
-/// The result of a login attempt.
-/// </summary>
-/// <param name="Status">The status.</param>
-/// <param name="Ticket">The sign in ticket, in case the login succeeded.</param>
-/// <param name="Claims">The claims of the authenticated user, in case the login succeeded.</param>
-public record AdminLoginResult(AdminLoginStatus Status, string? Ticket = null, IReadOnlyList<Claim>? Claims = null);
-
-/// <summary>
-/// Validates the credentials of an admin panel user.
+    /// Validates the credentials of an admin panel user.
 /// </summary>
 /// <remarks>
 /// This service runs inside the blazor circuit, so the whole login - including the second factor -
@@ -79,6 +45,35 @@ public class AdminLoginService
     /// Gets the login name of the user which has to provide its second factor now.
     /// </summary>
     public string? PendingTwoFactorLoginName => this._pendingTwoFactorUser?.LoginName;
+
+    /// <summary>
+    /// Builds the claims which describe the specified authenticated user.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="usedSecondFactor">If set to <c>true</c>, the user authenticated with a second factor.</param>
+    /// <returns>The claims of the user.</returns>
+    public static IReadOnlyList<Claim> CreateClaims(AdminUser user, bool usedSecondFactor)
+    {
+        var authenticationMethod = usedSecondFactor
+            ? AdminAuthenticationDefaults.MultiFactorAuthenticationMethod
+            : AdminAuthenticationDefaults.PasswordAuthenticationMethod;
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.LoginName),
+            new(AdminAuthenticationDefaults.SecurityStampClaimType, user.SecurityStamp),
+            new(AdminAuthenticationDefaults.AuthenticationMethodClaimType, authenticationMethod),
+        };
+
+        var assignedRoles = (user.Roles ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var effectiveRoles = assignedRoles
+            .SelectMany(AdminRoles.GetEffectiveRoles)
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+        claims.AddRange(effectiveRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        return claims;
+    }
 
     /// <summary>
     /// Checks the specified password and either finishes the login or asks for the second factor.
@@ -180,36 +175,6 @@ public class AdminLoginService
     {
         var claims = CreateClaims(user, usedSecondFactor);
         return (this._ticketService.Issue(claims, false), claims);
-    }
-
-    /// <summary>
-    /// Builds the claims which describe the specified authenticated user.
-    /// </summary>
-    /// <param name="user">The user.</param>
-    /// <param name="usedSecondFactor">If set to <c>true</c>, the user authenticated with a second factor.</param>
-    /// <returns>The claims of the user.</returns>
-    public static IReadOnlyList<Claim> CreateClaims(AdminUser user, bool usedSecondFactor)
-    {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.LoginName),
-            new(AdminAuthenticationDefaults.SecurityStampClaimType, user.SecurityStamp),
-            new(
-                AdminAuthenticationDefaults.AuthenticationMethodClaimType,
-                usedSecondFactor
-                    ? AdminAuthenticationDefaults.MultiFactorAuthenticationMethod
-                    : AdminAuthenticationDefaults.PasswordAuthenticationMethod),
-        };
-
-        var assignedRoles = (user.Roles ?? string.Empty)
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var effectiveRoles = assignedRoles
-            .SelectMany(AdminRoles.GetEffectiveRoles)
-            .Distinct(StringComparer.OrdinalIgnoreCase);
-        claims.AddRange(effectiveRoles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-        return claims;
     }
 
     private async Task<AdminLoginResult> GetFailedResultAsync(AdminUser user)

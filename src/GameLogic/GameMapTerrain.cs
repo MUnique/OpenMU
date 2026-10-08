@@ -345,6 +345,16 @@ public class GameMapTerrain
     }
 
     /// <summary>
+    /// Determines whether a raw terrain attribute value describes a walkable tile.
+    /// </summary>
+    /// <param name="value">The raw attribute value.</param>
+    /// <returns><c>true</c> when the tile can be walked on; otherwise, <c>false</c>.</returns>
+    private static bool IsWalkableValue(byte value)
+    {
+        return (value & ~SafezoneBit) == 0;
+    }
+
+    /// <summary>
     /// Updates the ai grid value at the specified coordinate.
     /// </summary>
     /// <param name="x">The x.</param>
@@ -382,16 +392,6 @@ public class GameMapTerrain
         this.WalkMap[x, y] = IsWalkableValue(value);
         this.SafezoneMap[x, y] = value == 1;
         this.UpdateAiGridValue(x, y);
-    }
-
-    /// <summary>
-    /// Determines whether a raw terrain attribute value describes a walkable tile.
-    /// </summary>
-    /// <param name="value">The raw attribute value.</param>
-    /// <returns><c>true</c> when the tile can be walked on; otherwise, <c>false</c>.</returns>
-    private static bool IsWalkableValue(byte value)
-    {
-        return (value & ~SafezoneBit) == 0;
     }
 
     /// <summary>

@@ -56,7 +56,7 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            // Remove obsolete shiled recovery combo
+            // Remove obsolete shield recovery combo
             var attrCombos = charClass.AttributeCombinations;
             if (attrCombos.FirstOrDefault(ac => ac.InputAttribute == isInSafezone && ac.TargetAttribute == shieldRecoveryMultiplier) is { } isInSafeZoneToShieldRecoveryMultiplier)
             {
@@ -113,9 +113,10 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1f / 75000, shieldRecoveryMultiplier, AggregateType.Multiplicate));
 
             // Add default movement speeds for tier 2 chars
-            if (charClass.Number == 16 || charClass.Number == 17 // DL classes
-                || charClass.Number == 12 || charClass.Number == 13 // MG classes
-                || charClass.Number == 24 || charClass.Number == 25) // RF classes
+            // DL, MG, RF classes
+            if (charClass.Number == 16 || charClass.Number == 17
+                || charClass.Number == 12 || charClass.Number == 13
+                || charClass.Number == 24 || charClass.Number == 25)
             {
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeed, AggregateType.Maximum));
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeedUnderwater, AggregateType.Maximum));

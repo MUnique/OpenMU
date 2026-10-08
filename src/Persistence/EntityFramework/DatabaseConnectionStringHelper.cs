@@ -18,10 +18,12 @@ public static partial class DatabaseConnectionStringHelper
     /// Gets the environment variable name for the database host.
     /// </summary>
     public static string DbHostVariableName { get; } = "DB_HOST";
+
     /// <summary>
     /// Gets the environment variable name for the admin user.
     /// </summary>
     public static string DbAdminUserVariableName { get; } = "DB_ADMIN_USER";
+
     /// <summary>
     /// Gets the environment variable name for the admin password.
     /// </summary>

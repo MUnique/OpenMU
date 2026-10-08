@@ -1,11 +1,13 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="@typeof(Pages.NotFound)">
+﻿@using MUnique.OpenMU.Web.AdminPanel.Pages
+
+<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="@typeof(Pages.NotFound)">
   <Found Context="routeData">
     <ModalContainer>
       <AuthorizeRouteView RouteData="routeData" DefaultLayout="@typeof(Layout.MainLayout)">
         <NotAuthorized>
           @if (context.User.Identity?.IsAuthenticated is true)
           {
-            <Pages.AccessDenied />
+            <AccessDenied />
           }
           else
           {

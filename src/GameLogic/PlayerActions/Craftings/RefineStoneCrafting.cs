@@ -13,8 +13,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// </summary>
 public class RefineStoneCrafting : SimpleItemCraftingHandler
 {
-    #region List of excluded Items (if item level < 4)
-
+    // List of excluded Items (if item level < 4)
     private readonly ISet<(byte Group, short Number)> _excludedItems = new HashSet<(byte, short)>
     {
         (0, 0), // Kris
@@ -102,8 +101,6 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
         (11, 11), // Silk Boots
         (11, 12), // Wind Boots
     };
-
-    #endregion
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RefineStoneCrafting"/> class.

@@ -31,9 +31,10 @@ internal abstract class BotStartupProfile
     public abstract byte StarterItemLevel { get; }
 
     /// <summary>
-    /// Gets whether a character of this profile is equipped with a starter armor set. Fresh characters
-    /// start like a regular player's new character - weapon only, no armor - while veterans start with
-    /// a basic set so they can survive the maps their start level puts them on.
+    /// Gets a value indicating whether a character of this profile is equipped with a starter
+    /// armor set. Fresh characters start like a regular player's new character - weapon only,
+    /// no armor - while veterans start with a basic set so they can survive the maps their
+    /// start level puts them on.
     /// </summary>
     public abstract bool EquipStarterArmor { get; }
 

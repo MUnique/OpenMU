@@ -17,6 +17,12 @@ public static class ApiKeyAuthenticationDefaults
     internal const string AuthenticationScheme = "OpenMU.ApiKey";
 
     /// <summary>
+    /// Gets the authentication schemes which are accepted by the public API: an API key for external
+    /// applications, and the cookie of the admin panel, so a logged in user can use it as well.
+    /// </summary>
+    internal const string ApiSchemes = CookieAuthenticationDefaults.AuthenticationScheme + "," + AuthenticationScheme;
+
+    /// <summary>
     /// Gets the request header which carries the API key.
     /// </summary>
     public static string HeaderName => "X-Api-Key";
@@ -37,12 +43,6 @@ public static class ApiKeyAuthenticationDefaults
     /// redirect to the login page when they are not authenticated.
     /// </summary>
     public static string ApiPathPrefix => "/api";
-
-    /// <summary>
-    /// Gets the authentication schemes which are accepted by the public API: an API key for external
-    /// applications, and the cookie of the admin panel, so a logged in user can use it as well.
-    /// </summary>
-    internal const string ApiSchemes = CookieAuthenticationDefaults.AuthenticationScheme + "," + AuthenticationScheme;
 
     /// <summary>
     /// Gets the minimum length of an API key.

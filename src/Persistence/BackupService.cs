@@ -169,24 +169,6 @@ public class BackupService : IBackupService
         }
     }
 
-    private async Task ExportAdminUsersAsync(
-        ZipArchive archive,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-    {
-        var items = await this._adminUserRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
-        var serializer = new JsonObjectSerializer();
-        foreach (var item in items)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var entryName = $"AdminUser_{item.Id}.json";
-            var entry = archive.CreateEntry(entryName);
-            await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
-            await serializer.SerializeAsync(item, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-    }
-
     private static async Task ExportAsync<TData, TBasic>(
         ZipArchive archive,
         string filePrefix,
@@ -412,6 +394,24 @@ public class BackupService : IBackupService
             BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
         return prop?.GetSetMethod(nonPublic: true) is not null ? prop : null;
+    }
+
+    private async Task ExportAdminUsersAsync(
+        ZipArchive archive,
+        IdReferenceHandler sharedHandler,
+        CancellationToken cancellationToken)
+    {
+        var items = await this._adminUserRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        var serializer = new JsonObjectSerializer();
+        foreach (var item in items)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var entryName = $"AdminUser_{item.Id}.json";
+            var entry = archive.CreateEntry(entryName);
+            await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await serializer.SerializeAsync(item, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private object GetOrCreateObject(IContext context, object basicModelObj, Dictionary<Guid, object> createdObjects)

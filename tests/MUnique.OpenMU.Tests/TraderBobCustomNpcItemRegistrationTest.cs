@@ -28,6 +28,10 @@ using MUnique.OpenMU.AttributeSystem;
 /// </summary>
 public interface ITraderBobResultPlugIn : IViewPlugIn
 {
+    /// <summary>
+    /// Notifies the view about the result of an item registration.
+    /// </summary>
+    /// <param name="success">A value indicating whether the registration succeeded.</param>
     ValueTask RegistrationResultAsync(bool success);
 }
 
@@ -37,19 +41,26 @@ public interface ITraderBobResultPlugIn : IViewPlugIn
 [Guid("98765432-1234-1234-1234-123456789012")]
 public class TraderBobRegistrationStrategy : BaseItemRegistrationStrategy
 {
+    /// <inheritdoc />
     public override short NpcNumber => 500;
 
     // No specific stats needed for Trader Bob
+    /// <inheritdoc />
     public override AttributeDefinition? TargetStat => null;
+
+    /// <inheritdoc />
     public override AttributeDefinition? TargetTotalStat => null;
 
+    /// <inheritdoc />
     public override ValueTask OpenDialogAsync(Player player) => ValueTask.CompletedTask;
 
+    /// <inheritdoc />
     protected override async ValueTask OnRegistrationCompletedAsync(Player player)
     {
         await player.InvokeViewPlugInAsync<ITraderBobResultPlugIn>(p => p.RegistrationResultAsync(true)).ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     protected override async ValueTask OnMissingItemAsync(Player player)
     {
         await player.InvokeViewPlugInAsync<ITraderBobResultPlugIn>(p => p.RegistrationResultAsync(false)).ConfigureAwait(false);
@@ -64,12 +75,18 @@ public class TraderBobCustomNpcItemRegistrationTest
 {
     private ItemRegistrationAction _action = null!;
 
+    /// <summary>
+    /// Sets up the test fixture.
+    /// </summary>
     [SetUp]
     public void Setup()
     {
         this._action = new ItemRegistrationAction();
     }
 
+    /// <summary>
+    /// Tests that registering an item with a custom NPC succeeds.
+    /// </summary>
     [Test]
     public async Task RegisterItem_WithCustomNpc_Success()
     {

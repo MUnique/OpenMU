@@ -60,6 +60,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Map = this.CreateMap();
 
         this._players = new MiniGamePlayerRegistry(this.Definition);
+
         // Rewards intentionally follow the game's (possibly overridden) drop generator
         // instead of the game context one: ChaosCastleDropGenerator only overrides monster
         // kill drops and delegates reward generation back to the context generator,

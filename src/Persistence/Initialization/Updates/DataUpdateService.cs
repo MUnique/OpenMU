@@ -166,25 +166,6 @@ public class DataUpdateService
         return result;
     }
 
-    private static bool IsDependencySatisfied(
-        UpdateDependency dependency,
-        IReadOnlyDictionary<Guid, int> installedVersions,
-        IReadOnlyDictionary<Guid, IConfigurationUpdatePlugIn> pendingByKey)
-    {
-        return (installedVersions.TryGetValue(dependency.Key, out var installedVersion)
-                && (dependency.MinVersion is null || installedVersion >= dependency.MinVersion))
-            || (pendingByKey.TryGetValue(dependency.Key, out var pending)
-                && (dependency.MinVersion is null || pending.Version >= dependency.MinVersion));
-    }
-
-    private static async ValueTask<IReadOnlyDictionary<Guid, int>> GetInstalledVersionsAsync(IContext context)
-    {
-        return (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
-            .Where(up => up.InstalledAt is not null)
-            .GroupBy(up => up.Key)
-            .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
-    }
-
     /// <summary>
     /// Determines the key of the data initialization which created the configuration.
     /// </summary>
@@ -212,5 +193,24 @@ public class DataUpdateService
             (0, 95) => Version095d.DataInitialization.Id,
             _ => throw new InvalidOperationException($"Unknown client version: {clientDefinition}."),
         };
+    }
+
+    private static bool IsDependencySatisfied(
+        UpdateDependency dependency,
+        IReadOnlyDictionary<Guid, int> installedVersions,
+        IReadOnlyDictionary<Guid, IConfigurationUpdatePlugIn> pendingByKey)
+    {
+        return (installedVersions.TryGetValue(dependency.Key, out var installedVersion)
+                && (dependency.MinVersion is null || installedVersion >= dependency.MinVersion))
+            || (pendingByKey.TryGetValue(dependency.Key, out var pending)
+                && (dependency.MinVersion is null || pending.Version >= dependency.MinVersion));
+    }
+
+    private static async ValueTask<IReadOnlyDictionary<Guid, int>> GetInstalledVersionsAsync(IContext context)
+    {
+        return (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
+            .Where(up => up.InstalledAt is not null)
+            .GroupBy(up => up.Key)
+            .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
     }
 }
