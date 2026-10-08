@@ -14,9 +14,9 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDataChangedNotification
 {
-    private static readonly TimeSpan LookupCacheLifetime = TimeSpan.FromSeconds(5);
-
     private const string LookupCacheKey = "LoggedInAccountService.PlayerLookup";
+
+    private static readonly TimeSpan LookupCacheLifetime = TimeSpan.FromSeconds(5);
 
     private readonly ILoginServer _loginServer;
     private readonly IServerProvider _serverProvider;
