@@ -744,26 +744,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.NotifyPlugInsAsync<IMiniGameEndedPlugIn>(p => p.MiniGameEndedAsync(this, this.Winner, players)).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Notifies the plugins of a plugin point about a change of this game.
-    /// Errors of the plugins are logged, so that they can't break the game loop.
-    /// </summary>
-    /// <typeparam name="TPlugIn">The type of the plugin point.</typeparam>
-    /// <param name="notify">The function which notifies the plugin point.</param>
-    private async ValueTask NotifyPlugInsAsync<TPlugIn>(Func<TPlugIn, ValueTask> notify)
+    private ValueTask NotifyPlugInsAsync<TPlugIn>(Func<TPlugIn, ValueTask> notify)
         where TPlugIn : class
     {
-        try
-        {
-            if (this._gameContext.PlugInManager.GetPlugInPoint<TPlugIn>() is { } plugInPoint)
-            {
-                await notify(plugInPoint).ConfigureAwait(false);
-            }
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "{context}: Error when notifying the plugins of {plugInPoint}", this, typeof(TPlugIn).Name);
-        }
+        return this._gameContext.PlugInManager.NotifyPlugInsAsync(notify, this.Logger);
     }
 
     private GameMap CreateMap()
