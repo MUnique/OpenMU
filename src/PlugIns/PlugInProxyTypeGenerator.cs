@@ -108,6 +108,7 @@ internal class PlugInProxyTypeGenerator
             {
                 return this.GetTypeName(type.DeclaringType) + "." + baseName + "<" + genericArguments + ">";
             }
+
             return baseName + "<" + genericArguments + ">";
         }
 
