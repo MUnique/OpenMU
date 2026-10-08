@@ -9,42 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
-/// <summary>
-/// The result status of a login attempt.
-/// </summary>
-public enum AdminLoginStatus
-{
     /// <summary>
-    /// The credentials were wrong or the user is not allowed to log in.
-    /// </summary>
-    Failed,
-
-    /// <summary>
-    /// The user is locked out because of too many failed attempts.
-    /// </summary>
-    LockedOut,
-
-    /// <summary>
-    /// The password was correct, but a second factor is required now.
-    /// </summary>
-    TwoFactorRequired,
-
-    /// <summary>
-    /// The login succeeded.
-    /// </summary>
-    Succeeded,
-}
-
-/// <summary>
-/// The result of a login attempt.
-/// </summary>
-/// <param name="Status">The status.</param>
-/// <param name="Ticket">The sign in ticket, in case the login succeeded.</param>
-/// <param name="Claims">The claims of the authenticated user, in case the login succeeded.</param>
-public record AdminLoginResult(AdminLoginStatus Status, string? Ticket = null, IReadOnlyList<Claim>? Claims = null);
-
-/// <summary>
-/// Validates the credentials of an admin panel user.
+    /// Validates the credentials of an admin panel user.
 /// </summary>
 /// <remarks>
 /// This service runs inside the blazor circuit, so the whole login - including the second factor -
