@@ -1,4 +1,4 @@
-// <copyright file="PeriodicTaskConfiguration.cs" company="MUnique">
+﻿// <copyright file="PeriodicTaskConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -80,5 +80,32 @@ public class PeriodicTaskConfiguration
 
         // For example, p = 00:00. Check that time between 00:00:00 and 00:00:05
         return this.Timetable.Any(p => p.IsBetween(earlier, nowTime));
+    }
+
+    /// <summary>
+    /// Gets the next start time of the task, according to the <see cref="Timetable"/>.
+    /// </summary>
+    /// <param name="utcNow">The current time, in UTC.</param>
+    /// <param name="serverTimeZone">The time zone of the server, in which the times of the <see cref="Timetable"/> are defined.</param>
+    /// <returns>The next start time, in UTC; or <see langword="null"/>, if the timetable is empty.</returns>
+    public DateTime? GetNextStartUtc(DateTime utcNow, TimeZoneInfo serverTimeZone)
+    {
+        var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(utcNow, serverTimeZone));
+        DateTime? result = null;
+
+        // Today, the remaining times of the timetable can still come; otherwise the first one of tomorrow.
+        foreach (var date in new[] { today, today.AddDays(1) })
+        {
+            foreach (var time in this.Timetable)
+            {
+                var startUtc = TimeZoneInfo.ConvertTimeToUtc(date.ToDateTime(time, DateTimeKind.Unspecified), serverTimeZone);
+                if (startUtc > utcNow && (result is null || startUtc < result))
+                {
+                    result = startUtc;
+                }
+            }
+        }
+
+        return result;
     }
 }
