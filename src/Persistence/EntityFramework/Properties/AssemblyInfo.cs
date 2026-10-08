@@ -12,3 +12,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MUnique.OpenMU.Persistence.Initialization.Tests")]
 [assembly: InternalsVisibleTo("MUnique.OpenMU.Tests")]
 [assembly: InternalsVisibleTo("MUnique.OpenMU.Measurements")]
+[assembly: MUnique.OpenMU.Persistence.GeneratePersistentTypeRegistry("MUnique.OpenMU.Persistence.EntityFramework.Model")]
