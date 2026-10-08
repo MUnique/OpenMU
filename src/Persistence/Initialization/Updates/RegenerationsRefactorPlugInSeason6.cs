@@ -56,7 +56,7 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            // Remove obsolete shiled recovery combo
+            // Remove obsolete shield recovery combo
             var attrCombos = charClass.AttributeCombinations;
             if (attrCombos.FirstOrDefault(ac => ac.InputAttribute == isInSafezone && ac.TargetAttribute == shieldRecoveryMultiplier) is { } isInSafeZoneToShieldRecoveryMultiplier)
             {

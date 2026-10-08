@@ -63,6 +63,29 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     public override DateTime UpdatedAt => new(2026, 09, 30, 12, 0, 0, DateTimeKind.Utc);
 
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    {
+        var hatchery = gameConfiguration.Maps.FirstOrDefault(map => map.Number == RaklionBoss.Number);
+        if (hatchery is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        foreach (var spawn in hatchery.MonsterSpawns.Where(spawn => spawn.SpawnTrigger == SpawnTrigger.Automatic))
+        {
+            if (GetWaveNumber(spawn.MonsterDefinition?.Number) is { } waveNumber)
+            {
+                spawn.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
+                spawn.WaveNumber = waveNumber;
+            }
+        }
+
+        AddSelupanSkills(context, gameConfiguration);
+
+        return ValueTask.CompletedTask;
+    }
+
     /// <summary>
     /// Creates an attack skill of Selupan with its damage multiplier, if it doesn't exist yet.
     /// </summary>
@@ -95,29 +118,6 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
             damageMultiplier,
             Stats.SkillMultiplier,
             InputOperator.Maximum));
-    }
-
-    /// <inheritdoc />
-    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-    {
-        var hatchery = gameConfiguration.Maps.FirstOrDefault(map => map.Number == RaklionBoss.Number);
-        if (hatchery is null)
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        foreach (var spawn in hatchery.MonsterSpawns.Where(spawn => spawn.SpawnTrigger == SpawnTrigger.Automatic))
-        {
-            if (GetWaveNumber(spawn.MonsterDefinition?.Number) is { } waveNumber)
-            {
-                spawn.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
-                spawn.WaveNumber = waveNumber;
-            }
-        }
-
-        AddSelupanSkills(context, gameConfiguration);
-
-        return ValueTask.CompletedTask;
     }
 
     private static void AddSelupanSkills(IContext context, GameConfiguration gameConfiguration)

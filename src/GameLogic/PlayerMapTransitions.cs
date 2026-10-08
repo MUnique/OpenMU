@@ -323,6 +323,24 @@ internal sealed class PlayerMapTransitions
     }
 
     /// <summary>
+    /// Places the player (and its summon) at the specified gate.
+    /// </summary>
+    /// <param name="gate">The gate.</param>
+    internal async ValueTask PlaceAtGateAsync(ExitGate gate)
+    {
+        var player = this._player;
+        var landingPoint = gate.GetRandomPoint();
+        player.SelectedCharacter!.PositionX = landingPoint.X;
+        player.SelectedCharacter.PositionY = landingPoint.Y;
+        player.SelectedCharacter.CurrentMap = gate.Map;
+        player.Rotation = gate.Direction;
+
+        await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
+
+        this._summon.PlaceAtGate(gate);
+    }
+
+    /// <summary>
     /// Gets the instance of the map which the player enters. Usually, it's hosted by the own game
     /// server of the player. If not, the player enters it on another game server which hosts it,
     /// see <see cref="IMapHostLocator"/>.
@@ -397,24 +415,6 @@ internal sealed class PlayerMapTransitions
         await this._summon.RemoveFromMapAsync(currentMap).ConfigureAwait(false);
 
         return true;
-    }
-
-    /// <summary>
-    /// Places the player (and its summon) at the specified gate.
-    /// </summary>
-    /// <param name="gate">The gate.</param>
-    internal async ValueTask PlaceAtGateAsync(ExitGate gate)
-    {
-        var player = this._player;
-        var landingPoint = gate.GetRandomPoint();
-        player.SelectedCharacter!.PositionX = landingPoint.X;
-        player.SelectedCharacter.PositionY = landingPoint.Y;
-        player.SelectedCharacter.CurrentMap = gate.Map;
-        player.Rotation = gate.Direction;
-
-        await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
-
-        this._summon.PlaceAtGate(gate);
     }
 
     /// <summary>
