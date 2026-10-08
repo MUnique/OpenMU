@@ -651,7 +651,6 @@ public sealed class GameConfigurationLoaderGenerator
     /// </summary>
     private sealed record ReferenceEdge(LoadedType Parent, string Name, IEntityType TargetType, int ForeignKeyIndex, bool IsReference);
 
-
     /// <summary>
     /// The handler of a json property, determined with the same rules as the <c>ReferenceResolvingConverter</c>.
     /// </summary>
