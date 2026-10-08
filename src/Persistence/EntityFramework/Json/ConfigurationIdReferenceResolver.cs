@@ -4,34 +4,22 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
+using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
 /// A reference resolver which resolves them by looking at the objects occurring in the <see cref="GameConfiguration" />.
 /// The cache is maintained by instances of the <see cref="ConfigurationTypeRepository{T}" />.
+/// There is one instance for each <see cref="CachingRepositoryProvider"/>, so it's discarded together with the cached configuration.
 /// </summary>
-/// <remarks>TODO: I don't like it as a singleton, but I keep it until I find a cleaner solution.</remarks>
 internal class ConfigurationIdReferenceResolver : ReferenceResolver
 {
     /// <summary>
-    /// The singleton instance.
+    /// The cache of the configuration objects by their id.
+    /// It's filled by the repositories of the configuration types while accounts of logging in players are deserialized concurrently.
     /// </summary>
-    private static readonly ConfigurationIdReferenceResolver InstanceValue = new();
-
-    private readonly IDictionary<Guid, IIdentifiable> _cache = new Dictionary<Guid, IIdentifiable>();
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigurationIdReferenceResolver"/> class.
-    /// </summary>
-    protected ConfigurationIdReferenceResolver()
-    {
-    }
-
-    /// <summary>
-    /// Gets the singleton instance.
-    /// </summary>
-    public static ConfigurationIdReferenceResolver Instance => InstanceValue;
+    private readonly IDictionary<Guid, IIdentifiable> _cache = new ConcurrentDictionary<Guid, IIdentifiable>();
 
     /// <inheritdoc />
     public override object ResolveReference(string referenceId)

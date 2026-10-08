@@ -114,7 +114,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -122,7 +122,7 @@ public class ChaosMixes : InitializerBase
         bless.MaximumAmount = bless.MinimumAmount;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         craftingSettings.RequiredItems.Add(bless);
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -130,7 +130,7 @@ public class ChaosMixes : InitializerBase
         soul.MaximumAmount = soul.MinimumAmount;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         craftingSettings.RequiredItems.Add(soul);
 
         // Result:
@@ -166,40 +166,40 @@ public class ChaosMixes : InitializerBase
         chaos.MinimumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaosWeaponSettings.RequiredItems.Add(chaos);
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
         bless.MinimumAmount = 0;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         chaosWeaponSettings.RequiredItems.Add(bless);
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
         soul.MinimumAmount = 0;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         chaosWeaponSettings.RequiredItems.Add(soul);
 
         // Result:
         chaosWeaponSettings.ResultItemSelect = ResultItemSelection.Any;
 
         var chaosDragonAxe = this.Context.CreateNew<ItemCraftingResultItem>();
-        chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Dragon Axe");
+        chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Chaos Dragon Axe");
         chaosDragonAxe.RandomMinimumLevel = 0;
         chaosDragonAxe.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosDragonAxe);
 
         var chaosNatureBow = this.Context.CreateNew<ItemCraftingResultItem>();
-        chaosNatureBow.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Nature Bow");
+        chaosNatureBow.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Chaos Nature Bow");
         chaosNatureBow.RandomMinimumLevel = 0;
         chaosNatureBow.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosNatureBow);
 
         var chaosLightningStaff = this.Context.CreateNew<ItemCraftingResultItem>();
-        chaosLightningStaff.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Lightning Staff");
+        chaosLightningStaff.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Chaos Lightning Staff");
         chaosLightningStaff.RandomMinimumLevel = 0;
         chaosLightningStaff.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosLightningStaff);
@@ -245,21 +245,21 @@ public class ChaosMixes : InitializerBase
         chaos.MinimumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
         bless.MinimumAmount = 0;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         craftingSettings.RequiredItems.Add(bless);
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
         soul.MinimumAmount = 0;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         craftingSettings.RequiredItems.Add(soul);
 
         // Result:
@@ -325,7 +325,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var feather = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -333,7 +333,7 @@ public class ChaosMixes : InitializerBase
         feather.MaximumAmount = 1;
         feather.SuccessResult = MixResult.Disappear;
         feather.FailResult = MixResult.Disappear;
-        feather.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Loch's Feather"));
+        feather.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Loch's Feather"));
         craftingSettings.RequiredItems.Add(feather);
 
         // Result:
@@ -410,7 +410,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -418,7 +418,7 @@ public class ChaosMixes : InitializerBase
         creation.MaximumAmount = 1;
         creation.SuccessResult = MixResult.Disappear;
         creation.FailResult = MixResult.Disappear;
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         craftingSettings.RequiredItems.Add(creation);
 
         var stackOf10Soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -426,7 +426,7 @@ public class ChaosMixes : InitializerBase
         stackOf10Soul.MaximumAmount = 1;
         stackOf10Soul.SuccessResult = MixResult.Disappear;
         stackOf10Soul.FailResult = MixResult.Disappear;
-        stackOf10Soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul"));
+        stackOf10Soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Packed Jewel of Soul"));
         craftingSettings.RequiredItems.Add(stackOf10Soul);
 
         // Result:
@@ -466,7 +466,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -474,7 +474,7 @@ public class ChaosMixes : InitializerBase
         creation.MaximumAmount = 1;
         creation.SuccessResult = MixResult.Disappear;
         creation.FailResult = MixResult.Disappear;
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         craftingSettings.RequiredItems.Add(creation);
 
         var stackOf10Soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -482,7 +482,7 @@ public class ChaosMixes : InitializerBase
         stackOf10Soul.MaximumAmount = 1;
         stackOf10Soul.SuccessResult = MixResult.Disappear;
         stackOf10Soul.FailResult = MixResult.Disappear;
-        stackOf10Soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Soul"));
+        stackOf10Soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Packed Jewel of Soul"));
         craftingSettings.RequiredItems.Add(stackOf10Soul);
 
         var stackOf10Bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -490,7 +490,7 @@ public class ChaosMixes : InitializerBase
         stackOf10Bless.MaximumAmount = 1;
         stackOf10Bless.SuccessResult = MixResult.Disappear;
         stackOf10Bless.FailResult = MixResult.Disappear;
-        stackOf10Bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Packed Jewel of Bless"));
+        stackOf10Bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Packed Jewel of Bless"));
         craftingSettings.RequiredItems.Add(stackOf10Bless);
 
         var feather = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -498,7 +498,7 @@ public class ChaosMixes : InitializerBase
         feather.MaximumAmount = 1;
         feather.SuccessResult = MixResult.Disappear;
         feather.FailResult = MixResult.Disappear;
-        feather.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Feather of Condor"));
+        feather.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Feather of Condor"));
         craftingSettings.RequiredItems.Add(feather);
 
         var flame = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -506,7 +506,7 @@ public class ChaosMixes : InitializerBase
         flame.MaximumAmount = 1;
         flame.SuccessResult = MixResult.Disappear;
         flame.FailResult = MixResult.Disappear;
-        flame.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Flame of Condor"));
+        flame.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Flame of Condor"));
         craftingSettings.RequiredItems.Add(flame);
 
         // Result:
@@ -585,7 +585,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var crest = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -595,7 +595,7 @@ public class ChaosMixes : InitializerBase
         crest.FailResult = MixResult.Disappear;
 
         // A monarch's crest is a Loch's Feather+1
-        crest.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Loch's Feather"));
+        crest.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Loch's Feather"));
         crest.MinimumItemLevel = 1;
         crest.MaximumItemLevel = 1;
         craftingSettings.RequiredItems.Add(crest);
@@ -633,7 +633,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -641,12 +641,12 @@ public class ChaosMixes : InitializerBase
         creation.MaximumAmount = 1;
         creation.SuccessResult = MixResult.Disappear;
         creation.FailResult = MixResult.Disappear;
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         craftingSettings.RequiredItems.Add(creation);
 
         // Result:
         var fruit = this.Context.CreateNew<ItemCraftingResultItem>();
-        fruit.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Fruits");
+        fruit.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Fruits");
         craftingSettings.ResultItems.Add(fruit);
 
         return fruitCrafting;
@@ -669,7 +669,7 @@ public class ChaosMixes : InitializerBase
         bless.Reference = 1;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         craftingSettings.RequiredItems.Add(bless);
 
         // Result:
@@ -698,7 +698,7 @@ public class ChaosMixes : InitializerBase
         soul.Reference = 1;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         craftingSettings.RequiredItems.Add(soul);
 
         // Result:
@@ -726,12 +726,12 @@ public class ChaosMixes : InitializerBase
         gemstone.MaximumAmount = 1;
         gemstone.SuccessResult = MixResult.Disappear;
         gemstone.FailResult = MixResult.Disappear;
-        gemstone.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Gemstone"));
+        gemstone.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Gemstone"));
         crafting.SimpleCraftingSettings.RequiredItems.Add(gemstone);
 
         // Result:
         var harmony = this.Context.CreateNew<ItemCraftingResultItem>();
-        harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony");
+        harmony.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Harmony");
         crafting.SimpleCraftingSettings.ResultItems.Add(harmony);
 
         return crafting;
@@ -754,7 +754,7 @@ public class ChaosMixes : InitializerBase
         chaos.MaximumAmount = 1;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         craftingSettings.RequiredItems.Add(chaos);
 
         var horn = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -762,14 +762,14 @@ public class ChaosMixes : InitializerBase
         horn.MaximumAmount = 10;
         horn.SuccessResult = MixResult.Disappear;
         horn.FailResult = MixResult.Disappear;
-        horn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Horn of Uniria"));
+        horn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Horn of Uniria"));
         craftingSettings.RequiredItems.Add(horn);
 
         // Result:
         craftingSettings.ResultItemSkillChance = 100;
 
         var dinorant = this.Context.CreateNew<ItemCraftingResultItem>();
-        dinorant.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
+        dinorant.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Horn of Dinorant");
         craftingSettings.ResultItems.Add(dinorant);
 
         return crafting;
@@ -814,31 +814,31 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var spirit = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        spirit.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Spirit"));
+        spirit.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Spirit"));
         spirit.MinimumAmount = 1;
         spirit.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(spirit);
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         bless.MinimumAmount = 5;
         bless.MaximumAmount = 5;
         craftingSettings.RequiredItems.Add(bless);
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         soul.MinimumAmount = 5;
         soul.MaximumAmount = 5;
         craftingSettings.RequiredItems.Add(soul);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         creation.MinimumAmount = 1;
         creation.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(creation);
@@ -847,7 +847,7 @@ public class ChaosMixes : InitializerBase
         craftingSettings.ResultItemSkillChance = 100;
 
         var darkHorse = this.Context.CreateNew<ItemCraftingResultItem>();
-        darkHorse.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Horse");
+        darkHorse.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Dark Horse");
         darkHorse.Durability = 255;
         darkHorse.RandomMinimumLevel = 1;
         darkHorse.RandomMaximumLevel = 1;
@@ -867,7 +867,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var spirit = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        spirit.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Spirit"));
+        spirit.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Spirit"));
         spirit.MinimumAmount = 1;
         spirit.MaximumAmount = 1;
         spirit.MinimumItemLevel = 1;
@@ -875,32 +875,32 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(spirit);
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         bless.MinimumAmount = 2;
         bless.MaximumAmount = 2;
         craftingSettings.RequiredItems.Add(bless);
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         soul.MinimumAmount = 2;
         soul.MaximumAmount = 2;
         craftingSettings.RequiredItems.Add(soul);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(chaos);
 
         var creation = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
+        creation.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
         creation.MinimumAmount = 1;
         creation.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(creation);
 
         // Result:
         var darkRaven = this.Context.CreateNew<ItemCraftingResultItem>();
-        darkRaven.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Raven");
+        darkRaven.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Dark Raven");
         darkRaven.Durability = 255;
         darkRaven.RandomMinimumLevel = 1;
         darkRaven.RandomMaximumLevel = 1;
@@ -920,7 +920,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var healthPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        healthPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Large Healing Potion"));
+        healthPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Large Healing Potion"));
         healthPotion.MinimumAmount = 3;
         healthPotion.MaximumAmount = 3;
         healthPotion.MaximumItemLevel = 15;
@@ -928,7 +928,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var shieldPotion = this.Context.CreateNew<ItemCraftingResultItem>();
-        shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Small Shield Potion");
+        shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Small Shield Potion");
         shieldPotion.Durability = 1;
         craftingSettings.ResultItems.Add(shieldPotion);
 
@@ -946,7 +946,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var complexPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        complexPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Small Complex Potion"));
+        complexPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Small Complex Potion"));
         complexPotion.MinimumAmount = 3;
         complexPotion.MaximumAmount = 3;
         complexPotion.MaximumItemLevel = 1;
@@ -954,7 +954,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var shieldPotion = this.Context.CreateNew<ItemCraftingResultItem>();
-        shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Medium Shield Potion");
+        shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Medium Shield Potion");
         shieldPotion.Durability = 1;
         craftingSettings.ResultItems.Add(shieldPotion);
 
@@ -972,7 +972,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var complexPotion = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        complexPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Medium Complex Potion"));
+        complexPotion.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Medium Complex Potion"));
         complexPotion.MinimumAmount = 3;
         complexPotion.MaximumAmount = 3;
         complexPotion.MaximumItemLevel = 1;
@@ -980,7 +980,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var shieldPotion = this.Context.CreateNew<ItemCraftingResultItem>();
-        shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Large Shield Potion");
+        shieldPotion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Large Shield Potion");
         shieldPotion.Durability = 1;
         craftingSettings.ResultItems.Add(shieldPotion);
 
@@ -998,32 +998,32 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian"));
+        guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Guardian"));
         guardian.MinimumAmount = 1;
         guardian.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(guardian);
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         bless.MinimumAmount = 5;
         bless.MaximumAmount = 5;
         craftingSettings.RequiredItems.Add(bless);
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
         soul.MinimumAmount = 5;
         soul.MaximumAmount = 5;
         craftingSettings.RequiredItems.Add(soul);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(chaos);
 
         // Result:
         var lifeStone = this.Context.CreateNew<ItemCraftingResultItem>();
-        lifeStone.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Life Stone");
+        lifeStone.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Life Stone");
         lifeStone.Durability = 1;
         craftingSettings.ResultItems.Add(lifeStone);
 
@@ -1041,26 +1041,26 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Bless of Guardian"));
+        guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Bless of Guardian"));
         guardian.MinimumAmount = 20;
         guardian.MaximumAmount = 20;
         craftingSettings.RequiredItems.Add(guardian);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(chaos);
 
         var splinter = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        splinter.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Splinter of Armor"));
+        splinter.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Splinter of Armor"));
         splinter.MinimumAmount = 20;
         splinter.MaximumAmount = 20;
         craftingSettings.RequiredItems.Add(splinter);
 
         // Result:
         var fragmentOfHorn = this.Context.CreateNew<ItemCraftingResultItem>();
-        fragmentOfHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Fragment of Horn");
+        fragmentOfHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Fragment of Horn");
         fragmentOfHorn.Durability = 1;
         craftingSettings.ResultItems.Add(fragmentOfHorn);
 
@@ -1078,26 +1078,26 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var fragmentOfHorn = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        fragmentOfHorn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Fragment of Horn"));
+        fragmentOfHorn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Fragment of Horn"));
         fragmentOfHorn.MinimumAmount = 5;
         fragmentOfHorn.MaximumAmount = 5;
         craftingSettings.RequiredItems.Add(fragmentOfHorn);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(chaos);
 
         var clawOfBeast = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        clawOfBeast.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Claw of Beast"));
+        clawOfBeast.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Claw of Beast"));
         clawOfBeast.MinimumAmount = 10;
         clawOfBeast.MaximumAmount = 10;
         craftingSettings.RequiredItems.Add(clawOfBeast);
 
         // Result:
         var brokenHorn = this.Context.CreateNew<ItemCraftingResultItem>();
-        brokenHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Broken Horn");
+        brokenHorn.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Broken Horn");
         brokenHorn.Durability = 1;
         craftingSettings.ResultItems.Add(brokenHorn);
 
@@ -1115,19 +1115,19 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
 
         var brokenHorn = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        brokenHorn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Broken Horn"));
+        brokenHorn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Broken Horn"));
         brokenHorn.MinimumAmount = 1;
         brokenHorn.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(brokenHorn);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
+        chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         chaos.MinimumAmount = 1;
         chaos.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(chaos);
 
         var life = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        life.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Life"));
+        life.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Life"));
         life.MinimumAmount = 3;
         life.MaximumAmount = 3;
         craftingSettings.RequiredItems.Add(life);
@@ -1136,7 +1136,7 @@ public class ChaosMixes : InitializerBase
         craftingSettings.ResultItemSkillChance = 100;
 
         var fenrir = this.Context.CreateNew<ItemCraftingResultItem>();
-        fenrir.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Fenrir");
+        fenrir.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Horn of Fenrir");
         fenrir.Durability = 255;
         craftingSettings.ResultItems.Add(fenrir);
 
@@ -1246,13 +1246,13 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(randomItem10To15);
 
         var harmony = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        harmony.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Harmony"));
+        harmony.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Harmony"));
         harmony.MinimumAmount = 1;
         harmony.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(harmony);
 
         var guardian = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Guardian"));
+        guardian.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Guardian"));
         guardian.MinimumAmount = 1;
         guardian.MaximumAmount = 1;
         craftingSettings.RequiredItems.Add(guardian);
@@ -1272,7 +1272,7 @@ public class ChaosMixes : InitializerBase
         var branches = this.Context.CreateNew<ItemCraftingRequiredItem>();
         branches.MinimumAmount = 255;
         branches.MaximumAmount = 255;
-        branches.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Golden Cherry Blossom Branch"));
+        branches.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Golden Cherry Blossom Branch"));
         craftingSettings.RequiredItems.Add(branches);
 
         craftingSettings.ResultItemMaxExcOptionCount = 1;

@@ -21,6 +21,11 @@ using MUnique.OpenMU.GameLogic.Resets;
 [TestFixture]
 public class BotMasterHandlerTests
 {
+    /// <summary>
+    /// The master skill roots by their number. Like in the configuration, all skills of a root share the same instance.
+    /// </summary>
+    private readonly Dictionary<byte, MasterSkillRoot> _roots = [];
+
     private IGameContext _gameContext = null!;
 
     /// <summary>
@@ -29,6 +34,7 @@ public class BotMasterHandlerTests
     [SetUp]
     public void SetUp()
     {
+        this._roots.Clear();
         this._gameContext = GameContextTestHelper.CreateGameContext();
         this._gameContext.Configuration.MaximumLevel = 400;
     }
@@ -247,6 +253,17 @@ public class BotMasterHandlerTests
             .Returns(masterClass);
     }
 
+    private MasterSkillRoot GetRoot(byte rootId)
+    {
+        if (!this._roots.TryGetValue(rootId, out var root))
+        {
+            root = new MasterSkillRoot();
+            this._roots.Add(rootId, root);
+        }
+
+        return root;
+    }
+
     private Skill CreateMasterSkill(short number, byte rank, CharacterClass qualifiedClass, byte rootId = 1)
     {
         var masterDefinition = new Mock<MasterSkillDefinition>();
@@ -254,7 +271,7 @@ public class BotMasterHandlerTests
         masterDefinition.Object.Rank = rank;
         masterDefinition.Object.MaximumLevel = 20;
         masterDefinition.Object.MinimumLevel = 1;
-        masterDefinition.Object.Root = new MasterSkillRoot { Id = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, rootId) };
+        masterDefinition.Object.Root = this.GetRoot(rootId);
         masterDefinition.Setup(m => m.RequiredMasterSkills).Returns(new List<Skill>());
 
         var skill = new Mock<Skill>();

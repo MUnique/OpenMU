@@ -34,6 +34,15 @@ internal partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configur
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="PassivePowerUps" />.
+    /// </summary>
+    public ICollection<PowerUpDefinition> RawPassivePowerUps { get; } = new EntityFramework.List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PassivePowerUps => base.PassivePowerUps ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPassivePowerUps);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Root"/>.
     /// </summary>
     public Guid? RootId { get; set; }

@@ -9,23 +9,31 @@ using System.Net;
 using System.Threading;
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
-/// Implementation of <see cref="IGameServerStateObserver"/> which publishes the state
-/// by sending a heartbeat to a Dapr pub/sub component.
+/// Publishes the state of the game server by sending a heartbeat to a Dapr pub/sub component.
 /// </summary>
-public sealed class GameServerStatePublisher : IGameServerStateObserver, IDisposable
+/// <remarks>
+/// The game server has one listener for each <see cref="GameServerEndpoint"/>, i.e. for each
+/// supported client version. Each listener registers its public end point through the observer
+/// of <see cref="ForEndpoint"/>, and the heartbeat contains all of them, so that the central server
+/// can list the game server at the connect server of each client version.
+/// </remarks>
+public sealed class GameServerStatePublisher : IDisposable
 {
     private const string PubSubName = "pubsub";
     private readonly DaprClient _daprClient;
     private readonly ILogger<GameServerStatePublisher> _logger;
+    private readonly Dictionary<GameServerEndpoint, GameServerEndPointInfo> _endPoints = new();
+    private readonly object _syncRoot = new();
+    private readonly Stopwatch _upTime = Stopwatch.StartNew();
 
     private int _currentConnections;
     private ServerInfo? _serverInfo;
-    private IPEndPoint? _publicEndPoint;
 
     private CancellationTokenSource? _heartbeatCancellationTokenSource;
 
@@ -40,21 +48,58 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         this._logger = logger;
     }
 
+    /// <summary>
+    /// Gets the observer for the listener of the specified endpoint.
+    /// </summary>
+    /// <param name="endpoint">The endpoint.</param>
+    /// <returns>The observer for the listener of the specified endpoint.</returns>
+    public IGameServerStateObserver ForEndpoint(GameServerEndpoint endpoint) => new EndpointObserver(this, endpoint);
+
     /// <inheritdoc />
     public void Dispose()
     {
-        this._heartbeatCancellationTokenSource?.Cancel();
-        this._heartbeatCancellationTokenSource?.Dispose();
+        lock (this._syncRoot)
+        {
+            this._heartbeatCancellationTokenSource?.Cancel();
+            this._heartbeatCancellationTokenSource?.Dispose();
+            this._heartbeatCancellationTokenSource = null;
+        }
     }
 
-    /// <inheritdoc />
-    public void RegisterGameServer(ServerInfo serverInfo, IPEndPoint publicEndPoint)
+    private void RegisterEndPoint(GameServerEndpoint endpoint, ServerInfo serverInfo, IPEndPoint publicEndPoint)
     {
-        this._heartbeatCancellationTokenSource?.Cancel(false);
+        var client = endpoint.Client ?? throw new InvalidOperationException($"The client of the endpoint with port {endpoint.NetworkPort} is not set.");
+        lock (this._syncRoot)
+        {
+            this._serverInfo = serverInfo;
+            this._endPoints[endpoint] = new GameServerEndPointInfo(publicEndPoint.ToString(), client.Season, client.Episode, (byte)client.Language);
+            if (this._heartbeatCancellationTokenSource is null)
+            {
+                this.StartHeartbeat();
+            }
+        }
+    }
 
-        this._serverInfo = serverInfo;
-        this._publicEndPoint = publicEndPoint;
-        this._heartbeatCancellationTokenSource = new();
+    private void UnregisterEndPoint(GameServerEndpoint endpoint)
+    {
+        lock (this._syncRoot)
+        {
+            this._endPoints.Remove(endpoint);
+            if (this._endPoints.Count == 0 && this._heartbeatCancellationTokenSource is { } cts)
+            {
+                this._logger.LogInformation("Stopping heartbeat thread");
+                cts.Cancel();
+                cts.Dispose();
+                this._heartbeatCancellationTokenSource = null;
+            }
+        }
+    }
+
+    private void StartHeartbeat()
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        this._heartbeatCancellationTokenSource = cancellationTokenSource;
+        var cancellationToken = cancellationTokenSource.Token;
         try
         {
             this._logger.LogInformation("Starting heartbeat thread ...");
@@ -63,7 +108,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
                 {
                     try
                     {
-                        this.HeartbeatLoop(this._heartbeatCancellationTokenSource.Token);
+                        this.HeartbeatLoop(cancellationToken);
                     }
                     catch (Exception ex)
                     {
@@ -72,6 +117,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
                 })
             {
                 Name = "Heartbeat",
+                IsBackground = true,
             };
             heartbeatThread.Start();
 
@@ -83,47 +129,57 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         }
     }
 
-    /// <inheritdoc />
-    public void UnregisterGameServer(ushort serverId)
-    {
-        this._logger.LogInformation("Stopping heartbeat thread");
-        this._heartbeatCancellationTokenSource?.Cancel();
-    }
-
-    /// <inheritdoc />
-    public void CurrentConnectionsChanged(ushort serverId, int currentConnections)
-    {
-        this._currentConnections = currentConnections;
-    }
-
     private void HeartbeatLoop(CancellationToken cancellationToken)
     {
-        if (this._serverInfo is not { } serverInfo
-            || this._publicEndPoint is not { } publicEndPoint)
-        {
-            return;
-        }
-
-        var stopWatch = new Stopwatch();
-        stopWatch.Start();
-        var publicEndPointString = publicEndPoint.ToString();
-        var arguments = new GameServerHeartbeatArguments(serverInfo, publicEndPointString, stopWatch.Elapsed);
-
         while (!cancellationToken.IsCancellationRequested)
         {
-            serverInfo.CurrentConnections = this._currentConnections;
-            arguments.UpTime = stopWatch.Elapsed;
-
-            try
+            GameServerHeartbeatArguments? arguments = null;
+            lock (this._syncRoot)
             {
-                this._daprClient.PublishEventAsync(PubSubName, "GameServerHeartbeat", arguments, cancellationToken).WaitAndUnwrapException(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogDebug(ex, "Error when publishing game server heartbeat");
+                if (this._serverInfo is { } serverInfo && this._endPoints.Count > 0)
+                {
+                    serverInfo.CurrentConnections = this._currentConnections;
+                    arguments = new GameServerHeartbeatArguments(serverInfo, this._endPoints.Values.ToList(), this._upTime.Elapsed);
+                }
             }
 
-            Thread.Sleep(5000);
+            if (arguments is not null)
+            {
+                try
+                {
+                    this._daprClient.PublishEventAsync(PubSubName, "GameServerHeartbeat", arguments, cancellationToken).WaitAndUnwrapException(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogDebug(ex, "Error when publishing game server heartbeat");
+                }
+            }
+
+            cancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(5));
         }
+    }
+
+    /// <summary>
+    /// The observer for the listener of one endpoint.
+    /// </summary>
+    private sealed class EndpointObserver : IGameServerStateObserver
+    {
+        private readonly GameServerStatePublisher _publisher;
+        private readonly GameServerEndpoint _endpoint;
+
+        public EndpointObserver(GameServerStatePublisher publisher, GameServerEndpoint endpoint)
+        {
+            this._publisher = publisher;
+            this._endpoint = endpoint;
+        }
+
+        public void RegisterGameServer(ServerInfo gameServer, IPEndPoint publicEndPoint)
+            => this._publisher.RegisterEndPoint(this._endpoint, gameServer, publicEndPoint);
+
+        public void UnregisterGameServer(ushort serverId)
+            => this._publisher.UnregisterEndPoint(this._endpoint);
+
+        public void CurrentConnectionsChanged(ushort serverId, int currentConnections)
+            => this._publisher._currentConnections = currentConnections;
     }
 }

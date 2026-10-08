@@ -13,6 +13,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 
@@ -73,7 +74,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
     /// <summary>
     /// Gets the name of the map which will be set as <see cref="GameMapDefinition.Name"/>.
     /// </summary>
-    protected abstract string MapName { get; }
+    protected abstract LocalizedString MapName { get; }
 
     /// <summary>
     /// Gets the version prefix for Terrain resources.

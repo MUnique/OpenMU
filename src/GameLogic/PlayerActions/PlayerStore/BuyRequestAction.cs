@@ -85,7 +85,7 @@ public class BuyRequestAction
         }
 
         bool itemSold = false;
-        using (await requestedPlayer.ShopStorage.StoreLock.LockAsync())
+        using (await requestedPlayer.ShopStorage.StoreLock.LockAsync().ConfigureAwait(false))
         {
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {

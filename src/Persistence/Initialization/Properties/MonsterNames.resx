@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="BullFighter" xml:space="preserve"><value>Bull Fighter</value></data>
+  <data name="Hound" xml:space="preserve"><value>Hound</value></data>
+  <data name="BudgeDragon" xml:space="preserve"><value>Budge Dragon</value></data>
+  <data name="Spider" xml:space="preserve"><value>Spider</value></data>
+  <data name="EliteBullFighter" xml:space="preserve"><value>Elite Bull Fighter</value></data>
+  <data name="HellHound" xml:space="preserve"><value>Hell Hound</value></data>
+  <data name="Lich" xml:space="preserve"><value>Lich</value></data>
+  <data name="Giant" xml:space="preserve"><value>Giant</value></data>
+  <data name="PoisonBull" xml:space="preserve"><value>Poison Bull</value></data>
+  <data name="ThunderLich" xml:space="preserve"><value>Thunder Lich</value></data>
+  <data name="DarkKnight" xml:space="preserve"><value>Dark Knight</value></data>
+  <data name="Ghost" xml:space="preserve"><value>Ghost</value></data>
+  <data name="Larva" xml:space="preserve"><value>Larva</value></data>
+  <data name="HellSpider" xml:space="preserve"><value>Hell Spider</value></data>
+  <data name="SkeletonWarrior" xml:space="preserve"><value>Skeleton Warrior</value></data>
+  <data name="SkeletonArcher" xml:space="preserve"><value>Skeleton Archer</value></data>
+  <data name="EliteSkeleton" xml:space="preserve"><value>Elite Skeleton</value></data>
+  <data name="Cyclops" xml:space="preserve"><value>Cyclops</value></data>
+  <data name="Gorgon" xml:space="preserve"><value>Gorgon</value></data>
+  <data name="Yeti" xml:space="preserve"><value>Yeti</value></data>
+  <data name="EliteYeti" xml:space="preserve"><value>Elite Yeti</value></data>
+  <data name="Assassin" xml:space="preserve"><value>Assassin</value></data>
+  <data name="IceMonster" xml:space="preserve"><value>Ice Monster</value></data>
+  <data name="Hommerd" xml:space="preserve"><value>Hommerd</value></data>
+  <data name="Worm" xml:space="preserve"><value>Worm</value></data>
+  <data name="IceQueen" xml:space="preserve"><value>Ice Queen</value></data>
+  <data name="Goblin" xml:space="preserve"><value>Goblin</value></data>
+  <data name="ChainScorpion" xml:space="preserve"><value>Chain Scorpion</value></data>
+  <data name="BeetleMonster" xml:space="preserve"><value>Beetle Monster</value></data>
+  <data name="Hunter" xml:space="preserve"><value>Hunter</value></data>
+  <data name="ForestMonster" xml:space="preserve"><value>Forest Monster</value></data>
+  <data name="Agon" xml:space="preserve"><value>Agon</value></data>
+  <data name="StoneGolem" xml:space="preserve"><value>Stone Golem</value></data>
+  <data name="EliteGoblin" xml:space="preserve"><value>Elite Goblin</value></data>
+  <data name="CursedWizard" xml:space="preserve"><value>Cursed Wizard</value></data>
+  <data name="DeathGorgon" xml:space="preserve"><value>Death Gorgon</value></data>
+  <data name="Shadow" xml:space="preserve"><value>Shadow</value></data>
+  <data name="Devil" xml:space="preserve"><value>Devil</value></data>
+  <data name="Balrog" xml:space="preserve"><value>Balrog</value></data>
+  <data name="PoisonShadow" xml:space="preserve"><value>Poison Shadow</value></data>
+  <data name="DeathKnight" xml:space="preserve"><value>Death Knight</value></data>
+  <data name="DeathCow" xml:space="preserve"><value>Death Cow</value></data>
+  <data name="Bahamut" xml:space="preserve"><value>Bahamut</value></data>
+  <data name="Vepar" xml:space="preserve"><value>Vepar</value></data>
+  <data name="Valkyrie" xml:space="preserve"><value>Valkyrie</value></data>
+  <data name="LizardKing" xml:space="preserve"><value>Lizard King</value></data>
+  <data name="Hydra" xml:space="preserve"><value>Hydra</value></data>
+  <data name="GreatBahamut" xml:space="preserve"><value>Great Bahamut</value></data>
+  <data name="SilverValkyrie" xml:space="preserve"><value>Silver Valkyrie</value></data>
+  <data name="IronWheel" xml:space="preserve"><value>Iron Wheel</value></data>
+  <data name="Tantallos" xml:space="preserve"><value>Tantallos</value></data>
+  <data name="Zaikan" xml:space="preserve"><value>Zaikan</value></data>
+  <data name="BloodyWolf" xml:space="preserve"><value>Bloody Wolf</value></data>
+  <data name="BeamKnight" xml:space="preserve"><value>Beam Knight</value></data>
+  <data name="Mutant" xml:space="preserve"><value>Mutant</value></data>
+  <data name="DeathBeamKnight" xml:space="preserve"><value>Death Beam Knight</value></data>
+  <data name="Alquamos" xml:space="preserve"><value>Alquamos</value></data>
+  <data name="QueenRainer" xml:space="preserve"><value>Queen Rainer</value></data>
+  <data name="MegaCrust" xml:space="preserve"><value>Mega Crust</value></data>
+  <data name="PhantomKnight" xml:space="preserve"><value>Phantom Knight</value></data>
+  <data name="Drakan" xml:space="preserve"><value>Drakan</value></data>
+  <data name="AlphaCrust" xml:space="preserve"><value>Alpha Crust</value></data>
+  <data name="GreatDrakan" xml:space="preserve"><value>Great Drakan</value></data>
+  <data name="DarkPhoenixShield" xml:space="preserve"><value>Dark Phoenix Shield</value></data>
+  <data name="DarkPhoenix" xml:space="preserve"><value>Dark Phoenix</value></data>
+  <data name="DeathAngel1" xml:space="preserve"><value>Death Angel 1</value></data>
+  <data name="DeathCenturion1" xml:space="preserve"><value>Death Centurion 1</value></data>
+  <data name="BloodSoldier1" xml:space="preserve"><value>Blood Soldier 1</value></data>
+  <data name="Aegis1" xml:space="preserve"><value>Aegis 1</value></data>
+  <data name="RogueCenturion1" xml:space="preserve"><value>Rogue Centurion 1</value></data>
+  <data name="Necron1" xml:space="preserve"><value>Necron 1</value></data>
+  <data name="GateToKalima1OfPlayer" xml:space="preserve"><value>Gate to Kalima 1 of {0}</value></data>
+  <data name="GateToKalima2OfPlayer" xml:space="preserve"><value>Gate to Kalima 2 of {0}</value></data>
+  <data name="GateToKalima3OfPlayer" xml:space="preserve"><value>Gate to Kalima 3 of {0}</value></data>
+  <data name="GateToKalima4OfPlayer" xml:space="preserve"><value>Gate to Kalima 4 of {0}</value></data>
+  <data name="GateToKalima5OfPlayer" xml:space="preserve"><value>Gate to Kalima 5 of {0}</value></data>
+  <data name="GateToKalima6OfPlayer" xml:space="preserve"><value>Gate to Kalima 6 of {0}</value></data>
+  <data name="GateToKalima7OfPlayer" xml:space="preserve"><value>Gate to Kalima 7 of {0}</value></data>
+  <data name="Schriker1" xml:space="preserve"><value>Schriker 1</value></data>
+  <data name="IllusionOfKundun1" xml:space="preserve"><value>Illusion of Kundun 1</value></data>
+  <data name="DeathAngel2" xml:space="preserve"><value>Death Angel 2</value></data>
+  <data name="DeathCenturion2" xml:space="preserve"><value>Death Centurion 2</value></data>
+  <data name="BloodSoldier2" xml:space="preserve"><value>Blood Soldier 2</value></data>
+  <data name="Aegis2" xml:space="preserve"><value>Aegis 2</value></data>
+  <data name="RogueCenturion2" xml:space="preserve"><value>Rogue Centurion 2</value></data>
+  <data name="Necron2" xml:space="preserve"><value>Necron 2</value></data>
+  <data name="Schriker2" xml:space="preserve"><value>Schriker 2</value></data>
+  <data name="IllusionOfKundun2" xml:space="preserve"><value>Illusion of Kundun 2</value></data>
+  <data name="DeathAngel3" xml:space="preserve"><value>Death Angel 3</value></data>
+  <data name="DeathCenturion3" xml:space="preserve"><value>Death Centurion 3</value></data>
+  <data name="BloodSoldier3" xml:space="preserve"><value>Blood Soldier 3</value></data>
+  <data name="Aegis3" xml:space="preserve"><value>Aegis 3</value></data>
+  <data name="RogueCenturion3" xml:space="preserve"><value>Rogue Centurion 3</value></data>
+  <data name="Necron3" xml:space="preserve"><value>Necron 3</value></data>
+  <data name="Schriker3" xml:space="preserve"><value>Schriker 3</value></data>
+  <data name="IllusionOfKundun3" xml:space="preserve"><value>Illusion of Kundun 3</value></data>
+  <data name="DeathAngel4" xml:space="preserve"><value>Death Angel 4</value></data>
+  <data name="DeathCenturion4" xml:space="preserve"><value>Death Centurion 4</value></data>
+  <data name="BloodSoldier4" xml:space="preserve"><value>Blood Soldier 4</value></data>
+  <data name="Aegis4" xml:space="preserve"><value>Aegis 4</value></data>
+  <data name="RogueCenturion4" xml:space="preserve"><value>Rogue Centurion 4</value></data>
+  <data name="Necron4" xml:space="preserve"><value>Necron 4</value></data>
+  <data name="Schriker4" xml:space="preserve"><value>Schriker 4</value></data>
+  <data name="IllusionOfKundun4" xml:space="preserve"><value>Illusion of Kundun 4</value></data>
+  <data name="WolfStatus" xml:space="preserve"><value>Wolf Status</value></data>
+  <data name="WolfAltar1" xml:space="preserve"><value>Wolf Altar1</value></data>
+  <data name="WolfAltar2" xml:space="preserve"><value>Wolf Altar2</value></data>
+  <data name="WolfAltar3" xml:space="preserve"><value>Wolf Altar3</value></data>
+  <data name="WolfAltar4" xml:space="preserve"><value>Wolf Altar4</value></data>
+  <data name="WolfAltar5" xml:space="preserve"><value>Wolf Altar5</value></data>
+  <data name="Senior" xml:space="preserve"><value>Senior</value></data>
+  <data name="Guardsman" xml:space="preserve"><value>Guardsman</value></data>
+  <data name="PetTrainer" xml:space="preserve"><value>Pet Trainer</value></data>
+  <data name="Marlon" xml:space="preserve"><value>Marlon</value></data>
+  <data name="MessengerOfArch" xml:space="preserve"><value>Messenger of Arch.</value></data>
+  <data name="SevinaThePriestess" xml:space="preserve"><value>Sevina the Priestess</value></data>
+  <data name="Charon" xml:space="preserve"><value>Charon</value></data>
+  <data name="ChaosGoblin" xml:space="preserve"><value>Chaos Goblin</value></data>
+  <data name="BazTheVaultKeeper" xml:space="preserve"><value>Baz The Vault Keeper</value></data>
+  <data name="GuildMaster" xml:space="preserve"><value>Guild Master</value></data>
+  <data name="Lahap" xml:space="preserve"><value>Lahap</value></data>
+  <data name="ElfSoldier" xml:space="preserve"><value>Elf Soldier</value></data>
+  <data name="DeathAngel5" xml:space="preserve"><value>Death Angel 5</value></data>
+  <data name="DeathCenturion5" xml:space="preserve"><value>Death Centurion 5</value></data>
+  <data name="BloodSoldier5" xml:space="preserve"><value>Blood Soldier 5</value></data>
+  <data name="Aegis5" xml:space="preserve"><value>Aegis 5</value></data>
+  <data name="RogueCenturion5" xml:space="preserve"><value>Rogue Centurion 5</value></data>
+  <data name="Necron5" xml:space="preserve"><value>Necron 5</value></data>
+  <data name="Schriker5" xml:space="preserve"><value>Schriker 5</value></data>
+  <data name="IllusionOfKundun5" xml:space="preserve"><value>Illusion of Kundun 5</value></data>
+  <data name="DeathAngel6" xml:space="preserve"><value>Death Angel 6</value></data>
+  <data name="DeathCenturion6" xml:space="preserve"><value>Death Centurion 6</value></data>
+  <data name="BloodSoldier6" xml:space="preserve"><value>Blood Soldier 6</value></data>
+  <data name="Aegis6" xml:space="preserve"><value>Aegis 6</value></data>
+  <data name="RogueCenturion6" xml:space="preserve"><value>Rogue Centurion 6</value></data>
+  <data name="Necron6" xml:space="preserve"><value>Necron 6</value></data>
+  <data name="Schriker6" xml:space="preserve"><value>Schriker 6</value></data>
+  <data name="IllusionOfKundun7" xml:space="preserve"><value>Illusion of Kundun 7</value></data>
+  <data name="CastleGate1" xml:space="preserve"><value>Castle Gate1</value></data>
+  <data name="LifeStone" xml:space="preserve"><value>Life Stone</value></data>
+  <data name="GuardianStatue" xml:space="preserve"><value>Guardian Statue</value></data>
+  <data name="CanonTower" xml:space="preserve"><value>Canon Tower</value></data>
+  <data name="LizardWarrior" xml:space="preserve"><value>Lizard Warrior</value></data>
+  <data name="FireGolem" xml:space="preserve"><value>Fire Golem</value></data>
+  <data name="QueenBee" xml:space="preserve"><value>Queen Bee</value></data>
+  <data name="PoisonGolem" xml:space="preserve"><value>Poison Golem</value></data>
+  <data name="AxeWarrior" xml:space="preserve"><value>Axe Warrior</value></data>
+  <data name="Erohim" xml:space="preserve"><value>Erohim</value></data>
+  <data name="WitchQueen" xml:space="preserve"><value>Witch Queen</value></data>
+  <data name="BlueGolem" xml:space="preserve"><value>Blue Golem</value></data>
+  <data name="DeathRider" xml:space="preserve"><value>Death Rider</value></data>
+  <data name="ForestOrc" xml:space="preserve"><value>Forest Orc</value></data>
+  <data name="DeathTree" xml:space="preserve"><value>Death Tree</value></data>
+  <data name="HellMaine" xml:space="preserve"><value>Hell Maine</value></data>
+  <data name="HammerScout" xml:space="preserve"><value>Hammer Scout</value></data>
+  <data name="LanceScout" xml:space="preserve"><value>Lance Scout</value></data>
+  <data name="BowScout" xml:space="preserve"><value>Bow Scout</value></data>
+  <data name="Werewolf" xml:space="preserve"><value>Werewolf</value></data>
+  <data name="ScoutHero" xml:space="preserve"><value>Scout(Hero)</value></data>
+  <data name="WerewolfHero" xml:space="preserve"><value>Werewolf(Hero)</value></data>
+  <data name="Balram" xml:space="preserve"><value>Balram</value></data>
+  <data name="Soram" xml:space="preserve"><value>Soram</value></data>
+  <data name="Aegis7" xml:space="preserve"><value>Aegis 7</value></data>
+  <data name="RogueCenturion7" xml:space="preserve"><value>Rogue Centurion 7</value></data>
+  <data name="BloodSoldier7" xml:space="preserve"><value>Blood Soldier 7</value></data>
+  <data name="DeathAngel7" xml:space="preserve"><value>Death Angel 7</value></data>
+  <data name="Necron7" xml:space="preserve"><value>Necron 7</value></data>
+  <data name="DeathCenturion7" xml:space="preserve"><value>Death Centurion 7</value></data>
+  <data name="Schriker7" xml:space="preserve"><value>Schriker 7</value></data>
+  <data name="IllusionOfKundun6" xml:space="preserve"><value>Illusion of Kundun 6</value></data>
+  <data name="Berserker" xml:space="preserve"><value>Berserker</value></data>
+  <data name="SplinterWolf" xml:space="preserve"><value>Splinter Wolf</value></data>
+  <data name="IronRider" xml:space="preserve"><value>Iron Rider</value></data>
+  <data name="Satyros" xml:space="preserve"><value>Satyros</value></data>
+  <data name="BladeHunter" xml:space="preserve"><value>Blade Hunter</value></data>
+  <data name="Kentauros" xml:space="preserve"><value>Kentauros</value></data>
+  <data name="Gigantis" xml:space="preserve"><value>Gigantis</value></data>
+  <data name="Genocider" xml:space="preserve"><value>Genocider</value></data>
+  <data name="Persona" xml:space="preserve"><value>Persona</value></data>
+  <data name="TwinTale" xml:space="preserve"><value>Twin Tale</value></data>
+  <data name="Dreadfear" xml:space="preserve"><value>Dreadfear</value></data>
+  <data name="Nightmare" xml:space="preserve"><value>Nightmare</value></data>
+  <data name="MayaHandLeft" xml:space="preserve"><value>Maya (Hand Left)</value></data>
+  <data name="MayaHandRight" xml:space="preserve"><value>Maya (Hand Right)</value></data>
+  <data name="Maya" xml:space="preserve"><value>Maya</value></data>
+  <data name="GatewayMachine" xml:space="preserve"><value>Gateway Machine</value></data>
+  <data name="Elphis" xml:space="preserve"><value>Elphis</value></data>
+  <data name="Osbourne" xml:space="preserve"><value>Osbourne</value></data>
+  <data name="Jerridon" xml:space="preserve"><value>Jerridon</value></data>
+  <data name="ChaosCardMaster" xml:space="preserve"><value>Chaos Card Master</value></data>
+  <data name="Mirage" xml:space="preserve"><value>Mirage</value></data>
+  <data name="PriestDevin" xml:space="preserve"><value>Priest Devin</value></data>
+  <data name="WerewolfQuarrel" xml:space="preserve"><value>Werewolf Quarrel</value></data>
+  <data name="BalramTraineeSoldier" xml:space="preserve"><value>Balram (Trainee Soldier)</value></data>
+  <data name="DeathSpiritTraineeSoldier" xml:space="preserve"><value>Death Spirit (Trainee Soldier)</value></data>
+  <data name="SoramTraineeSoldier" xml:space="preserve"><value>Soram (Trainee Soldier)</value></data>
+  <data name="DarkElfTraineeSoldier" xml:space="preserve"><value>Dark Elf (Trainee Soldier)</value></data>
+  <data name="StrangeRabbit" xml:space="preserve"><value>Strange Rabbit</value></data>
+  <data name="PollutedButterfly" xml:space="preserve"><value>Polluted Butterfly</value></data>
+  <data name="HideousRabbit" xml:space="preserve"><value>Hideous Rabbit</value></data>
+  <data name="Werewolf421" xml:space="preserve"><value>Werewolf</value></data>
+  <data name="CursedLich" xml:space="preserve"><value>Cursed Lich</value></data>
+  <data name="TotemGolem" xml:space="preserve"><value>Totem Golem</value></data>
+  <data name="Grizzly" xml:space="preserve"><value>Grizzly</value></data>
+  <data name="CaptainGrizzly" xml:space="preserve"><value>Captain Grizzly</value></data>
+  <data name="Gigantis434" xml:space="preserve"><value>Gigantis</value></data>
+  <data name="Berserk" xml:space="preserve"><value>Berserk</value></data>
+  <data name="BalramTrainee" xml:space="preserve"><value>Balram (Trainee)</value></data>
+  <data name="SoramTrainee" xml:space="preserve"><value>Soram (Trainee)</value></data>
+  <data name="Persona438" xml:space="preserve"><value>Persona</value></data>
+  <data name="Dreadfear439" xml:space="preserve"><value>Dreadfear</value></data>
+  <data name="DarkElf" xml:space="preserve"><value>Dark_Elf</value></data>
+  <data name="SapiUnus" xml:space="preserve"><value>Sapi-Unus</value></data>
+  <data name="SapiDuo" xml:space="preserve"><value>Sapi-Duo</value></data>
+  <data name="SapiTres" xml:space="preserve"><value>Sapi-Tres</value></data>
+  <data name="ShadowPawn" xml:space="preserve"><value>Shadow Pawn</value></data>
+  <data name="ShadowKnight" xml:space="preserve"><value>Shadow Knight</value></data>
+  <data name="ShadowLook" xml:space="preserve"><value>Shadow Look</value></data>
+  <data name="ThunderNapin" xml:space="preserve"><value>Thunder Napin</value></data>
+  <data name="GhostNapin" xml:space="preserve"><value>Ghost Napin</value></data>
+  <data name="BlazeNapin" xml:space="preserve"><value>Blaze Napin</value></data>
+  <data name="SeedMaster" xml:space="preserve"><value>Seed Master</value></data>
+  <data name="SeedResearcher" xml:space="preserve"><value>Seed Researcher</value></data>
+  <data name="IceWalker" xml:space="preserve"><value>Ice Walker</value></data>
+  <data name="GiantMammoth" xml:space="preserve"><value>Giant Mammoth</value></data>
+  <data name="IceGiant" xml:space="preserve"><value>Ice Giant</value></data>
+  <data name="Coolutin" xml:space="preserve"><value>Coolutin</value></data>
+  <data name="IronKnight" xml:space="preserve"><value>Iron Knight</value></data>
+  <data name="Selupan" xml:space="preserve"><value>Selupan</value></data>
+  <data name="ZombieFighter" xml:space="preserve"><value>Zombie Fighter</value></data>
+  <data name="ZombieFighter481" xml:space="preserve"><value>Zombie Fighter</value></data>
+  <data name="ResurrectedGladiator" xml:space="preserve"><value>Resurrected Gladiator</value></data>
+  <data name="ResurrectedGladiator483" xml:space="preserve"><value>Resurrected Gladiator</value></data>
+  <data name="AshSlaughterer" xml:space="preserve"><value>Ash Slaughterer</value></data>
+  <data name="AshSlaughterer485" xml:space="preserve"><value>Ash Slaughterer</value></data>
+  <data name="BloodAssassin" xml:space="preserve"><value>Blood Assassin</value></data>
+  <data name="CruelBloodAssassin" xml:space="preserve"><value>Cruel Blood Assassin</value></data>
+  <data name="CruelBloodAssassin488" xml:space="preserve"><value>Cruel Blood Assassin</value></data>
+  <data name="BurningLavaGiant" xml:space="preserve"><value>Burning Lava Giant</value></data>
+  <data name="RuthlessLavaGiant" xml:space="preserve"><value>Ruthless Lava Giant</value></data>
+  <data name="RuthlessLavaGiant491" xml:space="preserve"><value>Ruthless Lava Giant</value></data>
+  <data name="MossTheMerchant" xml:space="preserve"><value>Moss The Merchant</value></data>
+  <data name="AdviserJerinteu" xml:space="preserve"><value>Adviser Jerinteu</value></data>
+  <data name="TerribleButcher" xml:space="preserve"><value>Terrible Butcher</value></data>
+  <data name="MadButcher" xml:space="preserve"><value>Mad Butcher</value></data>
+  <data name="IceWalker531" xml:space="preserve"><value>Ice Walker</value></data>
+  <data name="Larva532" xml:space="preserve"><value>Larva</value></data>
+  <data name="DoppelgangerElf" xml:space="preserve"><value>Doppelganger Elf</value></data>
+  <data name="DoppelgangerKnight" xml:space="preserve"><value>Doppelganger Knight</value></data>
+  <data name="DoppelgangerWizard" xml:space="preserve"><value>Doppelganger Wizard</value></data>
+  <data name="DoppelgangerMagicGladiator" xml:space="preserve"><value>Doppelganger Magic Gladiator</value></data>
+  <data name="DoppelgangerDarkLord" xml:space="preserve"><value>Doppelganger Dark Lord</value></data>
+  <data name="DoppelgangerSummoner" xml:space="preserve"><value>Doppelganger Summoner</value></data>
+  <data name="Lugard" xml:space="preserve"><value>Lugard</value></data>
+  <data name="BloodyOrc" xml:space="preserve"><value>Bloody Orc</value></data>
+  <data name="BloodyDeathRider" xml:space="preserve"><value>Bloody Death Rider</value></data>
+  <data name="BloodyGolem" xml:space="preserve"><value>Bloody Golem</value></data>
+  <data name="BloodyWitchQueen" xml:space="preserve"><value>Bloody Witch Queen</value></data>
+  <data name="BerserkerWarrior" xml:space="preserve"><value>Berserker Warrior</value></data>
+  <data name="KentaurosWarrior" xml:space="preserve"><value>Kentauros Warrior</value></data>
+  <data name="GigantisWarrior" xml:space="preserve"><value>Gigantis Warrior</value></data>
+  <data name="GenociderWarrior" xml:space="preserve"><value>Genocider Warrior</value></data>
+  <data name="SapiQueen" xml:space="preserve"><value>Sapi Queen</value></data>
+  <data name="DarkMammoth" xml:space="preserve"><value>Dark Mammoth</value></data>
+  <data name="DarkGiant" xml:space="preserve"><value>Dark Giant</value></data>
+  <data name="DarkCoolutin" xml:space="preserve"><value>Dark Coolutin</value></data>
+  <data name="DarkIronKnight" xml:space="preserve"><value>Dark Iron Knight</value></data>
+  <data name="VenomousChainScorpion" xml:space="preserve"><value>Venomous Chain Scorpion</value></data>
+  <data name="BoneScorpion" xml:space="preserve"><value>Bone Scorpion</value></data>
+  <data name="Orcus" xml:space="preserve"><value>Orcus</value></data>
+  <data name="Gollock" xml:space="preserve"><value>Gollock</value></data>
+  <data name="Crypta" xml:space="preserve"><value>Crypta</value></data>
+  <data name="Crypos" xml:space="preserve"><value>Crypos</value></data>
+  <data name="Condra" xml:space="preserve"><value>Condra</value></data>
+  <data name="Narcondra" xml:space="preserve"><value>Narcondra</value></data>
+  <data name="David" xml:space="preserve"><value>David</value></data>
+</root>

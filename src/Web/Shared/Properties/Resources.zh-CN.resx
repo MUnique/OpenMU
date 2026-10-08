@@ -493,4 +493,35 @@
   <data name="InvalidNumber" xml:space="preserve"><value>{0}必须是数字。</value></data>
   <data name="MonsterLabel" xml:space="preserve"><value>怪物</value></data>
   <data name="MapsLabel" xml:space="preserve"><value>地图</value></data>
+  <data name="UnknownSkill" xml:space="preserve">
+    <value>未知技能</value>
+  </data>
+  <data name="AddSkill" xml:space="preserve">
+    <value>添加技能</value>
+  </data>
+  <data name="MasterSkillTree" xml:space="preserve">
+    <value>大师技能树</value>
+  </data>
+  <data name="SpentMasterPoints" xml:space="preserve">
+    <value>已用点数：{0}</value>
+  </data>
+  <data name="ResetMasterSkillTree" xml:space="preserve">
+    <value>重置大师技能树</value>
+  </data>
+  <data name="ResetMasterSkillTreeQuestion" xml:space="preserve">
+    <value>确定要移除该角色的所有大师技能吗？</value>
+  </data>
+  <data name="ResetMasterSkillTreeAndRefundQuestion" xml:space="preserve">
+    <value>确定要移除该角色的所有大师技能吗？已使用的 {0} 点将返还到大师升级点数中。</value>
+  </data>
+  <data name="MasterSkillTooltip" xml:space="preserve">
+    <value>{0} (#{1})
+等级：{2} - {3}</value>
+  </data>
+  <data name="MasterSkillRequirementsNotFulfilled" xml:space="preserve">
+    <value>警告：未满足学习此技能的条件。所需技能以及上一阶的一个技能需要至少达到 {0} 级。</value>
+  </data>
+  <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
+    <value>需要所需技能以及上一阶的一个技能至少达到 {0} 级。</value>
+  </data>
 </root>

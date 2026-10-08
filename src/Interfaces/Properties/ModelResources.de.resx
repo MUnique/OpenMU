@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LetterHeader_TypeCaption" xml:space="preserve">
+    <value>Briefkopf</value>
+  </data>
+  <data name="LetterHeader_TypeCaptionPlural" xml:space="preserve">
+    <value>Briefköpfe</value>
+  </data>
+  <data name="LetterHeader_SenderName_Caption" xml:space="preserve">
+    <value>Name des Absenders</value>
+  </data>
+  <data name="LetterHeader_ReceiverName_Caption" xml:space="preserve">
+    <value>Name des Empfängers</value>
+  </data>
+  <data name="LetterHeader_Subject_Caption" xml:space="preserve">
+    <value>Betreff</value>
+  </data>
+  <data name="LetterHeader_LetterDate_Caption" xml:space="preserve">
+    <value>Briefdatum</value>
+  </data>
+  <data name="LetterHeader_ReadFlag_Caption" xml:space="preserve">
+    <value>Gelesen</value>
+  </data>
+  <data name="GuildListEntry_TypeCaption" xml:space="preserve">
+    <value>Gildenlisteneintrag</value>
+  </data>
+  <data name="GuildListEntry_TypeCaptionPlural" xml:space="preserve">
+    <value>Gildenlisteneinträge</value>
+  </data>
+  <data name="GuildListEntry_PlayerName_Caption" xml:space="preserve">
+    <value>Spielername</value>
+  </data>
+  <data name="GuildListEntry_ServerId_Caption" xml:space="preserve">
+    <value>Server-Id</value>
+  </data>
+  <data name="GuildListEntry_PlayerPosition_Caption" xml:space="preserve">
+    <value>Position des Spielers</value>
+  </data>
+  <data name="Guild_TypeCaption" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="Guild_TypeCaptionPlural" xml:space="preserve">
+    <value>Gilden</value>
+  </data>
+  <data name="Guild_Score_Caption" xml:space="preserve">
+    <value>Punktzahl</value>
+  </data>
+  <data name="Guild_Notice_Caption" xml:space="preserve">
+    <value>Mitteilung</value>
+  </data>
+  <data name="Guild_Hostility_Caption" xml:space="preserve">
+    <value>Feindschaft</value>
+  </data>
+  <data name="Guild_AllianceGuild_Caption" xml:space="preserve">
+    <value>Allianzgilde</value>
+  </data>
+  <data name="Friend_TypeCaption" xml:space="preserve">
+    <value>Freund</value>
+  </data>
+  <data name="Friend_TypeCaptionPlural" xml:space="preserve">
+    <value>Freunde</value>
+  </data>
+  <data name="Friend_CharacterId_Caption" xml:space="preserve">
+    <value>Charakter-Id</value>
+  </data>
+  <data name="Friend_FriendId_Caption" xml:space="preserve">
+    <value>Freundes-Id</value>
+  </data>
+  <data name="Friend_Accepted_Caption" xml:space="preserve">
+    <value>Angenommen</value>
+  </data>
+  <data name="Friend_RequestOpen_Caption" xml:space="preserve">
+    <value>Anfrage offen</value>
+  </data>
+  <data name="GuildMemberStatus_TypeCaption" xml:space="preserve">
+    <value>Gildenmitgliedsstatus</value>
+  </data>
+  <data name="GuildMemberStatus_TypeCaptionPlural" xml:space="preserve">
+    <value>Gildenmitgliedsstatus</value>
+  </data>
+  <data name="GuildMemberStatus_GuildId_Caption" xml:space="preserve">
+    <value>Gilden-Id</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_TypeCaption" xml:space="preserve">
+    <value>Chat-Server-Authentifizierungsinfo</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_TypeCaptionPlural" xml:space="preserve">
+    <value>Chat-Server-Authentifizierungsinfos</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_RoomId_Caption" xml:space="preserve">
+    <value>Raum-Id</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_ClientName_Caption" xml:space="preserve">
+    <value>Client-Name</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_AuthenticationToken_Caption" xml:space="preserve">
+    <value>Authentifizierungstoken</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_HostAddress_Caption" xml:space="preserve">
+    <value>Hostadresse</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_AuthenticationRequiredUntil_Caption" xml:space="preserve">
+    <value>Authentifizierung erforderlich bis</value>
+  </data>
+  <data name="FriendViewItem_TypeCaption" xml:space="preserve">
+    <value>Freundesansichtseintrag</value>
+  </data>
+  <data name="FriendViewItem_TypeCaptionPlural" xml:space="preserve">
+    <value>Freundesansichtseinträge</value>
+  </data>
+  <data name="FriendViewItem_CharacterName_Caption" xml:space="preserve">
+    <value>Charaktername</value>
+  </data>
+  <data name="FriendViewItem_FriendName_Caption" xml:space="preserve">
+    <value>Name des Freundes</value>
+  </data>
+  <data name="LocalizableException_TypeCaption" xml:space="preserve">
+    <value>Lokalisierbare Ausnahme</value>
+  </data>
+  <data name="LocalizableException_TypeCaptionPlural" xml:space="preserve">
+    <value>Lokalisierbare Ausnahmen</value>
+  </data>
+  <data name="LocalizableException_InnerException_Caption" xml:space="preserve">
+    <value>Innere Ausnahme</value>
+  </data>
+  <data name="SpecialServerId_TypeCaption" xml:space="preserve">
+    <value>Spezielle Server-Id</value>
+  </data>
+  <data name="SpecialServerId_Invisible_Caption" xml:space="preserve">
+    <value>Unsichtbar</value>
+  </data>
+  <data name="NoneConfigurationChangePublisher_TypeCaption" xml:space="preserve">
+    <value>Leerer Konfigurationsänderungs-Publisher</value>
+  </data>
+  <data name="NoneConfigurationChangePublisher_TypeCaptionPlural" xml:space="preserve">
+    <value>Leere Konfigurationsänderungs-Publisher</value>
+  </data>
+  <data name="GuildPosition_TypeCaption" xml:space="preserve">
+    <value>Gildenposition</value>
+  </data>
+  <data name="GuildPosition_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="GuildPosition_NormalMember_Caption" xml:space="preserve">
+    <value>Normales Mitglied</value>
+  </data>
+  <data name="GuildPosition_GuildMaster_Caption" xml:space="preserve">
+    <value>Gildenmeister</value>
+  </data>
+  <data name="GuildPosition_BattleMaster_Caption" xml:space="preserve">
+    <value>Kampfmeister</value>
+  </data>
+  <data name="GuildPosition_AssistantMaster_Caption" xml:space="preserve">
+    <value>Assistenzmeister</value>
+  </data>
+  <data name="LocalizableExceptionBase_TypeCaption" xml:space="preserve">
+    <value>Lokalisierbare Ausnahmebasis</value>
+  </data>
+  <data name="LocalizableExceptionBase_TypeCaptionPlural" xml:space="preserve">
+    <value>Lokalisierbare Ausnahmebasen</value>
+  </data>
+  <data name="LocalizableExceptionBase_FormatArguments_Caption" xml:space="preserve">
+    <value>Formatargumente</value>
+  </data>
+  <data name="LocalizableExceptionBase_ResourceKey_Caption" xml:space="preserve">
+    <value>Ressourcenschlüssel</value>
+  </data>
+  <data name="SpecialServerIds_TypeCaption" xml:space="preserve">
+    <value>Spezielle Server-Ids</value>
+  </data>
+  <data name="SpecialServerIds_TypeCaptionPlural" xml:space="preserve">
+    <value>Spezielle Server-Ids</value>
+  </data>
+  <data name="ServerType_TypeCaption" xml:space="preserve">
+    <value>Servertyp</value>
+  </data>
+  <data name="ServerType_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="ServerType_GameServer_Caption" xml:space="preserve">
+    <value>Game-Server</value>
+  </data>
+  <data name="ServerType_ConnectServer_Caption" xml:space="preserve">
+    <value>Connect-Server</value>
+  </data>
+  <data name="ServerType_ChatServer_Caption" xml:space="preserve">
+    <value>Chat-Server</value>
+  </data>
+  <data name="ServerState_TypeCaption" xml:space="preserve">
+    <value>Serverstatus</value>
+  </data>
+  <data name="ServerState_Stopped_Caption" xml:space="preserve">
+    <value>Gestoppt</value>
+  </data>
+  <data name="ServerState_Starting_Caption" xml:space="preserve">
+    <value>Startet</value>
+  </data>
+  <data name="ServerState_Started_Caption" xml:space="preserve">
+    <value>Gestartet</value>
+  </data>
+  <data name="ServerState_Stopping_Caption" xml:space="preserve">
+    <value>Wird gestoppt</value>
+  </data>
+  <data name="ServerState_Timeout_Caption" xml:space="preserve">
+    <value>Zeitüberschreitung</value>
+  </data>
+  <data name="MessageType_TypeCaption" xml:space="preserve">
+    <value>Nachrichtentyp</value>
+  </data>
+  <data name="MessageType_GoldenCenter_Caption" xml:space="preserve">
+    <value>Gold, zentriert</value>
+  </data>
+  <data name="MessageType_BlueNormal_Caption" xml:space="preserve">
+    <value>Blau, normal</value>
+  </data>
+  <data name="MessageType_GuildNotice_Caption" xml:space="preserve">
+    <value>Gildenmitteilung</value>
+  </data>
+</root>

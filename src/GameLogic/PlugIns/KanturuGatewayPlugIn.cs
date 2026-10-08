@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handles the Gateway Machine NPC (NPC #367) in Kanturu Relics.
+/// Handles the Gateway Machine NPC (by default NPC #367) in Kanturu Relics.
 /// When a player talks to this NPC, the server sends a <c>0xD1/0x00</c> StateInfo
 /// packet so that the client opens the <c>INTERFACE_KANTURU2ND_ENTERNPC</c> dialog.
 /// The actual entry is triggered later when the client sends <c>0xD1/0x01</c>
@@ -23,12 +23,12 @@ using MUnique.OpenMU.PlugIns;
 [Guid("B7E4D2A3-1F85-4DAB-9074-19B4708389D5")]
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuGatewayPlugIn_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuGatewayPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
-public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
+public class KanturuGatewayPlugIn : NpcTalkPlugInBase
 {
     /// <summary>
     /// The NPC number of the Gateway Machine.
     /// </summary>
-    public const short GatewayMachineNumber = 367;
+    internal const short GatewayMachineNumber = 367;
 
     // Detail state for the dialog when entry is open:
     // KANTURU_MAYA_DIRECTION_STANBY1 = 1 — shows user count and enables Enter button.
@@ -37,6 +37,9 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
     // Detail state for the dialog while the next start is awaited:
     // STANBY_START = 1 — client shows "Opens in X minutes".
     private const byte DetailStandbyStart = 1;
+
+    /// <inheritdoc />
+    public override short DefaultNpcNumber => GatewayMachineNumber;
 
     /// <summary>
     /// Sends the 0xD1/0x00 StateInfo packet to the player so the client opens the
@@ -77,14 +80,8 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    protected override async ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        if (npc.Definition.Number != GatewayMachineNumber)
-        {
-            return;
-        }
-
-        // Mark as handled before any await so TalkNpcAction sees it synchronously.
         eventArgs.HasBeenHandled = true;
 
         // The client keeps the dialog open until the player enters or closes it, so the

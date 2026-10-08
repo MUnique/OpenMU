@@ -64,7 +64,7 @@ public class StateMachine
             return false;
         }
 
-        using var l = await this._asyncLock.LockAsync();
+        using var l = await this._asyncLock.LockAsync().ConfigureAwait(false);
 
         if (this.CurrentState?.PossibleTransitions is not { } possibleTransitions)
         {

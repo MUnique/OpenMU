@@ -71,7 +71,7 @@ public class ChatMessageAction
             return;
         }
 
-        await this._chatProcessMessages[messageType].ProcessMessageAsync(sender, (message, playerName)).ConfigureAwait(true);
+        await this._chatProcessMessages[messageType].ProcessMessageAsync(sender, (message, playerName)).ConfigureAwait(false);
     }
 
     private ChatMessageType GetMessageType(string message, bool whisper)

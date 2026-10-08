@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class Icarus : BaseMapInitializer
     internal const byte Number = 10;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Icarus";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Icarus"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class Icarus : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Icarus);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Version075.Maps.LostTower.Number;
@@ -125,7 +127,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 69;
-            monster.Designation = "Alquamos";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Alquamos);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 5;
@@ -158,7 +160,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 70;
-            monster.Designation = "Queen Rainer";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.QueenRainer);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 5;
@@ -191,7 +193,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 71;
-            monster.Designation = "Mega Crust";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.MegaCrust);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -223,7 +225,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 72;
-            monster.Designation = "Phantom Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.PhantomKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -256,7 +258,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 73;
-            monster.Designation = "Drakan";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Drakan);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 5;
@@ -289,7 +291,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 74;
-            monster.Designation = "Alpha Crust";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.AlphaCrust);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -321,7 +323,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 75;
-            monster.Designation = "Great Drakan";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GreatDrakan);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 5;
@@ -354,7 +356,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 76;
-            monster.Designation = "Dark Phoenix Shield";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkPhoenixShield);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 5;
@@ -387,7 +389,7 @@ internal class Icarus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 77;
-            monster.Designation = "Dark Phoenix";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkPhoenix);
             monster.MoveRange = 1;
             monster.AttackRange = 6;
             monster.ViewRange = 7;

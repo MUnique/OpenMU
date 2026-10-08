@@ -125,6 +125,39 @@ public class Account
     public bool IsVaultExtended { get; set; }
 
     /// <summary>
+    /// Gets or sets the available WCoin (C) of the cash shop.
+    /// </summary>
+    /// <remarks>
+    /// The client shows it as credit cash, which is usually bought with real money.
+    /// Only the game server changes it, because it may hold the account in memory;
+    /// other services add a <see cref="CashShopCoinGrant"/>.
+    /// </remarks>
+    [Browsable(false)]
+    public int WCoinC { get; set; }
+
+    /// <summary>
+    /// Gets or sets the available WCoin (P) of the cash shop.
+    /// </summary>
+    /// <remarks>
+    /// The client shows it as prepaid cash, which is usually bought with prepaid cards.
+    /// Only the game server changes it, because it may hold the account in memory;
+    /// other services add a <see cref="CashShopCoinGrant"/>.
+    /// </remarks>
+    [Browsable(false)]
+    public int WCoinP { get; set; }
+
+    /// <summary>
+    /// Gets or sets the available Goblin Points of the cash shop.
+    /// </summary>
+    /// <remarks>
+    /// The client shows it as mileage, which is usually earned by playing.
+    /// Only the game server changes it, because it may hold the account in memory;
+    /// other services add a <see cref="CashShopCoinGrant"/>.
+    /// </remarks>
+    [Browsable(false)]
+    public int GoblinPoints { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is a template account
     /// and therefore read-only within the game server.
     /// </summary>

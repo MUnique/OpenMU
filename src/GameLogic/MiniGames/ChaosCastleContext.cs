@@ -255,8 +255,9 @@ public sealed class ChaosCastleContext : MiniGameContext
         }
     }
 
-#pragma warning disable VSTHRD100 // Avoid async void methods
     /// <inheritdoc />
+    // This handles the Died event, which requires a void handler. It catches and logs all exceptions, so none get lost.
+#pragma warning disable VSTHRD100 // Avoid async void methods
     protected override async void OnMonsterDied(object? sender, DeathInformation e)
 #pragma warning restore VSTHRD100 // Avoid async void methods
     {

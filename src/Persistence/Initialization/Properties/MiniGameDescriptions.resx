@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ImperialGuardianMonday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Monday, which takes place on map 69.</value>
+  </data>
+  <data name="ImperialGuardianTuesday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Tuesday, which takes place on map 70.</value>
+  </data>
+  <data name="ImperialGuardianWednesday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Wednesday, which takes place on map 71.</value>
+  </data>
+  <data name="ImperialGuardianThursday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Thursday, which takes place on map 69.</value>
+  </data>
+  <data name="ImperialGuardianFriday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Friday, which takes place on map 70.</value>
+  </data>
+  <data name="ImperialGuardianSaturday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Saturday, which takes place on map 71.</value>
+  </data>
+  <data name="ImperialGuardianSunday" xml:space="preserve">
+    <value>Event definition for the imperial guardian event on Sunday, which takes place on map 72.</value>
+  </data>
+</root>

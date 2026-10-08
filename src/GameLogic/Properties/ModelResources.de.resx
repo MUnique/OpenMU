@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="KanturuTransitionDefinition_TypeCaption" xml:space="preserve">
+    <value>Kanturu-Übergangsdefinition</value>
+  </data>
+  <data name="KanturuTransitionDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Kanturu-Übergangsdefinitionen</value>
+  </data>
+  <data name="KanturuTransitionDefinition_CinematicDuration_Caption" xml:space="preserve">
+    <value>Dauer der Zwischensequenz</value>
+  </data>
+  <data name="KanturuTransitionDefinition_EntryPointX_Caption" xml:space="preserve">
+    <value>Eintrittspunkt X</value>
+  </data>
+  <data name="KanturuTransitionDefinition_EntryPointY_Caption" xml:space="preserve">
+    <value>Eintrittspunkt Y</value>
+  </data>
+  <data name="KanturuTransitionDefinition_WarpAnimationDelay_Caption" xml:space="preserve">
+    <value>Verzögerung der Warp-Animation</value>
+  </data>
+  <data name="KanturuNightmareHpPhase_TypeCaption" xml:space="preserve">
+    <value>Kanturu-Nightmare-HP-Phase</value>
+  </data>
+  <data name="KanturuNightmareHpPhase_TypeCaptionPlural" xml:space="preserve">
+    <value>Kanturu-Nightmare-HP-Phasen</value>
+  </data>
+  <data name="KanturuNightmareHpPhase_HealthPercentage_Caption" xml:space="preserve">
+    <value>Lebensprozentsatz</value>
+  </data>
+  <data name="KanturuNightmareHpPhase_TeleportTargetX_Caption" xml:space="preserve">
+    <value>Teleportziel X</value>
+  </data>
+  <data name="KanturuNightmareHpPhase_TeleportTargetY_Caption" xml:space="preserve">
+    <value>Teleportziel Y</value>
+  </data>
+  <data name="KanturuNightmareHpPhase_MessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel</value>
+  </data>
+  <data name="KanturuTerrainArea_TypeCaption" xml:space="preserve">
+    <value>Kanturu-Geländebereich</value>
+  </data>
+  <data name="KanturuTerrainArea_TypeCaptionPlural" xml:space="preserve">
+    <value>Kanturu-Geländebereiche</value>
+  </data>
+  <data name="KanturuTerrainArea_EndX_Caption" xml:space="preserve">
+    <value>Ende X</value>
+  </data>
+  <data name="KanturuTerrainArea_EndY_Caption" xml:space="preserve">
+    <value>Ende Y</value>
+  </data>
+  <data name="KanturuPhaseDefinition_TypeCaption" xml:space="preserve">
+    <value>Kanturu-Phasendefinition</value>
+  </data>
+  <data name="KanturuPhaseDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Kanturu-Phasendefinitionen</value>
+  </data>
+  <data name="KanturuPhaseDefinition_Kind_Caption" xml:space="preserve">
+    <value>Art</value>
+  </data>
+  <data name="KanturuPhaseDefinition_State_Caption" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="KanturuPhaseDefinition_DetailState_Caption" xml:space="preserve">
+    <value>Detailstatus</value>
+  </data>
+  <data name="KanturuPhaseDefinition_TimeLimit_Caption" xml:space="preserve">
+    <value>Zeitlimit</value>
+  </data>
+  <data name="KanturuPhaseDefinition_SpawnWaveNumber_Caption" xml:space="preserve">
+    <value>Nummer der Spawn-Welle</value>
+  </data>
+  <data name="KanturuPhaseDefinition_StartDelay_Caption" xml:space="preserve">
+    <value>Startverzögerung</value>
+  </data>
+  <data name="KanturuPhaseDefinition_KillTarget_Caption" xml:space="preserve">
+    <value>Kill-Ziel</value>
+  </data>
+  <data name="KanturuPhaseDefinition_CountedMonsters_Caption" xml:space="preserve">
+    <value>Gezählte Monster</value>
+  </data>
+  <data name="KanturuPhaseDefinition_Duration_Caption" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="KanturuPhaseDefinition_StartMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Start</value>
+  </data>
+  <data name="KanturuPhaseDefinition_CompletedMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Abschluss</value>
+  </data>
+  <data name="KanturuPhaseDefinition_StandbyDuration_Caption" xml:space="preserve">
+    <value>Bereitschaftsdauer</value>
+  </data>
+  <data name="KanturuPhaseDefinition_Transition_Caption" xml:space="preserve">
+    <value>Übergang</value>
+  </data>
+  <data name="KanturuEventDefinition_TypeCaption" xml:space="preserve">
+    <value>Kanturu-Eventdefinition</value>
+  </data>
+  <data name="KanturuEventDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Kanturu-Eventdefinitionen</value>
+  </data>
+  <data name="KanturuEventDefinition_IntroSpawnWaveNumber_Caption" xml:space="preserve">
+    <value>Nummer der Intro-Spawn-Welle</value>
+  </data>
+  <data name="KanturuEventDefinition_IntroMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Intro</value>
+  </data>
+  <data name="KanturuEventDefinition_IntroState_Caption" xml:space="preserve">
+    <value>Intro-Status</value>
+  </data>
+  <data name="KanturuEventDefinition_IntroDetailState_Caption" xml:space="preserve">
+    <value>Intro-Detailstatus</value>
+  </data>
+  <data name="KanturuEventDefinition_IntroDuration_Caption" xml:space="preserve">
+    <value>Intro-Dauer</value>
+  </data>
+  <data name="KanturuEventDefinition_MayaAttackInterval_Caption" xml:space="preserve">
+    <value>Maya-Angriffsintervall</value>
+  </data>
+  <data name="KanturuEventDefinition_Phases_Caption" xml:space="preserve">
+    <value>Phasen</value>
+  </data>
+  <data name="KanturuEventDefinition_RequiredItemDurabilityLossInterval_Caption" xml:space="preserve">
+    <value>Intervall des Haltbarkeitsverlusts des benötigten Gegenstands</value>
+  </data>
+  <data name="KanturuEventDefinition_RequiredItemDurabilityLoss_Caption" xml:space="preserve">
+    <value>Haltbarkeitsverlust des benötigten Gegenstands</value>
+  </data>
+  <data name="KanturuEventDefinition_RequiredItemDestroyedMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für zerstörten benötigten Gegenstand</value>
+  </data>
+  <data name="KanturuEventDefinition_BarrierOpeningMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Barrierenöffnung</value>
+  </data>
+  <data name="KanturuEventDefinition_VictoryCinematicDuration_Caption" xml:space="preserve">
+    <value>Dauer der Siegessequenz</value>
+  </data>
+  <data name="KanturuEventDefinition_BarrierAreas_Caption" xml:space="preserve">
+    <value>Barrierenbereiche</value>
+  </data>
+  <data name="KanturuEventDefinition_TowerOfRefinementDuration_Caption" xml:space="preserve">
+    <value>Dauer des Raffinerieturms</value>
+  </data>
+  <data name="KanturuEventDefinition_TowerClosingWarningOffset_Caption" xml:space="preserve">
+    <value>Vorlaufzeit der Turmschließungswarnung</value>
+  </data>
+  <data name="KanturuEventDefinition_TowerConqueredMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für eroberten Turm</value>
+  </data>
+  <data name="KanturuEventDefinition_TowerClosingWarningMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Turmschließungswarnung</value>
+  </data>
+  <data name="KanturuEventDefinition_TowerClosedMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für geschlossenen Turm</value>
+  </data>
+  <data name="KanturuEventDefinition_VictoryMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Sieg</value>
+  </data>
+  <data name="KanturuEventDefinition_DefeatMessageKey_Caption" xml:space="preserve">
+    <value>Nachrichtenschlüssel für Niederlage</value>
+  </data>
+  <data name="KanturuNightmareDefinition_TypeCaption" xml:space="preserve">
+    <value>Kanturu-Nightmare-Definition</value>
+  </data>
+  <data name="KanturuNightmareDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Kanturu-Nightmare-Definitionen</value>
+  </data>
+  <data name="KanturuNightmareDefinition_SpawnTimeout_Caption" xml:space="preserve">
+    <value>Spawn-Zeitlimit</value>
+  </data>
+  <data name="KanturuNightmareDefinition_HealthCheckInterval_Caption" xml:space="preserve">
+    <value>Intervall der Lebensprüfung</value>
+  </data>
+  <data name="KanturuNightmareDefinition_TeleportDelay_Caption" xml:space="preserve">
+    <value>Teleportverzögerung</value>
+  </data>
+  <data name="KanturuNightmareDefinition_SpecialAttackSkillNumber_Caption" xml:space="preserve">
+    <value>Fähigkeitsnummer des Spezialangriffs</value>
+  </data>
+  <data name="KanturuNightmareDefinition_SpecialAttackInterval_Caption" xml:space="preserve">
+    <value>Intervall des Spezialangriffs</value>
+  </data>
+  <data name="KanturuNightmareDefinition_BattleDetailState_Caption" xml:space="preserve">
+    <value>Kampf-Detailstatus</value>
+  </data>
+  <data name="KanturuNightmareDefinition_HpPhases_Caption" xml:space="preserve">
+    <value>HP-Phasen</value>
+  </data>
+  <data name="DoppelgangerPathArea_TypeCaption" xml:space="preserve">
+    <value>Doppelgänger-Pfadbereich</value>
+  </data>
+  <data name="DoppelgangerPathArea_TypeCaptionPlural" xml:space="preserve">
+    <value>Doppelgänger-Pfadbereiche</value>
+  </data>
+  <data name="DoppelgangerHerdSize_TypeCaption" xml:space="preserve">
+    <value>Doppelgänger-Herdengröße</value>
+  </data>
+  <data name="DoppelgangerHerdSize_TypeCaptionPlural" xml:space="preserve">
+    <value>Doppelgänger-Herdengrößen</value>
+  </data>
+  <data name="DoppelgangerHerdSize_StartsAfter_Caption" xml:space="preserve">
+    <value>Beginnt nach</value>
+  </data>
+  <data name="DoppelgangerHerdSize_BaseCount_Caption" xml:space="preserve">
+    <value>Basisanzahl</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_TypeCaption" xml:space="preserve">
+    <value>Doppelgänger-Eventdefinition</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Doppelgänger-Eventdefinitionen</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_MaximumGoalCount_Caption" xml:space="preserve">
+    <value>Maximale Zielanzahl</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_PlayInfoInterval_Caption" xml:space="preserve">
+    <value>Intervall der Spielinfo</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_HerdInterval_Caption" xml:space="preserve">
+    <value>Herdenintervall</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_HerdMonsters_Caption" xml:space="preserve">
+    <value>Herdenmonster</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_HerdSizes_Caption" xml:space="preserve">
+    <value>Herdengrößen</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_AttackFirstChance_Caption" xml:space="preserve">
+    <value>Chance auf Erstangriff</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_AlwaysAttackingMonsters_Caption" xml:space="preserve">
+    <value>Immer angreifende Monster</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_AdditionalSpawns_Caption" xml:space="preserve">
+    <value>Zusätzliche Spawns</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_IceWalkerSpawnTime_Caption" xml:space="preserve">
+    <value>Spawn-Zeit des Ice Walker</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMissionDuration_Caption" xml:space="preserve">
+    <value>Missionsdauer des Ice Walker</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMinimumPosition_Caption" xml:space="preserve">
+    <value>Minimale Position des Ice Walker</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMaximumPosition_Caption" xml:space="preserve">
+    <value>Maximale Position des Ice Walker</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMissionFailedMultiplier_Caption" xml:space="preserve">
+    <value>Multiplikator bei gescheiterter Ice-Walker-Mission</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_MonsterScalings_Caption" xml:space="preserve">
+    <value>Monsterskalierungen</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_InterimChestMonsters_Caption" xml:space="preserve">
+    <value>Monster der Zwischentruhe</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_InterimRewardChest_Caption" xml:space="preserve">
+    <value>Zwischenbelohnungstruhe</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_InterimChestCount_Caption" xml:space="preserve">
+    <value>Anzahl der Zwischentruhen</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_InterimChestDuration_Caption" xml:space="preserve">
+    <value>Dauer der Zwischentruhe</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_LarvaChance_Caption" xml:space="preserve">
+    <value>Larva-Chance</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_FinalRewardChest_Caption" xml:space="preserve">
+    <value>Endbelohnungstruhe</value>
+  </data>
+  <data name="DoppelgangerEventDefinition_Paths_Caption" xml:space="preserve">
+    <value>Pfade</value>
+  </data>
+  <data name="DoppelgangerPath_TypeCaption" xml:space="preserve">
+    <value>Doppelgänger-Pfad</value>
+  </data>
+  <data name="DoppelgangerPath_TypeCaptionPlural" xml:space="preserve">
+    <value>Doppelgänger-Pfade</value>
+  </data>
+  <data name="DoppelgangerPath_MapNumber_Caption" xml:space="preserve">
+    <value>Kartennummer</value>
+  </data>
+  <data name="DoppelgangerPath_Areas_Caption" xml:space="preserve">
+    <value>Bereiche</value>
+  </data>
+  <data name="DoppelgangerMonsterSpawn_TypeCaption" xml:space="preserve">
+    <value>Doppelgänger-Monster-Spawn</value>
+  </data>
+  <data name="DoppelgangerMonsterSpawn_TypeCaptionPlural" xml:space="preserve">
+    <value>Doppelgänger-Monster-Spawns</value>
+  </data>
+  <data name="DoppelgangerMonsterSpawn_SpawnTime_Caption" xml:space="preserve">
+    <value>Spawn-Zeit</value>
+  </data>
+  <data name="DoppelgangerMonsterSpawn_Monsters_Caption" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_TypeCaption" xml:space="preserve">
+    <value>Doppelgänger-Monsterskalierung</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_TypeCaptionPlural" xml:space="preserve">
+    <value>Doppelgänger-Monsterskalierungen</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_MaximumPlayerLevel_Caption" xml:space="preserve">
+    <value>Maximales Spielerlevel</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_LevelMultipliers_Caption" xml:space="preserve">
+    <value>Level-Multiplikatoren</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_HealthMultipliers_Caption" xml:space="preserve">
+    <value>Lebensmultiplikatoren</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_DamageMultipliers_Caption" xml:space="preserve">
+    <value>Schadensmultiplikatoren</value>
+  </data>
+  <data name="DoppelgangerMonsterScaling_DefenseMultipliers_Caption" xml:space="preserve">
+    <value>Verteidigungsmultiplikatoren</value>
+  </data>
+  <data name="SpawnMapStrategy_RandomMap_Caption" xml:space="preserve">
+    <value>Zufällige Karte</value>
+  </data>
+  <data name="SpawnMapStrategy_AllMaps_Caption" xml:space="preserve">
+    <value>Alle Karten</value>
+  </data>
+  <data name="KanturuPhaseKind_MonsterWave_Caption" xml:space="preserve">
+    <value>Monsterwelle</value>
+  </data>
+  <data name="KanturuPhaseKind_Transition_Caption" xml:space="preserve">
+    <value>Übergang</value>
+  </data>
+  <data name="KanturuState_None_Caption" xml:space="preserve">
+    <value>Keiner</value>
+  </data>
+  <data name="KanturuState_Standby_Caption" xml:space="preserve">
+    <value>Bereitschaft</value>
+  </data>
+  <data name="KanturuState_MayaBattle_Caption" xml:space="preserve">
+    <value>Maya-Kampf</value>
+  </data>
+  <data name="KanturuState_NightmareBattle_Caption" xml:space="preserve">
+    <value>Nightmare-Kampf</value>
+  </data>
+  <data name="KanturuState_Tower_Caption" xml:space="preserve">
+    <value>Turm</value>
+  </data>
+  <data name="KanturuState_End_Caption" xml:space="preserve">
+    <value>Ende</value>
+  </data>
+</root>

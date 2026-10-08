@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Map initialization for the duel arena map.
@@ -17,11 +19,6 @@ internal class DuelArena : BaseMapInitializer
     internal const byte Number = 64;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Duel Arena";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DuelArena"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -31,11 +28,16 @@ internal class DuelArena : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.DuelArena);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Lorencia.Number;

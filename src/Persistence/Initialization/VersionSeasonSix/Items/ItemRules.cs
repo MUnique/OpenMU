@@ -95,6 +95,12 @@ public class ItemRules : InitializerBase
         Rule(12, 17, Blocked.Repair), // Orb of Penetration
         Rule(12, 18, Blocked.Repair), // Orb of Ice Arrow
         Rule(12, 19, Blocked.Repair), // Orb of Death Stab
+        Rule(12, 130, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Small Cape of Lord
+        Rule(12, 131, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Small Wing of Curse
+        Rule(12, 132, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Small Wings of Elf
+        Rule(12, 133, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Small Wings of Heaven
+        Rule(12, 134, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Small Wings of Satan
+        Rule(12, 135, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Little Warrior's Cloak
         Rule(13, 0, Blocked.Repair), // Guardian Angel
         Rule(13, 1, Blocked.Repair), // Imp
         Rule(13, 2, Blocked.Repair), // Horn of Uniria
@@ -252,8 +258,17 @@ public class ItemRules : InitializerBase
     /// <param name="gameConfiguration">The game configuration.</param>
     internal static void Apply(GameConfiguration gameConfiguration)
     {
+        Apply(gameConfiguration.Items);
+    }
+
+    /// <summary>
+    /// Applies the <see cref="Rules"/> to the given items. Items which are not listed are skipped.
+    /// </summary>
+    /// <param name="items">The items.</param>
+    internal static void Apply(IEnumerable<ItemDefinition> items)
+    {
         var rules = Rules.ToDictionary(rule => (rule.Group, rule.Number), rule => rule.BlockedActions);
-        foreach (var item in gameConfiguration.Items)
+        foreach (var item in items)
         {
             if (!rules.TryGetValue((item.Group, item.Number), out var blocked))
             {

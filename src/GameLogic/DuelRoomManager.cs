@@ -41,7 +41,7 @@ public class DuelRoomManager
     /// <returns>A <see cref="ValueTask"/> with a free <see cref="DuelRoom"/>.</returns>
     public async ValueTask<DuelRoom?> GetFreeDuelRoomAsync(Player player1, Player player2, CancellationToken cancellationToken = default)
     {
-        using var l = await this._lock.LockAsync(cancellationToken);
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
         for (int i = 0; i < this._duelRooms.Length; i++)
         {
             if (this._duelRooms[i] is null)
@@ -62,7 +62,7 @@ public class DuelRoomManager
     /// <returns>A <see cref="ValueTask"/>.</returns>
     public async ValueTask GiveBackDuelRoomAsync(DuelRoom duelRoom)
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync().ConfigureAwait(false);
         this._duelRooms[duelRoom.Index] = null;
     }
 

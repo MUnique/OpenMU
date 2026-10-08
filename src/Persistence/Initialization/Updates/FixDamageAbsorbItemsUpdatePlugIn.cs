@@ -141,7 +141,7 @@ public class FixDamageAbsorbItemsUpdatePlugIn : UpdatePlugInBase
     private static void FixHarmonyDefenseOption(GameConfiguration gameConfiguration)
     {
         var harmonyOption = gameConfiguration.ItemOptions
-            .FirstOrDefault(io => io.Name == HarmonyOptions.DefenseOptionsName)
+            .FirstOrDefault(io => io.Name.ValueInNeutralLanguage == HarmonyOptions.DefenseOptionsName)
             ?.PossibleOptions.FirstOrDefault(o => o.Number == 7);
         if (harmonyOption is null)
         {

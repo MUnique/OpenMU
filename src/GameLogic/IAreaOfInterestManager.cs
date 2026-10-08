@@ -32,7 +32,11 @@ public interface IAreaOfInterestManager
     /// <param name="target">The new coordinates.</param>
     /// <param name="moveLock">The move lock.</param>
     /// <param name="moveType">Type of the move.</param>
-    ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType);
+    /// <param name="notifyMovedObject">
+    /// If set to <c>true</c>, the moved object is notified about its own move as well.
+    /// Pass <c>false</c> when the move only confirms a position the object already reported itself.
+    /// </param>
+    ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true);
 
     /// <summary>
     /// Gets the object in range.

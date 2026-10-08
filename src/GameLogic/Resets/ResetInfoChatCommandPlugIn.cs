@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("79F2C2C2-2E4C-4F4B-8A74-4227D1209D27")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ResetInfoChatCommandPlugIn_Name), Description = nameof(PlugInResources.ResetInfoChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Shows required costs and gained points for the next reset.", null)]
+[ChatCommandHelp(Command)]
 public class ResetInfoChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/resetinfo";

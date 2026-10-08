@@ -262,7 +262,8 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
             throw new ArgumentNullException(nameof(gameConfiguration), "When cache should be used, the game configuration must be provided.");
         }
 
-        var dbContext = new TypedContext(editType) { CurrentGameConfiguration = gameConfiguration as GameConfiguration };
+        var dbContext = TypedContext.Create(editType);
+        dbContext.CurrentGameConfiguration = gameConfiguration as GameConfiguration;
         if (useCache)
         {
             return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._changeListener, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());

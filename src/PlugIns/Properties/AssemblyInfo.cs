@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("MUnique.OpenMU.PlugIns")]
 
 [assembly: InternalsVisibleTo("MUnique.OpenMU.PlugIns.Tests")]
+[assembly: InternalsVisibleTo("MUnique.OpenMU.Measurements")]

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Noria map.
@@ -19,11 +21,6 @@ internal class Noria : BaseMapInitializer
     internal const byte Number = 3;
 
     /// <summary>
-    /// The default name of the map.
-    /// </summary>
-    internal const string Name = "Noria";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Noria"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class Noria : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Noria);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -70,7 +72,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 26;
-            monster.Designation = "Goblin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Goblin);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -102,7 +104,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 27;
-            monster.Designation = "Chain Scorpion";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChainScorpion);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -130,7 +132,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 28;
-            monster.Designation = "Beetle Monster";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BeetleMonster);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -157,7 +159,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 29;
-            monster.Designation = "Hunter";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Hunter);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 4;
@@ -185,7 +187,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 30;
-            monster.Designation = "Forest Monster";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ForestMonster);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -213,7 +215,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 31;
-            monster.Designation = "Agon";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Agon);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -241,7 +243,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 32;
-            monster.Designation = "Stone Golem";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.StoneGolem);
             monster.MoveRange = 2;
             monster.AttackRange = 2;
             monster.ViewRange = 3;
@@ -268,7 +270,7 @@ internal class Noria : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 33;
-            monster.Designation = "Elite Goblin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.EliteGoblin);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;

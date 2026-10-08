@@ -57,7 +57,7 @@ with `-adminpanel:disabled`.
 | [Chat commands](chat-commands.md) | Which in-game commands exist and who may use them |
 | [Map editor](map-editor.md) | Edit monster spawn areas and gates graphically |
 | [Live map](live-map.md) | Watch what happens on a map in real time |
-| [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana, Prometheus, Zipkin |
+| [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana with logs, metrics and traces |
 | [Users](users.md) | The users which may log into the admin panel |
 | [API keys](authentication.md#api-keys-for-external-applications) | The keys with which external applications use the public API |
 
@@ -97,7 +97,7 @@ Some parts of the panel depend on how the server is hosted:
 
 | | All-in-one | Distributed |
 |---|---|---|
-| Logs | [Log files page](logs-and-monitoring.md#log-files-all-in-one) inside the panel | Links to Grafana/Loki, metrics and Zipkin |
+| Logs | [Log files page](logs-and-monitoring.md#log-files-all-in-one) inside the panel | Links to Grafana for logs, metrics and traces |
 | Live map | Rendered by the panel itself | Reverse-proxied from the game server container |
 | Auto start / auto schema update | Applies | Ignored — listeners always start, schema updates are started manually |
 | After an installation | Ready immediately | The connect server and game server containers have to be restarted |

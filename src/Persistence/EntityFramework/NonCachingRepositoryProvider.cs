@@ -47,8 +47,7 @@ internal class NonCachingRepositoryProvider : RepositoryProvider
     protected void RegisterMissingRepositoriesAsGeneric()
     {
         var registeredTypes = this.Repositories.Keys.ToList();
-        using var entityContext = new EntityDataContext();
-        var modelTypes = entityContext.Model.GetEntityTypes().Select(e => e.ClrType);
+        var modelTypes = EntityDataContext.CompleteModel.GetEntityTypes().Select(e => e.ClrType);
         var missingTypes = modelTypes.Where(t => t.BaseType is not null && !registeredTypes.Contains(t.BaseType));
         foreach (var type in missingTypes)
         {

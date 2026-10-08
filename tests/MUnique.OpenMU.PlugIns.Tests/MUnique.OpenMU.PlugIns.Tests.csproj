@@ -42,4 +42,9 @@
     <ProjectReference Include="..\MUnique.OpenMU.Tests\MUnique.OpenMU.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PlugIns.Generators\MUnique.OpenMU.PlugIns.Generators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>

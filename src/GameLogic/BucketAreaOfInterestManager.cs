@@ -60,10 +60,16 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
 
             bucketInfo.OldBucket = newBucket;
             bucketInfo.NewBucket = null;
-            newBucket?.RemoveAsync(obj);
+            if (newBucket is not null)
+            {
+                await newBucket.RemoveAsync(obj).ConfigureAwait(false);
+            }
 
             bucketInfo.OldBucket = newBucket;
-            oldBucket?.RemoveAsync(obj);
+            if (oldBucket is not null)
+            {
+                await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
+            }
 
             bucketInfo.OldBucket = null;
         }
@@ -90,13 +96,13 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
     }
 
     /// <inheritdoc/>
-    public async ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType)
+    public async ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true)
     {
         var differentBucket = await this.MoveObjectOnMapAsync(obj, target, moveLock, moveType).ConfigureAwait(false);
 
         if (obj is IObservable observable)
         {
-            await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(obj, moveType), true).ConfigureAwait(false);
+            await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(obj, moveType), notifyMovedObject).ConfigureAwait(false);
         }
 
         var observingPlayer = obj as IBucketMapObserver;
@@ -170,7 +176,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
             return false;
         }
 
-        using (await moveLock.LockAsync())
+        using (await moveLock.LockAsync().ConfigureAwait(false))
         {
             var oldPosition = obj.Position;
             Bucket<ILocateable>? oldBucket;

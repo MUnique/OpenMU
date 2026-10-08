@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Level2ndWingOptions" xml:space="preserve">
+    <value>二代翅膀属性</value>
+  </data>
+  <data name="Level3rdWingOptions" xml:space="preserve">
+    <value>三代翅膀属性</value>
+  </data>
+  <data name="AgnisAncientSet" xml:space="preserve">
+    <value>阿莱斯的圣魂套装属性</value>
+  </data>
+  <data name="AncientBonusOfTotalAgility" xml:space="preserve">
+    <value>套装敏捷总值加成</value>
+  </data>
+  <data name="AncientBonusOfTotalEnergy" xml:space="preserve">
+    <value>套装智力总值加成</value>
+  </data>
+  <data name="AncientBonusOfTotalStrength" xml:space="preserve">
+    <value>套装力量总值加成</value>
+  </data>
+  <data name="AncientBonusOfTotalVitality" xml:space="preserve">
+    <value>套装体力总值加成</value>
+  </data>
+  <data name="AnonymousAncientSet" xml:space="preserve">
+    <value>汉斯的强化皮套装属性</value>
+  </data>
+  <data name="AnubisAncientSet" xml:space="preserve">
+    <value>帕希的传说套装属性</value>
+  </data>
+  <data name="ApolloAncientSet" xml:space="preserve">
+    <value>帕西的革套装属性</value>
+  </data>
+  <data name="ArgoAncientSet" xml:space="preserve">
+    <value>安吉拉的精灵套装属性</value>
+  </data>
+  <data name="AruanAncientSet" xml:space="preserve">
+    <value>安吉拉的强化女神套装属性</value>
+  </data>
+  <data name="BarnakeAncientSet" xml:space="preserve">
+    <value>帕西的强化革套装属性</value>
+  </data>
+  <data name="BaseDamageBonusPhysicalAndWizardryMinAndMaxOption" xml:space="preserve">
+    <value>基础伤害追加属性（物理及魔法，最小值和最大值）</value>
+  </data>
+  <data name="BaseDefenseOption" xml:space="preserve">
+    <value>基础防御力追加属性</value>
+  </data>
+  <data name="BerserkerAncientSet" xml:space="preserve">
+    <value>汉斯的强化翡翠套装属性</value>
+  </data>
+  <data name="BroyAncientSet" xml:space="preserve">
+    <value>阿莱斯的强化圣魂套装属性</value>
+  </data>
+  <data name="CapeOfEmperorOptions" xml:space="preserve">
+    <value>帝王披风属性</value>
+  </data>
+  <data name="CapeOfFighterOptions" xml:space="preserve">
+    <value>武者披风属性</value>
+  </data>
+  <data name="CapeOfLordOptions" xml:space="preserve">
+    <value>王者披风属性</value>
+  </data>
+  <data name="CapeOfOverruleOptions" xml:space="preserve">
+    <value>斗皇披风属性</value>
+  </data>
+  <data name="CetoAncientSet" xml:space="preserve">
+    <value>安吉拉的藤套装属性</value>
+  </data>
+  <data name="ChronoAncientSet" xml:space="preserve">
+    <value>露茜的红翼套装属性</value>
+  </data>
+  <data name="CloudAncientSet" xml:space="preserve">
+    <value>汉斯的强化黄金套装属性</value>
+  </data>
+  <data name="CompleteSetBonusLevel10" xml:space="preserve">
+    <value>全套装备奖励属性（强化 +10）</value>
+  </data>
+  <data name="CompleteSetBonusLevel11" xml:space="preserve">
+    <value>全套装备奖励属性（强化 +11）</value>
+  </data>
+  <data name="CompleteSetBonusLevel12" xml:space="preserve">
+    <value>全套装备奖励属性（强化 +12）</value>
+  </data>
+  <data name="CompleteSetBonusLevel13" xml:space="preserve">
+    <value>全套装备奖励属性（强化 +13）</value>
+  </data>
+  <data name="CompleteSetBonusLevel14" xml:space="preserve">
+    <value>全套装备奖励属性（强化 +14）</value>
+  </data>
+  <data name="CompleteSetBonusLevel15" xml:space="preserve">
+    <value>全套装备奖励属性（强化 +15）</value>
+  </data>
+  <data name="CompleteSetBonusAnyLevel" xml:space="preserve">
+    <value>全套装备奖励属性（任意强化等级）</value>
+  </data>
+  <data name="CurseBaseDamageMinAndMaxOption" xml:space="preserve">
+    <value>基础诅咒攻击力追加属性（最小值和最大值）</value>
+  </data>
+  <data name="DarkHorseOptions" xml:space="preserve">
+    <value>黑王马属性</value>
+  </data>
+  <data name="DefenseRatePvMOption" xml:space="preserve">
+    <value>对怪物防御成功率追加属性</value>
+  </data>
+  <data name="DinorantOptions" xml:space="preserve">
+    <value>彩云兽属性</value>
+  </data>
+  <data name="DrakeAncientSet" xml:space="preserve">
+    <value>安吉拉的强化藤套装属性</value>
+  </data>
+  <data name="EliteSkeletonTransformationRing" xml:space="preserve">
+    <value>骷髅战士变身指环属性</value>
+  </data>
+  <data name="ElvianAncientSet" xml:space="preserve">
+    <value>安吉拉的强化风套装属性</value>
+  </data>
+  <data name="EnisAncientSet" xml:space="preserve">
+    <value>帕希的强化传说套装属性</value>
+  </data>
+  <data name="EpleteAncientSet" xml:space="preserve">
+    <value>汉斯的翡翠套装属性</value>
+  </data>
+  <data name="EvisAncientSet" xml:space="preserve">
+    <value>帕西的骷髅套装属性</value>
+  </data>
+  <data name="ExcellentDefenseOptions" xml:space="preserve">
+    <value>卓越防御属性</value>
+  </data>
+  <data name="ExcellentPhysicalAttackOptions" xml:space="preserve">
+    <value>卓越物理攻击属性</value>
+  </data>
+  <data name="ExcellentWizardryAttackOptions" xml:space="preserve">
+    <value>卓越魔法攻击属性</value>
+  </data>
+  <data name="FaseAncientSet" xml:space="preserve">
+    <value>安吉拉的强化天蚕套装属性</value>
+  </data>
+  <data name="FenrirOptions" xml:space="preserve">
+    <value>炎狼兽属性</value>
+  </data>
+  <data name="GaiaAncientSet" xml:space="preserve">
+    <value>安吉拉的天蚕套装属性</value>
+  </data>
+  <data name="GaionAncientSet" xml:space="preserve">
+    <value>凯文的亚特兰蒂斯套装属性</value>
+  </data>
+  <data name="GarudaAncientSet" xml:space="preserve">
+    <value>汉斯的黄金套装属性</value>
+  </data>
+  <data name="GuardianOptionArmor" xml:space="preserve">
+    <value>380级装备属性（铠）</value>
+  </data>
+  <data name="GuardianOptionBoots" xml:space="preserve">
+    <value>380级装备属性（靴）</value>
+  </data>
+  <data name="GuardianOptionGloves" xml:space="preserve">
+    <value>380级装备属性（护手）</value>
+  </data>
+  <data name="GuardianOptionHelm" xml:space="preserve">
+    <value>380级装备属性（盔）</value>
+  </data>
+  <data name="GuardianOptionPants" xml:space="preserve">
+    <value>380级装备属性（护腿）</value>
+  </data>
+  <data name="GuardianOptionWeapon" xml:space="preserve">
+    <value>380级装备属性（武器）</value>
+  </data>
+  <data name="GywenAncientSet" xml:space="preserve">
+    <value>安吉拉的女神套装属性</value>
+  </data>
+  <data name="HarmonyDefenseOptions" xml:space="preserve">
+    <value>再生防御属性</value>
+  </data>
+  <data name="HarmonyPhysicalAttackOptions" xml:space="preserve">
+    <value>再生物理攻击属性</value>
+  </data>
+  <data name="HarmonyWizardryAttackOptions" xml:space="preserve">
+    <value>再生魔法攻击属性</value>
+  </data>
+  <data name="HealthRecoverForJewelery" xml:space="preserve">
+    <value>首饰生命恢复属性</value>
+  </data>
+  <data name="HerasAncientSet" xml:space="preserve">
+    <value>帕西的魔王套装属性</value>
+  </data>
+  <data name="HyonAncientSet" xml:space="preserve">
+    <value>汉斯的龙王套装属性</value>
+  </data>
+  <data name="HyperionAncientSet" xml:space="preserve">
+    <value>汉斯的青铜套装属性</value>
+  </data>
+  <data name="JeweleryOptionMaximumAbility" xml:space="preserve">
+    <value>首饰最大技能值属性</value>
+  </data>
+  <data name="JeweleryOptionMaximumMana" xml:space="preserve">
+    <value>首饰最大魔法值属性</value>
+  </data>
+  <data name="KantataAncientSet" xml:space="preserve">
+    <value>汉斯的白金套装属性</value>
+  </data>
+  <data name="KarisAncientSet" xml:space="preserve">
+    <value>安吉拉的强化精灵套装属性</value>
+  </data>
+  <data name="Luck" xml:space="preserve">
+    <value>幸运属性</value>
+  </data>
+  <data name="MinetAncientSet" xml:space="preserve">
+    <value>帕西的强化魔王套装属性</value>
+  </data>
+  <data name="MistAncientSet" xml:space="preserve">
+    <value>汉斯的强化青铜套装属性</value>
+  </data>
+  <data name="MurenAncientSet" xml:space="preserve">
+    <value>凯文的强化亚特兰蒂斯套装属性</value>
+  </data>
+  <data name="OdinAncientSet" xml:space="preserve">
+    <value>安吉拉的风套装属性</value>
+  </data>
+  <data name="PhysicalBaseDamageMinAndMaxOption" xml:space="preserve">
+    <value>基础物理攻击力追加属性（最小值和最大值）</value>
+  </data>
+  <data name="RaveAncientSet" xml:space="preserve">
+    <value>汉斯的强化白金套装属性</value>
+  </data>
+  <data name="SemedenAncientSet" xml:space="preserve">
+    <value>露茜的强化红翼套装属性</value>
+  </data>
+  <data name="SkeletonTransformationRing" xml:space="preserve">
+    <value>骨架变身指环属性</value>
+  </data>
+  <data name="SocketBonusOptionsArmors" xml:space="preserve">
+    <value>镶嵌奖励属性（防具）</value>
+  </data>
+  <data name="SocketBonusOptionsPhysical" xml:space="preserve">
+    <value>镶嵌奖励属性（物理攻击）</value>
+  </data>
+  <data name="SocketBonusOptionsWizardry" xml:space="preserve">
+    <value>镶嵌奖励属性（魔法攻击）</value>
+  </data>
+  <data name="SocketOptionsEarth" xml:space="preserve">
+    <value>镶嵌属性（土）</value>
+  </data>
+  <data name="SocketOptionsFire" xml:space="preserve">
+    <value>镶嵌属性（火）</value>
+  </data>
+  <data name="SocketOptionsIce" xml:space="preserve">
+    <value>镶嵌属性（冰）</value>
+  </data>
+  <data name="SocketOptionsLightning" xml:space="preserve">
+    <value>镶嵌属性（雷）</value>
+  </data>
+  <data name="SocketOptionsWater" xml:space="preserve">
+    <value>镶嵌属性（水）</value>
+  </data>
+  <data name="SocketOptionsWind" xml:space="preserve">
+    <value>镶嵌属性（风）</value>
+  </data>
+  <data name="SylionAncientSet" xml:space="preserve">
+    <value>帕西的强化骷髅套装属性</value>
+  </data>
+  <data name="ViciousAncientSet" xml:space="preserve">
+    <value>汉斯的强化龙王套装属性</value>
+  </data>
+  <data name="WarriorAncientSet" xml:space="preserve">
+    <value>汉斯的皮套装属性</value>
+  </data>
+  <data name="WingOfDimensionOptions" xml:space="preserve">
+    <value>次元之翼属性</value>
+  </data>
+  <data name="WingOfEternalOptions" xml:space="preserve">
+    <value>时空之翼属性</value>
+  </data>
+  <data name="WingOfIllusionOptions" xml:space="preserve">
+    <value>幻影之翼属性</value>
+  </data>
+  <data name="WingOfRuinOptions" xml:space="preserve">
+    <value>破灭之翼属性</value>
+  </data>
+  <data name="WingOfStormOptions" xml:space="preserve">
+    <value>暴风之翼属性</value>
+  </data>
+  <data name="WingsOfCurseOptions" xml:space="preserve">
+    <value>灾难之翼属性</value>
+  </data>
+  <data name="WingsOfDarknessOptions" xml:space="preserve">
+    <value>暗黑之翼属性</value>
+  </data>
+  <data name="WingsOfDespairOptions" xml:space="preserve">
+    <value>绝望之翼属性</value>
+  </data>
+  <data name="WingsOfDragonOptions" xml:space="preserve">
+    <value>飞龙之翼属性</value>
+  </data>
+  <data name="WingsOfElfOptions" xml:space="preserve">
+    <value>精灵翅膀属性</value>
+  </data>
+  <data name="WingsOfHeavenOptions" xml:space="preserve">
+    <value>天使翅膀属性</value>
+  </data>
+  <data name="WingsOfSatanOptions" xml:space="preserve">
+    <value>恶魔翅膀属性</value>
+  </data>
+  <data name="WingsOfSoulOptions" xml:space="preserve">
+    <value>魔魂之翼属性</value>
+  </data>
+  <data name="WingsOfSpiritsOptions" xml:space="preserve">
+    <value>圣灵之翼属性</value>
+  </data>
+  <data name="WizardryBaseDamageMinAndMaxOption" xml:space="preserve">
+    <value>基础魔法攻击力追加属性（最小值和最大值）</value>
+  </data>
+</root>

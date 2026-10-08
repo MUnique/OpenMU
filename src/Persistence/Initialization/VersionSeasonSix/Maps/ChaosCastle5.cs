@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class ChaosCastle5 : BaseMapInitializer
     internal const byte Number = 22;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Chaos Castle 5";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="ChaosCastle5"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,6 +31,11 @@ internal class ChaosCastle5 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.ChaosCastle5);
+
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Devias.Number;
 
@@ -41,7 +43,7 @@ internal class ChaosCastle5 : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

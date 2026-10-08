@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class Raklion : BaseMapInitializer
     internal const byte Number = 57;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "LaCleon"; // Raklion
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Raklion"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class Raklion : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.LaCleon); // Raklion
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -180,7 +182,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 454;
-            monster.Designation = "Ice Walker";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IceWalker);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -213,7 +215,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 455;
-            monster.Designation = "Giant Mammoth";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GiantMammoth);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 6;
@@ -245,7 +247,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 456;
-            monster.Designation = "Ice Giant";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IceGiant);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 7;
@@ -277,7 +279,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 457;
-            monster.Designation = "Coolutin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Coolutin);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -310,7 +312,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 458;
-            monster.Designation = "Iron Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IronKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -342,7 +344,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 562;
-            monster.Designation = "Dark Mammoth";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkMammoth);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 6;
@@ -374,7 +376,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 563;
-            monster.Designation = "Dark Giant";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkGiant);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 8;
@@ -406,7 +408,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 564;
-            monster.Designation = "Dark Coolutin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkCoolutin);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 8;
@@ -438,7 +440,7 @@ internal class Raklion : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 565;
-            monster.Designation = "Dark Iron Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkIronKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.ViewRange = 8;

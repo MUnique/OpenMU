@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -25,15 +27,15 @@ internal class ImperialGuardianInitializer : InitializerBase
     /// <summary>
     /// The days of the event with their map and the coordinates of the entrance of the first zone.
     /// </summary>
-    private static readonly (ImperialGuardianDay Day, byte MapNumber, byte EntranceX, byte EntranceY)[] Days =
+    private static readonly (ImperialGuardianDay Day, byte MapNumber, byte EntranceX, byte EntranceY, LocalizedString Name, LocalizedString Description)[] Days =
     [
-        (ImperialGuardianDay.Monday, FortressOfImperialGuardian1.Number, 231, 15),
-        (ImperialGuardianDay.Tuesday, FortressOfImperialGuardian2.Number, 86, 63),
-        (ImperialGuardianDay.Wednesday, FortressOfImperialGuardian3.Number, 154, 187),
-        (ImperialGuardianDay.Thursday, FortressOfImperialGuardian1.Number, 231, 15),
-        (ImperialGuardianDay.Friday, FortressOfImperialGuardian2.Number, 86, 63),
-        (ImperialGuardianDay.Saturday, FortressOfImperialGuardian3.Number, 154, 187),
-        (ImperialGuardianDay.Sunday, FortressOfImperialGuardian4.Number, 93, 66),
+        (ImperialGuardianDay.Monday, FortressOfImperialGuardian1.Number, 231, 15, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianMonday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianMonday)),
+        (ImperialGuardianDay.Tuesday, FortressOfImperialGuardian2.Number, 86, 63, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianTuesday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianTuesday)),
+        (ImperialGuardianDay.Wednesday, FortressOfImperialGuardian3.Number, 154, 187, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianWednesday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianWednesday)),
+        (ImperialGuardianDay.Thursday, FortressOfImperialGuardian1.Number, 231, 15, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianThursday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianThursday)),
+        (ImperialGuardianDay.Friday, FortressOfImperialGuardian2.Number, 86, 63, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianFriday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianFriday)),
+        (ImperialGuardianDay.Saturday, FortressOfImperialGuardian3.Number, 154, 187, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianSaturday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianSaturday)),
+        (ImperialGuardianDay.Sunday, FortressOfImperialGuardian4.Number, 93, 66, LocalizedString.FromResource(() => MiniGameNames.ImperialGuardianSunday), LocalizedString.FromResource(() => MiniGameDescriptions.ImperialGuardianSunday)),
     ];
 
     /// <summary>
@@ -58,7 +60,7 @@ internal class ImperialGuardianInitializer : InitializerBase
     /// </summary>
     internal void CreateMiniGameDefinitions()
     {
-        foreach (var (day, mapNumber, entranceX, entranceY) in Days)
+        foreach (var (day, mapNumber, entranceX, entranceY, name, description) in Days)
         {
             var id = GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.ImperialGuardian, (short)day);
             if (this.GameConfiguration.MiniGameDefinitions.Any(definition => definition.GetId() == id))
@@ -70,8 +72,8 @@ internal class ImperialGuardianInitializer : InitializerBase
             var definition = this.Context.CreateNew<MiniGameDefinition>();
             definition.SetGuid((short)MiniGameType.ImperialGuardian, (short)day);
             this.GameConfiguration.MiniGameDefinitions.Add(definition);
-            definition.Name = $"Imperial Guardian {day}";
-            definition.Description = $"Event definition for the imperial guardian event on {day}, which takes place on map {mapNumber}.";
+            definition.Name = name;
+            definition.Description = description;
             definition.Type = MiniGameType.ImperialGuardian;
             definition.GameLevel = (byte)day;
             definition.EnterDuration = TimeSpan.FromSeconds(60);

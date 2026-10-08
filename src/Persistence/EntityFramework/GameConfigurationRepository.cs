@@ -16,8 +16,6 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 internal class GameConfigurationRepository : GenericRepository<GameConfiguration>
 {
-    private readonly JsonObjectLoader _objectLoader;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GameConfigurationRepository" /> class.
     /// </summary>
@@ -27,7 +25,6 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     public GameConfigurationRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener)
         : base(repositoryProvider, loggerFactory, changeListener)
     {
-        this._objectLoader = new GameConfigurationJsonObjectLoader();
     }
 
     /// <inheritdoc />
@@ -43,7 +40,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false) is { } config)
+            if (await CreateObjectLoader().LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false) is { } config)
             {
                 currentContext.Context.Attach(config);
                 return config;
@@ -70,7 +67,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
+            var configs = (await CreateObjectLoader().LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
             configs.ForEach(c => currentContext.Context.Attach(c));
             return configs;
         }
@@ -79,4 +76,11 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
             await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
+
+    /// <summary>
+    /// Creates a new object loader for each load. Its reference handler keeps the loaded objects,
+    /// so a shared loader would return the instances of a previous load again and overwrite their values.
+    /// </summary>
+    /// <returns>The new object loader.</returns>
+    private static JsonObjectLoader CreateObjectLoader() => new GameConfigurationJsonObjectLoader();
 }

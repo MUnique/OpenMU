@@ -4,12 +4,16 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Threading;
+
 /// <summary>
 /// The base repository provider.
 /// </summary>
 public class BaseRepositoryProvider : IRepositoryProvider
 {
-    private bool _isInitialized;
+    private readonly Lock _initializationLock = new();
+
+    private volatile bool _isInitialized;
 
     /// <summary>
     /// Gets the repositories for each entity type.
@@ -123,10 +127,20 @@ public class BaseRepositoryProvider : IRepositoryProvider
 
     private void EnsureInitialized()
     {
-        if (!this._isInitialized)
+        if (this._isInitialized)
         {
-            this.Initialize();
-            this._isInitialized = true;
+            return;
+        }
+
+        // A provider is shared by concurrent contexts, e.g. of players logging in at the same time,
+        // so the first accesses may happen concurrently.
+        lock (this._initializationLock)
+        {
+            if (!this._isInitialized)
+            {
+                this.Initialize();
+                this._isInitialized = true;
+            }
         }
     }
 }

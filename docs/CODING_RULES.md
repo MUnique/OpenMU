@@ -138,26 +138,48 @@ When writing the update plugin:
 
 * Derive from `UpdatePlugInBase` and give the class a fresh `[Guid]` — that
   GUID **is** the update's identity (`Key` resolves from it automatically);
-  just make sure the GUID is new (rule 5).
+  just make sure the GUID is new (rule 5). The GUID never changes afterwards.
 * If the update requires another update to be installed first, declare it
   with `DependsOn` (referencing the other plugin's GUID) instead of a
   runtime guard — dependencies are validated eagerly and applied in
-  dependency order.
-* **Never edit an update plugin that has already been released.** Its application
-  is recorded per database, so a change has no effect for anyone who already ran
-  it. Add a new update instead.
-* `CreatedAt` is **today's actual date**. Don't invent one. It also determines
-  the order in which independent pending updates are applied.
+  dependency order. If it requires a specific *version* of another update,
+  give the dependency a minimum version instead:
+  `DependsOn => [new UpdateDependency(otherUpdateKey, minVersion: 2)]`.
+* A released update is corrected by **versioning, not by cloning**:
+  1. Keep the class and its GUID. Increase `Version` and extend `ApplyAsync`,
+     so the fix stays self-contained in the original plugin. Never add a
+     second update plugin for the same data.
+  2. Set `UpdatedAt` to today's date; `CreatedAt` keeps the original date.
+     `UpdatedAt` decides the order in which independent pending updates run.
+  3. Handle every upgrade path: a database may jump from any previous version
+     straight to the current one. Write `ApplyAsync` cumulatively — ensure the
+     final state (set the values, add what's missing) instead of replaying
+     deltas.
+  4. Keep `ApplyAsync` idempotent: applying it twice must not duplicate
+     anything. Check for existing data first, update values in place, never
+     blind-append. `ApplyAsync` stays cumulative by default; only a large data
+     plugin whose re-run would clobber owner customizations may override the
+     `ApplyAsync` overload which additionally receives the installed version
+     (`null` when not installed) and apply just the delta from there.
+* `CreatedAt` is the date the update was first written — today's actual date
+  for a new update. Don't invent one.
 * Decide `IsMandatory` deliberately: mandatory updates cannot be deselected, so
-  they override the server owner's own customizations.
+  they override the server owner's own customizations. A correction to an
+  optional plugin inherits `false`, so owners can skip a fix to content they
+  already installed — that is intended, not a loophole.
 * Where the change differs per game version, write a shared `…Base` class and
   thin `075` / `095d` / `SeasonSix` subclasses. Don't copy the plugin per
   version.
 * Keep the `Name` and `Description` meaningful — server owners read them to
   decide whether an update would overwrite something they customized.
-* Test both paths. `DarkHorseCanFlyTest` is the pattern: one test checks a newly
-  initialized database, one removes the data again and checks that the update
-  plugin restores it (applying it twice, to show it doesn't duplicate anything).
+* Test three paths (tests live in `tests/MUnique.OpenMU.Persistence.Initialization.Tests`,
+  using an in-memory database — no database server needed):
+  1. a freshly initialized database already contains the fixed data;
+  2. an existing database which is missing the data is repaired by applying
+     the update;
+  3. applying the update a second time changes nothing.
+  For a `Version` bump, the repair test starts from the previous version's
+  state (data as the old version left it).
 
 Two related traps:
 

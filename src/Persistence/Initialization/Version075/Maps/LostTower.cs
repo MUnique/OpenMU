@@ -8,6 +8,8 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -21,11 +23,6 @@ internal class LostTower : BaseMapInitializer
     internal const byte Number = 4;
 
     /// <summary>
-    /// The default name of the map.
-    /// </summary>
-    internal const string Name = "Lost Tower";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="LostTower"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -35,11 +32,16 @@ internal class LostTower : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.LostTower);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -658,7 +660,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 34;
-            monster.Designation = "Cursed Wizard";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CursedWizard);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -691,7 +693,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 35;
-            monster.Designation = "Death Gorgon";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathGorgon);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -724,7 +726,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 36;
-            monster.Designation = "Shadow";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Shadow);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -756,7 +758,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 37;
-            monster.Designation = "Devil";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Devil);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -789,7 +791,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 38;
-            monster.Designation = "Balrog";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Balrog);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -822,7 +824,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 39;
-            monster.Designation = "Poison Shadow";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.PoisonShadow);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -856,7 +858,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 40;
-            monster.Designation = "Death Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -888,7 +890,7 @@ internal class LostTower : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 41;
-            monster.Designation = "Death Cow";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathCow);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;

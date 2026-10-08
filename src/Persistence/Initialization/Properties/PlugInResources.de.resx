@@ -1,0 +1,767 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+  <data name="DataInitialization075_Name" xml:space="preserve">
+    <value>Initialisierung Version 0.75</value>
+  </data>
+  <data name="DataInitialization075_Description" xml:space="preserve">
+    <value>Stellt die Ausgangsdaten für Version 0.75 bereit</value>
+  </data>
+  <data name="DataInitialization095d_Name" xml:space="preserve">
+    <value>Initialisierung Version 0.95d</value>
+  </data>
+  <data name="DataInitialization095d_Description" xml:space="preserve">
+    <value>Stellt die Ausgangsdaten für Version 0.95d bereit</value>
+  </data>
+  <data name="DataInitialization_Name" xml:space="preserve">
+    <value>Initialisierung Season 6 Episode 3</value>
+  </data>
+  <data name="DataInitialization_Description" xml:space="preserve">
+    <value>Stellt die Ausgangsdaten für Season 6 Episode 3 bereit.</value>
+  </data>
+  <data name="AddArrowsForFairyElf_Name" xml:space="preserve">
+    <value>Pfeile für Feenelfe</value>
+  </data>
+  <data name="AddArrowsForFairyElf_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Feenelfen-Charakter Pfeile hinzu.</value>
+  </data>
+  <data name="AddChargeForRageFighter_Name" xml:space="preserve">
+    <value>Charge für Wutkämpfer</value>
+  </data>
+  <data name="AddChargeForRageFighter_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Wutkämpfer-Charakter die Fähigkeit Charge hinzu.</value>
+  </data>
+  <data name="AddEnergyBallForDarkWizard_Name" xml:space="preserve">
+    <value>Energy Ball für Dunklen Zauberer</value>
+  </data>
+  <data name="AddEnergyBallForDarkWizard_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Zauberer-Charakter die Fähigkeit Energy Ball hinzu.</value>
+  </data>
+  <data name="AddForceForDarkLord_Name" xml:space="preserve">
+    <value>Force für Dunklen Lord</value>
+  </data>
+  <data name="AddForceForDarkLord_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Lord-Charakter die Fähigkeit Force hinzu.</value>
+  </data>
+  <data name="AddLanceForSummoner_Name" xml:space="preserve">
+    <value>Lance für Beschwörer</value>
+  </data>
+  <data name="AddLanceForSummoner_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Beschwörer-Charakter die Fähigkeit Lance hinzu.</value>
+  </data>
+  <data name="AddRingOfWarriorLevel40ForNewCharacters_Name" xml:space="preserve">
+    <value>Ring of Warrior (Level 40) für neue Charaktere</value>
+  </data>
+  <data name="AddRingOfWarriorLevel40ForNewCharacters_Description" xml:space="preserve">
+    <value>Fügt den Ring hinzu, der auf Level 40 fallen gelassen werden kann.</value>
+  </data>
+  <data name="AddRingOfWarriorLevel80ForNewCharacters_Name" xml:space="preserve">
+    <value>Ring of Warrior (Level 80) für neue Charaktere</value>
+  </data>
+  <data name="AddRingOfWarriorLevel80ForNewCharacters_Description" xml:space="preserve">
+    <value>Fügt den Ring hinzu, der auf Level 80 fallen gelassen werden kann.</value>
+  </data>
+  <data name="AddShortBowForFairyElf_Name" xml:space="preserve">
+    <value>Short Bow für Feenelfe</value>
+  </data>
+  <data name="AddShortBowForFairyElf_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Feenelfen-Charakter einen Short Bow hinzu.</value>
+  </data>
+  <data name="AddShortSwordForDarkLord_Name" xml:space="preserve">
+    <value>Short Sword für Dunklen Lord</value>
+  </data>
+  <data name="AddShortSwordForDarkLord_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Lord-Charakter ein Short Sword hinzu.</value>
+  </data>
+  <data name="AddShortSwordForMagicGladiator_Name" xml:space="preserve">
+    <value>Short Sword für Magischen Gladiator</value>
+  </data>
+  <data name="AddShortSwordForMagicGladiator_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Magischer-Gladiator-Charakter ein Short Sword hinzu.</value>
+  </data>
+  <data name="AddSmallAxeForDarkKnight_Name" xml:space="preserve">
+    <value>Small Axe für Dunklen Ritter</value>
+  </data>
+  <data name="AddSmallAxeForDarkKnight_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Ritter-Charakter eine Small Axe hinzu.</value>
+  </data>
+  <data name="AddSmallShieldForDarkLord_Name" xml:space="preserve">
+    <value>Small Shield für Dunklen Lord</value>
+  </data>
+  <data name="AddSmallShieldForDarkLord_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Lord-Charakter ein Small Shield hinzu.</value>
+  </data>
+  <data name="AddSmallShieldForMagicGladiator_Name" xml:space="preserve">
+    <value>Small Shield für Magischen Gladiator</value>
+  </data>
+  <data name="AddSmallShieldForMagicGladiator_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Magischer-Gladiator-Charakter ein Small Shield hinzu.</value>
+  </data>
+  <data name="AddCrescentMoonSlashForDarkKnight_Name" xml:space="preserve">
+    <value>Crescent Moon Slash für Dunklen Ritter</value>
+  </data>
+  <data name="AddCrescentMoonSlashForDarkKnight_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Ritter-Charakter die Fähigkeit Crescent Moon Slash (aktiv bei Castle Siege) hinzu.</value>
+  </data>
+  <data name="AddStarfallForFairyElf_Name" xml:space="preserve">
+    <value>Starfall für Feenelfe</value>
+  </data>
+  <data name="AddStarfallForFairyElf_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Feenelfen-Charakter die Fähigkeit Starfall (aktiv bei Castle Siege) hinzu.</value>
+  </data>
+  <data name="AddManaRaysForMagicGladiator_Name" xml:space="preserve">
+    <value>Mana Rays für Magischen Gladiator</value>
+  </data>
+  <data name="AddManaRaysForMagicGladiator_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Magischer-Gladiator-Charakter die Fähigkeit Mana Rays (aktiv bei Castle Siege) hinzu.</value>
+  </data>
+  <data name="AddFireBlastForDarkLord_Name" xml:space="preserve">
+    <value>Fire Blast für Dunklen Lord</value>
+  </data>
+  <data name="AddFireBlastForDarkLord_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Dunkler-Lord-Charakter die Fähigkeit Fire Blast (aktiv bei Castle Siege) hinzu.</value>
+  </data>
+  <data name="AddSpiralSlashForMagicGladiator_Name" xml:space="preserve">
+    <value>Spiral Slash für Magischen Gladiator</value>
+  </data>
+  <data name="AddSpiralSlashForMagicGladiator_Description" xml:space="preserve">
+    <value>Fügt einem erstellten Magischer-Gladiator-Charakter die Fähigkeit Spiral Slash (aktiv bei Castle Siege) hinzu.</value>
+  </data>
+  <data name="FixWeaponRisePercentagePlugInSeason6_Name" xml:space="preserve">
+    <value>Korrektur des Steigerungsprozentsatzes von Waffen, der Zauberei-/Fluch-Optionen von Beschwörer-Gegenständen und mehrerer Schadensraten von Flügeln der 3. Stufe</value>
+  </data>
+  <data name="FixWeaponRisePercentagePlugInSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert den Steigerungsprozentsatz von Waffen (Stab, Stock, Buch, Zepter); die Zauberei-/Fluch-Optionen von Beschwörer-Waffen und -Flügeln; sowie die Schadensraten von Wing of Dimension (Erhöhung/Verringerung), Cape of Overrule (Erhöhung/Verringerung) und Cape of Emperor (Verringerung). Enthält außerdem Korrekturen für Divine Staff of Archangel und Eternal Wing Stick.</value>
+  </data>
+  <data name="FixAreaSkillsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Flächenfähigkeiten</value>
+  </data>
+  <data name="FixAreaSkillsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Korrigiert Reichweite, Wirkungsradius und Verzögerung der Fähigkeiten Hellfire, Decay und Ice Storm.</value>
+  </data>
+  <data name="AddMissingMerchantStoresPlugIn_Name" xml:space="preserve">
+    <value>Fehlende Händlerläden hinzufügen</value>
+  </data>
+  <data name="AddMissingMerchantStoresPlugIn_Description" xml:space="preserve">
+    <value>Gibt der Gemischtwarenhändlerin Christine (545), die ein Ladenfenster, aber keine Gegenstände hatte, einen Gemischtwarenladen, geklont von Händler Thompson (231).</value>
+  </data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name" xml:space="preserve">
+    <value>Korrektur von DropsFromMonsters bei Event-Gegenständen Season 6</value>
+  </data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert Event-Gegenstände, bei denen DropsFromMonsters auf true gesetzt ist, wodurch sie auf Level 0 droppen, anstatt ihre eigenen DropItemGroups zu verwenden.</value>
+  </data>
+  <data name="InfinityArrowSkillOnQuestCompletionPlugIn_Name" xml:space="preserve">
+    <value>Fügt die Fähigkeit Infinity Arrow mit Quest hinzu</value>
+  </data>
+  <data name="InfinityArrowSkillOnQuestCompletionPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Fähigkeit Infinity Arrow als Questbelohnung für 'Gain Hero Status (Muse Elf)' hinzu.</value>
+  </data>
+  <data name="RegenerationsRefactorPlugInBase_Name" xml:space="preserve">
+    <value>Überarbeitung der Regenerationen</value>
+  </data>
+  <data name="RegenerationsRefactorPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert und überarbeitet einige Regenerationsattribute (Leben, Mana, AG).</value>
+  </data>
+  <data name="AddDuelConfigurationPlugIn_Name" xml:space="preserve">
+    <value>Duellkonfiguration hinzufügen</value>
+  </data>
+  <data name="AddDuelConfigurationPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt Daten für die Duellkonfiguration hinzu</value>
+  </data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Monsterattribute von Blutburg 7/8</value>
+  </data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Tauscht die Attributwerte zwischen BC7 (Monster 138-143) und BC8 (Monster 428-433), damit die Progression stimmt: BC6 → BC7 → BC8.</value>
+  </data>
+  <data name="AddDoppelgangerDataUpdatePlugIn_Name" xml:space="preserve">
+    <value>Doppelgänger-Daten hinzufügen</value>
+  </data>
+  <data name="AddDoppelgangerDataUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Konfiguration des Doppelgänger-Events hinzu.</value>
+  </data>
+  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Castle-Siege-Registrierung konfigurieren</value>
+  </data>
+  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung konfiguriert den Gegenstand, der für die Castle-Siege-Registrierung mit dem Sign of Lord verwendet wird.</value>
+  </data>
+  <data name="AddKanturuMapContentUpdatePlugIn_Name" xml:space="preserve">
+    <value>Karteninhalte von Kanturu hinzufügen</value>
+  </data>
+  <data name="AddKanturuMapContentUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Bosse von Kanturu (Maya, ihre Hände, Nightmare) und die Spawns der Event-Wellen hinzu.</value>
+  </data>
+  <data name="FinishSummonerMasterTreePlugIn_Name" xml:space="preserve">
+    <value>Meisterbaum des Beschwörers fertigstellen</value>
+  </data>
+  <data name="FinishSummonerMasterTreePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung vervollständigt den Meisterbaum des Beschwörers und korrigiert einige seiner Fähigkeitswerte.</value>
+  </data>
+  <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Name" xml:space="preserve">
+    <value>Attribut für maximale Allianzgröße hinzufügen (Season 6)</value>
+  </data>
+  <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve">
+    <value>Fügt der Spielkonfiguration von Season 6 das globale Basisattribut MaximumAllianceSize mit dem Standardwert 5 hinzu.</value>
+  </data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Antik-Diskriminatoren</value>
+  </data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Diskriminatoren einiger antiker Gegenstände.</value>
+  </data>
+  <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve">
+    <value>Buff-Fähigkeiten des Beschwörers hinzufügen</value>
+  </data>
+  <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Beschwörer-Buff-Fähigkeiten Sleep, Innovation, Damage Reflection und Weakness hinzu. Außerdem korrigiert sie die Option zur vollständigen Reflexion der Flügel der 3. Stufe.</value>
+  </data>
+  <data name="AddIsQuestItemFlagPlugIn_Name" xml:space="preserve">
+    <value>Kennzeichen IsQuestItem hinzufügen</value>
+  </data>
+  <data name="AddIsQuestItemFlagPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung kennzeichnet die vorhandenen Quest-Gegenstände als solche, sodass sie nur von Charakteren mit einer passenden aktiven Quest aufgehoben werden können.</value>
+  </data>
+  <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Einige hinzugefügte Fähigkeiten</value>
+  </data>
+  <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die folgenden Fähigkeiten hinzu: Wizardry Enhance, Increase Health, Increase Block, Ignore Defense.</value>
+  </data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInBase_Name" xml:space="preserve">
+    <value>Korrektur der Resistenzberechnungen von Schmuck</value>
+  </data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Resistenzwerte von Schmuckgegenständen.</value>
+  </data>
+  <data name="FixChaosMixesPlugInBase_Name" xml:space="preserve">
+    <value>Korrektur der Einstellungen der Chaos-Kombinationen</value>
+  </data>
+  <data name="FixChaosMixesPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Einstellungen für die Herstellung von Chaos-Waffen.</value>
+  </data>
+  <data name="FixDamageAbsorbItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur schadensabsorbierender Gegenstände/Fähigkeiten</value>
+  </data>
+  <data name="FixDamageAbsorbItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Einstellungen der Schadensabsorption für Gegenstände und Fähigkeiten.</value>
+  </data>
+  <data name="AddHarmonyOptionWeightsUpdateSeason6_Name" xml:space="preserve">
+    <value>Gewichtungen der Harmonie-Optionen hinzufügen</value>
+  </data>
+  <data name="AddHarmonyOptionWeightsUpdateSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Gewichtungen der Optionen des Juwels der Harmonie hinzu, die für die Optionszuweisung verwendet werden, korrigiert einige Optionen und korrigiert die Kombination zur Gegenstandswiederherstellung</value>
+  </data>
+  <data name="AddQuestItemLimitPlugIn_Name" xml:space="preserve">
+    <value>Limits für Quest-Gegenstände hinzufügen</value>
+  </data>
+  <data name="AddQuestItemLimitPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt Limits für Quest-Gegenstände hinzu, sodass nur ein Gegenstand aufgehoben werden kann.</value>
+  </data>
+  <data name="FinishDarkKnightMasterTreePlugInSeason6_Name" xml:space="preserve">
+    <value>Meisterbaum des Dunklen Ritters fertigstellen</value>
+  </data>
+  <data name="FinishDarkKnightMasterTreePlugInSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung vervollständigt die Fähigkeiten und Effekte des Meisterbaums des Dunklen Ritters. Außerdem korrigiert sie die Schadensberechnung beim Führen von zwei Waffen.</value>
+  </data>
+  <data name="AddLorenMarketJuliaWarpPlugIn_Name" xml:space="preserve">
+    <value>Warp von Julia am Loren-Markt hinzufügen</value>
+  </data>
+  <data name="AddLorenMarketJuliaWarpPlugIn_Description" xml:space="preserve">
+    <value>Macht Market Union Member Julia (547) auf beiden Seiten zu einem funktionierenden Warp-NPC zwischen Lorencia und dem Loren-Markt, anstatt einer leeren Händlerin.</value>
+  </data>
+  <data name="LimitWhiteWizardDropsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Drops des White Wizard begrenzen</value>
+  </data>
+  <data name="LimitWhiteWizardDropsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Begrenzt den Wizard's Ring auf einen pro Charakter.</value>
+  </data>
+  <data name="ChaosCastleDataUpdatePlugIn_Name" xml:space="preserve">
+    <value>Chaos-Castle-Daten</value>
+  </data>
+  <data name="ChaosCastleDataUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung erstellt die Konfigurationsdaten für das Chaos-Castle-Event.</value>
+  </data>
+  <data name="FinishDarkLordMasterTreePlugIn_Name" xml:space="preserve">
+    <value>Meisterbaum des Dunklen Lords fertigstellen</value>
+  </data>
+  <data name="FinishDarkLordMasterTreePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung vervollständigt die Fähigkeiten und Effekte des Meisterbaums des Dunklen Lords.</value>
+  </data>
+  <data name="FixWingsAndCapesCraftingsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Herstellung von Flügeln und Umhängen</value>
+  </data>
+  <data name="FixWingsAndCapesCraftingsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung setzt die richtigen Einstellungen für die Herstellung von Flügeln und Umhängen.</value>
+  </data>
+  <data name="AddRenaItemUpdatePlugIn_Name" xml:space="preserve">
+    <value>Gegenstand Rena hinzufügen</value>
+  </data>
+  <data name="AddRenaItemUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den fehlenden Gegenstand Rena hinzu, der für die Gegenstandsregistrierung benötigt wird.</value>
+  </data>
+  <data name="AddCrestOfMonarchDropGroupUpdateSeason6_Name" xml:space="preserve">
+    <value>Drop-Gruppe für Crest of Monarch hinzufügen</value>
+  </data>
+  <data name="AddCrestOfMonarchDropGroupUpdateSeason6_Description" xml:space="preserve">
+    <value>Fügt Ikarus die Drop-Gegenstandsgruppe für Crest of Monarch (Loch's Feather +1) hinzu.</value>
+  </data>
+  <data name="FixSummonerCurseSkillsPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Fluch-Fähigkeiten des Beschwörers</value>
+  </data>
+  <data name="FixSummonerCurseSkillsPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt fehlende Einstellungen für Flächenfähigkeiten für den Fluch (Buch) des Beschwörers und die Fähigkeit Lightning Shock hinzu.</value>
+  </data>
+  <data name="AddAreaSkillSettingsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Einstellungen für Flächenfähigkeiten hinzufügen</value>
+  </data>
+  <data name="AddAreaSkillSettingsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Fügt die neuen Einstellungen für Flächenfähigkeiten wie Evil Spirit usw. hinzu, damit sie wieder richtig funktionieren.</value>
+  </data>
+  <data name="FinishDarkWizardMasterTreePlugIn_Name" xml:space="preserve">
+    <value>Meisterbaum des Dunklen Zauberers fertigstellen</value>
+  </data>
+  <data name="FinishDarkWizardMasterTreePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung vervollständigt die Erweiterung der Zaubereieffekte im Meisterbaum des Dunklen Zauberers.</value>
+  </data>
+  <data name="RemoveJewelDropLevelGapPlugInBase_Name" xml:space="preserve">
+    <value>Drop-Level-Lücke bei Juwelen entfernen</value>
+  </data>
+  <data name="RemoveJewelDropLevelGapPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung entfernt die bestehende Drop-Level-Lücke für Juwelen und ähnliche Gegenstände, die immer droppen sollten.</value>
+  </data>
+  <data name="FixSetBonusesPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Set-Boni von Gegenständen</value>
+  </data>
+  <data name="FixSetBonusesPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Set-Boni für zusätzliche Verteidigung von +10~15-Sets und die Verteidigungsrate.</value>
+  </data>
+  <data name="AddElfSoldierBuffPlugIn_Name" xml:space="preserve">
+    <value>Buff des Elfensoldaten hinzufügen</value>
+  </data>
+  <data name="AddElfSoldierBuffPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Buff des Elfensoldaten (Verteidigungs- und Schadensbonus) als konfigurierbaren Buff hinzu.</value>
+  </data>
+  <data name="FixSocketSeedCraftingUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Herstellung von Sockel-Samen</value>
+  </data>
+  <data name="FixSocketSeedCraftingUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung setzt die richtigen Einstellungen für die Herstellung von Sockel-Samen.</value>
+  </data>
+  <data name="FixWarriorMorningStarPlugIn_Name" xml:space="preserve">
+    <value>Korrektur des Morning Star des Warrior-Sets</value>
+  </data>
+  <data name="FixWarriorMorningStarPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Waffe des antiken Sets Warrior. Die Hand Axe wird durch den Morning Star ersetzt.</value>
+  </data>
+  <data name="SpawnFixesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrekturen der Spawnpunkte</value>
+  </data>
+  <data name="SpawnFixesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Spawnpunkte von NPCs. 1) Die Crywolf-Statuen werden korrigiert. 2) Wanderhändler und Marlon. 3) Spawn-Auslöser in Chaos Castle 1</value>
+  </data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Name" xml:space="preserve">
+    <value>Korrektur der Schadensberechnungen von Schmuck und Haustieren</value>
+  </data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert schadensbezogene Optionen von Schmuckgegenständen und Haustieren sowie die Resistenzwerte von Schmuck.</value>
+  </data>
+  <data name="RemoveDuplicateStatAttributesPlugInBase_Name" xml:space="preserve">
+    <value>Doppelte Statusattribute entfernen</value>
+  </data>
+  <data name="RemoveDuplicateStatAttributesPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung entfernt Statusattribute, die für eine Charakterklasse mehr als einmal definiert sind.</value>
+  </data>
+  <data name="FixItemRequirementsPlugIn2_Name" xml:space="preserve">
+    <value>Korrektur der Gegenstandsanforderungen (Elfenbögen) v2</value>
+  </data>
+  <data name="FixItemRequirementsPlugIn2_Description" xml:space="preserve">
+    <value>Aktualisiert einige Gegenstandsanforderungen von Elfenbögen, die falsch initialisiert wurden. Dies korrigiert Konfigurationen, die nach der ersten Korrektur, aber vor der Korrektur der Basisdaten erstellt wurden.</value>
+  </data>
+  <data name="FixWeaponRisePercentagePlugInBase_Name" xml:space="preserve">
+    <value>Korrektur des Steigerungsprozentsatzes von Waffen</value>
+  </data>
+  <data name="FixWeaponRisePercentagePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert den Steigerungsprozentsatz von Waffen (Stab)</value>
+  </data>
+  <data name="FixItemRequirementsPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Gegenstandsanforderungen (Elfenbögen)</value>
+  </data>
+  <data name="FixItemRequirementsPlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert einige Gegenstandsanforderungen von Elfenbögen, die falsch initialisiert wurden.</value>
+  </data>
+  <data name="AddCastleSiegeDataUpdatePlugIn_Name" xml:space="preserve">
+    <value>Castle-Siege-Daten hinzufügen</value>
+  </data>
+  <data name="AddCastleSiegeDataUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Castle-Siege-Konfiguration und den persistenten Zustand hinzu.</value>
+  </data>
+  <data name="FixAttackSpeedCalculationUpdate_Name" xml:space="preserve">
+    <value>Korrektur der Berechnung der Angriffsgeschwindigkeit</value>
+  </data>
+  <data name="FixAttackSpeedCalculationUpdate_Description" xml:space="preserve">
+    <value>Fügt Attribute und Beziehungen für die Angriffsgeschwindigkeit hinzu. Fügt Effekte für Ale und Potion of Soul hinzu.</value>
+  </data>
+  <data name="FixItemOptionsAndAttackSpeedPlugInBase_Name" xml:space="preserve">
+    <value>Korrektur von Gegenstandsoptionen und Angriffsgeschwindigkeit</value>
+  </data>
+  <data name="FixItemOptionsAndAttackSpeedPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert einige Gegenstandsoptionen (Schaden, Verteidigungsrate) und die Angriffsgeschwindigkeit von Waffen.</value>
+  </data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Name" xml:space="preserve">
+    <value>Korrektur der Schadensberechnung beim Führen von zwei Waffen</value>
+  </data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Schadensberechnung beim Führen von zwei Waffen.</value>
+  </data>
+  <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Name" xml:space="preserve">
+    <value>Globales Attribut für die Geldmengenrate hinzufügen</value>
+  </data>
+  <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Description" xml:space="preserve">
+    <value>Verschiebt das Attribut MoneyAmountRate von den Basisattributen der Charakterklassen zu den globalen Basisattributen.</value>
+  </data>
+  <data name="FixDamageCalcsPlugInBase_Name" xml:space="preserve">
+    <value>Korrektur der Schadensberechnungen</value>
+  </data>
+  <data name="FixDamageCalcsPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert schadensbezogene Charakterwerte, magische Effekte, Gegenstände und Optionen.</value>
+  </data>
+  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Castle-Siege-Teilnahme konfigurieren</value>
+  </data>
+  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die im Client sichtbaren Effekte für die Teilnehmerseiten von Castle Siege hinzu.</value>
+  </data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Name" xml:space="preserve">
+    <value>Korrektur von DropsFromMonsters bei Event-Gegenständen 0.95d</value>
+  </data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert Event-Gegenstände, bei denen DropsFromMonsters auf true gesetzt ist, wodurch sie auf Level 0 droppen, anstatt ihre eigenen DropItemGroups zu verwenden.</value>
+  </data>
+  <data name="AddItemDropGroupForJewelsUpdate075_Name" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppe für Juwelen erstellen</value>
+  </data>
+  <data name="AddItemDropGroupForJewelsUpdate075_Description" xml:space="preserve">
+    <value>Diese Aktualisierung erstellt eine eigene Drop-Gegenstandsgruppe für Juwelen mit einer Standardchance von 5%.</value>
+  </data>
+  <data name="FixCharStatsForceWavePlugInBase_Name" xml:space="preserve">
+    <value>Korrektur des Verteidigungsmultiplikators des DW</value>
+  </data>
+  <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert den Multiplikator von Beweglichkeit zu Verteidigung beim DW.</value>
+  </data>
+  <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve">
+    <value>Meisterbaum der Elfe fertigstellen</value>
+  </data>
+  <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung vervollständigt den Meisterbaum der Elfe und korrigiert einige ihrer Fähigkeitswerte. Außerdem fügt sie das fehlende zusätzliche Projektil (4.) bei einigen höherstufigen Bögen und Armbrüsten hinzu.</value>
+  </data>
+  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name" xml:space="preserve">
+    <value>Lebensstein von Castle Siege konfigurieren</value>
+  </data>
+  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung konfiguriert die Kampfattribute des Lebenssteins von Castle Siege.</value>
+  </data>
+  <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Attribute der Gegenstandsregistrierung hinzufügen</value>
+  </data>
+  <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt Daten für die Attribute der Gegenstandsregistrierung hinzu.</value>
+  </data>
+  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Name" xml:space="preserve">
+    <value>Wirtschaft von Castle Siege konfigurieren</value>
+  </data>
+  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung aktiviert die Castle-Siege-Wirtschaftsoberfläche des NPCs Senior.</value>
+  </data>
+  <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve">
+    <value>Korrektur der Schadensraten von Flügeln</value>
+  </data>
+  <data name="FixWingsDmgRatesUpdatePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Werte der Tabellen für Schadensabsorption und Erhöhungsbonus pro Level von Flügeln.</value>
+  </data>
+  <data name="FixLifeSwellEffectUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur des Effekts Life Swell</value>
+  </data>
+  <data name="FixLifeSwellEffectUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung setzt die richtigen Einstellungen für den Effekt Life Swell.</value>
+  </data>
+  <data name="AddPointsPerResetAttributePlugIn_Name" xml:space="preserve">
+    <value>Fügt das Attribut PointsPerReset hinzu</value>
+  </data>
+  <data name="AddPointsPerResetAttributePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt das Attribut PointsPerReset hinzu.</value>
+  </data>
+  <data name="ChainLightningUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Chain Lightning</value>
+  </data>
+  <data name="ChainLightningUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung setzt die richtigen Einstellungen für die Fähigkeit Chain Lightning.</value>
+  </data>
+  <data name="FixDefenseCalcsPlugInBase_Name" xml:space="preserve">
+    <value>Korrektur der Verteidigungsberechnungen</value>
+  </data>
+  <data name="FixDefenseCalcsPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert verteidigungsbezogene Charakterwerte, magische Effekte und Optionen.</value>
+  </data>
+  <data name="FixDuelArenaSafezoneMapUpdate_Name" xml:space="preserve">
+    <value>Korrektur der Karte der sicheren Zone des Kolosseums</value>
+  </data>
+  <data name="FixDuelArenaSafezoneMapUpdate_Description" xml:space="preserve">
+    <value>Setzt die sichere Zone des Kolosseums auf Lorencia.</value>
+  </data>
+  <data name="AddMovementSpeedAttributesPlugInBase_Name" xml:space="preserve">
+    <value>Attribute für die Bewegungsgeschwindigkeit hinzufügen</value>
+  </data>
+  <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve">
+    <value>Fügt eine attributbasierte Konfiguration der Bewegungsgeschwindigkeit für Spieler, Monster, Gegenstände, Effekte und Unterwasserkarten hinzu.</value>
+  </data>
+  <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve">
+    <value>Systemkonfiguration hinzufügen</value>
+  </data>
+  <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die neue Systemkonfiguration hinzu.</value>
+  </data>
+  <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve">
+    <value>Kanturu-Daten hinzufügen</value>
+  </data>
+  <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Konfiguration des Events im Raffinerieturm von Kanturu hinzu.</value>
+  </data>
+  <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve">
+    <value>Korrektur der Fähigkeit Drain Life</value>
+  </data>
+  <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve">
+    <value>Aktualisiert die Attribute der Beschwörer-Fähigkeit Drain Life, damit sie richtig funktioniert.</value>
+  </data>
+  <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve">
+    <value>Meisterbaum des Wutkämpfers fertigstellen</value>
+  </data>
+  <data name="FinishRageFighterMasterTreePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung vervollständigt den Meisterbaum des Wutkämpfers und korrigiert einige seiner Fähigkeitswerte.</value>
+  </data>
+  <data name="FixIgnoreDefenseSkillUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Fähigkeit Ignore Defense</value>
+  </data>
+  <data name="FixIgnoreDefenseSkillUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Definition des magischen Effekts für die Fähigkeit Ignore Defense hinzu.</value>
+  </data>
+  <data name="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name" xml:space="preserve">
+    <value>Korrektur der Schmuckoptionen für max. Mana/AG in %</value>
+  </data>
+  <data name="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Berechnung der prozentualen Erhöhung von max. Mana/AG durch die Optionen von Ring of Magic/Pendant of Ability</value>
+  </data>
+  <data name="AddRandomExperienceConfigAttributesPlugInBase_Name" xml:space="preserve">
+    <value>Konfigurationsattribute für zufällige Erfahrung hinzufügen</value>
+  </data>
+  <data name="AddRandomExperienceConfigAttributesPlugInBase_Description" xml:space="preserve">
+    <value>Fügt der Spielkonfiguration neue Konfigurationsattribute für zufällige Erfahrung hinzu.</value>
+  </data>
+  <data name="FixCharStatsForceWavePlugInSeason6_Name" xml:space="preserve">
+    <value>Korrektur der Charakterwerte und der Fähigkeit Force Wave Str des DL</value>
+  </data>
+  <data name="FixCharStatsForceWavePlugInSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert mehrere Charakterwerte und die Meisterfähigkeit Force Wave Strengthener des DL.</value>
+  </data>
+  <data name="FixWarpLevelUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Warp-Level-Reduzierung</value>
+  </data>
+  <data name="FixWarpLevelUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin aktualisiert LevelWarpRequirementReductionPercent für MG, DL und RF.</value>
+  </data>
+  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Name" xml:space="preserve">
+    <value>Projektilanzahl für Triple Shot hinzufügen</value>
+  </data>
+  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Description" xml:space="preserve">
+    <value>Fügt der Fähigkeit Triple Shot eine Projektilanzahl von 3 hinzu, damit die Pfeilrichtungen richtig behandelt werden.</value>
+  </data>
+  <data name="FixSkillMultipliersPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Fähigkeitsmultiplikatoren</value>
+  </data>
+  <data name="FixSkillMultipliersPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Fähigkeitsmultiplikatoren des RF und fügt mehrere fähigkeitsspezifische Multiplikatoren hinzu.</value>
+  </data>
+  <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Monster der White-Wizard-Invasion hinzufügen</value>
+  </data>
+  <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Fügt für bestehende Datenbanken White Wizard (135), Destructive Ogre Soldier (136) und Destructive Ogre Archer (137) sowie Drop-Gruppen hinzu.</value>
+  </data>
+  <data name="AddKalimaPlugIn_Name" xml:space="preserve">
+    <value>Kalima hinzufügen</value>
+  </data>
+  <data name="AddKalimaPlugIn_Description" xml:space="preserve">
+    <value>Dies fügt die Gegenstände hinzu, die zum Betreten der Karte Kalima benötigt werden.</value>
+  </data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInBase_Name" xml:space="preserve">
+    <value>Korrektur von DropsFromMonsters bei Event-Gegenständen</value>
+  </data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert Event-Gegenstände, bei denen DropsFromMonsters auf true gesetzt ist, wodurch sie auf Level 0 droppen, anstatt ihre eigenen DropItemGroups zu verwenden.</value>
+  </data>
+  <data name="FixCharStatsForceWavePlugIn095d_Name" xml:space="preserve">
+    <value>Korrektur der Charakterwerte von DW und MG</value>
+  </data>
+  <data name="FixCharStatsForceWavePlugIn095d_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Werte für den Multiplikator von Beweglichkeit zu Verteidigung (DW) und die Basisenergie (MG).</value>
+  </data>
+  <data name="FixHorseFenrirOptionsSoulBarrierPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Optionen von Dark Horse und Gold Fenrir sowie der Effekte von Soul Barrier</value>
+  </data>
+  <data name="FixHorseFenrirOptionsSoulBarrierPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt Optionen für Dark Horse hinzu und korrigiert die Optionen von Gold Fenrir sowie die Effekte von Soul Barrier.</value>
+  </data>
+  <data name="FixLevelDiv20ExcOptionUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur des Schadens der exzellenten Option Level/20</value>
+  </data>
+  <data name="FixLevelDiv20ExcOptionUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die exzellente Option, die Level / 20 als Zaubereischaden hinzufügt</value>
+  </data>
+  <data name="AddGuardsDataPlugIn_Name" xml:space="preserve">
+    <value>Daten der Wach-NPCs hinzufügen</value>
+  </data>
+  <data name="AddGuardsDataPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt Daten für Wach-NPCs hinzu, damit sie angreifen und sich bewegen können.</value>
+  </data>
+  <data name="FixRageFighterMultipleHitSkillsPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Mehrfachtreffer-Fähigkeiten des Wutkämpfers</value>
+  </data>
+  <data name="FixRageFighterMultipleHitSkillsPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Wutkämpfer-Fähigkeiten Killing Blow, Beast Uppercut, Chain Drive, Dragon Roar und Phoenix Shot die fehlenden Mehrfachtreffer sowie deren magische Effekte hinzu.</value>
+  </data>
+  <data name="FixChaosMixesPlugInSeason6_Name" xml:space="preserve">
+    <value>Korrektur der Einstellungen der Chaos-Kombinationen und mehrerer Optionen</value>
+  </data>
+  <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert die Herstellungseinstellungen für Chaos-Waffe, Flügel der 1. Stufe, Dinorant, Gegenstandslevel-Erhöhung, Flügel der 2. Stufe, Flügel der 3. Stufe, Umhang, SD-Tränke, Wächter-Option und Secromicon; den Wert der Option zur Schadensverringerung von Blue Fenrir (Protect); die Zaubereioption von Wizard's Ring; die Wächter-Optionen von Gegenständen der Stufe 380 für Beschwörer und Wutkämpfer.</value>
+  </data>
+  <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Name" xml:space="preserve">
+    <value>Drop-Gruppen für Fenrir-Materialien hinzufügen</value>
+  </data>
+  <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve">
+    <value>Fügt allen Monstern von Crywolf die Drops von Splinter of Armor (5 %), Bless of Guardian (2 %) und Claw of Beast (0,5 %) hinzu. Materialien, die in Crywolf bereits durch eine andere Gruppe droppen, werden übersprungen.</value>
+  </data>
+  <data name="FixVulcanusWarpIndexUpdatePlugIn_Name" xml:space="preserve">
+    <value>Korrektur des Warp-Index von Vulkanus</value>
+  </data>
+  <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung korrigiert den Index des Warp-Eintrags von Vulkanus auf 42, den der Spielclient von Season 6 anfordert.</value>
+  </data>
+  <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Kleine Flügel und Umhänge hinzufügen</value>
+  </data>
+  <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die fehlenden kleinen Flügel und Umhänge des Item-Shops hinzu: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan und Little Warrior's Cloak. Vorhandene Gegenstände mit denselben Nummern bleiben unverändert.</value>
+  </data>
+  <data name="FixDinorantOptionNumbersPlugIn_Name" xml:space="preserve">
+    <value>Korrektur der Optionsnummern des Dinorant</value>
+  </data>
+  <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung gibt jeder Option des Dinorant eine eigene Nummer, die ihrem Bit im Optionsfeld entspricht, das der Client erwartet.</value>
+  </data>
+  <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve">
+    <value>NPCs der Gesprächs-Plugins konfigurieren</value>
+  </data>
+  <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung konfiguriert die NPCs der Plugins, die das Gespräch mit einem NPC behandeln, z. B. den Reset-NPC oder den Erzengel der Blutburg.</value>
+  </data>
+</root>

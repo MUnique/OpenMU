@@ -40,6 +40,26 @@ public class PowerUpFactoryTest
     }
 
     /// <summary>
+    /// Tests if a fixed option (a normal option without level dependent values, like the dinorant options)
+    /// results in its power up, regardless of the level of the option link.
+    /// </summary>
+    /// <param name="level">The level of the option link.</param>
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(4)]
+    public async ValueTask FixedItemOptionIgnoresLevelAsync(int level)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var factory = this.GetPowerUpFactory();
+        var item = this.GetItemWithOption();
+        item.ItemOptions.Single().Level = level;
+
+        var result = factory.GetPowerUps(item, player.Attributes!);
+
+        Assert.That(result.Sum(p => p.Value), Is.EqualTo(PowerUpStrength));
+    }
+
+    /// <summary>
     /// Tests if the item option of level 0 results in the corresponding power up.
     /// </summary>
     [Test]

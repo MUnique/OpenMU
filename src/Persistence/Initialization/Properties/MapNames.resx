@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Lorencia" xml:space="preserve"><value>Lorencia</value></data>
+  <data name="Dungeon" xml:space="preserve"><value>Dungeon</value></data>
+  <data name="Devias" xml:space="preserve"><value>Devias</value></data>
+  <data name="Noria" xml:space="preserve"><value>Noria</value></data>
+  <data name="LostTower" xml:space="preserve"><value>Lost Tower</value></data>
+  <data name="Atlans" xml:space="preserve"><value>Atlans</value></data>
+  <data name="Tarkan" xml:space="preserve"><value>Tarkan</value></data>
+  <data name="DevilSquare1" xml:space="preserve"><value>Devil Square 1</value></data>
+  <data name="DevilSquare2" xml:space="preserve"><value>Devil Square 2</value></data>
+  <data name="DevilSquare3" xml:space="preserve"><value>Devil Square 3</value></data>
+  <data name="DevilSquare4" xml:space="preserve"><value>Devil Square 4</value></data>
+  <data name="Icarus" xml:space="preserve"><value>Icarus</value></data>
+  <data name="BloodCastle1" xml:space="preserve"><value>Blood Castle 1</value></data>
+  <data name="BloodCastle2" xml:space="preserve"><value>Blood Castle 2</value></data>
+  <data name="BloodCastle3" xml:space="preserve"><value>Blood Castle 3</value></data>
+  <data name="BloodCastle4" xml:space="preserve"><value>Blood Castle 4</value></data>
+  <data name="BloodCastle5" xml:space="preserve"><value>Blood Castle 5</value></data>
+  <data name="BloodCastle6" xml:space="preserve"><value>Blood Castle 6</value></data>
+  <data name="BloodCastle7" xml:space="preserve"><value>Blood Castle 7</value></data>
+  <data name="ChaosCastle1" xml:space="preserve"><value>Chaos Castle 1</value></data>
+  <data name="ChaosCastle2" xml:space="preserve"><value>Chaos Castle 2</value></data>
+  <data name="ChaosCastle3" xml:space="preserve"><value>Chaos Castle 3</value></data>
+  <data name="ChaosCastle4" xml:space="preserve"><value>Chaos Castle 4</value></data>
+  <data name="ChaosCastle5" xml:space="preserve"><value>Chaos Castle 5</value></data>
+  <data name="ChaosCastle6" xml:space="preserve"><value>Chaos Castle 6</value></data>
+  <data name="Kalima1" xml:space="preserve"><value>Kalima 1</value></data>
+  <data name="Kalima2" xml:space="preserve"><value>Kalima 2</value></data>
+  <data name="Kalima3" xml:space="preserve"><value>Kalima 3</value></data>
+  <data name="Kalima4" xml:space="preserve"><value>Kalima 4</value></data>
+  <data name="Kalima5" xml:space="preserve"><value>Kalima 5</value></data>
+  <data name="Kalima6" xml:space="preserve"><value>Kalima 6</value></data>
+  <data name="ValleyOfLoren" xml:space="preserve"><value>Valley of Loren</value></data>
+  <data name="LandOfTrials" xml:space="preserve"><value>Land_of_Trials</value></data>
+  <data name="DevilSquare5" xml:space="preserve"><value>Devil Square 5</value></data>
+  <data name="DevilSquare6" xml:space="preserve"><value>Devil Square 6</value></data>
+  <data name="DevilSquare7" xml:space="preserve"><value>Devil Square 7</value></data>
+  <data name="Aida" xml:space="preserve"><value>Aida</value></data>
+  <data name="CrywolfFortress" xml:space="preserve"><value>Crywolf Fortress</value></data>
+  <data name="Kalima7" xml:space="preserve"><value>Kalima 7</value></data>
+  <data name="KanturuI" xml:space="preserve"><value>Kanturu_I</value></data>
+  <data name="KanturuIII" xml:space="preserve"><value>Kanturu_III</value></data>
+  <data name="KanturuEvent" xml:space="preserve"><value>Kanturu Event</value></data>
+  <data name="BarracksOfBalgass" xml:space="preserve"><value>Barracks of Balgass</value></data>
+  <data name="BalgassRefuge" xml:space="preserve"><value>Balgass Refuge</value></data>
+  <data name="IllusionTemple1" xml:space="preserve"><value>Illusion Temple 1</value></data>
+  <data name="IllusionTemple2" xml:space="preserve"><value>Illusion Temple 2</value></data>
+  <data name="IllusionTemple3" xml:space="preserve"><value>Illusion Temple 3</value></data>
+  <data name="IllusionTemple4" xml:space="preserve"><value>Illusion Temple 4</value></data>
+  <data name="IllusionTemple5" xml:space="preserve"><value>Illusion Temple 5</value></data>
+  <data name="IllusionTemple6" xml:space="preserve"><value>Illusion Temple 6</value></data>
+  <data name="Elvenland" xml:space="preserve"><value>Elvenland</value></data>
+  <data name="BloodCastle8" xml:space="preserve"><value>Blood Castle 8</value></data>
+  <data name="ChaosCastle7" xml:space="preserve"><value>Chaos Castle 7</value></data>
+  <data name="SwampOfCalmness" xml:space="preserve"><value>Swamp Of Calmness</value></data>
+  <data name="LaCleon" xml:space="preserve"><value>LaCleon</value></data>
+  <data name="LaCleonBoss" xml:space="preserve"><value>LaCleon Boss</value></data>
+  <data name="Vulcanus" xml:space="preserve"><value>Vulcanus</value></data>
+  <data name="DuelArena" xml:space="preserve"><value>Duel Arena</value></data>
+  <data name="Doppelgaenger1" xml:space="preserve"><value>Doppelgaenger 1</value></data>
+  <data name="Doppelgaenger2" xml:space="preserve"><value>Doppelgaenger 2</value></data>
+  <data name="Doppelgaenger3" xml:space="preserve"><value>Doppelgaenger 3</value></data>
+  <data name="Doppelgaenger4" xml:space="preserve"><value>Doppelgaenger 4</value></data>
+  <data name="FortressOfImperialGuardian1" xml:space="preserve"><value>Fortress of Imperial Guardian 1</value></data>
+  <data name="FortressOfImperialGuardian2" xml:space="preserve"><value>Fortress of Imperial Guardian 2</value></data>
+  <data name="FortressOfImperialGuardian3" xml:space="preserve"><value>Fortress of Imperial Guardian 3</value></data>
+  <data name="FortressOfImperialGuardian4" xml:space="preserve"><value>Fortress of Imperial Guardian 4</value></data>
+  <data name="LorenMarket" xml:space="preserve"><value>LorenMarket</value></data>
+  <data name="Karutan1" xml:space="preserve"><value>Karutan 1</value></data>
+  <data name="Karutan2" xml:space="preserve"><value>Karutan 2</value></data>
+</root>

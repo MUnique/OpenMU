@@ -434,6 +434,36 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("No", resourceCulture);
             }
         }
+        
+        /// <summary>Gets the localized UnknownSkill text.</summary>
+        public static string UnknownSkill => ResourceManager.GetString("UnknownSkill", resourceCulture)!;
+        
+        /// <summary>Gets the localized AddSkill text.</summary>
+        public static string AddSkill => ResourceManager.GetString("AddSkill", resourceCulture)!;
+        
+        /// <summary>Gets the localized MasterSkillTree text.</summary>
+        public static string MasterSkillTree => ResourceManager.GetString("MasterSkillTree", resourceCulture)!;
+        
+        /// <summary>Gets the localized SpentMasterPoints text.</summary>
+        public static string SpentMasterPoints => ResourceManager.GetString("SpentMasterPoints", resourceCulture)!;
+        
+        /// <summary>Gets the localized ResetMasterSkillTree text.</summary>
+        public static string ResetMasterSkillTree => ResourceManager.GetString("ResetMasterSkillTree", resourceCulture)!;
+        
+        /// <summary>Gets the localized ResetMasterSkillTreeQuestion text.</summary>
+        public static string ResetMasterSkillTreeQuestion => ResourceManager.GetString("ResetMasterSkillTreeQuestion", resourceCulture)!;
+        
+        /// <summary>Gets the localized ResetMasterSkillTreeAndRefundQuestion text.</summary>
+        public static string ResetMasterSkillTreeAndRefundQuestion => ResourceManager.GetString("ResetMasterSkillTreeAndRefundQuestion", resourceCulture)!;
+        
+        /// <summary>Gets the localized MasterSkillTooltip text.</summary>
+        public static string MasterSkillTooltip => ResourceManager.GetString("MasterSkillTooltip", resourceCulture)!;
+        
+        /// <summary>Gets the localized MasterSkillRequirementsNotFulfilled text.</summary>
+        public static string MasterSkillRequirementsNotFulfilled => ResourceManager.GetString("MasterSkillRequirementsNotFulfilled", resourceCulture)!;
+        
+        /// <summary>Gets the localized MasterSkillRequirementsNotYetFulfilled text.</summary>
+        public static string MasterSkillRequirementsNotYetFulfilled => ResourceManager.GetString("MasterSkillRequirementsNotYetFulfilled", resourceCulture)!;
 
         /// <summary>
         ///   Looks up a localized string similar to Create.

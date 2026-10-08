@@ -8,6 +8,8 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Kanturu Relics map.
@@ -20,11 +22,6 @@ internal class KanturuRelics : BaseMapInitializer
     internal const byte Number = 38;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Kanturu_III"; // Kanturu Relics, Kanturu Remain
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="KanturuRelics"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class KanturuRelics : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.KanturuIII); // Kanturu Relics, Kanturu Remain
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -210,7 +212,7 @@ internal class KanturuRelics : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 358;
-            monster.Designation = "Persona";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Persona);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -242,7 +244,7 @@ internal class KanturuRelics : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 359;
-            monster.Designation = "Twin Tale";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.TwinTale);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -274,7 +276,7 @@ internal class KanturuRelics : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 360;
-            monster.Designation = "Dreadfear";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Dreadfear);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 5;

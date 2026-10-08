@@ -74,7 +74,13 @@ public class CollectionAdapter<TClass, TEfCore> : ICollection<TClass>, INotifyCo
     {
         var items = this._rawCollection.ToList();
         this._rawCollection.Clear();
-        this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, items));
+
+        // A reset can't carry the removed items, but the listeners need them,
+        // e.g. to remove the reference of an item to its storage.
+        if (items.Count > 0)
+        {
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items));
+        }
     }
 
     /// <inheritdoc />

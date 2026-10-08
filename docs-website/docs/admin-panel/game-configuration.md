@@ -104,6 +104,20 @@ Item definitions with their requirements, level tables, possible options, socket
 and the classes which may equip them. Items use a dedicated editor with a
 graphical representation instead of the plain generic form.
 
+## Item options, option types and item sets
+
+The game configuration menu provides separate entries for these lists:
+
+* **Item options** (`edit-config-grid/…ItemOptionDefinition/`): available item
+  bonuses, their effects and level-dependent values.
+* **Item option types** (`edit-config-grid/…ItemOptionType/`): categories such as
+  excellent or ancient options.
+* **Item set groups** (`edit-config-grid/…ItemSetGroup/`): item set names, member
+  items and set bonuses.
+
+Each entry opens the existing configuration grid, where entries can be inspected
+and edited without navigating through the full configuration.
+
 ## Item drops
 
 Route `edit-item-drops`

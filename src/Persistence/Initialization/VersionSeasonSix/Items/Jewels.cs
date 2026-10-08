@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Class which contains item definitions for jewels for season 6.
@@ -41,7 +43,7 @@ public class Jewels : Version097d.Items.Jewels
     private ItemDefinition CreateJewelOfGuardian()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Jewel of Guardian";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.JewelOfGuardian);
         itemDefinition.Number = 31;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -61,7 +63,7 @@ public class Jewels : Version097d.Items.Jewels
     private ItemDefinition CreateGemstone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Gemstone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.Gemstone);
         itemDefinition.Number = 41;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -81,7 +83,7 @@ public class Jewels : Version097d.Items.Jewels
     private ItemDefinition CreateJewelOfHarmony()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Jewel of Harmony";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.JewelOfHarmony);
         itemDefinition.Number = 42;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -101,7 +103,7 @@ public class Jewels : Version097d.Items.Jewels
     private ItemDefinition CreateLowerRefineStone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Lower refine stone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.LowerRefineStone);
         itemDefinition.Number = 43;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -121,7 +123,7 @@ public class Jewels : Version097d.Items.Jewels
     private ItemDefinition CreateHigherRefineStone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Higher refine stone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.HigherRefineStone);
         itemDefinition.Number = 44;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;

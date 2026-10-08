@@ -11,6 +11,22 @@ to understand how this all works.
 A plugin manager takes care of discovering plugins and offers methods to retrieve,
 activate, deactivate and to manually register plugins.
 
+Projects which contain plugins reference `MUnique.OpenMU.PlugIns.Generators` as
+analyzer:
+
+```xml
+<ProjectReference Include="..\PlugIns.Generators\MUnique.OpenMU.PlugIns.Generators.csproj"
+                  OutputItemType="Analyzer"
+                  ReferenceOutputAssembly="false" />
+```
+
+It generates a registry of the plugins of the assembly, and the proxies of the
+plugin points which are defined in it. The plugin manager takes the plugins from
+the registry. For assemblies without one, e.g. external plugin assemblies which
+were built without the generator, it searches all types for the `PlugInAttribute`.
+The registries can be disabled with the `AppContext` switch
+`MUnique.OpenMU.PlugIns.DisableGeneratedRegistries`.
+
 ## Plugin Types
 
 The system supports the following kind of plugins. They are used in different

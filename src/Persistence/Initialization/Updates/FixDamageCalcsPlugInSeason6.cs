@@ -170,7 +170,7 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
         }
 
         var armorDamageDecrease = Stats.ArmorDamageDecrease.GetPersistent(gameConfiguration);
-        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Harmony Defense Options");
+        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name.ValueInNeutralLanguage == "Harmony Defense Options");
         if (harmonyDefOptions is not null
             && harmonyDefOptions.PossibleOptions.FirstOrDefault(o => o.Number == 7) is { } dmgDecOpt)
         {

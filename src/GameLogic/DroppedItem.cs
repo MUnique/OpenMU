@@ -200,7 +200,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
 
         var itemWasTemporary = this.Item is TemporaryItem;
-        using (await this._pickupLock.LockAsync())
+        using (await this._pickupLock.LockAsync().ConfigureAwait(false))
         {
             if (!this._availableToPick)
             {
@@ -246,7 +246,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     private async ValueTask<bool> TryStackOnItemAsync(Player player, Item stackTarget)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}, trying to add to an existing item at slot {2}", player, this, stackTarget.ItemSlot);
-        using (await this._pickupLock.LockAsync())
+        using (await this._pickupLock.LockAsync().ConfigureAwait(false))
         {
             if (!this._availableToPick)
             {

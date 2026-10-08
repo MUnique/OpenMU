@@ -228,7 +228,7 @@ internal static class BotMasterHandler
         if (definition.Rank > 1
             && !player.SelectedCharacter!.LearnedSkills.Any(l =>
                 l.Skill?.MasterDefinition?.Root is { } root
-                && root.Id == definition.Root?.Id
+                && root.Equals(definition.Root)
                 && l.Skill.MasterDefinition.Rank == definition.Rank - 1
                 && l.Level >= RankUnlockLevel))
         {

@@ -895,6 +895,12 @@
   <data name="ConfigurationUpdate_CreatedAt_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Caption" xml:space="preserve">
+    <value>更新时间</value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="ConfigurationUpdate_InstalledAt_Caption" xml:space="preserve">
     <value>安装时间</value>
   </data>
@@ -914,12 +920,6 @@
     <value>初始化键</value>
   </data>
   <data name="ConfigurationUpdateState_InitializationKey_Description" xml:space="preserve">
-    <value></value>
-  </data>
-  <data name="ConfigurationUpdateState_CurrentInstalledVersion_Caption" xml:space="preserve">
-    <value>当前已安装版本</value>
-  </data>
-  <data name="ConfigurationUpdateState_CurrentInstalledVersion_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="ConnectServerDefinition_TypeCaption" xml:space="preserve">
@@ -2406,6 +2406,42 @@
   </data>
   <data name="ItemDefinition_StorageLimitPerCharacter_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="ItemDefinition_IsTradable_Caption" xml:space="preserve">
+    <value>可交易</value>
+  </data>
+  <data name="ItemDefinition_IsTradable_Description" xml:space="preserve">
+    <value>是否允许将此物品放入与其他玩家的交易中。</value>
+  </data>
+  <data name="ItemDefinition_IsDroppable_Caption" xml:space="preserve">
+    <value>可丢弃到地面</value>
+  </data>
+  <data name="ItemDefinition_IsDroppable_Description" xml:space="preserve">
+    <value>是否允许将此物品丢弃到地面。不控制怪物是否掉落此物品。</value>
+  </data>
+  <data name="ItemDefinition_IsStorable_Caption" xml:space="preserve">
+    <value>可存入仓库</value>
+  </data>
+  <data name="ItemDefinition_IsStorable_Description" xml:space="preserve">
+    <value>是否允许将此物品存入仓库。</value>
+  </data>
+  <data name="ItemDefinition_IsSellableToNpc_Caption" xml:space="preserve">
+    <value>可出售给 NPC</value>
+  </data>
+  <data name="ItemDefinition_IsSellableToNpc_Description" xml:space="preserve">
+    <value>是否允许将此物品出售给 NPC 商人。</value>
+  </data>
+  <data name="ItemDefinition_IsPersonalStoreSellable_Caption" xml:space="preserve">
+    <value>可通过个人商店出售</value>
+  </data>
+  <data name="ItemDefinition_IsPersonalStoreSellable_Description" xml:space="preserve">
+    <value>是否允许在个人商店中出售此物品。</value>
+  </data>
+  <data name="ItemDefinition_IsRepairable_Caption" xml:space="preserve">
+    <value>可常规修理</value>
+  </data>
+  <data name="ItemDefinition_IsRepairable_Description" xml:space="preserve">
+    <value>是否允许通过 NPC 或背包修理功能修复此物品。不影响使用宝石等特殊方式恢复耐久度。</value>
   </data>
   <data name="ItemDefinition_Name_Caption" xml:space="preserve">
     <value>名称</value>

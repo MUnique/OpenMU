@@ -36,6 +36,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private readonly IConfigurationChangeMediator _changeMediator;
     private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly IEventPublisher _eventPublisher;
+    private readonly IMapHostLocator _mapHostLocator;
 
     private readonly IPacketArchive? _packetArchive;
 
@@ -85,6 +86,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
 
         this._logger = this._loggerFactory.CreateLogger<GameServerContainer>();
         this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer);
+        this._mapHostLocator = new InProcessMapHostLocator(this._gameServers);
         this._packetArchive = packetArchive;
     }
 
@@ -180,7 +182,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private void InitializeGameServer(GameServerDefinition gameServerDefinition)
     {
         using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator, this._packetArchive);
+        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator, this._packetArchive, this._mapHostLocator);
         gameServer.Context.ServerTimeZone = Program.ServerTimeZone;
         foreach (var endpoint in gameServerDefinition.Endpoints)
         {

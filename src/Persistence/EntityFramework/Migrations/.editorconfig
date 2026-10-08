@@ -1,0 +1,5 @@
+# EF Core scaffolds 'using' directives outside the namespace (SA1200)
+# and without a copyright header. These files are generated — don't
+# re-fix them on every migration.
+[*.cs]
+dotnet_diagnostic.SA1200.severity = none

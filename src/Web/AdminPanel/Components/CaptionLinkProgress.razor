@@ -1,0 +1,102 @@
+@using MUnique.OpenMU.Persistence.Initialization.Captions
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@* Shows the progress of linking the built-in captions, which can take a while. *@
+<div class="card" role="status" aria-live="polite">
+    <div class="card-body">
+        <h4 class="card-title">@Resources.LinkingBuiltInCaptions</h4>
+        <p class="card-text">@Resources.CaptionsLinkingHint</p>
+
+        <div class="progress mb-3" role="progressbar" aria-valuenow="@this.Percent" aria-valuemin="0" aria-valuemax="100" style="height: 1.5rem;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: @(this.Percent)%;">@(this.Percent) %</div>
+        </div>
+
+        <ul class="list-unstyled mb-2">
+            @foreach (var step in Steps)
+            {
+                <li class="@GetStepCssClass(step)">
+                    @if (step < this.CurrentStep)
+                    {
+                        <span class="oi oi-check text-success me-2" aria-hidden="true"></span>
+                    }
+                    else if (step == this.CurrentStep)
+                    {
+                        <span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-media-record text-body-tertiary me-2" aria-hidden="true"></span>
+                    }
+                    @GetStepCaption(step)
+                </li>
+            }
+        </ul>
+
+        <small class="text-body-secondary">@string.Format(Resources.CaptionsLinkingElapsed, this.Elapsed.ToString(@"m\:ss"))</small>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The relative durations of the steps, used to weight the progress bar.
+    /// The creation of the reference configuration takes by far the longest.
+    /// </summary>
+    private static readonly IReadOnlyDictionary<CaptionLinkStep, int> StepWeights = new Dictionary<CaptionLinkStep, int>
+    {
+        [CaptionLinkStep.LoadingConfiguration] = 10,
+        [CaptionLinkStep.CreatingReferenceConfiguration] = 75,
+        [CaptionLinkStep.LinkingCaptions] = 10,
+        [CaptionLinkStep.Saving] = 5,
+    };
+
+    /// <summary>
+    /// The usual duration of a step. Within a step, the progress approaches the end of the step
+    /// based on the time which elapsed in it, so the bar keeps moving without claiming to be done.
+    /// </summary>
+    private static readonly TimeSpan TypicalStepDuration = TimeSpan.FromSeconds(15);
+
+    private static readonly CaptionLinkStep[] Steps = StepWeights.Keys.Order().ToArray();
+
+    /// <summary>
+    /// Gets or sets the current step.
+    /// </summary>
+    [Parameter]
+    public CaptionLinkStep CurrentStep { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time which elapsed since linking started.
+    /// </summary>
+    [Parameter]
+    public TimeSpan Elapsed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time which elapsed since the current step started.
+    /// </summary>
+    [Parameter]
+    public TimeSpan StepElapsed { get; set; }
+
+    private int Percent
+    {
+        get
+        {
+            var completed = StepWeights.Where(w => w.Key < this.CurrentStep).Sum(w => w.Value);
+            if (!StepWeights.TryGetValue(this.CurrentStep, out var currentWeight))
+            {
+                return completed == 0 ? 0 : 100;
+            }
+
+            var fractionOfStep = 1 - Math.Exp(-this.StepElapsed.TotalSeconds / TypicalStepDuration.TotalSeconds);
+            return (int)Math.Min(99, completed + (currentWeight * 0.95 * fractionOfStep));
+        }
+    }
+
+    private static string GetStepCaption(CaptionLinkStep step)
+    {
+        return Resources.ResourceManager.GetString($"CaptionLinkStep_{step}", Resources.Culture) ?? step.ToString();
+    }
+
+    private string GetStepCssClass(CaptionLinkStep step)
+    {
+        return step == this.CurrentStep ? "fw-semibold" : step > this.CurrentStep ? "text-body-secondary" : string.Empty;
+    }
+}

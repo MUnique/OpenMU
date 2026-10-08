@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for scroll items which allow a character to learn <see cref="Skill"/>s.
@@ -30,18 +32,18 @@ public class Scrolls : InitializerBase
     /// </summary>
     public override void Initialize()
     {
-        this.CreateScroll(0, 1, "Scroll of Poison", 30, 0, 140, 17000);
-        this.CreateScroll(1, 2, "Scroll of Meteorite", 21, 0, 104, 11000);
-        this.CreateScroll(2, 3, "Scroll of Lighting", 13, 0, 72, 3000);
-        this.CreateScroll(3, 4, "Scroll of Fire Ball", 5, 0, 40, 300);
-        this.CreateScroll(4, 5, "Scroll of Flame", 35, 0, 160, 21000);
-        this.CreateScroll(5, 6, "Scroll of Teleport", 17, 0, 88, 5000);
-        this.CreateScroll(6, 7, "Scroll of Ice", 25, 0, 120, 14000);
-        this.CreateScroll(7, 8, "Scroll of Twister", 40, 0, 180, 25000);
-        this.CreateScroll(8, 9, "Scroll of Evil Spirit", 50, 0, 220, 35000);
-        this.CreateScroll(9, 10, "Scroll of Hellfire", 60, 0, 260, 60000);
-        this.CreateScroll(10, 11, "Scroll of Power Wave", 9, 0, 56, 1100);
-        this.CreateScroll(11, 12, "Scroll of Aqua Beam", 74, 0, 345, 100000);
+        this.CreateScroll(0, 1, LocalizedString.FromResource(() => ItemNames.ScrollOfPoison), 30, 0, 140, 17000);
+        this.CreateScroll(1, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfMeteorite), 21, 0, 104, 11000);
+        this.CreateScroll(2, 3, LocalizedString.FromResource(() => ItemNames.ScrollOfLighting), 13, 0, 72, 3000);
+        this.CreateScroll(3, 4, LocalizedString.FromResource(() => ItemNames.ScrollOfFireBall), 5, 0, 40, 300);
+        this.CreateScroll(4, 5, LocalizedString.FromResource(() => ItemNames.ScrollOfFlame), 35, 0, 160, 21000);
+        this.CreateScroll(5, 6, LocalizedString.FromResource(() => ItemNames.ScrollOfTeleport), 17, 0, 88, 5000);
+        this.CreateScroll(6, 7, LocalizedString.FromResource(() => ItemNames.ScrollOfIce), 25, 0, 120, 14000);
+        this.CreateScroll(7, 8, LocalizedString.FromResource(() => ItemNames.ScrollOfTwister), 40, 0, 180, 25000);
+        this.CreateScroll(8, 9, LocalizedString.FromResource(() => ItemNames.ScrollOfEvilSpirit), 50, 0, 220, 35000);
+        this.CreateScroll(9, 10, LocalizedString.FromResource(() => ItemNames.ScrollOfHellfire), 60, 0, 260, 60000);
+        this.CreateScroll(10, 11, LocalizedString.FromResource(() => ItemNames.ScrollOfPowerWave), 9, 0, 56, 1100);
+        this.CreateScroll(11, 12, LocalizedString.FromResource(() => ItemNames.ScrollOfAquaBeam), 74, 0, 345, 100000);
     }
 
     /// <summary>
@@ -54,7 +56,7 @@ public class Scrolls : InitializerBase
     /// <param name="levelRequirement">The level requirement.</param>
     /// <param name="energyRequirement">The energy requirement.</param>
     /// <param name="money">The money.</param>
-    protected void CreateScroll(byte number, int skillNumber, string name, byte dropLevel, int levelRequirement, int energyRequirement, int money)
+    protected void CreateScroll(byte number, int skillNumber, LocalizedString name, byte dropLevel, int levelRequirement, int energyRequirement, int money)
     {
         var scroll = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(scroll);

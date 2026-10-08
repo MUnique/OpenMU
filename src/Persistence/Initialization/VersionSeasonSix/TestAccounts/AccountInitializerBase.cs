@@ -247,7 +247,7 @@ internal abstract class AccountInitializerBase : InitializerBase
         if (level > 220)
         {
             // Some skills require a completed level 220 quest, so we add it here.
-            var marlonNpc = this.GameConfiguration.Monsters.First(m => m.Designation == "Marlon");
+            var marlonNpc = this.GameConfiguration.Monsters.First(m => m.Designation.ValueInNeutralLanguage == "Marlon");
             if (marlonNpc.Quests
                     .Where(q => q.QualifiedCharacter == character.CharacterClass
                                 || q.QualifiedCharacter!.NextGenerationClass == character.CharacterClass)
@@ -700,7 +700,7 @@ internal abstract class AccountInitializerBase : InitializerBase
             ancient.ItemOptions.Add(luck);
         }
 
-        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name == ancientName);
+        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name.ValueInNeutralLanguage == ancientName);
         var itemOfSet = set.Items.First(i => i.ItemDefinition == ancient.Definition);
         if (itemOfSet.BonusOption is { })
         {

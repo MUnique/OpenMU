@@ -8,6 +8,11 @@ spec:
   metadata:
   - name: host
     value: "amqp://rabbit:5672"
+  # Each process needs its own queue to receive every message, also when multiple processes
+  # share the same app id, like the game servers. Dapr takes the pod name from the POD_NAME
+  # environment variable of the sidecar, which is set automatically on Kubernetes.
+  - name: consumerID
+    value: "{podName}"
   - name: durable
     value: "true"
   - name: deletedWhenUnused

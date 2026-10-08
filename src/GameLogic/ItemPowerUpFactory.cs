@@ -267,8 +267,8 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
             var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
 
-            // Dinorant options are an exception.
-            if (optionOfLevel is null && level > 1 && item.Definition!.Skill?.Number != 49)
+            // Fixed options (e.g. of the Dinorant) have no level dependent values, so their level doesn't matter.
+            if (optionOfLevel is null && level > 1 && !option.IsFixedOption())
             {
                 this._logger.LogWarning("Item {item} (id {itemId}) has IncreasableItemOption ({option}, id {optionId}) with level {level}, but no definition in LevelDependentOptions.", item, item.GetId(), option, option.GetId(), level);
                 continue;

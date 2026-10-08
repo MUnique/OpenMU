@@ -282,8 +282,17 @@ public class MiniGameStartPlugInTests
         await this._plugIn.StartForTestAsync(state).ConfigureAwait(false);
         Assert.That(notifications, Is.EqualTo(new[] { "Open 2" }));
 
-        Assert.That(game.SkipCurrentWait(), Is.True);
+        // The game loop runs in the background, so the entering phase may not have started its wait yet.
+        // A skip only affects a running wait, so we retry until it hits it.
         var deadline = DateTime.UtcNow.AddSeconds(10);
+        var skipped = game.SkipCurrentWait();
+        while (!skipped && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(10).ConfigureAwait(false);
+            skipped = game.SkipCurrentWait();
+        }
+
+        Assert.That(skipped, Is.True);
         while (game.State == MiniGameState.Open && DateTime.UtcNow < deadline)
         {
             await Task.Delay(50).ConfigureAwait(false);

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Karutan1 map.
@@ -19,11 +21,6 @@ internal class Karutan1 : BaseMapInitializer
     internal const byte Number = 80;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Karutan 1";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Karutan1"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class Karutan1 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Karutan1);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -184,7 +186,7 @@ internal class Karutan1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 569;
-            monster.Designation = "Venomous Chain Scorpion";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.VenomousChainScorpion);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
@@ -215,7 +217,7 @@ internal class Karutan1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 570;
-            monster.Designation = "Bone Scorpion";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BoneScorpion);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
@@ -246,7 +248,7 @@ internal class Karutan1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 571;
-            monster.Designation = "Orcus";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Orcus);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
@@ -277,7 +279,7 @@ internal class Karutan1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 573;
-            monster.Designation = "Crypta";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Crypta);
             monster.MoveRange = 6;
             monster.AttackRange = 1;
             monster.ViewRange = 10;
@@ -308,7 +310,7 @@ internal class Karutan1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 574;
-            monster.Designation = "Crypos";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Crypos);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;

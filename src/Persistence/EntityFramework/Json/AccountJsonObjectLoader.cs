@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
+using System.Text.Json.Serialization;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -14,8 +15,9 @@ public class AccountJsonObjectLoader : JsonObjectLoader
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountJsonObjectLoader"/> class.
     /// </summary>
-    public AccountJsonObjectLoader()
-        : base(new JsonQueryBuilder(), new JsonObjectDeserializer(), new CachingReferenceHandler())
+    /// <param name="configurationResolver">The resolver of the cached configuration objects, which are referenced by the account data.</param>
+    public AccountJsonObjectLoader(ReferenceResolver? configurationResolver = null)
+        : base(new JsonQueryBuilder(), new JsonObjectDeserializer(), new CachingReferenceHandler(configurationResolver))
     {
     }
 }

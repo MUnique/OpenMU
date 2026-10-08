@@ -23,4 +23,9 @@ internal static class AdminPolicies
     /// Gets the policy which requires the administrator role.
     /// </summary>
     internal const string Administrator = "OpenMU.Administrator";
+
+    /// <summary>
+    /// The policy which requires the <see cref="AdminRoles.CashShop"/> role, to grant cash shop coins.
+    /// </summary>
+    internal const string CashShop = "OpenMU.CashShop";
 }

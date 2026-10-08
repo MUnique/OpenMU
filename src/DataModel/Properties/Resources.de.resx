@@ -1,0 +1,283 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="SystemConfiguration_IpResolver_Description" xml:space="preserve">
+	  <value>Legt fest, wie die eigene IP-Adresse ermittelt wird. Sie wird an den Spiel-
+client zurückgemeldet, wenn dieser eine Verbindung zu einem ausgewählten Game-Server (Server-
+auswahl) oder zum Chat-Server (beim Starten eines Chats mit dem Messenger im Spiel) anfordert.
+Dies kann hilfreich sein, wenn der Server in einer Umgebung gestartet wird, in der die öffentliche
+IP von außen nicht erreichbar ist (z. B. weil Sie Ihre IPv4-Adresse teilen
+oder hinter einer Firewall sind) und Sie ihn auf Ihrem Computer oder in Ihrem privaten Netzwerk verwenden möchten.</value>
+	</data>
+	<data name="SystemConfiguration_IpResolver_Name" xml:space="preserve">
+	  <value>IP-Ermittlung</value>
+	</data>
+	<data name="SystemConfiguration_IpResolverParameter_Description" xml:space="preserve">
+	  <value>Legt den Parameter für die IP-Ermittlung fest, wenn sie auf 'Benutzerdefiniert' gesetzt ist</value>
+	</data>
+	<data name="SystemConfiguration_IpResolverParameter_Name" xml:space="preserve">
+	  <value>Benutzerdefinierte IP / Hostname</value>
+	</data>
+	<data name="SystemConfiguration_AutoStart_Name" xml:space="preserve">
+	  <value>Automatischer Start</value>
+	</data>
+	<data name="SystemConfiguration_AutoStart_Description" xml:space="preserve">
+	  <value>Legt fest, ob die (Unter-)Server automatisch gestartet werden sollen, wenn der Serverprozess startet. Diese Einstellung gilt nur für den All-in-one-Server (MUnique.OpenMU.Startup).</value>
+	</data>
+	<data name="SystemConfiguration_ReadConsoleInput_Description" xml:space="preserve">
+	  <value>Legt fest, ob der Benutzer Befehle in der Konsole des Serverprozesses eingeben kann. Diese Einstellung gilt nur für den All-in-one-Server (MUnique.OpenMU.Startup). Sie ersetzt den Startparameter '-deamon'.</value>
+	</data>
+	<data name="SystemConfiguration_ReadConsoleInput_Name" xml:space="preserve">
+	  <value>Konsoleneingabe lesen</value>
+	</data>
+	<data name="SystemConfiguration_TimeZoneId_Name" xml:space="preserve">
+	  <value>Server-Zeitzone</value>
+	</data>
+	<data name="SystemConfiguration_TimeZoneId_Description" xml:space="preserve">
+	  <value>Die Zeitzonen-ID, mit der die Zeiten periodischer Event-Zeitpläne (z. B. Invasionen, Blutburg, Devil Square) interpretiert werden. IANA-IDs werden empfohlen, z. B. 'Europe/Berlin'. Wenn leer, wird UTC verwendet.</value>
+	</data>
+	<data name="SystemConfiguration_Name" xml:space="preserve">
+	  <value>Systemkonfiguration</value>
+	</data>
+	<data name="SystemConfiguration_Description" xml:space="preserve">
+	  <value>Diese Einstellungen gelten systemweit. Beachten Sie, dass sie durch Startparameter und Umgebungsvariablen überschrieben werden können. Weitere Informationen finden Sie in der Startup-Readme.</value>
+	</data>
+	<data name="SystemConfiguration_AutoUpdateSchema_Name" xml:space="preserve">
+	  <value>Datenbankschema automatisch aktualisieren</value>
+	</data>
+	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
+	  <value>Legt fest, ob der All-in-one-Server (MUnique.OpenMU.Startup) das Datenbankschema beim Start des Serverprozesses automatisch aktualisiert. In einer verteilten Installation muss der Benutzer die Aktualisierung manuell über das Admin-Panel starten.</value>
+	</data>
+	<data name="Excellent" xml:space="preserve">
+	  <value>Exzellent</value>
+	</data>
+	<data name="Skill" xml:space="preserve">
+	  <value>Fähigkeit</value>
+	</data>
+	<data name="Luck" xml:space="preserve">
+	  <value>Glück</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzer_Name" xml:space="preserve">
+	  <value>Netzwerkanalyse</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Name" xml:space="preserve">
+	  <value>Größe des Live-Puffers</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Description" xml:space="preserve">
+	  <value>Die Anzahl der Datenpakete, die pro beobachteter Verbindung auf der Seite der Netzwerkanalyse im Speicher gehalten werden. Wenn mehr Pakete eintreffen, werden die ältesten verworfen.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationArchivePath_Name" xml:space="preserve">
+	  <value>Pfad des Beobachtungsarchivs</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationArchivePath_Description" xml:space="preserve">
+	  <value>Der Pfad, in dem der Datenverkehr der beobachteten Konten archiviert wird. Ein relativer Pfad wird relativ zum Verzeichnis der Anwendung aufgelöst. Er darf nicht auf einen Ordner zeigen, der vom Webserver bereitgestellt wird - eine archivierte Sitzung enthält das Login-Paket des Spielers im Klartext.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Name" xml:space="preserve">
+	  <value>Maximale Sitzungsgröße (MB)</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Description" xml:space="preserve">
+	  <value>Die maximale Größe einer Datei einer archivierten Sitzung in Megabyte. Eine Sitzung, die größer wird, wird in einer weiteren Datei fortgesetzt.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Name" xml:space="preserve">
+	  <value>Maximale Archivgröße (MB)</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Description" xml:space="preserve">
+	  <value>Die maximale Größe des gesamten Beobachtungsarchivs in Megabyte. Wird sie überschritten, werden die ältesten Sitzungen entfernt. Ein Wert von 0 bedeutet, dass die Größe unbegrenzt ist.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationRetentionDays_Name" xml:space="preserve">
+	  <value>Aufbewahrung im Archiv (Tage)</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationRetentionDays_Description" xml:space="preserve">
+	  <value>Die Anzahl der Tage, nach denen eine archivierte Sitzung entfernt wird. Ein Wert von 0 bedeutet, dass die Sitzungen für immer aufbewahrt werden.</value>
+	</data>
+	<data name="CastleSiegeScheduleSummary" xml:space="preserve">
+	  <value>{0} am {1} um {2:D2}:{3:D2}</value>
+	</data>
+	<data name="CastleSiegeUpgradeSummary" xml:space="preserve">
+	  <value>Level {0}: Wert={1}, Juwelen={2}, Zen={3}</value>
+	</data>
+	<data name="CastleSiegeZoneSummary" xml:space="preserve">
+	  <value>{0} / {1} bis {2} / {3}</value>
+	</data>
+	<data name="ItemStorageSummary" xml:space="preserve">
+	  <value>{0} Gegenstände, {1} Geld</value>
+	</data>
+	<data name="DayOfWeek_Sunday" xml:space="preserve">
+	  <value>Sonntag</value>
+	</data>
+	<data name="DayOfWeek_Monday" xml:space="preserve">
+	  <value>Montag</value>
+	</data>
+	<data name="DayOfWeek_Tuesday" xml:space="preserve">
+	  <value>Dienstag</value>
+	</data>
+	<data name="DayOfWeek_Wednesday" xml:space="preserve">
+	  <value>Mittwoch</value>
+	</data>
+	<data name="DayOfWeek_Thursday" xml:space="preserve">
+	  <value>Donnerstag</value>
+	</data>
+	<data name="DayOfWeek_Friday" xml:space="preserve">
+	  <value>Freitag</value>
+	</data>
+	<data name="DayOfWeek_Saturday" xml:space="preserve">
+	  <value>Samstag</value>
+	</data>
+	<data name="SpawnPointSummary" xml:space="preserve">
+	  <value>{0} - Anz.: {1} @ {2}/{3}</value>
+	</data>
+	<data name="SpawnAreaSummary" xml:space="preserve">
+	  <value>{0} - Anz.: {1} @ {2}/{3} bis {4}/{5}</value>
+	</data>
+	<data name="SpawnWaveSummary" xml:space="preserve">
+	  <value> - Welle: {0}</value>
+	</data>
+	<data name="EnterGateSummary" xml:space="preserve">
+	  <value>{0} ({1}) (Level {2}) nach {3}</value>
+	</data>
+	<data name="WaveSummary" xml:space="preserve">
+	  <value>Welle {0}: {1}</value>
+	</data>
+	<data name="RectangleSummary" xml:space="preserve">
+	  <value>{0} / {1} bis {2} / {3}</value>
+	</data>
+	<data name="BattleZoneSummary" xml:space="preserve">
+	  <value>Kampfzone ({0})</value>
+	</data>
+	<data name="CastleNpcSummary" xml:space="preserve">
+	  <value>{0} #{1} bei ({2},{3})</value>
+	</data>
+	<data name="DuelConfigSummary" xml:space="preserve">
+	  <value>Duellkonfiguration {0} Arenen, Ausgang: {1}</value>
+	</data>
+	<data name="GameServerConfigSummary" xml:space="preserve">
+	  <value>Standard ({0} Spieler)</value>
+	</data>
+	<data name="RandomItemSummary" xml:space="preserve">
+	  <value>Zufälliger Gegenstand</value>
+	</data>
+	<data name="OptionRequirementSummary" xml:space="preserve">
+	  <value>{0}: Unteroptionstyp {1}, Min. Anzahl {2}</value>
+	</data>
+	<data name="SkillRewardSummary" xml:space="preserve">
+	  <value>Fähigkeit: {0}</value>
+	</data>
+	<data name="AttributeRewardSummary" xml:space="preserve">
+	  <value>Attribut: {0} x {1}</value>
+	</data>
+	<data name="TerrainChangeSummary" xml:space="preserve">
+	  <value>{0} Attribut '{1}' von ({2}, {3}) bis ({4}, {5}); {6}</value>
+	</data>
+	<data name="TerrainSet" xml:space="preserve">
+	  <value>Setzen</value>
+	</data>
+	<data name="TerrainRemove" xml:space="preserve">
+	  <value>Entfernen</value>
+	</data>
+	<data name="TerrainWithClientUpdate" xml:space="preserve">
+	  <value>mit Client-Aktualisierung</value>
+	</data>
+	<data name="TerrainWithoutClientUpdate" xml:space="preserve">
+	  <value>ohne Client-Aktualisierung</value>
+	</data>
+	<data name="ChatServerSummary" xml:space="preserve">
+	  <value>[ChatServerDefinition ServerID={0}, Beschreibung={1}]</value>
+	</data>
+</root>

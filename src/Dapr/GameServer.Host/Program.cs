@@ -4,7 +4,9 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer;
@@ -19,8 +21,8 @@ using GameServer = MUnique.OpenMU.GameServer.GameServer;
 _ = MUnique.OpenMU.GameLogic.Rand.NextInt(1, 2);
 _ = MUnique.OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
-var gameServerId = byte.Parse(Environment.GetEnvironmentVariable("GS_ID") ?? "0");
-var serviceName = $"GameServer{gameServerId + 1}";
+var gameServerId = GameServerIdResolver.Determine();
+var serviceName = $"GameServer{gameServerId}";
 var builder = DaprService.CreateBuilder(serviceName, args);
 var plugInConfigurations = new List<PlugInConfiguration>();
 
@@ -30,7 +32,7 @@ services.AddSingleton<GameServer>()
     .AddSingleton<IGameServer>(s => s.GetService<GameServer>()!)
     .AddSingleton<IList<IManageableServer>>(s => new List<IManageableServer>() { s.GetService<GameServer>()! })
     .AddSingleton(s => s.GetService<GameServer>()!.Context)
-    .AddSingleton<IGameServerStateObserver, GameServerStatePublisher>()
+    .AddSingleton<GameServerStatePublisher>()
     .AddSingleton<ConfigurationChangeMediator>()
     .AddSingleton<IConfigurationChangeMediator>(s => s.GetRequiredService<ConfigurationChangeMediator>())
     .AddSingleton<IConfigurationChangeMediatorListener>(s => s.GetRequiredService<ConfigurationChangeMediator>())
@@ -42,11 +44,16 @@ services.AddSingleton<GameServer>()
     .AddSingleton<IObservableGameServer, ObservableGameServerAdapter>()
     .AddPersistentSingleton<GameServerDefinition>(def => def.ServerID == gameServerId)
     .AddPeristenceProvider()
+    .AddDatabaseHealthCheck()
     .AddPlugInManager(plugInConfigurations)
     .AddIpResolver(args)
     .AddNetworkObservation()
     .AddHostedService<GameServerHostedServiceWrapper>()
     .PublishManageableServer<IGameServer>();
+
+// On shutdown, the game server saves and disconnects all players, which may take longer than the
+// default of 30 seconds. The container runtime should wait longer than that, e.g. 60 seconds.
+services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(50));
 
 builder.AddMapApp();
 

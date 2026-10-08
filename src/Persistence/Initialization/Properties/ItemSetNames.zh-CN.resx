@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Agnis" xml:space="preserve">
+    <value>阿莱斯的圣魂套装</value>
+  </data>
+  <data name="Anonymous" xml:space="preserve">
+    <value>汉斯的强化皮套装</value>
+  </data>
+  <data name="Anubis" xml:space="preserve">
+    <value>帕希的传说套装</value>
+  </data>
+  <data name="Apollo" xml:space="preserve">
+    <value>帕西的革套装</value>
+  </data>
+  <data name="Argo" xml:space="preserve">
+    <value>安吉拉的精灵套装</value>
+  </data>
+  <data name="Aruan" xml:space="preserve">
+    <value>安吉拉的强化女神套装</value>
+  </data>
+  <data name="Barnake" xml:space="preserve">
+    <value>帕西的强化革套装</value>
+  </data>
+  <data name="Berserker" xml:space="preserve">
+    <value>汉斯的强化翡翠套装</value>
+  </data>
+  <data name="Broy" xml:space="preserve">
+    <value>阿莱斯的强化圣魂套装</value>
+  </data>
+  <data name="Ceto" xml:space="preserve">
+    <value>安吉拉的藤套装</value>
+  </data>
+  <data name="Chrono" xml:space="preserve">
+    <value>露茜的红翼套装</value>
+  </data>
+  <data name="Cloud" xml:space="preserve">
+    <value>汉斯的强化黄金套装</value>
+  </data>
+  <data name="Drake" xml:space="preserve">
+    <value>安吉拉的强化藤套装</value>
+  </data>
+  <data name="Elvian" xml:space="preserve">
+    <value>安吉拉的强化风套装</value>
+  </data>
+  <data name="Enis" xml:space="preserve">
+    <value>帕希的强化传说套装</value>
+  </data>
+  <data name="Eplete" xml:space="preserve">
+    <value>汉斯的翡翠套装</value>
+  </data>
+  <data name="Evis" xml:space="preserve">
+    <value>帕西的骷髅套装</value>
+  </data>
+  <data name="Fase" xml:space="preserve">
+    <value>安吉拉的强化天蚕套装</value>
+  </data>
+  <data name="Gaia" xml:space="preserve">
+    <value>安吉拉的天蚕套装</value>
+  </data>
+  <data name="Gaion" xml:space="preserve">
+    <value>凯文的亚特兰蒂斯套装</value>
+  </data>
+  <data name="Garuda" xml:space="preserve">
+    <value>汉斯的黄金套装</value>
+  </data>
+  <data name="Gywen" xml:space="preserve">
+    <value>安吉拉的女神套装</value>
+  </data>
+  <data name="Heras" xml:space="preserve">
+    <value>帕西的魔王套装</value>
+  </data>
+  <data name="Hyon" xml:space="preserve">
+    <value>汉斯的龙王套装</value>
+  </data>
+  <data name="Hyperion" xml:space="preserve">
+    <value>汉斯的青铜套装</value>
+  </data>
+  <data name="Kantata" xml:space="preserve">
+    <value>汉斯的白金套装</value>
+  </data>
+  <data name="Karis" xml:space="preserve">
+    <value>安吉拉的强化精灵套装</value>
+  </data>
+  <data name="Minet" xml:space="preserve">
+    <value>帕西的强化魔王套装</value>
+  </data>
+  <data name="Mist" xml:space="preserve">
+    <value>汉斯的强化青铜套装</value>
+  </data>
+  <data name="Muren" xml:space="preserve">
+    <value>凯文的强化亚特兰蒂斯套装</value>
+  </data>
+  <data name="Odin" xml:space="preserve">
+    <value>安吉拉的风套装</value>
+  </data>
+  <data name="Rave" xml:space="preserve">
+    <value>汉斯的强化白金套装</value>
+  </data>
+  <data name="Semeden" xml:space="preserve">
+    <value>露茜的强化红翼套装</value>
+  </data>
+  <data name="Sylion" xml:space="preserve">
+    <value>帕西的强化骷髅套装</value>
+  </data>
+  <data name="Vicious" xml:space="preserve">
+    <value>汉斯的强化龙王套装</value>
+  </data>
+  <data name="Warrior" xml:space="preserve">
+    <value>汉斯的皮套装</value>
+  </data>
+</root>

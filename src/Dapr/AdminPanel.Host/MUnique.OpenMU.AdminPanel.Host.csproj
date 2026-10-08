@@ -12,6 +12,8 @@
     <UserSecretsId>c2dfacaa-6b66-4d66-9c79-de236b5c05b5</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <!-- The blazor framework scripts (_framework/blazor.web.js) are only included automatically, when the project contains .razor files itself. -->
+    <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
   </PropertyGroup>
 
   <ItemGroup>

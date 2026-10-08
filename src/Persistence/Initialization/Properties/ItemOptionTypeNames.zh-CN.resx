@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="AncientBonusOption" xml:space="preserve">
+    <value>套装额外属性</value>
+  </data>
+  <data name="AncientOption" xml:space="preserve">
+    <value>套装属性</value>
+  </data>
+  <data name="BlackFenrirOption" xml:space="preserve">
+    <value>黑色炎狼兽属性</value>
+  </data>
+  <data name="BlueFenrirOption" xml:space="preserve">
+    <value>蓝色炎狼兽属性</value>
+  </data>
+  <data name="DarkHorseOption" xml:space="preserve">
+    <value>黑王马属性</value>
+  </data>
+  <data name="ExcellentOption" xml:space="preserve">
+    <value>卓越属性</value>
+  </data>
+  <data name="GoldFenrirOption" xml:space="preserve">
+    <value>金色炎狼兽属性</value>
+  </data>
+  <data name="GuardianOption" xml:space="preserve">
+    <value>380级装备属性</value>
+  </data>
+  <data name="JewelOfHarmonyOption" xml:space="preserve">
+    <value>再生属性</value>
+  </data>
+  <data name="LuckCriticalDamageChance5" xml:space="preserve">
+    <value>幸运（幸运一击概率 5%）</value>
+  </data>
+  <data name="Option" xml:space="preserve">
+    <value>追加属性</value>
+  </data>
+  <data name="SocketBonusOption" xml:space="preserve">
+    <value>镶嵌奖励属性</value>
+  </data>
+  <data name="SocketOption" xml:space="preserve">
+    <value>镶嵌属性</value>
+  </data>
+  <data name="WingOption" xml:space="preserve">
+    <value>翅膀属性</value>
+  </data>
+</root>

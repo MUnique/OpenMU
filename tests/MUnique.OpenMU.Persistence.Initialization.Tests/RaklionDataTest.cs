@@ -38,8 +38,8 @@ internal class RaklionDataTest
     }
 
     /// <summary>
-    /// Tests that the updates change the automatic spawns of the hatchery of an existing database to the waves of the event
-    /// and add the skills of Selupan, and that applying them twice doesn't change anything.
+    /// Tests that the update changes the automatic spawns of the hatchery of an existing database to the waves of the event
+    /// and adds the skills of Selupan, and that applying it twice doesn't change anything.
     /// </summary>
     [Test]
     public async Task UpdateChangesSpawnsOfExistingDatabaseAsync()
@@ -58,11 +58,9 @@ internal class RaklionDataTest
         }
 
         var raklionUpdate = new AddRaklionEventUpdatePlugIn();
-        var fallUpdate = new AddSelupanFallSkillUpdatePlugIn();
         for (var i = 0; i < 2; i++)
         {
             await raklionUpdate.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
-            await fallUpdate.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
         }
 
         AssertEventSpawns(gameConfiguration);

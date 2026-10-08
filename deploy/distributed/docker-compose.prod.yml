@@ -31,9 +31,7 @@ services:
       - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - certificates:/etc/nginx/ssl/:ro
     depends_on:
-      - grafana
-      - zipkin
-      - prometheus 
+      - otel-lgtm
 
   certbot:
     image: certbot/certbot:latest
@@ -41,61 +39,23 @@ services:
       - certbot-www:/var/www/certbot/:rw
       - certificates:/etc/letsencrypt/:rw
 
-  grafana:
-    restart: "unless-stopped"
-  prometheus:
-    restart: "unless-stopped"
-  loki:
-    restart: "unless-stopped"
-  minio:
-    restart: "unless-stopped"
-  redis-state:
-    restart: "unless-stopped"
-  dapr-placement:
-    restart: "unless-stopped"
-  rabbit:
-    restart: "unless-stopped"
-  database:
-    restart: "unless-stopped"
-  zipkin:
-    restart: "unless-stopped"
-
-  connectServer:
+  otel-lgtm:
     restart: "unless-stopped"
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      GF_SERVER_ROOT_URL: https://${DOMAIN_NAME}/grafana/
 
-  loginServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  friendServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  guildServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  chatServer:
-    restart: "unless-stopped"
+  centralServer:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   adminPanel:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-  
+
   gameServer0:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   gameServer1:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production

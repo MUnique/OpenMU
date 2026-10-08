@@ -178,6 +178,67 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can now create a character of the class {0}..
+        /// </summary>
+        public static string CashShopCharacterClassUnlocked {
+            get {
+                return ResourceManager.GetString("CashShopCharacterClassUnlocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your inventory has been extended. Select your character again to use the new space..
+        /// </summary>
+        public static string CashShopInventoryExtended {
+            get {
+                return ResourceManager.GetString("CashShopInventoryExtended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your vault has been extended..
+        /// </summary>
+        public static string CashShopVaultExtended {
+            get {
+                return ResourceManager.GetString("CashShopVaultExtended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account Name: {0}.
+        /// </summary>
+        public static string CharacterInfoAccountNameFormat {
+            get {
+                return ResourceManager.GetString("CharacterInfoAccountNameFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Id: {0}
+        ///Name: {1}
+        ///Class: {2}
+        ///Slot: {3}
+        ///Create Date: {4}
+        ///Exp: {5}
+        ///Level Up Points: {6}
+        ///Master Exp: {7}
+        ///Master Lv Up Points: {8}
+        ///Location: {9}({10}, {11})
+        ///Kill Count: {12}
+        ///State Remaining Seconds: {13}
+        ///State: {14}
+        ///Status: {15}
+        ///Used Fruit Points: {16}
+        ///Used Neg Fruit Points: {17}
+        ///Inventory Extensions: {18}.
+        /// </summary>
+        public static string CharacterInfoFormat {
+            get {
+                return ResourceManager.GetString("CharacterInfoFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
         /// </summary>
         public static string DoppelgangerIceWalkerAppeared {
@@ -282,6 +343,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GensRequiredToCreateGuild {
             get {
                 return ResourceManager.GetString("GensRequiredToCreateGuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You received {0} Goblin Points for your play time..
+        /// </summary>
+        public static string GoblinPointsForPlayTime {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTime", resourceCulture);
             }
         }
         
@@ -2005,6 +2075,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction..
+        /// </summary>
+        public static string SpeedHackWarning {
+            get {
+                return ResourceManager.GetString("SpeedHackWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stacked Jewel not found..
         /// </summary>
         public static string StackedJewelNotFound {
@@ -2019,6 +2098,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StatPointInfo {
             get {
                 return ResourceManager.GetString("StatPointInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summoning canceled..
+        /// </summary>
+        public static string SummonPartyCanceled {
+            get {
+                return ResourceManager.GetString("SummonPartyCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summoning in {0} second(s)....
+        /// </summary>
+        public static string SummonPartyCountdownFormat {
+            get {
+                return ResourceManager.GetString("SummonPartyCountdownFormat", resourceCulture);
             }
         }
         

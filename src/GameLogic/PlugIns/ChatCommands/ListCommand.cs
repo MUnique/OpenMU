@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("a5b0a3e5-bb2a-4287-821a-cd97714fe209")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ListCommand_Name), Description = nameof(PlugInResources.ListCommand_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Lists all the commands.", null)]
+[ChatCommandHelp(Command)]
 public class ListCommand : IChatCommandPlugIn
 {
     private const string Command = "/list";
