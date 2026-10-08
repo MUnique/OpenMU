@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Discord;
 
+using System.Globalization;
+
 /// <summary>
 /// The settings of the Discord integration.
 /// </summary>
@@ -52,4 +54,20 @@ public class DiscordSettings
     /// </summary>
     public bool IsNotificationEnabled => this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url))
                                          || (this.Bot.IsEnabled && this.Bot.Channels.Count > 0);
+
+    /// <summary>
+    /// Gets the culture of the <see cref="Language"/>; or the invariant culture, if the language is unknown.
+    /// </summary>
+    /// <returns>The culture.</returns>
+    public CultureInfo GetCulture()
+    {
+        try
+        {
+            return CultureInfo.GetCultureInfo(this.Language);
+        }
+        catch (CultureNotFoundException)
+        {
+            return CultureInfo.InvariantCulture;
+        }
+    }
 }

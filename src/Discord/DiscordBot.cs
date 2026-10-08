@@ -35,6 +35,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
     private CancellationTokenSource? _statusLoopCancellation;
     private ulong? _statusMessageId;
     private ServerState _serverState = ServerState.Stopped;
+    private int _isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordBot"/> class.
@@ -158,10 +159,16 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// It may be called more than once, e.g. by a dependency injection container which knows the bot as singleton and as hosted service.
+    /// The lock isn't disposed, because a <see cref="SemaphoreSlim"/> without wait handle doesn't hold any resources.
+    /// </remarks>
     public async ValueTask DisposeAsync()
     {
-        await this.ShutdownAsync().ConfigureAwait(false);
-        this._lifecycleLock.Dispose();
+        if (Interlocked.Exchange(ref this._isDisposed, 1) == 0)
+        {
+            await this.ShutdownAsync().ConfigureAwait(false);
+        }
     }
 
     private static Embed ToDiscordEmbed(DiscordEmbed embed)
@@ -361,6 +368,14 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
             _ => LogLevel.Debug,
         };
         this._logger.Log(level, message.Exception, "{source}: {message}", message.Source, message.Message);
+
+        // With an invalid token, the library would try to connect again and again.
+        if (message.Exception is global::Discord.Net.HttpException { HttpCode: System.Net.HttpStatusCode.Unauthorized })
+        {
+            this._logger.LogError("Discord rejected the token of the bot, so the bot is stopped. Please check the configured token.");
+            _ = Task.Run(async () => await this.ShutdownAsync().ConfigureAwait(false));
+        }
+
         return Task.CompletedTask;
     }
 

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Discord;
 
 using System.Collections.Concurrent;
-using System.Globalization;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
@@ -47,7 +46,7 @@ public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
     {
         this._settings = settings;
         this._logger = loggerFactory.CreateLogger<DiscordNotifier>();
-        this._formatter = new DiscordMessageFormatter(GetCulture(settings.Language), getServerName, getGuildName);
+        this._formatter = new DiscordMessageFormatter(settings.GetCulture(), getServerName, getGuildName);
 
         var senders = new Dictionary<DiscordChannelCategory, DiscordMessageQueue>();
         if (botMessenger is not null)
@@ -99,18 +98,6 @@ public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
         foreach (var sender in this._senders.Values)
         {
             await sender.DisposeAsync().ConfigureAwait(false);
-        }
-    }
-
-    private static CultureInfo GetCulture(string language)
-    {
-        try
-        {
-            return CultureInfo.GetCultureInfo(language);
-        }
-        catch (CultureNotFoundException)
-        {
-            return CultureInfo.InvariantCulture;
         }
     }
 

@@ -28,7 +28,7 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
     private readonly IFriendServer _friendServer;
     private readonly IGuildServer _guildServer;
     private readonly PlugInManager _plugInManager;
-    private readonly TimeZoneInfo _serverTimeZone;
+    private readonly Func<TimeZoneInfo> _getServerTimeZone;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordGameDataProvider"/> class.
@@ -38,21 +38,21 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
     /// <param name="friendServer">The friend server, which knows the online state of the characters.</param>
     /// <param name="guildServer">The guild server.</param>
     /// <param name="plugInManager">The plugin manager, with the active plugins which run the events.</param>
-    /// <param name="serverTimeZone">The time zone of the server, in which the schedules of the events are defined.</param>
+    /// <param name="getServerTimeZone">The function which gets the time zone of the server, in which the schedules of the events are defined.</param>
     public DiscordGameDataProvider(
         IServerProvider serverProvider,
         IPersistenceContextProvider persistenceContextProvider,
         IFriendServer friendServer,
         IGuildServer guildServer,
         PlugInManager plugInManager,
-        TimeZoneInfo serverTimeZone)
+        Func<TimeZoneInfo> getServerTimeZone)
     {
         this._serverProvider = serverProvider;
         this._persistenceContextProvider = persistenceContextProvider;
         this._friendServer = friendServer;
         this._guildServer = guildServer;
         this._plugInManager = plugInManager;
-        this._serverTimeZone = serverTimeZone;
+        this._getServerTimeZone = getServerTimeZone;
     }
 
     /// <inheritdoc />
@@ -114,7 +114,7 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
     public ValueTask<IReadOnlyList<UpcomingEventInfo>> GetUpcomingEventsAsync(CultureInfo culture)
     {
         IReadOnlyList<UpcomingEventInfo> events = UpcomingEvents
-            .Get(this._plugInManager, DateTime.UtcNow, this._serverTimeZone, UpcomingEventsTimeSpan, culture)
+            .Get(this._plugInManager, DateTime.UtcNow, this._getServerTimeZone(), UpcomingEventsTimeSpan, culture)
             .Select(e => new UpcomingEventInfo(e.Name, e.StartsAtUtc))
             .ToList();
         return ValueTask.FromResult(events);

@@ -76,7 +76,7 @@ public class DiscordGameDataProviderTest
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        this._provider = new DiscordGameDataProvider(serverProvider.Object, persistence, this._friendServer.Object, this._guildServer.Object, this._plugInManager, TimeZoneInfo.Utc);
+        this._provider = new DiscordGameDataProvider(serverProvider.Object, persistence, this._friendServer.Object, this._guildServer.Object, this._plugInManager, () => TimeZoneInfo.Utc);
     }
 
     /// <summary>
