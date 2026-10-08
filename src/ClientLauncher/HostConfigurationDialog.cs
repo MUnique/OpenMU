@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.ClientLauncher;
 
 using System.ComponentModel;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 /// <summary>
 /// Dialog for connection settings of a server.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public partial class HostConfigurationDialog : Form
 {
     /// <summary>

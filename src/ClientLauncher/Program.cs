@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.ClientLauncher;
 
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 /// <summary>
 /// The static main program.
 /// </summary>
+[SupportedOSPlatform("windows")]
 internal static class Program
 {
     /// <summary>
