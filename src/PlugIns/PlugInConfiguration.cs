@@ -1,4 +1,4 @@
-// <copyright file="PlugInConfiguration.cs" company="MUnique">
+﻿// <copyright file="PlugInConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -80,9 +80,10 @@ public class PlugInConfiguration : INotifyPropertyChanged
     {
         get
         {
-            var plugInType = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(GetTypesSafely)
-                .FirstOrDefault(t => t.GUID == this.TypeId);
+            var plugInType = PlugInRegistries.FindPlugInType(this.TypeId)
+                ?? AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(GetTypesSafely)
+                    .FirstOrDefault(t => t.GUID == this.TypeId);
             var plugInAttribute = plugInType?.GetCustomAttribute<DisplayAttribute>(inherit: false);
 
             return plugInAttribute?.GetName() ?? this.TypeId.ToString();

@@ -25,11 +25,6 @@ public class PlugInManager
     /// </summary>
     public const string DisableGeneratedRegistriesSwitch = "MUnique.OpenMU.PlugIns.DisableGeneratedRegistries";
 
-    /// <summary>
-    /// The generated plugin registries of the assemblies; <c>null</c> for assemblies without one.
-    /// </summary>
-    private static readonly ConcurrentDictionary<Assembly, IPlugInRegistry?> Registries = new();
-
     private readonly ILogger<PlugInManager> _logger;
     private readonly ServiceContainer _serviceContainer;
     private readonly IDictionary<Type, object> _plugInPoints = new Dictionary<Type, object>();
@@ -91,6 +86,25 @@ public class PlugInManager
     /// Gets the reference handler for references in custom plugin configurations.
     /// </summary>
     public ReferenceHandler? CustomConfigReferenceHandler { get; }
+
+    /// <summary>
+    /// Discovers the plugin types of the specified assembly, which are the classes marked with the <see cref="PlugInAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    /// The types are taken from the generated plugin registry of the assembly (see <see cref="IPlugInRegistry"/>).
+    /// For an assembly without one, its types are searched.
+    /// </remarks>
+    /// <param name="assembly">The assembly.</param>
+    /// <returns>The plugin types of the assembly, in the order of their definition.</returns>
+    public static IEnumerable<Type> DiscoverPlugInTypes(Assembly assembly)
+    {
+        if (PlugInRegistries.Get(assembly) is { } registry)
+        {
+            return registry.PlugIns.Select(plugIn => plugIn.Type);
+        }
+
+        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null).Select(type => type.AsType());
+    }
 
     /// <summary>
     /// Reads the given plugin configurations and applies them to the known plugins.
@@ -390,25 +404,6 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the plugin registry of the assembly, which has been generated at compile time.
-    /// </summary>
-    /// <param name="assembly">The assembly.</param>
-    /// <returns>The plugin registry of the assembly; <c>null</c>, if it has none.</returns>
-    private static IPlugInRegistry? GetRegistry(Assembly assembly)
-    {
-        if (AppContext.TryGetSwitch(DisableGeneratedRegistriesSwitch, out var isDisabled) && isDisabled)
-        {
-            return null;
-        }
-
-        return Registries.GetOrAdd(
-            assembly,
-            static a => a.GetCustomAttribute<PlugInRegistryAttribute>() is { } attribute
-                ? Activator.CreateInstance(attribute.RegistryType) as IPlugInRegistry
-                : null);
-    }
-
-    /// <summary>
     /// Creates the registration of a plugin type of an assembly without a generated <see cref="IPlugInRegistry"/>.
     /// It registers the plugin at each of its plugin interfaces by reflection.
     /// </summary>
@@ -615,7 +610,7 @@ public class PlugInManager
             .Where(assembly => !assembly.FullName!.StartsWith("Blazor"))
             .SelectMany(assembly =>
                 {
-                    if (GetRegistry(assembly) is { } registry)
+                    if (PlugInRegistries.Get(assembly) is { } registry)
                     {
                         return registry.PlugIns;
                     }
@@ -637,7 +632,7 @@ public class PlugInManager
 
     private IEnumerable<PlugInRegistration> DiscoverPlugIns(Assembly assembly)
     {
-        if (GetRegistry(assembly) is { } registry)
+        if (PlugInRegistries.Get(assembly) is { } registry)
         {
             return registry.PlugIns;
         }
