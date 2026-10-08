@@ -50,4 +50,10 @@ public interface IEventPublisher
     /// <param name="serverId">The identifier of the server on which the client tried to enter.</param>
     /// <param name="loginName">The login name.</param>
     ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName);
+
+    /// <summary>
+    /// Publishes an event of the game to the whole server, e.g. to notify external systems like Discord.
+    /// </summary>
+    /// <param name="gameEvent">The game event.</param>
+    ValueTask GameEventAsync(GameEvent gameEvent);
 }

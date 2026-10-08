@@ -16,5 +16,6 @@ public class ChatMessageNormalProcessor : BannableChatMessageBaseProcessor
     {
         sender.Logger.LogDebug("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
         await sender.ForEachWorldObserverAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(content.Message, sender.SelectedCharacter!.Name, ChatMessageType.Normal), true).ConfigureAwait(false);
+        await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Normal).ConfigureAwait(false);
     }
 }

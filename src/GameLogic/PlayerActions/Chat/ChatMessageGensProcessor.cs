@@ -36,5 +36,6 @@ public class ChatMessageGensProcessor : BannableChatMessageBaseProcessor
                 ? player.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(content.Message, senderName, ChatMessageType.Gens)).AsTask()
                 : Task.CompletedTask)
             .ConfigureAwait(false);
+        await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Gens).ConfigureAwait(false);
     }
 }

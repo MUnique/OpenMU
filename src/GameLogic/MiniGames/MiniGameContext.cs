@@ -99,6 +99,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public MiniGameDefinition Definition { get; }
 
     /// <summary>
+    /// Gets the game context to which this game belongs.
+    /// </summary>
+    public IGameContext GameContext => this._gameContext;
+
+    /// <summary>
     /// Gets the UTC time when the entering phase ends. It's derived from the creation
     /// time and the configured <see cref="MiniGameDefinition.EnterDuration"/> and is used
     /// for the entrance announcements.
@@ -613,6 +618,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Logger.LogDebug("{context}: Running the game ...", this);
         try
         {
+            await this.NotifyPlugInsAsync<IMiniGameEntranceOpenedPlugIn>(p => p.MiniGameEntranceOpenedAsync(this)).ConfigureAwait(false);
+
             var enterDuration = this.Definition.EnterDuration.AtLeast(this.MinimumEnterDuration);
             var gameDuration = this.Definition.GameDuration.AtLeast(CountdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(CountdownMessageDuration).AtLeast(CountdownMessageDuration);
@@ -709,6 +716,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.OnGameStartAsync(players).ConfigureAwait(false);
         await this._mapInitializer.InitializeNpcsOnEventStartAsync(this.Map, this).ConfigureAwait(false);
         _ = Task.Run(() => this._spawnWaves.RunAsync(this.GameEndedToken), this.GameEndedToken);
+        await this.NotifyPlugInsAsync<IMiniGameStartedPlugIn>(p => p.MiniGameStartedAsync(this, players)).ConfigureAwait(false);
     }
 
     private async ValueTask ShowCountdownMessageAsync()
@@ -737,6 +745,15 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         var players = await this._players.GetSnapshotAsync().ConfigureAwait(false);
 
         await this.GameEndedAsync(players).ConfigureAwait(false);
+
+        // Notified after GameEndedAsync, because some games determine their winner there.
+        await this.NotifyPlugInsAsync<IMiniGameEndedPlugIn>(p => p.MiniGameEndedAsync(this, this.Winner, players)).ConfigureAwait(false);
+    }
+
+    private ValueTask NotifyPlugInsAsync<TPlugIn>(Func<TPlugIn, ValueTask> notify)
+        where TPlugIn : class
+    {
+        return this._gameContext.PlugInManager.NotifyPlugInsAsync(notify, this.Logger);
     }
 
     private GameMap CreateMap()

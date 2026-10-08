@@ -1,4 +1,4 @@
-// <copyright file="CastleSiegePlugIn.cs" company="MUnique">
+﻿// <copyright file="CastleSiegePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -338,6 +338,11 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             previousState,
             context.CurrentState,
             context.StateEndTimeUtc);
+
+        var gameContext = context.GameContext;
+        await gameContext.PlugInManager.NotifyPlugInsAsync<ICastleSiegeStateChangedPlugIn>(
+            p => p.CastleSiegeStateChangedAsync(gameContext, context, previousState),
+            logger).ConfigureAwait(false);
 
         if (period.State == CastleSiegeState.EndCycle)
         {

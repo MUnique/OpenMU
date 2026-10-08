@@ -24,6 +24,7 @@ public class ChatMessageWhisperProcessor : BannableChatMessageBaseProcessor
             if (!eventArgs.Cancel)
             {
                 await whisperReceiver.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(content.Message, sender.SelectedCharacter!.Name, ChatMessageType.Whisper)).ConfigureAwait(false);
+                await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Whisper, whisperReceiver).ConfigureAwait(false);
             }
         }
     }

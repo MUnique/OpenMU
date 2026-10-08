@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Startup;
 
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -14,6 +15,8 @@ public class InMemoryEventPublisher : IEventPublisher
     private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly IFriendServer _friendServer;
     private readonly IGuildServer _guildServer;
+    private readonly IReadOnlyCollection<IGameEventListener> _gameEventListeners;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InMemoryEventPublisher"/> class.
@@ -21,11 +24,15 @@ public class InMemoryEventPublisher : IEventPublisher
     /// <param name="gameServers">The game servers.</param>
     /// <param name="friendServer">The friend server.</param>
     /// <param name="guildServer">The guild server.</param>
-    public InMemoryEventPublisher(IDictionary<int, IGameServer> gameServers, IFriendServer friendServer, IGuildServer guildServer)
+    /// <param name="gameEventListeners">The listeners for the <see cref="GameEvent"/>s.</param>
+    /// <param name="logger">The logger.</param>
+    public InMemoryEventPublisher(IDictionary<int, IGameServer> gameServers, IFriendServer friendServer, IGuildServer guildServer, IEnumerable<IGameEventListener> gameEventListeners, ILogger<InMemoryEventPublisher> logger)
     {
         this._gameServers = gameServers;
         this._friendServer = friendServer;
         this._guildServer = guildServer;
+        this._gameEventListeners = gameEventListeners.ToList();
+        this._logger = logger;
     }
 
     /// <inheritdoc />
@@ -71,6 +78,22 @@ public class InMemoryEventPublisher : IEventPublisher
         foreach (var gameServer in this._gameServers)
         {
             await gameServer.Value.PlayerAlreadyLoggedInAsync(serverId, loginName).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask GameEventAsync(GameEvent gameEvent)
+    {
+        foreach (var listener in this._gameEventListeners)
+        {
+            try
+            {
+                await listener.OnGameEventAsync(gameEvent).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error when notifying the listener {listener} about the game event {gameEvent}", listener, gameEvent);
+            }
         }
     }
 }
