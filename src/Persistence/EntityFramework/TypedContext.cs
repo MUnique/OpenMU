@@ -1,4 +1,4 @@
-// <copyright file="TypedContext.cs" company="MUnique">
+﻿// <copyright file="TypedContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence.EntityFramework.TypedContexts;
 
 /// <summary>
 /// A context which is used to show and edit instances of a specific type.
@@ -25,6 +26,26 @@ internal class TypedContext : EntityDataContext, ITypedContext
         { typeof(GameServerEndpoint), [typeof(GameClientDefinition)] },
         { typeof(ConnectServerDefinition), [typeof(GameClientDefinition)] },
         { typeof(DuelArea), [typeof(GameMapDefinition)] },
+    };
+
+    /// <summary>
+    /// The factories of the contexts with a compiled model, per edit type.
+    /// </summary>
+    /// <remarks>
+    /// These are the edit types which are used by the servers, e.g. by the game logic, outside of the admin panel.
+    /// For them, building the model at runtime would delay their first use by several hundred milliseconds each.
+    /// See CompiledModels/Readme.md about how to add another one.
+    /// </remarks>
+    private static readonly IReadOnlyDictionary<Type, Func<TypedContext>> ContextsWithCompiledModel = new Dictionary<Type, Func<TypedContext>>
+    {
+        { typeof(DataModel.Entities.CastleSiegeData), () => new CastleSiegeDataTypedContext() },
+        { typeof(DataModel.Entities.CastleSiegeGuildRegistration), () => new CastleSiegeGuildRegistrationTypedContext() },
+        { typeof(DataModel.Entities.CastleSiegePendingReward), () => new CastleSiegePendingRewardTypedContext() },
+        { typeof(DataModel.Entities.GensAbuse), () => new GensAbuseTypedContext() },
+        { typeof(DataModel.Entities.GensMember), () => new GensMemberTypedContext() },
+        { typeof(DataModel.Statistics.MiniGameRankingEntry), () => new MiniGameRankingEntryTypedContext() },
+        { typeof(PlugIns.PlugInConfiguration), () => new PlugInConfigurationTypedContext() },
+        { typeof(SystemConfiguration), () => new SystemConfigurationTypedContext() },
     };
 
     private IEntityType? _rootType;
@@ -48,13 +69,13 @@ internal class TypedContext : EntityDataContext, ITypedContext
     /// </summary>
     public Type EditType { get; }
 
-    private IReadOnlySet<Type> EditTypes => this.GetOrInitializeContextInfo().EditTypes;
+    private IReadOnlySet<Type> EditTypes => this.GetContextInfo().EditTypes;
 
-    private IReadOnlySet<Type> BackReferenceTypes => this.GetOrInitializeContextInfo().BackReferenceTypes;
+    private IReadOnlySet<Type> BackReferenceTypes => this.GetContextInfo().BackReferenceTypes;
 
-    private IReadOnlySet<Type> ReadOnlyTypes => this.GetOrInitializeContextInfo().ReadOnlyTypes;
+    private IReadOnlySet<Type> ReadOnlyTypes => this.GetContextInfo().ReadOnlyTypes;
 
-    private string? GameConfigNavigationName => this.GetOrInitializeContextInfo().GameConfigNavigationName;
+    private string? GameConfigNavigationName => this.GetContextInfo().GameConfigNavigationName;
 
     /// <inheritdoc />
     public bool IsIncluded(Type clrType)
@@ -70,17 +91,39 @@ internal class TypedContext : EntityDataContext, ITypedContext
                || (type.BaseType is { } baseType && this.BackReferenceTypes.Contains(baseType));
     }
 
-    /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    /// <summary>
+    /// Creates a new context for the specified edit type.
+    /// </summary>
+    /// <param name="editType">The edit type.</param>
+    /// <returns>The new context, which uses a compiled model if one is available for the edit type.</returns>
+    internal static TypedContext Create(Type editType)
     {
-        base.OnModelCreating(modelBuilder);
-        var modelTypes = modelBuilder.Model.GetEntityTypes().ToList();
+        return ContextsWithCompiledModel.TryGetValue(editType, out var factory)
+            ? factory()
+            : new TypedContext(editType);
+    }
 
-        var editTypes = this.DetermineEditTypes(modelTypes).DistinctBy(t => t.EntityType).ToList();
+    /// <summary>
+    /// Determines the information about the context of an edit type, based on the model of the <see cref="EntityDataContext"/>,
+    /// which includes all entity types.
+    /// </summary>
+    /// <remarks>
+    /// The information is determined independently of the model building, because a context with a compiled model
+    /// doesn't build its model. The model of the <see cref="EntityDataContext"/> is the same as the one
+    /// which is passed to <see cref="OnModelCreating"/> before the types are ignored.
+    /// </remarks>
+    /// <param name="completeModel">The model which includes all entity types.</param>
+    /// <param name="editType">The edit type.</param>
+    /// <returns>The information about the context.</returns>
+    internal static ContextInfo DetermineContextInfo(IModel completeModel, Type editType)
+    {
+        var modelTypes = completeModel.GetEntityTypes().ToList();
+
+        var editTypes = DetermineEditTypes(modelTypes, editType).DistinctBy(t => t.EntityType).ToList();
         var mainType = editTypes.FirstOrDefault().EntityType;
 
         var gameConfigType = modelTypes.FirstOrDefault(mt => mt.ClrType == typeof(EntityFramework.Model.GameConfiguration));
-        var gameConfigNav = gameConfigType?.GetNavigations().FirstOrDefault(nav => nav.IsCollection && nav.TargetEntityType.ClrType == mainType);
+        var gameConfigNav = gameConfigType is null ? null : GetNavigationsInOrder(gameConfigType).FirstOrDefault(nav => nav.IsCollection && nav.TargetEntityType.ClrType == mainType);
 
         var additionalTypes = editTypes
             .Select(et => (et, entityType: modelTypes.FirstOrDefault(mt => mt.ClrType == et.EntityType)))
@@ -92,7 +135,7 @@ internal class TypedContext : EntityDataContext, ITypedContext
         var finalEditTypes = new HashSet<Type>();
         foreach (var type in editTypes)
         {
-            var existingType = modelBuilder.Model.FindEntityType(type.EntityType);
+            var existingType = completeModel.FindEntityType(type.EntityType);
             if (existingType is not null)
             {
                 finalEditTypes.Add(existingType.ClrType);
@@ -108,21 +151,25 @@ internal class TypedContext : EntityDataContext, ITypedContext
             finalEditTypes.Add(gameConfigNav.DeclaringEntityType.ClrType);
         }
 
-        foreach (var type in modelTypes.Where(t => !finalEditTypes.Contains(t.ClrType)))
+        return new(
+            finalEditTypes,
+            editTypes.Where(t => t.IsBackReference).Select(t => t.EntityType).ToHashSet(),
+            editTypes.Where(t => t.IsReadOnly).Select(t => t.EntityType).ToHashSet(),
+            gameConfigNav?.Name);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        var editTypes = this.GetContextInfo().EditTypes;
+        foreach (var type in modelBuilder.Model.GetEntityTypes().Where(t => !editTypes.Contains(t.ClrType)).ToList())
         {
             modelBuilder.Ignore(type.ClrType);
         }
-
-        ContextInfoPerEditType.TryAdd(
-            this.EditType,
-            new(
-                finalEditTypes,
-                editTypes.Where(t => t.IsBackReference).Select(t => t.EntityType).ToHashSet(),
-                editTypes.Where(t => t.IsReadOnly).Select(t => t.EntityType).ToHashSet(),
-                gameConfigNav?.Name));
     }
 
-    private static IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineAdditionalTypes(IEnumerable<Type> modelTypes, IMutableEntityType type)
+    private static IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineAdditionalTypes(IEnumerable<Type> modelTypes, IEntityType type)
     {
         if (!AdditionalTypes.TryGetValue(type.ClrType, out var additionalTypes)
             && !AdditionalTypes.TryGetValue(type.ClrType.BaseType!, out additionalTypes))
@@ -142,10 +189,9 @@ internal class TypedContext : EntityDataContext, ITypedContext
         }
     }
 
-    private static IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineNavigationTypes(IMutableEntityType parentType)
+    private static IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineNavigationTypes(IEntityType parentType)
     {
-        var navigations = parentType
-            .GetNavigations()
+        var navigations = GetNavigationsInOrder(parentType)
             .Where(nav => nav.PropertyInfo is { });
         foreach (var navigation in navigations)
         {
@@ -179,21 +225,22 @@ internal class TypedContext : EntityDataContext, ITypedContext
         }
     }
 
-    private ContextInfo GetOrInitializeContextInfo()
+    /// <summary>
+    /// Gets the navigations of the entity type, ordered by their name.
+    /// </summary>
+    /// <remarks>
+    /// The edit types are de-duplicated by keeping the first occurrence, so the order matters. A model which is built
+    /// at runtime orders the navigations ordinally by name, a compiled model doesn't. So we order them explicitly.
+    /// </remarks>
+    private static IEnumerable<INavigation> GetNavigationsInOrder(IEntityType entityType)
     {
-        // Trigger model building to run OnModelCreating which fills ContextInfoPerEditType.
-        // Accessing the model ensures it's initialized.
-        _ = this.Model;
-
-        return ContextInfoPerEditType.TryGetValue(this.EditType, out var info)
-            ? info
-            : throw new InvalidOperationException($"Context info for edit type '{this.EditType}' not found after model initialization.");
+        return entityType.GetNavigations().OrderBy(nav => nav.Name, StringComparer.Ordinal);
     }
 
-    private IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineEditTypes(IList<IMutableEntityType> modelTypes)
+    private static IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineEditTypes(IList<IEntityType> modelTypes, Type editType)
     {
-        var mainType = modelTypes.FirstOrDefault(met => met.ClrType == this.EditType)
-                       ?? modelTypes.FirstOrDefault(met => met.ClrType.BaseType == this.EditType);
+        var mainType = modelTypes.FirstOrDefault(met => met.ClrType == editType)
+                       ?? modelTypes.FirstOrDefault(met => met.ClrType.BaseType == editType);
         if (mainType is null)
         {
             yield break;
@@ -205,6 +252,11 @@ internal class TypedContext : EntityDataContext, ITypedContext
         {
             yield return navType;
         }
+    }
+
+    private ContextInfo GetContextInfo()
+    {
+        return ContextInfoPerEditType.GetOrAdd(this.EditType, static editType => DetermineContextInfo(CompleteModel, editType));
     }
 
     /// <summary>
@@ -249,5 +301,12 @@ internal class TypedContext : EntityDataContext, ITypedContext
         }
     }
 
-    private record ContextInfo(IReadOnlySet<Type> EditTypes, IReadOnlySet<Type> BackReferenceTypes, IReadOnlySet<Type> ReadOnlyTypes, string? GameConfigNavigationName);
+    /// <summary>
+    /// Information about the context of an edit type.
+    /// </summary>
+    /// <param name="EditTypes">The types which are included in the model of the context.</param>
+    /// <param name="BackReferenceTypes">The types which are referenced back by a member of the aggregate.</param>
+    /// <param name="ReadOnlyTypes">The types which are referenced, but not saved.</param>
+    /// <param name="GameConfigNavigationName">The name of the navigation of the game configuration to the edit type.</param>
+    internal record ContextInfo(IReadOnlySet<Type> EditTypes, IReadOnlySet<Type> BackReferenceTypes, IReadOnlySet<Type> ReadOnlyTypes, string? GameConfigNavigationName);
 }

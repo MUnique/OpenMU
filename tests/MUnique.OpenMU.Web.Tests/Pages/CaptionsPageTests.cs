@@ -32,6 +32,8 @@ public class CaptionsPageTests
 
     private InMemoryPersistenceContextProvider _persistenceContextProvider = null!;
 
+    private ServiceProvider _plugInServices = null!;
+
     private CultureInfo _previousUiCulture = null!;
 
     private static string SourceKey => LocalizedStringResources.CreateSourceKey(SourceName, nameof(Resources.Captions));
@@ -50,9 +52,12 @@ public class CaptionsPageTests
         }
 
         this._persistenceContextProvider = new InMemoryPersistenceContextProvider();
-        var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
         this._context = new BunitContext();
         this._context.Services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+        this._context.Services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
+        this._plugInServices = new ServiceCollection().AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance).BuildServiceProvider();
+        var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, this._plugInServices, null);
+        plugInManager.RegisterPlugInAtPlugInPoint<IDataInitializationPlugIn>(new CaptionsPageTestInitialization(this._persistenceContextProvider, NullLoggerFactory.Instance));
         this._context.Services.AddSingleton(new SetupService(this._persistenceContextProvider, plugInManager));
         this._context.Services.AddSingleton(new ConfigurationCaptionService(this._persistenceContextProvider, plugInManager, NullLoggerFactory.Instance));
         this._context.Services.AddScoped<NavigationHistory>();
@@ -65,6 +70,7 @@ public class CaptionsPageTests
     public void Teardown()
     {
         this._context.Dispose();
+        this._plugInServices.Dispose();
         CultureInfo.CurrentUICulture = this._previousUiCulture;
     }
 
@@ -114,28 +120,64 @@ public class CaptionsPageTests
         var cut = this._context.Render<Captions>();
 
         cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.CaptionsReviewTitle)));
-        var row = cut.Find("tbody tr");
-        Assert.That(row.TextContent, Does.Contain("zh-CN"));
+        var rows = cut.FindAll("tbody tr");
+        var row = rows.Single(r => r.TextContent.Contains("zh-CN", StringComparison.Ordinal));
         Assert.That(row.TextContent, Does.Contain(Resources.CaptionChangeKind_Missing));
         Assert.That(row.QuerySelector("input[type=checkbox]")!.HasAttribute("checked"), Is.True);
 
         cut.FindAll("button").Single(b => b.TextContent.Trim() == Resources.ApplySelectedChanges).Click();
 
         cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.AllLocalizationsInPlace)));
-        Assert.That(cut.Markup, Does.Contain(string.Format(Resources.AppliedCaptionChanges, 1)));
+        Assert.That(cut.Markup, Does.Contain(string.Format(Resources.AppliedCaptionChanges, rows.Count)));
         using var context = this._persistenceContextProvider.CreateNewContext();
         var storedMonster = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single().Monsters.Single();
         Assert.That(storedMonster.Designation.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("配置名称"));
         Assert.That(storedMonster.Designation.IsUnchangedSinceSourceStamp, Is.True);
     }
 
-    private async Task<MonsterDefinition> CreateConfigurationAsync(LocalizedString designation)
+    /// <summary>
+    /// If built-in captions of an already linked configuration are not linked yet, e.g. because an update added their sources,
+    /// the page offers to link them, and shows their changes afterwards.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task LinkedWithUnlinkedBuiltInCaptions_OffersLinkingAsync()
+    {
+        await this.CreateConfigurationAsync(
+            Resources.ResourceManager.GetLocalizedString(nameof(Resources.Captions)),
+            (CaptionsPageTestInitialization.MonsterId, new LocalizedString("Captions"))).ConfigureAwait(false);
+
+        var cut = this._context.Render<Captions>();
+
+        // The page is shown first, while the check for linkable captions is running in the background.
+        cut.WaitForState(() => cut.Markup.Contains(Resources.CaptionsLinkableTitle, StringComparison.Ordinal), TimeSpan.FromSeconds(30));
+        Assert.That(cut.Markup, Does.Contain($"{nameof(MonsterDefinition)} (1)"));
+        Assert.That(cut.Markup, Does.Not.Contain(Resources.AllLocalizationsInPlace));
+
+        cut.FindAll("button").First(b => b.TextContent.Trim() == Resources.LinkBuiltInCaptions).Click();
+
+        cut.WaitForState(() => cut.Markup.Contains(Resources.CaptionsReviewTitle, StringComparison.Ordinal), TimeSpan.FromSeconds(30));
+        Assert.That(cut.Markup, Does.Not.Contain(Resources.CaptionsLinkableTitle));
+        Assert.That(cut.Markup, Does.Contain(string.Format(Resources.LinkedBuiltInCaptions, 1, 0)));
+    }
+
+    private async Task<MonsterDefinition> CreateConfigurationAsync(LocalizedString designation, params (Guid Id, LocalizedString Designation)[] additionalMonsters)
     {
         using var context = this._persistenceContextProvider.CreateNewContext();
         var configuration = context.CreateNew<GameConfiguration>();
         var monster = context.CreateNew<MonsterDefinition>();
         monster.Designation = designation;
         configuration.Monsters.Add(monster);
+        foreach (var (id, additionalDesignation) in additionalMonsters)
+        {
+            var additionalMonster = context.CreateNew<MonsterDefinition>();
+            ((IIdentifiable)additionalMonster).Id = id;
+            additionalMonster.Designation = additionalDesignation;
+            configuration.Monsters.Add(additionalMonster);
+        }
+
+        var updateState = context.CreateNew<ConfigurationUpdateState>();
+        updateState.InitializationKey = CaptionsPageTestInitialization.Id;
         await context.SaveChangesAsync().ConfigureAwait(false);
         return monster;
     }

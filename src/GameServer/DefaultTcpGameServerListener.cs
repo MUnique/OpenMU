@@ -31,6 +31,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private readonly IGameServerStateObserver _stateObserver;
     private readonly IIpAddressResolver _addressResolver;
     private readonly ILoggerFactory _loggerFactory;
+    private readonly int? _listenerPort;
     private Listener? _listener;
 
     /// <summary>
@@ -43,7 +44,25 @@ public class DefaultTcpGameServerListener : IGameServerListener
     /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     public DefaultTcpGameServerListener(GameServerEndpoint endPoint, ServerInfo gameServerInfo, IGameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory)
+        : this(endPoint, gameServerInfo, gameContext, stateObserver, addressResolver, loggerFactory, null)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
+    /// </summary>
+    /// <param name="endPoint">The endpoint to which this listener is listening.</param>
+    /// <param name="gameServerInfo">The game server information.</param>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="stateObserver">The connect server.</param>
+    /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="listenerPort">The port to listen on instead of the <see cref="GameServerEndpoint.NetworkPort"/> of the endpoint, e.g.
+    /// the same port in every container of the distributed deployment. When it's set, it's also the published port, unless
+    /// the endpoint defines an <see cref="GameServerEndpoint.AlternativePublishedPort"/>.</param>
+    public DefaultTcpGameServerListener(GameServerEndpoint endPoint, ServerInfo gameServerInfo, IGameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory, int? listenerPort)
+    {
+        this._listenerPort = listenerPort;
         this._endPoint = endPoint;
         this._gameServerInfo = gameServerInfo;
         this._gameContext = gameContext;
@@ -59,6 +78,16 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private INetworkEncryptionFactoryPlugIn? EncryptionFactoryPlugIn { get; set; }
 
     private ClientVersion ClientVersion => new(this._endPoint.Client!.Season, this._endPoint.Client.Episode, this._endPoint.Client.Language);
+
+    /// <summary>
+    /// Gets the port on which the listener listens.
+    /// </summary>
+    private int ListenerPort => this._listenerPort ?? this._endPoint.NetworkPort;
+
+    /// <summary>
+    /// Gets the port which is published to the clients.
+    /// </summary>
+    private int PublishedPort => this._endPoint.AlternativePublishedPort > 0 ? this._endPoint.AlternativePublishedPort : this.ListenerPort;
 
     /// <inheritdoc/>
     public async ValueTask StartAsync()
@@ -76,18 +105,17 @@ public class DefaultTcpGameServerListener : IGameServerListener
             this.Log(l => l.LogWarning("No network encryption plugin for version {clientVersion} available. It falls back to default encryption.", this.ClientVersion));
         }
 
-        var port = this._endPoint.NetworkPort;
+        var port = this.ListenerPort;
         this._logger.LogInformation("Starting Server Listener, port {port}", port);
         this._listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this._loggerFactory);
         this._listener.ClientAccepted += this.OnClientAcceptedAsync;
         this._listener.ClientAccepting += this.OnClientAcceptingAsync;
-        if (this._endPoint.AlternativePublishedPort > 0)
+        if (this.PublishedPort != port)
         {
-            port = this._endPoint.AlternativePublishedPort;
-            this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", this._endPoint.NetworkPort, port);
+            this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", port, this.PublishedPort);
         }
 
-        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), port));
+        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), this.PublishedPort));
 
         if (this._addressResolver is ConfigurableIpResolver configurableIpResolver)
         {
@@ -106,7 +134,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
             configurableIpResolver.ConfigurationChanged -= this.OnResolverConfigurationChanged;
         }
 
-        var port = this._endPoint.NetworkPort;
+        var port = this.ListenerPort;
         this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
         this._logger.LogInformation($"Stopping listener on port {port}.");
         if (this._listener is null || !this._listener.IsBound)
@@ -134,9 +162,8 @@ public class DefaultTcpGameServerListener : IGameServerListener
 
             var newAddress = await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false);
 
-            var port = this._endPoint.NetworkPort;
             this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
-            this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(newAddress, port));
+            this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(newAddress, this.PublishedPort));
         }
         catch (Exception ex)
         {

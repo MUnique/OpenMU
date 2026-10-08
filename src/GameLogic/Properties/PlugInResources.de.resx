@@ -1,0 +1,1731 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CastleSiegeLeverTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Torhebel</value>
+  </data>
+  <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
+    <value>Öffnet die Bedienoberfläche für einen Torhebel von Castle Siege.</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Kriegsmaschine</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Description" xml:space="preserve">
+    <value>Öffnet eine Kriegsmaschine von Castle Siege für einen berechtigten Spieler.</value>
+  </data>
+  <data name="CastleSiegePlugIn_Description" xml:space="preserve">
+    <value>Steuert den wöchentlichen Zustandszyklus von Castle Siege.</value>
+  </data>
+  <data name="CastleSiegePendingRewardPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Auslieferung ausstehender Belohnungen</value>
+  </data>
+  <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
+    <value>Liefert vorgemerkte Belohnungen für Teilnehmer von Castle Siege aus, wenn ein Charakter das Spiel betritt.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Gardist</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Zeigt die Verfügbarkeit des Landes der Prüfungen und die geltende Eintrittsgebühr an.</value>
+  </data>
+  <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
+    <value>Funktion MU Helper</value>
+  </data>
+  <data name="MuHelperFeaturePlugIn_Description" xml:space="preserve">
+    <value>Stellt die Konfiguration für die Funktion MU Helper bereit.</value>
+  </data>
+  <data name="UpdatePetCommandManagerOnItemMovePlugIn_Name" xml:space="preserve">
+    <value>Haustier-Befehlsverwaltung beim Verschieben von Gegenständen aktualisieren</value>
+  </data>
+  <data name="UpdatePetCommandManagerOnItemMovePlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert die Haustier-Befehlsverwaltung des Spielerobjekts, nachdem ein Haustier aus- oder abgelegt wurde.</value>
+  </data>
+  <data name="GuildWarKillScorePlugIn_Name" xml:space="preserve">
+    <value>Kill-Punkte im Gilden-Soccer</value>
+  </data>
+  <data name="GuildWarKillScorePlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin erhöht die Punktzahl des Soccer-Ergebnisses, wenn ein Kill erfolgt ist.</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugIn_Name" xml:space="preserve">
+    <value>Fortschritt periodisch speichern</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugIn_Description" xml:space="preserve">
+    <value>Speichert den Fortschritt von Spielern periodisch, wenn ihr Status 'EnteredWorld' ist.</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>Erfahrungsverlust des Spielers nach dem Tod</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin verringert die Erfahrung, nachdem der Spieler von einem Monster getötet wurde.</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugIn_Name" xml:space="preserve">
+    <value>Getötete Quest-Monster zählen</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin erhöht die Anzahl getöteter Monster im Queststatus aktiver Quests.</value>
+  </data>
+  <data name="SelfDefensePlugIn_Name" xml:space="preserve">
+    <value>Selbstverteidigung</value>
+  </data>
+  <data name="SelfDefensePlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert den Zustand des Selbstverteidigungssystems.</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Name" xml:space="preserve">
+    <value>Pause der Schild-Regeneration</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert das Attribut für die Pause der Schild-Regeneration und setzt es zurück.</value>
+  </data>
+  <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name" xml:space="preserve">
+    <value>Nachricht an alle, wenn ein Spieler die Welt betritt</value>
+  </data>
+  <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Description" xml:space="preserve">
+    <value>Zeigt allen Spielern eine Nachricht an, wenn ein Spieler das Spiel betritt.</value>
+  </data>
+  <data name="UpdateIsInSafezoneAfterPlayerMoved_Name" xml:space="preserve">
+    <value>Aufenthalt in sicherer Zone nach Bewegung aktualisieren</value>
+  </data>
+  <data name="UpdateIsInSafezoneAfterPlayerMoved_Description" xml:space="preserve">
+    <value>Aktualisiert das Attribut, ob sich ein Spieler in der sicheren Zone befindet. Dadurch wird zum Beispiel die automatische Regeneration von Leben und Schild aktiviert.</value>
+  </data>
+  <data name="WeatherUpdatePlugIn_Name" xml:space="preserve">
+    <value>Wetteraktualisierung</value>
+  </data>
+  <data name="WeatherUpdatePlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert den Wetterzustand jeder gehosteten Karte zufällig.</value>
+  </data>
+  <data name="GatekeeperNpcPlugin_Name" xml:space="preserve">
+    <value>Torwächter-NPC</value>
+  </data>
+  <data name="GatekeeperNpcPlugin_Description" xml:space="preserve">
+    <value>Verarbeitet Anfragen an den Torwächter-NPC</value>
+  </data>
+  <data name="ResetCharacterNpcPlugin_Name" xml:space="preserve">
+    <value>Reset-NPC</value>
+  </data>
+  <data name="ResetCharacterNpcPlugin_Description" xml:space="preserve">
+    <value>Verarbeitet Anfragen an den NPC zum Zurücksetzen des Charakters</value>
+  </data>
+  <data name="ResetChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Reset</value>
+  </data>
+  <data name="ResetChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/reset'.</value>
+  </data>
+  <data name="ResetInfoChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Reset-Info</value>
+  </data>
+  <data name="ResetInfoChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/resetinfo'. Zeigt die erforderlichen Kosten und die gewährten Punkte für den nächsten Reset an.</value>
+  </data>
+  <data name="ResetFeaturePlugIn_Name" xml:space="preserve">
+    <value>Funktion Reset</value>
+  </data>
+  <data name="ResetFeaturePlugIn_Description" xml:space="preserve">
+    <value>Stellt die Konfiguration für die Reset-Funktion bereit.</value>
+  </data>
+  <data name="EndDuelWhenLeavingDuelMapPlugIn_Name" xml:space="preserve">
+    <value>Duell beim Verlassen der Duellkarte beenden</value>
+  </data>
+  <data name="EndDuelWhenLeavingDuelMapPlugIn_Description" xml:space="preserve">
+    <value>Beendet das Duell, wenn einer der Duellanten die Duellkarte verlässt. Wenn ein Zuschauer die Duellkarte verlässt, wird er ebenfalls aus der Zuschauerliste entfernt.</value>
+  </data>
+  <data name="UpdateDuelScorePlugIn_Name" xml:space="preserve">
+    <value>Duellpunktzahl aktualisieren</value>
+  </data>
+  <data name="UpdateDuelScorePlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin erhöht die Punktzahl des Duells, wenn ein Kill erfolgt ist.</value>
+  </data>
+  <data name="AlcoholConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch von Alkohol</value>
+  </data>
+  <data name="AlcoholConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch von Alkohol verarbeitet.</value>
+  </data>
+  <data name="AntidoteConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch von Gegengift</value>
+  </data>
+  <data name="AntidoteConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch von Gegengift verarbeitet.</value>
+  </data>
+  <data name="AppleConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch von Äpfeln</value>
+  </data>
+  <data name="AppleConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch von Äpfeln verarbeitet.</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Juwels des Segens</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Juwels des Segens verarbeitet.</value>
+  </data>
+  <data name="FruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch von Früchten</value>
+  </data>
+  <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch von Früchten verarbeitet.</value>
+  </data>
+  <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Juwels der Harmonie</value>
+  </data>
+  <data name="HarmonyJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Juwels der Harmonie verarbeitet.</value>
+  </data>
+  <data name="HigherRefineStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des höheren Verfeinerungssteins</value>
+  </data>
+  <data name="HigherRefineStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des höheren Verfeinerungssteins verarbeitet.</value>
+  </data>
+  <data name="LargeComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des großen Komplextranks</value>
+  </data>
+  <data name="LargeComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des großen Komplextranks verarbeitet.</value>
+  </data>
+  <data name="LargeHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des großen Heiltranks</value>
+  </data>
+  <data name="LargeHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des großen Heiltranks verarbeitet.</value>
+  </data>
+  <data name="LargeManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>Verbrauch des großen Manatranks</value>
+  </data>
+  <data name="LargeManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des großen Manatranks verarbeitet.</value>
+  </data>
+  <data name="LargeShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des großen Schildtranks</value>
+  </data>
+  <data name="LargeShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des großen Schildtranks verarbeitet.</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Juwels des Lebens</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Juwels des Lebens verarbeitet.</value>
+  </data>
+  <data name="LowerRefineStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des niederen Verfeinerungssteins</value>
+  </data>
+  <data name="LowerRefineStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des niederen Verfeinerungssteins verarbeitet.</value>
+  </data>
+  <data name="MediumComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des mittleren Komplextranks</value>
+  </data>
+  <data name="MediumComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des mittleren Komplextranks verarbeitet.</value>
+  </data>
+  <data name="MediumHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des mittleren Heiltranks</value>
+  </data>
+  <data name="MediumHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des mittleren Heiltranks verarbeitet.</value>
+  </data>
+  <data name="MediumManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>Verbrauch des mittleren Manatranks</value>
+  </data>
+  <data name="MediumManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des mittleren Manatranks verarbeitet.</value>
+  </data>
+  <data name="MediumShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des mittleren Schildtranks</value>
+  </data>
+  <data name="MediumShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des mittleren Schildtranks verarbeitet.</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Belagerungstranks</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Belagerungstranks verarbeitet.</value>
+  </data>
+  <data name="SmallComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des kleinen Komplextranks</value>
+  </data>
+  <data name="SmallComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des kleinen Komplextranks verarbeitet.</value>
+  </data>
+  <data name="SmallHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des kleinen Heiltranks</value>
+  </data>
+  <data name="SmallHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des kleinen Heiltranks verarbeitet.</value>
+  </data>
+  <data name="SmallManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>Verbrauch des kleinen Manatranks</value>
+  </data>
+  <data name="SmallManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des kleinen Manatranks verarbeitet.</value>
+  </data>
+  <data name="SmallShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des kleinen Schildtranks</value>
+  </data>
+  <data name="SmallShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des kleinen Schildtranks verarbeitet.</value>
+  </data>
+  <data name="SoulJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Juwels der Seele</value>
+  </data>
+  <data name="SoulJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Juwels der Seele verarbeitet.</value>
+  </data>
+  <data name="SummoningOrbConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Beschwörungskugel</value>
+  </data>
+  <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch der Beschwörungskugel verarbeitet.</value>
+  </data>
+  <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Stadtportal-Schriftrolle</value>
+  </data>
+  <data name="TownPortalScrollConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch der Stadtportal-Schriftrolle verarbeitet.</value>
+  </data>
+  <data name="ChainLightningSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Chain Lightning</value>
+  </data>
+  <data name="ChainLightningSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Chain Lightning der Klasse Beschwörer. Zusätzlich zum angegriffenen Ziel trifft sie bis zu zwei weitere Ziele.</value>
+  </data>
+  <data name="DragonRoarSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Dragon Roar</value>
+  </data>
+  <data name="DragonRoarSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Dragon Roar der Klasse Wutkämpfer. Zusätzlich zum angegriffenen Ziel trifft sie bis zu sieben weitere Ziele.</value>
+  </data>
+  <data name="DrainLifeSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Drain Life</value>
+  </data>
+  <data name="DrainLifeSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Drain Life der Klasse Beschwörer. Zusätzlich zum Angriff auf das Ziel wird Leben in Höhe des verursachten Schadens zurückgewonnen.</value>
+  </data>
+  <data name="EarthShakeSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Earth Shake</value>
+  </data>
+  <data name="EarthShakeSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Earth Shake des Dunklen Pferdes. Stößt die Ziele vom Angreifer weg.</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Fire Scream</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Fire Scream der Klasse Dunkler Lord. Mit einer gewissen Chance verursacht sie zusätzlichen Schaden (Explosion) an allen Zielen in einem Radius um das Ziel selbst.</value>
+  </data>
+  <data name="ForceSkillAction_Name" xml:space="preserve">
+    <value>Fähigkeit Force</value>
+  </data>
+  <data name="ForceSkillAction_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Force des Dunklen Lords.</value>
+  </data>
+  <data name="ForceWaveStrengSkillAction_Name" xml:space="preserve">
+    <value>Fähigkeit Force Wave Strengthener</value>
+  </data>
+  <data name="ForceWaveStrengSkillAction_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Force Wave Strengthener des Dunklen Lords.</value>
+  </data>
+  <data name="NovaSkillStartPlugin_Name" xml:space="preserve">
+    <value>Start der Fähigkeit Nova</value>
+  </data>
+  <data name="NovaSkillStartPlugin_Description" xml:space="preserve">
+    <value>Verarbeitet den Start der Fähigkeit Nova der Klasse Zauberer.</value>
+  </data>
+  <data name="NovaSkillStopPlugin_Name" xml:space="preserve">
+    <value>Stopp der Fähigkeit Nova</value>
+  </data>
+  <data name="NovaSkillStopPlugin_Description" xml:space="preserve">
+    <value>Verarbeitet das Stoppen der Fähigkeit Nova der Klasse Zauberer.</value>
+  </data>
+  <data name="PhoenixShotSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Phoenix Shot</value>
+  </data>
+  <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Waffenfähigkeit Phoenix Shot der Klasse Wutkämpfer. Zusätzlich zum angegriffenen Ziel trifft sie bis zu sieben weitere Ziele.</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Pollution</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Pollution (Book of Lagle) der Klasse Beschwörer. Mit einer gewissen Chance stößt sie die Ziele 2 Felder vom Angreifer weg.</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Requiem</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Requiem (Book of Neil) der Klasse Beschwörer. Mit einer gewissen Chance betäubt sie das Ziel.</value>
+  </data>
+  <data name="SoulBarrierProficieSkillAction_Name" xml:space="preserve">
+    <value>Fähigkeit Soul Barrier Proficiency</value>
+  </data>
+  <data name="SoulBarrierProficieSkillAction_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Soul Barrier Proficiency des Großmeisters.</value>
+  </data>
+  <data name="SoulBarrierStrengSkillAction_Name" xml:space="preserve">
+    <value>Fähigkeit Soul Barrier Strengthener</value>
+  </data>
+  <data name="SoulBarrierStrengSkillAction_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Soul Barrier Strengthener des Großmeisters.</value>
+  </data>
+  <data name="SummonPartySkillPlugin_Name" xml:space="preserve">
+    <value>Fähigkeit Summon Party</value>
+  </data>
+  <data name="SummonPartySkillPlugin_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Summon Party der Klasse Dunkler Lord.</value>
+  </data>
+  <data name="TwistingSlashMasterySkillPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeit Twisting Slash Mastery</value>
+  </data>
+  <data name="TwistingSlashMasterySkillPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Fähigkeit Twisting Slash Mastery der Klasse Dunkler Ritter. Mit einer gewissen Chance stößt sie die Ziele 2 Felder vom Angreifer weg.</value>
+  </data>
+  <data name="AddAgilityStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Beweglichkeit hinzufügen</value>
+  </data>
+  <data name="AddAgilityStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter die angegebene Anzahl an Beweglichkeitspunkten hinzu.</value>
+  </data>
+  <data name="AddCommandStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Führung hinzufügen</value>
+  </data>
+  <data name="AddCommandStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter die angegebene Anzahl an Führungspunkten hinzu.</value>
+  </data>
+  <data name="AddEnergyStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Energie hinzufügen</value>
+  </data>
+  <data name="AddEnergyStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter die angegebene Anzahl an Energiepunkten hinzu.</value>
+  </data>
+  <data name="AddStrengthStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Stärke hinzufügen</value>
+  </data>
+  <data name="AddStrengthStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter die angegebene Anzahl an Stärkepunkten hinzu.</value>
+  </data>
+  <data name="AddVitalityStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Vitalität hinzufügen</value>
+  </data>
+  <data name="AddVitalityStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter die angegebene Anzahl an Vitalitätspunkten hinzu.</value>
+  </data>
+  <data name="BanAccChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Konto sperren</value>
+  </data>
+  <data name="BanAccChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/banacc &lt;acc&gt;'. Sperrt ein Konto für das Spiel.</value>
+  </data>
+  <data name="BanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Charakter sperren</value>
+  </data>
+  <data name="BanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/banchar &lt;char&gt;'. Sperrt das Konto eines Charakters für das Spiel.</value>
+  </data>
+  <data name="ChangeLanguageChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Sprache ändern</value>
+  </data>
+  <data name="ChangeLanguageChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/language &lt;isoCode&gt;'. Ändert die Sprache des Kontos.</value>
+  </data>
+  <data name="CharInfoChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Charakterinfo</value>
+  </data>
+  <data name="CharInfoChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/charinfo &lt;char&gt;'. Gibt Informationen über den Charakter an den Anfragenden zurück.</value>
+  </data>
+  <data name="ChatBanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Chatsperre für Charakter</value>
+  </data>
+  <data name="ChatBanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/chatban &lt;characterName&gt; &lt;durationMinutes&gt;'. Sperrt das Konto eines Charakters für die angegebenen Minuten für den Chat.</value>
+  </data>
+  <data name="ChatUnbanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Chatsperre für Charakter aufheben</value>
+  </data>
+  <data name="ChatUnbanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/chatunban &lt;characterName&gt;'. Hebt die Chatsperre des Kontos eines Charakters auf.</value>
+  </data>
+  <data name="CreateMonsterChatCommand_Name" xml:space="preserve">
+    <value>Chatbefehl Monster erstellen</value>
+  </data>
+  <data name="CreateMonsterChatCommand_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/createmonster &lt;number&gt; &lt;intelligent&gt;'. Erstellt ein Monster, das vom GM ferngesteuert werden kann.</value>
+  </data>
+  <data name="DisconnectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Verbindung trennen</value>
+  </data>
+  <data name="DisconnectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/disconnect &lt;char&gt;'. Trennt die Verbindung eines Spielers zum Game-Server.</value>
+  </data>
+  <data name="GuildBattleSoccerChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Gilden-Battle-Soccer</value>
+  </data>
+  <data name="GuildBattleSoccerChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/battlesoccer &lt;guildname&gt;'. Sendet eine Anfrage an den Gildenmeister der angefragten Gilde.</value>
+  </data>
+  <data name="GuildDisconnectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Gilde trennen</value>
+  </data>
+  <data name="GuildDisconnectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/guilddisconnect &lt;guild&gt;'. Trennt die Verbindung der Gildenmitglieder.</value>
+  </data>
+  <data name="GuildMoveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Gilde versetzen</value>
+  </data>
+  <data name="GuildMoveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/guildmove &lt;guild&gt; &lt;map&gt; &lt;x?&gt; &lt;y?&gt;'. Versetzt die Charaktere einer Gilde auf eine angegebene Karte und Koordinaten.</value>
+  </data>
+  <data name="GuildWarChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Gildenkrieg</value>
+  </data>
+  <data name="GuildWarChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/war &lt;guild&gt;'. Sendet eine Anfrage an den Gildenmeister der angefragten Gilde.</value>
+  </data>
+  <data name="HelpCommand_Name" xml:space="preserve">
+    <value>Befehl Hilfe</value>
+  </data>
+  <data name="HelpCommand_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl /help &lt;command&gt;. Zeigt Informationen zum angefragten Befehl an.</value>
+  </data>
+  <data name="HideChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Verstecken</value>
+  </data>
+  <data name="HideChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/hide'. Versteckt den eigenen Spieler vor anderen.</value>
+  </data>
+  <data name="ItemChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Gegenstand</value>
+  </data>
+  <data name="ItemChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;'. Lässt einen bestimmten Gegenstand neben dem Charakter fallen.</value>
+  </data>
+  <data name="KillAllMonstersChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Alle Monster töten</value>
+  </data>
+  <data name="KillAllMonstersChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/killall'. Tötet alle Monster auf der aktuellen Karte.</value>
+  </data>
+  <data name="ListCommand_Name" xml:space="preserve">
+    <value>Befehl Liste</value>
+  </data>
+  <data name="ListCommand_Description" xml:space="preserve">
+    <value>Listet alle Befehle auf.</value>
+  </data>
+  <data name="MoveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Versetzen</value>
+  </data>
+  <data name="MoveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/move &lt;target&gt; &lt;mapIdOrName?&gt; &lt;x?&gt; &lt;y?&gt;'. Versetzt den Charakter an das angegebene Ziel.</value>
+  </data>
+  <data name="MoveMonsterChatCommand_Name" xml:space="preserve">
+    <value>Chatbefehl Ferngesteuertes Monster versetzen</value>
+  </data>
+  <data name="MoveMonsterChatCommand_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/movemonster &lt;id&gt; &lt;x&gt; &lt;y&gt;'. Versetzt ein zuvor erstelltes Monster, das vom GM ferngesteuert werden kann.</value>
+  </data>
+  <data name="NoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Mitteilung</value>
+  </data>
+  <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/goldnotice message'. Sendet eine globale goldene Mitteilung an alle Spieler des Spiels.</value>
+  </data>
+  <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Händler-NPC öffnen</value>
+  </data>
+  <data name="NpcChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Öffnet den Laden des Händler-NPCs.</value>
+  </data>
+  <data name="OnlineChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Online</value>
+  </data>
+  <data name="OnlineChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/online'. Ermittelt die Anzahl der Game Master und Spieler, die online sind.</value>
+  </data>
+  <data name="OpenWarehouseChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Lager öffnen</value>
+  </data>
+  <data name="OpenWarehouseChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Öffnet das Lager.</value>
+  </data>
+  <data name="PkChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl PK</value>
+  </data>
+  <data name="PkChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/pk &lt;char&gt; &lt;pk_lvl&gt; &lt;pk_count&gt;'. Setzt PK-Level und PK-Anzahl eines Charakters.</value>
+  </data>
+  <data name="PkClearChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl PK löschen</value>
+  </data>
+  <data name="PkClearChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/pkclear &lt;char&gt;'. Löscht die PK-Anzahl.</value>
+  </data>
+  <data name="PostChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Post</value>
+  </data>
+  <data name="PostChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/post message'. Sendet eine globale blaue Systemnachricht an alle Spieler des Spiels.</value>
+  </data>
+  <data name="RemoveNpcChatCommand_Name" xml:space="preserve">
+    <value>Chatbefehl NPC entfernen</value>
+  </data>
+  <data name="RemoveNpcChatCommand_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/removenpc &lt;id&gt;'.</value>
+  </data>
+  <data name="ShowFireworksEffectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Feuerwerkseffekt anzeigen</value>
+  </data>
+  <data name="ShowFireworksEffectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/fireworks &lt;x&gt; &lt;y&gt;'. Zeigt einen Feuerwerkseffekt an den angegebenen Koordinaten an.</value>
+  </data>
+  <data name="ShowXmasFireworksEffectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Weihnachtsfeuerwerk anzeigen</value>
+  </data>
+  <data name="ShowXmasFireworksEffectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/xmasfireworks &lt;x&gt; &lt;y&gt;'. Zeigt einen Weihnachtsfeuerwerkseffekt an den angegebenen Koordinaten an.</value>
+  </data>
+  <data name="SkinChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Skin</value>
+  </data>
+  <data name="SkinChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/skin &lt;number&gt;'. Wendet einen Monster-Skin auf den Charakter des Game Masters an.</value>
+  </data>
+  <data name="SkipMiniGameWaitChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Minispiel-Wartezeit überspringen</value>
+  </data>
+  <data name="SkipMiniGameWaitChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/skipwait'. Überspringt die aktuelle Wartephase des Minispiel-Events (Betreten, Countdown, Bereitschaft); übersprungene Wartezeiten gelten als abgeschlossen.</value>
+  </data>
+  <data name="StartBloodCastleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Blutburg-Event starten</value>
+  </data>
+  <data name="StartBloodCastleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/startbc'. Startet das Blutburg-Event zum nächstmöglichen Zeitpunkt.</value>
+  </data>
+  <data name="StartChaosCastleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Chaos-Castle-Event starten</value>
+  </data>
+  <data name="StartChaosCastleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/startcc'. Startet das Chaos-Castle-Event zum nächstmöglichen Zeitpunkt.</value>
+  </data>
+  <data name="StartDevilSquareEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Devil-Square-Event starten</value>
+  </data>
+  <data name="StartDevilSquareEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/startds'. Startet das Devil-Square-Event zum nächstmöglichen Zeitpunkt.</value>
+  </data>
+  <data name="StartKanturuEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Kanturu-Event starten</value>
+  </data>
+  <data name="StartKanturuEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/startkanturu'. Startet das Kanturu-Event zum nächstmöglichen Zeitpunkt.</value>
+  </data>
+  <data name="TeleportChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Teleport</value>
+  </data>
+  <data name="TeleportChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/teleport &lt;x&gt; &lt;y&gt;'. Teleportiert den Game Master zu den angegebenen Koordinaten.</value>
+  </data>
+  <data name="TraceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Trace</value>
+  </data>
+  <data name="TraceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/trace &lt;char&gt;'. Versetzt den Game Master zum Standort des Charakters.</value>
+  </data>
+  <data name="TrackChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Track</value>
+  </data>
+  <data name="TrackChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/track &lt;char&gt;'. Versetzt den Spieler zum Standort des Game Masters.</value>
+  </data>
+  <data name="UnBanAccChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Kontosperre aufheben</value>
+  </data>
+  <data name="UnBanAccChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/unbanacc &lt;acc&gt;'. Hebt die Sperre eines Kontos für das Spiel auf.</value>
+  </data>
+  <data name="UnBanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Charaktersperre aufheben</value>
+  </data>
+  <data name="UnBanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/unbanchar &lt;char&gt;'. Hebt die Sperre des Kontos eines Charakters für das Spiel auf.</value>
+  </data>
+  <data name="UnHideChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Sichtbar machen</value>
+  </data>
+  <data name="UnHideChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/unhide'. Macht den eigenen Spieler für andere wieder sichtbar.</value>
+  </data>
+  <data name="WalkMonsterChatCommand_Name" xml:space="preserve">
+    <value>Chatbefehl Ferngesteuertes Monster laufen lassen</value>
+  </data>
+  <data name="WalkMonsterChatCommand_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;'. Lässt ein zuvor erstelltes Monster, das vom GM ferngesteuert werden kann, laufen.</value>
+  </data>
+  <data name="GoldenInvasionPlugIn_Name" xml:space="preserve">
+    <value>Goldene Invasion</value>
+  </data>
+  <data name="GoldenInvasionPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet das Event Goldene Invasion</value>
+  </data>
+  <data name="RedDragonInvasionPlugIn_Name" xml:space="preserve">
+    <value>Invasion des Roten Drachen</value>
+  </data>
+  <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet das Event Invasion des Roten Drachen</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>Haltbarkeitsverfall</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert die Haltbarkeit von Gegenständen, die mit der Zeit verfallen.</value>
+  </data>
+  <data name="HappyHourPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet das Event Happy Hour</value>
+  </data>
+  <data name="UnlockDarkLordAtLevel250_Name" xml:space="preserve">
+    <value>Dunklen Lord ab Level 250 freischalten</value>
+  </data>
+  <data name="UnlockDarkLordAtLevel250_Description" xml:space="preserve">
+    <value>Schaltet die Charakterklasse Dunkler Lord frei, sobald der erste Charakter eines Kontos Level 250 erreicht.</value>
+  </data>
+  <data name="UnlockMagicGladiatorAtLevel220_Name" xml:space="preserve">
+    <value>Magischen Gladiator ab Level 220 freischalten</value>
+  </data>
+  <data name="UnlockMagicGladiatorAtLevel220_Description" xml:space="preserve">
+    <value>Schaltet die Charakterklasse Magischer Gladiator frei, sobald der erste Charakter eines Kontos Level 220 erreicht.</value>
+  </data>
+  <data name="UnlockRageFighterAtLevel150_Name" xml:space="preserve">
+    <value>Wutkämpfer ab Level 150 freischalten</value>
+  </data>
+  <data name="UnlockRageFighterAtLevel150_Description" xml:space="preserve">
+    <value>Schaltet die Charakterklasse Wutkämpfer frei, sobald der erste Charakter eines Kontos Level 150 erreicht.</value>
+  </data>
+  <data name="UnlockSummonerAtLevel1_Name" xml:space="preserve">
+    <value>Beschwörer ab Level 1 freischalten</value>
+  </data>
+  <data name="UnlockSummonerAtLevel1_Description" xml:space="preserve">
+    <value>Schaltet die Charakterklasse Beschwörer frei, sobald der erste Charakter eines Kontos Level 1 erreicht.</value>
+  </data>
+  <data name="WanderingMerchantsPlugIn_Name" xml:space="preserve">
+    <value>Wanderhändler</value>
+  </data>
+  <data name="WanderingMerchantsPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin lässt die Wanderhändler erscheinen und bewegt sie.</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>Geldverlust des Spielers nach dem Tod</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin verringert das Geld (Zen), nachdem der Spieler von einem Monster getötet wurde.</value>
+  </data>
+  <data name="LearnablesConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch erlernbarer Gegenstände</value>
+  </data>
+  <data name="LearnablesConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch von Gegenständen verarbeitet, die Fähigkeiten hinzufügen (z. B. Schriftrollen, Kugeln).</value>
+  </data>
+  <data name="TargetedSkillDefaultPlugin_Name" xml:space="preserve">
+    <value>Standard für gezielte Fähigkeiten</value>
+  </data>
+  <data name="TargetedSkillDefaultPlugin_Description" xml:space="preserve">
+    <value>Standard-Handler (Auffangfall) für gezielte Fähigkeiten</value>
+  </data>
+  <data name="AddStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Statuswert hinzufügen</value>
+  </data>
+  <data name="AddStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/add (ene|agi|vit|str|cmd) (amount)'. Fügt dem angegebenen Attribut des Charakters die angegebene Anzahl an Statuspunkten hinzu.</value>
+  </data>
+  <data name="ClearInventoryChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Inventar leeren</value>
+  </data>
+  <data name="ClearInventoryChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Leert das Inventar. Verwendung: /clearinv (optional:character)</value>
+  </data>
+  <data name="GetLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Level abfragen</value>
+  </data>
+  <data name="GetLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt das Level eines Spielers ab. Verwendung: /getlevel (optional:character)</value>
+  </data>
+  <data name="GetLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Level-up-Punkte abfragen</value>
+  </data>
+  <data name="GetLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt die Level-up-Punkte eines Spielers ab. Verwendung: /getleveluppoints (optional:character)</value>
+  </data>
+  <data name="GetMasterLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Master-Level abfragen</value>
+  </data>
+  <data name="GetMasterLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt das Master-Level eines Spielers ab. Verwendung: /getmasterlevel (optional:character)</value>
+  </data>
+  <data name="GetMasterLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Master-Level-up-Punkte abfragen</value>
+  </data>
+  <data name="GetMasterLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt die Master-Level-up-Punkte eines Spielers ab. Verwendung: /getmasterleveluppoints (optional:character)</value>
+  </data>
+  <data name="GetMoneyChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Geld abfragen</value>
+  </data>
+  <data name="GetMoneyChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt das Geld eines Spielers ab. Verwendung: /getmoney (optional:character)</value>
+  </data>
+  <data name="GetResetsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Resets abfragen</value>
+  </data>
+  <data name="GetResetsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt die Resets eines Spielers ab. Verwendung: /getresets (optional:character)</value>
+  </data>
+  <data name="GetStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Statuswert abfragen</value>
+  </data>
+  <data name="GetStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Fragt Statuspunkte ab. Verwendung: /get (ene|agi|vit|str|cmd) (optional:character)</value>
+  </data>
+  <data name="SetLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Level setzen</value>
+  </data>
+  <data name="SetLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt das Level eines Spielers. Verwendung: /setlevel (level) (optional:character)</value>
+  </data>
+  <data name="SetLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Level-up-Punkte setzen</value>
+  </data>
+  <data name="SetLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt die Level-up-Punkte eines Spielers. Verwendung: /setleveluppoints (points) (optional:character)</value>
+  </data>
+  <data name="SetMasterLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Master-Level setzen</value>
+  </data>
+  <data name="SetMasterLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt das Master-Level eines Spielers. Verwendung: /setmasterlevel (level) (optional:character)</value>
+  </data>
+  <data name="SetMasterLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Master-Level-up-Punkte setzen</value>
+  </data>
+  <data name="SetMasterLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt die Master-Level-up-Punkte eines Spielers. Verwendung: /setmasterleveluppoints (points) (optional:character)</value>
+  </data>
+  <data name="SetMoneyChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Geld setzen</value>
+  </data>
+  <data name="SetMoneyChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt das Geld eines Spielers. Verwendung: /setmoney (amount) (optional:character)</value>
+  </data>
+  <data name="SetResetsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Resets setzen</value>
+  </data>
+  <data name="SetResetsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt die Resets eines Spielers. Verwendung: /setresets (resets) (optional:character)</value>
+  </data>
+  <data name="SetStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Statuswert setzen</value>
+  </data>
+  <data name="SetStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Setzt Statuspunkte. Verwendung: /set (ene|agi|vit|str|cmd) (amount) (optional:character)</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRatePercentage_Name" xml:space="preserve">
+    <value>Erfolgsrate %</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRatePercentage_Description" xml:space="preserve">
+    <value>Die Erfolgsrate in Prozent für die Erhöhung des Gegenstandslevels.</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Name" xml:space="preserve">
+    <value>Glücksbonus auf Erfolgsrate %</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Description" xml:space="preserve">
+    <value>Die zusätzliche Erfolgsrate, wenn der Gegenstand die Option Glück hat.</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimales Gegenstandslevel</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MinimumLevel_Description" xml:space="preserve">
+    <value>Das minimale Gegenstandslevel, das der Gegenstand vor dem Anwenden des Juwels haben muss.</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MaximumLevel_Name" xml:space="preserve">
+    <value>Maximales Gegenstandslevel</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MaximumLevel_Description" xml:space="preserve">
+    <value>Das maximale Gegenstandslevel, das der Gegenstand vor dem Anwenden des Juwels haben darf.</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_LevelAmount_Name" xml:space="preserve">
+    <value>Anzahl hinzuzufügender Level</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_LevelAmount_Description" xml:space="preserve">
+    <value>Wie oft dem Gegenstand ein Level hinzugefügt wird (höchstens bis zum maximal erlaubten Level).</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Name" xml:space="preserve">
+    <value>Min. Level für Rückfall auf 0</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Description" xml:space="preserve">
+    <value>Das Gegenstandslevel, ab dem der Gegenstand bei einem Fehlschlag auf Level 0 zurückfällt.</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_AllowedItems_Name" xml:space="preserve">
+    <value>Erlaubte Gegenstände</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_AllowedItems_Description" xml:space="preserve">
+    <value>Legt die Gegenstände fest, die verbessert werden dürfen. Wenn leer, sind alle Gegenstände erlaubt, außer denen unter 'Nicht erlaubte Gegenstände'.</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_DisallowedItems_Name" xml:space="preserve">
+    <value>Nicht erlaubte Gegenstände</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_DisallowedItems_Description" xml:space="preserve">
+    <value>Legt die Gegenstände fest, die nicht verbessert werden dürfen.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_MoneyCost_Name" xml:space="preserve">
+    <value>Geldkosten</value>
+  </data>
+  <data name="ClearInventoryConfiguration_MoneyCost_Description" xml:space="preserve">
+    <value>Die Geldkosten zum Leeren des Inventars (außer für GMs). Standard: 0.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_RequireConfirmation_Name" xml:space="preserve">
+    <value>Bestätigung erforderlich</value>
+  </data>
+  <data name="ClearInventoryConfiguration_RequireConfirmation_Description" xml:space="preserve">
+    <value>Wenn aktiviert, muss der Spieler den Befehl innerhalb von 10 Sekunden erneut ausführen, um das Leeren des Inventars zu bestätigen (außer GMs).</value>
+  </data>
+  <data name="ClearInventoryConfiguration_ConfirmationMessage_Name" xml:space="preserve">
+    <value>Bestätigungsnachricht</value>
+  </data>
+  <data name="ClearInventoryConfiguration_ConfirmationMessage_Description" xml:space="preserve">
+    <value>Die Nachricht, die angezeigt wird, wenn der Spieler den Befehl innerhalb von 10 Sekunden erneut ausführen muss, um das Leeren des Inventars zu bestätigen.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_NotEnoughMoneyMessage_Name" xml:space="preserve">
+    <value>Nachricht bei zu wenig Geld</value>
+  </data>
+  <data name="ClearInventoryConfiguration_NotEnoughMoneyMessage_Description" xml:space="preserve">
+    <value>Die Nachricht, die angezeigt wird, wenn der Spieler nicht genug Geld hat, um den Befehl auszuführen.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_InventoryClearedMessage_Name" xml:space="preserve">
+    <value>Nachricht bei geleertem Inventar</value>
+  </data>
+  <data name="ClearInventoryConfiguration_InventoryClearedMessage_Description" xml:space="preserve">
+    <value>Die Nachricht, die angezeigt wird, wenn das Inventar geleert wurde.</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_OpenMerchantNpc_Name" xml:space="preserve">
+    <value>NPC-ID</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_OpenMerchantNpc_Description" xml:space="preserve">
+    <value>Die ID des NPCs, dessen Händlerladen geöffnet wird. Standard: Potion Girl Amy - 253.</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_MinimumVipLevel_Name" xml:space="preserve">
+    <value>Minimales VIP-Level</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_MinimumVipLevel_Description" xml:space="preserve">
+    <value>Das minimale VIP-Level, um den Befehl zu verwenden. Standard: 0.</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name" xml:space="preserve">
+    <value>Nachricht bei unzureichendem VIP-Level</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description" xml:space="preserve">
+    <value>Die Nachricht, die angezeigt wird, wenn der Spieler nicht das erforderliche VIP-Level für diesen Befehl hat (außer GMs).</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name" xml:space="preserve">
+    <value>Minimales VIP-Level</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description" xml:space="preserve">
+    <value>Das minimale VIP-Level, um den Befehl zu verwenden (außer GMs). Standard: 0.</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name" xml:space="preserve">
+    <value>Nachricht bei unzureichendem VIP-Level</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description" xml:space="preserve">
+    <value>Die Nachricht, die angezeigt wird, wenn der Spieler nicht das erforderliche VIP-Level für diesen Befehl hat (außer GMs).</value>
+  </data>
+  <data name="ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name" xml:space="preserve">
+    <value>Chatbefehl NPC-IDs anzeigen</value>
+  </data>
+  <data name="ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/showids'.</value>
+  </data>
+  <data name="MuHelperConfiguration_CostPerStage_Name" xml:space="preserve">
+    <value>Kosten pro Stufe</value>
+  </data>
+  <data name="MuHelperConfiguration_CostPerStage_Description" xml:space="preserve">
+    <value>Dieser Wert wird pro Zahlungsintervall angewendet und mit dem gesamten Charakterlevel multipliziert.</value>
+  </data>
+  <data name="MuHelperConfiguration_PayInterval_Name" xml:space="preserve">
+    <value>Zahlungsintervall</value>
+  </data>
+  <data name="MuHelperConfiguration_StageInterval_Name" xml:space="preserve">
+    <value>Stufenintervall</value>
+  </data>
+  <data name="MuHelperConfiguration_StageInterval_Description" xml:space="preserve">
+    <value>Nach jedem Intervall wird die Stufe auf die nächste Stufe erhöht, in der Regel mit steigenden Kosten.</value>
+  </data>
+  <data name="MuHelperConfiguration_MinLevel_Name" xml:space="preserve">
+    <value>Minimales Charakterlevel</value>
+  </data>
+  <data name="MuHelperConfiguration_MaxLevel_Name" xml:space="preserve">
+    <value>Maximales Charakterlevel</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_TotalRecoverPercentage_Name" xml:space="preserve">
+    <value>Gesamte Regeneration in Prozent</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverPercentageIncreaseByPotionLevel_Name" xml:space="preserve">
+    <value>Erhöhung des Regenerationsprozentsatzes pro Tranklevel</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Name" xml:space="preserve">
+    <value>Verringerung der Regenerationsverzögerung pro Tranklevel</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description" xml:space="preserve">
+    <value>Ein Wert zwischen 0 und 1 (exklusiv). 1 würde bedeuten, dass die Regeneration ab Level 1 sofort wirkt.</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Name" xml:space="preserve">
+    <value>Zusätzliche Regeneration minus Charakterlevel</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description" xml:space="preserve">
+    <value>Legt den Wert fest, der zusätzlich regeneriert wird. Von diesem Wert wird das Charakterlevel abgezogen.</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_CooldownTime_Name" xml:space="preserve">
+    <value>Abklingzeit</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_CooldownTime_Description" xml:space="preserve">
+    <value>Die Abklingzeit bis zum nächsten Verbrauch.</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverSteps_Name" xml:space="preserve">
+    <value>Maximales Charakterlevel</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverSteps_Description" xml:space="preserve">
+    <value>Wenn keine definiert sind, erfolgt die Regeneration sofort.</value>
+  </data>
+  <data name="SelfDefensePlugInConfiguration_SelfDefenseTimeOut_Name" xml:space="preserve">
+    <value>Zeitlimit der Selbstverteidigung.</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugInConfiguration_Message_Name" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_LossesPerLevel_Name" xml:space="preserve">
+    <value>Verluste pro Level</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimales Level</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_IsMaster_Name" xml:space="preserve">
+    <value>Ist Master</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_InventoryMoneyLossPercentage_Name" xml:space="preserve">
+    <value>Geldverlust im Inventar %</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name" xml:space="preserve">
+    <value>Geldverlust im Tresor %</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_LossesPerLevel_Name" xml:space="preserve">
+    <value>Verluste pro Level</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimales Level</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_IsMaster_Name" xml:space="preserve">
+    <value>Ist Master</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_Losses_Name" xml:space="preserve">
+    <value>Verluste pro Stufe</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_State_Name" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_ExperienceLossPercentage_Name" xml:space="preserve">
+    <value>Erfahrungsverlust %</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugInConfiguration_Interval_Name" xml:space="preserve">
+    <value>Speicherintervall</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
+    <value>Zeitplan</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
+    <value>Vorlaufzeit der Ankündigung</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_TaskDuration_Name" xml:space="preserve">
+    <value>Dauer der Aufgabe (Minimum)</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_StartMessage_Name" xml:space="preserve">
+    <value>Startnachricht</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_StartMessage_Description" xml:space="preserve">
+    <value>Der Text, der beim Start der Aufgabe als goldene Nachricht im Spiel angezeigt wird.</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_EndMessage_Name" xml:space="preserve">
+    <value>Endnachricht</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_EndMessage_Description" xml:space="preserve">
+    <value>Der Text, der beim Ende der Aufgabe als goldene Nachricht im Spiel angezeigt wird.</value>
+  </data>
+  <data name="ResetConfiguration_ResetLimit_Name" xml:space="preserve">
+    <value>Reset-Limit</value>
+  </data>
+  <data name="ResetConfiguration_RequiredLevel_Name" xml:space="preserve">
+    <value>Erforderliches Level</value>
+  </data>
+  <data name="ResetConfiguration_LevelAfterReset_Name" xml:space="preserve">
+    <value>Level nach dem Reset</value>
+  </data>
+  <data name="ResetConfiguration_RequiredMoney_Name" xml:space="preserve">
+    <value>Erforderliches Geld</value>
+  </data>
+  <data name="ResetConfiguration_MultiplyRequiredMoneyByResetCount_Name" xml:space="preserve">
+    <value>Erforderliches Geld mit Anzahl der Resets multiplizieren</value>
+  </data>
+  <data name="ResetConfiguration_ResetStats_Name" xml:space="preserve">
+    <value>Basiswerte auf Klassenstandard zurücksetzen</value>
+  </data>
+  <data name="ResetConfiguration_PointsPerReset_Name" xml:space="preserve">
+    <value>Punkte pro Reset</value>
+  </data>
+  <data name="ResetConfiguration_MultiplyPointsByResetCount_Name" xml:space="preserve">
+    <value>Punkte mit Anzahl der Resets multiplizieren</value>
+  </data>
+  <data name="ResetConfiguration_ReplacePointsPerReset_Name" xml:space="preserve">
+    <value>Level-up-Punkte durch Reset-Gesamtsumme ersetzen</value>
+  </data>
+  <data name="ResetConfiguration_MoveHome_Name" xml:space="preserve">
+    <value>Nach Hause versetzen</value>
+  </data>
+  <data name="ResetConfiguration_LogOut_Name" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="MiniGameStartConfiguration_EntranceOpenedMessage_Name" xml:space="preserve">
+    <value>Nachricht bei geöffnetem Eingang</value>
+  </data>
+  <data name="MiniGameStartConfiguration_EntranceClosedMessage_Name" xml:space="preserve">
+    <value>Nachricht bei geschlossenem Eingang</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Name" xml:space="preserve">
+    <value>Öffnungsdauer des Turms</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Description" xml:space="preserve">
+    <value>Wie lange der Raffinerieturm geöffnet bleibt, nachdem der Boss Nightmare besiegt wurde. Solange das Zeitfenster geöffnet ist, werden geplante Event-Starts übersprungen; ein Start durch einen Game Master wird trotzdem ausgeführt und beendet das Zeitfenster.</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Name" xml:space="preserve">
+    <value>Turm geöffnet bis (UTC)</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Description" xml:space="preserve">
+    <value>Ende des aktuellen Öffnungszeitfensters in UTC. Wird automatisch gesetzt, wenn Nightmare besiegt wird.</value>
+  </data>
+  <data name="HappyHourConfiguration_ExperienceMultiplier_Name" xml:space="preserve">
+    <value>Erfahrungsmultiplikator</value>
+  </data>
+  <data name="WanderingMerchantsConfiguration_MinimumSpawnDuration_Name" xml:space="preserve">
+    <value>Minimale Spawn-Dauer</value>
+  </data>
+  <data name="WanderingMerchantsConfiguration_MaximumSpawnDuration_Name" xml:space="preserve">
+    <value>Maximale Spawn-Dauer</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Offline-Leveln</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Ermöglicht Spielern, mit /offlevel das Offline-Leveln zu starten. Der Charakter bleibt nach dem Trennen des Clients in der Welt und stoppt, wenn sich der Spieler wieder anmeldet.</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Name" xml:space="preserve">
+    <value>Automatischer Wiedereintritt in die Party</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Description" xml:space="preserve">
+    <value>Lässt Spieler beim Betreten der Welt automatisch wieder ihrer vorherigen Party beitreten.</value>
+  </data>
+  <data name="MonsterAttributeScaler_Name" xml:space="preserve">
+    <value>Skalierung der Monsterattribute</value>
+  </data>
+  <data name="MonsterAttributeScaler_Description" xml:space="preserve">
+    <value>Erhöht alle Basiswerte von Monstern um einen konfigurierbaren Prozentsatz.</value>
+  </data>
+  <data name="StatResetFeaturePlugIn_Name" xml:space="preserve">
+    <value>Funktion Statuswerte zurücksetzen</value>
+  </data>
+  <data name="StatResetFeaturePlugIn_Description" xml:space="preserve">
+    <value>Stellt die Konfiguration für die Funktion zum Zurücksetzen der Statuswerte bereit.</value>
+  </data>
+  <data name="ResetStatsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Statuswerte zurücksetzen</value>
+  </data>
+  <data name="ResetStatsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/resetstats'.</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredLevel_Name" xml:space="preserve">
+    <value>Erforderliches Level</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredMoney_Name" xml:space="preserve">
+    <value>Erforderliches Geld</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredResetItem_Name" xml:space="preserve">
+    <value>Erforderlicher Reset-Gegenstand</value>
+  </data>
+  <data name="StatResetConfiguration_ChatCommandEnabled_Name" xml:space="preserve">
+    <value>Chatbefehl aktiviert</value>
+  </data>
+  <data name="StatResetConfiguration_MoveHome_Name" xml:space="preserve">
+    <value>Nach Hause versetzen</value>
+  </data>
+  <data name="StatResetConfiguration_LogOut_Name" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Verbrauch des Lebenssteins</value>
+  </data>
+  <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Verbraucht Lebenssteine, nachdem sie während Castle Siege erfolgreich platziert wurden.</value>
+  </data>
+  <data name="DoppelgangerRewardChestPlugIn_Name" xml:space="preserve">
+    <value>Doppelgänger-Belohnungstruhen</value>
+  </data>
+  <data name="DoppelgangerRewardChestPlugIn_Description" xml:space="preserve">
+    <value>Öffnet die Belohnungstruhen des Doppelgänger-Events, wenn ein Spieler mit ihnen spricht.</value>
+  </data>
+  <data name="SignOfDimensionsStackedPlugIn_Name" xml:space="preserve">
+    <value>Umwandlung eines Stapels von Sign of Dimensions</value>
+  </data>
+  <data name="SignOfDimensionsStackedPlugIn_Description" xml:space="preserve">
+    <value>Wandelt einen vollen Stapel von Sign of Dimensions in einen Mirror of Dimensions um.</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Name" xml:space="preserve">
+    <value>Doppelgänger-Event</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
+    <value>Konfiguriert den Ablauf des Doppelgänger-Events, z. B. seine Monster, deren Pfade und Multiplikatoren.</value>
+  </data>
+  <data name="BotConfiguration_Enabled_Name" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
+  <data name="BotConfiguration_Enabled_Description" xml:space="preserve">
+    <value>Wenn aktiviert, werden nach dem Start des Servers Bots gespawnt.</value>
+  </data>
+  <data name="BotConfiguration_ResetBots_Name" xml:space="preserve">
+    <value>Bots zurücksetzen</value>
+  </data>
+  <data name="BotConfiguration_ResetBots_Description" xml:space="preserve">
+    <value>Löscht beim nächsten Start alle Bot-Konten und -Charaktere und erzeugt sie anschließend neu. Setzt sich danach selbst zurück.</value>
+  </data>
+  <data name="BotConfiguration_PurgeBots_Name" xml:space="preserve">
+    <value>Bots entfernen</value>
+  </data>
+  <data name="BotConfiguration_PurgeBots_Description" xml:space="preserve">
+    <value>Löscht alle Bot-Konten und -Charaktere und schaltet die Bot-Funktion aus, ohne neue zu erzeugen. Setzt sich danach selbst zurück.</value>
+  </data>
+  <data name="BotConfiguration_StartAsFreshCharacters_Name" xml:space="preserve">
+    <value>Als neue Charaktere starten</value>
+  </data>
+  <data name="BotConfiguration_StartAsFreshCharacters_Description" xml:space="preserve">
+    <value>Neu erzeugte Bots beginnen auf Level 1 mit Startausrüstung der Stufe 0, wie ein neu erstellter Spielercharakter, statt mit zufälligem Level, Reset-Verlauf und verbesserter Ausrüstung.</value>
+  </data>
+  <data name="BotConfiguration_PresenceRotation_Name" xml:space="preserve">
+    <value>Anwesenheitsrotation</value>
+  </data>
+  <data name="BotConfiguration_PresenceRotation_Description" xml:space="preserve">
+    <value>Bots melden sich im Tagesverlauf an und ab (nachts am wenigsten, abends am meisten), anstatt rund um die Uhr online zu sein.</value>
+  </data>
+  <data name="BotConfiguration_MinOnlineSharePercent_Name" xml:space="preserve">
+    <value>Min. Online-Anteil %</value>
+  </data>
+  <data name="BotConfiguration_MinOnlineSharePercent_Description" xml:space="preserve">
+    <value>Prozentsatz der Bot-Population, der in der ruhigsten Stunde online bleibt (100 = keine Rotation).</value>
+  </data>
+  <data name="BotConfiguration_NumberOfAccounts_Name" xml:space="preserve">
+    <value>Anzahl der Konten</value>
+  </data>
+  <data name="BotConfiguration_NumberOfAccounts_Description" xml:space="preserve">
+    <value>Wie viele Bot-Konten verwaltet werden.</value>
+  </data>
+  <data name="BotConfiguration_MaxCharactersPerAccount_Name" xml:space="preserve">
+    <value>Charaktere pro Konto</value>
+  </data>
+  <data name="BotConfiguration_MaxCharactersPerAccount_Description" xml:space="preserve">
+    <value>Wie viele Charaktere jedes Bot-Konto hat (max. 5).</value>
+  </data>
+  <data name="BotConfiguration_BotCapacityPercent_Name" xml:space="preserve">
+    <value>Bot-Kapazität %</value>
+  </data>
+  <data name="BotConfiguration_BotCapacityPercent_Description" xml:space="preserve">
+    <value>Anteil der maximalen Spielerzahl eines Game-Servers, den seine Bots belegen dürfen; der Rest bleibt für echte Spieler reserviert.</value>
+  </data>
+  <data name="BotConfiguration_BotsPayResetCosts_Name" xml:space="preserve">
+    <value>Bots zahlen Reset-Kosten</value>
+  </data>
+  <data name="BotConfiguration_BotsPayResetCosts_Description" xml:space="preserve">
+    <value>Wenn aktiviert, verbrauchen Bots für ihre Resets die konfigurierten Zen-/Gegenstandskosten wie menschliche Spieler (Standard: kostenlose Bot-Resets).</value>
+  </data>
+  <data name="BotConfiguration_JewelStockPerKind_Name" xml:space="preserve">
+    <value>Juwelenvorrat pro Art</value>
+  </data>
+  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
+    <value>Wie viele Juwelen des Segens/der Seele/des Lebens ein Bot von jeder Art behält; darüber hinaus hebt er sie nicht mehr auf und verkauft den Überschuss.</value>
+  </data>
+  <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve">
+    <value>Trankvorrat (Ladungen)</value>
+  </data>
+  <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve">
+    <value>Bis zu wie vielen Ladungen an Heil- und Manatränken ein Bot bei einem Händler einkauft.</value>
+  </data>
+  <data name="BotConfiguration_ProofOfConceptAccounts_Name" xml:space="preserve">
+    <value>Zusätzliche zu belebende Konten</value>
+  </data>
+  <data name="BotConfiguration_ProofOfConceptAccounts_Description" xml:space="preserve">
+    <value>Kommagetrennte Anmeldenamen bestehender Konten, die zusätzlich zur generierten Population als Bots belebt werden.</value>
+  </data>
+  <data name="BotSelfDefensePlugIn_Name" xml:space="preserve">
+    <value>Selbstverteidigung der Bots</value>
+  </data>
+  <data name="BotSelfDefensePlugIn_Description" xml:space="preserve">
+    <value>Lässt serverseitige Bots zurückschlagen, wenn ein Spieler sie angreift.</value>
+  </data>
+  <data name="BotRevengePlugIn_Name" xml:space="preserve">
+    <value>Rache der Bots</value>
+  </data>
+  <data name="BotRevengePlugIn_Description" xml:space="preserve">
+    <value>Lässt serverseitige Bots zu ihrem Todesort zurückkehren und sich an dem Spieler rächen, der sie getötet hat.</value>
+  </data>
+  <data name="BotSkillProgressionPlugIn_Name" xml:space="preserve">
+    <value>Fähigkeitsfortschritt der Bots</value>
+  </data>
+  <data name="BotSkillProgressionPlugIn_Description" xml:space="preserve">
+    <value>Verteilt Level-up-Statuspunkte und bringt serverseitigen Bots beim Aufsteigen neue, zu Klasse und Level passende Fähigkeiten bei.</value>
+  </data>
+  <data name="BotFeaturePlugIn_Description" xml:space="preserve">
+    <value>Spawnt serverseitige Bots, die auf den Karten Monster jagen. Konfigurieren Sie die zu belebenden Konten und aktivieren Sie die Funktion.</value>
+  </data>
+  <data name="MaximumConnectionsPerIpPlugIn_Name" xml:space="preserve">
+    <value>Maximale Verbindungen pro IP</value>
+  </data>
+  <data name="MaximumConnectionsPerIpPlugIn_Description" xml:space="preserve">
+    <value>Begrenzt die maximale Anzahl paralleler Verbindungen von derselben IP-Adresse.</value>
+  </data>
+  <data name="SpeedHackDetectPlugIn_Name" xml:space="preserve">
+    <value>Speedhack-Anti-Cheat</value>
+  </data>
+  <data name="SpeedHackDetectPlugIn_Description" xml:space="preserve">
+    <value>Erkennt und verhindert Speedhacks beim Laufen und Angreifen von Spielern.</value>
+  </data>
+  <data name="KanturuGatewayPlugIn_Name" xml:space="preserve">
+    <value>Kanturu-Tormaschine</value>
+  </data>
+  <data name="KanturuGatewayPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den NPC Gateway Machine von Kanturu für den Event-Eintritt.</value>
+  </data>
+  <data name="SymbolOfKundunStackedPlugIn_Name" xml:space="preserve">
+    <value>Stapel von Symbol of Kundun</value>
+  </data>
+  <data name="SymbolOfKundunStackedPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin wandelt einen Stapel von Symbol of Kundun in eine verlorene Karte um.</value>
+  </data>
+  <data name="DuelSpawnGatePlugIn_Name" xml:space="preserve">
+    <value>Spawn-Tor für Duelle</value>
+  </data>
+  <data name="DuelSpawnGatePlugIn_Description" xml:space="preserve">
+    <value>Lässt einen Spieler, der sich in einem Duell befindet, auf seiner Seite des Duellbereichs erscheinen.</value>
+  </data>
+  <data name="SoccerSpawnGatePlugIn_Name" xml:space="preserve">
+    <value>Spawn-Tor für Soccer</value>
+  </data>
+  <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve">
+    <value>Lässt einen Spieler eines laufenden Soccer-Spiels auf dem Soccer-Feld erscheinen.</value>
+  </data>
+  <data name="PetExperiencePlugIn_Name" xml:space="preserve">
+    <value>Haustier-Erfahrung</value>
+  </data>
+  <data name="PetExperiencePlugIn_Description" xml:space="preserve">
+    <value>Gibt den trainierbaren Haustieren eines Spielers einen Anteil der Erfahrung, die der Spieler für einen Kill erhalten hat.</value>
+  </data>
+  <data name="PeriodicInvasionConfiguration_ForceSingleMap_Name" xml:space="preserve">
+    <value>Einzelne Karte erzwingen</value>
+  </data>
+  <data name="PeriodicInvasionConfiguration_Mobs_Name" xml:space="preserve">
+    <value>Monster-Spawns</value>
+  </data>
+  <data name="WhiteWizardInvasionPlugIn_Name" xml:space="preserve">
+    <value>Invasion des White Wizard</value>
+  </data>
+  <data name="WhiteWizardInvasionPlugIn_Description" xml:space="preserve">
+    <value>Aktiviert die Funktion Invasion des White Wizard.</value>
+  </data>
+  <data name="ItemRegistrationConfiguration_Rules_Name" xml:space="preserve">
+    <value>Registrierungsregeln der NPCs</value>
+  </data>
+  <data name="ItemRegistrationConfiguration_Rules_Description" xml:space="preserve">
+    <value>Konfiguriert die Regeln der Gegenstandsregistrierung für verschiedene NPCs.</value>
+  </data>
+  <data name="NpcItemRegistrationRule_NpcNumber_Name" xml:space="preserve">
+    <value>NPC-Nummer</value>
+  </data>
+  <data name="NpcItemRegistrationRule_NpcNumber_Description" xml:space="preserve">
+    <value>Die Nummer der NPC-Definition (z. B. 236 für Golden Archer).</value>
+  </data>
+  <data name="NpcItemRegistrationRule_AcceptedItemGroup_Name" xml:space="preserve">
+    <value>Akzeptierte Gegenstandsgruppe</value>
+  </data>
+  <data name="NpcItemRegistrationRule_AcceptedItemGroup_Description" xml:space="preserve">
+    <value>Gruppe des akzeptierten Gegenstands (z. B. 14 für Event-Gegenstände).</value>
+  </data>
+  <data name="NpcItemRegistrationRule_AcceptedItemNumber_Name" xml:space="preserve">
+    <value>Akzeptierte Gegenstandsnummer</value>
+  </data>
+  <data name="NpcItemRegistrationRule_AcceptedItemNumber_Description" xml:space="preserve">
+    <value>Nummer des akzeptierten Gegenstands (z. B. 21 für Rena).</value>
+  </data>
+  <data name="NpcItemRegistrationRule_RequiredItemsCount_Name" xml:space="preserve">
+    <value>Anzahl benötigter Gegenstände</value>
+  </data>
+  <data name="NpcItemRegistrationRule_RequiredItemsCount_Description" xml:space="preserve">
+    <value>Anzahl der Gegenstände, die für eine Belohnung benötigt werden.</value>
+  </data>
+  <data name="NpcItemRegistrationRule_RewardZen_Name" xml:space="preserve">
+    <value>Belohnung in Zen</value>
+  </data>
+  <data name="NpcItemRegistrationRule_RewardZen_Description" xml:space="preserve">
+    <value>Zen, das beim Erreichen der benötigten Gegenstandsanzahl vergeben wird.</value>
+  </data>
+  <data name="NpcItemRegistrationRule_RewardDropItemGroup_Name" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppe der Belohnung</value>
+  </data>
+  <data name="NpcItemRegistrationRule_RewardDropItemGroup_Description" xml:space="preserve">
+    <value>Die DropItemGroup, mit der der Belohnungsgegenstand erzeugt wird. Wenn leer, wird kein Gegenstand gedroppt (nur Zen-Belohnung).</value>
+  </data>
+  <data name="ChaosCastleStartPlugIn_Name" xml:space="preserve">
+    <value>Chaos-Castle-Start</value>
+  </data>
+  <data name="ChaosCastleStartPlugIn_Description" xml:space="preserve">
+    <value>Chaos-Castle-Event</value>
+  </data>
+  <data name="KanturuStartPlugIn_Name" xml:space="preserve">
+    <value>Kanturu-Start</value>
+  </data>
+  <data name="KanturuStartPlugIn_Description" xml:space="preserve">
+    <value>Event im Raffinerieturm von Kanturu</value>
+  </data>
+  <data name="BloodCastleStartPlugIn_Name" xml:space="preserve">
+    <value>Blutburg-Start</value>
+  </data>
+  <data name="BloodCastleStartPlugIn_Description" xml:space="preserve">
+    <value>Blutburg-Event</value>
+  </data>
+  <data name="DevilSquareStartPlugIn_Name" xml:space="preserve">
+    <value>Devil-Square-Start</value>
+  </data>
+  <data name="DevilSquareStartPlugIn_Description" xml:space="preserve">
+    <value>Devil-Square-Event</value>
+  </data>
+  <data name="PKClearConfiguration_ZenCostPerKill_Name" xml:space="preserve">
+    <value>Zen-Kosten pro Kill</value>
+  </data>
+  <data name="PKClearConfiguration_ZenCostPerKill_Description" xml:space="preserve">
+    <value>Die Menge an Zen, die zum Löschen eines PK-Zählers erforderlich ist.</value>
+  </data>
+  <data name="PKClearConfiguration_AllowRegularPlayers_Name" xml:space="preserve">
+    <value>Normale Spieler zulassen</value>
+  </data>
+  <data name="PKClearConfiguration_AllowRegularPlayers_Description" xml:space="preserve">
+    <value>Erlaubt normalen Spielern, mit diesem Befehl ihren eigenen PK-Status gegen Zen zu löschen.</value>
+  </data>
+  <data name="LostMapDroppedPlugIn_Name" xml:space="preserve">
+    <value>Verlorene Karte fallen gelassen</value>
+  </data>
+  <data name="LostMapDroppedPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin verarbeitet das Fallenlassen des Gegenstands Verlorene Karte. Es erstellt das Tor zur Karte Kalima.</value>
+  </data>
+  <data name="ItemBoxDroppedPlugIn_Name" xml:space="preserve">
+    <value>Gegenstandsbox fallen gelassen</value>
+  </data>
+  <data name="ItemBoxDroppedPlugIn_Description" xml:space="preserve">
+    <value>Dieses Plugin verarbeitet das Fallenlassen einer Gegenstandsbox, z. B. Box of Kundun.</value>
+  </data>
+  <data name="ResetConfiguration_RequiredResetItem_Name" xml:space="preserve">
+    <value>Erforderlicher Reset-Gegenstand</value>
+  </data>
+  <data name="ResetConfiguration_ItemCostTiers_Name" xml:space="preserve">
+    <value>Stufen der Gegenstandskosten</value>
+  </data>
+  <data name="ResetConfiguration_PointsTiers_Name" xml:space="preserve">
+    <value>Punktestufen</value>
+  </data>
+  <data name="ResetPointTier_MinimumResetCount_Name" xml:space="preserve">
+    <value>Minimale Anzahl an Resets</value>
+  </data>
+  <data name="ResetPointTier_PointsGranted_Name" xml:space="preserve">
+    <value>Gewährte Punkte</value>
+  </data>
+  <data name="ResetItemCostTier_MinimumResetCount_Name" xml:space="preserve">
+    <value>Minimale Anzahl an Resets</value>
+  </data>
+  <data name="ResetItemCostTier_RequiredItemAmount_Name" xml:space="preserve">
+    <value>Erforderliche Gegenstandsmenge</value>
+  </data>
+  <data name="ActorHitRecorderPlugIn_Name" xml:space="preserve">
+    <value>Treffer-Aufzeichnung für Testakteure</value>
+  </data>
+  <data name="ActorHitRecorderPlugIn_Description" xml:space="preserve">
+    <value>Zeichnet Treffer, die geskriptete Testakteure austeilen und erhalten, in ihrem Ereignisstrom auf.</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_HealthPercentage_Caption" xml:space="preserve">
+    <value>Lebensprozentsatz</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_DefensePercentage_Caption" xml:space="preserve">
+    <value>Verteidigungsprozentsatz</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption" xml:space="preserve">
+    <value>Prozentsatz der Verteidigungsrate</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption" xml:space="preserve">
+    <value>Prozentsatz der Angriffsrate</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_DamagePercentage_Caption" xml:space="preserve">
+    <value>Schadensprozentsatz</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption" xml:space="preserve">
+    <value>Prozentsatz für alle Werte</value>
+  </data>
+  <data name="MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption" xml:space="preserve">
+    <value>Maximale Verbindungen pro IP</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption" xml:space="preserve">
+    <value>Minimales Angriffsintervall (ms)</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption" xml:space="preserve">
+    <value>Skalierungsfaktor der Angriffsgeschwindigkeit</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption" xml:space="preserve">
+    <value>Basisverzögerung der Angriffsgeschwindigkeit (ms)</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_MaxAttackTokens_Caption" xml:space="preserve">
+    <value>Max. Angriffstoken</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption" xml:space="preserve">
+    <value>Max. erlaubter Versatz beim Laufstart</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption" xml:space="preserve">
+    <value>Toleranz der Laufgeschwindigkeit (ms)</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_WarningHistoryHours_Caption" xml:space="preserve">
+    <value>Warnungsverlauf (Stunden)</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve">
+    <value>Entprellung von Warnungen (Sekunden)</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve">
+    <value>Max. Warnungen</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve">
+    <value>Bei Verstoß trennen</value>
+  </data>
+  <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve">
+    <value>Automatisch sperren</value>
+  </data>
+  <data name="InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption" xml:space="preserve">
+    <value>Auf allen Karten spawnen</value>
+  </data>
+  <data name="InvasionSpawnConfiguration_AnnounceDeath_Caption" xml:space="preserve">
+    <value>Tod ankündigen</value>
+  </data>
+  <data name="InvasionSpawnConfiguration_MapStrategy_Caption" xml:space="preserve">
+    <value>Kartenstrategie</value>
+  </data>
+  <data name="InvasionSpawnConfiguration_MapIds_Caption" xml:space="preserve">
+    <value>Karten-Ids</value>
+  </data>
+  <data name="InvasionSpawnConfiguration_Count_Caption" xml:space="preserve">
+    <value>Anzahl</value>
+  </data>
+  <data name="InvasionSpawnConfiguration_MonsterId_Caption" xml:space="preserve">
+    <value>Monster-Id</value>
+  </data>
+  <data name="KanturuStartConfiguration_EventDefinition_Caption" xml:space="preserve">
+    <value>Eventdefinition</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption" xml:space="preserve">
+    <value>Zu reparierende Zielgegenstände</value>
+  </data>
+  <data name="RaklionPlugIn_Name" xml:space="preserve">
+    <value>Raklion-Event</value>
+  </data>
+  <data name="RaklionPlugIn_Description" xml:space="preserve">
+    <value>Das Event in der Brutstätte von Raklion: Wenn alle Spinneneier zerstört sind, erscheint Selupan. Nach dem Kampf wird die Brutstätte für einige Zeit geschlossen.</value>
+  </data>
+  <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
+    <value>Event der Kaiserlichen Wächter</value>
+  </data>
+  <data name="ImperialGuardianFeaturePlugIn_Description" xml:space="preserve">
+    <value>Konfiguriert den Ablauf des Events der Kaiserlichen Wächter, z. B. seine Zeiten, die Erfahrungsbelohnung und die Skalierung der Monster.</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Name" xml:space="preserve">
+    <value>Umwandlung eines Stapels von Suspicious Scrap of Paper</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Description" xml:space="preserve">
+    <value>Wandelt einen vollen Stapel von Suspicious Scrap of Paper in einen Gaion's Order um.</value>
+  </data>
+  <data name="GensFeaturePlugIn_Name" xml:space="preserve">
+    <value>Gens-System</value>
+  </data>
+  <data name="GensFeaturePlugIn_Description" xml:space="preserve">
+    <value>Konfiguriert das Gens-System, in dem die Spieler bei ihren NPCs einer der Gens Duprian und Vanert beitreten können.</value>
+  </data>
+  <data name="GensMembershipPlugIn_Name" xml:space="preserve">
+    <value>Gens-Mitgliedschaft</value>
+  </data>
+  <data name="GensMembershipPlugIn_Description" xml:space="preserve">
+    <value>Lädt die Gens-Mitgliedschaft eines Charakters, wenn er das Spiel betritt, und zeigt sie dem Spieler an.</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Name" xml:space="preserve">
+    <value>Gens-Kampfzone</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Description" xml:space="preserve">
+    <value>Nur Gens-Mitglieder können die Kampfzone betreten. Kills zwischen Mitgliedern verschiedener Gens darin ändern ihre Beitragspunkte, ohne den Töter zum Gesetzlosen zu machen.</value>
+  </data>
+  <data name="GensRankingPlugIn_Name" xml:space="preserve">
+    <value>Gens-Rangliste</value>
+  </data>
+  <data name="GensRankingPlugIn_Description" xml:space="preserve">
+    <value>Berechnet die Rangliste der Gens im konfigurierten Intervall und aktualisiert die Ranglistenpositionen und Ränge aller Mitglieder.</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Name" xml:space="preserve">
+    <value>Beziehungsregeln der Gens</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
+    <value>Die Regeln der Gens für Partys, Gilden und Allianzen: keine Party zwischen verschiedenen Gens und in der Kampfzone, Gilden und Allianzen nur innerhalb einer Gens.</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
+    <value>Effektnummer von Potion of Bless</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
+    <value>Effektnummer von Potion of Soul</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Name" xml:space="preserve">
+    <value>Erzengel der Blutburg</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet das Gespräch mit dem Erzengel im Blutburg-Event, bei dem Spieler den Quest-Gegenstand abgeben, um das Event zu gewinnen.</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
+    <value>Der NPC, der von diesem Plugin verarbeitet wird. Wenn kein NPC festgelegt ist, verarbeitet das Plugin keinen NPC.</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Name" xml:space="preserve">
+    <value>Erkennung verlorener Verbindungen</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Description" xml:space="preserve">
+    <value>Trennt Spieler, deren Client nicht mehr meldet, dass er aktiv ist, weil ihre Verbindung verloren ging, ohne geschlossen zu werden. Sonst blieben sie verbunden, und weitere Anmeldungen ihres Kontos würden abgelehnt.</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Name" xml:space="preserve">
+    <value>Zeitlimit</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
+    <value>Die Zeit, nach der eine Verbindung als verloren gilt, wenn ihr Client nicht gemeldet hat, dass er aktiv ist. Der Spielclient meldet es alle 20 Sekunden. Null deaktiviert die Erkennung.</value>
+  </data>
+</root>

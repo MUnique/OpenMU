@@ -14380,6 +14380,591 @@
         </Enum>
       </Enums>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>01</SubCode>
+      <Name>CashShopPointInfo</Name>
+      <Length>45</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested the cash shop point information (CashShopPointInfoRequest).</SentWhen>
+      <CausedReaction>The client shows the available WCoin (C), WCoin (P) and Goblin Points in the cash shop dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ViewType</Name>
+          <Description>It is stored, but not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Double</Type>
+          <Name>TotalCash</Name>
+          <Description>The sum of WCoin (C) and WCoin (P). It is stored, but not shown by the client.</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Double</Type>
+          <Name>WCoinC</Name>
+          <Description>The available WCoin (C), originally named "cash credit".</Description>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>Double</Type>
+          <Name>WCoinP</Name>
+          <Description>The available WCoin (P), originally named "cash prepaid".</Description>
+        </Field>
+        <Field>
+          <Index>29</Index>
+          <Type>Double</Type>
+          <Name>TotalPoints</Name>
+          <Description>It is stored, but not shown by the client.</Description>
+        </Field>
+        <Field>
+          <Index>37</Index>
+          <Type>Double</Type>
+          <Name>GoblinPoints</Name>
+          <Description>The available Goblin Points, originally named "mileage".</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>02</SubCode>
+      <Name>CashShopOpenStateResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to open the cash shop dialog (CashShopOpenState).</SentWhen>
+      <CausedReaction>If the opening is allowed, the client requests the point information and the first storage page, and shows the cash shop dialog. Otherwise, nothing happens.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsAllowed</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>03</SubCode>
+      <Name>CashShopItemBuyResult</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to buy an item in the cash shop (CashShopItemBuyRequest).</SentWhen>
+      <CausedReaction>The client shows a message with the result. If the item was bought, it requests the point information and the first storage page again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopBuyResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>LeftCount</Name>
+          <Description>The number of items which are left for sale, if the number is limited. It's not used by the client.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopBuyResult</Name>
+          <Description>The result of a request to buy an item in the cash shop.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The item was bought and added to the storage.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughCoins</Name>
+              <Description>The player doesn't have enough WCoin or Goblin Points.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>StorageFull</Name>
+              <Description>The storage of the player is full.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SoldOut</Name>
+              <Description>The item is sold out.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotAvailableCurrently</Name>
+              <Description>The item is currently not available.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoLongerAvailable</Name>
+              <Description>The item is no longer available.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CannotBeBought</Name>
+              <Description>The item can't be bought.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemCannotBeBought</Name>
+              <Description>Event items can't be bought.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemLimitExceeded</Name>
+              <Description>The maximum number of purchases of the event item is exceeded.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WrongCoinType</Name>
+              <Description>The selected coin type is not the one of the item.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseAccessFailed</Name>
+              <Description>The access to the database failed.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseError</Name>
+              <Description>A database error occurred.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>04</SubCode>
+      <Name>CashShopItemGiftResult</Name>
+      <Length>17</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to send an item of the cash shop as gift (CashShopItemGiftRequest).</SentWhen>
+      <CausedReaction>The client shows a message with the result. If the gift was sent, it requests the point information again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopGiftResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>LeftCount</Name>
+          <Description>The number of items which are left for sale, if the number is limited. It's not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Double</Type>
+          <Name>LimitedCash</Name>
+          <Description>It's not used by the client.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopGiftResult</Name>
+          <Description>The result of a request to send an item of the cash shop as gift.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The gift was added to the gift storage of the recipient.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughCoins</Name>
+              <Description>The player doesn't have enough WCoin or Goblin Points.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RecipientStorageFull</Name>
+              <Description>The storage of the recipient is full.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RecipientNotFound</Name>
+              <Description>The recipient wasn't found.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SoldOut</Name>
+              <Description>The item is sold out.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoLongerAvailable</Name>
+              <Description>The item is no longer available.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoLongerAvailable2</Name>
+              <Description>The item is no longer available. The client shows it as error.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CannotBeGifted</Name>
+              <Description>The item can't be sent as gift.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemCannotBeGifted</Name>
+              <Description>The event item can't be sent as gift.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemGiftLimitExceeded</Name>
+              <Description>The maximum number of gifts of the event item is exceeded.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WrongCoinType</Name>
+              <Description>The selected coin type is not the one of the item.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IdDoesNotExist</Name>
+              <Description>The ID doesn't exist.</Description>
+              <Value>20</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseAccessFailed</Name>
+              <Description>The access to the database failed.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseError</Name>
+              <Description>A database error occurred.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0B</SubCode>
+      <Name>CashShopStorageItemConsumeResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to use an item of the cash shop storage (CashShopStorageItemConsumeRequest).</SentWhen>
+      <CausedReaction>The client shows a message with the result. If the item was used, it requests the shown storage page again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopConsumeResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopConsumeResult</Name>
+          <Description>The result of a request to use an item of the cash shop storage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The item was used.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemNotFound</Name>
+              <Description>The item doesn't exist in the storage.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PcCafeOnly</Name>
+              <Description>The item can only be received in a PC cafe.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ColorPlanActive</Name>
+              <Description>A color plan is already active in the selected period.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PersonalFixedPlanActive</Name>
+              <Description>A personal fixed plan is already active in the selected period.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The inventory doesn't have enough space.</Description>
+              <Value>21</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CannotUse</Name>
+              <Description>The item can't be used.</Description>
+              <Value>22</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ConflictingItemActive</Name>
+              <Description>The item can't be used together with an item which is already in use.</Description>
+              <Value>24</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseAccessFailed</Name>
+              <Description>The access to the database failed.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Error</Name>
+              <Description>An error occurred.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>06</SubCode>
+      <Name>CashShopStorageListResponse</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested a page of the cash shop storage or gift storage (CashShopStorageListRequest).</SentWhen>
+      <CausedReaction>The client clears the storage list and expects the items of the page with the following CashShopStorageItem or CashShopGiftStorageItem messages.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TotalItemCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PageItemCount</Name>
+          <Description>The number of items on the requested page. The client shows up to 9 items per page.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PageIndex</Name>
+          <Description>The one-based index of the page.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TotalPages</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0C</SubCode>
+      <Name>CashShopScriptVersion</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player entered the game.</SentWhen>
+      <CausedReaction>The client remembers the version of the cash shop script (product catalog) and unlocks the cash shop. When the dialog is opened, the client loads the script of this version from 'Data\InGameShopScript\[SaleZone].[Year].[YearId]'.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SaleZone</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Year</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>YearId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0D</SubCode>
+      <Name>CashShopStorageItem</Name>
+      <Length>33</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After CashShopStorageListResponse of the normal storage, for each item of the requested page.</SentWhen>
+      <CausedReaction>The client adds the item to the shown storage list. Name, quantity and period are looked up in the cash shop script by the product and price sequence numbers.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageIndex</Name>
+          <Description>The index of the item in the storage. The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ItemSequence</Name>
+          <Description>The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageGroupCode</Name>
+          <Description>It is stored, but not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ProductSequence</Name>
+          <Description>The product sequence number of the cash shop script.</Description>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PriceSequence</Name>
+          <Description>The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</Description>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Double</Type>
+          <Name>CashPoints</Name>
+          <Description>The amount of WCoin, if the item type is Cash.</Description>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopStorageItemType</TypeName>
+          <Name>ItemType</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopStorageItemType</Name>
+          <Description>The type of an item in the cash shop storage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Cash</Name>
+              <Description>The item is an amount of WCoin, which is defined by the cash points field. The ASCII character 'C'.</Description>
+              <Value>67</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Product</Name>
+              <Description>The item is a product of the cash shop script. The ASCII character 'P'.</Description>
+              <Value>80</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0E</SubCode>
+      <Name>CashShopGiftStorageItem</Name>
+      <Length>244</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After CashShopStorageListResponse of the gift storage, for each item of the requested page.</SentWhen>
+      <CausedReaction>The client adds the item to the shown gift storage list, together with the sender and the message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageIndex</Name>
+          <Description>The index of the item in the storage. The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ItemSequence</Name>
+          <Description>The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageGroupCode</Name>
+          <Description>It is stored, but not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ProductSequence</Name>
+          <Description>The product sequence number of the cash shop script.</Description>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PriceSequence</Name>
+          <Description>The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</Description>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Double</Type>
+          <Name>CashPoints</Name>
+          <Description>The amount of WCoin, if the item type is Cash.</Description>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopStorageItemType</TypeName>
+          <Name>ItemType</Name>
+        </Field>
+        <Field>
+          <Index>33</Index>
+          <Type>String</Type>
+          <Name>SenderName</Name>
+          <Length>11</Length>
+        </Field>
+        <Field>
+          <Index>44</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+          <Length>200</Length>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopStorageItemType</Name>
+          <Description>The type of an item in the cash shop storage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Cash</Name>
+              <Description>The item is an amount of WCoin, which is defined by the cash points field. The ASCII character 'C'.</Description>
+              <Value>67</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Product</Name>
+              <Description>The item is a product of the cash shop script. The ASCII character 'P'.</Description>
+              <Value>80</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>15</SubCode>
+      <Name>CashShopBannerVersion</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player entered the game.</SentWhen>
+      <CausedReaction>The client remembers the version of the cash shop banner. When the dialog is opened, the client loads the banner of this version from 'Data\InGameShopBanner\[SaleZone].[Year].[YearId]'.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SaleZone</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Year</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>YearId</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

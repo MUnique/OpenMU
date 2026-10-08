@@ -8456,4 +8456,342 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopPointInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="viewType">It is stored, but not used by the client.</param>
+    /// <param name="totalCash">The sum of WCoin (C) and WCoin (P). It is stored, but not shown by the client.</param>
+    /// <param name="wCoinC">The available WCoin (C), originally named "cash credit".</param>
+    /// <param name="wCoinP">The available WCoin (P), originally named "cash prepaid".</param>
+    /// <param name="totalPoints">It is stored, but not shown by the client.</param>
+    /// <param name="goblinPoints">The available Goblin Points, originally named "mileage".</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested the cash shop point information (CashShopPointInfoRequest).
+    /// Causes reaction on client side: The client shows the available WCoin (C), WCoin (P) and Goblin Points in the cash shop dialog.
+    /// </remarks>
+    public static async ValueTask SendCashShopPointInfoAsync(this IConnection? connection, byte @viewType, double @totalCash, double @wCoinC, double @wCoinP, double @totalPoints, double @goblinPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopPointInfoRef.Length;
+            var packet = new CashShopPointInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.ViewType = @viewType;
+            packet.TotalCash = @totalCash;
+            packet.WCoinC = @wCoinC;
+            packet.WCoinP = @wCoinP;
+            packet.TotalPoints = @totalPoints;
+            packet.GoblinPoints = @goblinPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopOpenStateResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isAllowed">The is allowed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to open the cash shop dialog (CashShopOpenState).
+    /// Causes reaction on client side: If the opening is allowed, the client requests the point information and the first storage page, and shows the cash shop dialog. Otherwise, nothing happens.
+    /// </remarks>
+    public static async ValueTask SendCashShopOpenStateResponseAsync(this IConnection? connection, bool @isAllowed)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopOpenStateResponseRef.Length;
+            var packet = new CashShopOpenStateResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsAllowed = @isAllowed;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemBuyResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="leftCount">The number of items which are left for sale, if the number is limited. It's not used by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to buy an item in the cash shop (CashShopItemBuyRequest).
+    /// Causes reaction on client side: The client shows a message with the result. If the item was bought, it requests the point information and the first storage page again.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemBuyResultAsync(this IConnection? connection, CashShopItemBuyResult.CashShopBuyResult @result, uint @leftCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemBuyResultRef.Length;
+            var packet = new CashShopItemBuyResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LeftCount = @leftCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemGiftResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="leftCount">The number of items which are left for sale, if the number is limited. It's not used by the client.</param>
+    /// <param name="limitedCash">It's not used by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to send an item of the cash shop as gift (CashShopItemGiftRequest).
+    /// Causes reaction on client side: The client shows a message with the result. If the gift was sent, it requests the point information again.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemGiftResultAsync(this IConnection? connection, CashShopItemGiftResult.CashShopGiftResult @result, uint @leftCount, double @limitedCash)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemGiftResultRef.Length;
+            var packet = new CashShopItemGiftResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LeftCount = @leftCount;
+            packet.LimitedCash = @limitedCash;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopStorageItemConsumeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to use an item of the cash shop storage (CashShopStorageItemConsumeRequest).
+    /// Causes reaction on client side: The client shows a message with the result. If the item was used, it requests the shown storage page again.
+    /// </remarks>
+    public static async ValueTask SendCashShopStorageItemConsumeResultAsync(this IConnection? connection, CashShopStorageItemConsumeResult.CashShopConsumeResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopStorageItemConsumeResultRef.Length;
+            var packet = new CashShopStorageItemConsumeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopStorageListResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="totalItemCount">The total item count.</param>
+    /// <param name="pageItemCount">The number of items on the requested page. The client shows up to 9 items per page.</param>
+    /// <param name="pageIndex">The one-based index of the page.</param>
+    /// <param name="totalPages">The total pages.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested a page of the cash shop storage or gift storage (CashShopStorageListRequest).
+    /// Causes reaction on client side: The client clears the storage list and expects the items of the page with the following CashShopStorageItem or CashShopGiftStorageItem messages.
+    /// </remarks>
+    public static async ValueTask SendCashShopStorageListResponseAsync(this IConnection? connection, ushort @totalItemCount, ushort @pageItemCount, ushort @pageIndex, ushort @totalPages)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopStorageListResponseRef.Length;
+            var packet = new CashShopStorageListResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.TotalItemCount = @totalItemCount;
+            packet.PageItemCount = @pageItemCount;
+            packet.PageIndex = @pageIndex;
+            packet.TotalPages = @totalPages;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopScriptVersion" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="saleZone">The sale zone.</param>
+    /// <param name="year">The year.</param>
+    /// <param name="yearId">The year id.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player entered the game.
+    /// Causes reaction on client side: The client remembers the version of the cash shop script (product catalog) and unlocks the cash shop. When the dialog is opened, the client loads the script of this version from 'Data\InGameShopScript\[SaleZone].[Year].[YearId]'.
+    /// </remarks>
+    public static async ValueTask SendCashShopScriptVersionAsync(this IConnection? connection, ushort @saleZone, ushort @year, ushort @yearId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopScriptVersionRef.Length;
+            var packet = new CashShopScriptVersionRef(connection.Output.GetSpan(length)[..length]);
+            packet.SaleZone = @saleZone;
+            packet.Year = @year;
+            packet.YearId = @yearId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopStorageItem" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storageIndex">The index of the item in the storage. The client sends it back when the item should be used.</param>
+    /// <param name="itemSequence">The client sends it back when the item should be used.</param>
+    /// <param name="storageGroupCode">It is stored, but not used by the client.</param>
+    /// <param name="productSequence">The product sequence number of the cash shop script.</param>
+    /// <param name="priceSequence">The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</param>
+    /// <param name="cashPoints">The amount of WCoin, if the item type is Cash.</param>
+    /// <param name="itemType">The item type.</param>
+    /// <remarks>
+    /// Is sent by the server when: After CashShopStorageListResponse of the normal storage, for each item of the requested page.
+    /// Causes reaction on client side: The client adds the item to the shown storage list. Name, quantity and period are looked up in the cash shop script by the product and price sequence numbers.
+    /// </remarks>
+    public static async ValueTask SendCashShopStorageItemAsync(this IConnection? connection, uint @storageIndex, uint @itemSequence, uint @storageGroupCode, uint @productSequence, uint @priceSequence, double @cashPoints, CashShopStorageItem.CashShopStorageItemType @itemType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopStorageItemRef.Length;
+            var packet = new CashShopStorageItemRef(connection.Output.GetSpan(length)[..length]);
+            packet.StorageIndex = @storageIndex;
+            packet.ItemSequence = @itemSequence;
+            packet.StorageGroupCode = @storageGroupCode;
+            packet.ProductSequence = @productSequence;
+            packet.PriceSequence = @priceSequence;
+            packet.CashPoints = @cashPoints;
+            packet.ItemType = @itemType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopGiftStorageItem" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storageIndex">The index of the item in the storage. The client sends it back when the item should be used.</param>
+    /// <param name="itemSequence">The client sends it back when the item should be used.</param>
+    /// <param name="storageGroupCode">It is stored, but not used by the client.</param>
+    /// <param name="productSequence">The product sequence number of the cash shop script.</param>
+    /// <param name="priceSequence">The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</param>
+    /// <param name="cashPoints">The amount of WCoin, if the item type is Cash.</param>
+    /// <param name="itemType">The item type.</param>
+    /// <param name="senderName">The sender name.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the server when: After CashShopStorageListResponse of the gift storage, for each item of the requested page.
+    /// Causes reaction on client side: The client adds the item to the shown gift storage list, together with the sender and the message.
+    /// </remarks>
+    public static async ValueTask SendCashShopGiftStorageItemAsync(this IConnection? connection, uint @storageIndex, uint @itemSequence, uint @storageGroupCode, uint @productSequence, uint @priceSequence, double @cashPoints, CashShopGiftStorageItem.CashShopStorageItemType @itemType, string @senderName, string @message)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopGiftStorageItemRef.Length;
+            var packet = new CashShopGiftStorageItemRef(connection.Output.GetSpan(length)[..length]);
+            packet.StorageIndex = @storageIndex;
+            packet.ItemSequence = @itemSequence;
+            packet.StorageGroupCode = @storageGroupCode;
+            packet.ProductSequence = @productSequence;
+            packet.PriceSequence = @priceSequence;
+            packet.CashPoints = @cashPoints;
+            packet.ItemType = @itemType;
+            packet.SenderName = @senderName;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopBannerVersion" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="saleZone">The sale zone.</param>
+    /// <param name="year">The year.</param>
+    /// <param name="yearId">The year id.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player entered the game.
+    /// Causes reaction on client side: The client remembers the version of the cash shop banner. When the dialog is opened, the client loads the banner of this version from 'Data\InGameShopBanner\[SaleZone].[Year].[YearId]'.
+    /// </remarks>
+    public static async ValueTask SendCashShopBannerVersionAsync(this IConnection? connection, ushort @saleZone, ushort @year, ushort @yearId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopBannerVersionRef.Length;
+            var packet = new CashShopBannerVersionRef(connection.Output.GetSpan(length)[..length]);
+            packet.SaleZone = @saleZone;
+            packet.Year = @year;
+            packet.YearId = @yearId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

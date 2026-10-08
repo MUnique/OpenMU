@@ -637,6 +637,150 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop packets (0xD2 identifier)..
+        /// </summary>
+        public static string CashShopGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop group handler.
+        /// </summary>
+        public static string CashShopGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop buy requests (0xD2, 0x03 identifier)..
+        /// </summary>
+        public static string CashShopItemBuyRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopItemBuyRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop buy request handler.
+        /// </summary>
+        public static string CashShopItemBuyRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopItemBuyRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop gift requests (0xD2, 0x04 identifier)..
+        /// </summary>
+        public static string CashShopItemGiftRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopItemGiftRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop gift request handler.
+        /// </summary>
+        public static string CashShopItemGiftRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopItemGiftRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for opening and closing the cash shop (0xD2, 0x02 identifier)..
+        /// </summary>
+        public static string CashShopOpenStateHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopOpenStateHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop open state handler.
+        /// </summary>
+        public static string CashShopOpenStateHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopOpenStateHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop point information requests (0xD2, 0x01 identifier)..
+        /// </summary>
+        public static string CashShopPointInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopPointInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop point info request handler.
+        /// </summary>
+        public static string CashShopPointInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopPointInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for requests to use an item of the cash shop storage (0xD2, 0x0B identifier)..
+        /// </summary>
+        public static string CashShopStorageItemConsumeRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopStorageItemConsumeRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop storage item use request handler.
+        /// </summary>
+        public static string CashShopStorageItemConsumeRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopStorageItemConsumeRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop storage list requests (0xD2, 0x05 identifier)..
+        /// </summary>
+        public static string CashShopStorageListRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopStorageListRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop storage list request handler.
+        /// </summary>
+        public static string CashShopStorageListRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopStorageListRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the ICashShopViewPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string CashShopViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop view.
+        /// </summary>
+        public static string CashShopViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
         /// </summary>
         public static string CastleSiegeCrownAccessStatePlugIn_Description {
@@ -7481,5 +7625,10 @@ namespace MUnique.OpenMU.GameServer.Properties {
         /// <summary>Gets the localized EnterMarketPlace_Description text.</summary>
         public static string EnterMarketPlace_Description => ResourceManager.GetString("EnterMarketPlace_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized PingHandlerPlugIn_Name text.</summary>
+        public static string PingHandlerPlugIn_Name => ResourceManager.GetString("PingHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
+        public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
     }
 }

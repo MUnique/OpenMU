@@ -1,8 +1,36 @@
 volumes:
   adminpanel-keys:
   dbdata:
-  prometheus-data:
-  minio-data:
+  otel-lgtm-data:
+
+# Every OpenMU service gets a dapr sidecar in its own container. The service reaches its sidecar
+# through the DAPR_HTTP_ENDPOINT and DAPR_GRPC_ENDPOINT, the sidecar reaches the service through
+# its -app-channel-address. This way, each of them can be restarted without breaking the other one,
+# e.g. when a game server process ends to apply a changed configuration.
+# The game servers share the app id "game-server": nothing addresses a game server by its app id,
+# the calls to game servers are published to all of them. The POD_NAME of a sidecar names its
+# queues in RabbitMQ (see dapr-components/pubsub.yaml), so it must be unique.
+x-dapr-sidecar: &dapr-sidecar
+  image: "daprio/daprd:latest"
+  restart: unless-stopped
+  depends_on:
+    dapr-placement:
+      condition: service_started
+    rabbit:
+      condition: service_healthy
+    redis-state:
+      condition: service_healthy
+  volumes:
+    - "./dapr-components/:/components"
+
+# The OpenMU services report on /health/ready whether they can do their work, e.g. that the database is
+# installed. Nothing waits for it, because the central and game servers aren't ready before the setup.
+x-openmu-healthcheck: &openmu-healthcheck
+  test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health/ready"]
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 60s
 
 services:
   nginx-80:
@@ -14,74 +42,56 @@ services:
     volumes:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf
     depends_on:
-      - grafana
-      - zipkin
-      - prometheus
+      - otel-lgtm
 
-  grafana:
-    image: grafana/grafana:9.5.14
-    container_name: grafana
-    volumes:
-      - ./grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml
-    depends_on:
-      - loki
-      - prometheus
-    ports:
-      - 3000
-
-  prometheus:
-    image: prom/prometheus:v2.21.0
-    ports:
-      - 9090
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
-
-  loki:
-    image: grafana/loki:2.5.0
-    container_name: loki
-    command: "-config.file=/etc/loki/config.yaml -target=all"
-    ports:
-      - 3100
-      - 7946
-      - 9095
-    volumes:
-      - ./loki-config.yaml:/etc/loki/config.yaml
-    depends_on:
-      - minio
-
-  minio:
-    image: minio/minio
-    entrypoint:
-      - sh
-      - -euc
-      - |
-        mkdir -p /data/loki-data && \
-        mkdir -p /data/loki-ruler && \
-        minio server /data
+  otel-lgtm:
+    # OpenTelemetry collector, Loki (logs), Prometheus (metrics), Tempo (traces) and Grafana in one container.
+    # It's intended for development, demo and testing environments. For bigger production setups,
+    # replace it by dedicated deployments of these components - the OpenMU services just need the OTLP endpoint.
+    image: grafana/otel-lgtm:0.35.0
+    container_name: otel-lgtm
+    restart: always
+    expose:
+      - "3000" # Grafana, reachable through nginx
+      - "4317" # OTLP gRPC
+      - "4318" # OTLP HTTP
     environment:
-      - MINIO_ACCESS_KEY=loki
-      - MINIO_SECRET_KEY=supersecret
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
-      - MINIO_UPDATE=off
-    ports:
-      - 9000
+      GF_SERVER_ROOT_URL: http://localhost/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      # Grafana relies on the admin panel login: nginx asks the admin panel and passes
+      # the user and its role in the X-WEBAUTH-USER and X-WEBAUTH-ROLE headers.
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_BASIC_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_DISABLE_SIGNOUT_MENU: "true"
+      GF_AUTH_PROXY_ENABLED: "true"
+      GF_AUTH_PROXY_HEADER_NAME: X-WEBAUTH-USER
+      GF_AUTH_PROXY_HEADER_PROPERTY: username
+      GF_AUTH_PROXY_HEADERS: Role:X-WEBAUTH-ROLE
+      GF_AUTH_PROXY_SYNC_TTL: "1" # minutes until a changed role is applied
+      GF_USERS_AUTO_ASSIGN_ORG: "true"
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: Viewer
+      GF_USERS_VIEWERS_CAN_EDIT: "true" # allows the viewers to use Explore for logs and traces
     volumes:
-      - minio-data:/data
+      - otel-lgtm-data:/data
 
   redis-state:
     image: redis
-    restart: always
+    restart: unless-stopped
     ports:
       - 6379
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
   dapr-placement:
     image: "daprio/dapr"
     container_name: dapr_placement
+    restart: unless-stopped
     command: ["./placement", "-port", "50006"]
     ports:
       - "50006"
@@ -89,14 +99,20 @@ services:
   rabbit:
     image: rabbitmq:3-management-alpine
     container_name: pubsub_rabbitmq
-    restart: always
+    restart: unless-stopped
     ports:
       - "5672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 5s
+      timeout: 10s
+      retries: 24
+      start_period: 10s
 
   database:
     image: postgres
     container_name: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}
       POSTGRES_DB: ${DB_NAME:-openmu}
@@ -105,171 +121,73 @@ services:
       - "5432"
     volumes:
       - dbdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
-  zipkin:
-    image: openzipkin/zipkin
-    container_name: tracing_zipkin
-    restart: always
+  centralServer:
+    # Hosts the connect, login, guild, friend and chat servers.
+    image: munique/openmu-central
+    container_name: centralServer
+    restart: unless-stopped
+    healthcheck: *openmu-healthcheck
+    build:
+      context: ../../src
+      dockerfile: Dapr/CentralServer.Host/Dockerfile
     ports:
-      - "9411:9411"
-
-  connectServer:
-    image: munique/openmu-connect
-    container_name: connectServer
-    ports:
-      - "50001"
-      - "44405:44405"
-      - "9464" # Prometheus
+      - "44405:44405" # connect server of the first client version
+      - "44406:44406" # connect server of the second client version, e.g. of season 6
+      - "55980:55980" # chat server
     environment:
-      APPID: connectServer
+      DAPR_HTTP_ENDPOINT: http://centralServer-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://centralServer-dapr:50001
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - rabbit
-      - zipkin
-      - database
+      centralServer-dapr:
+        condition: service_started
+      database:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
 
-  connectServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: connectServer_dapr
-    command: [ "./daprd", "-app-id", "connectServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - connectServer
-    network_mode: "service:connectServer"
-    volumes:
-      - "./dapr-components/:/components"
-
-  loginServer:
-    image: munique/openmu-login
-    container_name: loginServer
-    ports:
-      - "50001"
-      - "9464" # Prometheus
+  centralServer-dapr:
+    <<: *dapr-sidecar
+    container_name: centralServer_dapr
     environment:
-      ASPNETCORE_URLS: http://+:8080
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    depends_on:
-      - zipkin
-      - database
-
-  loginServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: loginServer_dapr
-    command: [ "./daprd", "-app-id", "loginServer", "-app-port", "8080",
+      POD_NAME: centralServer
+    command: [ "./daprd", "-app-id", "central-server", "-app-port", "8080",
+                "-app-channel-address", "centralServer",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - loginServer
-    network_mode: "service:loginServer"
-    volumes:
-      - "./dapr-components/:/components"
-
-  friendServer:
-    image: munique/openmu-friend
-    container_name: friendServer
-    ports:
-      - "50001"
-      - "9464" # Prometheus
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    depends_on:
-      - chatServer-dapr
-      - database
-      - zipkin
-
-  friendServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: friendServer_dapr
-    command: [ "./daprd", "-app-id", "friendServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - friendServer
-    network_mode: "service:friendServer"
-    volumes:
-      - "./dapr-components/:/components"
-  
-  guildServer:
-    image: munique/openmu-guild
-    container_name: guildServer
-    ports:
-      - "50001"
-      - "9464" # Prometheus
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    depends_on:
-      - database
-      - zipkin
-
-  guildServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: guildServer_dapr
-    command: [ "./daprd", "-app-id", "guildServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - guildServer
-    network_mode: "service:guildServer"
-    volumes:
-      - "./dapr-components/:/components"
-
-  chatServer:
-    image: munique/openmu-chat
-    container_name: chatServer
-    environment:
-      APPID: chatServer
-      ASPNETCORE_URLS: http://+:8080
-      DB_HOST: ${DB_HOST:-database}
-      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
-      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
-    ports:
-      - "55980:55980"
-      - "50001"
-      - "9464" # Prometheus
-    depends_on:
-      - database
-      - zipkin
-
-  chatServer-dapr:
-    image: "daprio/daprd:latest"
-    container_name: chatServer_dapr
-    command: [ "./daprd", "-app-id", "chatServer", "-app-port", "8080",
-                "-components-path", "/components",
-                "-config", "/components/config.yaml",
-                "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - chatServer
-    network_mode: "service:chatServer"
-    volumes:
-      - "./dapr-components/:/components"
-
 
   adminPanel:
     image: munique/openmu-admin
     container_name: adminPanel
+    restart: unless-stopped
+    healthcheck: *openmu-healthcheck
+    build:
+      context: ../../src
+      dockerfile: Dapr/AdminPanel.Host/Dockerfile
     depends_on:
-      - database
+      adminPanel-dapr:
+        condition: service_started
+      database:
+        condition: service_healthy
     ports:
       - "8080"
-      - "9464" # Prometheus
     environment:
+      DAPR_HTTP_ENDPOINT: http://adminPanel-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://adminPanel-dapr:50001
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       PATH_BASE: /admin/
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
@@ -285,99 +203,105 @@ services:
       - adminpanel-keys:/app/data-protection-keys
 
   adminPanel-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: adminPanel_dapr
-    command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "8080",
+    environment:
+      POD_NAME: adminPanel
+    command: [ "./daprd", "-app-id", "admin-panel", "-app-port", "8080",
+                "-app-channel-address", "adminPanel",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-
-    depends_on:
-      - adminPanel
-    network_mode: "service:adminPanel"
-    volumes:
-      - "./dapr-components/:/components"
 
   gameServer0:
     image: munique/openmu-game
     container_name: gameServer0
+    restart: unless-stopped
+    healthcheck: *openmu-healthcheck
+    # The game server saves and disconnects its players when it stops, which may take a while.
+    stop_grace_period: 60s
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "8080"
-      - "50001"
       - "55901:55901"
       - "55902:55902"
-      - "9464" # Prometheus
     environment:
       GS_ID: 0
-      APPID: gameServer0
+      DAPR_HTTP_ENDPOINT: http://gameServer0-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://gameServer0-dapr:50001
       PATH_BASE: /gameServer/0/
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - connectServer-dapr
-      - loginServer-dapr
-      - friendServer-dapr
-      - rabbit
-      - zipkin
-      - database
-      - loki
+      gameServer0-dapr:
+        condition: service_started
+      centralServer:
+        condition: service_started
+      database:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
 
   gameServer0-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: gameserver0_dapr
-    command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "8080",
+    environment:
+      POD_NAME: gameServer0
+    command: [ "./daprd", "-app-id", "game-server", "-app-port", "8080",
+                "-app-channel-address", "gameServer0",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - gameServer0
-    network_mode: "service:gameServer0"
-    volumes:
-      - "./dapr-components/:/components"
-  
+
   gameServer1:
     image: munique/openmu-game
     container_name: gameServer1
+    restart: unless-stopped
+    healthcheck: *openmu-healthcheck
+    # The game server saves and disconnects its players when it stops, which may take a while.
+    stop_grace_period: 60s
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "8080"
-      - "50001"
       - "55903:55903"
       - "55904:55904"
-      - "9464" # Prometheus
     environment:
       GS_ID: 1
-      APPID: gameServer1
+      DAPR_HTTP_ENDPOINT: http://gameServer1-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://gameServer1-dapr:50001
       PATH_BASE: /gameServer/1/
       ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
       DB_HOST: ${DB_HOST:-database}
       DB_ADMIN_USER: ${DB_ADMIN_USER:-}
       DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
-      - connectServer-dapr
-      - loginServer-dapr
-      - friendServer-dapr
-      - rabbit
-      - zipkin
-      - database
-      - loki
+      gameServer1-dapr:
+        condition: service_started
+      centralServer:
+        condition: service_started
+      database:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
 
   gameServer1-dapr:
-    image: "daprio/daprd:latest"
+    <<: *dapr-sidecar
     container_name: gameserver1_dapr
-    command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "8080",
+    environment:
+      POD_NAME: gameServer1
+    command: [ "./daprd", "-app-id", "game-server", "-app-port", "8080",
+                "-app-channel-address", "gameServer1",
+                "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - gameServer1
-    network_mode: "service:gameServer1"
-    volumes:
-      - "./dapr-components/:/components"

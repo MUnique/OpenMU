@@ -14,6 +14,17 @@ using MUnique.OpenMU.Persistence.Json;
 /// </summary>
 public class CachingReferenceHandler : ReferenceHandler, IIdReferenceHandler
 {
+    private readonly ReferenceResolver? _configurationResolver;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CachingReferenceHandler"/> class.
+    /// </summary>
+    /// <param name="configurationResolver">The resolver of the cached configuration objects. If it's <c>null</c>, only the loaded objects are resolved.</param>
+    public CachingReferenceHandler(ReferenceResolver? configurationResolver = null)
+    {
+        this._configurationResolver = configurationResolver;
+    }
+
     /// <summary>
     /// Gets the currently used resolver.
     /// </summary>
@@ -22,6 +33,8 @@ public class CachingReferenceHandler : ReferenceHandler, IIdReferenceHandler
     /// <inheritdoc />
     public override ReferenceResolver CreateResolver()
     {
-        return this.Current ??= new MultipleSourceReferenceResolver(new IdReferenceResolver(), ConfigurationIdReferenceResolver.Instance);
+        return this.Current ??= this._configurationResolver is { } configurationResolver
+            ? new MultipleSourceReferenceResolver(new IdReferenceResolver(), configurationResolver)
+            : new IdReferenceResolver();
     }
 }

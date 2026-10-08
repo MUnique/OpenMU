@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Globalization;
-using System.Reflection;
 
 /// <summary>
 /// Extensions to make the process of creating more commands easier.
@@ -23,9 +22,7 @@ public static class CommandExtensions
         where T : class, new()
     {
         var instance = new T();
-        var properties = typeof(T).GetProperties()
-            .Where(property => property.SetMethod is { })
-            .ToList();
+        var properties = ChatCommandArguments.GetProperties(typeof(T));
         var arguments = command.Split(' ').Where(x => !x.Contains("/")).ToList();
 
         if (command.Contains('='))
@@ -41,9 +38,8 @@ public static class CommandExtensions
         }
 
         var attributedArguments = properties
-            .Select(p => p.GetCustomAttribute<ArgumentAttribute>(inherit: true))
-            .Where(a => a is { })
-            .Select(a => a!)
+            .Select(p => p.Argument)
+            .OfType<ArgumentAttribute>()
             .ToList();
         var requiredArgumentCount = attributedArguments.Any()
             ? attributedArguments.Count(a => a.IsRequired)
@@ -125,12 +121,11 @@ public static class CommandExtensions
     /// <returns>The described parameters, in the order in which they are expected when they are passed without their short names.</returns>
     public static IEnumerable<ChatCommandParameterInfo> GetParameterInfos(Type argumentsType)
     {
-        var properties = argumentsType.GetProperties().Where(p => p.CanWrite);
-        foreach (var property in properties)
+        foreach (var property in ChatCommandArguments.GetProperties(argumentsType))
         {
             IReadOnlyList<string> validValues = [];
 
-            if (property.GetCustomAttribute<ValidValuesAttribute>() is { } validValuesAttribute)
+            if (property.ValidValues is { } validValuesAttribute)
             {
                 validValues = validValuesAttribute.ValidValues.ToList();
             }
@@ -145,7 +140,7 @@ public static class CommandExtensions
 
             // A parameter without an ArgumentAttribute can't be required - the parser
             // only counts the required arguments of the attributed properties.
-            var argumentAttribute = property.GetCustomAttribute<ArgumentAttribute>(inherit: true);
+            var argumentAttribute = property.Argument;
 
             yield return new ChatCommandParameterInfo(
                 property.Name,
@@ -156,14 +151,14 @@ public static class CommandExtensions
         }
     }
 
-    private static async ValueTask<bool> ReadNamedArgumentsAsync(object instance, IList<PropertyInfo> properties, IList<string> arguments, Player? player)
+    private static async ValueTask<bool> ReadNamedArgumentsAsync(object instance, IReadOnlyList<ChatCommandArgumentProperty> properties, IList<string> arguments, Player? player)
     {
-        var argumentProperties = properties.Where(property => property.GetCustomAttribute<ArgumentAttribute>() is { }).ToList();
-        var requiredProperties = argumentProperties.Where(prop => prop.GetCustomAttribute<ArgumentAttribute>() is { IsRequired: true }).ToList();
+        var argumentProperties = properties.Where(property => property.Argument is { }).ToList();
+        var requiredProperties = argumentProperties.Where(prop => prop.Argument is { IsRequired: true }).ToList();
 
         foreach (var property in argumentProperties)
         {
-            var attribute = property.GetCustomAttributes<ArgumentAttribute>().First();
+            var attribute = property.Argument!;
             var argument = arguments.FirstOrDefault(x => x.Split('=').First().Trim() == attribute.ShortName);
 
             if (argument is null)
@@ -201,7 +196,7 @@ public static class CommandExtensions
         return false;
     }
 
-    private static async ValueTask<bool> TrySetPropertyValueAsync(object instance, PropertyInfo propertyInfo, string stringValue, Player? player)
+    private static async ValueTask<bool> TrySetPropertyValueAsync(object instance, ChatCommandArgumentProperty propertyInfo, string stringValue, Player? player)
     {
         try
         {

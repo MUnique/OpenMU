@@ -17,12 +17,12 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Double Wield Damage Calculations";
+    internal const string PlugInName = "Finish Dark Knight Master Tree PlugIn";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes the double wield damage calculations.";
+    internal const string PlugInDescription = "This update completes the dark knight master tree skills and effects. It also fixes the double wield damage calculations.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;

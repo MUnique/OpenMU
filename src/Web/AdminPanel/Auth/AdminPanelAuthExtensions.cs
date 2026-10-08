@@ -75,6 +75,8 @@ public static class AdminPanelAuthExtensions
         services.AddSingleton<BootstrapAdminUserProvider>();
         services.AddSingleton<SignInTicketService>();
         services.AddSingleton<AdminUserAvailabilityService>();
+        services.AddSingleton<AdminPrincipalValidator>();
+        services.AddSingleton<ReverseProxyAuthenticationService>();
         services.AddScoped<IUserStore<AdminUser>, AdminUserStore>();
         services.AddScoped<AdminLoginService>();
         services.AddScoped<AuthenticatorSetupService>();
@@ -123,7 +125,8 @@ public static class AdminPanelAuthExtensions
             .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddRequirements(new AdminAccessRequirement()).Build())
             .AddPolicy(AdminPolicies.Viewer, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Viewer)))
             .AddPolicy(AdminPolicies.Operator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Operator)))
-            .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)));
+            .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)))
+            .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)));
         services.AddCascadingAuthenticationState();
         services.AddScoped<AdminAuthenticationStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<AdminAuthenticationStateProvider>());

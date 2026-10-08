@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Agnis" xml:space="preserve">
+    <value>Agnis</value>
+  </data>
+  <data name="Anonymous" xml:space="preserve">
+    <value>Anonymous</value>
+  </data>
+  <data name="Anubis" xml:space="preserve">
+    <value>Anubis</value>
+  </data>
+  <data name="Apollo" xml:space="preserve">
+    <value>Apollo</value>
+  </data>
+  <data name="Argo" xml:space="preserve">
+    <value>Argo</value>
+  </data>
+  <data name="Aruan" xml:space="preserve">
+    <value>Aruan</value>
+  </data>
+  <data name="Barnake" xml:space="preserve">
+    <value>Barnake</value>
+  </data>
+  <data name="Berserker" xml:space="preserve">
+    <value>Berserker</value>
+  </data>
+  <data name="Broy" xml:space="preserve">
+    <value>Broy</value>
+  </data>
+  <data name="Ceto" xml:space="preserve">
+    <value>Ceto</value>
+  </data>
+  <data name="Chrono" xml:space="preserve">
+    <value>Chrono</value>
+  </data>
+  <data name="Cloud" xml:space="preserve">
+    <value>Cloud</value>
+  </data>
+  <data name="Drake" xml:space="preserve">
+    <value>Drake</value>
+  </data>
+  <data name="Elvian" xml:space="preserve">
+    <value>Elvian</value>
+  </data>
+  <data name="Enis" xml:space="preserve">
+    <value>Enis</value>
+  </data>
+  <data name="Eplete" xml:space="preserve">
+    <value>Eplete</value>
+  </data>
+  <data name="Evis" xml:space="preserve">
+    <value>Evis</value>
+  </data>
+  <data name="Fase" xml:space="preserve">
+    <value>Fase</value>
+  </data>
+  <data name="Gaia" xml:space="preserve">
+    <value>Gaia</value>
+  </data>
+  <data name="Gaion" xml:space="preserve">
+    <value>Gaion</value>
+  </data>
+  <data name="Garuda" xml:space="preserve">
+    <value>Garuda</value>
+  </data>
+  <data name="Gywen" xml:space="preserve">
+    <value>Gywen</value>
+  </data>
+  <data name="Heras" xml:space="preserve">
+    <value>Heras</value>
+  </data>
+  <data name="Hyon" xml:space="preserve">
+    <value>Hyon</value>
+  </data>
+  <data name="Hyperion" xml:space="preserve">
+    <value>Hyperion</value>
+  </data>
+  <data name="Kantata" xml:space="preserve">
+    <value>Kantata</value>
+  </data>
+  <data name="Karis" xml:space="preserve">
+    <value>Karis</value>
+  </data>
+  <data name="Minet" xml:space="preserve">
+    <value>Minet</value>
+  </data>
+  <data name="Mist" xml:space="preserve">
+    <value>Mist</value>
+  </data>
+  <data name="Muren" xml:space="preserve">
+    <value>Muren</value>
+  </data>
+  <data name="Odin" xml:space="preserve">
+    <value>Odin</value>
+  </data>
+  <data name="Rave" xml:space="preserve">
+    <value>Rave</value>
+  </data>
+  <data name="Semeden" xml:space="preserve">
+    <value>Semeden</value>
+  </data>
+  <data name="Sylion" xml:space="preserve">
+    <value>Sylion</value>
+  </data>
+  <data name="Vicious" xml:space="preserve">
+    <value>Vicious</value>
+  </data>
+  <data name="Warrior" xml:space="preserve">
+    <value>Warrior</value>
+  </data>
+</root>

@@ -47,7 +47,7 @@ public class AddSmallWingsUpdatePlugIn : UpdatePlugInBase
     /// <remarks>
     /// The wings get the movement speed attributes and the item rule flags, so these have to exist first.
     /// </remarks>
-    public override IEnumerable<Guid> DependsOn => [typeof(AddMovementSpeedAttributesPlugInSeason6).GUID, typeof(AddItemRuleFlagsPlugIn).GUID];
+    public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddMovementSpeedAttributesPlugInSeason6).GUID, typeof(AddItemRuleFlagsPlugIn).GUID];
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

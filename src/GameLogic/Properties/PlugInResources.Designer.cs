@@ -286,6 +286,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size..
+        /// </summary>
+        public static string CashShopFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop.
+        /// </summary>
+        public static string CashShopFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the versions of the cash shop script and banner to the player when it enters the game..
+        /// </summary>
+        public static string CashShopVersionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopVersionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop version.
+        /// </summary>
+        public static string CashShopVersionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopVersionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
         /// </summary>
         public static string CastleSiegeGuardsmanTalkPlugIn_Description {
@@ -1078,6 +1114,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gives players Goblin Points of the cash shop for their play time..
+        /// </summary>
+        public static string GoblinPointsForPlayTimePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTimePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Goblin Points for play time.
+        /// </summary>
+        public static string GoblinPointsForPlayTimePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTimePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Golden Invasion event.
         /// </summary>
         public static string GoldenInvasionPlugIn_Description {
@@ -1299,6 +1353,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ImperialGuardianFeaturePlugIn_Name {
             get {
                 return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds an inventory extension to the character when a player uses the Magic Backpack from the cash shop storage..
+        /// </summary>
+        public static string InventoryExtensionDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryExtensionDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Magic Backpack.
+        /// </summary>
+        public static string InventoryExtensionDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryExtensionDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2320,6 +2392,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage..
+        /// </summary>
+        public static string RageFighterCharacterCardDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCardDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Rage Fighter Character Card.
+        /// </summary>
+        public static string RageFighterCharacterCardDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCardDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time..
         /// </summary>
         public static string RaklionPlugIn_Description {
@@ -3258,6 +3348,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage..
+        /// </summary>
+        public static string SummonerCharacterCardDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCardDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Summoner Character Card.
+        /// </summary>
+        public static string SummonerCharacterCardDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCardDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the summoning orb consumption..
         /// </summary>
         public static string SummoningOrbConsumeHandlerPlugIn_Description {
@@ -3744,6 +3852,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extends the vault of the account when a player uses the Vault Expansion Certificate from the cash shop storage..
+        /// </summary>
+        public static string VaultExtensionDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("VaultExtensionDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Vault Expansion Certificate.
+        /// </summary>
+        public static string VaultExtensionDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("VaultExtensionDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {
@@ -4201,8 +4327,40 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
         public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name text.</summary>
-        public static string BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Name text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Name => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture)!;
 
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Description text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Description => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Name text.</summary>
+        public static string TwisterAnimationCounterStrategy_Name => ResourceManager.GetString("TwisterAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Description text.</summary>
+        public static string TwisterAnimationCounterStrategy_Description => ResourceManager.GetString("TwisterAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Name text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Name => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Description text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Description => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Name text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Name => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Description text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Description => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Name text.</summary>
+        public static string LostConnectionDetectionPlugIn_Name => ResourceManager.GetString("LostConnectionDetectionPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Description text.</summary>
+        public static string LostConnectionDetectionPlugIn_Description => ResourceManager.GetString("LostConnectionDetectionPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Name text.</summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Name => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
     }
 }

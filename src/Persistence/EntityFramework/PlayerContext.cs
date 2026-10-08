@@ -28,6 +28,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc/>
     public async ValueTask<DataModel.Entities.LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using var context = this.RepositoryProvider.ContextStack.UseContext(this);
         if (this.RepositoryProvider.GetRepository<LetterBody, LetterBodyRepository>() is { } repository)
         {
@@ -40,18 +41,31 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc/>
     public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         if (letterHeader is not Model.LetterHeader persistentHeader)
         {
             return false;
         }
 
-        persistentHeader.Receiver = await this.Context.Set<Character>().FirstOrDefaultAsync(c => c.Name == letterHeader.ReceiverName, cancellationToken).ConfigureAwait(false);
-        return persistentHeader.Receiver != null;
+        var receiverId = await this.Context.Set<Character>()
+            .Where(c => c.Name == letterHeader.ReceiverName)
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (receiverId is not { } id)
+        {
+            return false;
+        }
+
+        // Just the foreign key is required to save the letter, so we don't load and track the whole receiver.
+        persistentHeader.ReceiverId = id;
+        return true;
     }
 
     /// <inheritdoc />
     public async ValueTask<DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             if (this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
@@ -66,6 +80,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc />
     public async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             if (this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
@@ -80,6 +95,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc />
     public async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             if (this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
@@ -94,6 +110,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc />
     public async ValueTask<IEnumerable<DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             return await this.Context.Set<Account>().AsNoTracking().OrderBy(a => a.LoginName).Skip(skip).Take(count).ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -103,6 +120,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc />
     public async ValueTask<IEnumerable<DataModel.Entities.Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             // Invariant: this one runs in .NET, so it must not depend on the server's locale - in a
@@ -123,6 +141,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <inheritdoc />
     public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             if (this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
@@ -135,10 +154,25 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<Guid?> GetAccountIdByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<Account>()
+                .Where(account => account.RawCharacters.Any(character => character.Name == characterName))
+                .Select(account => (Guid?)account.Id)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<DataModel.Entities.CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             return await this.Context.Set<CastleSiegePendingReward>()
@@ -149,10 +183,76 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CashShopStorageItem>> GetCashShopStorageItemsAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<CashShopStorageItem>()
+                .Where(item => item.AccountId == accountId)
+                .OrderBy(item => item.AddedAt)
+                .ThenBy(item => item.Id)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CashShopCoinGrant>> GetPendingCashShopCoinGrantsAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<CashShopCoinGrant>()
+                .Where(grant => grant.AccountId == accountId && grant.AppliedAt == null)
+                .OrderBy(grant => grant.CreatedAt)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CashShopCoinGrant>> GetLatestCashShopCoinGrantsAsync(
+        Guid accountId,
+        int maximumCount,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<CashShopCoinGrant>()
+                .Where(grant => grant.AccountId == accountId)
+                .OrderByDescending(grant => grant.CreatedAt)
+                .Take(maximumCount)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.CashShopCoinGrant?> GetCashShopCoinGrantByReferenceAsync(
+        string reference,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<CashShopCoinGrant>()
+                .FirstOrDefaultAsync(grant => grant.Reference == reference, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             return await this.Context.Set<GensMember>()
@@ -167,6 +267,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         Guid victimId,
         CancellationToken cancellationToken = default)
     {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
             return await this.Context.Set<GensAbuse>()

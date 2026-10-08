@@ -10,8 +10,10 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -43,19 +45,19 @@ public class Pets : InitializerBase
     public override void Initialize()
     {
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
-        var angel = this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true,
+        var angel = this.CreatePet(0, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.GuardianAngel), 23, true, true,
             (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate),
             (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(angel);
-        var imp = this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true,
+        var imp = this.CreatePet(1, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.Imp), 28, true, true,
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true,
+        var uniria = this.CreatePet(2, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, true, true,
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true,
+        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, LocalizedString.FromResource(() => ItemNames.HornOfDinorant), 110, false, true,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
@@ -63,7 +65,7 @@ public class Pets : InitializerBase
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
 
-        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false,
+        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, LocalizedString.FromResource(() => ItemNames.DarkHorse), 218, false, false,
             (Stats.IsHorseEquipped, 1, AggregateType.AddRaw),
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
@@ -73,19 +75,19 @@ public class Pets : InitializerBase
         darkHorse.PetExperienceFormula = PetExperienceFormula;
         darkHorse.MaximumItemLevel = 50;
 
-        var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 0, false, false);
+        var darkRaven = this.CreatePet(5, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.DarkRaven), 0, false, false);
         darkRaven.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(1));
         darkRaven.PetExperienceFormula = PetExperienceFormula;
         darkRaven.MaximumItemLevel = 50;
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
-        var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true,
+        var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, LocalizedString.FromResource(() => ItemNames.HornOfFenrir), 300, false, true,
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
         this.AddFenrirOptions(fenrir);
 
-        this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
+        this.CreatePet(64, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.Demon), 1, false, true,
             (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
@@ -93,17 +95,17 @@ public class Pets : InitializerBase
             (Stats.MinimumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MaximumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw));
-        this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true,
+        this.CreatePet(65, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.SpiritOfGuardian), 1, false, true,
             (Stats.DamageReceiveDecrement, 0.7f, AggregateType.Multiplicate),
             (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
-        this.CreatePet(67, 0, 1, 1, "Pet Rudolf", 28, false, true);
-        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true,
+        this.CreatePet(67, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.PetRudolf), 28, false, true);
+        this.CreatePet(80, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.PetPanda), 1, false, true,
             (Stats.BonusExperienceRate, 0.5f, AggregateType.AddRaw),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
-        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true,
+        this.CreatePet(106, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.PetUnicorn), 28, false, true,
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
-        this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true,
+        this.CreatePet(123, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.PetSkeleton), 1, false, true,
             (Stats.MinimumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
@@ -129,7 +131,7 @@ public class Pets : InitializerBase
         var item = this.Context.CreateNew<ItemDefinition>();
         item.Group = 13;
         item.Number = 32;
-        item.Name = "Splinter of Armor";
+        item.Name = LocalizedString.FromResource(() => ItemNames.SplinterOfArmor);
         item.Width = 1;
         item.Height = 1;
         item.Durability = 20;
@@ -142,7 +144,7 @@ public class Pets : InitializerBase
         var item = this.Context.CreateNew<ItemDefinition>();
         item.Group = 13;
         item.Number = 33;
-        item.Name = "Bless of Guardian";
+        item.Name = LocalizedString.FromResource(() => ItemNames.BlessOfGuardian);
         item.Width = 1;
         item.Height = 1;
         item.Durability = 1;
@@ -156,7 +158,7 @@ public class Pets : InitializerBase
         var item = this.Context.CreateNew<ItemDefinition>();
         item.Group = 13;
         item.Number = 34;
-        item.Name = "Claw of Beast";
+        item.Name = LocalizedString.FromResource(() => ItemNames.ClawOfBeast);
         item.Width = 1;
         item.Height = 1;
         item.Durability = 10;
@@ -169,7 +171,7 @@ public class Pets : InitializerBase
         var item = this.Context.CreateNew<ItemDefinition>();
         item.Group = 13;
         item.Number = 35;
-        item.Name = "Fragment of Horn";
+        item.Name = LocalizedString.FromResource(() => ItemNames.FragmentOfHorn);
         item.Width = 1;
         item.Height = 1;
         item.Durability = 1;
@@ -182,7 +184,7 @@ public class Pets : InitializerBase
         var item = this.Context.CreateNew<ItemDefinition>();
         item.Group = 13;
         item.Number = 36;
-        item.Name = "Broken Horn";
+        item.Name = LocalizedString.FromResource(() => ItemNames.BrokenHorn);
         item.Width = 2;
         item.Height = 2;
         item.Durability = 1;
@@ -196,7 +198,7 @@ public class Pets : InitializerBase
         var spirit = this.Context.CreateNew<ItemDefinition>();
         spirit.Group = 13;
         spirit.Number = 31;
-        spirit.Name = "Spirit";
+        spirit.Name = LocalizedString.FromResource(() => ItemNames.Spirit);
         spirit.Width = 1;
         spirit.Height = 1;
         spirit.Durability = 1;
@@ -225,7 +227,7 @@ public class Pets : InitializerBase
         BaseMapInitializer.RegisterDefaultDropItemGroup(ravenDrop);
     }
 
-    private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
+    private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, LocalizedString name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
     {
         var pet = this.Context.CreateNew<ItemDefinition>();
         pet.SetGuid(13, number);
@@ -272,14 +274,15 @@ public class Pets : InitializerBase
         dinoOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Dino);
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
-        dinoOptionDefinition.Name = "Dinorant Options";
+        dinoOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.DinorantOptions);
         dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
         dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first
 
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));  // Level 1
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 2
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 4
+        // The numbers are the bits of the option field which the client expects for each option.
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }
@@ -290,7 +293,7 @@ public class Pets : InitializerBase
         horseOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Horse);
         this.GameConfiguration.ItemOptions.Add(horseOptionDefinition);
 
-        horseOptionDefinition.Name = "Dark Horse Options";
+        horseOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.DarkHorseOptions);
 
         horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 1, Stats.DamageReceiveHorseDecrement, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Horse, -0.15f, (Stats.HorseLevel, -0.005f)));
         horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 2, Stats.DefenseBase, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Horse, 5, (Stats.HorseLevel, 2), (Stats.TotalAgility, 1f / 20)));
@@ -311,7 +314,7 @@ public class Pets : InitializerBase
         fenrirOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Fenrir);
         this.GameConfiguration.ItemOptions.Add(fenrirOptionDefinition);
 
-        fenrirOptionDefinition.Name = "Fenrir Options";
+        fenrirOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.FenrirOptions);
 
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.AttackDamageIncrease, 1.1f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.DamageReceiveDecrement, 0.90f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
@@ -339,7 +342,16 @@ public class Pets : InitializerBase
     {
         var combinationBonus = this.Context.CreateNew<ItemOptionCombinationBonus>();
         combinationBonus.Number = number;
-        combinationBonus.Description = $"{optionType.Name}: {targetAttribute.Designation}";
+        combinationBonus.Description = number switch
+        {
+            BlackFenrirMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlackFenrirMovementSpeed),
+            BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlackFenrirUnderwaterMovementSpeed),
+            BlueFenrirMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlueFenrirMovementSpeed),
+            BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.BlueFenrirUnderwaterMovementSpeed),
+            GoldFenrirMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.GoldFenrirMovementSpeed),
+            GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber => LocalizedString.FromResource(() => ItemOptionDescriptions.GoldFenrirUnderwaterMovementSpeed),
+            _ => new LocalizedString($"{optionType.Name.ValueInNeutralLanguage}: {targetAttribute.Designation}"),
+        };
         combinationBonus.AppliesMultipleTimes = false;
         combinationBonus.Requirements.Add(this.CreateFenrirMovementSpeedRequirement(optionType));
         combinationBonus.Bonus = this.CreatePowerUpDefinition(targetAttribute, MovementSpeedConstants.UpgradedFenrirMovementSpeed, AggregateType.Maximum);

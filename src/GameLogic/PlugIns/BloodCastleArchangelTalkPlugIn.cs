@@ -15,17 +15,20 @@ using MUnique.OpenMU.PlugIns;
 [Guid("93AC4541-4BB7-4833-A7B0-902AB9D87089")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.BloodCastleArchangelTalkPlugIn_Name), Description = nameof(PlugInResources.BloodCastleArchangelTalkPlugIn_Description), ResourceType = typeof(PlugInResources))]
-public class BloodCastleArchangelTalkPlugIn : IPlayerTalkToNpcPlugIn, ISupportCustomConfiguration<BloodCastleArchangelTalkPlugInConfiguration>, ISupportDefaultCustomConfiguration
+public class BloodCastleArchangelTalkPlugIn : NpcTalkPlugInBase
 {
-    /// <inheritdoc />
-    public BloodCastleArchangelTalkPlugInConfiguration? Configuration { get; set; }
+    /// <summary>
+    /// The number of the Archangel NPC.
+    /// </summary>
+    internal const short ArchangelNumber = 232;
 
     /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    public override short DefaultNpcNumber => ArchangelNumber;
+
+    /// <inheritdoc />
+    protected override async ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        var configuration = this.Configuration ??= new BloodCastleArchangelTalkPlugInConfiguration();
-        if (player.CurrentMiniGame is not BloodCastleContext bloodCastle
-            || npc.Definition.Number != configuration.ArchangelNumber)
+        if (player.CurrentMiniGame is not BloodCastleContext bloodCastle)
         {
             return;
         }
@@ -33,7 +36,4 @@ public class BloodCastleArchangelTalkPlugIn : IPlayerTalkToNpcPlugIn, ISupportCu
         eventArgs.HasBeenHandled = true;
         await bloodCastle.TalkToNpcArchangelAsync(player).ConfigureAwait(false);
     }
-
-    /// <inheritdoc />
-    public object CreateDefaultConfig() => new BloodCastleArchangelTalkPlugInConfiguration();
 }

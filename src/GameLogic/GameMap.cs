@@ -104,6 +104,15 @@ public class GameMap
     }
 
     /// <summary>
+    /// Gets the players which are currently on this map.
+    /// </summary>
+    /// <returns>The players which are currently on this map.</returns>
+    public IList<Player> GetPlayers()
+    {
+        return this._objectsInMap.Values.OfType<Player>().ToList();
+    }
+
+    /// <summary>
     /// Gets the attackables in range of the specified coordinates.
     /// </summary>
     /// <param name="point">The coordinates.</param>
@@ -229,9 +238,13 @@ public class GameMap
     /// <param name="target">The new coordinates.</param>
     /// <param name="moveLock">The move lock.</param>
     /// <param name="moveType">Type of the move.</param>
-    public ValueTask MoveAsync(ILocateable locatable, Point target, AsyncLock moveLock, MoveType moveType)
+    /// <param name="notifyMovedObject">
+    /// If set to <c>true</c>, the moved object is notified about its own move as well.
+    /// Pass <c>false</c> when the move only confirms a position the object already reported itself.
+    /// </param>
+    public ValueTask MoveAsync(ILocateable locatable, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true)
     {
-        return this._areaOfInterestManager.MoveObjectAsync(locatable, target, moveLock, moveType);
+        return this._areaOfInterestManager.MoveObjectAsync(locatable, target, moveLock, moveType, notifyMovedObject);
     }
 
     /// <summary>

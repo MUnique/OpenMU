@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.API;
 
 using System.Globalization;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,11 @@ using MUnique.OpenMU.Network.Analyzer.Archive;
 /// <remarks>
 /// The archived files are not served statically: they contain the traffic of a player in plain
 /// text, including its login packet. Like every other controller of the admin panel, this one
-/// requires an authenticated user.
+/// requires an authenticated user. The attribute is required, because not every host requires
+/// an authorization for all of its controllers, e.g. the admin panel of the distributed deployment
+/// also offers endpoints which are called by dapr.
 /// </remarks>
+[Authorize]
 [Route("api/network-archive/")]
 public class NetworkArchiveController : Controller
 {

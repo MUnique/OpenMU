@@ -1544,4 +1544,16 @@
   <data name="InvasionSpawnConfiguration_MonsterId_Caption" xml:space="preserve"><value>怪物 ID</value></data>
   <data name="KanturuStartConfiguration_EventDefinition_Caption" xml:space="preserve"><value>副本定义</value></data>
   <data name="BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption" xml:space="preserve"><value>修复目标物品</value></data>
+  <data name="LostConnectionDetectionPlugIn_Name" xml:space="preserve">
+    <value>断线检测</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Description" xml:space="preserve">
+    <value>当客户端不再报告其在线状态时（连接已丢失但未关闭），断开该玩家的连接。否则玩家会一直保持连接，其账号的后续登录将被拒绝。</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Name" xml:space="preserve">
+    <value>超时时间</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
+    <value>客户端未报告在线状态多久后，连接被视为已丢失。游戏客户端每 20 秒报告一次。设为零则禁用检测。</value>
+  </data>
 </root>

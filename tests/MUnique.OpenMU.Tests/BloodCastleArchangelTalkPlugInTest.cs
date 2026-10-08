@@ -46,8 +46,8 @@ public class BloodCastleArchangelTalkPlugInTest
         player.CurrentMiniGame = this.CreateBloodCastle(player);
         var eventArgs = new NpcTalkEventArgs();
 
-        await new BloodCastleArchangelTalkPlugIn()
-            .PlayerTalksToNpcAsync(player, CreateNpc(player, BloodCastleArchangelTalkPlugInConfiguration.DefaultArchangelNumber), eventArgs)
+        await CreatePlugIn()
+            .PlayerTalksToNpcAsync(player, CreateNpc(player, BloodCastleArchangelTalkPlugIn.ArchangelNumber), eventArgs)
             .ConfigureAwait(false);
 
         Assert.That(eventArgs.HasBeenHandled, Is.True);
@@ -64,33 +64,41 @@ public class BloodCastleArchangelTalkPlugInTest
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var eventArgs = new NpcTalkEventArgs();
 
-        await new BloodCastleArchangelTalkPlugIn()
-            .PlayerTalksToNpcAsync(player, CreateNpc(player, BloodCastleArchangelTalkPlugInConfiguration.DefaultArchangelNumber), eventArgs)
+        await CreatePlugIn()
+            .PlayerTalksToNpcAsync(player, CreateNpc(player, BloodCastleArchangelTalkPlugIn.ArchangelNumber), eventArgs)
             .ConfigureAwait(false);
 
         Assert.That(eventArgs.HasBeenHandled, Is.False);
     }
 
     /// <summary>
-    /// Tests that the plugin uses the configured NPC number instead of the default one.
+    /// Tests that the plugin uses the configured NPC instead of the default one.
     /// </summary>
     [Test]
-    public async ValueTask ConfiguredArchangelNumberIsUsedAsync()
+    public async ValueTask ConfiguredArchangelIsUsedAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.CurrentMiniGame = this.CreateBloodCastle(player);
         var plugIn = new BloodCastleArchangelTalkPlugIn
         {
-            Configuration = new BloodCastleArchangelTalkPlugInConfiguration { ArchangelNumber = OtherNpcNumber },
+            Configuration = new NpcTalkPlugInConfiguration { Npc = new MonsterDefinition { Number = OtherNpcNumber } },
         };
         var defaultArchangelArgs = new NpcTalkEventArgs();
         var configuredArchangelArgs = new NpcTalkEventArgs();
 
-        await plugIn.PlayerTalksToNpcAsync(player, CreateNpc(player, BloodCastleArchangelTalkPlugInConfiguration.DefaultArchangelNumber), defaultArchangelArgs).ConfigureAwait(false);
+        await plugIn.PlayerTalksToNpcAsync(player, CreateNpc(player, BloodCastleArchangelTalkPlugIn.ArchangelNumber), defaultArchangelArgs).ConfigureAwait(false);
         await plugIn.PlayerTalksToNpcAsync(player, CreateNpc(player, OtherNpcNumber), configuredArchangelArgs).ConfigureAwait(false);
 
         Assert.That(defaultArchangelArgs.HasBeenHandled, Is.False);
         Assert.That(configuredArchangelArgs.HasBeenHandled, Is.True);
+    }
+
+    private static BloodCastleArchangelTalkPlugIn CreatePlugIn()
+    {
+        return new BloodCastleArchangelTalkPlugIn
+        {
+            Configuration = new NpcTalkPlugInConfiguration { Npc = new MonsterDefinition { Number = BloodCastleArchangelTalkPlugIn.ArchangelNumber } },
+        };
     }
 
     private static NonPlayerCharacter CreateNpc(Player player, short number)

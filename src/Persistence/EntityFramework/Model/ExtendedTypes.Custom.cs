@@ -8,7 +8,6 @@
 
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Mapster;
 using MUnique.OpenMU.Persistence.Json;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -218,9 +217,7 @@ internal partial class Account : IConvertibleTo<BasicModel.Account>
 {
     public BasicModel.Account Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-
-        return this.Adapt<BasicModel.Account>();
+        return BasicModelConverter.Convert<BasicModel.Account>(this);
     }
 }
 
@@ -228,9 +225,7 @@ internal partial class GameConfiguration : IConvertibleTo<BasicModel.GameConfigu
 {
     public BasicModel.GameConfiguration Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-
-        return this.Adapt<BasicModel.GameConfiguration>();
+        return BasicModelConverter.Convert<BasicModel.GameConfiguration>(this);
     }
 }
 
@@ -238,8 +233,7 @@ internal partial class ConnectServerDefinition : IConvertibleTo<BasicModel.Conne
 {
     public BasicModel.ConnectServerDefinition Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.ConnectServerDefinition>();
+        return BasicModelConverter.Convert<BasicModel.ConnectServerDefinition>(this);
     }
 }
 
@@ -247,8 +241,7 @@ internal partial class GameClientDefinition : IConvertibleTo<BasicModel.GameClie
 {
     public BasicModel.GameClientDefinition Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.GameClientDefinition>();
+        return BasicModelConverter.Convert<BasicModel.GameClientDefinition>(this);
     }
 }
 
@@ -279,8 +272,7 @@ internal partial class ChatServerDefinition : IConvertibleTo<BasicModel.ChatServ
 {
     public BasicModel.ChatServerDefinition Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.ChatServerDefinition>();
+        return BasicModelConverter.Convert<BasicModel.ChatServerDefinition>(this);
     }
 }
 
@@ -288,8 +280,7 @@ internal partial class GameServerDefinition : IConvertibleTo<BasicModel.GameServ
 {
     public BasicModel.GameServerDefinition Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.GameServerDefinition>();
+        return BasicModelConverter.Convert<BasicModel.GameServerDefinition>(this);
     }
 }
 
@@ -297,8 +288,7 @@ internal partial class SystemConfiguration : IConvertibleTo<BasicModel.SystemCon
 {
     public BasicModel.SystemConfiguration Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.SystemConfiguration>();
+        return BasicModelConverter.Convert<BasicModel.SystemConfiguration>(this);
     }
 }
 
@@ -306,8 +296,7 @@ internal partial class ConfigurationUpdate : IConvertibleTo<BasicModel.Configura
 {
     public BasicModel.ConfigurationUpdate Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.ConfigurationUpdate>();
+        return BasicModelConverter.Convert<BasicModel.ConfigurationUpdate>(this);
     }
 }
 
@@ -315,8 +304,7 @@ internal partial class ConfigurationUpdateState : IConvertibleTo<BasicModel.Conf
 {
     public BasicModel.ConfigurationUpdateState Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.ConfigurationUpdateState>();
+        return BasicModelConverter.Convert<BasicModel.ConfigurationUpdateState>(this);
     }
 }
 
@@ -324,8 +312,7 @@ internal partial class CastleSiegeData : IConvertibleTo<BasicModel.CastleSiegeDa
 {
     public BasicModel.CastleSiegeData Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.CastleSiegeData>();
+        return BasicModelConverter.Convert<BasicModel.CastleSiegeData>(this);
     }
 }
 
@@ -333,8 +320,7 @@ internal partial class CrywolfData : IConvertibleTo<BasicModel.CrywolfData>
 {
     public BasicModel.CrywolfData Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.CrywolfData>();
+        return BasicModelConverter.Convert<BasicModel.CrywolfData>(this);
     }
 }
 
@@ -342,8 +328,7 @@ internal partial class GensMember : IConvertibleTo<BasicModel.GensMember>
 {
     public BasicModel.GensMember Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.GensMember>();
+        return BasicModelConverter.Convert<BasicModel.GensMember>(this);
     }
 }
 
@@ -351,7 +336,6 @@ internal partial class GensAbuse : IConvertibleTo<BasicModel.GensAbuse>
 {
     public BasicModel.GensAbuse Convert()
     {
-        MapsterConfigurator.EnsureConfigured();
-        return this.Adapt<BasicModel.GensAbuse>();
+        return BasicModelConverter.Convert<BasicModel.GensAbuse>(this);
     }
 }

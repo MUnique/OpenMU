@@ -24,7 +24,7 @@ internal static class ModelBuilderExtensions
             if (key != null)
             {
                 key.ValueGenerated = Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd;
-                key.SetValueGeneratorFactory((_, _) => new GuidV7ValueGenerator());
+                key.SetValueGeneratorFactory(typeof(GuidV7ValueGeneratorFactory));
             }
         }
 

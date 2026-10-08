@@ -94,9 +94,11 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new DoppelgangerInitializer(this.Context, this.GameConfiguration).Initialize();
         new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
         new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CashShopItems(this.Context, this.GameConfiguration).Initialize();
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();
+        new CashShopInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     /// <summary>

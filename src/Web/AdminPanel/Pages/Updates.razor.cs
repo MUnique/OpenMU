@@ -63,7 +63,8 @@ public partial class Updates
         if (this._isDataInitialized)
         {
             var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
-            this._availableUpdates = updates.Select(up => new UpdateViewModel(up)).ToList();
+            var installedUpdates = await this.UpdateService.GetInstalledUpdatesAsync().ConfigureAwait(false);
+            this._availableUpdates = updates.Select(up => new UpdateViewModel(up, installedUpdates.TryGetValue(up.Key, out var installed) ? installed.Version : null, installed.InstalledAt)).ToList();
         }
     }
 
@@ -123,9 +124,13 @@ public partial class Updates
         /// Initializes a new instance of the <see cref="UpdateViewModel"/> class.
         /// </summary>
         /// <param name="updatePlugIn">The update plugin.</param>
-        public UpdateViewModel(IConfigurationUpdatePlugIn updatePlugIn)
+        /// <param name="installedVersion">The installed version of the update, if any.</param>
+        /// <param name="installedAt">The installation date of the update, if any.</param>
+        public UpdateViewModel(IConfigurationUpdatePlugIn updatePlugIn, int? installedVersion, DateTime? installedAt)
         {
             this._updatePlugIn = updatePlugIn;
+            this.InstalledVersion = installedVersion;
+            this.InstalledAt = installedAt;
             this.Selected = true;
         }
 
@@ -172,6 +177,12 @@ public partial class Updates
         public string Name => this._updatePlugIn.Name;
 
         public Guid Key => this._updatePlugIn.Key;
+
+        public int? InstalledVersion { get; }
+
+        public DateTime? InstalledAt { get; }
+
+        public string VersionLabel => this.InstalledVersion is { } installed ? $" (v{installed} → v{this._updatePlugIn.Version})" : string.Empty;
 
         public string Description => this._updatePlugIn.Description;
 

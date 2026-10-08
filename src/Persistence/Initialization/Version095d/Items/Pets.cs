@@ -9,7 +9,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -30,18 +32,18 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        var angel = this.CreatePet(0, 0, "Guardian Angel", 23, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+        var angel = this.CreatePet(0, 0, LocalizedString.FromResource(() => ItemNames.GuardianAngel), 23, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(angel);
-        var imp = this.CreatePet(1, 0, "Imp", 28, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+        var imp = this.CreatePet(1, 0, LocalizedString.FromResource(() => ItemNames.Imp), 28, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, 0, "Horn of Uniria", 25, true, (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
+        var uniria = this.CreatePet(2, 0, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, true, (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
+        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, LocalizedString.FromResource(() => ItemNames.HornOfDinorant), 110, false, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
     }
 
-    private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
+    private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, LocalizedString name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
     {
         var pet = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(pet);
@@ -85,13 +87,14 @@ public class Pets : InitializerBase
         var dinoOptionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
-        dinoOptionDefinition.Name = "Dinorant Options";
+        dinoOptionDefinition.Name = LocalizedString.FromResource(() => ItemOptionNames.DinorantOptions);
         dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
         dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first
 
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
+        // The numbers are the bits of the option field which the client expects for each option.
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal));
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);

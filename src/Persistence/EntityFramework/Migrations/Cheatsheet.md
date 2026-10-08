@@ -16,6 +16,9 @@ Here are my notes about how to (re-)generate entity framework core migrations.
 * Run this command (replace *[Name]* by the name of the migration):
   > Add-Migration *[Name]* -context EntityDataContext
 
+* Generate the compiled models again, see [CompiledModels/Readme.md](../CompiledModels/Readme.md).
+* Generate the code of the `GameConfigurationLoader` again, see [Loading/Readme.md](../Loading/Readme.md).
+
 ## Replacing the initial migration
 
 Replacing the initial migration is only allowed until a stable version of OpenMU
