@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.Persistence.Json;
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -53,7 +55,7 @@ public class JsonObjectDeserializer
         _currentReferenceHandler = referenceHandler;
         try
         {
-            return JsonSerializer.Deserialize<T>(textReader, options);
+            return JsonSerializer.Deserialize(textReader, (JsonTypeInfo<T>)options.GetTypeInfo(typeof(T)));
         }
         finally
         {
@@ -74,11 +76,27 @@ public class JsonObjectDeserializer
         // can be overwritten to apply additional settings.
     }
 
+    /// <summary>
+    /// Creates the type info resolver, which provides the metadata of the types which are registered by the generated code,
+    /// and of the types of the <see cref="PersistenceJsonSerializerContext"/>.
+    /// The reflection based resolver is only used for other types, and only if reflection is enabled for the serializer.
+    /// </summary>
+    /// <returns>The type info resolver.</returns>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The reflection based resolver is only used when reflection is enabled for the serializer.")]
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "The reflection based resolver is only used when reflection is enabled for the serializer.")]
+    private static IJsonTypeInfoResolver CreateTypeInfoResolver()
+    {
+        return JsonSerializer.IsReflectionEnabledByDefault
+            ? JsonTypeInfoResolver.Combine(ReferenceResolvingTypeInfoResolver.Instance, PersistenceJsonSerializerContext.Default, new DefaultJsonTypeInfoResolver())
+            : JsonTypeInfoResolver.Combine(ReferenceResolvingTypeInfoResolver.Instance, PersistenceJsonSerializerContext.Default);
+    }
+
     private JsonSerializerOptions CreateOptions()
     {
         var options = new JsonSerializerOptions
         {
             ReferenceHandler = new DelegatingReferenceHandler(),
+            TypeInfoResolver = CreateTypeInfoResolver(),
             Converters =
             {
                 new LocalizedStringJsonConverter(),

@@ -124,14 +124,17 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
         var propertyNames = new HashSet<string>(properties.Select(p => p.Name));
 
         var propertyModels = ImmutableArray.CreateBuilder<PropertyModel>();
+        var valueTypes = new List<ITypeSymbol> { type };
         foreach (var property in properties)
         {
+            ITypeSymbol valueType;
             var collectionInterface = DetermineCollectionInterface(property.Type, collectionType);
             var jsonName = GetJsonPropertyName(property, jsonPropertyName) ?? property.Name;
             PropertyModel? model;
             if (collectionInterface is not null && property.Name.StartsWith(RawPrefix, StringComparison.Ordinal))
             {
-                model = CreateAdderModel(PropertyKind.RawAdder, jsonName, collectionInterface.TypeArguments[0], property, collectionInterface, compilation);
+                valueType = collectionInterface.TypeArguments[0];
+                model = CreateAdderModel(PropertyKind.RawAdder, jsonName, valueType, property, collectionInterface, compilation);
             }
             else if (collectionInterface is not null && property.Name.StartsWith(JoinedPrefix, StringComparison.Ordinal))
             {
@@ -153,10 +156,12 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
                     return null;
                 }
 
-                model = CreateAdderModel(PropertyKind.JoinedAdder, basePropertyName, joinNavigation.Type, baseCollectionProperty, baseCollectionInterface, compilation);
+                valueType = joinNavigation.Type;
+                model = CreateAdderModel(PropertyKind.JoinedAdder, basePropertyName, valueType, baseCollectionProperty, baseCollectionInterface, compilation);
             }
             else if (property.SetMethod is { } setMethod && !propertyNames.Contains(JoinedPrefix + property.Name))
             {
+                valueType = property.Type;
                 model = CreateSetterModel(jsonName, property, setMethod, compilation);
             }
             else if (collectionInterface is not null
@@ -164,7 +169,8 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
                      && !propertyNames.Contains(JoinedPrefix + property.Name))
             {
                 // A collection without setter and without a "Raw" or "Joined" counterpart, which would hold its data.
-                model = CreateAdderModel(PropertyKind.CollectionAdder, jsonName, collectionInterface.TypeArguments[0], property, collectionInterface, compilation);
+                valueType = collectionInterface.TypeArguments[0];
+                model = CreateAdderModel(PropertyKind.CollectionAdder, jsonName, valueType, property, collectionInterface, compilation);
             }
             else
             {
@@ -179,6 +185,7 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
             }
 
             propertyModels.Add(model);
+            valueTypes.Add(valueType);
         }
 
         var containingTypes = string.Concat(GetContainingTypes(type).Select(t => t.Name + "_"));
@@ -189,7 +196,94 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
             ns,
             containingTypes + type.Name + "ReferenceResolvingConverter",
             typeName,
-            new EquatableArray<PropertyModel>(propertyModels.ToImmutable()));
+            new EquatableArray<PropertyModel>(propertyModels.ToImmutable()),
+            new EquatableArray<ValueTypeModel>(CreateValueTypeModels(valueTypes, compilation)));
+    }
+
+    /// <summary>
+    /// Creates the models of the types which are read by the converter, including the converted type itself.
+    /// The underlying types of nullable value types are included, too.
+    /// </summary>
+    private static ImmutableArray<ValueTypeModel> CreateValueTypeModels(IEnumerable<ITypeSymbol> types, Compilation compilation)
+    {
+        var result = new Dictionary<string, ValueTypeModel>();
+        foreach (var type in types)
+        {
+            var current = type;
+            while (current is not null)
+            {
+                var typeName = current.ToDisplayString(TypeFormat);
+                ITypeSymbol? underlyingType = null;
+                if (result.ContainsKey(typeName) || !IsAccessible(current, compilation))
+                {
+                    break;
+                }
+
+                string? builtInConverter;
+                if (current is INamedTypeSymbol { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T } nullable)
+                {
+                    underlyingType = nullable.TypeArguments[0];
+                    builtInConverter = "global::System.Text.Json.Serialization.Metadata.JsonMetadataServices.GetNullableConverter<" + underlyingType.ToDisplayString(TypeFormat) + ">(options)";
+                }
+                else if (current.TypeKind == TypeKind.Enum)
+                {
+                    builtInConverter = "global::System.Text.Json.Serialization.Metadata.JsonMetadataServices.GetEnumConverter<" + typeName + ">(options)";
+                }
+                else
+                {
+                    builtInConverter = GetBuiltInConverterName(current) is { } converterName
+                        ? "global::System.Text.Json.Serialization.Metadata.JsonMetadataServices." + converterName
+                        : null;
+                }
+
+                result.Add(typeName, new ValueTypeModel(typeName, builtInConverter));
+                current = underlyingType;
+            }
+        }
+
+        return result.Values.OrderBy(t => t.TypeName, StringComparer.Ordinal).ToImmutableArray();
+    }
+
+    /// <summary>
+    /// Gets the name of the property of the <c>JsonMetadataServices</c>, which provides the built-in converter of the type.
+    /// </summary>
+    private static string? GetBuiltInConverterName(ITypeSymbol type)
+    {
+        if (type is IArrayTypeSymbol { Rank: 1, ElementType.SpecialType: SpecialType.System_Byte })
+        {
+            return "ByteArrayConverter";
+        }
+
+        switch (type.SpecialType)
+        {
+            case SpecialType.System_Boolean: return "BooleanConverter";
+            case SpecialType.System_Byte: return "ByteConverter";
+            case SpecialType.System_SByte: return "SByteConverter";
+            case SpecialType.System_Char: return "CharConverter";
+            case SpecialType.System_Int16: return "Int16Converter";
+            case SpecialType.System_UInt16: return "UInt16Converter";
+            case SpecialType.System_Int32: return "Int32Converter";
+            case SpecialType.System_UInt32: return "UInt32Converter";
+            case SpecialType.System_Int64: return "Int64Converter";
+            case SpecialType.System_UInt64: return "UInt64Converter";
+            case SpecialType.System_Single: return "SingleConverter";
+            case SpecialType.System_Double: return "DoubleConverter";
+            case SpecialType.System_Decimal: return "DecimalConverter";
+            case SpecialType.System_String: return "StringConverter";
+            case SpecialType.System_DateTime: return "DateTimeConverter";
+        }
+
+        return type.ToDisplayString(TypeFormat) switch
+        {
+            "global::System.Guid" => "GuidConverter",
+            "global::System.DateTimeOffset" => "DateTimeOffsetConverter",
+            "global::System.TimeSpan" => "TimeSpanConverter",
+            "global::System.DateOnly" => "DateOnlyConverter",
+            "global::System.TimeOnly" => "TimeOnlyConverter",
+            "global::System.Uri" => "UriConverter",
+            "global::System.Version" => "VersionConverter",
+            _ => null,
+        };
     }
 
     /// <summary>
@@ -521,6 +615,12 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
         builder.AppendLine("    [global::System.Runtime.CompilerServices.ModuleInitializer]");
         builder.AppendLine("    internal static void Register()");
         builder.AppendLine("    {");
+        foreach (var valueType in models.SelectMany(m => m.ValueTypes).GroupBy(t => t.TypeName).Select(g => g.First()).OrderBy(t => t.TypeName, StringComparer.Ordinal))
+        {
+            builder.Append("        global::MUnique.OpenMU.Persistence.Json.ReferenceResolvingTypeInfoResolver.Register<").Append(valueType.TypeName).Append(">(")
+                .Append(valueType.BuiltInConverter is null ? "null" : "static options => " + valueType.BuiltInConverter).AppendLine(");");
+        }
+
         foreach (var model in models)
         {
             var converterName = model.Namespace is null ? "global::" + model.ConverterName : "global::" + model.Namespace + "." + model.ConverterName;
@@ -541,7 +641,15 @@ public class ReferenceResolvingConverterGenerator : IIncrementalGenerator
     /// <param name="ConverterName">The name of the converter class.</param>
     /// <param name="TypeName">The fully qualified name of the converted type.</param>
     /// <param name="Properties">The properties which are read.</param>
-    private sealed record ConverterModel(string HintName, string? Namespace, string ConverterName, string TypeName, EquatableArray<PropertyModel> Properties);
+    /// <param name="ValueTypes">The types which are read by the converter, including the converted type.</param>
+    private sealed record ConverterModel(string HintName, string? Namespace, string ConverterName, string TypeName, EquatableArray<PropertyModel> Properties, EquatableArray<ValueTypeModel> ValueTypes);
+
+    /// <summary>
+    /// The model of a type which is read by a converter.
+    /// </summary>
+    /// <param name="TypeName">The fully qualified name of the type.</param>
+    /// <param name="BuiltInConverter">The expression which gets the built-in converter of the type for the <c>options</c>, if there is one.</param>
+    private sealed record ValueTypeModel(string TypeName, string? BuiltInConverter);
 
     /// <summary>
     /// The model of a property handler.
