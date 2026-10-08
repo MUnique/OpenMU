@@ -17,6 +17,14 @@ internal sealed class RecordingMessenger : IDiscordMessenger
     /// </summary>
     public List<(ulong ChannelId, IReadOnlyList<DiscordEmbed> Embeds)> Messages { get; } = new();
 
+    /// <summary>
+    /// Gets the channels per category.
+    /// </summary>
+    public Dictionary<DiscordChannelCategory, ulong> Channels { get; } = new();
+
+    /// <inheritdoc />
+    public ulong? GetChannelId(DiscordChannelCategory category) => this.Channels.TryGetValue(category, out var channelId) ? channelId : null;
+
     /// <inheritdoc />
     public Task SendAsync(ulong channelId, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
     {

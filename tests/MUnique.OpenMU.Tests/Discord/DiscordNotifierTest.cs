@@ -80,8 +80,7 @@ public class DiscordNotifierTest
         var handler = new RecordingHttpMessageHandler();
         var messenger = new RecordingMessenger();
         var settings = new DiscordSettings();
-        settings.Bot.Token = "token";
-        settings.Bot.Channels[DiscordChannelCategory.WorldNews] = 42;
+        messenger.Channels[DiscordChannelCategory.WorldNews] = 42;
         await using (var notifier = CreateNotifier(handler, settings, messenger))
         {
             await notifier.OnGameEventAsync(new BossKilledEvent(0, DateTime.UtcNow, "Hero", "Kundun", "Kalima 7")).ConfigureAwait(false);
@@ -91,6 +90,22 @@ public class DiscordNotifierTest
         Assert.That(messenger.Messages[0].ChannelId, Is.EqualTo(42));
         Assert.That(messenger.Messages[0].Embeds[0].Title, Is.EqualTo("Boss defeated"));
         Assert.That(handler.Requests, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a category without channel of the bot is posted by the webhook, e.g. before the bot found the channels of the layout.
+    /// </summary>
+    [Test]
+    public async Task WebhookIsUsedWithoutBotChannelAsync()
+    {
+        var handler = new RecordingHttpMessageHandler();
+        var messenger = new RecordingMessenger();
+        await using var notifier = CreateNotifier(handler, new DiscordSettings(), messenger);
+
+        await notifier.OnGameEventAsync(new BossKilledEvent(0, DateTime.UtcNow, "Hero", "Kundun", "Kalima 7")).ConfigureAwait(false);
+
+        await handler.WaitForRequestsAsync(1).ConfigureAwait(false);
+        Assert.That(messenger.Messages, Is.Empty);
     }
 
     private static DiscordNotifier CreateNotifier(RecordingHttpMessageHandler handler, DiscordSettings settings, IDiscordMessenger? botMessenger = null)

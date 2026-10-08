@@ -18,19 +18,28 @@ public class DiscordBotSettings
     /// Gets or sets the identifier of the Discord server (guild) of the game server.
     /// The slash commands are registered for it, which makes them available immediately.
     /// Without it, they are registered globally, which can take up to an hour.
+    /// The bot posts into the channels of the layout of this Discord server; without it, of the only Discord server which the bot is in.
     /// </summary>
     public ulong? GuildId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the channel in which the bot keeps a message with the status of the game servers up to date.
+    /// Without it, the bot uses the status channel of the layout.
     /// </summary>
     public ulong? StatusChannelId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifiers of the channels per <see cref="DiscordChannelCategory"/>, into which the bot posts the game events.
+    /// They take precedence over the channels of the layout.
     /// A category with a channel is posted by the bot instead of its webhook.
     /// </summary>
     public Dictionary<DiscordChannelCategory, ulong> Channels { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the path of a JSON file with the layout of the Discord server, which the command <c>/openmu setup</c> sets up.
+    /// Without it, the default layout is used.
+    /// </summary>
+    public string? LayoutFile { get; set; }
 
     /// <summary>
     /// Gets or sets the interval in which the status message and the presence of the bot are updated.

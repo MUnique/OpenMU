@@ -11,11 +11,12 @@ using global::Discord;
 using global::Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Discord.Properties;
+using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// The Discord bot. It shows the status of the game servers, answers the slash commands
-/// and can post messages, e.g. the game events.
+/// The Discord bot. It shows the status of the game servers, answers the slash commands,
+/// can post messages, e.g. the game events, and sets up the Discord server.
 /// </summary>
 /// <remarks>
 /// It only needs the <see cref="GatewayIntents.Guilds"/> intent, and no privileged one,
@@ -23,16 +24,29 @@ using MUnique.OpenMU.Interfaces;
 /// </remarks>
 public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDisposable
 {
+    /// <summary>
+    /// The name of the command which administrates the integration.
+    /// </summary>
+    internal const string AdministrationCommandName = "openmu";
+
+    /// <summary>
+    /// The name of the sub command which sets up the Discord server.
+    /// </summary>
+    internal const string SetupCommandName = "setup";
+
     private readonly DiscordBotSettings _settings;
     private readonly DiscordCommands _commands;
     private readonly DiscordStatusFormatter _statusFormatter;
     private readonly IDiscordGameDataProvider _data;
+    private readonly DiscordServerLayout _layout;
+    private readonly DiscordServerProvisioner _provisioner;
     private readonly ILogger<DiscordBot> _logger;
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
 
     private DiscordSocketClient? _client;
     private TaskCompletionSource _ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private CancellationTokenSource? _statusLoopCancellation;
+    private DiscordChannelRouting _routing;
     private ulong? _statusMessageId;
     private ServerState _serverState = ServerState.Stopped;
     private int _isDisposed;
@@ -44,14 +58,19 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
     /// <param name="commands">The slash commands.</param>
     /// <param name="statusFormatter">The formatter of the status.</param>
     /// <param name="data">The provider of the data of the game.</param>
+    /// <param name="layout">The layout of the Discord server.</param>
+    /// <param name="provisioner">The provisioner, which sets up the Discord server.</param>
     /// <param name="logger">The logger.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, ILogger<DiscordBot> logger)
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, ILogger<DiscordBot> logger)
     {
         this._settings = settings;
         this._commands = commands;
         this._statusFormatter = statusFormatter;
         this._data = data;
+        this._layout = layout;
+        this._provisioner = provisioner;
         this._logger = logger;
+        this._routing = DiscordChannelRouting.Create(settings, layout, new Dictionary<string, ulong>());
     }
 
     /// <inheritdoc />
@@ -146,6 +165,12 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
     Task Microsoft.Extensions.Hosting.IHostedService.StopAsync(CancellationToken cancellationToken) => this.ShutdownAsync().AsTask();
 
     /// <inheritdoc />
+    /// <remarks>
+    /// The channels of the layout are known after the bot connected to Discord.
+    /// </remarks>
+    public ulong? GetChannelId(DiscordChannelCategory category) => this._routing.GetChannelId(category);
+
+    /// <inheritdoc />
     public async Task SendAsync(ulong channelId, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
     {
         await this._ready.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -226,6 +251,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
             this._logger.LogError(ex, "The slash commands of the Discord bot couldn't be registered.");
         }
 
+        this.UpdateRouting(client);
         this.ServerState = ServerState.Started;
         this._ready.TrySetResult();
 
@@ -249,7 +275,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
             }
 
             return (ApplicationCommandProperties)builder.Build();
-        }).ToArray();
+        }).Append(this.CreateAdministrationCommand()).ToArray();
 
         if (this._settings.GuildId is { } guildId && client.GetGuild(guildId) is { } guild)
         {
@@ -261,8 +287,28 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
         }
     }
 
+    private ApplicationCommandProperties CreateAdministrationCommand()
+    {
+        return new SlashCommandBuilder()
+            .WithName(AdministrationCommandName)
+            .WithDescription(this._commands.Text(nameof(Resources.Command_OpenMu_Description)))
+            .WithDefaultMemberPermissions(GuildPermission.Administrator)
+            .WithContextTypes(InteractionContextType.Guild)
+            .AddOption(new SlashCommandOptionBuilder()
+                .WithName(SetupCommandName)
+                .WithDescription(this._commands.Text(nameof(Resources.Command_Setup_Description)))
+                .WithType(ApplicationCommandOptionType.SubCommand))
+            .Build();
+    }
+
     private async Task OnSlashCommandExecutedAsync(SocketSlashCommand command)
     {
+        if (command.Data.Name == AdministrationCommandName)
+        {
+            await this.SetUpDiscordServerAsync(command).ConfigureAwait(false);
+            return;
+        }
+
         try
         {
             // The data might come from the database, which can take longer than Discord waits for an answer.
@@ -275,6 +321,60 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
         }
+    }
+
+    private async Task SetUpDiscordServerAsync(SocketSlashCommand command)
+    {
+        try
+        {
+            await command.DeferAsync(ephemeral: true).ConfigureAwait(false);
+
+            // The command is only visible to administrators by default, but this can be changed in the settings of the Discord server.
+            if (this._client is not { } client
+                || command.GuildId is not { } guildId
+                || client.GetGuild(guildId) is not { } guild
+                || command.User is not SocketGuildUser { GuildPermissions.Administrator: true })
+            {
+                await command.FollowupAsync(embed: ToDiscordEmbed(this._commands.CreateAdministratorRequiredAnswer()), ephemeral: true).ConfigureAwait(false);
+                return;
+            }
+
+            this._logger.LogInformation("The Discord server {guild} ({guildId}) is set up by {user}.", guild.Name, guild.Id, command.User.Username);
+            var result = await this._provisioner.ProvisionAsync(new SocketGuildServer(guild), this._layout).ConfigureAwait(false);
+            if (this.GetRoutingGuild(client)?.Id == guild.Id)
+            {
+                // The cache of the client might not know the created channels yet.
+                this._routing = DiscordChannelRouting.Create(this._settings, this._layout, result.ChannelIds);
+            }
+
+            await command.FollowupAsync(embed: ToDiscordEmbed(this._commands.CreateSetupReport(result)), ephemeral: true, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when setting up the Discord server.");
+        }
+    }
+
+    /// <summary>
+    /// Gets the Discord server whose channels of the layout receive the notifications and the status:
+    /// The configured one, or the only one which the bot is in.
+    /// </summary>
+    private SocketGuild? GetRoutingGuild(DiscordSocketClient client)
+    {
+        if (this._settings.GuildId is { } guildId)
+        {
+            return client.GetGuild(guildId);
+        }
+
+        return client.Guilds.Count == 1 ? client.Guilds.First() : null;
+    }
+
+    private void UpdateRouting(DiscordSocketClient client)
+    {
+        var channelIds = this.GetRoutingGuild(client) is { } guild
+            ? DiscordServerProvisioner.FindChannels(this._layout, SocketGuildServer.GetChannels(guild))
+            : new Dictionary<string, ulong>();
+        this._routing = DiscordChannelRouting.Create(this._settings, this._layout, channelIds);
     }
 
     private async Task RunStatusLoopAsync(CancellationToken cancellationToken)
@@ -304,10 +404,12 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
 
         try
         {
+            // Channels might have been created, renamed or deleted in the meantime.
+            this.UpdateRouting(client);
             var servers = this._data.GetGameServers();
             await client.SetCustomStatusAsync(this._statusFormatter.CreatePresence(servers)).ConfigureAwait(false);
 
-            if (this._settings.StatusChannelId is { } channelId
+            if (this._routing.StatusChannelId is { } channelId
                 && await this.GetMessageChannelAsync(channelId).ConfigureAwait(false) is { } channel)
             {
                 var embed = ToDiscordEmbed(this._statusFormatter.CreateStatus(servers, DateTime.UtcNow));
