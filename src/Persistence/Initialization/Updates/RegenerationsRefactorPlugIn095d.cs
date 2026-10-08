@@ -41,7 +41,8 @@ public class RegenerationsRefactorPlugIn095D : RegenerationsRefactorPlugInBase
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
             // Add default movement speeds for tier 2 chars
-            if (charClass.Number == 12 || charClass.Number == 13) // MG classes
+            // MG classes
+            if (charClass.Number == 12 || charClass.Number == 13)
             {
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeed, AggregateType.Maximum));
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeedUnderwater, AggregateType.Maximum));

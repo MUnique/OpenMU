@@ -2211,9 +2211,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 itemDefenseFactor = 6;
             }
-            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0) // MG
+            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0)
             {
-                itemDefenseFactor = 7;
+                itemDefenseFactor = 7; // MG classes
             }
             else
             {

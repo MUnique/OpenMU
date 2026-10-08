@@ -24,10 +24,11 @@ public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
     /// <inheritdoc/>
     public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
     {
+        var isMiss = hitInfo is { HealthDamage: 0, ShieldDamage: 0 };
         if (attacker is not Player attackerPlayer
             || attackerPlayer.Attributes is not { } playerAttributes
             || hitInfo is not { } hit
-            || hit is { HealthDamage: 0, ShieldDamage: 0 }) // It's a miss
+            || isMiss)
         {
             return;
         }

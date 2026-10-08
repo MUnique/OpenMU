@@ -178,7 +178,8 @@ public abstract class RegenerationsRefactorPlugInBase : UpdatePlugInBase
             AddStatAttributeIfNotExists(nearbyPartyMemberCount);
 
             // Change base ability recovery multiplier
-            if (charClass.Number != 4 && charClass.Number != 6 && charClass.Number != 7) // DK classes
+            // DK classes
+            if (charClass.Number != 4 && charClass.Number != 6 && charClass.Number != 7)
             {
                 if (charClass.BaseAttributeValues.FirstOrDefault(bav => bav.Definition == abilityRecoveryMultiplier) is { } baseAbilityRecoveryMultiplier)
                 {
