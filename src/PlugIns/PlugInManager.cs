@@ -88,6 +88,25 @@ public class PlugInManager
     public ReferenceHandler? CustomConfigReferenceHandler { get; }
 
     /// <summary>
+    /// Discovers the plugin types of the specified assembly, which are the classes marked with the <see cref="PlugInAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    /// The types are taken from the generated plugin registry of the assembly (see <see cref="IPlugInRegistry"/>).
+    /// For an assembly without one, its types are searched.
+    /// </remarks>
+    /// <param name="assembly">The assembly.</param>
+    /// <returns>The plugin types of the assembly, in the order of their definition.</returns>
+    public static IEnumerable<Type> DiscoverPlugInTypes(Assembly assembly)
+    {
+        if (PlugInRegistries.Get(assembly) is { } registry)
+        {
+            return registry.PlugIns.Select(plugIn => plugIn.Type);
+        }
+
+        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null).Select(type => type.AsType());
+    }
+
+    /// <summary>
     /// Reads the given plugin configurations and applies them to the known plugins.
     /// It can be called again later, e.g. when the configurations became available
     /// after the database has been initialized. In this case, the previously read

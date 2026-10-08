@@ -1,4 +1,4 @@
-// <copyright file="ConfigureNpcTalkPlugInsPlugInBase.cs" company="MUnique">
+﻿// <copyright file="ConfigureNpcTalkPlugInsPlugInBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -40,7 +40,7 @@ public abstract class ConfigureNpcTalkPlugInsPlugInBase : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var plugInTypes = typeof(NpcTalkPlugInBase).Assembly.GetTypes()
+        var plugInTypes = PlugInManager.DiscoverPlugInTypes(typeof(NpcTalkPlugInBase).Assembly)
             .Where(type => type.IsSubclassOf(typeof(NpcTalkPlugInBase)) && !type.IsAbstract);
         foreach (var plugInType in plugInTypes)
         {

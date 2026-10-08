@@ -75,6 +75,21 @@ public class GeneratedPlugInRegistryTest
     }
 
     /// <summary>
+    /// Tests that <see cref="PlugInManager.DiscoverPlugInTypes"/> finds all NPC talk plugins, like searching all types of the assembly.
+    /// </summary>
+    [Test]
+    public void NpcTalkPlugInsAreDiscovered()
+    {
+        static bool IsNpcTalkPlugIn(Type type) => type.IsSubclassOf(typeof(GameLogic.PlugIns.NpcTalkPlugInBase)) && !type.IsAbstract;
+        var assembly = typeof(GameLogic.PlugIns.NpcTalkPlugInBase).Assembly;
+
+        var expected = assembly.GetTypes().Where(IsNpcTalkPlugIn).ToList();
+
+        Assert.That(PlugInManager.DiscoverPlugInTypes(assembly).Where(IsNpcTalkPlugIn), Is.EqualTo(expected));
+        Assert.That(expected, Is.Not.Empty);
+    }
+
+    /// <summary>
     /// Tests that <see cref="PlugInConfiguration.Name"/> returns the same names with the registries as by searching the assemblies.
     /// </summary>
     [Test]
