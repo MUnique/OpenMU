@@ -230,6 +230,16 @@ internal sealed class Program : IDisposable
         }
     }
 
+    private static IPacketCaptureService CreatePacketCaptureService(IServiceProvider serviceProvider)
+    {
+        var serverProvider = serviceProvider.GetService<IServerProvider>()
+                             ?? throw new InvalidOperationException($"{nameof(IServerProvider)} not registered.");
+        var bufferSize = _systemConfiguration?.NetworkAnalyzerLiveBufferSize ?? 0;
+        return new PacketCaptureService(
+            serverProvider,
+            bufferSize > 0 ? bufferSize : LiveCapturedConnection.DefaultMaximumPacketCount);
+    }
+
     private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         if (e.IsTerminating)
@@ -666,16 +676,6 @@ internal sealed class Program : IDisposable
         }
 
         return contextProvider;
-    }
-
-    private static IPacketCaptureService CreatePacketCaptureService(IServiceProvider serviceProvider)
-    {
-        var serverProvider = serviceProvider.GetService<IServerProvider>()
-                             ?? throw new InvalidOperationException($"{nameof(IServerProvider)} not registered.");
-        var bufferSize = _systemConfiguration?.NetworkAnalyzerLiveBufferSize ?? 0;
-        return new PacketCaptureService(
-            serverProvider,
-            bufferSize > 0 ? bufferSize : LiveCapturedConnection.DefaultMaximumPacketCount);
     }
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)
