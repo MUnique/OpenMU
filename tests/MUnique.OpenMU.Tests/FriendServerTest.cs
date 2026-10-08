@@ -211,6 +211,25 @@ public sealed class FriendServerTest
         this._gameServer2.Verify(gs => gs.FriendOnlineStateChangedAsync(this._player2.Name, this._player1.Name, FriendServer.FriendServer.OfflineServerId), Times.AtLeastOnce);
     }
 
+    /// <summary>
+    /// Tests that the online state of a character can be queried, and that an invisible character appears offline.
+    /// </summary>
+    [Test]
+    public async Task OnlineServerOfCharacterIsReportedAsync()
+    {
+        Assert.That(await this._friendServer.GetOnlineServerIdAsync(this._player1.Name).ConfigureAwait(false), Is.Null);
+
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, 2).ConfigureAwait(false);
+        Assert.That(await this._friendServer.GetOnlineServerIdAsync(this._player1.Name).ConfigureAwait(false), Is.EqualTo(2));
+
+        await this._friendServer.SetPlayerVisibilityStateAsync(2, this._player1.Id, this._player1.Name, false).ConfigureAwait(false);
+        Assert.That(await this._friendServer.GetOnlineServerIdAsync(this._player1.Name).ConfigureAwait(false), Is.Null);
+
+        await this._friendServer.SetPlayerVisibilityStateAsync(2, this._player1.Id, this._player1.Name, true).ConfigureAwait(false);
+        await this._friendServer.PlayerLeftGameAsync(this._player1.Id, this._player1.Name).ConfigureAwait(false);
+        Assert.That(await this._friendServer.GetOnlineServerIdAsync(this._player1.Name).ConfigureAwait(false), Is.Null);
+    }
+
     private async ValueTask PlayerEnteredGameAsync(Guid playerId, string playerName, int serverId)
     {
         await this._friendServer.PlayerEnteredGameAsync((byte)serverId, playerId, playerName).ConfigureAwait(false);

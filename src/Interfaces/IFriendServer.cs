@@ -106,4 +106,14 @@ public interface IFriendServer
     /// <param name="roomNumber">The room number.</param>
     /// <returns>The success of the invitation.</returns>
     ValueTask<bool> InviteFriendToChatRoomAsync(string selectedCharacterName, string friendName, ushort roomNumber);
+
+    /// <summary>
+    /// Gets the identifier of the game server on which the character is online.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>
+    /// The identifier of the game server; or <see langword="null"/>, if the character is offline
+    /// or invisible (which looks like offline to other players).
+    /// </returns>
+    ValueTask<byte?> GetOnlineServerIdAsync(string characterName);
 }

@@ -150,5 +150,19 @@ public class FriendServer : IFriendServer
         }
     }
 
+    /// <inheritdoc />
+    public async ValueTask<byte?> GetOnlineServerIdAsync(string characterName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<string, byte?>(this._targetAppId, GetMethodName(nameof(this.GetOnlineServerIdAsync)), characterName).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when getting the online state of a character.");
+            return null;
+        }
+    }
+
     private static string GetMethodName(string name) => $"{CentralServer.FriendServerRoute}/{name}";
 }
