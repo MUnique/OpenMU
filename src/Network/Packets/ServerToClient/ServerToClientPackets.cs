@@ -32496,7 +32496,7 @@ public readonly struct ChatCommandParameter
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 102;
+    public static int Length => 152;
 
     /// <summary>
     /// Gets or sets defines if the parameter has to be specified to execute the command.
@@ -32541,6 +32541,51 @@ public readonly struct ChatCommandParameter
     {
         get => this._data.Span.ExtractString(54, 48, System.Text.Encoding.UTF8);
         set => this._data.Slice(54, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the kind of object which the value refers to, so that a fitting picker can be offered. It's a hint, never a constraint: a raw value can always be entered, because the data of the client may not match the configuration of the server.
+    /// </summary>
+    public ChatCommandValueReference ValueReference
+    {
+        get => (ChatCommandValueReference)this._data.Span[102];
+        set => this._data.Span[102] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets defines if the parameter is numeric and the fields Minimum and Maximum describe its accepted range.
+    /// </summary>
+    public bool HasRange
+    {
+        get => this._data.Span[103..].GetBoolean();
+        set => this._data.Span[103..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the smallest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).
+    /// </summary>
+    public ulong Minimum
+    {
+        get => ReadUInt64LittleEndian(this._data.Span[104..]);
+        set => WriteUInt64LittleEndian(this._data.Span[104..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the largest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).
+    /// </summary>
+    public ulong Maximum
+    {
+        get => ReadUInt64LittleEndian(this._data.Span[112..]);
+        set => WriteUInt64LittleEndian(this._data.Span[112..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the other parameter which identifies the referenced object together with this one, e.g. the item group for the item number, so that one picker can fill both. It's empty when the value identifies the object on its own.
+    /// </summary>
+    public string ValueReferenceGroupWith
+    {
+        get => this._data.Span.ExtractString(120, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(120, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 }
@@ -40804,6 +40849,77 @@ public readonly struct CashShopBannerVersion
         /// The parameter expects a 0 or a 1.
         /// </summary>
             Boolean = 2,
+    }
+
+    /// <summary>
+    /// The kind of object which the value of a chat command parameter refers to.
+    /// </summary>
+    public enum ChatCommandValueReference
+    {
+        /// <summary>
+        /// The value doesn't refer to any known kind of object.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// The value is the name of a character.
+        /// </summary>
+            CharacterName = 1,
+
+        /// <summary>
+        /// The value is the login name of an account.
+        /// </summary>
+            AccountName = 2,
+
+        /// <summary>
+        /// The value is the name of a guild.
+        /// </summary>
+            GuildName = 3,
+
+        /// <summary>
+        /// The value is the number or the name of a map.
+        /// </summary>
+            Map = 4,
+
+        /// <summary>
+        /// The value is a x-coordinate on a map.
+        /// </summary>
+            MapCoordinateX = 5,
+
+        /// <summary>
+        /// The value is a y-coordinate on a map.
+        /// </summary>
+            MapCoordinateY = 6,
+
+        /// <summary>
+        /// The value is the group of an item.
+        /// </summary>
+            ItemGroup = 7,
+
+        /// <summary>
+        /// The value is the number of an item within its group.
+        /// </summary>
+            ItemNumber = 8,
+
+        /// <summary>
+        /// The value is the number of a monster, which also identifies its model.
+        /// </summary>
+            MonsterNumber = 9,
+
+        /// <summary>
+        /// The value is the id of an object which is currently in the scope of the player.
+        /// </summary>
+            ObjectId = 10,
+
+        /// <summary>
+        /// The value is the number of a skill.
+        /// </summary>
+            SkillNumber = 11,
+
+        /// <summary>
+        /// The value is the ISO 639-1 code of a language, e.g. 'en'.
+        /// </summary>
+            LanguageIsoCode = 12,
     }
 
     /// <summary>

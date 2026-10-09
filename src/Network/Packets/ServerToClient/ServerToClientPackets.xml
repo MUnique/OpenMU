@@ -11800,7 +11800,7 @@
         <Structure>
           <Name>ChatCommandParameter</Name>
           <Description>Describes one parameter of a chat command, so that a user interface can offer an input for it.</Description>
-          <Length>102</Length>
+          <Length>152</Length>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -11834,6 +11834,38 @@
               <Name>ValidValues</Name>
               <Length>48</Length>
               <Description>The accepted values, separated by a pipe. It's empty when the parameter isn't limited to a set of values.</Description>
+            </Field>
+            <Field>
+              <Index>102</Index>
+              <Type>Enum</Type>
+              <TypeName>ChatCommandValueReference</TypeName>
+              <Name>ValueReference</Name>
+              <Description>The kind of object which the value refers to, so that a fitting picker can be offered. It's a hint, never a constraint: a raw value can always be entered, because the data of the client may not match the configuration of the server.</Description>
+            </Field>
+            <Field>
+              <Index>103</Index>
+              <Type>Boolean</Type>
+              <Name>HasRange</Name>
+              <Description>Defines if the parameter is numeric and the fields Minimum and Maximum describe its accepted range.</Description>
+            </Field>
+            <Field>
+              <Index>104</Index>
+              <Type>LongLittleEndian</Type>
+              <Name>Minimum</Name>
+              <Description>The smallest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).</Description>
+            </Field>
+            <Field>
+              <Index>112</Index>
+              <Type>LongLittleEndian</Type>
+              <Name>Maximum</Name>
+              <Description>The largest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).</Description>
+            </Field>
+            <Field>
+              <Index>120</Index>
+              <Type>String</Type>
+              <Name>ValueReferenceGroupWith</Name>
+              <Length>32</Length>
+              <Description>The name of the other parameter which identifies the referenced object together with this one, e.g. the item group for the item number, so that one picker can fill both. It's empty when the value identifies the object on its own.</Description>
             </Field>
           </Fields>
         </Structure>
@@ -15180,6 +15212,77 @@
           <Name>Boolean</Name>
           <Description>The parameter expects a 0 or a 1.</Description>
           <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>ChatCommandValueReference</Name>
+      <Description>The kind of object which the value of a chat command parameter refers to.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>The value doesn't refer to any known kind of object.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CharacterName</Name>
+          <Description>The value is the name of a character.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>AccountName</Name>
+          <Description>The value is the login name of an account.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GuildName</Name>
+          <Description>The value is the name of a guild.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Map</Name>
+          <Description>The value is the number or the name of a map.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MapCoordinateX</Name>
+          <Description>The value is a x-coordinate on a map.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MapCoordinateY</Name>
+          <Description>The value is a y-coordinate on a map.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemGroup</Name>
+          <Description>The value is the group of an item.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemNumber</Name>
+          <Description>The value is the number of an item within its group.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MonsterNumber</Name>
+          <Description>The value is the number of a monster, which also identifies its model.</Description>
+          <Value>9</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ObjectId</Name>
+          <Description>The value is the id of an object which is currently in the scope of the player.</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SkillNumber</Name>
+          <Description>The value is the number of a skill.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LanguageIsoCode</Name>
+          <Description>The value is the ISO 639-1 code of a language, e.g. 'en'.</Description>
+          <Value>12</Value>
         </EnumValue>
       </Values>
     </Enum>

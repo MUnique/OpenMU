@@ -13,5 +13,6 @@ public class SkinChatCommandArgs : ArgumentsBase
     /// Gets or sets the skin number, which is mostly equivalent to the <see cref="MonsterDefinition.Number"/>.
     /// </summary>
     [Argument("skin", true)]
+    [ValueReference(ChatCommandValueReference.MonsterNumber)]
     public short SkinNumber { get; set; }
 }

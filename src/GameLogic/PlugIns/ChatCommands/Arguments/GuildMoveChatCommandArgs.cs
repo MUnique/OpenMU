@@ -15,24 +15,28 @@ public class GuildMoveChatCommandArgs : ArgumentsBase
     /// Gets or sets the guild name.
     /// </summary>
     [Argument("guild")]
+    [ValueReference(ChatCommandValueReference.GuildName)]
     public string? GuildName { get; set; }
 
     /// <summary>
     /// Gets or sets the name or id of the map.
     /// </summary>
     [Argument("mapIdOrName")]
+    [ValueReference(ChatCommandValueReference.Map)]
     public string? MapIdOrName { get; set; }
 
     /// <summary>
     /// Gets or sets the coordinate X.
     /// </summary>
     [Argument("x", false)]
+    [ValueReference(ChatCommandValueReference.MapCoordinateX)]
     public byte X { get; set; }
 
     /// <summary>
     /// Gets or sets the coordinate Y.
     /// </summary>
     [Argument("y", false)]
+    [ValueReference(ChatCommandValueReference.MapCoordinateY)]
     public byte Y { get; set; }
 
     /// <summary>

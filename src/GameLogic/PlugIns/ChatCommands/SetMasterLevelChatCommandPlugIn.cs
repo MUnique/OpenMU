@@ -72,6 +72,7 @@ public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLe
         /// <summary>
         /// Gets or sets the character name to set master level for.
         /// </summary>
+        [ValueReference(ChatCommandValueReference.CharacterName)]
         public string? CharacterName { get; set; }
     }
 }

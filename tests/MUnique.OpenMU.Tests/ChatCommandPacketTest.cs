@@ -38,6 +38,10 @@ public class ChatCommandPacketTest
         group.ShortName = "group";
         group.IsRequired = true;
         group.Type = ChatCommandParameterType.Number;
+        group.ValueReference = ChatCommandValueReference.ItemGroup;
+        group.HasRange = true;
+        group.Minimum = unchecked((ulong)-5L);
+        group.Maximum = 255;
 
         var ancient = written[1];
         ancient.Name = "Ancient";
@@ -49,6 +53,8 @@ public class ChatCommandPacketTest
         skill.Name = "Skill";
         skill.ShortName = "sk";
         skill.Type = ChatCommandParameterType.Boolean;
+        skill.ValueReference = ChatCommandValueReference.ItemNumber;
+        skill.ValueReferenceGroupWith = "Group";
 
         var read = new AvailableChatCommandRef(data);
 
@@ -66,14 +72,23 @@ public class ChatCommandPacketTest
         Assert.That(read[0].ShortName, Is.EqualTo("group"));
         Assert.That(read[0].IsRequired, Is.True);
         Assert.That(read[0].ValidValues, Is.Empty);
+        Assert.That(read[0].ValueReference, Is.EqualTo(ChatCommandValueReference.ItemGroup));
+        Assert.That(read[0].HasRange, Is.True);
+        Assert.That(unchecked((long)read[0].Minimum), Is.EqualTo(-5L));
+        Assert.That(read[0].Maximum, Is.EqualTo(255));
+        Assert.That(read[0].ValueReferenceGroupWith, Is.Empty);
 
         Assert.That(read[1].Name, Is.EqualTo("Ancient"));
         Assert.That(read[1].ShortName, Is.EqualTo("anc"));
         Assert.That(read[1].ValidValues, Is.EqualTo("0|1|2"));
         Assert.That(read[1].IsRequired, Is.False);
+        Assert.That(read[1].ValueReference, Is.EqualTo(ChatCommandValueReference.None));
+        Assert.That(read[1].HasRange, Is.False);
 
         Assert.That(read[2].Name, Is.EqualTo("Skill"));
         Assert.That(read[2].Type, Is.EqualTo(ChatCommandParameterType.Boolean));
+        Assert.That(read[2].ValueReference, Is.EqualTo(ChatCommandValueReference.ItemNumber));
+        Assert.That(read[2].ValueReferenceGroupWith, Is.EqualTo("Group"));
     }
 
     /// <summary>
@@ -87,5 +102,20 @@ public class ChatCommandPacketTest
         var withOneParameter = AvailableChatCommandRef.GetRequiredSize(1);
 
         Assert.That(withOneParameter - withoutParameters, Is.EqualTo(AvailableChatCommand.ChatCommandParameter.Length));
+    }
+
+    /// <summary>
+    /// Tests that every kind of value reference of the game logic has a counterpart
+    /// with the same name and value in the packet, so that the client gets every hint.
+    /// </summary>
+    [Test]
+    public void ValueReferencesMatchTheGameLogic()
+    {
+        var gameLogicValues = Enum.GetValues<GameLogic.PlugIns.ChatCommands.ChatCommandValueReference>()
+            .Select(value => (value.ToString(), (int)value));
+        var packetValues = Enum.GetValues<ChatCommandValueReference>()
+            .Select(value => (value.ToString(), (int)value));
+
+        Assert.That(packetValues, Is.EquivalentTo(gameLogicValues));
     }
 }

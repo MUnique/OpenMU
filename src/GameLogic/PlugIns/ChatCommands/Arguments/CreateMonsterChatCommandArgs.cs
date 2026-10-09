@@ -13,6 +13,7 @@ public class CreateMonsterChatCommandArgs : ArgumentsBase
     /// Gets or sets the character name.
     /// </summary>
     [Argument("number")]
+    [ValueReference(ChatCommandValueReference.MonsterNumber)]
     public short MonsterNumber { get; set; }
 
     /// <summary>

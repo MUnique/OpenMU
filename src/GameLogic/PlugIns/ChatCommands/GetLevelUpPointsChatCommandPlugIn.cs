@@ -56,6 +56,7 @@ public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelU
         /// <summary>
         /// Gets or sets the character name to get level-up points for.
         /// </summary>
+        [ValueReference(ChatCommandValueReference.CharacterName)]
         public string? CharacterName { get; set; }
     }
 }

@@ -30617,7 +30617,7 @@ public readonly ref struct ChatCommandParameterRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 102;
+    public static int Length => 152;
 
     /// <summary>
     /// Gets or sets defines if the parameter has to be specified to execute the command.
@@ -30662,6 +30662,51 @@ public readonly ref struct ChatCommandParameterRef
     {
         get => this._data.ExtractString(54, 48, System.Text.Encoding.UTF8);
         set => this._data.Slice(54, 48).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the kind of object which the value refers to, so that a fitting picker can be offered. It's a hint, never a constraint: a raw value can always be entered, because the data of the client may not match the configuration of the server.
+    /// </summary>
+    public ChatCommandValueReference ValueReference
+    {
+        get => (ChatCommandValueReference)this._data[102];
+        set => this._data[102] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets defines if the parameter is numeric and the fields Minimum and Maximum describe its accepted range.
+    /// </summary>
+    public bool HasRange
+    {
+        get => this._data[103..].GetBoolean();
+        set => this._data[103..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the smallest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).
+    /// </summary>
+    public ulong Minimum
+    {
+        get => ReadUInt64LittleEndian(this._data[104..]);
+        set => WriteUInt64LittleEndian(this._data[104..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the largest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).
+    /// </summary>
+    public ulong Maximum
+    {
+        get => ReadUInt64LittleEndian(this._data[112..]);
+        set => WriteUInt64LittleEndian(this._data[112..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the other parameter which identifies the referenced object together with this one, e.g. the item group for the item number, so that one picker can fill both. It's empty when the value identifies the object on its own.
+    /// </summary>
+    public string ValueReferenceGroupWith
+    {
+        get => this._data.ExtractString(120, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(120, 32).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 }

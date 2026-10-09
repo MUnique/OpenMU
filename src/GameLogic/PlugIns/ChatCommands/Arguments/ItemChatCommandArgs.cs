@@ -13,12 +13,14 @@ public class ItemChatCommandArgs : ArgumentsBase
     /// Gets or sets the group.
     /// </summary>
     [Argument("group")]
+    [ValueReference(ChatCommandValueReference.ItemGroup)]
     public byte Group { get; set; }
 
     /// <summary>
     /// Gets or sets the number.
     /// </summary>
     [Argument("number")]
+    [ValueReference(ChatCommandValueReference.ItemNumber, GroupWith = nameof(Group))]
     public short Number { get; set; }
 
     /// <summary>

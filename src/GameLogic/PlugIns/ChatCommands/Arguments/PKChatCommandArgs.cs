@@ -13,6 +13,7 @@ public class PkChatCommandArgs : ArgumentsBase
     /// Gets or sets the character name.
     /// </summary>
     [Argument("char")]
+    [ValueReference(ChatCommandValueReference.CharacterName)]
     public string? CharacterName { get; set; }
 
     /// <summary>
@@ -26,5 +27,6 @@ public class PkChatCommandArgs : ArgumentsBase
     /// Gets or sets the pk count.
     /// </summary>
     [Argument("pk_count")]
+    [Range(1, int.MaxValue)]
     public int Count { get; set; }
 }

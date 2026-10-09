@@ -13,5 +13,6 @@ public class IdCommandArgs : ArgumentsBase
     /// Gets or sets the npc id.
     /// </summary>
     [Argument("id", true)]
+    [ValueReference(ChatCommandValueReference.ObjectId)]
     public short Id { get; set; }
 }
