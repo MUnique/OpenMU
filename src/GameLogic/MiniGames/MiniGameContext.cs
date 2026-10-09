@@ -532,6 +532,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         if (args.Object is Player player)
         {
             player.Died += this.OnPlayerDied;
+
+            // A player which enters the map after terrain changes, e.g. when it rejoins the game,
+            // would otherwise see the original terrain, e.g. a closed bridge.
+            await this._changeEvents.SendAppliedTerrainChangesAsync(player).ConfigureAwait(false);
         }
 
         if (args.Object is DroppedItem item)

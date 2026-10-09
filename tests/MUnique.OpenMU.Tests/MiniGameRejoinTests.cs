@@ -112,6 +112,46 @@ public class MiniGameRejoinTests
         Assert.That(await game.TryRejoinAsync(reconnected).ConfigureAwait(false), Is.False);
     }
 
+    /// <summary>
+    /// Tests that a rejoined player gets the terrain changes which were applied while it was gone,
+    /// because its client loads the map with the original terrain, e.g. with a closed bridge.
+    /// </summary>
+    [Test]
+    public async Task RejoinedPlayerGetsAppliedTerrainChangesAsync()
+    {
+        var terrainChange = new MiniGameTerrainChange
+        {
+            TerrainAttribute = TerrainAttributeType.Blocked,
+            SetTerrainAttribute = true,
+            IsClientUpdateRequired = true,
+            StartX = 5,
+            StartY = 5,
+            EndX = 6,
+            EndY = 6,
+        };
+        var changeEventMock = new Mock<MiniGameChangeEvent>();
+        changeEventMock.SetupGet(e => e.TerrainChanges).Returns(new List<MiniGameTerrainChange> { terrainChange });
+        var (game, player) = await this.CreateRunningGameWithDisconnectedPlayerAsync(changeEventMock.Object).ConfigureAwait(false);
+        await WaitUntilAsync(() => !game.Map.Terrain.WalkMap[5, 5]).ConfigureAwait(false);
+
+        var reconnected = await CreateReconnectedPlayerAsync(player).ConfigureAwait(false);
+        Assert.That(await game.TryRejoinAsync(reconnected).ConfigureAwait(false), Is.True);
+        await game.Map.AddAsync(reconnected).ConfigureAwait(false);
+
+        var terrainView = Mock.Get(reconnected.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()!);
+        terrainView.Verify(
+            v => v.ChangeAttributesAsync(
+                TerrainAttributeType.Blocked,
+                true,
+                It.Is<IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)>>(areas => IsSingleArea(areas, 5, 5, 6, 6))),
+            Times.Once);
+    }
+
+    private static bool IsSingleArea(IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas, byte startX, byte startY, byte endX, byte endY)
+    {
+        return areas.Count == 1 && areas.Single() == (startX, startY, endX, endY);
+    }
+
     private static async Task EnterAsync(MiniGameContext game, Player player)
     {
         Assert.That(await game.TryEnterAsync(player).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
@@ -136,11 +176,11 @@ public class MiniGameRejoinTests
         Assert.That(condition(), Is.True, "The condition wasn't met in time.");
     }
 
-    private async Task<(TestGame Game, Player DisconnectedPlayer)> CreateRunningGameWithDisconnectedPlayerAsync()
+    private async Task<(TestGame Game, Player DisconnectedPlayer)> CreateRunningGameWithDisconnectedPlayerAsync(params MiniGameChangeEvent[] changeEvents)
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.SelectedCharacter!.Id = Guid.NewGuid();
-        var game = await this.CreateRunningGameAsync(player.GameContext).ConfigureAwait(false);
+        var game = await this.CreateRunningGameAsync(player.GameContext, changeEvents).ConfigureAwait(false);
 
         // Another player stays in the game, so that it goes on when the disconnected player leaves.
         var remainingPlayer = await PlayerTestHelper.CreatePlayerAsync(player.GameContext).ConfigureAwait(false);
@@ -161,13 +201,13 @@ public class MiniGameRejoinTests
         return (game, player);
     }
 
-    private async Task<TestGame> CreateRunningGameAsync(IGameContext gameContext)
+    private async Task<TestGame> CreateRunningGameAsync(IGameContext gameContext, params MiniGameChangeEvent[] changeEvents)
     {
         var mapDefinition = gameContext.Configuration.Maps.First(m => m.Number == 0);
         var definitionMock = new Mock<MiniGameDefinition>();
         definitionMock.SetupGet(d => d.Rewards).Returns(new List<MiniGameReward>());
         definitionMock.SetupGet(d => d.SpawnWaves).Returns(new List<MiniGameSpawnWave>());
-        definitionMock.SetupGet(d => d.ChangeEvents).Returns(new List<MiniGameChangeEvent>());
+        definitionMock.SetupGet(d => d.ChangeEvents).Returns(changeEvents.ToList());
         definitionMock.SetupGet(d => d.Entrance).Returns(new ExitGate { Map = mapDefinition });
         var definition = definitionMock.Object;
         definition.Type = MiniGameType.BloodCastle;
