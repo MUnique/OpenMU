@@ -32547,6 +32547,176 @@ public readonly struct ChatCommandParameter
 
 
 /// <summary>
+/// Is sent by the server when: Directly after an AvailableChatCommand message of a command which has parameters.
+/// Causes reaction on client side: The client remembers what the values of the parameters refer to and which values they accept, so that it can offer fitting inputs, e.g. a list of monsters instead of an empty number field. It's purely descriptive - a client which doesn't know this message can ignore it.
+/// </summary>
+public readonly struct AvailableChatCommandParameterHints
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvailableChatCommandParameterHints"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AvailableChatCommandParameterHints(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvailableChatCommandParameterHints"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AvailableChatCommandParameterHints(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the index of the command within the list, which is the same as in the AvailableChatCommand message before.
+    /// </summary>
+    public byte Index
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the parameter count.
+    /// </summary>
+    public byte ParameterCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ChatCommandParameterHint"/> of the specified index.
+    /// </summary>
+        public ChatCommandParameterHint this[int index] => new (this._data.Slice(7 + index * ChatCommandParameterHint.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AvailableChatCommandParameterHints"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AvailableChatCommandParameterHints(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AvailableChatCommandParameterHints"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AvailableChatCommandParameterHints packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ChatCommandParameterHint"/>.
+    /// </summary>
+    /// <param name="parametersCount">The count of <see cref="ChatCommandParameterHint"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int parametersCount) => parametersCount * ChatCommandParameterHint.Length + 7;
+
+
+/// <summary>
+/// Describes what the value of a chat command parameter refers to and which values it accepts. It's a hint for the user interface, never a constraint..
+/// </summary>
+public readonly struct ChatCommandParameterHint
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandParameterHint"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatCommandParameterHint(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 20;
+
+    /// <summary>
+    /// Gets or sets the kind of object which the value refers to.
+    /// </summary>
+    public ChatCommandValueReference ValueReference
+    {
+        get => (ChatCommandValueReference)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the index of the other parameter which identifies the referenced object together with this one, e.g. the group of an item. It's 255 when there is none.
+    /// </summary>
+    public byte GroupWithIndex
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets defines if the parameter is numeric and the minimum and maximum are known.
+    /// </summary>
+    public bool HasRange
+    {
+        get => this._data.Span[2..].GetBoolean();
+        set => this._data.Span[2..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the smallest accepted value, as a signed number in two's complement. Only valid when HasRange is set.
+    /// </summary>
+    public ulong Minimum
+    {
+        get => ReadUInt64LittleEndian(this._data.Span[4..]);
+        set => WriteUInt64LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the largest accepted value, as a signed number in two's complement. Only valid when HasRange is set.
+    /// </summary>
+    public ulong Maximum
+    {
+        get => ReadUInt64LittleEndian(this._data.Span[12..]);
+        set => WriteUInt64LittleEndian(this._data.Span[12..], value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>
@@ -40804,6 +40974,77 @@ public readonly struct CashShopBannerVersion
         /// The parameter expects a 0 or a 1.
         /// </summary>
             Boolean = 2,
+    }
+
+    /// <summary>
+    /// The kind of object which the value of a chat command parameter refers to. New kinds are only appended, so that the values stay the same.
+    /// </summary>
+    public enum ChatCommandValueReference
+    {
+        /// <summary>
+        /// The value doesn't refer to any known kind of object.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// The value is the name of a character.
+        /// </summary>
+            CharacterName = 1,
+
+        /// <summary>
+        /// The value is the login name of an account.
+        /// </summary>
+            AccountName = 2,
+
+        /// <summary>
+        /// The value is the name of a guild.
+        /// </summary>
+            GuildName = 3,
+
+        /// <summary>
+        /// The value is the number or the name of a map.
+        /// </summary>
+            Map = 4,
+
+        /// <summary>
+        /// The value is a x-coordinate on a map.
+        /// </summary>
+            MapCoordinateX = 5,
+
+        /// <summary>
+        /// The value is a y-coordinate on a map.
+        /// </summary>
+            MapCoordinateY = 6,
+
+        /// <summary>
+        /// The value is the group of an item definition.
+        /// </summary>
+            ItemGroup = 7,
+
+        /// <summary>
+        /// The value is the number of an item definition within its group.
+        /// </summary>
+            ItemNumber = 8,
+
+        /// <summary>
+        /// The value is the number of a monster definition, which also identifies its model.
+        /// </summary>
+            MonsterNumber = 9,
+
+        /// <summary>
+        /// The value is the id of an object which is currently in the scope of the player.
+        /// </summary>
+            ObjectId = 10,
+
+        /// <summary>
+        /// The value is the number of a skill.
+        /// </summary>
+            SkillNumber = 11,
+
+        /// <summary>
+        /// The value is the ISO 639-1 code of a language, e.g. 'en'.
+        /// </summary>
+            LanguageIsoCode = 12,
     }
 
     /// <summary>

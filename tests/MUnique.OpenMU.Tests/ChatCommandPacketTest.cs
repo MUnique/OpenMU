@@ -88,4 +88,74 @@ public class ChatCommandPacketTest
 
         Assert.That(withOneParameter - withoutParameters, Is.EqualTo(AvailableChatCommand.ChatCommandParameter.Length));
     }
+
+    /// <summary>
+    /// Tests that the hints of the parameters survive the way through the packet,
+    /// including a negative minimum and a parameter without a range.
+    /// </summary>
+    [Test]
+    public void AvailableChatCommandParameterHintsKeepTheirValues()
+    {
+        const int parameterCount = 3;
+        var data = new byte[AvailableChatCommandParameterHintsRef.GetRequiredSize(parameterCount)];
+
+        var written = new AvailableChatCommandParameterHintsRef(data)
+        {
+            Index = 7,
+            ParameterCount = parameterCount,
+        };
+
+        var group = written[0];
+        group.ValueReference = ChatCommandValueReference.ItemGroup;
+        group.GroupWithIndex = byte.MaxValue;
+        group.HasRange = true;
+        group.Minimum = 0;
+        group.Maximum = byte.MaxValue;
+
+        var number = written[1];
+        number.ValueReference = ChatCommandValueReference.ItemNumber;
+        number.GroupWithIndex = 0;
+        number.HasRange = true;
+        number.Minimum = unchecked((ulong)short.MinValue);
+        number.Maximum = (ulong)short.MaxValue;
+
+        var name = written[2];
+        name.ValueReference = ChatCommandValueReference.CharacterName;
+        name.GroupWithIndex = byte.MaxValue;
+
+        var read = new AvailableChatCommandParameterHintsRef(data);
+
+        Assert.That(read.Header.Code, Is.EqualTo(0xF5));
+        Assert.That(read.Header.SubCode, Is.EqualTo(0x02));
+        Assert.That(read.Index, Is.EqualTo(7));
+        Assert.That(read.ParameterCount, Is.EqualTo(parameterCount));
+
+        Assert.That(read[0].ValueReference, Is.EqualTo(ChatCommandValueReference.ItemGroup));
+        Assert.That(read[0].GroupWithIndex, Is.EqualTo(byte.MaxValue));
+        Assert.That(read[0].HasRange, Is.True);
+        Assert.That(read[0].Maximum, Is.EqualTo(byte.MaxValue));
+
+        Assert.That(read[1].ValueReference, Is.EqualTo(ChatCommandValueReference.ItemNumber));
+        Assert.That(read[1].GroupWithIndex, Is.EqualTo(0));
+        Assert.That(unchecked((long)read[1].Minimum), Is.EqualTo(short.MinValue));
+        Assert.That(unchecked((long)read[1].Maximum), Is.EqualTo(short.MaxValue));
+
+        Assert.That(read[2].ValueReference, Is.EqualTo(ChatCommandValueReference.CharacterName));
+        Assert.That(read[2].HasRange, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that both enums which describe a value reference have the same values,
+    /// because the server converts one into the other by casting.
+    /// </summary>
+    [Test]
+    public void ValueReferencesOfGameLogicAndPacketsMatch()
+    {
+        var gameLogicValues = Enum.GetValues<GameLogic.PlugIns.ChatCommands.ChatCommandValueReference>()
+            .ToDictionary(value => value.ToString(), value => (int)value);
+        var packetValues = Enum.GetValues<ChatCommandValueReference>()
+            .ToDictionary(value => value.ToString(), value => (int)value);
+
+        Assert.That(packetValues, Is.EquivalentTo(gameLogicValues));
+    }
 }

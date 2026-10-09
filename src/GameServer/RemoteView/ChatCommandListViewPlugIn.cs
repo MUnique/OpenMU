@@ -12,10 +12,12 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
+using PacketValueReference = MUnique.OpenMU.Network.Packets.ServerToClient.ChatCommandValueReference;
 
 /// <summary>
 /// The default implementation of the <see cref="IChatCommandListViewPlugIn"/> which sends
-/// one message per available chat command to the game client.
+/// one message per available chat command to the game client. A command with parameters
+/// is followed by a message with hints about the values of its parameters.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ChatCommandListViewPlugIn_Name), Description = nameof(PlugInResources.ChatCommandListViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -47,7 +49,7 @@ public class ChatCommandListViewPlugIn : IChatCommandListViewPlugIn
         }
     }
 
-    private static ValueTask SendCommandAsync(IConnection connection, ChatCommandInfo command, byte index, byte count)
+    private static async ValueTask SendCommandAsync(IConnection connection, ChatCommandInfo command, byte index, byte count)
     {
         // The client can't show more parameters than fit into one message, and a command
         // with that many parameters wouldn't be usable anyway.
@@ -82,7 +84,60 @@ public class ChatCommandListViewPlugIn : IChatCommandListViewPlugIn
             return size;
         }
 
+        await connection.SendAsync(Write).ConfigureAwait(false);
+
+        if (parameters.Count > 0)
+        {
+            await SendParameterHintsAsync(connection, parameters, index).ConfigureAwait(false);
+        }
+    }
+
+    private static ValueTask SendParameterHintsAsync(IConnection connection, List<ChatCommandParameterInfo> parameters, byte index)
+    {
+        int Write()
+        {
+            var size = AvailableChatCommandParameterHintsRef.GetRequiredSize(parameters.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+
+            // Not every field is written for every parameter, e.g. the range of a text.
+            span.Clear();
+            var packet = new AvailableChatCommandParameterHintsRef(span)
+            {
+                Index = index,
+                ParameterCount = (byte)parameters.Count,
+            };
+
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                var parameter = parameters[i];
+                var target = packet[i];
+
+                // The numeric values of both enums are the same, and new kinds are only appended to them.
+                target.ValueReference = (PacketValueReference)parameter.ValueReference;
+                target.GroupWithIndex = GetGroupWithIndex(parameters, parameter);
+                if (parameter is { Minimum: { } minimum, Maximum: { } maximum })
+                {
+                    target.HasRange = true;
+                    target.Minimum = unchecked((ulong)minimum);
+                    target.Maximum = unchecked((ulong)maximum);
+                }
+            }
+
+            return size;
+        }
+
         return connection.SendAsync(Write);
+    }
+
+    private static byte GetGroupWithIndex(List<ChatCommandParameterInfo> parameters, ChatCommandParameterInfo parameter)
+    {
+        if (parameter.ValueReferenceGroupWith is not { } groupWith)
+        {
+            return byte.MaxValue;
+        }
+
+        var groupWithIndex = parameters.FindIndex(other => other.Name == groupWith);
+        return groupWithIndex is >= 0 and < byte.MaxValue ? (byte)groupWithIndex : byte.MaxValue;
     }
 
     private static ChatCommandParameterType GetParameterType(string typeName)

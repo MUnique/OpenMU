@@ -11840,6 +11840,76 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>02</SubCode>
+      <Name>AvailableChatCommandParameterHints</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Directly after an AvailableChatCommand message of a command which has parameters.</SentWhen>
+      <CausedReaction>The client remembers what the values of the parameters refer to and which values they accept, so that it can offer fitting inputs, e.g. a list of monsters instead of an empty number field. It's purely descriptive - a client which doesn't know this message can ignore it.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of the command within the list, which is the same as in the AvailableChatCommand message before.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ParameterCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ChatCommandParameterHint</TypeName>
+          <Name>Parameters</Name>
+          <ItemCountField>ParameterCount</ItemCountField>
+          <Description>The hints for the parameters of the command, in the same order as in the AvailableChatCommand message.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>ChatCommandParameterHint</Name>
+          <Description>Describes what the value of a chat command parameter refers to and which values it accepts. It's a hint for the user interface, never a constraint.</Description>
+          <Length>20</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Enum</Type>
+              <TypeName>ChatCommandValueReference</TypeName>
+              <Name>ValueReference</Name>
+              <Description>The kind of object which the value refers to.</Description>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>GroupWithIndex</Name>
+              <Description>The index of the other parameter which identifies the referenced object together with this one, e.g. the group of an item. It's 255 when there is none.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Boolean</Type>
+              <Name>HasRange</Name>
+              <Description>Defines if the parameter is numeric and the minimum and maximum are known.</Description>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>LongLittleEndian</Type>
+              <Name>Minimum</Name>
+              <Description>The smallest accepted value, as a signed number in two's complement. Only valid when HasRange is set.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>LongLittleEndian</Type>
+              <Name>Maximum</Name>
+              <Description>The largest accepted value, as a signed number in two's complement. Only valid when HasRange is set.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>
@@ -15180,6 +15250,77 @@
           <Name>Boolean</Name>
           <Description>The parameter expects a 0 or a 1.</Description>
           <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>ChatCommandValueReference</Name>
+      <Description>The kind of object which the value of a chat command parameter refers to. New kinds are only appended, so that the values stay the same.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>The value doesn't refer to any known kind of object.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CharacterName</Name>
+          <Description>The value is the name of a character.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>AccountName</Name>
+          <Description>The value is the login name of an account.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GuildName</Name>
+          <Description>The value is the name of a guild.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Map</Name>
+          <Description>The value is the number or the name of a map.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MapCoordinateX</Name>
+          <Description>The value is a x-coordinate on a map.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MapCoordinateY</Name>
+          <Description>The value is a y-coordinate on a map.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemGroup</Name>
+          <Description>The value is the group of an item definition.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemNumber</Name>
+          <Description>The value is the number of an item definition within its group.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MonsterNumber</Name>
+          <Description>The value is the number of a monster definition, which also identifies its model.</Description>
+          <Value>9</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ObjectId</Name>
+          <Description>The value is the id of an object which is currently in the scope of the player.</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SkillNumber</Name>
+          <Description>The value is the number of a skill.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LanguageIsoCode</Name>
+          <Description>The value is the ISO 639-1 code of a language, e.g. 'en'.</Description>
+          <Value>12</Value>
         </EnumValue>
       </Values>
     </Enum>
