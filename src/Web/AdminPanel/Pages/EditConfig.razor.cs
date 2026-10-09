@@ -1,4 +1,4 @@
-// <copyright file="EditConfig.cs" company="MUnique">
+// <copyright file="EditConfig.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,12 +6,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Form;
-using MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 
 /// <summary>
 /// A generic edit page, which shows an <see cref="AutoForm{T}"/> for the given <see cref="EditBase.TypeString"/> and <see cref="EditBase.Id"/>.
@@ -19,7 +16,7 @@ using MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 [Route("/edit-config/{typeString}/")]
 [Route("/edit-config/{typeString}/{id:guid}")]
 [Route("/edit-config/{typeString}/{id:guid}/hide-collections")]
-public sealed class EditConfig : EditBase
+public sealed partial class EditConfig : EditBase
 {
     private static readonly IDictionary<Type, IList<(string Caption, string Path)>> EditorPages =
         new Dictionary<Type, IList<(string, string)>>
@@ -33,29 +30,27 @@ public sealed class EditConfig : EditBase
     [SupplyParameterFromQuery(Name = "search")]
     public string? SearchTerm { get; set; }
 
-    /// <inheritdoc />
-    protected override void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence)
-    {
-        var hideCollections = this.NavigationManager.Uri.EndsWith("hide-collections");
+    /// <summary>
+    /// Gets a value indicating whether collection properties should be hidden.
+    /// </summary>
+    private bool HideCollections => this.NavigationManager.Uri.EndsWith("hide-collections");
 
-        if (this.Type == typeof(Item))
-        {
-            builder.OpenComponent(++currentSequence, typeof(ItemEdit));
-            builder.AddAttribute(++currentSequence, nameof(ItemEdit.Item), this.Model);
-            builder.AddAttribute(++currentSequence, nameof(ItemEdit.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-            builder.CloseComponent();
-        }
-        else
-        {
-            builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
-            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
-            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.HideCollections), hideCollections);
-            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.SearchTerm), this.SearchTerm);
-            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnRefresh), EventCallback.Factory.Create(this, this.RefreshAsync));
-            builder.CloseComponent();
-        }
-    }
+    /// <summary>
+    /// Gets the closed <see cref="AutoForm{T}"/> type for the current <see cref="EditBase.Type"/>.
+    /// </summary>
+    private Type? AutoFormType => this.Type is null ? null : typeof(AutoForm<>).MakeGenericType(this.Type);
+
+    /// <summary>
+    /// Gets the parameters for the <see cref="AutoForm{T}"/> component.
+    /// </summary>
+    private Dictionary<string, object?> AutoFormParameters => new()
+    {
+        [nameof(AutoForm<object>.Model)] = this.Model,
+        [nameof(AutoForm<object>.HideCollections)] = this.HideCollections,
+        [nameof(AutoForm<object>.SearchTerm)] = this.SearchTerm,
+        [nameof(AutoForm<object>.OnValidSubmit)] = EventCallback.Factory.Create(this, this.SaveChangesAsync),
+        [nameof(AutoForm<object>.OnRefresh)] = EventCallback.Factory.Create(this, this.RefreshAsync),
+    };
 
     /// <inheritdoc />
     protected override string? GetEditorsMarkup()

@@ -1,0 +1,62 @@
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@if (this.Model is null || this.ModelType is null)
+{
+    return;
+}
+
+<Breadcrumb Caption="@this.Model.GetName()" />
+<h1>@Resources.Edit @this.ModelType.GetTypeCaption()</h1>
+@((MarkupString)(this.DownloadMarkup ?? string.Empty))
+@((MarkupString)(this.EditorsMarkup ?? string.Empty))
+
+<CascadingValue TValue="IContext" Value="@this.PersistenceContext" IsFixed="@this.IsOwningContext">
+    @this.ChildContent
+</CascadingValue>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the edited model.
+    /// </summary>
+    [Parameter]
+    public object? Model { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of the edited model.
+    /// </summary>
+    [Parameter]
+    public Type? ModelType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the persistence context which provides the edited data.
+    /// </summary>
+    [Parameter]
+    public IContext? PersistenceContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the page owns its persistence context.
+    /// </summary>
+    [Parameter]
+    public bool IsOwningContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets the download markup for the current type, if supported.
+    /// </summary>
+    [Parameter]
+    public string? DownloadMarkup { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional editors markup for the current type.
+    /// </summary>
+    [Parameter]
+    public string? EditorsMarkup { get; set; }
+
+    /// <summary>
+    /// Gets or sets the form content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
