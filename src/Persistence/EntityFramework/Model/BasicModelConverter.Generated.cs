@@ -223,6 +223,7 @@ internal sealed class BasicModelConverter
         target.ExternalUserName = source.ExternalUserName;
         target.CharacterName = source.CharacterName;
         target.LinkedAt = source.LinkedAt;
+        target.Notifications = source.Notifications;
         target.CodeHash = source.CodeHash;
         target.CodeExpiresAt = source.CodeExpiresAt;
         return target;

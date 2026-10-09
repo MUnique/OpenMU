@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.AccountExternalLink",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.AccountExternalLink),
                 baseEntityType,
-                propertyCount: 9,
+                propertyCount: 10,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 3,
                 keyCount: 1);
@@ -93,6 +93,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.AccountExternalLink).GetField("<LinkedAt>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             linkedAt.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var notifications = runtimeEntityType.AddProperty(
+                "Notifications",
+                typeof(MUnique.OpenMU.DataModel.Entities.AccountNotificationTypes),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.AccountExternalLink).GetProperty("Notifications", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.AccountExternalLink).GetField("<Notifications>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            notifications.SetSentinelFromProviderValue(0);
+            notifications.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var provider = runtimeEntityType.AddProperty(
                 "Provider",
