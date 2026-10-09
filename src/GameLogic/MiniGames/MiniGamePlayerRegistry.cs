@@ -89,6 +89,27 @@ internal sealed class MiniGamePlayerRegistry
     }
 
     /// <summary>
+    /// Tries to rejoin a player which lost its connection during the game.
+    /// Unlike <see cref="TryEnterAsync"/>, it doesn't require the game to be open,
+    /// because the player already entered it before; it just must not have ended yet.
+    /// </summary>
+    /// <param name="player">The player which rejoins.</param>
+    /// <returns>A value indicating whether rejoining had success.</returns>
+    public async ValueTask<bool> TryRejoinAsync(Player player)
+    {
+        using (await this._lock.WriterLockAsync().ConfigureAwait(false))
+        {
+            if (this._state is not (MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing)
+                || this._players.Count >= this._definition.MaximumPlayerCount)
+            {
+                return false;
+            }
+
+            return this._players.Add(player);
+        }
+    }
+
+    /// <summary>
     /// Removes the player from the registry.
     /// </summary>
     /// <param name="player">The player to remove.</param>

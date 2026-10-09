@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -32,6 +33,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private readonly MiniGameSpawnWaveRunner _spawnWaves;
 
     private readonly CancellationTokenSource _gameEndedCts = new();
+
+    /// <summary>
+    /// The positions of the characters which lost their connection during the game, by their id.
+    /// </summary>
+    private readonly ConcurrentDictionary<Guid, Point> _disconnectedCharacters = new();
 
     private readonly SkippableDelay _skipDelay;
 
@@ -287,6 +293,46 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public override string ToString()
     {
         return $"{this.Definition.Name} for {this._gameContext}";
+    }
+
+    /// <summary>
+    /// Remembers that the player lost its connection during the game, so that it can
+    /// rejoin through <see cref="TryRejoinAsync"/> when it logs in again while the game is still running.
+    /// </summary>
+    /// <param name="player">The player which is leaving the game.</param>
+    internal void RememberDisconnectedPlayer(Player player)
+    {
+        if (player is { IsAlive: true, SelectedCharacter: { } character }
+            && this.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing)
+        {
+            this._disconnectedCharacters[character.Id] = player.Position;
+        }
+    }
+
+    /// <summary>
+    /// Tries to bring the player back into this game, if its character lost the connection
+    /// during the game and the game is still running. On success, the character is placed
+    /// at its previous position on the map of this game, which the player enters when the
+    /// client is ready (see <see cref="GetEntrySpawnPosition"/> for game specific positions).
+    /// </summary>
+    /// <param name="player">The player which entered the world.</param>
+    /// <returns>A value indicating whether the player rejoined the game.</returns>
+    internal async ValueTask<bool> TryRejoinAsync(Player player)
+    {
+        if (player.SelectedCharacter is not { } character
+            || !this._disconnectedCharacters.TryRemove(character.Id, out var position)
+            || !await this._players.TryRejoinAsync(player).ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        player.CurrentMiniGame = this;
+        player.PlayerPickedUpItem += this.OnPlayerPickedUpItemAsync;
+        character.CurrentMap = this.Map.Definition;
+        character.PositionX = position.X;
+        character.PositionY = position.Y;
+        this.Logger.LogInformation("{context}: Player {player} rejoined the game after losing its connection.", this, player);
+        return true;
     }
 
     /// <summary>
