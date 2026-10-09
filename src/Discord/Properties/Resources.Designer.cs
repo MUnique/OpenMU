@@ -412,6 +412,33 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends a notice to all players in the game. For game masters..
+        /// </summary>
+        public static string Command_Announce_Description {
+            get {
+                return ResourceManager.GetString("Command_Announce_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The text of the notice..
+        /// </summary>
+        public static string Command_Announce_TextOption {
+            get {
+                return ResourceManager.GetString("Command_Announce_TextOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bans the account of a character, which is online. For game masters..
+        /// </summary>
+        public static string Command_Ban_Description {
+            get {
+                return ResourceManager.GetString("Command_Ban_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Selects the character of your account, as which you appear..
         /// </summary>
         public static string Command_Character_Description {
@@ -529,6 +556,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disconnects a character from the game. For game masters..
+        /// </summary>
+        public static string Command_Kick_Description {
+            get {
+                return ResourceManager.GetString("Command_Kick_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The code which you got in the game with /discord link..
         /// </summary>
         public static string Command_Link_CodeOption {
@@ -543,6 +579,33 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Command_Link_Description {
             get {
                 return ResourceManager.GetString("Command_Link_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Turns direct messages about your game account on or off..
+        /// </summary>
+        public static string Command_Notify_Description {
+            get {
+                return ResourceManager.GetString("Command_Notify_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On or off..
+        /// </summary>
+        public static string Command_Notify_EnabledOption {
+            get {
+                return ResourceManager.GetString("Command_Notify_EnabledOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The kind of direct messages..
+        /// </summary>
+        public static string Command_Notify_TypeOption {
+            get {
+                return ResourceManager.GetString("Command_Notify_TypeOption", resourceCulture);
             }
         }
         
@@ -628,6 +691,60 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your friend {0} is online..
+        /// </summary>
+        public static string Dm_FriendOnline {
+            get {
+                return ResourceManager.GetString("Dm_FriendOnline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} received a letter from {1}: {2}.
+        /// </summary>
+        public static string Dm_LetterReceived {
+            get {
+                return ResourceManager.GetString("Dm_LetterReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Somebody tried to log into your account on {0}, while you were logged in. If it wasn't you, change your password..
+        /// </summary>
+        public static string Dm_LoginAttempt {
+            get {
+                return ResourceManager.GetString("Dm_LoginAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle for the castle in the game. Guilds register for it in the game..
+        /// </summary>
+        public static string Event_CastleSiege_Description {
+            get {
+                return ResourceManager.GetString("Event_CastleSiege_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege.
+        /// </summary>
+        public static string Event_CastleSiege_Name {
+            get {
+                return ResourceManager.GetString("Event_CastleSiege_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the game.
+        /// </summary>
+        public static string Event_Location {
+            get {
+                return ResourceManager.GetString("Event_Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are no events in the next 24 hours..
         /// </summary>
         public static string Events_None {
@@ -651,6 +768,60 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string GlobalNotice_Title {
             get {
                 return ResourceManager.GetString("GlobalNotice_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notice was sent: {0}.
+        /// </summary>
+        public static string Gm_Announced {
+            get {
+                return ResourceManager.GetString("Gm_Announced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The account of {0} was banned..
+        /// </summary>
+        public static string Gm_Banned {
+            get {
+                return ResourceManager.GetString("Gm_Banned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} was disconnected..
+        /// </summary>
+        public static string Gm_Kicked {
+            get {
+                return ResourceManager.GetString("Gm_Kicked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only game masters can use this command. You need the role GM, and a game master character of your linked account selected with /character..
+        /// </summary>
+        public static string Gm_NotAllowed {
+            get {
+                return ResourceManager.GetString("Gm_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} isn't online..
+        /// </summary>
+        public static string Gm_NotOnline {
+            get {
+                return ResourceManager.GetString("Gm_NotOnline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game master.
+        /// </summary>
+        public static string Gm_Title {
+            get {
+                return ResourceManager.GetString("Gm_Title", resourceCulture);
             }
         }
         
@@ -844,6 +1015,51 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You get direct messages about: {0}.
+        /// </summary>
+        public static string Notify_Changed {
+            get {
+                return ResourceManager.GetString("Notify_Changed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to nothing.
+        /// </summary>
+        public static string Notify_None {
+            get {
+                return ResourceManager.GetString("Notify_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Friends online.
+        /// </summary>
+        public static string Notify_Type_Friend {
+            get {
+                return ResourceManager.GetString("Notify_Type_Friend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Letters.
+        /// </summary>
+        public static string Notify_Type_Letter {
+            get {
+                return ResourceManager.GetString("Notify_Type_Letter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login attempts.
+        /// </summary>
+        public static string Notify_Type_Login {
+            get {
+                return ResourceManager.GetString("Notify_Type_Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}: **{1}** / {2}.
         /// </summary>
         public static string Online_ServerLine {
@@ -966,6 +1182,24 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Setup_Title {
             get {
                 return ResourceManager.GetString("Setup_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} ({1}) used /{2} {3}.
+        /// </summary>
+        public static string StaffAlert_Text {
+            get {
+                return ResourceManager.GetString("StaffAlert_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game master command.
+        /// </summary>
+        public static string StaffAlert_Title {
+            get {
+                return ResourceManager.GetString("StaffAlert_Title", resourceCulture);
             }
         }
         

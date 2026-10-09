@@ -215,6 +215,15 @@
   <data name="Chat_TooFast" xml:space="preserve">
     <value>You're sending messages too fast. Please wait a moment.</value>
   </data>
+  <data name="Command_Announce_Description" xml:space="preserve">
+    <value>Sends a notice to all players in the game. For game masters.</value>
+  </data>
+  <data name="Command_Announce_TextOption" xml:space="preserve">
+    <value>The text of the notice.</value>
+  </data>
+  <data name="Command_Ban_Description" xml:space="preserve">
+    <value>Bans the account of a character, which is online. For game masters.</value>
+  </data>
   <data name="Command_Character_Description" xml:space="preserve">
     <value>Selects the character of your account, as which you appear.</value>
   </data>
@@ -254,11 +263,23 @@
   <data name="Command_GuildChat_Unbind_Description" xml:space="preserve">
     <value>Removes the binding of this channel to the chat of the game.</value>
   </data>
+  <data name="Command_Kick_Description" xml:space="preserve">
+    <value>Disconnects a character from the game. For game masters.</value>
+  </data>
   <data name="Command_Link_CodeOption" xml:space="preserve">
     <value>The code which you got in the game with /discord link.</value>
   </data>
   <data name="Command_Link_Description" xml:space="preserve">
     <value>Links your Discord user to your game account.</value>
+  </data>
+  <data name="Command_Notify_Description" xml:space="preserve">
+    <value>Turns direct messages about your game account on or off.</value>
+  </data>
+  <data name="Command_Notify_EnabledOption" xml:space="preserve">
+    <value>On or off.</value>
+  </data>
+  <data name="Command_Notify_TypeOption" xml:space="preserve">
+    <value>The kind of direct messages.</value>
   </data>
   <data name="Command_Online_Description" xml:space="preserve">
     <value>Shows how many players are online.</value>
@@ -287,6 +308,24 @@
   <data name="Command_Who_Description" xml:space="preserve">
     <value>Shows information about a character.</value>
   </data>
+  <data name="Dm_FriendOnline" xml:space="preserve">
+    <value>Your friend {0} is online.</value>
+  </data>
+  <data name="Dm_LetterReceived" xml:space="preserve">
+    <value>{0} received a letter from {1}: {2}</value>
+  </data>
+  <data name="Dm_LoginAttempt" xml:space="preserve">
+    <value>Somebody tried to log into your account on {0}, while you were logged in. If it wasn't you, change your password.</value>
+  </data>
+  <data name="Event_CastleSiege_Description" xml:space="preserve">
+    <value>The battle for the castle in the game. Guilds register for it in the game.</value>
+  </data>
+  <data name="Event_CastleSiege_Name" xml:space="preserve">
+    <value>Castle Siege</value>
+  </data>
+  <data name="Event_Location" xml:space="preserve">
+    <value>In the game</value>
+  </data>
   <data name="Events_None" xml:space="preserve">
     <value>There are no events in the next 24 hours.</value>
   </data>
@@ -295,6 +334,24 @@
   </data>
   <data name="GlobalNotice_Title" xml:space="preserve">
     <value>Notice</value>
+  </data>
+  <data name="Gm_Announced" xml:space="preserve">
+    <value>The notice was sent: {0}</value>
+  </data>
+  <data name="Gm_Banned" xml:space="preserve">
+    <value>The account of {0} was banned.</value>
+  </data>
+  <data name="Gm_Kicked" xml:space="preserve">
+    <value>{0} was disconnected.</value>
+  </data>
+  <data name="Gm_NotAllowed" xml:space="preserve">
+    <value>Only game masters can use this command. You need the role GM, and a game master character of your linked account selected with /character.</value>
+  </data>
+  <data name="Gm_NotOnline" xml:space="preserve">
+    <value>{0} isn't online.</value>
+  </data>
+  <data name="Gm_Title" xml:space="preserve">
+    <value>Game master</value>
   </data>
   <data name="Guild_Master" xml:space="preserve">
     <value>Guild master: {0}</value>
@@ -359,6 +416,21 @@
   <data name="MiniGameWon_Description" xml:space="preserve">
     <value>**{0}** won {1}!</value>
   </data>
+  <data name="Notify_Changed" xml:space="preserve">
+    <value>You get direct messages about: {0}</value>
+  </data>
+  <data name="Notify_None" xml:space="preserve">
+    <value>nothing</value>
+  </data>
+  <data name="Notify_Type_Friend" xml:space="preserve">
+    <value>Friends online</value>
+  </data>
+  <data name="Notify_Type_Letter" xml:space="preserve">
+    <value>Letters</value>
+  </data>
+  <data name="Notify_Type_Login" xml:space="preserve">
+    <value>Login attempts</value>
+  </data>
   <data name="Online_ServerLine" xml:space="preserve">
     <value>{0}: **{1}** / {2}</value>
   </data>
@@ -400,6 +472,12 @@
   </data>
   <data name="Setup_Title" xml:space="preserve">
     <value>Setup of the Discord server</value>
+  </data>
+  <data name="StaffAlert_Text" xml:space="preserve">
+    <value>{0} ({1}) used /{2} {3}</value>
+  </data>
+  <data name="StaffAlert_Title" xml:space="preserve">
+    <value>Game master command</value>
   </data>
   <data name="Status_NoServers" xml:space="preserve">
     <value>No game server is running.</value>

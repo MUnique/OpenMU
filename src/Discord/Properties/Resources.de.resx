@@ -215,6 +215,15 @@
   <data name="Chat_TooFast" xml:space="preserve">
     <value>Du sendest zu schnell Nachrichten. Bitte warte einen Moment.</value>
   </data>
+  <data name="Command_Announce_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht an alle Spieler im Spiel. Für Spielleiter.</value>
+  </data>
+  <data name="Command_Announce_TextOption" xml:space="preserve">
+    <value>Der Text der Nachricht.</value>
+  </data>
+  <data name="Command_Ban_Description" xml:space="preserve">
+    <value>Sperrt das Konto eines Charakters, der online ist. Für Spielleiter.</value>
+  </data>
   <data name="Command_Character_Description" xml:space="preserve">
     <value>Wählt den Charakter deines Kontos, als der du erscheinst.</value>
   </data>
@@ -254,11 +263,23 @@
   <data name="Command_GuildChat_Unbind_Description" xml:space="preserve">
     <value>Entfernt die Verbindung dieses Kanals mit dem Chat des Spiels.</value>
   </data>
+  <data name="Command_Kick_Description" xml:space="preserve">
+    <value>Trennt einen Charakter vom Spiel. Für Spielleiter.</value>
+  </data>
   <data name="Command_Link_CodeOption" xml:space="preserve">
     <value>Der Code, den du im Spiel mit /discord link erhalten hast.</value>
   </data>
   <data name="Command_Link_Description" xml:space="preserve">
     <value>Verknüpft deinen Discord-Benutzer mit deinem Spielkonto.</value>
+  </data>
+  <data name="Command_Notify_Description" xml:space="preserve">
+    <value>Schaltet Direktnachrichten über dein Spielkonto ein oder aus.</value>
+  </data>
+  <data name="Command_Notify_EnabledOption" xml:space="preserve">
+    <value>Ein oder aus.</value>
+  </data>
+  <data name="Command_Notify_TypeOption" xml:space="preserve">
+    <value>Die Art der Direktnachrichten.</value>
   </data>
   <data name="Command_Online_Description" xml:space="preserve">
     <value>Zeigt, wie viele Spieler online sind.</value>
@@ -287,6 +308,24 @@
   <data name="Command_Who_Description" xml:space="preserve">
     <value>Zeigt Informationen über einen Charakter.</value>
   </data>
+  <data name="Dm_FriendOnline" xml:space="preserve">
+    <value>Dein Freund {0} ist online.</value>
+  </data>
+  <data name="Dm_LetterReceived" xml:space="preserve">
+    <value>{0} hat einen Brief von {1} erhalten: {2}</value>
+  </data>
+  <data name="Dm_LoginAttempt" xml:space="preserve">
+    <value>Jemand hat versucht, sich auf {0} in dein Konto einzuloggen, während du eingeloggt warst. Wenn du es nicht warst, ändere dein Passwort.</value>
+  </data>
+  <data name="Event_CastleSiege_Description" xml:space="preserve">
+    <value>Der Kampf um die Burg im Spiel. Gilden melden sich im Spiel dafür an.</value>
+  </data>
+  <data name="Event_CastleSiege_Name" xml:space="preserve">
+    <value>Burgbelagerung</value>
+  </data>
+  <data name="Event_Location" xml:space="preserve">
+    <value>Im Spiel</value>
+  </data>
   <data name="Events_None" xml:space="preserve">
     <value>In den nächsten 24 Stunden gibt es keine Ereignisse.</value>
   </data>
@@ -295,6 +334,24 @@
   </data>
   <data name="GlobalNotice_Title" xml:space="preserve">
     <value>Ankündigung</value>
+  </data>
+  <data name="Gm_Announced" xml:space="preserve">
+    <value>Die Nachricht wurde gesendet: {0}</value>
+  </data>
+  <data name="Gm_Banned" xml:space="preserve">
+    <value>Das Konto von {0} wurde gesperrt.</value>
+  </data>
+  <data name="Gm_Kicked" xml:space="preserve">
+    <value>{0} wurde getrennt.</value>
+  </data>
+  <data name="Gm_NotAllowed" xml:space="preserve">
+    <value>Nur Spielleiter können diesen Befehl verwenden. Du brauchst die Rolle GM und einen mit /character gewählten Spielleiter-Charakter deines verknüpften Kontos.</value>
+  </data>
+  <data name="Gm_NotOnline" xml:space="preserve">
+    <value>{0} ist nicht online.</value>
+  </data>
+  <data name="Gm_Title" xml:space="preserve">
+    <value>Spielleiter</value>
   </data>
   <data name="Guild_Master" xml:space="preserve">
     <value>Gildenmeister: {0}</value>
@@ -359,6 +416,21 @@
   <data name="MiniGameWon_Description" xml:space="preserve">
     <value>**{0}** hat {1} gewonnen!</value>
   </data>
+  <data name="Notify_Changed" xml:space="preserve">
+    <value>Du erhältst Direktnachrichten über: {0}</value>
+  </data>
+  <data name="Notify_None" xml:space="preserve">
+    <value>nichts</value>
+  </data>
+  <data name="Notify_Type_Friend" xml:space="preserve">
+    <value>Freunde online</value>
+  </data>
+  <data name="Notify_Type_Letter" xml:space="preserve">
+    <value>Briefe</value>
+  </data>
+  <data name="Notify_Type_Login" xml:space="preserve">
+    <value>Anmeldeversuche</value>
+  </data>
   <data name="Online_ServerLine" xml:space="preserve">
     <value>{0}: **{1}** / {2}</value>
   </data>
@@ -400,6 +472,12 @@
   </data>
   <data name="Setup_Title" xml:space="preserve">
     <value>Einrichtung des Discord-Servers</value>
+  </data>
+  <data name="StaffAlert_Text" xml:space="preserve">
+    <value>{0} ({1}) verwendete /{2} {3}</value>
+  </data>
+  <data name="StaffAlert_Title" xml:space="preserve">
+    <value>Spielleiter-Befehl</value>
   </data>
   <data name="Status_NoServers" xml:space="preserve">
     <value>Es läuft kein Spielserver.</value>
