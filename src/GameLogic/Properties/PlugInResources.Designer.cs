@@ -916,6 +916,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publish guild, alliance and world chat.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishChatMessages_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishChatMessages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish excellent item drops.
         /// </summary>
         public static string GameEventPublisherConfiguration_PublishExcellentItemDrops_Name {
@@ -1263,6 +1272,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GuildBattleSoccerChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("GuildBattleSoccerChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord..
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice about the chat bridge.
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Name", resourceCulture);
             }
         }
         
@@ -4037,6 +4064,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string WeatherUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends a message to the world chat, which all players of all game servers can read, e.g. &apos;/world Hello!&apos;. It can be bridged to Discord..
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World chat command.
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
             }
         }
 

@@ -1616,4 +1616,19 @@
   <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
     <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link.</value>
   </data>
+  <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>World chat command</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sends a message to the world chat, which all players of all game servers can read, e.g. '/world Hello!'. It can be bridged to Discord.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>Publish guild, alliance and world chat</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Name" xml:space="preserve">
+    <value>Notice about the chat bridge</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
+    <value>Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord.</value>
+  </data>
 </root>

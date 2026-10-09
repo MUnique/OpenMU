@@ -92,6 +92,11 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         this._packetArchive = packetArchive;
     }
 
+    /// <summary>
+    /// Gets the publisher of the events between the servers of this application.
+    /// </summary>
+    public IEventPublisher EventPublisher => this._eventPublisher;
+
     /// <inheritdoc />
     public void Dispose()
     {

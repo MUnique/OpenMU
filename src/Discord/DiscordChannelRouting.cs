@@ -14,16 +14,22 @@ public sealed class DiscordChannelRouting
 {
     private readonly IReadOnlyDictionary<DiscordChannelCategory, ulong> _notificationChannels;
 
-    private DiscordChannelRouting(IReadOnlyDictionary<DiscordChannelCategory, ulong> notificationChannels, ulong? statusChannelId)
+    private DiscordChannelRouting(IReadOnlyDictionary<DiscordChannelCategory, ulong> notificationChannels, ulong? statusChannelId, ulong? worldChatChannelId)
     {
         this._notificationChannels = notificationChannels;
         this.StatusChannelId = statusChannelId;
+        this.WorldChatChannelId = worldChatChannelId;
     }
 
     /// <summary>
     /// Gets the identifier of the channel in which the bot shows the status of the game servers.
     /// </summary>
     public ulong? StatusChannelId { get; }
+
+    /// <summary>
+    /// Gets the identifier of the channel which is bound to the world chat of the game.
+    /// </summary>
+    public ulong? WorldChatChannelId { get; }
 
     /// <summary>
     /// Creates the routing.
@@ -36,6 +42,7 @@ public sealed class DiscordChannelRouting
     {
         var notificationChannels = new Dictionary<DiscordChannelCategory, ulong>();
         ulong? statusChannelId = null;
+        ulong? worldChatChannelId = null;
         foreach (var channel in layout.Channels)
         {
             if (!layoutChannelIds.TryGetValue(channel.Key, out var channelId))
@@ -52,6 +59,11 @@ public sealed class DiscordChannelRouting
             {
                 statusChannelId ??= channelId;
             }
+
+            if (channel.IsWorldChat)
+            {
+                worldChatChannelId ??= channelId;
+            }
         }
 
         foreach (var (category, channelId) in settings.Channels)
@@ -59,7 +71,7 @@ public sealed class DiscordChannelRouting
             notificationChannels[category] = channelId;
         }
 
-        return new DiscordChannelRouting(notificationChannels, settings.StatusChannelId ?? statusChannelId);
+        return new DiscordChannelRouting(notificationChannels, settings.StatusChannelId ?? statusChannelId, worldChatChannelId);
     }
 
     /// <summary>

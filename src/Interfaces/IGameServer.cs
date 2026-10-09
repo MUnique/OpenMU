@@ -90,6 +90,13 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     ValueTask AllianceChatMessageAsync(uint guildId, string sender, string message);
 
     /// <summary>
+    /// Sends a message of the world chat to all connected players.
+    /// </summary>
+    /// <param name="sender">The sender, e.g. the character name.</param>
+    /// <param name="message">The message.</param>
+    ValueTask WorldChatMessageAsync(string sender, string message);
+
+    /// <summary>
     /// Sends a global message to all connected players with the specified message type.
     /// </summary>
     /// <param name="message">The message.</param>

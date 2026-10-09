@@ -162,6 +162,16 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the time until which the chat of an account is banned, without loading the account.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The time until which the chat is banned; or <c>null</c>, if it isn't banned.</returns>
+    ValueTask<DateTime?> GetAccountChatBanUntilAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the link of an account to a user of an external service.
     /// </summary>
     /// <param name="accountId">The persistent account identifier.</param>

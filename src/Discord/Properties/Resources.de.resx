@@ -98,6 +98,51 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
+  <data name="Bind_AllianceBound" xml:space="preserve">
+    <value>Dieser Kanal ist jetzt mit dem Chat der Allianz von {0} verbunden. Die Nachrichten werden in beide Richtungen gespiegelt.</value>
+  </data>
+  <data name="Bind_ChannelInUse" xml:space="preserve">
+    <value>Dieser Kanal ist bereits mit dem Chat einer anderen Gilde oder Allianz verbunden.</value>
+  </data>
+  <data name="Bind_Created" xml:space="preserve">
+    <value>{1} ist der Kanal für den Chat von {0}. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn sehen.</value>
+  </data>
+  <data name="Bind_GuildBound" xml:space="preserve">
+    <value>Dieser Kanal ist jetzt mit dem Chat der Gilde {0} verbunden. Die Nachrichten werden in beide Richtungen gespiegelt.</value>
+  </data>
+  <data name="Bind_HostedServerUnavailable" xml:space="preserve">
+    <value>Der Discord-Server des Spiels ist für den Bot nicht verfügbar.</value>
+  </data>
+  <data name="Bind_ManageChannelRequired" xml:space="preserve">
+    <value>Du brauchst die Berechtigung, diesen Kanal zu verwalten.</value>
+  </data>
+  <data name="Bind_ModeNotAllowed" xml:space="preserve">
+    <value>Der Serverbetreiber erlaubt diese Art der Verbindung nicht.</value>
+  </data>
+  <data name="Bind_NotAllianceMaster" xml:space="preserve">
+    <value>Nur der Meister einer Allianz kann den Chat der Allianz verbinden.</value>
+  </data>
+  <data name="Bind_NotBound" xml:space="preserve">
+    <value>Dieser Kanal ist nicht mit einem Chat des Spiels verbunden.</value>
+  </data>
+  <data name="Bind_NotGuildMaster" xml:space="preserve">
+    <value>Nur der Gildenmeister kann das. Wähle deinen Gildenmeister-Charakter mit /character.</value>
+  </data>
+  <data name="Bind_NotInChannel" xml:space="preserve">
+    <value>Verwende diesen Befehl in einem Textkanal eines Discord-Servers.</value>
+  </data>
+  <data name="Bind_ServerNotAllowed" xml:space="preserve">
+    <value>Der Serverbetreiber erlaubt keine Verbindungen auf diesem Discord-Server.</value>
+  </data>
+  <data name="Bind_Title" xml:space="preserve">
+    <value>Gildenchat</value>
+  </data>
+  <data name="Bind_Unbound" xml:space="preserve">
+    <value>Die Verbindung dieses Kanals wurde entfernt.</value>
+  </data>
+  <data name="Bind_UseCreate" xml:space="preserve">
+    <value>Auf dem Discord-Server des Spiels verwende stattdessen /guildchat create.</value>
+  </data>
   <data name="BossKilled_Description" xml:space="preserve">
     <value>**{0}** hat **{1}** in {2} besiegt!</value>
   </data>
@@ -146,6 +191,30 @@
   <data name="Character_Selected" xml:space="preserve">
     <value>Du erscheinst jetzt als **{0}**.</value>
   </data>
+  <data name="Chat_ChatBanned" xml:space="preserve">
+    <value>Dein Chat ist gesperrt.</value>
+  </data>
+  <data name="Chat_Empty" xml:space="preserve">
+    <value>Die Nachricht ist leer.</value>
+  </data>
+  <data name="Chat_NoCharacter" xml:space="preserve">
+    <value>Wähle zuerst mit /character einen Charakter deines Kontos.</value>
+  </data>
+  <data name="Chat_NotBridged" xml:space="preserve">
+    <value>Dieser Kanal ist nicht mit einem Chat des Spiels verbunden.</value>
+  </data>
+  <data name="Chat_NotMember" xml:space="preserve">
+    <value>Dein Charakter {0} ist kein Mitglied der Gilde oder Allianz dieses Kanals. Wähle mit /character einen anderen Charakter.</value>
+  </data>
+  <data name="Chat_Sent" xml:space="preserve">
+    <value>Die Nachricht wurde als {0} gesendet.</value>
+  </data>
+  <data name="Chat_Title" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Chat_TooFast" xml:space="preserve">
+    <value>Du sendest zu schnell Nachrichten. Bitte warte einen Moment.</value>
+  </data>
   <data name="Command_Character_Description" xml:space="preserve">
     <value>Wählt den Charakter deines Kontos, als der du erscheinst.</value>
   </data>
@@ -164,6 +233,27 @@
   <data name="Command_Guild_GuildOption" xml:space="preserve">
     <value>Der Name der Gilde.</value>
   </data>
+  <data name="Command_GuildChat_Bind_Description" xml:space="preserve">
+    <value>Verbindet diesen Kanal mit dem Chat deiner Gilde oder Allianz.</value>
+  </data>
+  <data name="Command_GuildChat_Create_Description" xml:space="preserve">
+    <value>Erstellt einen Kanal für den Chat deiner Gilde oder Allianz auf dem Discord-Server des Spiels.</value>
+  </data>
+  <data name="Command_GuildChat_Description" xml:space="preserve">
+    <value>Verbindet den Chat deiner Gilde oder Allianz mit einem Discord-Kanal.</value>
+  </data>
+  <data name="Command_GuildChat_ScopeAlliance" xml:space="preserve">
+    <value>Allianz</value>
+  </data>
+  <data name="Command_GuildChat_ScopeGuild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="Command_GuildChat_ScopeOption" xml:space="preserve">
+    <value>Der Chat der Gilde oder der Allianz.</value>
+  </data>
+  <data name="Command_GuildChat_Unbind_Description" xml:space="preserve">
+    <value>Entfernt die Verbindung dieses Kanals mit dem Chat des Spiels.</value>
+  </data>
   <data name="Command_Link_CodeOption" xml:space="preserve">
     <value>Der Code, den du im Spiel mit /discord link erhalten hast.</value>
   </data>
@@ -178,6 +268,12 @@
   </data>
   <data name="Command_Rank_Description" xml:space="preserve">
     <value>Zeigt die besten Charaktere.</value>
+  </data>
+  <data name="Command_Say_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht aus diesem Kanal in den Chat des Spiels.</value>
+  </data>
+  <data name="Command_Say_MessageOption" xml:space="preserve">
+    <value>Die Nachricht.</value>
   </data>
   <data name="Command_Setup_Description" xml:space="preserve">
     <value>Erstellt die fehlenden Kanäle und Rollen dieses Discord-Servers.</value>

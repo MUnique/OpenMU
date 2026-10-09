@@ -2055,6 +2055,50 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("Guild", "guild");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildChatBinding", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("BoundAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BoundBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalChannelId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalServerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("GuildId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsHosted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Provider", "ExternalChannelId")
+                        .IsUnique();
+
+                    b.HasIndex("GuildId", "Scope", "Provider")
+                        .IsUnique();
+
+                    b.ToTable("GuildChatBinding", "data");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildMember", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5009,6 +5053,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawAllianceGuild");
 
                     b.Navigation("RawHostility");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildChatBinding", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildMember", b =>

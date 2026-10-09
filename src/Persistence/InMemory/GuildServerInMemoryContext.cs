@@ -57,6 +57,26 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName)
+    {
+        var characters = await this.Provider.GetRepository<Character>().GetAllAsync().ConfigureAwait(false);
+        if (characters.FirstOrDefault(c => c.Name == characterName) is not { } character)
+        {
+            return null;
+        }
+
+        var members = await this.Provider.GetRepository<GuildMember>().GetAllAsync().ConfigureAwait(false);
+        if (members.FirstOrDefault(m => m.Id == character.Id) is not { } member)
+        {
+            return null;
+        }
+
+        var guilds = await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync().ConfigureAwait(false);
+        var allianceMaster = guilds.FirstOrDefault(g => g.GetId() == member.GuildId)?.AllianceGuild;
+        return new GuildMembership(member.Id, member.GuildId, member.Status, allianceMaster?.GetId());
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId)
     {
         return (await this.Provider.GetRepository<DataModel.Entities.Guild>()

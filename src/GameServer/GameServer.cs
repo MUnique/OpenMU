@@ -246,6 +246,12 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     }
 
     /// <inheritdoc/>
+    public async ValueTask WorldChatMessageAsync(string sender, string message)
+    {
+        await this._gameContext.ForEachPlayerAsync(player => player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WorldChatMessage), sender, message).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask LetterReceivedAsync(LetterHeader letter)
     {
         if (letter.ReceiverName is null)

@@ -934,4 +934,13 @@ Inventory Extensions: {18}</value>
   <data name="DiscordUnlinked" xml:space="preserve">
     <value>Your account isn't linked to Discord anymore.</value>
   </data>
+  <data name="WorldChatMessage" xml:space="preserve">
+    <value>[World] {0}: {1}</value>
+  </data>
+  <data name="GuildChatMirrored" xml:space="preserve">
+    <value>The chat of your guild is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
+  </data>
+  <data name="AllianceChatMirrored" xml:space="preserve">
+    <value>The chat of your alliance is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
+  </data>
 </root>

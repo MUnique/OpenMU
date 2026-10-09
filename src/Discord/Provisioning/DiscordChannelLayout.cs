@@ -44,4 +44,9 @@ public sealed class DiscordChannelLayout
     /// Gets or sets a value indicating whether the bot shows the status of the game servers in the channel.
     /// </summary>
     public bool ShowsStatus { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the channel is bound to the world chat of the game.
+    /// </summary>
+    public bool IsWorldChat { get; set; }
 }

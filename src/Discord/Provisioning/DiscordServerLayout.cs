@@ -20,6 +20,11 @@ public sealed class DiscordServerLayout
     /// </summary>
     public const string LinkedRoleKey = "linked";
 
+    /// <summary>
+    /// The key of the category in which the bot creates the channels for the chats of guilds.
+    /// </summary>
+    public const string GuildsCategoryKey = "guilds";
+
     private const string DefaultLayoutResourceName = "MUnique.OpenMU.Discord.Provisioning.DefaultLayout.json";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()

@@ -16,7 +16,7 @@ using MUnique.OpenMU.Discord.Provisioning;
 public class DiscordServerLayoutTest
 {
     /// <summary>
-    /// Tests that the default layout is valid and has a channel for each category of notifications and for the status.
+    /// Tests that the default layout is valid and has a channel for each category of notifications, for the status and for the world chat.
     /// </summary>
     [Test]
     public void DefaultLayoutIsComplete()
@@ -26,6 +26,8 @@ public class DiscordServerLayoutTest
         Assert.That(layout.Validate(), Is.Empty);
         Assert.That(layout.Channels.SelectMany(c => c.Notifications).Distinct(), Is.EquivalentTo(Enum.GetValues<DiscordChannelCategory>()));
         Assert.That(layout.Channels.Count(c => c.ShowsStatus), Is.EqualTo(1));
+        Assert.That(layout.Channels.Count(c => c.IsWorldChat), Is.EqualTo(1));
+        Assert.That(layout.Categories.Select(c => c.Key), Does.Contain(DiscordServerLayout.GuildsCategoryKey));
     }
 
     /// <summary>

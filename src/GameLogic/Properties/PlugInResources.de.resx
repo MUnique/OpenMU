@@ -1773,4 +1773,19 @@
   <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
     <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung.</value>
   </data>
+  <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Weltchat</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht in den Weltchat, den alle Spieler aller Spielserver lesen, z.B. '/world Hallo!'. Er kann mit Discord verbunden werden.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>Gilden-, Allianz- und Weltchat veröffentlichen</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Name" xml:space="preserve">
+    <value>Hinweis auf die Chat-Brücke</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
+    <value>Teilt Spielern beim Betreten des Spiels mit, ob der Chat ihrer Gilde oder Allianz nach Discord gespiegelt wird.</value>
+  </data>
 </root>
