@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Discord;
 
+using MUnique.OpenMU.Discord.ChatBridge;
+
 /// <summary>
 /// The settings of the Discord bot.
 /// </summary>
@@ -40,6 +42,11 @@ public class DiscordBotSettings
     /// Without it, the default layout is used.
     /// </summary>
     public string? LayoutFile { get; set; }
+
+    /// <summary>
+    /// Gets or sets the settings of the chat bridge between the game and Discord.
+    /// </summary>
+    public DiscordChatBridgeSettings ChatBridge { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the interval in which the status message and the presence of the bot are updated.

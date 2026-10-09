@@ -8,6 +8,7 @@ using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Discord.ChatBridge;
 using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.GameLogic.AccountLinking;
 using MUnique.OpenMU.Interfaces;
@@ -49,6 +50,18 @@ public static class DiscordServiceCollectionExtensions
                     new AccountLinkService(() => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(new GameConfiguration())),
                     culture,
                     provider.GetRequiredService<ILogger<DiscordAccountCommands>>()))
+
+                // The event publisher of the all-in-one deployment depends on the bot, so it's resolved when it's needed.
+                .AddSingleton(provider => new DiscordChatBridge(
+                    settings.Bot.ChatBridge,
+                    new GuildChatBindingStore(() => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(new GameConfiguration())),
+                    new AccountLinkService(() => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(new GameConfiguration())),
+                    provider.GetRequiredService<IGuildServer>(),
+                    () => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(new GameConfiguration()),
+                    () => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewGuildContext(),
+                    () => provider.GetService<IEventPublisher>(),
+                    provider.GetRequiredService<ILogger<DiscordChatBridge>>()))
+                .AddSingleton(new DiscordChatCommands(culture))
                 .AddSingleton(new DiscordStatusFormatter(culture))
                 .AddSingleton(settings.Bot.LayoutFile is { Length: > 0 } layoutFile ? DiscordServerLayout.Load(layoutFile) : DiscordServerLayout.LoadDefault())
                 .AddSingleton(provider => new DiscordServerProvisioner(provider.GetRequiredService<ILogger<DiscordServerProvisioner>>()))
@@ -60,6 +73,8 @@ public static class DiscordServiceCollectionExtensions
                     provider.GetRequiredService<IDiscordGameDataProvider>(),
                     provider.GetRequiredService<DiscordServerLayout>(),
                     provider.GetRequiredService<DiscordServerProvisioner>(),
+                    provider.GetRequiredService<DiscordChatBridge>(),
+                    provider.GetRequiredService<DiscordChatCommands>(),
                     provider.GetRequiredService<ILogger<DiscordBot>>()))
                 .AddHostedService(provider => provider.GetRequiredService<DiscordBot>())
                 .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordBot>());

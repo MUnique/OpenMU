@@ -61,6 +61,141 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This channel is bound to the chat of the alliance of {0} now. The messages are mirrored in both directions..
+        /// </summary>
+        public static string Bind_AllianceBound {
+            get {
+                return ResourceManager.GetString("Bind_AllianceBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel is already bound to the chat of another guild or alliance..
+        /// </summary>
+        public static string Bind_ChannelInUse {
+            get {
+                return ResourceManager.GetString("Bind_ChannelInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {1} is the channel for the chat of {0}. Members who linked their Discord user can see it..
+        /// </summary>
+        public static string Bind_Created {
+            get {
+                return ResourceManager.GetString("Bind_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel is bound to the chat of the guild {0} now. The messages are mirrored in both directions..
+        /// </summary>
+        public static string Bind_GuildBound {
+            get {
+                return ResourceManager.GetString("Bind_GuildBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Discord server of the game isn't available to the bot..
+        /// </summary>
+        public static string Bind_HostedServerUnavailable {
+            get {
+                return ResourceManager.GetString("Bind_HostedServerUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need the permission to manage this channel..
+        /// </summary>
+        public static string Bind_ManageChannelRequired {
+            get {
+                return ResourceManager.GetString("Bind_ManageChannelRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server owner doesn't allow this kind of binding..
+        /// </summary>
+        public static string Bind_ModeNotAllowed {
+            get {
+                return ResourceManager.GetString("Bind_ModeNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the master of an alliance can bind the chat of the alliance..
+        /// </summary>
+        public static string Bind_NotAllianceMaster {
+            get {
+                return ResourceManager.GetString("Bind_NotAllianceMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel isn't bound to a chat of the game..
+        /// </summary>
+        public static string Bind_NotBound {
+            get {
+                return ResourceManager.GetString("Bind_NotBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the guild master can do this. Select your guild master character with /character..
+        /// </summary>
+        public static string Bind_NotGuildMaster {
+            get {
+                return ResourceManager.GetString("Bind_NotGuildMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this command in a text channel of a Discord server..
+        /// </summary>
+        public static string Bind_NotInChannel {
+            get {
+                return ResourceManager.GetString("Bind_NotInChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server owner doesn't allow bindings on this Discord server..
+        /// </summary>
+        public static string Bind_ServerNotAllowed {
+            get {
+                return ResourceManager.GetString("Bind_ServerNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild chat.
+        /// </summary>
+        public static string Bind_Title {
+            get {
+                return ResourceManager.GetString("Bind_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The binding of this channel was removed..
+        /// </summary>
+        public static string Bind_Unbound {
+            get {
+                return ResourceManager.GetString("Bind_Unbound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On the Discord server of the game, use /guildchat create instead..
+        /// </summary>
+        public static string Bind_UseCreate {
+            get {
+                return ResourceManager.GetString("Bind_UseCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to **{0}** defeated **{1}** in {2}!.
         /// </summary>
         public static string BossKilled_Description {
@@ -205,6 +340,78 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your chat is banned..
+        /// </summary>
+        public static string Chat_ChatBanned {
+            get {
+                return ResourceManager.GetString("Chat_ChatBanned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message is empty..
+        /// </summary>
+        public static string Chat_Empty {
+            get {
+                return ResourceManager.GetString("Chat_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a character of your account with /character first..
+        /// </summary>
+        public static string Chat_NoCharacter {
+            get {
+                return ResourceManager.GetString("Chat_NoCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel isn't bound to a chat of the game..
+        /// </summary>
+        public static string Chat_NotBridged {
+            get {
+                return ResourceManager.GetString("Chat_NotBridged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your character {0} isn't a member of the guild or alliance of this channel. Select another character with /character..
+        /// </summary>
+        public static string Chat_NotMember {
+            get {
+                return ResourceManager.GetString("Chat_NotMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message was sent as {0}..
+        /// </summary>
+        public static string Chat_Sent {
+            get {
+                return ResourceManager.GetString("Chat_Sent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat.
+        /// </summary>
+        public static string Chat_Title {
+            get {
+                return ResourceManager.GetString("Chat_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You're sending messages too fast. Please wait a moment..
+        /// </summary>
+        public static string Chat_TooFast {
+            get {
+                return ResourceManager.GetString("Chat_TooFast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Selects the character of your account, as which you appear..
         /// </summary>
         public static string Command_Character_Description {
@@ -259,6 +466,69 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Binds this channel to the chat of your guild or alliance..
+        /// </summary>
+        public static string Command_GuildChat_Bind_Description {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_Bind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates a channel for the chat of your guild or alliance on the Discord server of the game..
+        /// </summary>
+        public static string Command_GuildChat_Create_Description {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_Create_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Binds the chat of your guild or alliance to a Discord channel..
+        /// </summary>
+        public static string Command_GuildChat_Description {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alliance.
+        /// </summary>
+        public static string Command_GuildChat_ScopeAlliance {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_ScopeAlliance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild.
+        /// </summary>
+        public static string Command_GuildChat_ScopeGuild {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_ScopeGuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chat of the guild or of the alliance..
+        /// </summary>
+        public static string Command_GuildChat_ScopeOption {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_ScopeOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removes the binding of this channel to the chat of the game..
+        /// </summary>
+        public static string Command_GuildChat_Unbind_Description {
+            get {
+                return ResourceManager.GetString("Command_GuildChat_Unbind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The code which you got in the game with /discord link..
         /// </summary>
         public static string Command_Link_CodeOption {
@@ -300,6 +570,24 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Command_Rank_Description {
             get {
                 return ResourceManager.GetString("Command_Rank_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends a message from this channel to the chat of the game..
+        /// </summary>
+        public static string Command_Say_Description {
+            get {
+                return ResourceManager.GetString("Command_Say_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message..
+        /// </summary>
+        public static string Command_Say_MessageOption {
+            get {
+                return ResourceManager.GetString("Command_Say_MessageOption", resourceCulture);
             }
         }
         

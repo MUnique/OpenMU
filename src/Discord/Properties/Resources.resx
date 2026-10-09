@@ -98,6 +98,51 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
+  <data name="Bind_AllianceBound" xml:space="preserve">
+    <value>This channel is bound to the chat of the alliance of {0} now. The messages are mirrored in both directions.</value>
+  </data>
+  <data name="Bind_ChannelInUse" xml:space="preserve">
+    <value>This channel is already bound to the chat of another guild or alliance.</value>
+  </data>
+  <data name="Bind_Created" xml:space="preserve">
+    <value>{1} is the channel for the chat of {0}. Members who linked their Discord user can see it.</value>
+  </data>
+  <data name="Bind_GuildBound" xml:space="preserve">
+    <value>This channel is bound to the chat of the guild {0} now. The messages are mirrored in both directions.</value>
+  </data>
+  <data name="Bind_HostedServerUnavailable" xml:space="preserve">
+    <value>The Discord server of the game isn't available to the bot.</value>
+  </data>
+  <data name="Bind_ManageChannelRequired" xml:space="preserve">
+    <value>You need the permission to manage this channel.</value>
+  </data>
+  <data name="Bind_ModeNotAllowed" xml:space="preserve">
+    <value>The server owner doesn't allow this kind of binding.</value>
+  </data>
+  <data name="Bind_NotAllianceMaster" xml:space="preserve">
+    <value>Only the master of an alliance can bind the chat of the alliance.</value>
+  </data>
+  <data name="Bind_NotBound" xml:space="preserve">
+    <value>This channel isn't bound to a chat of the game.</value>
+  </data>
+  <data name="Bind_NotGuildMaster" xml:space="preserve">
+    <value>Only the guild master can do this. Select your guild master character with /character.</value>
+  </data>
+  <data name="Bind_NotInChannel" xml:space="preserve">
+    <value>Use this command in a text channel of a Discord server.</value>
+  </data>
+  <data name="Bind_ServerNotAllowed" xml:space="preserve">
+    <value>The server owner doesn't allow bindings on this Discord server.</value>
+  </data>
+  <data name="Bind_Title" xml:space="preserve">
+    <value>Guild chat</value>
+  </data>
+  <data name="Bind_Unbound" xml:space="preserve">
+    <value>The binding of this channel was removed.</value>
+  </data>
+  <data name="Bind_UseCreate" xml:space="preserve">
+    <value>On the Discord server of the game, use /guildchat create instead.</value>
+  </data>
   <data name="BossKilled_Description" xml:space="preserve">
     <value>**{0}** defeated **{1}** in {2}!</value>
   </data>
@@ -146,6 +191,30 @@
   <data name="Character_Selected" xml:space="preserve">
     <value>You appear as **{0}** now.</value>
   </data>
+  <data name="Chat_ChatBanned" xml:space="preserve">
+    <value>Your chat is banned.</value>
+  </data>
+  <data name="Chat_Empty" xml:space="preserve">
+    <value>The message is empty.</value>
+  </data>
+  <data name="Chat_NoCharacter" xml:space="preserve">
+    <value>Select a character of your account with /character first.</value>
+  </data>
+  <data name="Chat_NotBridged" xml:space="preserve">
+    <value>This channel isn't bound to a chat of the game.</value>
+  </data>
+  <data name="Chat_NotMember" xml:space="preserve">
+    <value>Your character {0} isn't a member of the guild or alliance of this channel. Select another character with /character.</value>
+  </data>
+  <data name="Chat_Sent" xml:space="preserve">
+    <value>The message was sent as {0}.</value>
+  </data>
+  <data name="Chat_Title" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Chat_TooFast" xml:space="preserve">
+    <value>You're sending messages too fast. Please wait a moment.</value>
+  </data>
   <data name="Command_Character_Description" xml:space="preserve">
     <value>Selects the character of your account, as which you appear.</value>
   </data>
@@ -164,6 +233,27 @@
   <data name="Command_Guild_GuildOption" xml:space="preserve">
     <value>The name of the guild.</value>
   </data>
+  <data name="Command_GuildChat_Bind_Description" xml:space="preserve">
+    <value>Binds this channel to the chat of your guild or alliance.</value>
+  </data>
+  <data name="Command_GuildChat_Create_Description" xml:space="preserve">
+    <value>Creates a channel for the chat of your guild or alliance on the Discord server of the game.</value>
+  </data>
+  <data name="Command_GuildChat_Description" xml:space="preserve">
+    <value>Binds the chat of your guild or alliance to a Discord channel.</value>
+  </data>
+  <data name="Command_GuildChat_ScopeAlliance" xml:space="preserve">
+    <value>Alliance</value>
+  </data>
+  <data name="Command_GuildChat_ScopeGuild" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="Command_GuildChat_ScopeOption" xml:space="preserve">
+    <value>The chat of the guild or of the alliance.</value>
+  </data>
+  <data name="Command_GuildChat_Unbind_Description" xml:space="preserve">
+    <value>Removes the binding of this channel to the chat of the game.</value>
+  </data>
   <data name="Command_Link_CodeOption" xml:space="preserve">
     <value>The code which you got in the game with /discord link.</value>
   </data>
@@ -178,6 +268,12 @@
   </data>
   <data name="Command_Rank_Description" xml:space="preserve">
     <value>Shows the best characters.</value>
+  </data>
+  <data name="Command_Say_Description" xml:space="preserve">
+    <value>Sends a message from this channel to the chat of the game.</value>
+  </data>
+  <data name="Command_Say_MessageOption" xml:space="preserve">
+    <value>The message.</value>
   </data>
   <data name="Command_Setup_Description" xml:space="preserve">
     <value>Creates the missing channels and roles of this Discord server.</value>

@@ -20,9 +20,15 @@
       "name": "Community",
       "channels": [
         { "key": "world-news", "name": "world-news", "topic": "Boss kills, rare drops and level milestones.", "isReadOnly": true, "notifications": [ "WorldNews" ] },
-        { "key": "world-chat", "name": "world-chat" },
+        { "key": "world-chat", "name": "world-chat", "topic": "The world chat of the game.", "isWorldChat": true },
         { "key": "general", "name": "general" }
       ]
+    },
+    {
+      // The channels for the chats of guilds are created here with /guildchat create.
+      "key": "guilds",
+      "name": "Guilds",
+      "channels": []
     },
     {
       "key": "staff",
