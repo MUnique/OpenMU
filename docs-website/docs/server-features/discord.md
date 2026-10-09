@@ -25,6 +25,7 @@ combined:
 | `CastleSiege` | Guild registration, the start and the end of the battle, and the new owner of the castle |
 | `WorldNews` | Boss kills, excellent and ancient items which monsters dropped, characters which reach a level milestone |
 | `Notices` | Global notices which game masters send with the `!` chat prefix |
+| `StaffAlerts` | The commands which game masters used in Discord, see [Commands for game masters](#commands-for-game-masters) |
 
 Each category is posted into its own channel. A category without channel isn't
 posted.
@@ -103,6 +104,8 @@ In the distributed deployment, the bot runs in its own container, see
 | `/character <name>` | Selects the character of the account, as which the player appears |
 | `/say <message>` | Sends a message to the chat of the game which is bound to the channel, see [Chat bridge](#chat-bridge) |
 | `/guildchat bind`, `create`, `unbind` | Binds the chat of a guild or alliance to a channel, see [Chat bridge](#chat-bridge) |
+| `/notify <type> <enabled>` | Turns [direct messages](#direct-messages) on or off |
+| `/announce <text>`, `/kick <character>`, `/ban <character>` | [Commands for game masters](#commands-for-game-masters) |
 
 The commands only show information; they don't change anything in the game.
 Additionally, players can [link their account](#linking-accounts) with
@@ -267,6 +270,45 @@ Without the intent, players use `/say <message>`. Discord only approves the
 intent for verified bots, which are in more than 100 Discord servers, with a
 reason.
 
+## Commands for game masters
+
+Game masters can use these commands in Discord:
+
+| Command | Effect |
+|---|---|
+| `/announce <text>` | Sends the text as golden notice to all players of all game servers. |
+| `/kick <character>` | Disconnects the character from the game. |
+| `/ban <character>` | Bans the account of the character, which has to be online, and disconnects it. |
+
+They need the role *GM* of the [layout](#setting-up-your-discord-server) on your
+Discord server, **and** a [linked account](#linking-accounts) whose selected
+character (`/character`) is a game master. So a Discord role alone isn't
+enough. Every use is logged and posted into `#staff-alerts`, or the channel of
+the `StaffAlerts` category.
+
+## Direct messages
+
+Linked players can get direct messages from the bot. They are off by default,
+and each player turns them on with `/notify` in Discord, or with
+`/discord notify <type>` in the game, which turns a type on or off:
+
+| Type | Direct message |
+|---|---|
+| `login` | Somebody tried to log into the account with the correct password, while it was logged in. |
+| `letter` | A character of the account received a letter. |
+| `friend` | A friend entered the game. Friends who are invisible in the game don't cause a message. |
+
+The bot can only send direct messages to users who share a Discord server with
+it, and who allow direct messages from its members.
+
+## Scheduled events
+
+With `Bot__CreateScheduledEvents` set to `true`, the bot creates a *scheduled
+event* on your Discord server for the next castle siege, so that players can
+mark it as interesting and get reminded by Discord. It's updated when the castle
+siege changes its state, which requires the *Game Event Publisher* plugin with
+castle siege events. The bot needs the permission to create events.
+
 ## Settings
 
 All settings are part of the `Discord` section of the configuration, so they can
@@ -284,6 +326,7 @@ the parts are separated by two underscores.
 | `Bot__StatusChannelId` | the layout | The identifier of the channel with the status message. |
 | `Bot__Channels__<Category>` | the layout | The identifier of the channel per category, into which the bot posts the notifications. |
 | `Bot__LayoutFile` | the default | The path of a JSON file with your own [layout](#your-own-layout). |
+| `Bot__CreateScheduledEvents` | `false` | Creates a [scheduled event](#scheduled-events) for the next castle siege. |
 | `Bot__StatusUpdateInterval` | `00:01:00` | How often the status message and the presence are updated. |
 | `Bot__ChatBridge__BindingMode` | `Both` | Where the chats of guilds can be bound: `Both`, `HostedOnly` (only channels on your Discord server) or `GuildOwnedOnly` (only on Discord servers of guilds). |
 | `Bot__ChatBridge__AllowedDiscordServerIds__0`, `__1`, … | all | The Discord servers of guilds, on which chats can be bound. |
