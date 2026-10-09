@@ -368,4 +368,6 @@
   <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve"><value>This update gives each Dinorant option a distinct number, which is its bit in the option field the client expects.</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve"><value>Configure NPCs of talk plugins</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>Move server ports out of the dynamic port range</value></data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly.</value></data>
 </root>

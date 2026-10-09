@@ -16,11 +16,17 @@ database and can all be changed later in the [admin panel](../admin-panel/server
 | 80 | Admin panel |
 | 44405 | Connect server — default connection port for the original client |
 | 44406 | Connect server — port for the [open source client](https://github.com/sven-n/MuMain) |
-| 55901 – 55906 | Game servers |
-| 55980 | Chat server |
+| 45901 – 45906 | Game servers |
+| 45980 | Chat server |
 
 See [Ports](../reference/ports.md) for the complete list, including the ports of
 the distributed deployment.
+
+:::note[Upgrading from an older version]
+Older versions used the ports 55901 – 55906 for the game servers and 55980 for
+the chat server. An existing database keeps these ports until you change them, see
+[upgrading an existing installation](../reference/ports.md#upgrading-an-existing-installation).
+:::
 
 :::note[Two connect servers]
 The database is initialized for two different clients by default. They connect to

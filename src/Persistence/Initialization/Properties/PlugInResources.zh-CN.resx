@@ -317,4 +317,6 @@
   <data name="FixRageFighterMultipleHitSkillsPlugIn_Description" xml:space="preserve"><value>为格斗家的 Killing Blow、Beast Uppercut、Chain Drive、Dragon Roar、Phoenix Shot 技能及其魔法效果补充缺失的多段攻击。</value></data>
   <data name="FixChaosMixesPlugInSeason6_Name" xml:space="preserve"><value>修正玛雅合成和多项物品属性</value></data>
   <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve"><value>修正玛雅武器、一代翅膀、彩云兽、物品强化、二代和三代翅膀、披风、防护药水、守护属性及召唤魔法书的合成配置；修正蓝色炎狼兽减伤、魔法师戒指魔法属性，以及召唤术师和格斗家 380 级物品的守护属性。</value></data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>将服务器端口移出动态端口范围</value></data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>此更新将游戏服务器和聊天服务器的端口从 55900 – 55999 移至 45900 – 45999（例如 55901 改为 45901，55980 改为 45980），因为原端口位于操作系统的动态端口范围内，可能已被占用。请相应调整防火墙、端口转发和 docker compose 文件。</value></data>
 </root>

@@ -50,7 +50,7 @@ main one, plus older versions such as 0.75 and 0.95d.
 A slider from 1 to 10. This only creates the **configuration** of that many game
 servers; whether they are actually started is decided on the
 [Servers page](servers.md). Each game server gets its own network port, starting
-at 55901.
+at 45901.
 
 ### 3. Test accounts
 

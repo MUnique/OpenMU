@@ -44,7 +44,11 @@ All game servers are one StatefulSet:
   handles what concerns it.
 * **They listen on the same ports,** `gameServer.listenerPort` and the following
   ones, one per client version (see
-  [`GS_LISTENER_PORT`](distributed.md#gs_listener_port)).
+  [`GS_LISTENER_PORT`](distributed.md#gs_listener_port)). The chat server,
+  however, listens on the port which is configured in the database, so it has to
+  match `centralServer.service.chatServerPort` — see
+  [upgrading an existing installation](../reference/ports.md#upgrading-an-existing-installation)
+  if your database was initialized by an older version.
 
 The game clients connect to the game servers directly, so they must be reachable
 from outside the cluster. With `gameServer.exposure: hostPort` (the default),
