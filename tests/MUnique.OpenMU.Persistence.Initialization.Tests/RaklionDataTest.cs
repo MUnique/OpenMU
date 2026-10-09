@@ -23,6 +23,7 @@ internal class RaklionDataTest
     private const short IceStormSkillNumber = 251;
     private const short IceStrikeSkillNumber = 252;
     private const short FallSkillNumber = 253;
+    private const short IronKnightNumber = 458;
 
     /// <summary>
     /// Tests that the monsters of the hatchery of a new database are spawned by the event.
@@ -67,6 +68,54 @@ internal class RaklionDataTest
         AssertSelupanSkills(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the iron knight of a new database uses the intelligence which lets it use its stab.
+    /// </summary>
+    [Test]
+    public async Task NewDatabaseLetsIronKnightStabAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var gameConfiguration = await CreateConfigurationAsync(contextProvider).ConfigureAwait(false);
+
+        Assert.That(GetIronKnight(gameConfiguration).IntelligenceTypeName, Is.EqualTo(typeof(IronKnightIntelligence).FullName));
+    }
+
+    /// <summary>
+    /// Tests that the update sets the intelligence of the iron knight of an existing database,
+    /// and that applying it twice doesn't change anything.
+    /// </summary>
+    [Test]
+    public async Task UpdateLetsIronKnightOfExistingDatabaseStabAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var gameConfiguration = await CreateConfigurationAsync(contextProvider).ConfigureAwait(false);
+        GetIronKnight(gameConfiguration).IntelligenceTypeName = null;
+
+        var update = new AddIronKnightStabUpdatePlugIn();
+        for (var i = 0; i < 2; i++)
+        {
+            await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+        }
+
+        Assert.That(GetIronKnight(gameConfiguration).IntelligenceTypeName, Is.EqualTo(typeof(IronKnightIntelligence).FullName));
+    }
+
+    /// <summary>
+    /// Tests that the update keeps an intelligence, which was already configured for the iron knight.
+    /// </summary>
+    [Test]
+    public async Task UpdateKeepsConfiguredIntelligenceOfIronKnightAsync()
+    {
+        const string customIntelligence = "Custom.Intelligence";
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var gameConfiguration = await CreateConfigurationAsync(contextProvider).ConfigureAwait(false);
+        GetIronKnight(gameConfiguration).IntelligenceTypeName = customIntelligence;
+
+        await new AddIronKnightStabUpdatePlugIn().ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(GetIronKnight(gameConfiguration).IntelligenceTypeName, Is.EqualTo(customIntelligence));
+    }
+
     private static async Task<GameConfiguration> CreateConfigurationAsync(InMemoryPersistenceContextProvider contextProvider)
     {
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
@@ -78,6 +127,11 @@ internal class RaklionDataTest
     private static GameMapDefinition GetHatchery(GameConfiguration gameConfiguration)
     {
         return gameConfiguration.Maps.Single(map => map.Number == HatcheryNumber);
+    }
+
+    private static MonsterDefinition GetIronKnight(GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.Monsters.Single(monster => monster.Number == IronKnightNumber);
     }
 
     private static bool IsSelupanSkill(Skill skill)

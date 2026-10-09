@@ -869,5 +869,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized ConfigureNpcTalkPlugInsPlugIn_Description text.</summary>
         public static string ConfigureNpcTalkPlugInsPlugIn_Description => ResourceManager.GetString("ConfigureNpcTalkPlugInsPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddIronKnightStabUpdatePlugIn_Name text.</summary>
+        public static string AddIronKnightStabUpdatePlugIn_Name => ResourceManager.GetString("AddIronKnightStabUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddIronKnightStabUpdatePlugIn_Description text.</summary>
+        public static string AddIronKnightStabUpdatePlugIn_Description => ResourceManager.GetString("AddIronKnightStabUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }
