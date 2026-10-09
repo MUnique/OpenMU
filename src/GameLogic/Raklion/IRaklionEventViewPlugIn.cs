@@ -55,4 +55,11 @@ public interface IRaklionEventViewPlugIn : IViewPlugIn
     /// <param name="target">The target of the skill.</param>
     /// <param name="skill">The skill.</param>
     ValueTask ShowSelupanSkillAsync(IAttacker selupan, IAttackable? target, SelupanSkill skill);
+
+    /// <summary>
+    /// Shows the stab of an iron knight, which the client shows as a thrust of its spear, followed by a combo effect.
+    /// </summary>
+    /// <param name="ironKnight">The iron knight.</param>
+    /// <param name="target">The target of the stab.</param>
+    ValueTask ShowIronKnightStabAsync(IAttacker ironKnight, IAttackable target);
 }
