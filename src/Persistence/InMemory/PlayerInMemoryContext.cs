@@ -157,6 +157,17 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DateTime?> GetAccountChatBanUntilAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return accounts.FirstOrDefault(account => account.Id == accountId)?.ChatBanUntil;
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkAsync(
         Guid accountId,
         string provider,

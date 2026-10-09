@@ -94,6 +94,7 @@ internal sealed class BasicModelConverter
             Gate value => this.Convert(value),
             GensAbuse value => this.Convert(value),
             GensMember value => this.Convert(value),
+            GuildChatBinding value => this.Convert(value),
             GuildMember value => this.Convert(value),
             Item value => this.Convert(value),
             ItemAppearance value => this.Convert(value),
@@ -1615,6 +1616,27 @@ internal sealed class BasicModelConverter
         target.Notice = source.Notice;
         target.Hostility = (MUnique.OpenMU.Interfaces.Guild)this.ConvertObject(source.Hostility)!;
         target.AllianceGuild = (MUnique.OpenMU.Interfaces.Guild)this.ConvertObject(source.AllianceGuild)!;
+        return target;
+    }
+
+    private BasicModel.GuildChatBinding Convert(GuildChatBinding source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.GuildChatBinding)converted;
+        }
+
+        var target = new BasicModel.GuildChatBinding();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.GuildId = source.GuildId;
+        target.Scope = source.Scope;
+        target.Provider = source.Provider;
+        target.ExternalServerId = source.ExternalServerId;
+        target.ExternalChannelId = source.ExternalChannelId;
+        target.IsHosted = source.IsHosted;
+        target.BoundBy = source.BoundBy;
+        target.BoundAt = source.BoundAt;
         return target;
     }
 

@@ -42,6 +42,13 @@ public interface IGuildServerContext : IContext
     ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId);
 
     /// <summary>
+    /// Gets the guild membership of a character.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>The membership; or <c>null</c>, if the character isn't a member of a guild.</returns>
+    ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName);
+
+    /// <summary>
     /// Gets the alliances of a guild.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
