@@ -84,7 +84,7 @@ The **+ Game server** button opens a small form:
 | PvP enabled | Whether players can attack each other on this server |
 | Server configuration | Which `GameServerConfiguration` to use — this defines the maps the server hosts |
 | Client | The `GameClientDefinition` which is expected to connect |
-| Network port | The TCP port of the listener, e.g. 55907 |
+| Network port | The TCP port of the listener, e.g. 45907 |
 
 After saving, the new server appears in the list, stopped, and can be started
 right away.

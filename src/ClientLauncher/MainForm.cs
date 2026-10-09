@@ -106,7 +106,7 @@ public partial class MainForm : Form
         {
             this.Hosts.Clear();
             this.Hosts.Add(new ServerHostSettings { Description = "Local ConnectServer", Address = "localhost", Port = 44405 });
-            this.Hosts.Add(new ServerHostSettings { Description = "Local GameServer 1", Address = "localhost", Port = 55901 });
+            this.Hosts.Add(new ServerHostSettings { Description = "Local GameServer 1", Address = "localhost", Port = 45901 });
         }
     }
 

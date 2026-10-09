@@ -41,7 +41,7 @@ centralServer:
     annotations: {}
     # One port for each connect server definition, i.e. client version.
     connectServerPorts: [44405, 44406]
-    chatServerPort: 55980
+    chatServerPort: 45980
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -71,7 +71,7 @@ gameServer:
   idOffset: 0
   # Every game server listens on this port for its first client version, on the next one for the
   # second client version, and so on.
-  listenerPort: 55901
+  listenerPort: 45901
   clientVersions: 2
   # How the game clients reach the game servers:
   #   hostPort: on the listener ports of the node the pod runs on. Kubernetes schedules at most one

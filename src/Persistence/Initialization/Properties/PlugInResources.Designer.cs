@@ -875,5 +875,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddIronKnightStabUpdatePlugIn_Description text.</summary>
         public static string AddIronKnightStabUpdatePlugIn_Description => ResourceManager.GetString("AddIronKnightStabUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized MoveServerPortsOutOfDynamicRangePlugInBase_Name text.</summary>
+        public static string MoveServerPortsOutOfDynamicRangePlugInBase_Name => ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MoveServerPortsOutOfDynamicRangePlugInBase_Description text.</summary>
+        public static string MoveServerPortsOutOfDynamicRangePlugInBase_Description => ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Description", resourceCulture)!;
+
     }
 }

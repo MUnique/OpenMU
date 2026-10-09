@@ -198,7 +198,7 @@
             targetPortNumericUpDown.Name = "targetPortNumericUpDown";
             targetPortNumericUpDown.Size = new System.Drawing.Size(92, 23);
             targetPortNumericUpDown.TabIndex = 3;
-            targetPortNumericUpDown.Value = new decimal(new int[] { 55901, 0, 0, 0 });
+            targetPortNumericUpDown.Value = new decimal(new int[] { 45901, 0, 0, 0 });
             // 
             // label6
             // 
@@ -263,7 +263,7 @@
             listenerPortNumericUpDown.Name = "listenerPortNumericUpDown";
             listenerPortNumericUpDown.Size = new System.Drawing.Size(92, 23);
             listenerPortNumericUpDown.TabIndex = 3;
-            listenerPortNumericUpDown.Value = new decimal(new int[] { 55900, 0, 0, 0 });
+            listenerPortNumericUpDown.Value = new decimal(new int[] { 45900, 0, 0, 0 });
             // 
             // btnStartProxy
             // 

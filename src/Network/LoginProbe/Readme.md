@@ -26,7 +26,7 @@ variable is unset, the account name is used, which is what the shipped test
 accounts use. One JSON object per step is written to standard output:
 
 ```json
-{"step":"server_selected","host":"127.127.127.127","port":55902,"server":0}
+{"step":"server_selected","host":"127.127.127.127","port":45902,"server":0}
 {"ok":true,"step":"login","account":"test4","result":"Okay"}
 {"ok":true,"step":"holding","seconds":30}
 {"ok":true,"step":"disconnected","account":"test4"}
