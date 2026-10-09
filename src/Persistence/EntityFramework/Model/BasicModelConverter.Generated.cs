@@ -50,6 +50,7 @@ internal sealed class BasicModelConverter
             IncreasableItemOption value => this.Convert(value),
             ItemDropItemGroup value => this.Convert(value),
             Account value => this.Convert(value),
+            AccountExternalLink value => this.Convert(value),
             AppearanceData value => this.Convert(value),
             AreaSkillSettings value => this.Convert(value),
             AttributeDefinition value => this.Convert(value),
@@ -202,6 +203,27 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.AccountExternalLink Convert(AccountExternalLink source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.AccountExternalLink)converted;
+        }
+
+        var target = new BasicModel.AccountExternalLink();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.AccountId = source.AccountId;
+        target.Provider = source.Provider;
+        target.ExternalUserId = source.ExternalUserId;
+        target.ExternalUserName = source.ExternalUserName;
+        target.CharacterName = source.CharacterName;
+        target.LinkedAt = source.LinkedAt;
+        target.CodeHash = source.CodeHash;
+        target.CodeExpiresAt = source.CodeExpiresAt;
         return target;
     }
 

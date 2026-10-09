@@ -162,6 +162,52 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the link of an account to a user of an external service.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The link; Otherwise, null, if the account has no link to the service.</returns>
+    ValueTask<AccountExternalLink?> GetAccountExternalLinkAsync(
+        Guid accountId,
+        string provider,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the link of a user of an external service to an account.
+    /// </summary>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="externalUserId">The identifier of the user in the external service.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The link; Otherwise, null, if the user isn't linked.</returns>
+    ValueTask<AccountExternalLink?> GetAccountExternalLinkByUserAsync(
+        string provider,
+        string externalUserId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the link with a pending one-time code.
+    /// </summary>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="codeHash">The hash of the code.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The link; Otherwise, null, if no link has the code.</returns>
+    ValueTask<AccountExternalLink?> GetAccountExternalLinkByCodeAsync(
+        string provider,
+        string codeHash,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the links of an account to users of external services.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The links.</returns>
+    ValueTask<IReadOnlyList<AccountExternalLink>> GetAccountExternalLinksAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the gens membership of a character.
     /// </summary>
     /// <param name="characterId">The persistent character identifier.</param>

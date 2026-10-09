@@ -157,6 +157,53 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkAsync(
+        Guid accountId,
+        string provider,
+        CancellationToken cancellationToken = default)
+    {
+        var links = await this.Provider.GetRepository<AccountExternalLink>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return links.FirstOrDefault(link => link.AccountId == accountId && link.Provider == provider);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkByUserAsync(
+        string provider,
+        string externalUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var links = await this.Provider.GetRepository<AccountExternalLink>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return links.FirstOrDefault(link => link.Provider == provider && link.ExternalUserId == externalUserId);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkByCodeAsync(
+        string provider,
+        string codeHash,
+        CancellationToken cancellationToken = default)
+    {
+        var links = await this.Provider.GetRepository<AccountExternalLink>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return links.FirstOrDefault(link => link.Provider == provider && link.CodeHash == codeHash);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var links = await this.Provider.GetRepository<AccountExternalLink>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return links.Where(link => link.AccountId == accountId).OrderBy(link => link.Provider).ToList();
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)
