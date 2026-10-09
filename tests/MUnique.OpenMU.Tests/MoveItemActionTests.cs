@@ -304,11 +304,125 @@ public class MoveItemActionTests
         Assert.That(player.ShopStorage!.GetItem(InventoryConstants.FirstStoreItemSlotIndex), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies that unequipping the last flying item on a map with a flying requirement is rejected
+    /// and the item is moved back to its slot.
+    /// </summary>
+    [Test]
+    public async ValueTask UnequippingLastFlyingItemOnFlyingMapIsRejectedAsync()
+    {
+        var player = await CreateTestPlayerOnFlyingMapAsync().ConfigureAwait(false);
+        var wings = CreateItem(CreateFlyingWingsDefinition(), 1);
+        await player.Inventory!.AddItemAsync(InventoryConstants.WingsSlot, wings).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, InventoryConstants.WingsSlot, Storages.Inventory, 20, Storages.Inventory).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(InventoryConstants.WingsSlot), Is.SameAs(wings));
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
+        Assert.That(player.Attributes![Stats.CanFly], Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Verifies that unequipping a flying item on a map without requirements is allowed.
+    /// </summary>
+    [Test]
+    public async ValueTask UnequippingFlyingItemWithoutMapRequirementIsAllowedAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var wings = CreateItem(CreateFlyingWingsDefinition(), 1);
+        await player.Inventory!.AddItemAsync(InventoryConstants.WingsSlot, wings).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, InventoryConstants.WingsSlot, Storages.Inventory, 20, Storages.Inventory).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(wings));
+        Assert.That(player.Inventory.GetItem(InventoryConstants.WingsSlot), Is.Null);
+    }
+
     private static Storage CreateVaultStorage()
     {
         var itemStorage = new Mock<ItemStorage>();
         itemStorage.Setup(i => i.Items).Returns(new List<Item>());
         return new Storage(InventoryConstants.WarehouseSize, itemStorage.Object);
+    }
+
+    private static async ValueTask<Player> CreateTestPlayerOnFlyingMapAsync()
+    {
+        var gameConfig = new Mock<GameConfiguration>();
+        gameConfig.SetupAllProperties();
+        gameConfig.Setup(c => c.Maps).Returns(new List<GameMapDefinition>());
+        gameConfig.Setup(c => c.Items).Returns(new List<ItemDefinition>());
+        gameConfig.Setup(c => c.Skills).Returns(new List<Skill>());
+        gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
+        gameConfig.Setup(c => c.CharacterClasses).Returns(new List<CharacterClass>());
+        gameConfig.Setup(c => c.Attributes).Returns(new List<AttributeDefinition>());
+        gameConfig.Setup(c => c.GlobalAttributeCombinations).Returns(new List<AttributeRelationship>());
+        gameConfig.Setup(c => c.GlobalBaseAttributeValues).Returns(new List<ConstValueAttribute>
+        {
+            new(1, Stats.MoneyAmountRate),
+        });
+
+        var flyingMap = new Mock<GameMapDefinition>();
+        flyingMap.SetupAllProperties();
+        flyingMap.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
+        flyingMap.Setup(m => m.MonsterSpawns).Returns(new List<MonsterSpawnArea>());
+        flyingMap.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        flyingMap.Object.TerrainData = new byte[ushort.MaxValue + 3];
+        flyingMap.Object.Number = 1;
+        flyingMap.Setup(m => m.MapRequirements).Returns(new List<AttributeRequirement>
+        {
+            new() { Attribute = Stats.CanFly, MinimumValue = 1 },
+        });
+        gameConfig.Object.Maps.Add(flyingMap.Object);
+
+        var normalMap = new Mock<GameMapDefinition>();
+        normalMap.SetupAllProperties();
+        normalMap.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
+        normalMap.Setup(m => m.MonsterSpawns).Returns(new List<MonsterSpawnArea>());
+        normalMap.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        normalMap.Object.TerrainData = new byte[ushort.MaxValue + 3];
+        normalMap.Object.Number = 0;
+        gameConfig.Object.Maps.Add(normalMap.Object);
+
+        gameConfig.Object.RecoveryInterval = int.MaxValue;
+        var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(
+            gameConfig.Object,
+            new InMemoryPersistenceContextProvider(),
+            mapInitializer,
+            new NullLoggerFactory(),
+            new PlugInManager(null, new NullLoggerFactory(), null, null),
+            NullDropGenerator.Instance,
+            new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+
+        player.SelectedCharacter!.CurrentMap = flyingMap.Object;
+        player.CurrentMap = null;
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        return player;
+    }
+
+    private static ItemDefinition CreateFlyingWingsDefinition()
+    {
+        var definitionMock = new Mock<ItemDefinition>();
+        definitionMock.SetupAllProperties();
+        definitionMock.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+        definitionMock.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
+        var definition = definitionMock.Object;
+        definition.Width = 2;
+        definition.Height = 2;
+        definition.Durability = 20;
+        var slotType = new Mock<ItemSlotType>();
+        slotType.Setup(s => s.ItemSlots).Returns(new List<int> { InventoryConstants.WingsSlot });
+        definition.ItemSlot = slotType.Object;
+        definition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition
+        {
+            TargetAttribute = Stats.CanFly,
+            BaseValue = 1,
+            AggregateType = AggregateType.AddRaw,
+        });
+        return definition;
     }
 
     private static async ValueTask<Player> CreateTestPlayerAsync()
