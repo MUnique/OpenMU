@@ -68,11 +68,13 @@ public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatComma
         /// <summary>
         /// Gets or sets the amount of money to set.
         /// </summary>
+        [Range(0, int.MaxValue)]
         public int Amount { get; set; }
 
         /// <summary>
         /// Gets or sets the character name to set money for.
         /// </summary>
+        [ValueReference(ChatCommandValueReference.CharacterName)]
         public string? CharacterName { get; set; }
     }
 }

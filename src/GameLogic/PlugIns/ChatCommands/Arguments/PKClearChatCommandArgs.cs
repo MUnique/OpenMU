@@ -13,5 +13,6 @@ public class PkClearChatCommandArgs : ArgumentsBase
     /// Gets or sets the character name.
     /// </summary>
     [Argument("char", false)]
+    [ValueReference(ChatCommandValueReference.CharacterName)]
     public string? CharacterName { get; set; }
 }
