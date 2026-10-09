@@ -502,4 +502,22 @@ Stufe: {2} - {3}</value>
   <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
     <value>Benötigt die erforderlichen Fertigkeiten und eine Fertigkeit des vorherigen Rangs mit mindestens Stufe {0}.</value>
   </data>
+  <data name="CharacterCreationHint" xml:space="preserve">
+    <value>Der Charakter erhält die Statuswerte seiner Klasse mit ihren Startwerten, startet auf der Heimatkarte seiner Klasse und bekommt ein leeres Inventar und die Standard-Tastenbelegung. Die Startgegenstände und -fertigkeiten, die das Spiel neuen Charakteren gibt, werden nicht hinzugefügt; bei Bedarf können sie auf der Bearbeitungsseite ergänzt werden.</value>
+  </data>
+  <data name="CharacterNameRequired" xml:space="preserve">
+    <value>Bitte einen Namen eingeben.</value>
+  </data>
+  <data name="CharacterNameInvalid" xml:space="preserve">
+    <value>Der Name entspricht nicht dem konfigurierten Muster: {0}</value>
+  </data>
+  <data name="CharacterClassRequired" xml:space="preserve">
+    <value>Bitte eine Charakterklasse auswählen.</value>
+  </data>
+  <data name="CharacterClassWithoutHomeMap" xml:space="preserve">
+    <value>Die Charakterklasse hat keine Heimatkarte, daher hätte der Charakter keine Startposition.</value>
+  </data>
+  <data name="NoFreeCharacterSlot" xml:space="preserve">
+    <value>Das Konto hat keinen freien Charakterplatz. Ein Konto kann bis zu {0} Charaktere haben.</value>
+  </data>
 </root>

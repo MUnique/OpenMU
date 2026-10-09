@@ -1,0 +1,133 @@
+@* <copyright file="CharacterCreationForm.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.GameLogic
+@using MUnique.OpenMU.Persistence
+
+@inject IDataSource<GameConfiguration> GameConfigurationSource
+
+@if (this._gameConfiguration is null)
+{
+    <LoadingIndicator />
+}
+else
+{
+    <EditForm EditContext="@this._editContext" OnSubmit="@this.OnSubmitAsync">
+        <CascadingValue Value="@this.PersistenceContext">
+            <p class="text-muted">@Resources.CharacterCreationHint</p>
+            @if (this._freeSlot is null)
+            {
+                <div class="alert alert-warning">@string.Format(Resources.NoFreeCharacterSlot, this._gameConfiguration.MaximumCharactersPerAccount)</div>
+            }
+
+            <TextField @bind-Value="this.Character.Name" />
+            <LookupField TObject="CharacterClass" @bind-Value="this.Character.CharacterClass" />
+        </CascadingValue>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" disabled="@(this._freeSlot is null)">@Resources.Submit</button>
+            <button type="button" @onclick="@this.OnCancel" class="btn btn-secondary">@Resources.Cancel</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+
+    private EditContext? _editContext;
+
+    private ValidationMessageStore? _validationMessages;
+
+    private GameConfiguration? _gameConfiguration;
+
+    private byte? _freeSlot;
+
+    /// <summary>
+    /// Gets or sets the character which is being created.
+    /// </summary>
+    [Parameter]
+    public Character Character { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the account to which the character is going to be added.
+    /// </summary>
+    [Parameter]
+    public Account Account { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [Parameter]
+    public IContext PersistenceContext { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the character got initialized and can be added to the account.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the form is cancelled.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(true);
+        this._editContext = new EditContext(this.Character);
+        this._validationMessages = new ValidationMessageStore(this._editContext);
+        this._editContext.OnFieldChanged += (_, args) =>
+        {
+            this._validationMessages.Clear(args.FieldIdentifier);
+            this._editContext.NotifyValidationStateChanged();
+        };
+
+        this._gameConfiguration = await this.GameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
+        this._freeSlot = this.Account.GetFreeCharacterSlot(this._gameConfiguration);
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        if (this._editContext is null
+            || this._validationMessages is null
+            || this._gameConfiguration is null
+            || this._freeSlot is not { } freeSlot)
+        {
+            return;
+        }
+
+        this._validationMessages.Clear();
+        var nameField = this._editContext.Field(nameof(Character.Name));
+        if (string.IsNullOrWhiteSpace(this.Character.Name))
+        {
+            this._validationMessages.Add(nameField, Resources.CharacterNameRequired);
+        }
+        else if (!this._gameConfiguration.IsValidCharacterName(this.Character.Name))
+        {
+            this._validationMessages.Add(nameField, string.Format(Resources.CharacterNameInvalid, this._gameConfiguration.CharacterNameRegex));
+        }
+
+        var classField = this._editContext.Field(nameof(Character.CharacterClass));
+        if (this.Character.CharacterClass is not { } characterClass)
+        {
+            this._validationMessages.Add(classField, Resources.CharacterClassRequired);
+        }
+        else if (characterClass.HomeMap is null)
+        {
+            this._validationMessages.Add(classField, Resources.CharacterClassWithoutHomeMap);
+        }
+
+        this._editContext.NotifyValidationStateChanged();
+        if (this._editContext.GetValidationMessages().Any() || this.Character.CharacterClass is not { } validCharacterClass)
+        {
+            return;
+        }
+
+        this.Character.CharacterSlot = freeSlot;
+        this.PersistenceContext.InitializeNewCharacter(this.Character, validCharacterClass);
+        await this.OnValidSubmit.InvokeAsync().ConfigureAwait(true);
+    }
+}

@@ -1007,5 +1007,23 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>Gets the localized MapsLabel text.</summary>
         public static string MapsLabel => ResourceManager.GetString("MapsLabel", resourceCulture)!;
 
+        /// <summary>Gets the localized CharacterCreationHint text.</summary>
+        public static string CharacterCreationHint => ResourceManager.GetString("CharacterCreationHint", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterNameRequired text.</summary>
+        public static string CharacterNameRequired => ResourceManager.GetString("CharacterNameRequired", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterNameInvalid text.</summary>
+        public static string CharacterNameInvalid => ResourceManager.GetString("CharacterNameInvalid", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterClassRequired text.</summary>
+        public static string CharacterClassRequired => ResourceManager.GetString("CharacterClassRequired", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterClassWithoutHomeMap text.</summary>
+        public static string CharacterClassWithoutHomeMap => ResourceManager.GetString("CharacterClassWithoutHomeMap", resourceCulture)!;
+
+        /// <summary>Gets the localized NoFreeCharacterSlot text.</summary>
+        public static string NoFreeCharacterSlot => ResourceManager.GetString("NoFreeCharacterSlot", resourceCulture)!;
+
     }
 }

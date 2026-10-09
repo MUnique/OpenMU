@@ -20,6 +20,14 @@ else if (this.Item is SkillEntry skillEntry && this.Owner is Character character
                             OnSubmit="@this.OnValidSubmit"
                             OnCancel="@this.OnCancel" />
 }
+else if (this.Item is Character newCharacter && this.Owner is Account account)
+{
+    <CharacterCreationForm Character="@newCharacter"
+                           Account="@account"
+                           PersistenceContext="@this.PersistenceContext"
+                           OnValidSubmit="@this.OnValidSubmit"
+                           OnCancel="@this.OnCancel" />
+}
 else
 {
     <EditForm Model="@this.Item" OnValidSubmit="@this.OnValidSubmit">
