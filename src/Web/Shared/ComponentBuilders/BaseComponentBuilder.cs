@@ -69,6 +69,14 @@ public class BaseComponentBuilder
     /// <param name="currentIndex">The current index in the render tree.</param>
     /// <param name="notificationService">The notification service.</param>
     /// <returns>The updated index in the render tree.</returns>
+    /// <remarks>
+    /// The sequence numbers are allocated from a strictly increasing counter which is
+    /// threaded through the builder chain by value within a single synchronous render
+    /// pass, so they are unique and stable for each rendered frame. The ASP0006 analyzer
+    /// only accepts integer literals and cannot verify this pattern, hence the suppression
+    /// at this single funnel method through which all component builders render.
+    /// </remarks>
+#pragma warning disable ASP0006
     protected int BuildField<TValue>(object model, Type componentType, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
     {
         builder.OpenComponent(currentIndex++, componentType);
@@ -94,4 +102,5 @@ public class BaseComponentBuilder
 
         return currentIndex;
     }
+#pragma warning restore ASP0006
 }
