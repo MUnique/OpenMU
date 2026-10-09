@@ -160,6 +160,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your account has no character named {0}..
+        /// </summary>
+        public static string Character_NotOfAccount {
+            get {
+                return ResourceManager.GetString("Character_NotOfAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Offline.
         /// </summary>
         public static string Character_Offline {
@@ -183,6 +192,33 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Character_Resets {
             get {
                 return ResourceManager.GetString("Character_Resets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You appear as **{0}** now..
+        /// </summary>
+        public static string Character_Selected {
+            get {
+                return ResourceManager.GetString("Character_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selects the character of your account, as which you appear..
+        /// </summary>
+        public static string Command_Character_Description {
+            get {
+                return ResourceManager.GetString("Command_Character_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the character..
+        /// </summary>
+        public static string Command_Character_NameOption {
+            get {
+                return ResourceManager.GetString("Command_Character_NameOption", resourceCulture);
             }
         }
         
@@ -223,6 +259,24 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The code which you got in the game with /discord link..
+        /// </summary>
+        public static string Command_Link_CodeOption {
+            get {
+                return ResourceManager.GetString("Command_Link_CodeOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Links your Discord user to your game account..
+        /// </summary>
+        public static string Command_Link_Description {
+            get {
+                return ResourceManager.GetString("Command_Link_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows how many players are online..
         /// </summary>
         public static string Command_Online_Description {
@@ -255,6 +309,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Command_Setup_Description {
             get {
                 return ResourceManager.GetString("Command_Setup_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removes the link to your game account..
+        /// </summary>
+        public static string Command_Unlink_Description {
+            get {
+                return ResourceManager.GetString("Command_Unlink_Description", resourceCulture);
             }
         }
         
@@ -408,6 +471,51 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string LevelMilestone_Title {
             get {
                 return ResourceManager.GetString("LevelMilestone_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The code is invalid or expired. Get a new one in the game with /discord link..
+        /// </summary>
+        public static string Link_InvalidCode {
+            get {
+                return ResourceManager.GetString("Link_InvalidCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your Discord user is linked to your game account now. You appear as **{0}**; choose another character with /character..
+        /// </summary>
+        public static string Link_Linked {
+            get {
+                return ResourceManager.GetString("Link_Linked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your Discord user isn't linked to a game account. Get a code in the game with /discord link, and enter it here with /link..
+        /// </summary>
+        public static string Link_NotLinked {
+            get {
+                return ResourceManager.GetString("Link_NotLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game account.
+        /// </summary>
+        public static string Link_Title {
+            get {
+                return ResourceManager.GetString("Link_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your Discord user isn't linked to a game account anymore..
+        /// </summary>
+        public static string Link_Unlinked {
+            get {
+                return ResourceManager.GetString("Link_Unlinked", resourceCulture);
             }
         }
         
