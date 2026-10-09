@@ -134,6 +134,54 @@ public class ItemStackAction
         await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Splits a requested amount from a stack into a free inventory slot.
+    /// </summary>
+    /// <param name="player">The player performing the split.</param>
+    /// <param name="slot">The inventory slot containing the stack.</param>
+    /// <param name="splitCount">The number of items to move into the new stack.</param>
+    public async ValueTask SplitStackAsync(Player player, byte slot, ushort splitCount)
+    {
+        var inventory = player.Inventory;
+        var sourceItem = inventory?.GetItem(slot);
+        if (inventory is null || sourceItem is null || sourceItem.Definition is null)
+        {
+            return;
+        }
+
+        var definition = sourceItem.Definition;
+        if (definition.Durability <= 1
+            || splitCount == 0
+            || splitCount >= sourceItem.Durability
+            || splitCount > definition.Durability)
+        {
+            return;
+        }
+
+        var freeSlot = inventory.FreeSlots.Take(1).ToList();
+        if (freeSlot.Count == 0)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryNotEnoughSpace)).ConfigureAwait(false);
+            return;
+        }
+
+        var splitItem = player.PersistenceContext.CreateNew<Item>();
+        splitItem.AssignValues(sourceItem);
+        splitItem.Durability = splitCount;
+
+        if (!await inventory.AddItemAsync(freeSlot[0], splitItem).ConfigureAwait(false))
+        {
+            player.PersistenceContext.Detach(splitItem);
+            return;
+        }
+
+        sourceItem.Durability -= splitCount;
+        await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(
+            p => p.ItemDurabilityChangedAsync(sourceItem, false)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(
+            p => p.ItemAppearAsync(splitItem)).ConfigureAwait(false);
+    }
+
     private static int GetCombineFee(byte stackSize) => (stackSize / 10) * CombineFeePerTen;
 
     private bool IsCorrectNpcOpened(Player player)
