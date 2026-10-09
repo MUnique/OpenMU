@@ -36,8 +36,8 @@ public class RequestedItemConsumptionFailedPlugIn : IRequestedItemConsumptionFai
         }
 
         await this._player.Connection.SendItemConsumptionFailedAsync(
-            (ushort)Math.Max(this._player.Attributes[Stats.CurrentHealth], 0f),
-            (ushort)Math.Max(this._player.Attributes[Stats.CurrentShield], 0f))
+            this._player.Attributes[Stats.CurrentHealth].ToUInt16Clamped(),
+            this._player.Attributes[Stats.CurrentShield].ToUInt16Clamped())
             .ConfigureAwait(false);
     }
 }
