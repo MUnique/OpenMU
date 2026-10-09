@@ -1569,8 +1569,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             moveToNextSafezone = true;
         }
 
-        if (this.CurrentMiniGame is { })
+        if (this.CurrentMiniGame is { } miniGame)
         {
+            if (this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                // The connection got lost, so the player may come back while the game is still running.
+                miniGame.RememberDisconnectedPlayer(this);
+            }
+
             moveToNextSafezone = true;
         }
 
@@ -1991,6 +1997,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
+        await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);

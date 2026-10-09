@@ -57,6 +57,13 @@ public sealed class OfflineLevelingChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
+        if (player.CurrentMiniGame is not null)
+        {
+            // Going offline disconnects the player, which would let the offline player rejoin the event.
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OfflineLevelingInMiniGame)).ConfigureAwait(false);
+            return;
+        }
+
         if (player.Attributes?[Stats.IsMuHelperActive] <= 0)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OfflineLevelingMuHelperNotRunning)).ConfigureAwait(false);

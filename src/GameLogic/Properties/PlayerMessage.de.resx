@@ -756,6 +756,9 @@
   <data name="OfflineLevelingNotOnMap" xml:space="preserve">
     <value>Sie müssen sich auf einer Karte befinden, um Offline-Leveln zu starten.</value>
   </data>
+  <data name="OfflineLevelingInMiniGame" xml:space="preserve">
+    <value>Sie können Offline-Leveln nicht während eines Events starten.</value>
+  </data>
   <data name="OfflineLevelingNoCharacterSelected" xml:space="preserve">
     <value>Es ist kein Charakter ausgewählt.</value>
   </data>

@@ -51,6 +51,14 @@ public interface IMiniGameManager
     IReadOnlyList<MiniGameContext> GetRunningMiniGames(MiniGameType miniGameType);
 
     /// <summary>
+    /// Tries to bring the player back into a running mini game, which its character
+    /// left because the connection was lost.
+    /// </summary>
+    /// <param name="player">The player which entered the world.</param>
+    /// <returns>A value indicating whether the player rejoined a mini game.</returns>
+    ValueTask<bool> TryRejoinAsync(Player player);
+
+    /// <summary>
     /// Removes the mini game instance from the game.
     /// </summary>
     /// <param name="miniGameContext">The context of the mini game.</param>
