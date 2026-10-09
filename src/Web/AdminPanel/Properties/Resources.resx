@@ -1954,4 +1954,37 @@
   <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
     <value>Product {0} has a quantity below 1.</value>
   </data>
+  <data name="ExternalLinks" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="ExternalLinksOf" xml:space="preserve">
+    <value>Links of {0}</value>
+  </data>
+  <data name="ExternalLinksDescription" xml:space="preserve">
+    <value>The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link. When you remove a Discord link here, remove the role of linked players in Discord yourself.</value>
+  </data>
+  <data name="ExternalLinksAccountNotFound" xml:space="preserve">
+    <value>The account wasn't found.</value>
+  </data>
+  <data name="ExternalLinksNone" xml:space="preserve">
+    <value>The account isn't linked.</value>
+  </data>
+  <data name="ExternalLinkService" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="ExternalLinkUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ExternalLinkCharacter" xml:space="preserve">
+    <value>Appears as</value>
+  </data>
+  <data name="ExternalLinkLinkedAt" xml:space="preserve">
+    <value>Linked at</value>
+  </data>
+  <data name="ExternalLinkPending" xml:space="preserve">
+    <value>Code valid until {0}</value>
+  </data>
+  <data name="ExternalLinkRemoved" xml:space="preserve">
+    <value>The link was removed.</value>
+  </data>
 </root>
