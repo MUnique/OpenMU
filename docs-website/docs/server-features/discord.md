@@ -267,6 +267,7 @@ Without the intent, players use `/say <message>`. Discord only approves the
 intent for verified bots, which are in more than 100 Discord servers, with a
 reason.
 
+## Settings
 
 All settings are part of the `Discord` section of the configuration, so they can
 also be set in the `appsettings.json` of the server. As environment variables,
