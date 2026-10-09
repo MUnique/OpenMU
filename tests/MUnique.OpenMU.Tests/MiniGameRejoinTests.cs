@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Reflection;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -147,6 +148,75 @@ public class MiniGameRejoinTests
             Times.Once);
     }
 
+    /// <summary>
+    /// Tests that a rejoined player keeps its Devil Square score, and that the reward
+    /// is given to the player of its new connection instead of the disconnected one.
+    /// </summary>
+    [Test]
+    public async Task RejoinedPlayerGetsDevilSquareRewardAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var gameContext = player.GameContext;
+        gameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
+        player.SelectedCharacter!.Id = Guid.NewGuid();
+        player.SelectedCharacter.Name = "Rejoiner";
+        var remainingPlayer = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        remainingPlayer.SelectedCharacter!.Id = Guid.NewGuid();
+        remainingPlayer.SelectedCharacter.Name = "Remaining";
+
+        var definition = CreateDefinition(gameContext, MiniGameType.DevilSquare);
+        definition.Rewards.Add(new MiniGameReward { RewardType = MiniGameRewardType.Money, RewardAmount = 1000 });
+        var game = new DevilSquareContext(new MiniGameMapKey(0, 0, string.Empty), definition, gameContext, CreateMapInitializer());
+        this._gamesToDispose.Add(game);
+        game.EnsureGameLoopRunning();
+        await EnterAsync(game, remainingPlayer).ConfigureAwait(false);
+        await EnterAsync(game, player).ConfigureAwait(false);
+        await SkipUntilPlayingAsync(game).ConfigureAwait(false);
+
+        player.IsAlive = true;
+        await game.Map.AddAsync(player).ConfigureAwait(false);
+        game.RememberDisconnectedPlayer(player);
+        await game.Map.RemoveAsync(player).ConfigureAwait(false);
+
+        var reconnected = await CreateReconnectedPlayerAsync(player).ConfigureAwait(false);
+        reconnected.SelectedCharacter!.Name = player.SelectedCharacter.Name;
+        Assert.That(await game.TryRejoinAsync(reconnected).ConfigureAwait(false), Is.True);
+
+        // The game duration can't be skipped, so the game is finished like a game master would do it.
+        typeof(MiniGameContext).GetMethod("FinishEvent", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, null);
+        await WaitUntilAsync(() => reconnected.Money > 0).ConfigureAwait(false);
+
+        Assert.That(reconnected.Money, Is.EqualTo(1000));
+        Assert.That(player.Money, Is.EqualTo(0));
+        Assert.That(remainingPlayer.Money, Is.EqualTo(1000));
+    }
+
+    private static MiniGameDefinition CreateDefinition(IGameContext gameContext, MiniGameType type, params MiniGameChangeEvent[] changeEvents)
+    {
+        var mapDefinition = gameContext.Configuration.Maps.First(m => m.Number == 0);
+        var definitionMock = new Mock<MiniGameDefinition>();
+        definitionMock.SetupGet(d => d.Rewards).Returns(new List<MiniGameReward>());
+        definitionMock.SetupGet(d => d.SpawnWaves).Returns(new List<MiniGameSpawnWave>());
+        definitionMock.SetupGet(d => d.ChangeEvents).Returns(changeEvents.ToList());
+        definitionMock.SetupGet(d => d.Entrance).Returns(new ExitGate { Map = mapDefinition });
+        var definition = definitionMock.Object;
+        definition.Type = type;
+        definition.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
+        definition.EnterDuration = TimeSpan.Zero;
+        definition.GameDuration = TimeSpan.FromMinutes(5);
+        definition.ExitDuration = TimeSpan.FromMinutes(1);
+        definition.MaximumPlayerCount = 10;
+        return definition;
+    }
+
+    private static IMapInitializer CreateMapInitializer()
+    {
+        var mapInitializerMock = new Mock<IMapInitializer>();
+        mapInitializerMock.Setup(m => m.CreateGameMap(It.IsAny<GameMapDefinition>()))
+            .Returns<GameMapDefinition>(map => new GameMap(map, TimeSpan.FromMinutes(1), 16));
+        return mapInitializerMock.Object;
+    }
+
     private static bool IsSingleArea(IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas, byte startX, byte startY, byte endX, byte endY)
     {
         return areas.Count == 1 && areas.Single() == (startX, startY, endX, endY);
@@ -176,6 +246,19 @@ public class MiniGameRejoinTests
         Assert.That(condition(), Is.True, "The condition wasn't met in time.");
     }
 
+    private static async Task SkipUntilPlayingAsync(MiniGameContext game)
+    {
+        // Skips the entering phase and the countdown, like a game master would do it.
+        var deadline = DateTime.UtcNow.Add(Timeout);
+        while (game.State != MiniGameState.Playing && DateTime.UtcNow < deadline)
+        {
+            game.SkipCurrentWait();
+            await Task.Delay(20).ConfigureAwait(false);
+        }
+
+        Assert.That(game.State, Is.EqualTo(MiniGameState.Playing));
+    }
+
     private async Task<(TestGame Game, Player DisconnectedPlayer)> CreateRunningGameWithDisconnectedPlayerAsync(params MiniGameChangeEvent[] changeEvents)
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
@@ -203,25 +286,8 @@ public class MiniGameRejoinTests
 
     private async Task<TestGame> CreateRunningGameAsync(IGameContext gameContext, params MiniGameChangeEvent[] changeEvents)
     {
-        var mapDefinition = gameContext.Configuration.Maps.First(m => m.Number == 0);
-        var definitionMock = new Mock<MiniGameDefinition>();
-        definitionMock.SetupGet(d => d.Rewards).Returns(new List<MiniGameReward>());
-        definitionMock.SetupGet(d => d.SpawnWaves).Returns(new List<MiniGameSpawnWave>());
-        definitionMock.SetupGet(d => d.ChangeEvents).Returns(changeEvents.ToList());
-        definitionMock.SetupGet(d => d.Entrance).Returns(new ExitGate { Map = mapDefinition });
-        var definition = definitionMock.Object;
-        definition.Type = MiniGameType.BloodCastle;
-        definition.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
-        definition.EnterDuration = TimeSpan.Zero;
-        definition.GameDuration = TimeSpan.FromMinutes(5);
-        definition.ExitDuration = TimeSpan.FromMinutes(1);
-        definition.MaximumPlayerCount = 10;
-
-        var mapInitializerMock = new Mock<IMapInitializer>();
-        mapInitializerMock.Setup(m => m.CreateGameMap(It.IsAny<GameMapDefinition>()))
-            .Returns<GameMapDefinition>(map => new GameMap(map, TimeSpan.FromMinutes(1), 16));
-
-        var game = new TestGame(new MiniGameMapKey(0, 0, string.Empty), definition, gameContext, mapInitializerMock.Object);
+        var definition = CreateDefinition(gameContext, MiniGameType.BloodCastle, changeEvents);
+        var game = new TestGame(new MiniGameMapKey(0, 0, string.Empty), definition, gameContext, CreateMapInitializer());
         this._gamesToDispose.Add(game);
         game.EnsureGameLoopRunning();
         await WaitUntilAsync(() => game.State == MiniGameState.Playing).ConfigureAwait(false);
