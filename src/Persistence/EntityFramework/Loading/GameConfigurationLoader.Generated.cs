@@ -23,7 +23,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"CastleSiegeConfigurationId\", \"CastleSiegeConfigurationId1\", \"CastleSiegeConfigurationId2\", \"CastleSiegeConfigurationId3\", \"CastleSiegeConfigurationId4\", \"Level\", \"RequiredJewelOfGuardianCount\", \"RequiredZen\", \"Value\" from config.\"CastleSiegeUpgradeDefinition\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"DefaultSide\", \"Direction\", \"InstanceId\", \"IsPersistedToDatabase\", \"MonsterDefinitionId\", \"SpawnX\", \"SpawnY\" from config.\"CastleSiegeNpcDefinition\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"DayOfWeek\", \"Hour\", \"Minute\", \"State\" from config.\"CastleSiegeStateScheduleEntry\"",
-        "select \"Id\", \"CanGetCreated\", \"ComboDefinitionId\", \"CreationAllowedFlag\", \"FruitCalculation\", \"GameConfigurationId\", \"HomeMapId\", \"IsMasterClass\", \"LevelRequirementByCreation\", \"LevelWarpRequirementReductionPercent\", \"Name\", \"NextGenerationClassId\", \"Number\" from config.\"CharacterClass\"",
+        "select \"Id\", \"CanGetCreated\", \"ComboDefinitionId\", \"CreationAllowedFlag\", \"FruitCalculation\", \"GameConfigurationId\", \"HomeMapId\", \"IntroducedIn\", \"IsActive\", \"IsMasterClass\", \"LevelRequirementByCreation\", \"LevelWarpRequirementReductionPercent\", \"Name\", \"NextGenerationClassId\", \"Number\" from config.\"CharacterClass\"",
         "select \"Id\", \"AggregateType\", \"CharacterClassId\", \"GameConfigurationId\", \"InputAttributeId\", \"InputOperand\", \"InputOperator\", \"OperandAttributeId\", \"PowerUpDefinitionValueId\", \"SkillId\", \"TargetAttributeId\" from config.\"AttributeRelationship\"",
         "select \"Id\", \"AggregateType\", \"CharacterClassId\", \"DefinitionId\", \"GameConfigurationId\", \"Value\" from config.\"ConstValueAttribute\"",
         "select \"Id\", \"MaximumCompletionTime\", \"Name\" from config.\"SkillComboDefinition\"",
@@ -42,7 +42,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"ItemOptionDefinitionId\", \"LevelType\", \"Number\", \"OptionTypeId\", \"PowerUpDefinitionId\", \"SubOptionType\", \"Weight\" from config.\"IncreasableItemOption\"",
         "select \"Id\", \"IncreasableItemOptionId\", \"Level\", \"PowerUpDefinitionId\", \"RequiredItemLevel\" from config.\"ItemOptionOfLevel\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"IsVisible\", \"Name\" from config.\"ItemOptionType\"",
-        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"GameConfigurationId\", \"Group\", \"Height\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"SkillId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
+        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"SkillId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
         "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"ItemDefinitionId\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
@@ -51,19 +51,19 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"ItemSlots\" from config.\"ItemSlotType\"",
         "select \"Id\", \"GameConfigurationId\", \"MixedJewelId\", \"Number\", \"SingleJewelId\" from config.\"JewelMix\"",
         "select \"Id\", \"ChanceId\", \"ChancePvpId\", \"DurationDependsOnTargetLevel\", \"DurationId\", \"DurationPvpId\", \"GameConfigurationId\", \"InformObservers\", \"MonsterTargetLevelDivisor\", \"Name\", \"Number\", \"PlayerTargetLevelDivisor\", \"SendDuration\", \"StopByDeath\", \"SubType\" from config.\"MagicEffectDefinition\"",
-        "select \"Id\", \"BattleZoneId\", \"Discriminator\", \"ExpMultiplier\", \"GameConfigurationId\", \"Name\", \"Number\", \"SafezoneMapId\", \"TerrainData\" from config.\"GameMapDefinition\"",
+        "select \"Id\", \"BattleZoneId\", \"Discriminator\", \"ExpMultiplier\", \"GameConfigurationId\", \"IntroducedIn\", \"IsActive\", \"Name\", \"Number\", \"SafezoneMapId\", \"TerrainData\" from config.\"GameMapDefinition\"",
         "select \"Id\", \"GroundId\", \"LeftGoalId\", \"LeftTeamSpawnPointX\", \"LeftTeamSpawnPointY\", \"RightGoalId\", \"RightTeamSpawnPointX\", \"RightTeamSpawnPointY\", \"Type\" from config.\"BattleZoneDefinition\"",
         "select \"Id\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"Rectangle\"",
         "select \"Id\", \"GameMapDefinitionId\", \"LevelRequirement\", \"Number\", \"TargetGateId\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"EnterGate\"",
         "select \"Id\", \"Direction\", \"IsSpawnGate\", \"MapId\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"ExitGate\"",
         "select \"Id\", \"Direction\", \"GameMapId\", \"MaximumHealthOverride\", \"MonsterDefinitionId\", \"Quantity\", \"SpawnTrigger\", \"WaveNumber\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"MonsterSpawnArea\"",
         "select \"Id\", \"GameConfigurationId\", \"Name\" from config.\"MasterSkillRoot\"",
-        "select \"Id\", \"AllowParty\", \"ArePlayerKillersAllowedToEnter\", \"Description\", \"EnterDuration\", \"EntranceFee\", \"EntranceId\", \"ExitDuration\", \"GameConfigurationId\", \"GameDuration\", \"GameLevel\", \"MapCreationPolicy\", \"MaximumCharacterLevel\", \"MaximumPlayerCount\", \"MaximumSpecialCharacterLevel\", \"MinimumCharacterLevel\", \"MinimumSpecialCharacterLevel\", \"Name\", \"RequiresMasterClass\", \"SaveRankingStatistics\", \"TicketItemId\", \"TicketItemLevel\", \"Type\" from config.\"MiniGameDefinition\"",
+        "select \"Id\", \"AllowParty\", \"ArePlayerKillersAllowedToEnter\", \"Description\", \"EnterDuration\", \"EntranceFee\", \"EntranceId\", \"ExitDuration\", \"GameConfigurationId\", \"GameDuration\", \"GameLevel\", \"IntroducedIn\", \"IsActive\", \"MapCreationPolicy\", \"MaximumCharacterLevel\", \"MaximumPlayerCount\", \"MaximumSpecialCharacterLevel\", \"MinimumCharacterLevel\", \"MinimumSpecialCharacterLevel\", \"Name\", \"RequiresMasterClass\", \"SaveRankingStatistics\", \"TicketItemId\", \"TicketItemLevel\", \"Type\" from config.\"MiniGameDefinition\"",
         "select \"Id\", \"Description\", \"Index\", \"Message\", \"MiniGameDefinitionId\", \"MinimumTargetLevel\", \"MultiplyKillsByPlayers\", \"NumberOfKills\", \"SpawnAreaId\", \"Target\", \"TargetDefinitionId\" from config.\"MiniGameChangeEvent\"",
         "select \"Id\", \"EndX\", \"EndY\", \"IsClientUpdateRequired\", \"MiniGameChangeEventId\", \"SetTerrainAttribute\", \"StartX\", \"StartY\", \"TerrainAttribute\" from config.\"MiniGameTerrainChange\"",
         "select \"Id\", \"ItemRewardId\", \"MiniGameDefinitionId\", \"Rank\", \"RequiredKillId\", \"RequiredSuccess\", \"RewardAmount\", \"RewardType\" from config.\"MiniGameReward\"",
         "select \"Id\", \"Description\", \"EndTime\", \"Message\", \"MiniGameDefinitionId\", \"StartTime\", \"WaveNumber\" from config.\"MiniGameSpawnWave\"",
-        "select \"Id\", \"AttackDelay\", \"AttackRange\", \"AttackSkillId\", \"Attribute\", \"Designation\", \"GameConfigurationId\", \"IntelligenceTypeName\", \"MerchantStoreId\", \"MoveDelay\", \"MoveRange\", \"NpcWindow\", \"Number\", \"NumberOfMaximumItemDrops\", \"ObjectKind\", \"RespawnDelay\", \"ViewRange\" from config.\"MonsterDefinition\"",
+        "select \"Id\", \"AttackDelay\", \"AttackRange\", \"AttackSkillId\", \"Attribute\", \"Designation\", \"GameConfigurationId\", \"IntelligenceTypeName\", \"IntroducedIn\", \"IsActive\", \"MerchantStoreId\", \"MoveDelay\", \"MoveRange\", \"NpcWindow\", \"Number\", \"NumberOfMaximumItemDrops\", \"ObjectKind\", \"RespawnDelay\", \"ViewRange\" from config.\"MonsterDefinition\"",
         "select \"Id\", \"AttributeDefinitionId\", \"MonsterDefinitionId\", \"Value\" from config.\"MonsterAttribute\"",
         "select \"Id\", \"MagicEffectDefinitionId\", \"MaximumLevel\", \"MinimumLevel\", \"MonsterDefinitionId\" from config.\"Buff\"",
         "select \"Id\", \"ItemCraftingHandlerClassName\", \"MonsterDefinitionId\", \"Name\", \"Number\", \"SimpleCraftingSettingsId\" from config.\"ItemCrafting\"",
@@ -549,14 +549,16 @@ internal sealed partial class GameConfigurationLoader
             entity.CreationAllowedFlag = (global::System.Byte)reader.GetInt16(3);
             entity.FruitCalculation = (global::MUnique.OpenMU.DataModel.Configuration.FruitCalculationStrategy)reader.GetInt32(4);
             if (!reader.IsDBNull(6)) { entity.HomeMapId = reader.GetGuid(6); }
-            entity.IsMasterClass = reader.GetBoolean(7);
-            entity.LevelRequirementByCreation = reader.GetInt16(8);
-            entity.LevelWarpRequirementReductionPercent = reader.GetInt32(9);
-            entity.Name = reader.IsDBNull(10) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(10));
-            if (!reader.IsDBNull(11)) { entity.NextGenerationClassId = reader.GetGuid(11); }
-            entity.Number = (global::System.Byte)reader.GetInt16(12);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(7);
+            entity.IsActive = reader.GetBoolean(8);
+            entity.IsMasterClass = reader.GetBoolean(9);
+            entity.LevelRequirementByCreation = reader.GetInt16(10);
+            entity.LevelWarpRequirementReductionPercent = reader.GetInt32(11);
+            entity.Name = reader.IsDBNull(12) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(12));
+            if (!reader.IsDBNull(13)) { entity.NextGenerationClassId = reader.GetGuid(13); }
+            entity.Number = (global::System.Byte)reader.GetInt16(14);
             this._CharacterClass[entity.Id] = entity;
-            this._CharacterClassRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(11) ? null : reader.GetGuid(11), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
+            this._CharacterClassRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(13) ? null : reader.GetGuid(13), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
         }
     }
 
@@ -837,28 +839,30 @@ internal sealed partial class GameConfigurationLoader
             entity.Durability = (global::System.Byte)reader.GetInt16(4);
             entity.Group = (global::System.Byte)reader.GetInt16(6);
             entity.Height = (global::System.Byte)reader.GetInt16(7);
-            entity.IsAmmunition = reader.GetBoolean(8);
-            entity.IsBoundToCharacter = reader.GetBoolean(9);
-            entity.IsDroppable = reader.GetBoolean(10);
-            entity.IsPersonalStoreSellable = reader.GetBoolean(11);
-            entity.IsQuestItem = reader.GetBoolean(12);
-            entity.IsRepairable = reader.GetBoolean(13);
-            entity.IsSellableToNpc = reader.GetBoolean(14);
-            entity.IsStorable = reader.GetBoolean(15);
-            entity.IsTradable = reader.GetBoolean(16);
-            if (!reader.IsDBNull(17)) { entity.ItemSlotId = reader.GetGuid(17); }
-            if (!reader.IsDBNull(18)) { entity.MaximumDropLevel = (global::System.Byte)reader.GetInt16(18); }
-            entity.MaximumItemLevel = (global::System.Byte)reader.GetInt16(19);
-            entity.MaximumSockets = reader.GetInt32(20);
-            entity.Name = reader.IsDBNull(21) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(21));
-            entity.Number = reader.GetInt16(22);
-            if (!reader.IsDBNull(23)) { entity.PetExperienceFormula = reader.GetString(23); }
-            if (!reader.IsDBNull(24)) { entity.SkillId = reader.GetGuid(24); }
-            entity.StorageLimitPerCharacter = reader.GetInt32(25);
-            entity.Value = reader.GetInt32(26);
-            entity.Width = (global::System.Byte)reader.GetInt16(27);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(8);
+            entity.IsActive = reader.GetBoolean(9);
+            entity.IsAmmunition = reader.GetBoolean(10);
+            entity.IsBoundToCharacter = reader.GetBoolean(11);
+            entity.IsDroppable = reader.GetBoolean(12);
+            entity.IsPersonalStoreSellable = reader.GetBoolean(13);
+            entity.IsQuestItem = reader.GetBoolean(14);
+            entity.IsRepairable = reader.GetBoolean(15);
+            entity.IsSellableToNpc = reader.GetBoolean(16);
+            entity.IsStorable = reader.GetBoolean(17);
+            entity.IsTradable = reader.GetBoolean(18);
+            if (!reader.IsDBNull(19)) { entity.ItemSlotId = reader.GetGuid(19); }
+            if (!reader.IsDBNull(20)) { entity.MaximumDropLevel = (global::System.Byte)reader.GetInt16(20); }
+            entity.MaximumItemLevel = (global::System.Byte)reader.GetInt16(21);
+            entity.MaximumSockets = reader.GetInt32(22);
+            entity.Name = reader.IsDBNull(23) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(23));
+            entity.Number = reader.GetInt16(24);
+            if (!reader.IsDBNull(25)) { entity.PetExperienceFormula = reader.GetString(25); }
+            if (!reader.IsDBNull(26)) { entity.SkillId = reader.GetGuid(26); }
+            entity.StorageLimitPerCharacter = reader.GetInt32(27);
+            entity.Value = reader.GetInt32(28);
+            entity.Width = (global::System.Byte)reader.GetInt16(29);
             this._ItemDefinition[entity.Id] = entity;
-            this._ItemDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(17) ? null : reader.GetGuid(17), reader.IsDBNull(24) ? null : reader.GetGuid(24), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
+            this._ItemDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(19) ? null : reader.GetGuid(19), reader.IsDBNull(26) ? null : reader.GetGuid(26), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
         }
     }
 
@@ -1006,12 +1010,14 @@ internal sealed partial class GameConfigurationLoader
             if (!reader.IsDBNull(1)) { entity.BattleZoneId = reader.GetGuid(1); }
             entity.Discriminator = reader.GetInt32(2);
             entity.ExpMultiplier = reader.GetDouble(3);
-            entity.Name = reader.IsDBNull(5) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(5));
-            entity.Number = reader.GetInt16(6);
-            if (!reader.IsDBNull(7)) { entity.SafezoneMapId = reader.GetGuid(7); }
-            if (!reader.IsDBNull(8)) { entity.TerrainData = reader.GetFieldValue<byte[]>(8); }
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(5);
+            entity.IsActive = reader.GetBoolean(6);
+            entity.Name = reader.IsDBNull(7) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(7));
+            entity.Number = reader.GetInt16(8);
+            if (!reader.IsDBNull(9)) { entity.SafezoneMapId = reader.GetGuid(9); }
+            if (!reader.IsDBNull(10)) { entity.TerrainData = reader.GetFieldValue<byte[]>(10); }
             this._GameMapDefinition[entity.Id] = entity;
-            this._GameMapDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(7) ? null : reader.GetGuid(7), reader.IsDBNull(4) ? null : reader.GetGuid(4)));
+            this._GameMapDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(9) ? null : reader.GetGuid(9), reader.IsDBNull(4) ? null : reader.GetGuid(4)));
         }
     }
 
@@ -1134,20 +1140,22 @@ internal sealed partial class GameConfigurationLoader
             entity.ExitDuration = reader.GetFieldValue<global::System.TimeSpan>(7);
             entity.GameDuration = reader.GetFieldValue<global::System.TimeSpan>(9);
             entity.GameLevel = (global::System.Byte)reader.GetInt16(10);
-            entity.MapCreationPolicy = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameMapCreationPolicy)reader.GetInt32(11);
-            entity.MaximumCharacterLevel = reader.GetInt32(12);
-            entity.MaximumPlayerCount = reader.GetInt32(13);
-            entity.MaximumSpecialCharacterLevel = reader.GetInt32(14);
-            entity.MinimumCharacterLevel = reader.GetInt32(15);
-            entity.MinimumSpecialCharacterLevel = reader.GetInt32(16);
-            entity.Name = reader.IsDBNull(17) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(17));
-            entity.RequiresMasterClass = reader.GetBoolean(18);
-            entity.SaveRankingStatistics = reader.GetBoolean(19);
-            if (!reader.IsDBNull(20)) { entity.TicketItemId = reader.GetGuid(20); }
-            entity.TicketItemLevel = reader.GetInt32(21);
-            entity.Type = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameType)reader.GetInt32(22);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(11);
+            entity.IsActive = reader.GetBoolean(12);
+            entity.MapCreationPolicy = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameMapCreationPolicy)reader.GetInt32(13);
+            entity.MaximumCharacterLevel = reader.GetInt32(14);
+            entity.MaximumPlayerCount = reader.GetInt32(15);
+            entity.MaximumSpecialCharacterLevel = reader.GetInt32(16);
+            entity.MinimumCharacterLevel = reader.GetInt32(17);
+            entity.MinimumSpecialCharacterLevel = reader.GetInt32(18);
+            entity.Name = reader.IsDBNull(19) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(19));
+            entity.RequiresMasterClass = reader.GetBoolean(20);
+            entity.SaveRankingStatistics = reader.GetBoolean(21);
+            if (!reader.IsDBNull(22)) { entity.TicketItemId = reader.GetGuid(22); }
+            entity.TicketItemLevel = reader.GetInt32(23);
+            entity.Type = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameType)reader.GetInt32(24);
             this._MiniGameDefinition[entity.Id] = entity;
-            this._MiniGameDefinitionRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(20) ? null : reader.GetGuid(20), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
+            this._MiniGameDefinitionRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(22) ? null : reader.GetGuid(22), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
         }
     }
 
@@ -1234,17 +1242,19 @@ internal sealed partial class GameConfigurationLoader
             entity.Attribute = (global::System.Byte)reader.GetInt16(4);
             entity.Designation = reader.IsDBNull(5) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(5));
             if (!reader.IsDBNull(7)) { entity.IntelligenceTypeName = reader.GetString(7); }
-            if (!reader.IsDBNull(8)) { entity.MerchantStoreId = reader.GetGuid(8); }
-            entity.MoveDelay = reader.GetFieldValue<global::System.TimeSpan>(9);
-            entity.MoveRange = (global::System.Byte)reader.GetInt16(10);
-            entity.NpcWindow = (global::MUnique.OpenMU.DataModel.Configuration.NpcWindow)reader.GetInt32(11);
-            entity.Number = reader.GetInt16(12);
-            entity.NumberOfMaximumItemDrops = reader.GetInt32(13);
-            entity.ObjectKind = (global::MUnique.OpenMU.DataModel.Configuration.NpcObjectKind)reader.GetInt32(14);
-            entity.RespawnDelay = reader.GetFieldValue<global::System.TimeSpan>(15);
-            entity.ViewRange = reader.GetInt16(16);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(8);
+            entity.IsActive = reader.GetBoolean(9);
+            if (!reader.IsDBNull(10)) { entity.MerchantStoreId = reader.GetGuid(10); }
+            entity.MoveDelay = reader.GetFieldValue<global::System.TimeSpan>(11);
+            entity.MoveRange = (global::System.Byte)reader.GetInt16(12);
+            entity.NpcWindow = (global::MUnique.OpenMU.DataModel.Configuration.NpcWindow)reader.GetInt32(13);
+            entity.Number = reader.GetInt16(14);
+            entity.NumberOfMaximumItemDrops = reader.GetInt32(15);
+            entity.ObjectKind = (global::MUnique.OpenMU.DataModel.Configuration.NpcObjectKind)reader.GetInt32(16);
+            entity.RespawnDelay = reader.GetFieldValue<global::System.TimeSpan>(17);
+            entity.ViewRange = reader.GetInt16(18);
             this._MonsterDefinition[entity.Id] = entity;
-            this._MonsterDefinitionRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(8) ? null : reader.GetGuid(8), reader.IsDBNull(6) ? null : reader.GetGuid(6)));
+            this._MonsterDefinitionRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(10) ? null : reader.GetGuid(10), reader.IsDBNull(6) ? null : reader.GetGuid(6)));
         }
     }
 

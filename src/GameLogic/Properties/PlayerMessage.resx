@@ -910,6 +910,9 @@ Used Fruit Points: {16}
 Used Neg Fruit Points: {17}
 Inventory Extensions: {18}</value>
   </data>
+  <data name="MapIsNotActive" xml:space="preserve">
+    <value>This map is not available.</value>
+  </data>
   <data name="GoblinPointsForPlayTime" xml:space="preserve">
     <value>You received {0} Goblin Points for your play time.</value>
   </data>

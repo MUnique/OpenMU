@@ -1175,6 +1175,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This map is not available..
+        /// </summary>
+        public static string MapIsNotActive {
+            get {
+                return ResourceManager.GetString("MapIsNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Map {0} not found..
         /// </summary>
         public static string MapNotFound {

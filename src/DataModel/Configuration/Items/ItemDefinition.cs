@@ -105,6 +105,26 @@ public partial class ItemDefinition
     public LocalizedString Name { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this item is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive items stay in the configuration, but are not available in the game,
+    /// e.g. they are not dropped by monsters and not sold by merchants.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the version of the original game which introduced this item.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped.
     /// </summary>
     public byte DropLevel { get; set; }

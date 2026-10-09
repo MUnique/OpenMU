@@ -167,7 +167,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     protected override async ValueTask OnStartedAsync(TGameState state)
     {
         var miniGameDefinitions = state.Context.Configuration.MiniGameDefinitions
-            .Where(d => d.Type == this.Key && d.MapCreationPolicy == MiniGameMapCreationPolicy.Shared);
+            .Where(d => d.Type == this.Key && d.MapCreationPolicy == MiniGameMapCreationPolicy.Shared && d.IsActive);
 
         await this.DisposeStaleGamesAsync(state.Context).ConfigureAwait(false);
 

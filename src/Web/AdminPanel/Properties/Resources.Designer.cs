@@ -142,6 +142,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activate all shown.
+        /// </summary>
+        public static string ActivateAllShown {
+            get {
+                return ResourceManager.GetString("ActivateAllShown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string Active {
+            get {
+                return ResourceManager.GetString("Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} of {1} active.
+        /// </summary>
+        public static string ActiveCountFormat {
+            get {
+                return ResourceManager.GetString("ActiveCountFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active Offline Player.
         /// </summary>
         public static string ActiveOfflinePlayer {
@@ -219,6 +246,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string All {
             get {
                 return ResourceManager.GetString("All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string AllEntries {
+            get {
+                return ResourceManager.GetString("AllEntries", resourceCulture);
             }
         }
         
@@ -1141,6 +1177,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Activation.
+        /// </summary>
+        public static string ContentActivation {
+            get {
+                return ResourceManager.GetString("ContentActivation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activate or deactivate maps, character classes, monsters, items and mini games, e.g. to restrict the game to the content of a certain season. Inactive entries stay in the configuration, but are not available in the game. Monsters which are already spawned remain until the game server is restarted..
+        /// </summary>
+        public static string ContentActivationDescription {
+            get {
+                return ResourceManager.GetString("ContentActivationDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content.
+        /// </summary>
+        public static string ContentType {
+            get {
+                return ResourceManager.GetString("ContentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The API key has been copied to the clipboard..
         /// </summary>
         public static string CopiedToClipboard {
@@ -1308,6 +1371,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Deactivate {
             get {
                 return ResourceManager.GetString("Deactivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deactivate all shown.
+        /// </summary>
+        public static string DeactivateAllShown {
+            get {
+                return ResourceManager.GetString("DeactivateAllShown", resourceCulture);
             }
         }
         
@@ -1819,6 +1891,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version {0}.
+        /// </summary>
+        public static string GameVersionFormat {
+            get {
+                return ResourceManager.GetString("GameVersionFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string GameVersionUnknown {
+            get {
+                return ResourceManager.GetString("GameVersionUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
         public static string General {
@@ -1977,6 +2067,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string InstallingPleaseWait {
             get {
                 return ResourceManager.GetString("InstallingPleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Introduced in.
+        /// </summary>
+        public static string IntroducedIn {
+            get {
+                return ResourceManager.GetString("IntroducedIn", resourceCulture);
             }
         }
         
@@ -2530,6 +2629,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Network Analyzer.
         /// </summary>
         public static string NetworkAnalyzer {
@@ -2737,6 +2845,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Number.
+        /// </summary>
+        public static string Number {
+            get {
+                return ResourceManager.GetString("Number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maximum item drops.
         /// </summary>
         public static string NumberOfMaximumItemDrops {
@@ -2800,11 +2917,29 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only active.
+        /// </summary>
+        public static string OnlyActive {
+            get {
+                return ResourceManager.GetString("OnlyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only for monster.
         /// </summary>
         public static string OnlyForMonster {
             get {
                 return ResourceManager.GetString("OnlyForMonster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only inactive.
+        /// </summary>
+        public static string OnlyInactive {
+            get {
+                return ResourceManager.GetString("OnlyInactive", resourceCulture);
             }
         }
         
@@ -2850,6 +2985,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Members {
             get {
                 return ResourceManager.GetString("Members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restrict to game version.
+        /// </summary>
+        public static string RestrictToGameVersion {
+            get {
+                return ResourceManager.GetString("RestrictToGameVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activates all content which was introduced up to the selected game version, and deactivates the content which was introduced later. Content of an unknown version is not changed. The changes are stored after saving..
+        /// </summary>
+        public static string RestrictToGameVersionHint {
+            get {
+                return ResourceManager.GetString("RestrictToGameVersionHint", resourceCulture);
             }
         }
         
@@ -3435,6 +3588,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Search {
             get {
                 return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season {0} Episode {1}.
+        /// </summary>
+        public static string SeasonEpisodeFormat {
+            get {
+                return ResourceManager.GetString("SeasonEpisodeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season {0}.
+        /// </summary>
+        public static string SeasonFormat {
+            get {
+                return ResourceManager.GetString("SeasonFormat", resourceCulture);
             }
         }
         

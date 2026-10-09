@@ -107,6 +107,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         this.CreateGameClientDefinition();
         await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
         this.GameConfigurationInitializer.Initialize();
+        IntroducedGameVersions.Apply(this.GameConfiguration);
 
         var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
         await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers).ConfigureAwait(false);

@@ -764,4 +764,10 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung konfiguriert die NPCs der Plugins, die das Gespräch mit einem NPC behandeln, z. B. den Reset-NPC oder den Erzengel der Blutburg.</value>
   </data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve">
+    <value>Spielversionen der Inhalte festlegen</value>
+  </data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Description" xml:space="preserve">
+    <value>Dieses Update legt fest, in welcher Version des Originalspiels die Karten, Charakterklassen, Monster, Gegenstände und Minispiele eingeführt wurden. Damit können die Inhalte bestimmter Spielversionen gesammelt aktiviert oder deaktiviert werden. Bereits festgelegte Versionen bleiben erhalten.</value>
+  </data>
 </root>

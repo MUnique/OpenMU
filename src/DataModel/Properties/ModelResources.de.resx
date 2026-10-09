@@ -1950,6 +1950,18 @@
   <data name="MonsterDefinition_Designation_Caption" xml:space="preserve">
     <value>Bezeichnung</value>
   </data>
+  <data name="MonsterDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="MonsterDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob dieses Monster im Spiel verfügbar ist. Inaktive Monster bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="MonsterDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="MonsterDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der dieses Monster eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
   <data name="MonsterDefinition_MoveRange_Caption" xml:space="preserve">
     <value>Bewegungsreichweite</value>
   </data>
@@ -3113,5 +3125,170 @@
   </data>
   <data name="CastleSiegeConfiguration_CrownHoldTimeSeconds_Description" xml:space="preserve">
     <value>Die Zeit, die der Allianzmeister der Angreifer an der Krone verbringen muss, um das Siegel zu registrieren; standardmäßig 30 Sekunden.</value>
+  </data>
+  <data name="GameMapDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="GameMapDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob diese Karte im Spiel verfügbar ist. Inaktive Karten bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="GameMapDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="GameMapDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der diese Karte eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="CharacterClass_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="CharacterClass_IsActive_Description" xml:space="preserve">
+    <value>Ob diese Charakterklasse im Spiel verfügbar ist. Inaktive Charakterklassen bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="CharacterClass_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="CharacterClass_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der diese Charakterklasse eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="ItemDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="ItemDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand im Spiel verfügbar ist. Inaktive Gegenstände bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="ItemDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="ItemDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der dieser Gegenstand eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="MiniGameDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="MiniGameDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob dieses Minispiel im Spiel verfügbar ist. Inaktive Minispiele bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="MiniGameDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="MiniGameDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der dieses Minispiel eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="GameVersion_TypeCaption" xml:space="preserve">
+    <value>Spielversion</value>
+  </data>
+  <data name="GameVersion_TypeDescription" xml:space="preserve">
+    <value>Eine Version des Originalspiels, z. B. eine Versionsnummer wie 0.97d oder eine Season mit ihrer Episode.</value>
+  </data>
+  <data name="GameVersion_Unknown_Caption" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="GameVersion_Version029_Caption" xml:space="preserve">
+    <value>0.29</value>
+  </data>
+  <data name="GameVersion_Version034_Caption" xml:space="preserve">
+    <value>0.34</value>
+  </data>
+  <data name="GameVersion_Version043_Caption" xml:space="preserve">
+    <value>0.43</value>
+  </data>
+  <data name="GameVersion_Version045_Caption" xml:space="preserve">
+    <value>0.45</value>
+  </data>
+  <data name="GameVersion_Version048_Caption" xml:space="preserve">
+    <value>0.48</value>
+  </data>
+  <data name="GameVersion_Version060_Caption" xml:space="preserve">
+    <value>0.60</value>
+  </data>
+  <data name="GameVersion_Version064_Caption" xml:space="preserve">
+    <value>0.64</value>
+  </data>
+  <data name="GameVersion_Version066_Caption" xml:space="preserve">
+    <value>0.66</value>
+  </data>
+  <data name="GameVersion_Version068_Caption" xml:space="preserve">
+    <value>0.68</value>
+  </data>
+  <data name="GameVersion_Version075_Caption" xml:space="preserve">
+    <value>0.75</value>
+  </data>
+  <data name="GameVersion_Version084_Caption" xml:space="preserve">
+    <value>0.84</value>
+  </data>
+  <data name="GameVersion_Version089c_Caption" xml:space="preserve">
+    <value>0.89c</value>
+  </data>
+  <data name="GameVersion_Version094b_Caption" xml:space="preserve">
+    <value>0.94b</value>
+  </data>
+  <data name="GameVersion_Version095d_Caption" xml:space="preserve">
+    <value>0.95d</value>
+  </data>
+  <data name="GameVersion_Version095k_Caption" xml:space="preserve">
+    <value>0.95k</value>
+  </data>
+  <data name="GameVersion_Version096y_Caption" xml:space="preserve">
+    <value>0.96y</value>
+  </data>
+  <data name="GameVersion_Version097d_Caption" xml:space="preserve">
+    <value>0.97d</value>
+  </data>
+  <data name="GameVersion_Version097p_Caption" xml:space="preserve">
+    <value>0.97p</value>
+  </data>
+  <data name="GameVersion_Version097r_Caption" xml:space="preserve">
+    <value>0.97r</value>
+  </data>
+  <data name="GameVersion_Version098r_Caption" xml:space="preserve">
+    <value>0.98r</value>
+  </data>
+  <data name="GameVersion_Version099_Caption" xml:space="preserve">
+    <value>0.99</value>
+  </data>
+  <data name="GameVersion_Version099GPlus_Caption" xml:space="preserve">
+    <value>0.99G+</value>
+  </data>
+  <data name="GameVersion_Version100s_Caption" xml:space="preserve">
+    <value>1.00s</value>
+  </data>
+  <data name="GameVersion_Season1_Caption" xml:space="preserve">
+    <value>Season 1</value>
+  </data>
+  <data name="GameVersion_Season2_Caption" xml:space="preserve">
+    <value>Season 2</value>
+  </data>
+  <data name="GameVersion_Season3Episode1_Caption" xml:space="preserve">
+    <value>Season 3 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season3Episode2_Caption" xml:space="preserve">
+    <value>Season 3 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season4Episode1_Caption" xml:space="preserve">
+    <value>Season 4 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season4Episode2_Caption" xml:space="preserve">
+    <value>Season 4 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season5Episode1_Caption" xml:space="preserve">
+    <value>Season 5 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season5Episode2_Caption" xml:space="preserve">
+    <value>Season 5 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season5Episode3_Caption" xml:space="preserve">
+    <value>Season 5 Episode 3</value>
+  </data>
+  <data name="GameVersion_Season5Episode4_Caption" xml:space="preserve">
+    <value>Season 5 Episode 4</value>
+  </data>
+  <data name="GameVersion_Season6Episode1_Caption" xml:space="preserve">
+    <value>Season 6 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season6Episode2_Caption" xml:space="preserve">
+    <value>Season 6 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season6Episode3_Caption" xml:space="preserve">
+    <value>Season 6 Episode 3</value>
   </data>
 </root>

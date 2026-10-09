@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 public static class GameMapDefinitionExtensions
 {
     /// <summary>
-    /// Checks the <see cref="GameMapDefinition.MapRequirements"/> for the specified player.
+    /// Checks if the map is active and the <see cref="GameMapDefinition.MapRequirements"/> for the specified player.
     /// </summary>
     /// <param name="gameMapDefinition">The game map definition.</param>
     /// <param name="player">The player.</param>
@@ -21,6 +21,12 @@ public static class GameMapDefinitionExtensions
     public static bool TryGetRequirementError(this GameMapDefinition gameMapDefinition, Player player, [MaybeNullWhen(false)] out string errorMessage)
     {
         errorMessage = null;
+
+        if (!gameMapDefinition.IsActive)
+        {
+            errorMessage = player.GetLocalizedMessage(nameof(PlayerMessage.MapIsNotActive));
+            return true;
+        }
 
         if (gameMapDefinition.MapRequirements is null || !gameMapDefinition.MapRequirements.Any())
         {

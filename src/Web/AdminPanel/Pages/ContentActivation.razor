@@ -1,0 +1,77 @@
+﻿@page "/content-activation"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.ContentActivation</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.ContentActivation" />
+
+<h1>@Resources.ContentActivation</h1>
+<p class="text-muted">@Resources.ContentActivationDescription</p>
+
+@if (this._entries is null)
+{
+    return;
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <select class="form-select w-auto" aria-label="@Resources.RestrictToGameVersion" @bind="this._targetVersion">
+        @foreach (var version in Enum.GetValues<GameVersion>().Where(v => v != GameVersion.Unknown))
+        {
+            <option value="@version">@GetCaption(version)</option>
+        }
+    </select>
+    <button type="button" class="btn btn-outline-primary" title="@Resources.RestrictToGameVersionHint" @onclick="this.RestrictToTargetVersion">@Resources.RestrictToGameVersion</button>
+    <span class="text-muted small">@Resources.RestrictToGameVersionHint</span>
+</div>
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <select class="form-select w-auto" aria-label="@Resources.ContentType" @bind="this.SelectedContentType">
+        @foreach (var contentType in Enum.GetValues<ContentType>())
+        {
+            <option value="@contentType">@GetCaption(contentType)</option>
+        }
+    </select>
+    <select class="form-select w-auto" @bind="this._stateFilter">
+        <option value="@StateFilter.All">@Resources.AllEntries</option>
+        <option value="@StateFilter.OnlyActive">@Resources.OnlyActive</option>
+        <option value="@StateFilter.OnlyInactive">@Resources.OnlyInactive</option>
+    </select>
+    <div class="flex-grow-1">
+        <input type="search" class="form-control" placeholder="@($"{Resources.Search}...")"
+               @bind="this._filter" @bind:event="oninput" />
+    </div>
+    <button type="button" class="btn btn-success" @onclick="() => this.SetActiveOfShownEntries(true)">@Resources.ActivateAllShown</button>
+    <button type="button" class="btn btn-warning" @onclick="() => this.SetActiveOfShownEntries(false)">@Resources.DeactivateAllShown</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
+</div>
+
+<p>@string.Format(Resources.ActiveCountFormat, this.ActiveCount, this.TotalCount)</p>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover align-middle">
+        <thead>
+        <tr>
+            <th class="col-1">@Resources.Active</th>
+            <th class="col-1">@Resources.Number</th>
+            <th>@Resources.Name</th>
+            <th class="col-2">@Resources.IntroducedIn</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in this.ShownEntries)
+        {
+            <tr @key="entry.Entity">
+                <td>
+                    <input type="checkbox" class="form-check-input" aria-label="@Resources.Active"
+                           @bind:get="entry.IsActive" @bind:set="value => entry.IsActive = value" />
+                </td>
+                <td>@entry.Number</td>
+                <td><MarkedText Marked="@this._filter" Text="@entry.Name" /></td>
+                <td>@GetCaption(entry.IntroducedIn)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

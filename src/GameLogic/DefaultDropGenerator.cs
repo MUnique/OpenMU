@@ -426,6 +426,15 @@ public class DefaultDropGenerator : IDropGenerator
             return null;
         }
 
+        if (possibleItems.Any(definition => !definition.IsActive))
+        {
+            possibleItems = possibleItems.Where(definition => definition.IsActive).ToList();
+            if (possibleItems.Count == 0)
+            {
+                return null;
+            }
+        }
+
         var item = new TemporaryItem
         {
             Definition = possibleItems.ElementAt(this._randomizer.NextInt(0, possibleItems.Count)),

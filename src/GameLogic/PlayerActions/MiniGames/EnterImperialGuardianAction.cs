@@ -52,7 +52,7 @@ public class EnterImperialGuardianAction
         var eventDefinition = ImperialGuardianFeaturePlugIn.GetEventDefinition(player.GameContext);
         var day = GetDay(player.GameContext, eventDefinition);
         var definition = player.GameContext.Configuration.MiniGameDefinitions
-            .FirstOrDefault(d => d.Type == MiniGameType.ImperialGuardian && d.GameLevel == day);
+            .FirstOrDefault(d => d.Type == MiniGameType.ImperialGuardian && d.GameLevel == day && d.IsActive);
         if (definition is null)
         {
             await ShowResultAsync(player, ImperialGuardianEnterResult.NotOpen, day).ConfigureAwait(false);

@@ -857,6 +857,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddSmallWingsUpdatePlugIn_Description text.</summary>
         public static string AddSmallWingsUpdatePlugIn_Description => ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized SetIntroducedGameVersionsPlugInBase_Name text.</summary>
+        public static string SetIntroducedGameVersionsPlugInBase_Name => ResourceManager.GetString("SetIntroducedGameVersionsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized SetIntroducedGameVersionsPlugInBase_Description text.</summary>
+        public static string SetIntroducedGameVersionsPlugInBase_Description => ResourceManager.GetString("SetIntroducedGameVersionsPlugInBase_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FixDinorantOptionNumbersPlugIn_Name text.</summary>
         public static string FixDinorantOptionNumbersPlugIn_Name => ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Name", resourceCulture)!;
 

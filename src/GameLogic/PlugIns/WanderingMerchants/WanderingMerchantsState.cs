@@ -21,7 +21,7 @@ public class WanderingMerchantsState : PeriodicTaskGameServerState
         var groupedMerchants = context.Configuration.Maps
             .SelectMany(m => m.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Wandering))
             .GroupBy(s => s.MonsterDefinition)
-            .Where(s => s.Key is not null)
+            .Where(s => s.Key is { IsActive: true })
             .Select(g => (g.Key, g.ToList()))
             .ToList();
         foreach (var (merchant, spawns) in groupedMerchants)

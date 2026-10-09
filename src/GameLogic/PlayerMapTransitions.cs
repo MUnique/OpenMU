@@ -315,7 +315,9 @@ internal sealed class PlayerMapTransitions
             }
         }
 
-        var spawnTargetMapDefinition = currentMapDefinition.SafezoneMap ?? currentMapDefinition;
+        var spawnTargetMapDefinition = currentMapDefinition.SafezoneMap is { IsActive: true } safezoneMap
+            ? safezoneMap
+            : currentMapDefinition;
         var targetMap = await player.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false).ConfigureAwait(false);
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()

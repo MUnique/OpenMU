@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
     public partial class MiniGameRankingEntryTypedContextModel
     {
         private MiniGameRankingEntryTypedContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("4e809dfd-de7b-49bd-82f9-b740b1f3e4d2"), entityTypeCount: 3)
+            : base(skipDetectChanges: false, modelId: new Guid("0bc3c315-e8e3-479e-8652-31612e76aa06"), entityTypeCount: 3)
         {
         }
 
