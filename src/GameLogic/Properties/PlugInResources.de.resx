@@ -1767,4 +1767,10 @@
   <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
     <value>Meisterlevel-Meilensteine</value>
   </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Discord</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung.</value>
+  </data>
 </root>

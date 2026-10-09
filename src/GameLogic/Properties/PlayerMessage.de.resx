@@ -910,4 +910,16 @@ Verwendete Fruchtpunkte: {16}
 Verwendete negative Fruchtpunkte: {17}
 Inventarerweiterungen: {18}</value>
   </data>
+  <data name="DiscordLinkCode" xml:space="preserve">
+    <value>Dein Code zum Verknüpfen mit Discord lautet {0}. Gib innerhalb von {1} Minuten /link {0} in Discord ein.</value>
+  </data>
+  <data name="DiscordLinked" xml:space="preserve">
+    <value>Dein Konto ist mit dem Discord-Benutzer {0} verknüpft, der als {1} erscheint. Mit /discord unlink entfernst du die Verknüpfung.</value>
+  </data>
+  <data name="DiscordNotLinked" xml:space="preserve">
+    <value>Dein Konto ist nicht mit Discord verknüpft. Mit /discord link erhältst du einen Code zum Verknüpfen.</value>
+  </data>
+  <data name="DiscordUnlinked" xml:space="preserve">
+    <value>Dein Konto ist nicht mehr mit Discord verknüpft.</value>
+  </data>
 </root>

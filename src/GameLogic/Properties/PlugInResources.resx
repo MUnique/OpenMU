@@ -1610,4 +1610,10 @@
   <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
     <value>Master level milestones</value>
   </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Discord command</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link.</value>
+  </data>
 </root>

@@ -922,4 +922,16 @@ Inventory Extensions: {18}</value>
   <data name="CashShopCharacterClassUnlocked" xml:space="preserve">
     <value>You can now create a character of the class {0}.</value>
   </data>
+  <data name="DiscordLinkCode" xml:space="preserve">
+    <value>Your code to link Discord is {0}. Enter /link {0} in Discord within {1} minutes.</value>
+  </data>
+  <data name="DiscordLinked" xml:space="preserve">
+    <value>Your account is linked to the Discord user {0}, who appears as {1}. Use /discord unlink to remove the link.</value>
+  </data>
+  <data name="DiscordNotLinked" xml:space="preserve">
+    <value>Your account isn't linked to Discord. Use /discord link to get a code for linking.</value>
+  </data>
+  <data name="DiscordUnlinked" xml:space="preserve">
+    <value>Your account isn't linked to Discord anymore.</value>
+  </data>
 </root>

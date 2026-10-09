@@ -239,6 +239,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your code to link Discord is {0}. Enter /link {0} in Discord within {1} minutes..
+        /// </summary>
+        public static string DiscordLinkCode {
+            get {
+                return ResourceManager.GetString("DiscordLinkCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account is linked to the Discord user {0}, who appears as {1}. Use /discord unlink to remove the link..
+        /// </summary>
+        public static string DiscordLinked {
+            get {
+                return ResourceManager.GetString("DiscordLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account isn&apos;t linked to Discord. Use /discord link to get a code for linking..
+        /// </summary>
+        public static string DiscordNotLinked {
+            get {
+                return ResourceManager.GetString("DiscordNotLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account isn&apos;t linked to Discord anymore..
+        /// </summary>
+        public static string DiscordUnlinked {
+            get {
+                return ResourceManager.GetString("DiscordUnlinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
         /// </summary>
         public static string DoppelgangerIceWalkerAppeared {
