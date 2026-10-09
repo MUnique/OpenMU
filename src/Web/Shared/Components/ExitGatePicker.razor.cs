@@ -9,9 +9,6 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
 /// Blazor component which allows to select an exit gate.
@@ -22,7 +19,7 @@ public partial class ExitGatePicker
 
     private readonly float _scale = 3;
 
-    private Image<Rgba32> _terrainImage = null!;
+    private string _terrainImageDataUrl = string.Empty;
     private GameMapDefinition? _map;
 
     private IList<GameMapDefinition> _maps = new List<GameMapDefinition>();
@@ -55,13 +52,13 @@ public partial class ExitGatePicker
                 this._map = value;
                 if (this._map is { })
                 {
-                    this._terrainImage = new GameMapTerrain(this._map).ToImage();
+                    this._terrainImageDataUrl = new GameMapTerrain(this._map).ToPngDataUrl();
                 }
             }
         }
     }
 
-    private string ImageData => this._terrainImage.ToBase64String(PngFormat.Instance);
+    private string ImageData => this._terrainImageDataUrl;
 
     /// <inheritdoc />
     protected override void OnParametersSet()
