@@ -2327,6 +2327,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to You can not start offline leveling during an event..
+        /// </summary>
+        public static string OfflineLevelingInMiniGame {
+            get {
+                return ResourceManager.GetString("OfflineLevelingInMiniGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to You must be on a map to start offline leveling..
         /// </summary>
         public static string OfflineLevelingNotOnMap {

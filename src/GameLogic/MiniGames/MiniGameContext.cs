@@ -320,17 +320,28 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     internal async ValueTask<bool> TryRejoinAsync(Player player)
     {
         if (player.SelectedCharacter is not { } character
-            || !this._disconnectedCharacters.TryRemove(character.Id, out var position)
-            || !await this._players.TryRejoinAsync(player).ConfigureAwait(false))
+            || !this._disconnectedCharacters.TryRemove(character.Id, out var position))
         {
             return false;
         }
 
-        player.CurrentMiniGame = this;
-        player.PlayerPickedUpItem += this.OnPlayerPickedUpItemAsync;
+        // The player is prepared before it's registered: as soon as it's registered, the end of
+        // the game may warp it to the safezone, which must not be overwritten afterwards.
+        var (previousMap, previousX, previousY) = (character.CurrentMap, character.PositionX, character.PositionY);
         character.CurrentMap = this.Map.Definition;
         character.PositionX = position.X;
         character.PositionY = position.Y;
+        player.CurrentMiniGame = this;
+        player.PlayerPickedUpItem += this.OnPlayerPickedUpItemAsync;
+
+        if (!await this._players.TryRejoinAsync(player).ConfigureAwait(false))
+        {
+            player.CurrentMiniGame = null;
+            player.PlayerPickedUpItem -= this.OnPlayerPickedUpItemAsync;
+            (character.CurrentMap, character.PositionX, character.PositionY) = (previousMap, previousX, previousY);
+            return false;
+        }
+
         this.Logger.LogInformation("{context}: Player {player} rejoined the game after losing its connection.", this, player);
         return true;
     }
@@ -557,8 +568,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             {
                 await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
             }
-            else if (player.IsAlive)
+            else if (player.IsAlive
+                && player.SelectedCharacter is { } character
+                && !this._disconnectedCharacters.ContainsKey(character.Id))
             {
+                // A player which may rejoin the game doesn't count, otherwise it would be counted again when it dies later.
                 this._changeEvents.NotifyKill(player);
             }
             else
@@ -831,6 +845,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         foreach (var player in players)
         {
             await player.WarpToSafezoneAsync().ConfigureAwait(false);
+
+            if (player.CurrentMiniGame == this)
+            {
+                // The player wasn't on the map yet, e.g. it just entered or rejoined and its client
+                // didn't acknowledge the map change yet. So it didn't leave the map, which detaches it otherwise.
+                player.CurrentMiniGame = null;
+                player.PlayerPickedUpItem -= this.OnPlayerPickedUpItemAsync;
+            }
         }
     }
 
