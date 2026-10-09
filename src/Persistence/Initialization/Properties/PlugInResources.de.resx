@@ -764,6 +764,12 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung konfiguriert die NPCs der Plugins, die das Gespräch mit einem NPC behandeln, z. B. den Reset-NPC oder den Erzengel der Blutburg.</value>
   </data>
+  <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve">
+    <value>Iron Knight nutzt seinen Stich</value>
+  </data>
+  <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung lässt den Iron Knight von Raklion mit seinem Stich angreifen, den der Client mit einem Kombo-Effekt anzeigt.</value>
+  </data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve">
     <value>Server-Ports aus dem dynamischen Portbereich verschieben</value>
   </data>

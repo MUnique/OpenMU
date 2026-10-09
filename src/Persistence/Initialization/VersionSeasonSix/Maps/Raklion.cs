@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Raklion;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
@@ -313,6 +314,7 @@ internal class Raklion : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 458;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.IronKnight);
+            monster.IntelligenceTypeName = typeof(IronKnightIntelligence).FullName;
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
