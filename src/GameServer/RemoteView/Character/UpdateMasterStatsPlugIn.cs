@@ -42,10 +42,10 @@ public class UpdateMasterStatsPlugIn : IUpdateMasterStatsPlugIn
             (ulong)character.MasterExperience,
             (ulong)this._player.GameServerContext.MasterExperienceTable[(int)this._player.Attributes[Stats.MasterLevel] + 1],
             (ushort)character.MasterLevelUpPoints,
-            (ushort)this._player.Attributes[Stats.MaximumHealth],
-            (ushort)this._player.Attributes[Stats.MaximumMana],
-            (ushort)this._player.Attributes[Stats.MaximumShield],
-            (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
+            this._player.Attributes[Stats.MaximumHealth].ToUInt16Clamped(),
+            this._player.Attributes[Stats.MaximumMana].ToUInt16Clamped(),
+            this._player.Attributes[Stats.MaximumShield].ToUInt16Clamped(),
+            this._player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
 
         await this._player.InvokeViewPlugInAsync<IUpdateMasterSkillsPlugIn>(p => p.UpdateMasterSkillsAsync()).ConfigureAwait(false);
     }

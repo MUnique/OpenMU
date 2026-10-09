@@ -44,10 +44,10 @@ public class RespawnAfterDeathPlugIn : IRespawnAfterDeathPlugIn
                 position.Y,
                 mapNumber,
                 this._player.Rotation.ToPacketByte(),
-                (ushort)this._player.Attributes[Stats.CurrentHealth],
-                (ushort)this._player.Attributes[Stats.CurrentMana],
-                (ushort)this._player.Attributes[Stats.CurrentShield],
-                (ushort)this._player.Attributes[Stats.CurrentAbility],
+                this._player.Attributes[Stats.CurrentHealth].ToUInt16Clamped(),
+                this._player.Attributes[Stats.CurrentMana].ToUInt16Clamped(),
+                this._player.Attributes[Stats.CurrentShield].ToUInt16Clamped(),
+                this._player.Attributes[Stats.CurrentAbility].ToUInt16Clamped(),
                 (ulong)(isMaster ? this._player.SelectedCharacter.MasterExperience : this._player.SelectedCharacter.Experience),
                 (uint)this._player.Money)
             .ConfigureAwait(false);
