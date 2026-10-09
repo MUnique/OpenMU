@@ -2,8 +2,6 @@
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Persistence
 @using MUnique.OpenMU.Web.Shared.Properties
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Png
 @using System.Globalization
 
 @implements IAsyncDisposable
@@ -86,7 +84,7 @@
 
 <div class="map-editor-row">
     <div class="map-column">
-        @if (this._terrainImage is { })
+        @if (this._terrainImageDataUrl is { })
         {
             <div class="map-host-container">
                 <div class="map-host"
@@ -124,8 +122,8 @@
                         {
                             <div class="coordinate-grid" style="@this.GetGridStyle()"></div>
                         }
-    </div>
-</div>
+                    </div>
+                </div>
 
                 <div class="map-coordinates-overlay">
                     <span class="coord-label">X: @this._mouseMapX, Y: @this._mouseMapY</span>

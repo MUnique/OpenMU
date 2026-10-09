@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.Web.Map.Map;
 
 using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic;
-using SixLabors.ImageSharp;
+using MUnique.OpenMU.Web.Shared;
 
 /// <summary>
 /// Extensions for the <see cref="IGameMapInfo"/>.
@@ -74,11 +74,6 @@ public static class GameMapInfoExtensions
 
     private static byte[] RenderTerrain(byte[]? terrainData)
     {
-        var terrain = new GameMapTerrain(terrainData);
-        using var bitmap = terrain.ToImage();
-        using var memoryStream = new MemoryStream();
-        bitmap.SaveAsPng(memoryStream);
-        memoryStream.Position = 0;
-        return memoryStream.ToArray();
+        return new GameMapTerrain(terrainData).ToPng();
     }
 }

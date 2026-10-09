@@ -17,9 +17,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared.Services;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
 /// A graphical editor for a <see cref="GameMapDefinition"/>.
@@ -44,7 +41,6 @@ public partial class MapEditor : IAsyncDisposable
     private MapCrudOperationsService? _crudService;
     private MapZoomManager? _zoomManager;
     private MapObjectFactory? _objectFactory;
-    private Image<Rgba32>? _terrainImage;
     private string? _terrainImageDataUrl;
     private ElementReference _mapHostRef;
     private ElementReference _mapSelectRef;
@@ -134,10 +130,8 @@ public partial class MapEditor : IAsyncDisposable
         get => this._selectedMap ?? throw new InvalidOperationException($"{nameof(this.SelectedMap)} is not initialized.");
         set
         {
-            this._terrainImage?.Dispose();
             this._selectedMap = value;
-            this._terrainImage = new GameMapTerrain(this.SelectedMap).ToImage();
-            this._terrainImageDataUrl = this._terrainImage.ToBase64String(PngFormat.Instance);
+            this._terrainImageDataUrl = new GameMapTerrain(this.SelectedMap).ToPngDataUrl();
         }
     }
 
@@ -145,7 +139,6 @@ public partial class MapEditor : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         this._dotNetRef?.Dispose();
-        this._terrainImage?.Dispose();
         this.NotificationService.PropertyChanged -= this.OnPropertyChanged;
 
         if (this._jsModule is not null)
