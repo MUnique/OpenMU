@@ -96,16 +96,25 @@ public sealed class DiscordCommands
     }
 
     /// <summary>
+    /// Gets the text of a resource in a culture.
+    /// </summary>
+    /// <param name="culture">The culture.</param>
+    /// <param name="resourceKey">The resource key.</param>
+    /// <param name="args">The format arguments.</param>
+    /// <returns>The text.</returns>
+    internal static string GetText(CultureInfo culture, string resourceKey, params object[] args)
+    {
+        var text = Resources.ResourceManager.GetString(resourceKey, culture) ?? resourceKey;
+        return args.Length == 0 ? text : string.Format(culture, text, args);
+    }
+
+    /// <summary>
     /// Gets the text of a resource in the culture of the answers.
     /// </summary>
     /// <param name="resourceKey">The resource key.</param>
     /// <param name="args">The format arguments.</param>
     /// <returns>The text.</returns>
-    internal string Text(string resourceKey, params object[] args)
-    {
-        var text = Resources.ResourceManager.GetString(resourceKey, this._culture) ?? resourceKey;
-        return args.Length == 0 ? text : string.Format(this._culture, text, args);
-    }
+    internal string Text(string resourceKey, params object[] args) => GetText(this._culture, resourceKey, args);
 
     /// <summary>
     /// Creates the answer to the setup of the Discord server.

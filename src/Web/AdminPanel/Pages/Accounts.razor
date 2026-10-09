@@ -1,4 +1,4 @@
-@page "/accounts"
+﻿@page "/accounts"
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Entities;
 @using MUnique.OpenMU.Persistence;
@@ -35,6 +35,9 @@
             <td>@item.EMail</td>
             <td>
                 <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> @Resources.Edit</NavLink>
+                <AuthorizeView Policy="@AdminPolicies.Operator">
+                    <NavLink href="@($"accounts/{Uri.EscapeDataString(item.LoginName)}/links")" class="btn btn-secondary ms-1"><span class="oi oi-link-intact" aria-hidden="true"></span> @Resources.ExternalLinks</NavLink>
+                </AuthorizeView>
                 <AuthorizeView Policy="@AdminPolicies.CashShop">
                     <NavLink href="@($"accounts/{Uri.EscapeDataString(item.LoginName)}/cash-shop")" class="btn btn-secondary ms-1"><span class="oi oi-dollar" aria-hidden="true"></span> @Resources.CashShopCoins</NavLink>
                 </AuthorizeView>

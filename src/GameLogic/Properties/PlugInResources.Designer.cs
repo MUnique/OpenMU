@@ -646,6 +646,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Links the account to a Discord user: &apos;/discord link&apos; creates a code which is entered in Discord, &apos;/discord unlink&apos; removes the link..
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord command.
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers..
         /// </summary>
         public static string DoppelgangerFeaturePlugIn_Description {

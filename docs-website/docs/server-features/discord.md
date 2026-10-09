@@ -98,10 +98,44 @@ In the distributed deployment, the bot runs in its own container, see
 | `/guild <name>` | The guild master, the number of members and the members which are online |
 | `/events` | The events of the next 24 hours, like mini games and invasions |
 | `/rank` | The ten best characters by resets, master level and level |
+| `/link <code>` | Links the Discord user to the game account, see [Linking accounts](#linking-accounts) |
+| `/unlink` | Removes the link to the game account |
+| `/character <name>` | Selects the character of the account, as which the player appears |
 
 The commands only show information; they don't change anything in the game.
-Additionally, administrators of the Discord server can use
-[`/openmu setup`](#setting-up-your-discord-server).
+Additionally, players can [link their account](#linking-accounts) with
+`/link`, `/unlink` and `/character`, and administrators of the Discord server
+can use [`/openmu setup`](#setting-up-your-discord-server).
+
+### Linking accounts
+
+Players can link their Discord user to their game account:
+
+1. In the game, the player enters `/discord link`. The game shows a one-time
+   code like `ABCD-EFGH`, which is valid for 10 minutes.
+2. In Discord, the player enters `/link ABCD-EFGH`.
+
+The link is to the account, not to a character. The player appears as the
+character which requested the code, and chooses another character of the account
+with `/character <name>` in Discord. A Discord user can be linked to one account,
+and an account to one Discord user; linking again replaces the previous link.
+Because Discord users are the same on every Discord server, the link counts on
+every Discord server the bot is in.
+
+`/discord` in the game shows the link, and `/discord unlink` in the game or
+`/unlink` in Discord removes it. In the admin panel, the *Links* button in the
+account list shows the links of an account and can remove them.
+
+Linked users get the role *Linked Player* of the
+[layout](#setting-up-your-discord-server) on your Discord server, so you can,
+for example, open channels only for players. The bot needs the *Manage Roles*
+permission for it, and its own role has to be above *Linked Player* in the role
+list. When an administrator removes a link in the admin panel, the role isn't
+removed automatically.
+
+The answers to these commands are only visible to the player who used them.
+The codes are stored as hash in the database, and every code can only be used
+once.
 
 When you configure the identifier of your Discord server (`Discord__Bot__GuildId`),
 the commands are available immediately. Otherwise, Discord may take up to an hour

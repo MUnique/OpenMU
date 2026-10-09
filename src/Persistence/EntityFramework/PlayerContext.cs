@@ -248,6 +248,67 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkAsync(
+        Guid accountId,
+        string provider,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .FirstOrDefaultAsync(link => link.AccountId == accountId && link.Provider == provider, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkByUserAsync(
+        string provider,
+        string externalUserId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .FirstOrDefaultAsync(link => link.Provider == provider && link.ExternalUserId == externalUserId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkByCodeAsync(
+        string provider,
+        string codeHash,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .FirstOrDefaultAsync(link => link.Provider == provider && link.CodeHash == codeHash, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .Where(link => link.AccountId == accountId)
+                .OrderBy(link => link.Provider)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)

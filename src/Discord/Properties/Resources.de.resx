@@ -131,6 +131,9 @@
   <data name="Character_NotFound" xml:space="preserve">
     <value>Es gibt keinen Charakter mit dem Namen **{0}**.</value>
   </data>
+  <data name="Character_NotOfAccount" xml:space="preserve">
+    <value>Dein Konto hat keinen Charakter namens {0}.</value>
+  </data>
   <data name="Character_Offline" xml:space="preserve">
     <value>Offline</value>
   </data>
@@ -139,6 +142,15 @@
   </data>
   <data name="Character_Resets" xml:space="preserve">
     <value>Resets {0}</value>
+  </data>
+  <data name="Character_Selected" xml:space="preserve">
+    <value>Du erscheinst jetzt als **{0}**.</value>
+  </data>
+  <data name="Command_Character_Description" xml:space="preserve">
+    <value>Wählt den Charakter deines Kontos, als der du erscheinst.</value>
+  </data>
+  <data name="Command_Character_NameOption" xml:space="preserve">
+    <value>Der Name des Charakters.</value>
   </data>
   <data name="Command_Events_Description" xml:space="preserve">
     <value>Zeigt die Ereignisse der nächsten 24 Stunden.</value>
@@ -152,6 +164,12 @@
   <data name="Command_Guild_GuildOption" xml:space="preserve">
     <value>Der Name der Gilde.</value>
   </data>
+  <data name="Command_Link_CodeOption" xml:space="preserve">
+    <value>Der Code, den du im Spiel mit /discord link erhalten hast.</value>
+  </data>
+  <data name="Command_Link_Description" xml:space="preserve">
+    <value>Verknüpft deinen Discord-Benutzer mit deinem Spielkonto.</value>
+  </data>
   <data name="Command_Online_Description" xml:space="preserve">
     <value>Zeigt, wie viele Spieler online sind.</value>
   </data>
@@ -163,6 +181,9 @@
   </data>
   <data name="Command_Setup_Description" xml:space="preserve">
     <value>Erstellt die fehlenden Kanäle und Rollen dieses Discord-Servers.</value>
+  </data>
+  <data name="Command_Unlink_Description" xml:space="preserve">
+    <value>Entfernt die Verknüpfung mit deinem Spielkonto.</value>
   </data>
   <data name="Command_Who_CharacterOption" xml:space="preserve">
     <value>Der Name des Charakters.</value>
@@ -214,6 +235,21 @@
   </data>
   <data name="LevelMilestone_Title" xml:space="preserve">
     <value>Meilenstein</value>
+  </data>
+  <data name="Link_InvalidCode" xml:space="preserve">
+    <value>Der Code ist ungültig oder abgelaufen. Im Spiel erhältst du mit /discord link einen neuen.</value>
+  </data>
+  <data name="Link_Linked" xml:space="preserve">
+    <value>Dein Discord-Benutzer ist jetzt mit deinem Spielkonto verknüpft. Du erscheinst als **{0}**; einen anderen Charakter wählst du mit /character.</value>
+  </data>
+  <data name="Link_NotLinked" xml:space="preserve">
+    <value>Dein Discord-Benutzer ist nicht mit einem Spielkonto verknüpft. Im Spiel erhältst du mit /discord link einen Code, den du hier mit /link eingibst.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>Spielkonto</value>
+  </data>
+  <data name="Link_Unlinked" xml:space="preserve">
+    <value>Dein Discord-Benutzer ist nicht mehr mit einem Spielkonto verknüpft.</value>
   </data>
   <data name="MasterLevelMilestone_Description" xml:space="preserve">
     <value>**{0}** ({1}) hat Meisterlevel {2} erreicht!</value>

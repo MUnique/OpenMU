@@ -1689,4 +1689,37 @@
   <data name="CaptionsCheckingLinkable" xml:space="preserve">
     <value>Es wird geprüft, ob integrierte Beschriftungen noch nicht verknüpft sind ...</value>
   </data>
+  <data name="ExternalLinks" xml:space="preserve">
+    <value>Verknüpfungen</value>
+  </data>
+  <data name="ExternalLinksOf" xml:space="preserve">
+    <value>Verknüpfungen von {0}</value>
+  </data>
+  <data name="ExternalLinksDescription" xml:space="preserve">
+    <value>Die Benutzer externer Dienste, wie Discord, die mit dem Konto verknüpft sind. Spieler verknüpfen ihr Konto im Spiel mit /discord link. Wenn du hier eine Discord-Verknüpfung entfernst, entferne die Rolle für verknüpfte Spieler in Discord selbst.</value>
+  </data>
+  <data name="ExternalLinksAccountNotFound" xml:space="preserve">
+    <value>Das Konto wurde nicht gefunden.</value>
+  </data>
+  <data name="ExternalLinksNone" xml:space="preserve">
+    <value>Das Konto ist nicht verknüpft.</value>
+  </data>
+  <data name="ExternalLinkService" xml:space="preserve">
+    <value>Dienst</value>
+  </data>
+  <data name="ExternalLinkUser" xml:space="preserve">
+    <value>Benutzer</value>
+  </data>
+  <data name="ExternalLinkCharacter" xml:space="preserve">
+    <value>Erscheint als</value>
+  </data>
+  <data name="ExternalLinkLinkedAt" xml:space="preserve">
+    <value>Verknüpft am</value>
+  </data>
+  <data name="ExternalLinkPending" xml:space="preserve">
+    <value>Code gültig bis {0}</value>
+  </data>
+  <data name="ExternalLinkRemoved" xml:space="preserve">
+    <value>Die Verknüpfung wurde entfernt.</value>
+  </data>
 </root>

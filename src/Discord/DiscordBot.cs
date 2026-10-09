@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Discord;
 
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using global::Discord;
@@ -12,6 +13,7 @@ using global::Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Discord.Properties;
 using MUnique.OpenMU.Discord.Provisioning;
+using MUnique.OpenMU.GameLogic.AccountLinking;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -22,7 +24,7 @@ using MUnique.OpenMU.Interfaces;
 /// It only needs the <see cref="GatewayIntents.Guilds"/> intent, and no privileged one,
 /// because it reacts on slash commands instead of reading messages.
 /// </remarks>
-public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDisposable
+public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEventListener, IAsyncDisposable
 {
     /// <summary>
     /// The name of the command which administrates the integration.
@@ -36,6 +38,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
 
     private readonly DiscordBotSettings _settings;
     private readonly DiscordCommands _commands;
+    private readonly DiscordAccountCommands _accountCommands;
     private readonly DiscordStatusFormatter _statusFormatter;
     private readonly IDiscordGameDataProvider _data;
     private readonly DiscordServerLayout _layout;
@@ -56,15 +59,17 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
     /// </summary>
     /// <param name="settings">The settings of the bot.</param>
     /// <param name="commands">The slash commands.</param>
+    /// <param name="accountCommands">The slash commands with which users link themselves to their game account.</param>
     /// <param name="statusFormatter">The formatter of the status.</param>
     /// <param name="data">The provider of the data of the game.</param>
     /// <param name="layout">The layout of the Discord server.</param>
     /// <param name="provisioner">The provisioner, which sets up the Discord server.</param>
     /// <param name="logger">The logger.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, ILogger<DiscordBot> logger)
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, ILogger<DiscordBot> logger)
     {
         this._settings = settings;
         this._commands = commands;
+        this._accountCommands = accountCommands;
         this._statusFormatter = statusFormatter;
         this._data = data;
         this._layout = layout;
@@ -185,6 +190,19 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
 
     /// <inheritdoc />
     /// <remarks>
+    /// When an account is unlinked in the game, the role of linked players is removed from its Discord user.
+    /// </remarks>
+    public async ValueTask OnGameEventAsync(GameEvent gameEvent)
+    {
+        if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
+            && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
+        {
+            await this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false)).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
     /// It may be called more than once, e.g. by a dependency injection container which knows the bot as singleton and as hosted service.
     /// The lock isn't disposed, because a <see cref="SemaphoreSlim"/> without wait handle doesn't hold any resources.
     /// </remarks>
@@ -264,7 +282,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
 
     private async Task RegisterCommandsAsync(DiscordSocketClient client)
     {
-        var commands = DiscordCommands.Definitions.Select(definition =>
+        var commands = DiscordCommands.Definitions.Concat(DiscordAccountCommands.Definitions).Select(definition =>
         {
             var builder = new SlashCommandBuilder()
                 .WithName(definition.Name)
@@ -309,6 +327,12 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
             return;
         }
 
+        if (DiscordAccountCommands.IsAccountCommand(command.Data.Name))
+        {
+            await this.ExecuteAccountCommandAsync(command).ConfigureAwait(false);
+            return;
+        }
+
         try
         {
             // The data might come from the database, which can take longer than Discord waits for an answer.
@@ -320,6 +344,63 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+        }
+    }
+
+    private async Task ExecuteAccountCommandAsync(SocketSlashCommand command)
+    {
+        try
+        {
+            // The answers are personal, e.g. the codes shouldn't be seen by others.
+            await command.DeferAsync(ephemeral: true).ConfigureAwait(false);
+            var argument = command.Data.Options.FirstOrDefault()?.Value as string;
+            var answer = await this._accountCommands.ExecuteAsync(command.Data.Name, argument, command.User.Id, command.User.Username).ConfigureAwait(false);
+            foreach (var roleChange in answer.RoleChanges)
+            {
+                await this.UpdateLinkedRoleAsync(roleChange).ConfigureAwait(false);
+            }
+
+            await command.FollowupAsync(embed: ToDiscordEmbed(answer.Embed), ephemeral: true, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+        }
+    }
+
+    /// <summary>
+    /// Adds or removes the role of linked players of the layout, in the Discord server of the game server.
+    /// </summary>
+    private async Task UpdateLinkedRoleAsync(DiscordRoleChange change)
+    {
+        if (this._client is not { } client
+            || this.GetRoutingGuild(client) is not { } guild
+            || this._layout.Roles.FirstOrDefault(role => role.Key == DiscordServerLayout.LinkedRoleKey) is not { } roleLayout
+            || guild.Roles.FirstOrDefault(role => string.Equals(role.Name, roleLayout.Name, StringComparison.OrdinalIgnoreCase)) is not { } role)
+        {
+            return;
+        }
+
+        try
+        {
+            // The members aren't cached, because the bot doesn't use the privileged intent for them.
+            if (await client.Rest.GetGuildUserAsync(guild.Id, change.UserId).ConfigureAwait(false) is not { } user)
+            {
+                return;
+            }
+
+            if (change.IsLinked)
+            {
+                await user.AddRoleAsync(role.Id).ConfigureAwait(false);
+            }
+            else
+            {
+                await user.RemoveRoleAsync(role.Id).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogWarning(ex, "The role {role} of the Discord user {userId} couldn't be updated. Has the bot the permission to manage roles?", role.Name, change.UserId);
         }
     }
 

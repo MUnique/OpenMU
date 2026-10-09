@@ -15,6 +15,11 @@ using System.Text.Json.Serialization;
 /// </summary>
 public sealed class DiscordServerLayout
 {
+    /// <summary>
+    /// The key of the role which the bot gives to the Discord users who are linked to a game account.
+    /// </summary>
+    public const string LinkedRoleKey = "linked";
+
     private const string DefaultLayoutResourceName = "MUnique.OpenMU.Discord.Provisioning.DefaultLayout.json";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()

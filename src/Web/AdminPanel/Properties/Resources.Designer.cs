@@ -1657,6 +1657,105 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Appears as.
+        /// </summary>
+        public static string ExternalLinkCharacter {
+            get {
+                return ResourceManager.GetString("ExternalLinkCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linked at.
+        /// </summary>
+        public static string ExternalLinkLinkedAt {
+            get {
+                return ResourceManager.GetString("ExternalLinkLinkedAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code valid until {0}.
+        /// </summary>
+        public static string ExternalLinkPending {
+            get {
+                return ResourceManager.GetString("ExternalLinkPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The link was removed..
+        /// </summary>
+        public static string ExternalLinkRemoved {
+            get {
+                return ResourceManager.GetString("ExternalLinkRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Links.
+        /// </summary>
+        public static string ExternalLinks {
+            get {
+                return ResourceManager.GetString("ExternalLinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The account wasn&apos;t found..
+        /// </summary>
+        public static string ExternalLinksAccountNotFound {
+            get {
+                return ResourceManager.GetString("ExternalLinksAccountNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link. When you remove a Discord link here, remove the role of linked players in Discord yourself..
+        /// </summary>
+        public static string ExternalLinksDescription {
+            get {
+                return ResourceManager.GetString("ExternalLinksDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service.
+        /// </summary>
+        public static string ExternalLinkService {
+            get {
+                return ResourceManager.GetString("ExternalLinkService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The account isn&apos;t linked..
+        /// </summary>
+        public static string ExternalLinksNone {
+            get {
+                return ResourceManager.GetString("ExternalLinksNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Links of {0}.
+        /// </summary>
+        public static string ExternalLinksOf {
+            get {
+                return ResourceManager.GetString("ExternalLinksOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User.
+        /// </summary>
+        public static string ExternalLinkUser {
+            get {
+                return ResourceManager.GetString("ExternalLinkUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extracted Information.
         /// </summary>
         public static string ExtractedInformation {
