@@ -154,9 +154,16 @@ public class MoveItemAction
 
     private async ValueTask MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
+        var wasEquipped = fromItemStorage == player.Inventory && fromSlot <= LastEquippableItemSlotIndex;
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
-        if (!await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false))
+        var wasAdded = await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false);
+        if (!wasAdded || (wasEquipped && !this.CompliesWithMapRequirements(player)))
         {
+            if (wasAdded)
+            {
+                await toItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
+            }
+
             var restoredToOriginalSlot = await fromItemStorage.AddItemAsync(fromSlot, item).ConfigureAwait(false);
             if (!restoredToOriginalSlot)
             {
@@ -171,6 +178,11 @@ public class MoveItemAction
                     item,
                     restoredToAnySlot);
                 await player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+            }
+
+            if (wasEquipped && player.CurrentMap is { } currentMap && currentMap.Definition.TryGetRequirementError(player, out var errorMessage))
+            {
+                await player.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
             }
 
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
@@ -195,6 +207,13 @@ public class MoveItemAction
             }
         }
     }
+
+    private bool CompliesWithMapRequirements(Player player)
+    {
+        return player.CurrentMap is not { } currentMap
+               || !currentMap.Definition.TryGetRequirementError(player, out _);
+    }
+
 
     /// <summary>
     /// Gets the storage information.
