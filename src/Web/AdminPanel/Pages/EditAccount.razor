@@ -1,0 +1,16 @@
+@inherits EditBase
+
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Web.AdminPanel.Components.Layout
+@using MUnique.OpenMU.Web.Shared.Components.ItemEdit
+
+<EditShell Model="@this.Model" ModelType="@this.Type" PersistenceContext="@this.PersistenceContext" IsOwningContext="@this.IsOwningContext" DownloadMarkup="@this.DownloadMarkup" EditorsMarkup="@this.GetEditorsMarkup()">
+    @if (this.Type == typeof(Item))
+    {
+        <ItemEdit Item="@((Item)this.Model!)" OnValidSubmit="this.SaveChangesAsync" />
+    }
+    else if (this.AutoFormType is not null)
+    {
+        <DynamicComponent Type="@this.AutoFormType" Parameters="@this.AutoFormParameters" />
+    }
+</EditShell>

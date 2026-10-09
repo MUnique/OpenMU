@@ -1,0 +1,9 @@
+@inherits EditBase
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer
+@using MUnique.OpenMU.Web.AdminPanel.Components.Layout
+
+<EditShell Model="@this.Model" ModelType="@this.Type" PersistenceContext="@this.PersistenceContext" IsOwningContext="@this.IsOwningContext" DownloadMarkup="@this.DownloadMarkup" EditorsMarkup="@this.GetEditorsMarkup()">
+    <ConnectServerConfiguration Model="@((ConnectServerDefinition)this.Model!)" OnValidSubmit="this.SaveChangesAsync" />
+</EditShell>

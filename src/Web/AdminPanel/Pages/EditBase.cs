@@ -7,16 +7,13 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
-using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -134,6 +131,21 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     protected virtual Type? Type => this._type ??= this.DetermineTypeByTypeString();
 
+    /// <summary>
+    /// Gets the persistence context which provides the edited data.
+    /// </summary>
+    protected IContext? PersistenceContext => this._persistenceContext;
+
+    /// <summary>
+    /// Gets a value indicating whether this page owns its persistence context.
+    /// </summary>
+    protected bool IsOwningContext => this._isOwningContext;
+
+    /// <summary>
+    /// Gets the download markup for the current type, if supported.
+    /// </summary>
+    protected string? DownloadMarkup => this.GetDownloadMarkup();
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
@@ -178,49 +190,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    protected override void BuildRenderTree(RenderTreeBuilder builder)
-    {
-        if (this.Model is null)
-        {
-            return;
-        }
-
-        builder.OpenComponent<Breadcrumb>(0);
-        builder.AddAttribute(1, nameof(Breadcrumb.Caption), this.Model.GetName());
-        builder.CloseComponent();
-
-        var downloadMarkup = this.GetDownloadMarkup();
-        var editorsMarkup = this.GetEditorsMarkup();
-
-        builder.AddMarkupContent(10, $"<h1>{Resources.Edit} {this.Type!.GetTypeCaption()}</h1>{downloadMarkup}{editorsMarkup}\r\n");
-
-        builder.OpenComponent<CascadingValue<IContext>>(11);
-        builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
-        builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
-        RenderFragment childContent = builder2 =>
-        {
-            var sequence = 14;
-            this.AddFormToRenderTree(builder2, ref sequence);
-        };
-
-        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), childContent);
-
-        builder.CloseComponent();
-    }
-
-    /// <inheritdoc />
     protected override Task OnInitializedAsync()
     {
         this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
         return base.OnInitializedAsync();
     }
-
-    /// <summary>
-    /// Adds the form to the render tree.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <param name="currentSequence">The current sequence.</param>
-    protected abstract void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence);
 
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
