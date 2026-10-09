@@ -182,14 +182,38 @@ public class GameEventPublisherPlugIn
     /// <inheritdoc />
     public ValueTask ChatMessageSentAsync(Player sender, string message, ChatMessageType messageType, Player? receiver)
     {
-        if (messageType != ChatMessageType.GlobalNotification
-            || this.Configuration?.PublishGlobalNotices is not true
-            || sender.GameContext is not IGameServerContext context)
+        if (sender.GameContext is not IGameServerContext context)
         {
             return ValueTask.CompletedTask;
         }
 
-        return context.EventPublisher.GameEventAsync(new GlobalNoticeEvent(context.Id, DateTime.UtcNow, sender.Name, message.TrimStart('!')));
+        if (messageType == ChatMessageType.GlobalNotification)
+        {
+            return this.Configuration?.PublishGlobalNotices is true
+                ? context.EventPublisher.GameEventAsync(new GlobalNoticeEvent(context.Id, DateTime.UtcNow, sender.Name, message.TrimStart('!')))
+                : ValueTask.CompletedTask;
+        }
+
+        GameChatChannel? channel = messageType switch
+        {
+            ChatMessageType.Guild => GameChatChannel.Guild,
+            ChatMessageType.Alliance => GameChatChannel.Alliance,
+            ChatMessageType.World => GameChatChannel.World,
+            _ => null,
+        };
+        if (channel is null || this.Configuration?.PublishChatMessages is not true)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // The guild and alliance messages still contain their prefix, @ or @@.
+        return context.EventPublisher.GameEventAsync(new ChatMessageEvent(
+            context.Id,
+            DateTime.UtcNow,
+            channel.Value,
+            sender.GuildStatus?.GuildId ?? 0,
+            sender.Name,
+            channel == GameChatChannel.World ? message : message.TrimStart('@')));
     }
 
     /// <inheritdoc />

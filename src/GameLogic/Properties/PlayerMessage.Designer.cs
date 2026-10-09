@@ -115,6 +115,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chat of your alliance is mirrored to Discord. Members who linked their Discord user can read and write it there..
+        /// </summary>
+        public static string AllianceChatMirrored {
+            get {
+                return ResourceManager.GetString("AllianceChatMirrored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You are already in a duel..
         /// </summary>
         public static string AlreadyInDuel {
@@ -388,6 +397,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GoblinPointsForPlayTime {
             get {
                 return ResourceManager.GetString("GoblinPointsForPlayTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chat of your guild is mirrored to Discord. Members who linked their Discord user can read and write it there..
+        /// </summary>
+        public static string GuildChatMirrored {
+            get {
+                return ResourceManager.GetString("GuildChatMirrored", resourceCulture);
             }
         }
         
@@ -2260,6 +2278,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string UsingThisItemNotImplemented {
             get {
                 return ResourceManager.GetString("UsingThisItemNotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [World] {0}: {1}.
+        /// </summary>
+        public static string WorldChatMessage {
+            get {
+                return ResourceManager.GetString("WorldChatMessage", resourceCulture);
             }
         }
         

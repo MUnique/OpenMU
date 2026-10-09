@@ -922,4 +922,13 @@ Inventarerweiterungen: {18}</value>
   <data name="DiscordUnlinked" xml:space="preserve">
     <value>Dein Konto ist nicht mehr mit Discord verknüpft.</value>
   </data>
+  <data name="WorldChatMessage" xml:space="preserve">
+    <value>[Welt] {0}: {1}</value>
+  </data>
+  <data name="GuildChatMirrored" xml:space="preserve">
+    <value>Der Chat deiner Gilde wird nach Discord gespiegelt. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn dort lesen und schreiben.</value>
+  </data>
+  <data name="AllianceChatMirrored" xml:space="preserve">
+    <value>Der Chat deiner Allianz wird nach Discord gespiegelt. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn dort lesen und schreiben.</value>
+  </data>
 </root>
