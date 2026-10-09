@@ -265,6 +265,9 @@ public class GameServerContext : GameContext, IGameServerContext
             }
 
             await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name).ConfigureAwait(false);
+
+            // E.g. the Discord bot can notify the friends of the player.
+            await this.EventPublisher.GameEventAsync(new PlayerEnteredGameEvent(this.Id, DateTime.UtcNow, selectedCharacter.Id, selectedCharacter.Name)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

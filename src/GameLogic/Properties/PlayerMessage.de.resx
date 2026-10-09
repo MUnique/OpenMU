@@ -931,4 +931,7 @@ Inventarerweiterungen: {18}</value>
   <data name="AllianceChatMirrored" xml:space="preserve">
     <value>Der Chat deiner Allianz wird nach Discord gespiegelt. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn dort lesen und schreiben.</value>
   </data>
+  <data name="DiscordNotifications" xml:space="preserve">
+    <value>Direktnachrichten in Discord über: {0}. Mit /discord notify login, letter oder friend schaltest du sie ein oder aus.</value>
+  </data>
 </root>

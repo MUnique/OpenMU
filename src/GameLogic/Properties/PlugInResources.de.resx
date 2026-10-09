@@ -1771,7 +1771,7 @@
     <value>Befehl Discord</value>
   </data>
   <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
-    <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung.</value>
+    <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung, '/discord notify letter' schaltet Direktnachrichten über Briefe ein oder aus (auch 'login' und 'friend').</value>
   </data>
   <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
     <value>Befehl Weltchat</value>

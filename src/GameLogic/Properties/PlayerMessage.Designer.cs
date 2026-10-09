@@ -266,6 +266,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Direct messages in Discord about: {0}. Turn them on or off with /discord notify login, letter or friend..
+        /// </summary>
+        public static string DiscordNotifications {
+            get {
+                return ResourceManager.GetString("DiscordNotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your account isn&apos;t linked to Discord. Use /discord link to get a code for linking..
         /// </summary>
         public static string DiscordNotLinked {

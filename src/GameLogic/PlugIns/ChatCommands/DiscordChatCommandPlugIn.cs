@@ -15,6 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which links the account of the player to a Discord user.
 /// <c>/discord link</c> creates a one-time code, which the player enters in Discord with <c>/link</c>.
 /// <c>/discord unlink</c> removes the link, and <c>/discord</c> shows it.
+/// <c>/discord notify letter</c> turns the direct messages about letters on or off; <c>login</c> and <c>friend</c> are the other types.
 /// </summary>
 [Guid("6694D50F-49B1-481D-8F65-B0D7DCCA77C3")]
 [PlugIn]
@@ -56,6 +57,18 @@ public class DiscordChatCommandPlugIn : ChatCommandPlugInBase<DiscordChatCommand
                 }
 
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordUnlinked)).ConfigureAwait(false);
+                break;
+            case DiscordChatCommandArgs.NotifyAction:
+                var type = AccountNotificationKeywords.Parse(arguments.Type);
+                if (await service.SetNotificationAsync(accountId, AccountLinkService.DiscordProvider, type, null).ConfigureAwait(false) is { } notifications)
+                {
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordNotifications), AccountNotificationKeywords.Format(notifications)).ConfigureAwait(false);
+                }
+                else
+                {
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordNotLinked)).ConfigureAwait(false);
+                }
+
                 break;
             default:
                 var link = await service.GetLinkAsync(accountId, AccountLinkService.DiscordProvider).ConfigureAwait(false);

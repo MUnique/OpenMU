@@ -68,9 +68,12 @@ public class LetterSendAction
         }
 
         // Try to forward it to the player, if he is online
-        if ((player.GameContext as IGameServerContext)?.FriendServer is { } friendServer)
+        if (player.GameContext is IGameServerContext gameServerContext)
         {
-            await friendServer.ForwardLetterAsync(letter).ConfigureAwait(false);
+            await gameServerContext.FriendServer.ForwardLetterAsync(letter).ConfigureAwait(false);
+
+            // E.g. the Discord bot can notify the receiver.
+            await gameServerContext.EventPublisher.GameEventAsync(new LetterReceivedEvent(gameServerContext.Id, DateTime.UtcNow, letter.ReceiverName ?? receiver, letter.SenderName ?? player.Name, letter.Subject ?? string.Empty)).ConfigureAwait(false);
         }
     }
 
