@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Views.Login;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to log in a player to the game.
@@ -134,7 +135,7 @@ public class LoginAction
                     {
                         context.Allowed = false;
                         await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                        await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                        await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
                         return (false, null);
                     }
 
@@ -168,7 +169,7 @@ public class LoginAction
                 {
                     context.Allowed = false;
                     await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                    await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                    await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
                     return (false, null);
                 }
 
@@ -211,6 +212,15 @@ public class LoginAction
         }
     }
 
+    /// <summary>
+    /// Notifies the game servers and external systems, that somebody tried to log into an account which is already logged in.
+    /// </summary>
+    private static async ValueTask NotifyAlreadyLoggedInAsync(IGameServerContext gameServerContext, string username)
+    {
+        await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+        await gameServerContext.EventPublisher.GameEventAsync(new AccountLoginBlockedEvent(gameServerContext.Id, DateTime.UtcNow, username)).ConfigureAwait(false);
+    }
+
     private async ValueTask HandleAlreadyConnectedAsync(Player player, string username)
     {
         var result = player.LoginResultOverride ?? LoginResult.AccountAlreadyConnected;
@@ -218,7 +228,7 @@ public class LoginAction
         await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(result)).ConfigureAwait(false);
         if (player.GameContext is IGameServerContext gameServerContext)
         {
-            await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+            await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
         }
     }
 

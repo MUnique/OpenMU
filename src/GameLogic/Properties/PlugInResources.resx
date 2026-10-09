@@ -1614,7 +1614,7 @@
     <value>Discord command</value>
   </data>
   <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
-    <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link.</value>
+    <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link, '/discord notify letter' turns direct messages about letters on or off (also 'login' and 'friend').</value>
   </data>
   <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
     <value>World chat command</value>

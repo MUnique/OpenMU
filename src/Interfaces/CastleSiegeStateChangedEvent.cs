@@ -16,5 +16,7 @@ namespace MUnique.OpenMU.Interfaces;
 /// The persistent identifier of the guild which owns the castle, if any. After the battle, it's the winner.
 /// The name can be retrieved with <see cref="IGuildServer.GetPersistentGuildNameAsync"/>.
 /// </param>
-public sealed record CastleSiegeStateChangedEvent(byte ServerId, DateTime TimestampUtc, string PreviousState, string State, DateTime StateEndsAtUtc, Guid? OwnerGuildId)
+/// <param name="NextBattleStartUtc">The time, in UTC, when the next battle starts, if it's known.</param>
+/// <param name="NextBattleEndUtc">The time, in UTC, when the next battle ends, if it's known.</param>
+public sealed record CastleSiegeStateChangedEvent(byte ServerId, DateTime TimestampUtc, string PreviousState, string State, DateTime StateEndsAtUtc, Guid? OwnerGuildId, DateTime? NextBattleStartUtc = null, DateTime? NextBattleEndUtc = null)
     : GameEvent(ServerId, TimestampUtc);

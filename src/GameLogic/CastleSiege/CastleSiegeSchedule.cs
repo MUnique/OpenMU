@@ -139,6 +139,24 @@ internal sealed class CastleSiegeSchedule
     /// </summary>
     /// <param name="state">The current state.</param>
     /// <returns>The next configured state.</returns>
+    /// <summary>
+    /// Gets the next period of a state which starts now or later, e.g. the next battle.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="utcNow">The current time, in UTC.</param>
+    /// <returns>The next period; or <c>null</c>, if the schedule doesn't contain the state.</returns>
+    public CastleSiegeStatePeriod? GetNextPeriod(CastleSiegeState state, DateTime utcNow)
+    {
+        if (!this.ContainsState(state))
+        {
+            return null;
+        }
+
+        utcNow = EnsureUtc(utcNow);
+        var startUtc = this.GetPreviousOrCurrentStateStart(state, utcNow);
+        return this.CreatePeriod(state, startUtc < utcNow ? startUtc + WeekDuration : startUtc);
+    }
+
     public CastleSiegeState GetNextState(CastleSiegeState state)
     {
         var index = this.GetStateIndex(state);

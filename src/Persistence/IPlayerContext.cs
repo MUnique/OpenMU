@@ -162,6 +162,22 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the identifier of an account by its login name, without loading the account.
+    /// </summary>
+    /// <param name="loginName">The login name.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The identifier of the account; Otherwise, null, if the account doesn't exist.</returns>
+    ValueTask<Guid?> GetAccountIdByLoginNameAsync(string loginName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the status of a character, e.g. if it's a game master, without loading the account.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The status; Otherwise, null, if the character doesn't exist.</returns>
+    ValueTask<CharacterStatus?> GetCharacterStatusAsync(string characterName, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the time until which the chat of an account is banned, without loading the account.
     /// </summary>
     /// <param name="accountId">The persistent account identifier.</param>

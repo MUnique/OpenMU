@@ -943,4 +943,7 @@ Inventory Extensions: {18}</value>
   <data name="AllianceChatMirrored" xml:space="preserve">
     <value>The chat of your alliance is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
   </data>
+  <data name="DiscordNotifications" xml:space="preserve">
+    <value>Direct messages in Discord about: {0}. Turn them on or off with /discord notify login, letter or friend.</value>
+  </data>
 </root>

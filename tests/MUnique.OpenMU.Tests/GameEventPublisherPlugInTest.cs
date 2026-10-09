@@ -54,6 +54,10 @@ public class GameEventPublisherPlugInTest
         new CharacterLevelMilestoneEvent(1, DateTime.UtcNow, "Hero", "Blade Knight", 400, false),
         new AccountUnlinkedEvent(1, DateTime.UtcNow, "discord", "42"),
         new ChatMessageEvent(1, DateTime.UtcNow, GameChatChannel.Alliance, 7, "Hero", "Hello"),
+        new AccountLoginBlockedEvent(1, DateTime.UtcNow, "hero"),
+        new LetterReceivedEvent(1, DateTime.UtcNow, "Hero", "Elf", "Hello"),
+        new PlayerEnteredGameEvent(1, DateTime.UtcNow, Guid.NewGuid(), "Hero"),
+        new CastleSiegeStateChangedEvent(1, DateTime.UtcNow, "Notify", "Ready", DateTime.UtcNow.AddHours(1), null, DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddHours(3)),
     };
 
     /// <summary>

@@ -248,6 +248,34 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<Guid?> GetAccountIdByLoginNameAsync(string loginName, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<Account>()
+                .Where(account => account.LoginName == loginName)
+                .Select(account => (Guid?)account.Id)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.CharacterStatus?> GetCharacterStatusAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<Character>()
+                .Where(character => character.Name == characterName)
+                .Select(character => (DataModel.Entities.CharacterStatus?)character.CharacterStatus)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DateTime?> GetAccountChatBanUntilAsync(
         Guid accountId,
         CancellationToken cancellationToken = default)

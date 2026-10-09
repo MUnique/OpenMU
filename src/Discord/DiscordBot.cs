@@ -46,6 +46,8 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     private readonly DiscordServerProvisioner _provisioner;
     private readonly DiscordChatBridge _chatBridge;
     private readonly DiscordChatCommands _chatCommands;
+    private readonly DiscordGameMasterCommands _gameMasterCommands;
+    private readonly DiscordDirectMessages _directMessages;
     private readonly ILogger<DiscordBot> _logger;
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
 
@@ -69,8 +71,10 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <param name="provisioner">The provisioner, which sets up the Discord server.</param>
     /// <param name="chatBridge">The chat bridge between the game and Discord.</param>
     /// <param name="chatCommands">The commands of the chat bridge.</param>
+    /// <param name="gameMasterCommands">The commands for game masters.</param>
+    /// <param name="directMessages">The direct messages to linked users.</param>
     /// <param name="logger">The logger.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, ILogger<DiscordBot> logger)
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, DiscordGameMasterCommands gameMasterCommands, DiscordDirectMessages directMessages, ILogger<DiscordBot> logger)
     {
         this._settings = settings;
         this._commands = commands;
@@ -81,6 +85,8 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         this._provisioner = provisioner;
         this._chatBridge = chatBridge;
         this._chatCommands = chatCommands;
+        this._gameMasterCommands = gameMasterCommands;
+        this._directMessages = directMessages;
         this._logger = logger;
         this._routing = DiscordChannelRouting.Create(settings, layout, new Dictionary<string, ulong>());
     }
@@ -199,6 +205,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     /// <remarks>
     /// Chat messages are mirrored to the bound channels.
+    /// Linked users get direct messages, if they turned them on, and the next castle siege becomes a scheduled event.
     /// When an account is unlinked in the game, the role of linked players is removed from its Discord user.
     /// </remarks>
     public async ValueTask OnGameEventAsync(GameEvent gameEvent)
@@ -206,6 +213,14 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         if (gameEvent is ChatMessageEvent chatMessage)
         {
             await this.OnChatMessageAsync(chatMessage).ConfigureAwait(false);
+        }
+        else if (gameEvent is AccountLoginBlockedEvent or LetterReceivedEvent or PlayerEnteredGameEvent)
+        {
+            this.SendDirectMessages(gameEvent);
+        }
+        else if (gameEvent is CastleSiegeStateChangedEvent castleSiegeStateChanged)
+        {
+            this.UpdateCastleSiegeEvent(castleSiegeStateChanged);
         }
         else if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
             && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
@@ -308,7 +323,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             return (ApplicationCommandProperties)builder.Build();
-        }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).ToArray();
+        }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).Concat(this.CreateExtraCommands()).ToArray();
 
         if (this._settings.GuildId is { } guildId && client.GetGuild(guildId) is { } guild)
         {
@@ -351,6 +366,18 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         if (IsChatCommand(command.Data.Name))
         {
             await this.ExecuteChatCommandAsync(command).ConfigureAwait(false);
+            return;
+        }
+
+        if (DiscordGameMasterCommands.IsGameMasterCommand(command.Data.Name))
+        {
+            await this.ExecuteGameMasterCommandAsync(command).ConfigureAwait(false);
+            return;
+        }
+
+        if (command.Data.Name == NotifyCommandName)
+        {
+            await this.ExecuteNotifyCommandAsync(command).ConfigureAwait(false);
             return;
         }
 

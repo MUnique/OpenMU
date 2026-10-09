@@ -213,6 +213,50 @@ public sealed class AccountLinkService
     }
 
     /// <summary>
+    /// Turns a type of notifications on or off for a linked account.
+    /// </summary>
+    /// <param name="accountId">The identifier of the account.</param>
+    /// <param name="provider">The name of the external service.</param>
+    /// <param name="type">The type of notifications.</param>
+    /// <param name="enabled">The new state; or <c>null</c>, to toggle the current state.</param>
+    /// <returns>The types of notifications which are on now; or <c>null</c>, if the account isn't linked.</returns>
+    public ValueTask<AccountNotificationTypes?> SetNotificationAsync(Guid accountId, string provider, AccountNotificationTypes type, bool? enabled)
+    {
+        return this.SetNotificationAsync(context => context.GetAccountExternalLinkAsync(accountId, provider), type, enabled);
+    }
+
+    /// <summary>
+    /// Turns a type of notifications on or off for a linked user.
+    /// </summary>
+    /// <param name="provider">The name of the external service.</param>
+    /// <param name="externalUserId">The identifier of the user in the external service.</param>
+    /// <param name="type">The type of notifications.</param>
+    /// <param name="enabled">The new state; or <c>null</c>, to toggle the current state.</param>
+    /// <returns>The types of notifications which are on now; or <c>null</c>, if the user isn't linked.</returns>
+    public ValueTask<AccountNotificationTypes?> SetNotificationByUserAsync(string provider, string externalUserId, AccountNotificationTypes type, bool? enabled)
+    {
+        return this.SetNotificationAsync(context => context.GetAccountExternalLinkByUserAsync(provider, externalUserId), type, enabled);
+    }
+
+    private async ValueTask<AccountNotificationTypes?> SetNotificationAsync(Func<IPlayerContext, ValueTask<AccountExternalLink?>> getLink, AccountNotificationTypes type, bool? enabled)
+    {
+        using var context = this._createContext();
+        if (await getLink(context).ConfigureAwait(false) is not { ExternalUserId: not null } link)
+        {
+            return null;
+        }
+
+        if (type != AccountNotificationTypes.None)
+        {
+            var isEnabled = enabled ?? !link.Notifications.HasFlag(type);
+            link.Notifications = isEnabled ? link.Notifications | type : link.Notifications & ~type;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        return link.Notifications;
+    }
+
+    /// <summary>
     /// Normalizes an entered code, so that it doesn't matter if it's entered in lower case or with separators.
     /// </summary>
     private static string NormalizeCode(string code)
