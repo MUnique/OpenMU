@@ -264,6 +264,35 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.GuildChatBinding>> GetGuildChatBindingsAsync(
+        Guid guildId,
+        Guid allianceMasterGuildId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await CreateGuildChatBindingsQuery(this.Context, guildId, allianceMasterGuildId)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Creates the query of <see cref="GetGuildChatBindingsAsync"/>.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="guildId">The persistent identifier of the guild.</param>
+    /// <param name="allianceMasterGuildId">The persistent identifier of the master guild of the alliance.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<GuildChatBinding> CreateGuildChatBindingsQuery(DbContext context, Guid guildId, Guid allianceMasterGuildId)
+    {
+        return context.Set<GuildChatBinding>()
+            .Where(binding => (binding.GuildId == guildId && binding.Scope == DataModel.Entities.GuildChatScope.Guild)
+                              || (binding.GuildId == allianceMasterGuildId && binding.Scope == DataModel.Entities.GuildChatScope.Alliance));
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkAsync(
         Guid accountId,
         string provider,

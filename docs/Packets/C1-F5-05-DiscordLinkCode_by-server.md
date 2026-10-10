@@ -28,3 +28,4 @@ The result of a request of a code to link the account to a Discord user.
 |-------|------|-------------|
 | 0 | Success | The code was created. |
 | 1 | NotAvailable | Linking isn't available, e.g. because the server isn't connected to Discord. |
+| 2 | TooSoon | A code was requested a moment ago. Every code replaces the previous one, so the server hands out new ones only every few seconds. |

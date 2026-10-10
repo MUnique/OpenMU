@@ -11871,7 +11871,7 @@
           <Index>7</Index>
           <Type>Boolean</Type>
           <Name>IsWorldChatBridged</Name>
-          <Description>Defines if the world chat is mirrored to a Discord channel.</Description>
+          <Description>Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.</Description>
         </Field>
         <Field>
           <Index>8</Index>
@@ -11954,6 +11954,11 @@
               <Name>NotAvailable</Name>
               <Description>Linking isn't available, e.g. because the server isn't connected to Discord.</Description>
               <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TooSoon</Name>
+              <Description>A code was requested a moment ago. Every code replaces the previous one, so the server hands out new ones only every few seconds.</Description>
+              <Value>2</Value>
             </EnumValue>
           </Values>
         </Enum>

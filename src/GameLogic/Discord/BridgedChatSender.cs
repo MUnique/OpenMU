@@ -6,7 +6,8 @@ namespace MUnique.OpenMU.GameLogic.Discord;
 
 /// <summary>
 /// The sender of a chat message which was written outside of the game, e.g. in Discord, and bridged into it.
-/// Its name is the name of a character with a prefix, which character names can't contain,
+/// Its name is the name of a character with a prefix, which character names can't contain
+/// (see <see cref="IsAllowedInCharacterName"/>, enforced when a character is created),
 /// so it can't be mistaken for a character.
 /// </summary>
 public static class BridgedChatSender
@@ -15,6 +16,13 @@ public static class BridgedChatSender
     /// The prefix of the names of bridged senders.
     /// </summary>
     public const char Prefix = '@';
+
+    /// <summary>
+    /// Determines whether a name may be the name of a character: it must not contain the prefix.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns><c>true</c>, if a character may have the name.</returns>
+    public static bool IsAllowedInCharacterName(string name) => !name.Contains(Prefix, StringComparison.Ordinal);
 
     /// <summary>
     /// Determines whether the sender of a chat message is a bridged sender.

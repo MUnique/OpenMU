@@ -54,11 +54,10 @@ public class DiscordIntegrationViewPlugIn : IDiscordIntegrationViewPlugIn
     }
 
     /// <inheritdoc/>
-    public async ValueTask ShowDiscordLinkCodeAsync(string? code, TimeSpan validity)
+    public async ValueTask ShowDiscordLinkCodeAsync(DiscordLinkCodeResult result, string? code, TimeSpan validity)
     {
-        var result = code is null ? DiscordLinkCode.DiscordLinkCodeResult.NotAvailable : DiscordLinkCode.DiscordLinkCodeResult.Success;
         var validMinutes = (byte)Math.Clamp(validity.TotalMinutes, 0, byte.MaxValue);
-        await this._player.Connection.SendDiscordLinkCodeAsync(result, code ?? string.Empty, validMinutes).ConfigureAwait(false);
+        await this._player.Connection.SendDiscordLinkCodeAsync(Convert(result), code ?? string.Empty, validMinutes).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -76,6 +75,13 @@ public class DiscordIntegrationViewPlugIn : IDiscordIntegrationViewPlugIn
             message).ConfigureAwait(false);
         return true;
     }
+
+    private static DiscordLinkCode.DiscordLinkCodeResult Convert(DiscordLinkCodeResult result) => result switch
+    {
+        DiscordLinkCodeResult.Created => DiscordLinkCode.DiscordLinkCodeResult.Success,
+        DiscordLinkCodeResult.TooSoon => DiscordLinkCode.DiscordLinkCodeResult.TooSoon,
+        _ => DiscordLinkCode.DiscordLinkCodeResult.NotAvailable,
+    };
 
     private static ExternalChatMessage.ExternalChatScope Convert(ExternalChatScope scope) => scope switch
     {

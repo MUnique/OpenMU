@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 
 using System.Text.RegularExpressions;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Character;
 
@@ -69,6 +70,26 @@ public class CreateCharacterAction
         return keyConfiguration;
     }
 
+    /// <summary>
+    /// Determines whether a character can be created with the name.
+    /// </summary>
+    /// <remarks>
+    /// The prefix of senders bridged from Discord is never allowed, independently of the configured expression:
+    /// the game and the clients tell a Discord user from a character by it (<see cref="BridgedChatSender"/>).
+    /// </remarks>
+    /// <param name="name">The name.</param>
+    /// <param name="nameRegex">The configured regular expression of character names; <c>null</c> or empty for any name.</param>
+    /// <returns><c>true</c>, if the name is valid.</returns>
+    public static bool IsValidCharacterName(string name, string? nameRegex)
+    {
+        if (!BridgedChatSender.IsAllowedInCharacterName(name))
+        {
+            return false;
+        }
+
+        return string.IsNullOrWhiteSpace(nameRegex) || Regex.IsMatch(name, nameRegex);
+    }
+
     private async ValueTask<DataModel.Entities.Character?> CreateCharacterAsync(Player player, string name, CharacterClass characterClass)
     {
         var account = player.Account;
@@ -79,7 +100,7 @@ public class CreateCharacterAction
         }
 
         player.Logger.LogDebug("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, characterClass);
-        var isValidName = string.IsNullOrWhiteSpace(player.GameContext.Configuration.CharacterNameRegex) || Regex.IsMatch(name, player.GameContext.Configuration.CharacterNameRegex);
+        var isValidName = IsValidCharacterName(name, player.GameContext.Configuration.CharacterNameRegex);
         player.Logger.LogDebug("CreateCharacter: Character Name matches = {0}", isValidName);
         if (!isValidName)
         {

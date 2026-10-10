@@ -168,6 +168,22 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.GuildChatBinding>> GetGuildChatBindingsAsync(
+        Guid guildId,
+        Guid allianceMasterGuildId,
+        CancellationToken cancellationToken = default)
+    {
+        var bindings = await this.Provider.GetRepository<GuildChatBinding>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return bindings
+            .Where(binding => (binding.GuildId == guildId && binding.Scope == DataModel.Entities.GuildChatScope.Guild)
+                              || (binding.GuildId == allianceMasterGuildId && binding.Scope == DataModel.Entities.GuildChatScope.Alliance))
+            .Cast<DataModel.Entities.GuildChatBinding>()
+            .ToList();
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkAsync(
         Guid accountId,
         string provider,

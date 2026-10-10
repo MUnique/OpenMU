@@ -32635,7 +32635,7 @@ public readonly struct DiscordIntegrationInfo
     }
 
     /// <summary>
-    /// Gets or sets defines if the world chat is mirrored to a Discord channel.
+    /// Gets or sets defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.
     /// </summary>
     public bool IsWorldChatBridged
     {
@@ -32724,6 +32724,11 @@ public readonly struct DiscordLinkCode
         /// Linking isn't available, e.g. because the server isn't connected to Discord.
         /// </summary>
             NotAvailable = 1,
+
+        /// <summary>
+        /// A code was requested a moment ago. Every code replaces the previous one, so the server hands out new ones only every few seconds.
+        /// </summary>
+            TooSoon = 2,
     }
 
     private readonly Memory<byte> _data;

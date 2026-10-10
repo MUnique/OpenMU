@@ -30756,7 +30756,7 @@ public readonly ref struct DiscordIntegrationInfoRef
     }
 
     /// <summary>
-    /// Gets or sets defines if the world chat is mirrored to a Discord channel.
+    /// Gets or sets defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.
     /// </summary>
     public bool IsWorldChatBridged
     {

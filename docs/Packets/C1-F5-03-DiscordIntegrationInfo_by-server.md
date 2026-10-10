@@ -19,7 +19,7 @@ The client configures its Discord features with it: the Rich Presence, a button 
 | 4 | 1 | Boolean |  | IsAccountLinked; Defines if the account is linked to a Discord user. |
 | 5 | 1 | Boolean |  | IsGuildChatBridged; Defines if the chat of the guild of the character is mirrored to a Discord channel. |
 | 6 | 1 | Boolean |  | IsAllianceChatBridged; Defines if the chat of the alliance of the character is mirrored to a Discord channel. |
-| 7 | 1 | Boolean |  | IsWorldChatBridged; Defines if the world chat is mirrored to a Discord channel. |
+| 7 | 1 | Boolean |  | IsWorldChatBridged; Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel. |
 | 8 | 20 | String |  | RichPresenceApplicationId; The id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none. |
 | 28 | 32 | String |  | RichPresenceLargeImageKey; The key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image. |
 | 60 | 32 | String |  | RichPresenceSmallImageKey; The key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image. |

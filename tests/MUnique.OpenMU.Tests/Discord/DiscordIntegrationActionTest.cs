@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.Tests.Discord;
 
 using MUnique.OpenMU.GameLogic;
+using Moq;
 using MUnique.OpenMU.GameLogic.AccountLinking;
 using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.GameLogic.PlayerActions.Discord;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -66,6 +68,30 @@ public class DiscordIntegrationActionTest
         Assert.That(info.LinkedUserName, Is.Null);
     }
 
+    /// <summary>
+    /// Tests that a player gets a new link code only after the cooldown, so a client asking in a loop
+    /// doesn't write to the database every time.
+    /// </summary>
+    [Test]
+    public async Task LinkCodesAreThrottledAsync()
+    {
+        var player = await CreatePlayerWithIntegrationAsync().ConfigureAwait(false);
+        var results = new List<DiscordLinkCodeResult>();
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IDiscordIntegrationViewPlugIn>()!)
+            .Setup(v => v.ShowDiscordLinkCodeAsync(It.IsAny<DiscordLinkCodeResult>(), It.IsAny<string?>(), It.IsAny<TimeSpan>()))
+            .Callback<DiscordLinkCodeResult, string?, TimeSpan>((result, _, _) => results.Add(result))
+            .Returns(ValueTask.CompletedTask);
+        var time = new ManualTimeProvider();
+        var action = new DiscordIntegrationAction(time);
+
+        await action.RequestLinkCodeAsync(player).ConfigureAwait(false);
+        await action.RequestLinkCodeAsync(player).ConfigureAwait(false);
+        time.Advance(DiscordIntegrationAction.LinkCodeCooldown);
+        await action.RequestLinkCodeAsync(player).ConfigureAwait(false);
+
+        Assert.That(results, Is.EqualTo(new[] { DiscordLinkCodeResult.Created, DiscordLinkCodeResult.TooSoon, DiscordLinkCodeResult.Created }));
+    }
+
     private static async ValueTask<Player> CreatePlayerWithIntegrationAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
@@ -78,5 +104,14 @@ public class DiscordIntegrationActionTest
     private static AccountLinkService CreateLinkService(Player player)
     {
         return new AccountLinkService(() => player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration));
+    }
+
+    private sealed class ManualTimeProvider : TimeProvider
+    {
+        private DateTimeOffset _now = new(2026, 10, 10, 12, 0, 0, TimeSpan.Zero);
+
+        public override DateTimeOffset GetUtcNow() => this._now;
+
+        public void Advance(TimeSpan duration) => this._now += duration;
     }
 }

@@ -64,20 +64,22 @@ public class DiscordIntegrationViewPlugInTest
     }
 
     /// <summary>
-    /// Tests that a missing link code is reported as not available.
+    /// Tests that the results of a link code request reach the client as such.
     /// </summary>
     [Test]
-    public async Task MissingLinkCodeIsNotAvailableAsync()
+    public async Task LinkCodeResultsAreSentAsync()
     {
         var (player, output) = CreatePlayer();
         var plugIn = new DiscordIntegrationViewPlugIn(player);
 
-        await plugIn.ShowDiscordLinkCodeAsync(null, TimeSpan.FromMinutes(10)).ConfigureAwait(false);
-        await plugIn.ShowDiscordLinkCodeAsync("ABCD-EFGH", TimeSpan.FromMinutes(10)).ConfigureAwait(false);
+        await plugIn.ShowDiscordLinkCodeAsync(DiscordLinkCodeResult.NotAvailable, null, TimeSpan.FromMinutes(10)).ConfigureAwait(false);
+        await plugIn.ShowDiscordLinkCodeAsync(DiscordLinkCodeResult.Created, "ABCD-EFGH", TimeSpan.FromMinutes(10)).ConfigureAwait(false);
+        await plugIn.ShowDiscordLinkCodeAsync(DiscordLinkCodeResult.TooSoon, null, TimeSpan.FromMinutes(10)).ConfigureAwait(false);
 
         var packets = ReadPackets(output);
         var missing = new DiscordLinkCodeRef(packets[0]);
         var created = new DiscordLinkCodeRef(packets[1]);
+        Assert.That(new DiscordLinkCodeRef(packets[2]).Result, Is.EqualTo(DiscordLinkCode.DiscordLinkCodeResult.TooSoon));
         Assert.That(missing.Result, Is.EqualTo(DiscordLinkCode.DiscordLinkCodeResult.NotAvailable));
         Assert.That(created.Result, Is.EqualTo(DiscordLinkCode.DiscordLinkCodeResult.Success));
         Assert.That(created.LinkCode, Is.EqualTo("ABCD-EFGH"));

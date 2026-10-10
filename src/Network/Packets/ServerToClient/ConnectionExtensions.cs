@@ -6641,7 +6641,7 @@ public static class ConnectionExtensions
     /// <param name="isAccountLinked">Defines if the account is linked to a Discord user.</param>
     /// <param name="isGuildChatBridged">Defines if the chat of the guild of the character is mirrored to a Discord channel.</param>
     /// <param name="isAllianceChatBridged">Defines if the chat of the alliance of the character is mirrored to a Discord channel.</param>
-    /// <param name="isWorldChatBridged">Defines if the world chat is mirrored to a Discord channel.</param>
+    /// <param name="isWorldChatBridged">Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.</param>
     /// <param name="richPresenceApplicationId">The id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none.</param>
     /// <param name="richPresenceLargeImageKey">The key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
     /// <param name="richPresenceSmallImageKey">The key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>

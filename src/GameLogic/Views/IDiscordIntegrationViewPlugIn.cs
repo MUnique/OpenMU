@@ -21,9 +21,10 @@ public interface IDiscordIntegrationViewPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the one-time code to link the account to a Discord user.
     /// </summary>
-    /// <param name="code">The code; <c>null</c>, if linking isn't available.</param>
+    /// <param name="result">The result of the request.</param>
+    /// <param name="code">The code; <c>null</c>, unless it was <see cref="DiscordLinkCodeResult.Created"/>.</param>
     /// <param name="validity">The time the code is valid.</param>
-    ValueTask ShowDiscordLinkCodeAsync(string? code, TimeSpan validity);
+    ValueTask ShowDiscordLinkCodeAsync(DiscordLinkCodeResult result, string? code, TimeSpan validity);
 
     /// <summary>
     /// Shows a chat message which was written outside of the game, if the client supports it.
