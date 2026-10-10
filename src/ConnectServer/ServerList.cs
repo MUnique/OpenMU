@@ -137,7 +137,7 @@ internal class ServerList
             return result;
         }
 
-        this._lock.EnterReadLock();
+        this._lock.EnterUpgradeableReadLock();
         try
         {
             result = this.Cache;
@@ -146,48 +146,56 @@ internal class ServerList
                 return result;
             }
 
-            byte[] packet;
-            if (this._clientVersion.Season == 0)
+            this._lock.EnterWriteLock();
+            try
             {
-                packet = new byte[ServerListResponseOld.GetRequiredSize(this._servers.Count)];
-                var response = new ServerListResponseOld(packet)
+                byte[] packet;
+                if (this._clientVersion.Season == 0)
                 {
-                    ServerCount = (byte)this._servers.Count,
-                };
-                var i = 0;
-                foreach (var server in this._servers)
-                {
-                    var serverBlock = response[i];
-                    serverBlock.ServerId = (byte)server.ServerId;
-                    serverBlock.LoadPercentage = server.ServerLoadPercentage;
-                    server.LoadIndex = ServerListResponseOld.GetRequiredSize(i) + 1; // GetRequiredSize(i) is the block offset; +1 is LoadPercentage.
-                    i++;
+                    packet = new byte[ServerListResponseOld.GetRequiredSize(this._servers.Count)];
+                    var response = new ServerListResponseOld(packet)
+                    {
+                        ServerCount = (byte)this._servers.Count,
+                    };
+                    var i = 0;
+                    foreach (var server in this._servers)
+                    {
+                        var serverBlock = response[i];
+                        serverBlock.ServerId = (byte)server.ServerId;
+                        serverBlock.LoadPercentage = server.ServerLoadPercentage;
+                        server.LoadIndex = ServerListResponseOld.GetRequiredSize(i) + 1; // GetRequiredSize(i) is the block offset; +1 is LoadPercentage.
+                        i++;
+                    }
                 }
-            }
-            else
-            {
-                packet = new byte[ServerListResponse.GetRequiredSize(this._servers.Count)];
-                var response = new ServerListResponse(packet)
+                else
                 {
-                    ServerCount = (ushort)this._servers.Count,
-                };
-                var i = 0;
-                foreach (var server in this._servers)
-                {
-                    var serverBlock = response[i];
-                    serverBlock.ServerId = server.ServerId;
-                    serverBlock.LoadPercentage = server.ServerLoadPercentage;
-                    server.LoadIndex = ServerListResponse.GetRequiredSize(i) + 2; // GetRequiredSize(i) is the block offset; +2 is LoadPercentage.
-                    i++;
+                    packet = new byte[ServerListResponse.GetRequiredSize(this._servers.Count)];
+                    var response = new ServerListResponse(packet)
+                    {
+                        ServerCount = (ushort)this._servers.Count,
+                    };
+                    var i = 0;
+                    foreach (var server in this._servers)
+                    {
+                        var serverBlock = response[i];
+                        serverBlock.ServerId = server.ServerId;
+                        serverBlock.LoadPercentage = server.ServerLoadPercentage;
+                        server.LoadIndex = ServerListResponse.GetRequiredSize(i) + 2; // GetRequiredSize(i) is the block offset; +2 is LoadPercentage.
+                        i++;
+                    }
                 }
-            }
 
-            this.Cache = packet;
-            return packet;
+                this.Cache = packet;
+                return packet;
+            }
+            finally
+            {
+                this._lock.ExitWriteLock();
+            }
         }
         finally
         {
-            this._lock.ExitReadLock();
+            this._lock.ExitUpgradeableReadLock();
         }
     }
 
