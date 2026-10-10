@@ -1588,13 +1588,13 @@ public class Stats
     public static AttributeDefinition SkillFinalMultiplier { get; } = new(new Guid("AC72CAE4-973C-46BB-BE3B-F6260E8DDFA8"), "Skill Final Damage Multiplier (skill attribute)", string.Empty);
 
     /// <summary>
-    /// Gets the skill's final multiplier attribute definition against non-player targets (PvE).
+    /// Gets the skill's final multiplier attribute definition against non-player targets (PvM).
     /// </summary>
     /// <remarks>
     /// When it's set, it replaces <see cref="SkillFinalMultiplier"/> outside of PvP.
     /// E.g. Dragon Slasher deals three times its damage to monsters.
     /// </remarks>
-    public static AttributeDefinition SkillFinalMultiplierPve { get; } = new(new Guid("A7C24DFA-7F97-42A6-90C4-1F634C77AD71"), "Skill Final Damage Multiplier (PvE) (skill attribute)", string.Empty);
+    public static AttributeDefinition SkillFinalMultiplierPvm { get; } = new(new Guid("A7C24DFA-7F97-42A6-90C4-1F634C77AD71"), "Skill Final Damage Multiplier (PvM) (skill attribute)", string.Empty);
 
     /// <summary>
     /// Gets the value of a master skill at its current level, as calculated by <see cref="MasterSkillDefinition.ValueFormula"/>.
@@ -1608,6 +1608,19 @@ public class Stats
     /// Gets the skill's final damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the Dragon Slaher skill's shield damage chance.
+    /// </summary>
+    public static AttributeDefinition DragonSlasherShieldDamageChance { get; } = new(new Guid("F2A8D5C7-1E9B-43F6-A2D8-7C4E1B9A6F3D"), "Dragon Slasher Shield Damage Chance (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the Dragon Slaher skill's shield damage rate.
+    /// </summary>
+    public static AttributeDefinition DragonSlasherShieldDamageRate { get; } = new(new Guid("A4E2F8C1-9D6B-47A3-B5E2-1F8C6D3A9B4E"), "Dragon Slasher Shield Damage Rate (skill attribute)", string.Empty)
+    {
+        MaximumValue = 1,
+    };
 
     /// <summary>
     /// Gets the dictionary which relates the jewelry element resistance attribute to the correspondent DMG bonus attribute.

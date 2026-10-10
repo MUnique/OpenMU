@@ -1309,7 +1309,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (previousFactor != item.GetCurrentDurabilityFactor())
         {
-            await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+            await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true, true).ConfigureAwait(false);
         }
     }
 
