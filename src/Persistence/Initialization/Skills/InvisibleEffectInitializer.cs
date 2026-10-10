@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 
 using System;
+
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the invisible effect.
@@ -31,7 +33,7 @@ public class InvisibleEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.Transparency;
-        magicEffect.Name = "Invisible";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.Invisible);
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = false;

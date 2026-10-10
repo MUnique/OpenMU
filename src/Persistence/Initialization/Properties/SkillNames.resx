@@ -24,4 +24,799 @@
   <data name="SelupanFall" xml:space="preserve">
     <value>Selupan Fall</value>
   </data>
+  <data name="Ice" xml:space="preserve">
+    <value>Ice</value>
+  </data>
+  <data name="Lightning" xml:space="preserve">
+    <value>Lightning</value>
+  </data>
+  <data name="EnergyBall" xml:space="preserve">
+    <value>Energy Ball</value>
+  </data>
+  <data name="TripleShot" xml:space="preserve">
+    <value>Triple Shot</value>
+  </data>
+  <data name="Slash" xml:space="preserve">
+    <value>Slash</value>
+  </data>
+  <data name="SummonGoblin" xml:space="preserve">
+    <value>Summon Goblin</value>
+  </data>
+  <data name="GreaterDamage" xml:space="preserve">
+    <value>Greater Damage</value>
+  </data>
+  <data name="GreaterDefense" xml:space="preserve">
+    <value>Greater Defense</value>
+  </data>
+  <data name="Heal" xml:space="preserve">
+    <value>Heal</value>
+  </data>
+  <data name="FlameOfEvilMonster" xml:space="preserve">
+    <value>Flame of Evil (Monster)</value>
+  </data>
+  <data name="Poison" xml:space="preserve">
+    <value>Poison</value>
+  </data>
+  <data name="Meteorite" xml:space="preserve">
+    <value>Meteorite</value>
+  </data>
+  <data name="PowerWave" xml:space="preserve">
+    <value>Power Wave</value>
+  </data>
+  <data name="Cyclone" xml:space="preserve">
+    <value>Cyclone</value>
+  </data>
+  <data name="FallingSlash" xml:space="preserve">
+    <value>Falling Slash</value>
+  </data>
+  <data name="Lunge" xml:space="preserve">
+    <value>Lunge</value>
+  </data>
+  <data name="Twister" xml:space="preserve">
+    <value>Twister</value>
+  </data>
+  <data name="Flame" xml:space="preserve">
+    <value>Flame</value>
+  </data>
+  <data name="Teleport" xml:space="preserve">
+    <value>Teleport</value>
+  </data>
+  <data name="FireBall" xml:space="preserve">
+    <value>Fire Ball</value>
+  </data>
+  <data name="Uppercut" xml:space="preserve">
+    <value>Uppercut</value>
+  </data>
+  <data name="Defense" xml:space="preserve">
+    <value>Defense</value>
+  </data>
+  <data name="AquaBeam" xml:space="preserve">
+    <value>Aqua Beam</value>
+  </data>
+  <data name="Hellfire" xml:space="preserve">
+    <value>Hellfire</value>
+  </data>
+  <data name="EvilSpirit" xml:space="preserve">
+    <value>Evil Spirit</value>
+  </data>
+  <data name="SummonBali" xml:space="preserve">
+    <value>Summon Bali</value>
+  </data>
+  <data name="SummonDarkKnight" xml:space="preserve">
+    <value>Summon Dark Knight</value>
+  </data>
+  <data name="SummonEliteYeti" xml:space="preserve">
+    <value>Summon Elite Yeti</value>
+  </data>
+  <data name="SummonAssassin" xml:space="preserve">
+    <value>Summon Assassin</value>
+  </data>
+  <data name="SummonStoneGolem" xml:space="preserve">
+    <value>Summon Stone Golem</value>
+  </data>
+  <data name="FireBreath" xml:space="preserve">
+    <value>Fire Breath</value>
+  </data>
+  <data name="Inferno" xml:space="preserve">
+    <value>Inferno</value>
+  </data>
+  <data name="Cometfall" xml:space="preserve">
+    <value>Cometfall</value>
+  </data>
+  <data name="TwistingSlash" xml:space="preserve">
+    <value>Twisting Slash</value>
+  </data>
+  <data name="Impale" xml:space="preserve">
+    <value>Impale</value>
+  </data>
+  <data name="GenericMonsterSkill" xml:space="preserve">
+    <value>Generic Monster Skill</value>
+  </data>
+  <data name="ForceWave" xml:space="preserve">
+    <value>Force Wave</value>
+  </data>
+  <data name="DeathStab" xml:space="preserve">
+    <value>Death Stab</value>
+  </data>
+  <data name="RagefulBlow" xml:space="preserve">
+    <value>Rageful Blow</value>
+  </data>
+  <data name="StrikeOfDestruction" xml:space="preserve">
+    <value>Strike of Destruction</value>
+  </data>
+  <data name="InfinityArrow" xml:space="preserve">
+    <value>Infinity Arrow</value>
+  </data>
+  <data name="PlasmaStorm" xml:space="preserve">
+    <value>Plasma Storm</value>
+  </data>
+  <data name="PowerSlash" xml:space="preserve">
+    <value>Power Slash</value>
+  </data>
+  <data name="DrainLife" xml:space="preserve">
+    <value>Drain Life</value>
+  </data>
+  <data name="Earthshake" xml:space="preserve">
+    <value>Earthshake</value>
+  </data>
+  <data name="Decay" xml:space="preserve">
+    <value>Decay</value>
+  </data>
+  <data name="IceStorm" xml:space="preserve">
+    <value>Ice Storm</value>
+  </data>
+  <data name="LightningShock" xml:space="preserve">
+    <value>Lightning Shock</value>
+  </data>
+  <data name="MultiShot" xml:space="preserve">
+    <value>Multi-Shot</value>
+  </data>
+  <data name="DoppelgangerSelfExplosion" xml:space="preserve">
+    <value>Doppelganger Self Explosion</value>
+  </data>
+  <data name="KillingBlow" xml:space="preserve">
+    <value>Killing Blow</value>
+  </data>
+  <data name="BeastUppercut" xml:space="preserve">
+    <value>Beast Uppercut</value>
+  </data>
+  <data name="Pollution" xml:space="preserve">
+    <value>Pollution</value>
+  </data>
+  <data name="Requiem" xml:space="preserve">
+    <value>Requiem</value>
+  </data>
+  <data name="Explosion" xml:space="preserve">
+    <value>Explosion</value>
+  </data>
+  <data name="PhoenixShot" xml:space="preserve">
+    <value>Phoenix Shot</value>
+  </data>
+  <data name="IncreaseBlock" xml:space="preserve">
+    <value>Increase Block</value>
+  </data>
+  <data name="IncreaseHealth" xml:space="preserve">
+    <value>Increase Health</value>
+  </data>
+  <data name="IgnoreDefense" xml:space="preserve">
+    <value>Ignore Defense</value>
+  </data>
+  <data name="DragonSlasher" xml:space="preserve">
+    <value>Dragon Slasher</value>
+  </data>
+  <data name="DragonRoar" xml:space="preserve">
+    <value>Dragon Roar</value>
+  </data>
+  <data name="DarkSide" xml:space="preserve">
+    <value>Dark Side</value>
+  </data>
+  <data name="ChainDrive" xml:space="preserve">
+    <value>Chain Drive</value>
+  </data>
+  <data name="GiganticStorm" xml:space="preserve">
+    <value>Gigantic Storm</value>
+  </data>
+  <data name="ExpansionOfWizardry" xml:space="preserve">
+    <value>Expansion of Wizardry</value>
+  </data>
+  <data name="Innovation" xml:space="preserve">
+    <value>Innovation</value>
+  </data>
+  <data name="Weakness" xml:space="preserve">
+    <value>Weakness</value>
+  </data>
+  <data name="Sleep" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="Berserker" xml:space="preserve">
+    <value>Berserker</value>
+  </data>
+  <data name="DamageReflection" xml:space="preserve">
+    <value>Damage Reflection</value>
+  </data>
+  <data name="ChainLightning" xml:space="preserve">
+    <value>Chain Lightning</value>
+  </data>
+  <data name="Nova" xml:space="preserve">
+    <value>Nova</value>
+  </data>
+  <data name="SoulBarrier" xml:space="preserve">
+    <value>Soul Barrier</value>
+  </data>
+  <data name="TeleportAlly" xml:space="preserve">
+    <value>Teleport Ally</value>
+  </data>
+  <data name="ChaoticDiseier" xml:space="preserve">
+    <value>Chaotic Diseier</value>
+  </data>
+  <data name="FireScream" xml:space="preserve">
+    <value>Fire Scream</value>
+  </data>
+  <data name="ElectricSpike" xml:space="preserve">
+    <value>Electric Spike</value>
+  </data>
+  <data name="IncreaseCriticalDamage" xml:space="preserve">
+    <value>Increase Critical Damage</value>
+  </data>
+  <data name="Summon" xml:space="preserve">
+    <value>Summon</value>
+  </data>
+  <data name="FireBurst" xml:space="preserve">
+    <value>Fire Burst</value>
+  </data>
+  <data name="FlameStrike" xml:space="preserve">
+    <value>Flame Strike</value>
+  </data>
+  <data name="Recovery" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="IceArrow" xml:space="preserve">
+    <value>Ice Arrow</value>
+  </data>
+  <data name="Penetration" xml:space="preserve">
+    <value>Penetration</value>
+  </data>
+  <data name="FireSlash" xml:space="preserve">
+    <value>Fire Slash</value>
+  </data>
+  <data name="SwellLife" xml:space="preserve">
+    <value>Swell Life</value>
+  </data>
+  <data name="RecoverManaMonsterKills" xml:space="preserve">
+    <value>Recover Mana Monster Kills</value>
+  </data>
+  <data name="RecoverHPFromMonsterKills" xml:space="preserve">
+    <value>Recover HP from Monster Kills</value>
+  </data>
+  <data name="IncreaseMinimumAttackPower" xml:space="preserve">
+    <value>Increase Minimum Attack Power</value>
+  </data>
+  <data name="RecoverSDFromMonsterKills" xml:space="preserve">
+    <value>Recover SD from Monster Kills</value>
+  </data>
+  <data name="DecreaseMana" xml:space="preserve">
+    <value>Decrease Mana</value>
+  </data>
+  <data name="IncreasePvPAttackRate" xml:space="preserve">
+    <value>Increase PvP Attack Rate</value>
+  </data>
+  <data name="IncreaseMaximumMana" xml:space="preserve">
+    <value>Increase Maximum Mana</value>
+  </data>
+  <data name="IncreaseMaximumHP" xml:space="preserve">
+    <value>Increase Maximum HP</value>
+  </data>
+  <data name="IncreaseAttackSuccessRate" xml:space="preserve">
+    <value>Increase Attack Success Rate</value>
+  </data>
+  <data name="IncreaseDefenseSuccessRate" xml:space="preserve">
+    <value>Increase Defense Success Rate</value>
+  </data>
+  <data name="IncreasesDefense" xml:space="preserve">
+    <value>Increases Defense</value>
+  </data>
+  <data name="DurabilityReduction3" xml:space="preserve">
+    <value>Durability Reduction(3)</value>
+  </data>
+  <data name="DurabilityReduction2" xml:space="preserve">
+    <value>Durability Reduction (2)</value>
+  </data>
+  <data name="DurabilityReduction1" xml:space="preserve">
+    <value>Durability Reduction (1)</value>
+  </data>
+  <data name="IncreaseIceResistance" xml:space="preserve">
+    <value>Increase Ice Resistance</value>
+  </data>
+  <data name="IncreaseLightningResistance" xml:space="preserve">
+    <value>Increase Lightning Resistance</value>
+  </data>
+  <data name="IncreasePoisonResistance" xml:space="preserve">
+    <value>Increase Poison Resistance</value>
+  </data>
+  <data name="IncreasesAGRecoveryRate" xml:space="preserve">
+    <value>Increases AG Recovery Rate</value>
+  </data>
+  <data name="IncreaseHPRecoveryRate" xml:space="preserve">
+    <value>Increase HP Recovery Rate</value>
+  </data>
+  <data name="IncreaseManaRecoveryRate" xml:space="preserve">
+    <value>Increase Mana Recovery Rate</value>
+  </data>
+  <data name="IncreaseSDRecoveryRate" xml:space="preserve">
+    <value>Increase SD Recovery Rate</value>
+  </data>
+  <data name="IncreaseMaximumSD" xml:space="preserve">
+    <value>Increase Maximum SD</value>
+  </data>
+  <data name="IncreasePvPDefenseRate" xml:space="preserve">
+    <value>Increase PvP Defense Rate</value>
+  </data>
+  <data name="StaminaIncreaseStrengthener" xml:space="preserve">
+    <value>Stamina Increase Strengthener</value>
+  </data>
+  <data name="DefSuccessRateIncMastery" xml:space="preserve">
+    <value>DefSuccessRate IncMastery</value>
+  </data>
+  <data name="DefSuccessRateIncPowUp" xml:space="preserve">
+    <value>Def SuccessRate IncPowUp</value>
+  </data>
+  <data name="EquippedWeaponMastery" xml:space="preserve">
+    <value>Equipped Weapon Mastery</value>
+  </data>
+  <data name="EquippedWeaponStrengthener" xml:space="preserve">
+    <value>Equipped Weapon Strengthener</value>
+  </data>
+  <data name="DragonRoarStrengthener" xml:space="preserve">
+    <value>Dragon Roar Strengthener</value>
+  </data>
+  <data name="DarkSideStrengthener" xml:space="preserve">
+    <value>Dark Side Strengthener</value>
+  </data>
+  <data name="ChainDriveStrengthener" xml:space="preserve">
+    <value>Chain Drive Strengthener</value>
+  </data>
+  <data name="WeaponMastery" xml:space="preserve">
+    <value>Weapon Mastery</value>
+  </data>
+  <data name="BeastUppercutMastery" xml:space="preserve">
+    <value>Beast Uppercut Mastery</value>
+  </data>
+  <data name="BeastUppercutStrengthener" xml:space="preserve">
+    <value>Beast Uppercut Strengthener</value>
+  </data>
+  <data name="KillingBlowMastery" xml:space="preserve">
+    <value>Killing Blow Mastery</value>
+  </data>
+  <data name="KillingBlowStrengthener" xml:space="preserve">
+    <value>Killing Blow Strengthener</value>
+  </data>
+  <data name="PetDurabilityStr" xml:space="preserve">
+    <value>Pet Durability Str</value>
+  </data>
+  <data name="DarkSpiritStr3" xml:space="preserve">
+    <value>Dark Spirit Str (3)</value>
+  </data>
+  <data name="DarkSpiritStr2" xml:space="preserve">
+    <value>Dark Spirit Str (2)</value>
+  </data>
+  <data name="DarkSpiritStr" xml:space="preserve">
+    <value>Dark Spirit Str</value>
+  </data>
+  <data name="CommandAttackInc" xml:space="preserve">
+    <value>Command Attack Inc</value>
+  </data>
+  <data name="ShieldMastery" xml:space="preserve">
+    <value>Shield Mastery</value>
+  </data>
+  <data name="ShieldStrengthener" xml:space="preserve">
+    <value>Shield Strengthener</value>
+  </data>
+  <data name="ScepterMastery" xml:space="preserve">
+    <value>Scepter Mastery</value>
+  </data>
+  <data name="ScepterStrengthener" xml:space="preserve">
+    <value>Scepter Strengthener</value>
+  </data>
+  <data name="UseScepterPetStr" xml:space="preserve">
+    <value>Use Scepter : Pet Str</value>
+  </data>
+  <data name="FireScreamStren" xml:space="preserve">
+    <value>Fire Scream Stren</value>
+  </data>
+  <data name="CritDMGIncPowUp3" xml:space="preserve">
+    <value>Crit DMG Inc PowUp (3)</value>
+  </data>
+  <data name="CritDMGIncPowUp2" xml:space="preserve">
+    <value>Crit DMG Inc PowUp (2)</value>
+  </data>
+  <data name="CriticalDMGIncPowUp" xml:space="preserve">
+    <value>Critical DMG Inc PowUp</value>
+  </data>
+  <data name="EarthshakeMastery" xml:space="preserve">
+    <value>Earthshake Mastery</value>
+  </data>
+  <data name="EarthshakeStreng" xml:space="preserve">
+    <value>Earthshake Streng</value>
+  </data>
+  <data name="DarkHorseStreng1" xml:space="preserve">
+    <value>Dark Horse Streng (1)</value>
+  </data>
+  <data name="FireBurstMastery" xml:space="preserve">
+    <value>Fire Burst Mastery</value>
+  </data>
+  <data name="FireBurstStreng" xml:space="preserve">
+    <value>Fire Burst Streng</value>
+  </data>
+  <data name="ForceWaveStreng" xml:space="preserve">
+    <value>Force Wave Streng</value>
+  </data>
+  <data name="Force" xml:space="preserve">
+    <value>Force</value>
+  </data>
+  <data name="BloodAttackStrengthen" xml:space="preserve">
+    <value>Blood Attack Strengthen</value>
+  </data>
+  <data name="IceStrengthener" xml:space="preserve">
+    <value>Ice Strengthener</value>
+  </data>
+  <data name="MagicMastery" xml:space="preserve">
+    <value>Magic Mastery</value>
+  </data>
+  <data name="EvilSpiritStrengthen" xml:space="preserve">
+    <value>Evil Spirit Strengthen</value>
+  </data>
+  <data name="InfernoStrengthener" xml:space="preserve">
+    <value>Inferno Strengthener</value>
+  </data>
+  <data name="FlameStrengthener" xml:space="preserve">
+    <value>Flame Strengthener</value>
+  </data>
+  <data name="PowerSlashStreng" xml:space="preserve">
+    <value>Power Slash Streng</value>
+  </data>
+  <data name="TwistingSlashStren" xml:space="preserve">
+    <value>Twisting Slash Stren</value>
+  </data>
+  <data name="BlastStrengthener" xml:space="preserve">
+    <value>Blast Strengthener</value>
+  </data>
+  <data name="LightningStrengthener" xml:space="preserve">
+    <value>Lightning Strengthener</value>
+  </data>
+  <data name="CycloneStrengthener" xml:space="preserve">
+    <value>Cyclone Strengthener</value>
+  </data>
+  <data name="MinimumWizCurseInc" xml:space="preserve">
+    <value>Minimum Wiz/Curse Inc</value>
+  </data>
+  <data name="BerserkerProficiency" xml:space="preserve">
+    <value>Berserker Proficiency</value>
+  </data>
+  <data name="BerserkerStrengthener" xml:space="preserve">
+    <value>Berserker Strengthener</value>
+  </data>
+  <data name="OtherWorldTomeMastery" xml:space="preserve">
+    <value>Other World Tome Mastery</value>
+  </data>
+  <data name="OtherWorldTomeStreng" xml:space="preserve">
+    <value>Other World Tome Streng</value>
+  </data>
+  <data name="StickMastery" xml:space="preserve">
+    <value>Stick Mastery</value>
+  </data>
+  <data name="StickStrengthener" xml:space="preserve">
+    <value>Stick Strengthener</value>
+  </data>
+  <data name="DrainLifeStrengthener" xml:space="preserve">
+    <value>Drain Life Strengthener</value>
+  </data>
+  <data name="LightningShockStr" xml:space="preserve">
+    <value>Lightning Shock Str</value>
+  </data>
+  <data name="ChainLightningStr" xml:space="preserve">
+    <value>Chain Lightning Str</value>
+  </data>
+  <data name="SleepStrengthener" xml:space="preserve">
+    <value>Sleep Strengthener</value>
+  </data>
+  <data name="LightningTomeMastery" xml:space="preserve">
+    <value>Lightning Tome Mastery</value>
+  </data>
+  <data name="LightningTomeStren" xml:space="preserve">
+    <value>Lightning Tome Stren</value>
+  </data>
+  <data name="WindTomeMastery" xml:space="preserve">
+    <value>Wind Tome Mastery</value>
+  </data>
+  <data name="WindTomeStrengthener" xml:space="preserve">
+    <value>Wind Tome Strengthener</value>
+  </data>
+  <data name="FireTomeMastery" xml:space="preserve">
+    <value>Fire Tome Mastery</value>
+  </data>
+  <data name="FireTomeStrengthener" xml:space="preserve">
+    <value>Fire Tome Strengthener</value>
+  </data>
+  <data name="MinimumAttPowerInc" xml:space="preserve">
+    <value>Minimum Att Power Inc</value>
+  </data>
+  <data name="InfinityArrowStr" xml:space="preserve">
+    <value>Infinity Arrow Str</value>
+  </data>
+  <data name="CrossbowMastery" xml:space="preserve">
+    <value>Crossbow Mastery</value>
+  </data>
+  <data name="CrossbowStrengthener" xml:space="preserve">
+    <value>Crossbow Strengthener</value>
+  </data>
+  <data name="BowMastery" xml:space="preserve">
+    <value>Bow Mastery</value>
+  </data>
+  <data name="BowStrengthener" xml:space="preserve">
+    <value>Bow Strengthener</value>
+  </data>
+  <data name="IceArrowStrengthener" xml:space="preserve">
+    <value>Ice Arrow Strengthener</value>
+  </data>
+  <data name="DefenseIncreaseMastery" xml:space="preserve">
+    <value>Defense Increase Mastery</value>
+  </data>
+  <data name="DefenseIncreaseStr" xml:space="preserve">
+    <value>Defense Increase Str</value>
+  </data>
+  <data name="AttackIncreaseMastery" xml:space="preserve">
+    <value>Attack Increase Mastery</value>
+  </data>
+  <data name="AttackIncreaseStr" xml:space="preserve">
+    <value>Attack Increase Str</value>
+  </data>
+  <data name="SummonedMonsterStr2" xml:space="preserve">
+    <value>Summoned Monster Str (2)</value>
+  </data>
+  <data name="TripleShotMastery" xml:space="preserve">
+    <value>Triple Shot Mastery</value>
+  </data>
+  <data name="TripleShotStrengthener" xml:space="preserve">
+    <value>Triple Shot Strengthener</value>
+  </data>
+  <data name="PenetrationStrengthener" xml:space="preserve">
+    <value>Penetration Strengthener</value>
+  </data>
+  <data name="SummonedMonsterStr1" xml:space="preserve">
+    <value>Summoned Monster Str (1)</value>
+  </data>
+  <data name="HealStrengthener" xml:space="preserve">
+    <value>Heal Strengthener</value>
+  </data>
+  <data name="MinimumWizardryInc" xml:space="preserve">
+    <value>Minimum Wizardry Inc</value>
+  </data>
+  <data name="SoulBarrierProficie" xml:space="preserve">
+    <value>Soul Barrier Proficie</value>
+  </data>
+  <data name="SoulBarrierStrength" xml:space="preserve">
+    <value>Soul Barrier Strength</value>
+  </data>
+  <data name="TwoHandedStaffMast" xml:space="preserve">
+    <value>Two-handed Staff Mast</value>
+  </data>
+  <data name="TwoHandedStaffStren" xml:space="preserve">
+    <value>Two-handed Staff Stren</value>
+  </data>
+  <data name="OneHandedStaffMast" xml:space="preserve">
+    <value>One-handed Staff Mast</value>
+  </data>
+  <data name="OneHandedStaffStren" xml:space="preserve">
+    <value>One-handed Staff Stren</value>
+  </data>
+  <data name="HellfireStrengthener" xml:space="preserve">
+    <value>Hellfire Strengthener</value>
+  </data>
+  <data name="DecayStrengthener" xml:space="preserve">
+    <value>Decay Strengthener</value>
+  </data>
+  <data name="PoisonStrengthener" xml:space="preserve">
+    <value>Poison Strengthener</value>
+  </data>
+  <data name="EvilSpiritStreng" xml:space="preserve">
+    <value>Evil Spirit Streng</value>
+  </data>
+  <data name="ExpansionOfWizMas" xml:space="preserve">
+    <value>Expansion of Wiz Mas</value>
+  </data>
+  <data name="ExpansionOfWizStreng" xml:space="preserve">
+    <value>Expansion of Wiz Streng</value>
+  </data>
+  <data name="SwellLifeStrengt" xml:space="preserve">
+    <value>Swell Life Strengt</value>
+  </data>
+  <data name="SpearMastery" xml:space="preserve">
+    <value>Spear Mastery</value>
+  </data>
+  <data name="SpearStrengthener" xml:space="preserve">
+    <value>Spear Strengthener</value>
+  </data>
+  <data name="MaceMastery" xml:space="preserve">
+    <value>Mace Mastery</value>
+  </data>
+  <data name="MaceStrengthener" xml:space="preserve">
+    <value>Mace Strengthener</value>
+  </data>
+  <data name="OneHandedSwordMast" xml:space="preserve">
+    <value>One-handed Sword Mast</value>
+  </data>
+  <data name="OneHandedSwordStren" xml:space="preserve">
+    <value>One-handed Sword Stren</value>
+  </data>
+  <data name="TwoHandedSwordMast" xml:space="preserve">
+    <value>Two-handed Sword Mast</value>
+  </data>
+  <data name="TwoHandedSwordStren" xml:space="preserve">
+    <value>Two-handed Sword Stren</value>
+  </data>
+  <data name="MaximumManaIncrease" xml:space="preserve">
+    <value>Maximum Mana Increase</value>
+  </data>
+  <data name="MaximumLifeIncrease" xml:space="preserve">
+    <value>Maximum Life Increase</value>
+  </data>
+  <data name="StrikeOfDestrStr" xml:space="preserve">
+    <value>Strike of Destr Str</value>
+  </data>
+  <data name="DeathStabStrengthener" xml:space="preserve">
+    <value>Death Stab Strengthener</value>
+  </data>
+  <data name="RagefulBlowMastery" xml:space="preserve">
+    <value>Rageful Blow Mastery</value>
+  </data>
+  <data name="RagefulBlowStreng" xml:space="preserve">
+    <value>Rageful Blow Streng</value>
+  </data>
+  <data name="TwistingSlashMastery" xml:space="preserve">
+    <value>Twisting Slash Mastery</value>
+  </data>
+  <data name="TwistingSlashStreng" xml:space="preserve">
+    <value>Twisting Slash Streng</value>
+  </data>
+  <data name="LungeStrengthener" xml:space="preserve">
+    <value>Lunge Strengthener</value>
+  </data>
+  <data name="FallingSlashStreng" xml:space="preserve">
+    <value>Falling Slash Streng</value>
+  </data>
+  <data name="SlashStrengthener" xml:space="preserve">
+    <value>Slash Strengthener</value>
+  </data>
+  <data name="AttackSuccRateInc" xml:space="preserve">
+    <value>Attack Succ Rate Inc</value>
+  </data>
+  <data name="PvPAttackRate" xml:space="preserve">
+    <value>PvP Attack Rate</value>
+  </data>
+  <data name="MonsterAttackManaInc" xml:space="preserve">
+    <value>Monster Attack Mana Inc</value>
+  </data>
+  <data name="MonsterAttackLifeInc" xml:space="preserve">
+    <value>Monster Attack Life Inc</value>
+  </data>
+  <data name="MinimumAttackPowerInc" xml:space="preserve">
+    <value>Minimum Attack Power Inc</value>
+  </data>
+  <data name="SwellLifeProficiency" xml:space="preserve">
+    <value>Swell Life Proficiency</value>
+  </data>
+  <data name="MonsterAttackSDInc" xml:space="preserve">
+    <value>Monster Attack SD Inc</value>
+  </data>
+  <data name="ManaReduction" xml:space="preserve">
+    <value>Mana Reduction</value>
+  </data>
+  <data name="DefenseSuccessRateInc" xml:space="preserve">
+    <value>Defense Success Rate Inc</value>
+  </data>
+  <data name="DefenseIncrease" xml:space="preserve">
+    <value>Defense Increase</value>
+  </data>
+  <data name="DurabilityReduction3Name" xml:space="preserve">
+    <value>Durability Reduction (3)</value>
+  </data>
+  <data name="IceResistanceIncrease" xml:space="preserve">
+    <value>Ice Resistance Increase</value>
+  </data>
+  <data name="LightningResistanceInc" xml:space="preserve">
+    <value>Lightning Resistance Inc</value>
+  </data>
+  <data name="PoisonResistanceInc" xml:space="preserve">
+    <value>Poison Resistance Inc</value>
+  </data>
+  <data name="AutomaticAGRecInc" xml:space="preserve">
+    <value>Automatic AG Rec Inc</value>
+  </data>
+  <data name="AutomaticHPRecInc" xml:space="preserve">
+    <value>Automatic HP Rec Inc</value>
+  </data>
+  <data name="AutomaticManaRecInc" xml:space="preserve">
+    <value>Automatic Mana Rec Inc</value>
+  </data>
+  <data name="SDRecoverySpeedInc" xml:space="preserve">
+    <value>SD Recovery Speed Inc</value>
+  </data>
+  <data name="MaximumSDIncrease" xml:space="preserve">
+    <value>Maximum SD increase</value>
+  </data>
+  <data name="PvPDefenceRateInc" xml:space="preserve">
+    <value>PvP Defence Rate Inc</value>
+  </data>
+  <data name="Charge" xml:space="preserve">
+    <value>Charge</value>
+  </data>
+  <data name="ShieldBurn" xml:space="preserve">
+    <value>Shield-Burn</value>
+  </data>
+  <data name="SpellOfPursuit" xml:space="preserve">
+    <value>Spell of Pursuit</value>
+  </data>
+  <data name="SpellOfRestriction" xml:space="preserve">
+    <value>Spell of Restriction</value>
+  </data>
+  <data name="SpellOfProtection" xml:space="preserve">
+    <value>Spell of Protection</value>
+  </data>
+  <data name="PotionOfSoul" xml:space="preserve">
+    <value>Potion of Soul</value>
+  </data>
+  <data name="PotionOfBless" xml:space="preserve">
+    <value>Potion of Bless</value>
+  </data>
+  <data name="PhysicalAttackImmunity" xml:space="preserve">
+    <value>Physical Attack Immunity</value>
+  </data>
+  <data name="MagicAttackImmunity" xml:space="preserve">
+    <value>Magic Attack Immunity</value>
+  </data>
+  <data name="SummonMonster" xml:space="preserve">
+    <value>Summon Monster</value>
+  </data>
+  <data name="FireBlast" xml:space="preserve">
+    <value>Fire Blast</value>
+  </data>
+  <data name="ManaRays" xml:space="preserve">
+    <value>Mana Rays</value>
+  </data>
+  <data name="AbolishMagic" xml:space="preserve">
+    <value>Abolish Magic</value>
+  </data>
+  <data name="CancelInvisibility" xml:space="preserve">
+    <value>Cancel Invisibility</value>
+  </data>
+  <data name="Invisibility" xml:space="preserve">
+    <value>Invisibility</value>
+  </data>
+  <data name="SwellMana" xml:space="preserve">
+    <value>Swell Mana</value>
+  </data>
+  <data name="CancelStun" xml:space="preserve">
+    <value>Cancel Stun</value>
+  </data>
+  <data name="Stun" xml:space="preserve">
+    <value>Stun</value>
+  </data>
+  <data name="SpiralSlash" xml:space="preserve">
+    <value>Spiral Slash</value>
+  </data>
+  <data name="Starfall" xml:space="preserve">
+    <value>Starfall</value>
+  </data>
+  <data name="Lance" xml:space="preserve">
+    <value>Lance</value>
+  </data>
+  <data name="CrescentMoonSlash" xml:space="preserve">
+    <value>Crescent Moon Slash</value>
+  </data>
+  <data name="NovaStart" xml:space="preserve">
+    <value>Nova (Start)</value>
+  </data>
+  <data name="SummonSoldier" xml:space="preserve">
+    <value>Summon Soldier</value>
+  </data>
 </root>

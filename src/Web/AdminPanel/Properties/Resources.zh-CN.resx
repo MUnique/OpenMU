@@ -1780,4 +1780,7 @@
   <data name="UsedBy" xml:space="preserve">
     <value>使用位置</value>
   </data>
+  <data name="GameMap" xml:space="preserve">
+    <value>地图</value>
+  </data>
 </root>

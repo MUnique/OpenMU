@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StaffRiseEven" xml:space="preserve">
+    <value>法杖伤害增幅（偶数魔力值）</value>
+  </data>
+  <data name="DamageIncreaseWeapons" xml:space="preserve">
+    <value>武器伤害加成</value>
+  </data>
+  <data name="DefenseRateIncreaseShields" xml:space="preserve">
+    <value>盾牌防御成功率加成</value>
+  </data>
+  <data name="DefenseIncreaseShields" xml:space="preserve">
+    <value>盾牌防御力加成</value>
+  </data>
+  <data name="RunningMovementSpeed" xml:space="preserve">
+    <value>奔跑移动速度</value>
+  </data>
+  <data name="DefenseIncreaseArmors" xml:space="preserve">
+    <value>防具防御力加成</value>
+  </data>
+  <data name="StaffRiseOdd" xml:space="preserve">
+    <value>法杖伤害增幅（奇数魔力值）</value>
+  </data>
+  <data name="TransformationRingSkinsTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（变身指环）</value>
+  </data>
+  <data name="ElementalResistancesJewelery" xml:space="preserve">
+    <value>首饰元素抗性</value>
+  </data>
+  <data name="DamageIncrease1stAnd3rdWings" xml:space="preserve">
+    <value>一代及三代翅膀伤害加成</value>
+  </data>
+  <data name="DefenseBonus1stAnd2ndWings" xml:space="preserve">
+    <value>一代及二代翅膀防御加成</value>
+  </data>
+  <data name="WingAbsorb" xml:space="preserve">
+    <value>翅膀伤害吸收</value>
+  </data>
+  <data name="DamageIncreasePercentBoltsArrows" xml:space="preserve">
+    <value>箭矢伤害加成比例</value>
+  </data>
+  <data name="ScepterRiseEven" xml:space="preserve">
+    <value>权杖伤害增幅（偶数魔力值）</value>
+  </data>
+  <data name="ScepterRiseOdd" xml:space="preserve">
+    <value>权杖伤害增幅（奇数魔力值）</value>
+  </data>
+  <data name="ManaLossAfterHitBoltsArrows" xml:space="preserve">
+    <value>箭矢命中后的魔法值消耗</value>
+  </data>
+  <data name="DefenseBonus3rdWings" xml:space="preserve">
+    <value>三代翅膀防御加成</value>
+  </data>
+  <data name="DamageIncrease2ndWings" xml:space="preserve">
+    <value>二代翅膀伤害加成</value>
+  </data>
+  <data name="TransformationRingSkinsSkeletonTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（骨架变身指环属性）</value>
+  </data>
+  <data name="TransformationRingSkinsPandaTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（熊猫变身指环）</value>
+  </data>
+  <data name="TransformationRingSkinsSnowmanTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（雪人变身指环）</value>
+  </data>
+  <data name="TransformationRingSkinsGameMasterTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（GM变身指环）</value>
+  </data>
+  <data name="TransformationRingSkinsChristmasTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（圣诞变身指环）</value>
+  </data>
+  <data name="TransformationRingSkinsJackOLanternTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（南瓜变身指环）</value>
+  </data>
+  <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
+    <value>变身戒指外观（骷髅战士变身指环属性）</value>
+  </data>
+</root>

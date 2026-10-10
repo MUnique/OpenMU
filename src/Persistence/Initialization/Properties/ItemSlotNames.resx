@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Pet" xml:space="preserve">
+    <value>Pet</value>
+  </data>
+  <data name="LeftHand" xml:space="preserve">
+    <value>Left Hand</value>
+  </data>
+  <data name="RightHand" xml:space="preserve">
+    <value>Right Hand</value>
+  </data>
+  <data name="Boots" xml:space="preserve">
+    <value>Boots</value>
+  </data>
+  <data name="Gloves" xml:space="preserve">
+    <value>Gloves</value>
+  </data>
+  <data name="Pants" xml:space="preserve">
+    <value>Pants</value>
+  </data>
+  <data name="Armor" xml:space="preserve">
+    <value>Armor</value>
+  </data>
+  <data name="Helm" xml:space="preserve">
+    <value>Helm</value>
+  </data>
+  <data name="LeftOrRightHand" xml:space="preserve">
+    <value>Left or Right Hand</value>
+  </data>
+  <data name="Ring" xml:space="preserve">
+    <value>Ring</value>
+  </data>
+  <data name="Pendant" xml:space="preserve">
+    <value>Pendant</value>
+  </data>
+  <data name="Wings" xml:space="preserve">
+    <value>Wings</value>
+  </data>
+</root>

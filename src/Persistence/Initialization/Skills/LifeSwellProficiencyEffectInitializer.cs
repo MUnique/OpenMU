@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the life swell proficiency effect.
@@ -30,7 +31,7 @@ public class LifeSwellProficiencyEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitudeProficiency;
-        magicEffect.Name = "Life Swell Proficiency Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.LifeSwellProficiencySkillEffect);
 
         this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.GreaterFortitude);
 

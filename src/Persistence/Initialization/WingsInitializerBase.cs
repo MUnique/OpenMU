@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Base class for wing data initializing.
@@ -115,7 +116,7 @@ public abstract class WingsInitializerBase : InitializerBase
             }
         }
 
-        return this.CreateItemBonusTable(Generate().ToArray(), "Wing absorb", "The damage absorb of wings per item level, 2 % less damage per level.");
+        return this.CreateItemBonusTable(Generate().ToArray(), LocalizedString.FromResource(() => LevelBonusNames.WingAbsorb), LocalizedString.FromResource(() => LevelBonusDescriptions.WingDamageAbsorb));
     }
 
     /// <summary>
@@ -131,7 +132,7 @@ public abstract class WingsInitializerBase : InitializerBase
             }
         }
 
-        return this.CreateItemBonusTable(Generate().ToArray(), "Damage Increase (1st and 3rd Wings)", "Defines the damage increase multiplier for first and third level wings. It's 2 % per wing level.");
+        return this.CreateItemBonusTable(Generate().ToArray(), LocalizedString.FromResource(() => LevelBonusNames.DamageIncrease1stAnd3rdWings), LocalizedString.FromResource(() => LevelBonusDescriptions.FirstAndThirdWingsDamageIncrease));
     }
 
     /// <summary>
@@ -147,7 +148,7 @@ public abstract class WingsInitializerBase : InitializerBase
             }
         }
 
-        return this.CreateItemBonusTable(Generate().ToArray(), "Damage Increase (2nd Wings)", "Defines the damage increase multiplier for second level wings. It's 1 % per wing level.");
+        return this.CreateItemBonusTable(Generate().ToArray(), LocalizedString.FromResource(() => LevelBonusNames.DamageIncrease2ndWings), LocalizedString.FromResource(() => LevelBonusDescriptions.SecondWingsDamageIncrease));
     }
 
     /// <summary>
@@ -155,7 +156,7 @@ public abstract class WingsInitializerBase : InitializerBase
     /// </summary>
     protected ItemLevelBonusTable CreateBonusDefensePerLevel()
     {
-        return this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Bonus (1st and 2nd Wings)", "Defines the defense bonus per level for 1st and 2nd level wings.");
+        return this.CreateItemBonusTable(DefenseIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DefenseBonus1stAnd2ndWings), LocalizedString.FromResource(() => LevelBonusDescriptions.FirstAndSecondWingsDefenseBonus));
     }
 
     /// <summary>
@@ -163,6 +164,6 @@ public abstract class WingsInitializerBase : InitializerBase
     /// </summary>
     protected ItemLevelBonusTable CreateBonusDefensePerLevelThirdWings()
     {
-        return this.CreateItemBonusTable(DefenseIncreaseByLevelThirdWings, "Defense Bonus (3rd Wings)", "Defines the defense bonus per level for 3rd level wings.");
+        return this.CreateItemBonusTable(DefenseIncreaseByLevelThirdWings, LocalizedString.FromResource(() => LevelBonusNames.DefenseBonus3rdWings), LocalizedString.FromResource(() => LevelBonusDescriptions.ThirdWingsDefenseBonus));
     }
 }

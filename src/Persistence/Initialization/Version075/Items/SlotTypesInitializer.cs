@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for <see cref="ItemSlotType"/>s.
@@ -27,74 +28,74 @@ public class SlotTypesInitializer : InitializerBase
     {
         var leftHand = this.Context.CreateNew<ItemSlotType>();
         leftHand.SetGuid(100);
-        leftHand.Description = "Left Hand";
+        leftHand.Description = LocalizedString.FromResource(() => ItemSlotNames.LeftHand);
         leftHand.ItemSlots.Add(0);
         this.GameConfiguration.ItemSlotTypes.Add(leftHand);
 
         var rightHand = this.Context.CreateNew<ItemSlotType>();
         rightHand.SetGuid(101);
-        rightHand.Description = "Right Hand";
+        rightHand.Description = LocalizedString.FromResource(() => ItemSlotNames.RightHand);
         rightHand.ItemSlots.Add(1);
         this.GameConfiguration.ItemSlotTypes.Add(rightHand);
 
         var leftOrRightHand = this.Context.CreateNew<ItemSlotType>();
         leftOrRightHand.SetGuid(1);
-        leftOrRightHand.Description = "Left or Right Hand";
+        leftOrRightHand.Description = LocalizedString.FromResource(() => ItemSlotNames.LeftOrRightHand);
         leftOrRightHand.ItemSlots.Add(0);
         leftOrRightHand.ItemSlots.Add(1);
         this.GameConfiguration.ItemSlotTypes.Add(leftOrRightHand);
 
         var helm = this.Context.CreateNew<ItemSlotType>();
         helm.SetGuid(2);
-        helm.Description = "Helm";
+        helm.Description = LocalizedString.FromResource(() => ItemSlotNames.Helm);
         helm.ItemSlots.Add(2);
         this.GameConfiguration.ItemSlotTypes.Add(helm);
 
         var armor = this.Context.CreateNew<ItemSlotType>();
         armor.SetGuid(3);
-        armor.Description = "Armor";
+        armor.Description = LocalizedString.FromResource(() => ItemSlotNames.Armor);
         armor.ItemSlots.Add(3);
         this.GameConfiguration.ItemSlotTypes.Add(armor);
 
         var pants = this.Context.CreateNew<ItemSlotType>();
         pants.SetGuid(4);
-        pants.Description = "Pants";
+        pants.Description = LocalizedString.FromResource(() => ItemSlotNames.Pants);
         pants.ItemSlots.Add(4);
         this.GameConfiguration.ItemSlotTypes.Add(pants);
 
         var gloves = this.Context.CreateNew<ItemSlotType>();
         gloves.SetGuid(5);
-        gloves.Description = "Gloves";
+        gloves.Description = LocalizedString.FromResource(() => ItemSlotNames.Gloves);
         gloves.ItemSlots.Add(5);
         this.GameConfiguration.ItemSlotTypes.Add(gloves);
 
         var boots = this.Context.CreateNew<ItemSlotType>();
         boots.SetGuid(6);
-        boots.Description = "Boots";
+        boots.Description = LocalizedString.FromResource(() => ItemSlotNames.Boots);
         boots.ItemSlots.Add(6);
         this.GameConfiguration.ItemSlotTypes.Add(boots);
 
         var wings = this.Context.CreateNew<ItemSlotType>();
         wings.SetGuid(7);
-        wings.Description = "Wings";
+        wings.Description = LocalizedString.FromResource(() => ItemSlotNames.Wings);
         wings.ItemSlots.Add(7);
         this.GameConfiguration.ItemSlotTypes.Add(wings);
 
         var pet = this.Context.CreateNew<ItemSlotType>();
         pet.SetGuid(8);
-        pet.Description = "Pet";
+        pet.Description = LocalizedString.FromResource(() => ItemSlotNames.Pet);
         pet.ItemSlots.Add(8);
         this.GameConfiguration.ItemSlotTypes.Add(pet);
 
         var pendant = this.Context.CreateNew<ItemSlotType>();
         pendant.SetGuid(9);
-        pendant.Description = "Pendant";
+        pendant.Description = LocalizedString.FromResource(() => ItemSlotNames.Pendant);
         pendant.ItemSlots.Add(9);
         this.GameConfiguration.ItemSlotTypes.Add(pendant);
 
         var ring = this.Context.CreateNew<ItemSlotType>();
         ring.SetGuid(10);
-        ring.Description = "Ring";
+        ring.Description = LocalizedString.FromResource(() => ItemSlotNames.Ring);
         ring.ItemSlots.Add(10);
         ring.ItemSlots.Add(11);
         this.GameConfiguration.ItemSlotTypes.Add(ring);

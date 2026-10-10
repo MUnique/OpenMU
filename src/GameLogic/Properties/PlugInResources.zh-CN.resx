@@ -1556,4 +1556,106 @@
   <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
     <value>客户端未报告在线状态多久后，连接被视为已丢失。游戏客户端每 20 秒报告一次。设为零则禁用检测。</value>
   </data>
+  <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>耐久度随时间消耗</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>更新按时间消耗耐久度的物品的耐久度。</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Name" xml:space="preserve">
+    <value>提炼之塔开放时长</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Description" xml:space="preserve">
+    <value>击败首领咒怨魔王后，提炼之塔保持开放的时长。开放期间跳过定时活动启动；游戏管理员仍可启动活动，并结束当前开放时段。</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Name" xml:space="preserve">
+    <value>提炼之塔开放截止时间（UTC）</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Description" xml:space="preserve">
+    <value>当前开放时段的结束时间，使用UTC。击败咒怨魔王后自动设置。</value>
+  </data>
+  <data name="RaklionPlugIn_Name" xml:space="preserve">
+    <value>孵化魔地活动</value>
+  </data>
+  <data name="RaklionPlugIn_Description" xml:space="preserve">
+    <value>冰霜之城孵化魔地的活动：摧毁全部蜘蛛卵后，冰霜巨蛛出现。战斗结束后，孵化魔地将暂时关闭。</value>
+  </data>
+  <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
+    <value>帝国军要塞活动</value>
+  </data>
+  <data name="ImperialGuardianFeaturePlugIn_Description" xml:space="preserve">
+    <value>配置帝国军要塞活动的运行规则，例如各阶段时间、经验奖励和怪物强度调整。</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Name" xml:space="preserve">
+    <value>奇怪的小纸条堆叠转换</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Description" xml:space="preserve">
+    <value>将堆叠满的奇怪的小纸条转换为凯文的指令。</value>
+  </data>
+  <data name="GensFeaturePlugIn_Name" xml:space="preserve">
+    <value>家族系统</value>
+  </data>
+  <data name="GensFeaturePlugIn_Description" xml:space="preserve">
+    <value>配置家族系统。玩家可通过家族管家加入多普瑞恩或巴内尔特家族。</value>
+  </data>
+  <data name="GensMembershipPlugIn_Name" xml:space="preserve">
+    <value>家族成员身份</value>
+  </data>
+  <data name="GensMembershipPlugIn_Description" xml:space="preserve">
+    <value>角色进入游戏时加载其家族成员信息，并向玩家显示。</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Name" xml:space="preserve">
+    <value>家族纷争区域</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Description" xml:space="preserve">
+    <value>只有家族成员可以进入纷争区域。不同家族成员在区域内击杀对方会改变家族名声，击杀者不会因此变为红名。</value>
+  </data>
+  <data name="GensRankingPlugIn_Name" xml:space="preserve">
+    <value>家族排名</value>
+  </data>
+  <data name="GensRankingPlugIn_Description" xml:space="preserve">
+    <value>按配置的时间间隔计算家族排名，并更新所有成员的排名和阶级。</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Name" xml:space="preserve">
+    <value>家族组队及战盟规则</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
+    <value>规定家族对组队、战盟和同盟的限制：不同家族之间以及纷争区域内禁止组队；战盟和同盟成员必须属于同一家族。</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
+    <value>祝福药水效果编号</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
+    <value>灵魂药水效果编号</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Name" xml:space="preserve">
+    <value>血色城堡大天使</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
+    <value>处理血色城堡活动中与大天使的对话，玩家向其交付任务物品以完成活动。</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Name" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
+    <value>由此插件处理对话的NPC。未设置时，插件不处理任何NPC的对话。</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>龙卷风动画计数</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>定义客户端对龙卷风动画的计数方式：每次动画均计数，命中数据不包含动画计数器。</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>黑龙波动画计数</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>定义客户端对黑龙波动画的计数方式：每次动画均计数。</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>五重箭动画计数</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>定义客户端对五重箭动画的计数方式：命中数据不包含动画计数器。</value>
+  </data>
 </root>

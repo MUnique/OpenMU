@@ -11,7 +11,6 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 /// <summary>
@@ -44,9 +43,9 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this._defenseIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Increase (Armors)", "Defines the defense increase per item level for armors. It's 3 per item level until level 9, then it's always 1 more for each level.");
-        this._shieldDefenseIncreaseTable = this.CreateItemBonusTable(ShieldDefenseIncreaseByLevel, "Defense Increase (Shields)", "Defines the defense increase per item level for shields. It's always 1 per item level.");
-        this._shieldDefenseRateIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Rate Increase (Shields)", "Defines the defense rate increase per item level for shields. It's 3 per item level until level 9, then it's always 1 more for each level.");
+        this._defenseIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DefenseIncreaseArmors), LocalizedString.FromResource(() => LevelBonusDescriptions.ArmorDefenseIncrease));
+        this._shieldDefenseIncreaseTable = this.CreateItemBonusTable(ShieldDefenseIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DefenseIncreaseShields), LocalizedString.FromResource(() => LevelBonusDescriptions.ShieldDefenseIncrease));
+        this._shieldDefenseRateIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DefenseRateIncreaseShields), LocalizedString.FromResource(() => LevelBonusDescriptions.ShieldDefenseRateIncrease));
         this._runningMovementSpeedTable = this.CreateRunningMovementSpeedTable();
     }
 
@@ -462,8 +461,8 @@ public abstract class ArmorInitializerBase : InitializerBase
     {
         var table = this.Context.CreateNew<ItemLevelBonusTable>();
         this.GameConfiguration.ItemLevelBonusTables.Add(table);
-        table.Name = "Running Movement Speed";
-        table.Description = "Defines the running movement speed for boots and underwater gloves from item level 5.";
+        table.Name = LocalizedString.FromResource(() => LevelBonusNames.RunningMovementSpeed);
+        table.Description = LocalizedString.FromResource(() => LevelBonusDescriptions.RunningMovementSpeed);
 
         for (int level = MovementSpeedConstants.RunningGearMinimumLevel; level <= this.MaximumArmorLevel; level++)
         {

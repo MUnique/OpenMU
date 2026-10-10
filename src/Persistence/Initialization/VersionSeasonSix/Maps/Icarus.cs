@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The initialization for the Icarus map.
@@ -30,7 +31,7 @@ internal class Icarus : Version095d.Maps.Icarus
         var feather = this.Context.CreateNew<DropItemGroup>();
         feather.SetGuid(this.MapNumber, 1);
         feather.Chance = 0.001;
-        feather.Description = "Loch's Feather";
+        feather.Description = LocalizedString.FromResource(() => DropGroupDescriptions.LochsFeather);
         feather.MinimumMonsterLevel = 82;
         feather.PossibleItems.Add(lochsFeather);
         this.MapDefinition!.DropItemGroups.Add(feather);
@@ -39,7 +40,7 @@ internal class Icarus : Version095d.Maps.Icarus
         var crest = this.Context.CreateNew<DropItemGroup>();
         crest.SetGuid(this.MapNumber, 2);
         crest.Chance = 0.001;
-        crest.Description = "Crest of Monarch";
+        crest.Description = LocalizedString.FromResource(() => DropGroupDescriptions.CrestOfMonarch);
         crest.MinimumMonsterLevel = 82;
         crest.ItemLevel = 1;
         crest.PossibleItems.Add(lochsFeather);

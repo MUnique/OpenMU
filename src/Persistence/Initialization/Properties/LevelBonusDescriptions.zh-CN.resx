@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StaffRiseEven" xml:space="preserve">
+    <value>定义魔力值为偶数的法杖每个强化等级的伤害增幅。</value>
+  </data>
+  <data name="WeaponDamageIncrease" xml:space="preserve">
+    <value>按武器强化等级提供伤害加成：每级增加3，从+10起每级的增量再增加1。</value>
+  </data>
+  <data name="ShieldDefenseRateIncrease" xml:space="preserve">
+    <value>定义盾牌每个强化等级的防御成功率增量：到+9为止每级增加3，之后每级的增量再增加1。</value>
+  </data>
+  <data name="ShieldDefenseIncrease" xml:space="preserve">
+    <value>定义盾牌每个强化等级的防御力增量，每级增加1。</value>
+  </data>
+  <data name="RunningMovementSpeed" xml:space="preserve">
+    <value>定义靴子及水下护手从强化+5起提供的奔跑移动速度。</value>
+  </data>
+  <data name="ArmorDefenseIncrease" xml:space="preserve">
+    <value>定义防具每个强化等级的防御力增量：到+9为止每级增加3，之后每级的增量再增加1。</value>
+  </data>
+  <data name="StaffRiseOdd" xml:space="preserve">
+    <value>定义魔力值为奇数的法杖每个强化等级的伤害增幅。</value>
+  </data>
+  <data name="TransformationRingSkinsTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（变身指环）。</value>
+  </data>
+  <data name="JeweleryElementalResistances" xml:space="preserve">
+    <value>定义首饰的元素抗性，每个强化等级增加1。</value>
+  </data>
+  <data name="FirstAndThirdWingsDamageIncrease" xml:space="preserve">
+    <value>定义一代及三代翅膀的伤害增幅，每强化一级增加2%。</value>
+  </data>
+  <data name="FirstAndSecondWingsDefenseBonus" xml:space="preserve">
+    <value>定义一代及二代翅膀每个强化等级的防御加成。</value>
+  </data>
+  <data name="WingDamageAbsorb" xml:space="preserve">
+    <value>定义翅膀每个强化等级的伤害吸收，每级减少2%所受伤害。</value>
+  </data>
+  <data name="AmmunitionDamageIncrease" xml:space="preserve">
+    <value>按箭矢强化等级提供的伤害增幅比例。</value>
+  </data>
+  <data name="ScepterRiseEven" xml:space="preserve">
+    <value>定义魔力值为偶数的权杖每个强化等级的伤害增幅。</value>
+  </data>
+  <data name="ScepterRiseOdd" xml:space="preserve">
+    <value>定义魔力值为奇数的权杖每个强化等级的伤害增幅。</value>
+  </data>
+  <data name="AmmunitionManaLoss" xml:space="preserve">
+    <value>无影箭效果下，每次技能命中按箭矢强化等级消耗的魔法值。</value>
+  </data>
+  <data name="AmmunitionDamageIncreasePerLevel" xml:space="preserve">
+    <value>按箭矢强化等级提供的伤害增幅比例。</value>
+  </data>
+  <data name="ThirdWingsDefenseBonus" xml:space="preserve">
+    <value>定义三代翅膀每个强化等级的防御加成。</value>
+  </data>
+  <data name="SecondWingsDamageIncrease" xml:space="preserve">
+    <value>定义二代翅膀的伤害增幅，每强化一级增加1%。</value>
+  </data>
+  <data name="TransformationRingSkinsSkeletonTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（骨架变身指环属性）。</value>
+  </data>
+  <data name="TransformationRingSkinsPandaTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（熊猫变身指环）。</value>
+  </data>
+  <data name="TransformationRingSkinsSnowmanTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（雪人变身指环）。</value>
+  </data>
+  <data name="TransformationRingSkinsGameMasterTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（GM变身指环）。</value>
+  </data>
+  <data name="TransformationRingSkinsChristmasTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（圣诞变身指环）。</value>
+  </data>
+  <data name="TransformationRingSkinsJackOLanternTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（南瓜变身指环）。</value>
+  </data>
+  <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
+    <value>记录变身戒指各等级的外观编号（骷髅战士变身指环属性）。</value>
+  </data>
+</root>

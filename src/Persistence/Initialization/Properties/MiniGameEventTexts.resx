@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StageTerrainChangeEvent" xml:space="preserve">
+    <value>Stage Terrain Change Event</value>
+  </data>
+  <data name="StatueSpawnEvent" xml:space="preserve">
+    <value>Statue Spawn Event</value>
+  </data>
+  <data name="KundunMinionsHaveBeenSubduedDestroyTheCrystalStatue" xml:space="preserve">
+    <value>Kundun minions have been subdued! Destroy the Crystal Statue!</value>
+  </data>
+  <data name="GateToggleEvent" xml:space="preserve">
+    <value>Gate Toggle Event</value>
+  </data>
+  <data name="Level0HasDemolishedTheCastleGate" xml:space="preserve">
+    <value>{0} has demolished the Castle Gate!</value>
+  </data>
+  <data name="BridgeToggleEvent" xml:space="preserve">
+    <value>Bridge Toggle Event</value>
+  </data>
+  <data name="EnoughMonsterKillsNowDestroyTheCastleGate" xml:space="preserve">
+    <value>Enough monster kills, now destroy the Castle Gate!</value>
+  </data>
+  <data name="EntranceToggleEvent" xml:space="preserve">
+    <value>Entrance Toggle Event</value>
+  </data>
+</root>

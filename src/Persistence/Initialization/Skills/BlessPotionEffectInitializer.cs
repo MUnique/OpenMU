@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the bless potion effect.
@@ -31,7 +32,7 @@ public class BlessPotionEffectInitializer : InitializerBase
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.PotionOfBless;
         magicEffect.SubType = 255 - (byte)MagicEffectNumber.PotionOfBless;
-        magicEffect.Name = "Potion of Bless Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.PotionOfBlessEffect);
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

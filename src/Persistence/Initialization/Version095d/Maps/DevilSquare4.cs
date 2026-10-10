@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
@@ -85,7 +84,7 @@ internal class DevilSquare4 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 66;
-            monster.Designation = "Cursed King";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CursedKing);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;

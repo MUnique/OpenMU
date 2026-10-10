@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization of all NPCs, which are no monsters.
@@ -48,7 +47,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 236;
-            def.Designation = "Golden Archer";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.GoldenArcher);
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);

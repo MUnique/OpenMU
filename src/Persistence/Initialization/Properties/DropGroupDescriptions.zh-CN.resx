@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="TheJewelsDropItemGroup01PercentDropChance" xml:space="preserve">
+    <value>宝石掉落组（0.1%掉落率）</value>
+  </data>
+  <data name="TheCommonDropItemGroupForRandomItems30PercentDropChance" xml:space="preserve">
+    <value>普通随机物品掉落组（30%掉落率）</value>
+  </data>
+  <data name="TheCommonMoneyDropItemGroup50PercentDropChance" xml:space="preserve">
+    <value>普通金币掉落组（50%掉落率）</value>
+  </data>
+  <data name="TheCommonDropItemGroupForRandomExcellentItems001PercentDropChance" xml:space="preserve">
+    <value>随机卓越物品掉落组（0.01%掉落率）</value>
+  </data>
+  <data name="ItemsFromRedDragon" xml:space="preserve">
+    <value>红龙掉落物品</value>
+  </data>
+  <data name="BoxOfKundunPlus2" xml:space="preserve">
+    <value>昆顿之盒 +2</value>
+  </data>
+  <data name="BoxOfLuck" xml:space="preserve">
+    <value>幸运宝箱</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel7" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 7）</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel6" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 6）</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel5" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 5）</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel4" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 4）</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel3" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 3）</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel2" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 2）</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel1" xml:space="preserve">
+    <value>昆顿之符掉落组（等级 1）</value>
+  </data>
+  <data name="DarkRavenSpirit" xml:space="preserve">
+    <value>黑暗之鸦灵魂</value>
+  </data>
+  <data name="DarkHorseSpirit" xml:space="preserve">
+    <value>黑王马灵魂</value>
+  </data>
+  <data name="SignOfDimensions" xml:space="preserve">
+    <value>次元标识</value>
+  </data>
+  <data name="QuestItemBrokenSwordDarkStoneBladeKnight" xml:space="preserve">
+    <value>任务物品：断剑、黑暗之石</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorBloodySummoner" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorMuseElf" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorSoulMaster" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorBladeKnight" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="CrestOfMonarch" xml:space="preserve">
+    <value>帝王之冠</value>
+  </data>
+  <data name="LochsFeather" xml:space="preserve">
+    <value>洛克之羽</value>
+  </data>
+  <data name="QuestItemFeatherOfDarkPhoenix" xml:space="preserve">
+    <value>任务物品：黑凤凰之羽</value>
+  </data>
+  <data name="QuestItemHornOfHellMaine" xml:space="preserve">
+    <value>任务物品：地狱犬王之角</value>
+  </data>
+  <data name="QuestItemFlameOfDeathBeamKnight" xml:space="preserve">
+    <value>任务物品：死亡光束骑士之炎</value>
+  </data>
+  <data name="QuestItemEyeOfAbyssalSummoner" xml:space="preserve">
+    <value>任务物品：深渊之眼（召唤术士）</value>
+  </data>
+  <data name="QuestItemSoulShardOfWizardDarkWizard" xml:space="preserve">
+    <value>任务物品：巫师灵魂碎片（黑暗巫师）</value>
+  </data>
+  <data name="QuestItemTearOfElfFairyElf" xml:space="preserve">
+    <value>任务物品：精灵之泪（圣射手）</value>
+  </data>
+  <data name="QuestItemBrokenSwordDarkStoneDarkKnight" xml:space="preserve">
+    <value>任务物品：断剑、黑暗之石</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorSummoner" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorDarkWizard" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorFairyElf" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorDarkKnight" xml:space="preserve">
+    <value>任务物品：帝王卷轴、荣誉之戒</value>
+  </data>
+  <data name="JewelOfGuardian" xml:space="preserve">
+    <value>守护宝石</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle7" xml:space="preserve">
+    <value>赤色要塞奖励远古物品 7</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle7" xml:space="preserve">
+    <value>赤色要塞奖励宝石 7</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle6" xml:space="preserve">
+    <value>赤色要塞奖励远古物品 6</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle6" xml:space="preserve">
+    <value>赤色要塞奖励宝石 6</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle5" xml:space="preserve">
+    <value>赤色要塞奖励远古物品 5</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle5" xml:space="preserve">
+    <value>赤色要塞奖励宝石 5</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle4" xml:space="preserve">
+    <value>赤色要塞奖励远古物品 4</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle4" xml:space="preserve">
+    <value>赤色要塞奖励宝石 4</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle3" xml:space="preserve">
+    <value>赤色要塞奖励远古物品 3</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle3" xml:space="preserve">
+    <value>赤色要塞奖励宝石 3</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle2" xml:space="preserve">
+    <value>赤色要塞奖励远古物品 2</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle2" xml:space="preserve">
+    <value>赤色要塞奖励宝石 2</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle1" xml:space="preserve">
+    <value>赤色要塞奖励宝石 1</value>
+  </data>
+  <data name="TheDropItemGroupForRena" xml:space="preserve">
+    <value>雷纳掉落组</value>
+  </data>
+  <data name="ArchangelWeaponBloodCastle" xml:space="preserve">
+    <value>大天使武器（血色城堡）</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle8" xml:space="preserve">
+    <value>血色城堡奖励物品 8</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle7" xml:space="preserve">
+    <value>血色城堡奖励物品 7</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle6" xml:space="preserve">
+    <value>血色城堡奖励物品 6</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle5" xml:space="preserve">
+    <value>血色城堡奖励物品 5</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle4" xml:space="preserve">
+    <value>血色城堡奖励物品 4</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle3" xml:space="preserve">
+    <value>血色城堡奖励物品 3</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle2" xml:space="preserve">
+    <value>血色城堡奖励物品 2</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle1" xml:space="preserve">
+    <value>血色城堡奖励物品 1</value>
+  </data>
+  <data name="WizardsRingFromDestructiveOgreArcher" xml:space="preserve">
+    <value>毁灭食人魔掉落的巫师之戒</value>
+  </data>
+  <data name="WizardsRingFromDestructiveOgreSoldier" xml:space="preserve">
+    <value>毁灭食人魔掉落的巫师之戒</value>
+  </data>
+  <data name="JewelOfBlessFromWhiteWizard" xml:space="preserve">
+    <value>白巫师掉落的祝福宝石</value>
+  </data>
+  <data name="BoxOfKundunPlus5" xml:space="preserve">
+    <value>昆顿之盒 +5</value>
+  </data>
+  <data name="BoxOfKundunPlus4" xml:space="preserve">
+    <value>昆顿之盒 +4</value>
+  </data>
+  <data name="BoxOfKundunPlus3" xml:space="preserve">
+    <value>昆顿之盒 +3</value>
+  </data>
+  <data name="BoxOfKundunPlus1" xml:space="preserve">
+    <value>昆顿之盒 +1</value>
+  </data>
+  <data name="GoldenCompensationBoxCrestOfMonarch" xml:space="preserve">
+    <value>黄金补偿宝箱：王者之书</value>
+  </data>
+  <data name="GoldenCompensationBoxLochsFeather" xml:space="preserve">
+    <value>黄金补偿宝箱：洛克之羽</value>
+  </data>
+  <data name="GoldenCompensationBoxJewel" xml:space="preserve">
+    <value>黄金补偿宝箱：宝石</value>
+  </data>
+  <data name="CompensationBoxCrestOfMonarch" xml:space="preserve">
+    <value>补偿宝箱：王者之书</value>
+  </data>
+  <data name="CompensationBoxLochsFeather" xml:space="preserve">
+    <value>补偿宝箱：洛克之羽</value>
+  </data>
+  <data name="CompensationBoxJewel" xml:space="preserve">
+    <value>补偿宝箱：宝石</value>
+  </data>
+  <data name="FlameOfCondor" xml:space="preserve">
+    <value>神鹰火种</value>
+  </data>
+</root>

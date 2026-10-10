@@ -106,3 +106,49 @@ Item option combination bonus descriptions (Fenrir movement bonuses and socket
 package bonuses) also use built-in resources. For an existing configuration, link
 the names and review the translations on this page before applying them. Custom
 descriptions are preserved unless explicitly selected.
+
+## Full configuration captions
+
+The same workflow also covers crafting names, quest titles, skill and
+magic-effect
+names, master-skill branches, combo names, warp destinations, equipment slots,
+item-level bonus table names and descriptions, drop-group descriptions, and
+mini-game stages, waves and announcements. These fields are visible in
+**Game Configuration → Full Configuration** and their nested editors. Existing
+installations must link the new captions and apply their selected translations;
+linking alone only records their resource keys. Restart the server process after
+applying changes, as described above.
+
+Some older drop groups, events and bonus tables have random IDs. Their captions
+can be linked by object type, property and exact neutral text when the reference
+has a single source for that text. Repeated descriptions can share that source;
+conflicting sources are skipped. This links captions only: it does not merge
+configuration objects or change their gameplay settings.
+
+Chinese warp labels use the same place names as the map resources. Existing
+Season 6 terminology is retained for items and activities. New quest titles and
+technical descriptions are translations of OpenMU's English configuration text,
+not claims of verbatim official client wording. The three legacy candy-box
+labels are descriptive translations pending confirmation from a matching Season
+6
+client. The Chinese name `次元标识` for `Sign of Dimensions` was confirmed by a
+contributor from their experience playing the official Chinese game. The
+official
+[family-system guide](https://mu.zhaouc.com/01_news/updatecn/s5/s5_3.htm) and
+[Doppelganger guide](https://mu.zhaouc.com/Guide/GameFeature/08_feature.html)
+provide terminology for the family and event plugin captions; their newer
+mechanics are not copied into the Season 6 configuration.
+
+Skill labels were also checked against the official
+[Season 6 Rage Fighter introduction](https://mu.zhaouc.com/news/Update/212.html)
+and the character guides for
+[Dark Knight](https://mu.zhaouc.com/Guide/GameIntro/01_character01.html),
+[Dark Wizard](https://mu.zhaouc.com/Guide/GameIntro/01_character02.html),
+[Fairy Elf](https://mu.zhaouc.com/Guide/GameIntro/01_character03.html),
+[Magic Gladiator](https://mu.zhaouc.com/Guide/GameIntro/01_character04.html),
+[Dark Lord](https://mu.zhaouc.com/Guide/GameIntro/01_character05.html) and
+[Summoner](https://mu.zhaouc.com/Guide/GameIntro/01_character06.html).
+Only names of skills present in the existing configuration are used. Technical
+master-skill variants retain descriptive suffixes rather than claiming a
+verified
+client label for every variant.

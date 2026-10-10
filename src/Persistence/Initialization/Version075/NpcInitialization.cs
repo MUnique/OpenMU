@@ -10,7 +10,6 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization of all NPCs, which are no monsters.
@@ -57,7 +56,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 239;
-            def.Designation = "Arena Guard";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.ArenaGuard);
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
@@ -141,7 +140,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 247;
-            def.Designation = "Crossbow Guard";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.CrossbowGuard);
             def.ObjectKind = NpcObjectKind.Guard;
             def.MoveRange = 3;
             def.AttackRange = 5;
@@ -181,7 +180,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 249;
-            def.Designation = "Berdysh Guard";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.BerdyshGuard);
             def.ObjectKind = NpcObjectKind.Guard;
             def.MoveRange = 3;
             def.AttackRange = 2;
@@ -265,7 +264,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 200;
-            def.Designation = "Soccerball";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.Soccerball);
             def.ObjectKind = NpcObjectKind.SoccerBall;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);

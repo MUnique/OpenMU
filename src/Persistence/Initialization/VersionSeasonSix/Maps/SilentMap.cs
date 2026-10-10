@@ -36,5 +36,5 @@ internal class SilentMap : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override LocalizedString MapName => Name;
+    protected override LocalizedString MapName => LocalizedString.FromResource(() => MapNames.SilentMap);
 }

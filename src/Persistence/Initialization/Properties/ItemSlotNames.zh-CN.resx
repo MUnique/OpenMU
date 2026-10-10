@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Pet" xml:space="preserve">
+    <value>宠物</value>
+  </data>
+  <data name="LeftHand" xml:space="preserve">
+    <value>左手</value>
+  </data>
+  <data name="RightHand" xml:space="preserve">
+    <value>右手</value>
+  </data>
+  <data name="Boots" xml:space="preserve">
+    <value>靴子</value>
+  </data>
+  <data name="Gloves" xml:space="preserve">
+    <value>护手</value>
+  </data>
+  <data name="Pants" xml:space="preserve">
+    <value>护腿</value>
+  </data>
+  <data name="Armor" xml:space="preserve">
+    <value>铠甲</value>
+  </data>
+  <data name="Helm" xml:space="preserve">
+    <value>头盔</value>
+  </data>
+  <data name="LeftOrRightHand" xml:space="preserve">
+    <value>左手或右手</value>
+  </data>
+  <data name="Ring" xml:space="preserve">
+    <value>戒指</value>
+  </data>
+  <data name="Pendant" xml:space="preserve">
+    <value>项链</value>
+  </data>
+  <data name="Wings" xml:space="preserve">
+    <value>翅膀</value>
+  </data>
+</root>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the increase health (stamina) strengthener effect.
@@ -27,7 +28,7 @@ public class IncreaseHealthStrengthenerEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseHealthStrengthener;
-        magicEffect.Name = "Increase Health Strengthener Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.IncreaseHealthStrengthenerSkillEffect);
 
         this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.IncreaseHealth);
     }

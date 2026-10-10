@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for event related items.
@@ -103,12 +102,12 @@ internal class EventTicketItems : InitializerBase
     {
         if (!this.GameConfiguration.Items.Any(item => item is { Group: 14, Number: 111 }))
         {
-            this.CreateEventItem(111, 14, 1, 1, "Mirror of Dimensions", false);
+            this.CreateEventItem(111, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.MirrorOfDimensions), false);
         }
 
         if (!this.GameConfiguration.Items.Any(item => item is { Group: 13, Number: 125 }))
         {
-            this.CreateEventItem(125, 13, 1, 1, "Doppelganger Free Ticket", false);
+            this.CreateEventItem(125, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.DoppelgangerFreeTicket), false);
         }
 
         if (this.GameConfiguration.Items.Any(item => item is { Group: 14, Number: 110 }))
@@ -117,13 +116,13 @@ internal class EventTicketItems : InitializerBase
         }
 
         // It's stackable up to five pieces, which transform into a Mirror of Dimensions.
-        var signOfDimensions = this.CreateEventItem(110, 14, 1, 1, "Sign of Dimensions", true);
+        var signOfDimensions = this.CreateEventItem(110, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SignOfDimensions), true);
         signOfDimensions.Durability = 5;
 
         var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
         dropItemGroup.SetGuid(14, 110);
         dropItemGroup.Chance = 0.001;
-        dropItemGroup.Description = "Sign of Dimensions";
+        dropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.SignOfDimensions);
         dropItemGroup.MinimumMonsterLevel = 32;
         dropItemGroup.PossibleItems.Add(signOfDimensions);
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);

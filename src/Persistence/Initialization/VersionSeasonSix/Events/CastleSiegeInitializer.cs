@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -121,7 +122,7 @@ internal sealed class CastleSiegeInitializer : InitializerBase
 
             var effect = this.Context.CreateNew<MagicEffectDefinition>();
             effect.Number = (short)effectNumber;
-            effect.Name = $"Castle Siege {effectNumber}";
+            effect.Name = MagicEffectNames.ResourceManager.GetLocalizedString($"CastleSiege{effectNumber}");
             effect.InformObservers = true;
             effect.SendDuration = false;
             effect.StopByDeath = false;

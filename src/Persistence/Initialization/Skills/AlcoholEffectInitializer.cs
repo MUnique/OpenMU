@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the alcohol effect.
@@ -30,7 +31,7 @@ public class AlcoholEffectInitializer : InitializerBase
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.Alcohol;
         magicEffect.SubType = 54;
-        magicEffect.Name = "Alcohol Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.AlcoholEffect);
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = false;
