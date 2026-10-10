@@ -125,10 +125,10 @@ public class MoveItemActionTests
     }
 
     /// <summary>
-    /// Verifies that an item can't be moved from the inventory into a locked vault.
+    /// Verifies that an item can still be moved from the inventory into a locked vault.
     /// </summary>
     [Test]
-    public async ValueTask InventoryToLockedVaultMoveKeepsItemInInventoryAsync()
+    public async ValueTask InventoryToLockedVaultMoveStoresItemInVaultAsync()
     {
         var player = await CreateTestPlayerAsync().ConfigureAwait(false);
         var vaultStorage = CreateVaultStorage();
@@ -141,8 +141,8 @@ public class MoveItemActionTests
 
         await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.Vault).ConfigureAwait(false);
 
-        Assert.That(player.Inventory.GetItem(20), Is.SameAs(source));
-        Assert.That(vaultStorage.GetItem(0), Is.Null);
+        Assert.That(vaultStorage.GetItem(0), Is.SameAs(source));
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
     }
 
     /// <summary>
@@ -167,10 +167,10 @@ public class MoveItemActionTests
     }
 
     /// <summary>
-    /// Verifies that money can't be moved from or to a locked vault.
+    /// Verifies that money can be deposited into a locked vault, but not taken out of it.
     /// </summary>
     [Test]
-    public async ValueTask LockedVaultRejectsMoneyTransfersAsync()
+    public async ValueTask LockedVaultAllowsOnlyMoneyDepositsAsync()
     {
         var player = await CreateTestPlayerAsync().ConfigureAwait(false);
         var vaultStorage = CreateVaultStorage();
@@ -182,15 +182,18 @@ public class MoveItemActionTests
         player.IsVaultLocked = true;
 
         Assert.That(player.TryTakeVaultMoney(200), Is.False);
-        Assert.That(player.TryDepositVaultMoney(50), Is.False);
         Assert.That(player.Money, Is.EqualTo(100));
         Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(500));
+
+        Assert.That(player.TryDepositVaultMoney(50), Is.True);
+        Assert.That(player.Money, Is.EqualTo(50));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(550));
 
         player.IsVaultLocked = false;
 
         Assert.That(player.TryTakeVaultMoney(200), Is.True);
-        Assert.That(player.Money, Is.EqualTo(300));
-        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(300));
+        Assert.That(player.Money, Is.EqualTo(250));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(350));
     }
 
     /// <summary>
