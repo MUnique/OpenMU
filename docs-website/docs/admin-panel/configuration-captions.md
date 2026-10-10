@@ -106,3 +106,12 @@ Item option combination bonus descriptions (Fenrir movement bonuses and socket
 package bonuses) also use built-in resources. For an existing configuration, link
 the names and review the translations on this page before applying them. Custom
 descriptions are preserved unless explicitly selected.
+
+## Attribute display text
+
+Built-in attribute names and descriptions can be displayed in Simplified Chinese.
+Global base attribute values also translate the aggregation operation. In attribute
+editors, a translated hint appears below the original name or description.
+The input still edits the stored English text, which configuration updates use to
+identify attributes. Unknown or customized text is shown unchanged.
+These display translations do not require linking or applying configuration names.
