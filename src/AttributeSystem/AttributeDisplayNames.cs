@@ -25,6 +25,12 @@ public static class AttributeDisplayNames
             : attribute.Designation;
     }
 
+    /// <summary>Gets a localized label for an attribute aggregation operation.</summary>
+    /// <param name="aggregateType">The aggregation operation.</param>
+    /// <returns>The localized label or enum value.</returns>
+    public static string GetDisplayName(this AggregateType aggregateType) =>
+        Resources.GetString("AggregateType_" + aggregateType, CultureInfo.CurrentUICulture) ?? aggregateType.ToString();
+
     /// <summary>Gets a localized description without replacing a customized description.</summary>
     /// <param name="attribute">The attribute definition.</param>
     /// <returns>The localized description or the original description.</returns>
@@ -36,12 +42,6 @@ public static class AttributeDisplayNames
                 ? Resources.GetString("Description_" + key, CultureInfo.CurrentUICulture) ?? attribute.Description
                 : attribute.Description;
     }
-
-    /// <summary>Gets a localized label for an attribute aggregation operation.</summary>
-    /// <param name="aggregateType">The aggregation operation.</param>
-    /// <returns>The localized label or enum value.</returns>
-    public static string GetDisplayName(this AggregateType aggregateType) =>
-        Resources.GetString("AggregateType_" + aggregateType, CultureInfo.CurrentUICulture) ?? aggregateType.ToString();
 
     private static string GetKey(string? designation) => new((designation ?? string.Empty).Where(char.IsAsciiLetterOrDigit).ToArray());
 }
