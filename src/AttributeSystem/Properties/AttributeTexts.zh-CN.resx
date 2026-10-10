@@ -1,0 +1,1242 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Name_AbilityrecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>击杀怪物恢复技能值（固定值）</value>
+  </data>
+  <data name="Name_AbilityrecoverafterMonsterkillmultiplierofmaxability" xml:space="preserve">
+    <value>击杀怪物恢复技能值（最大值比例）</value>
+  </data>
+  <data name="Name_AbilityRecoveryAbsoluteIncrease" xml:space="preserve">
+    <value>技能值恢复增加（固定值）</value>
+  </data>
+  <data name="Name_AbilityRecoveryMultiplier" xml:space="preserve">
+    <value>技能值恢复倍率</value>
+  </data>
+  <data name="Name_AbilityUsageReduction" xml:space="preserve">
+    <value>技能值消耗减少比例</value>
+  </data>
+  <data name="Description_AbilityUsageReduction" xml:space="preserve">
+    <value>技能所需技能值中不被消耗的比例，取值范围为 0～1。</value>
+  </data>
+  <data name="Name_AgilityRequirementreduction" xml:space="preserve">
+    <value>敏捷需求降低</value>
+  </data>
+  <data name="Description_AgilityRequirementreduction" xml:space="preserve">
+    <value>带有此属性的物品会按属性值降低所需敏捷。</value>
+  </data>
+  <data name="Name_AmmunitionDamageBonus" xml:space="preserve">
+    <value>弹药伤害加成比例</value>
+  </data>
+  <data name="Description_AmmunitionDamageBonus" xml:space="preserve">
+    <value>弹药伤害加成比例，与最小和最大基础伤害相乘。</value>
+  </data>
+  <data name="Name_Ammunitiondamageincrease" xml:space="preserve">
+    <value>弹药伤害增加</value>
+  </data>
+  <data name="Name_ArcheryAttackMode" xml:space="preserve">
+    <value>远程射击模式</value>
+  </data>
+  <data name="Description_ArcheryAttackMode" xml:space="preserve">
+    <value>弓箭手远程射击模式的开关。</value>
+  </data>
+  <data name="Name_ArcheryMaximumDamage" xml:space="preserve">
+    <value>远程射击最大伤害</value>
+  </data>
+  <data name="Description_ArcheryMaximumDamage" xml:space="preserve">
+    <value>弓箭手远程射击的最大伤害，叠加到投射类武器攻击中。</value>
+  </data>
+  <data name="Name_ArcheryMinimumDamage" xml:space="preserve">
+    <value>远程射击最小伤害</value>
+  </data>
+  <data name="Description_ArcheryMinimumDamage" xml:space="preserve">
+    <value>弓箭手远程射击的最小伤害，叠加到投射类武器攻击中。</value>
+  </data>
+  <data name="Name_Aretwoweaponsequipped" xml:space="preserve">
+    <value>是否装备两把武器</value>
+  </data>
+  <data name="Name_ArmorDamageDecrease" xml:space="preserve">
+    <value>装备减伤比例</value>
+  </data>
+  <data name="Description_ArmorDamageDecrease" xml:space="preserve">
+    <value>卓越、再生和镶嵌属性提供的总减伤比例，与最终伤害相乘后从伤害中扣除。</value>
+  </data>
+  <data name="Name_AttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>攻击伤害增加倍率</value>
+  </data>
+  <data name="Name_Attackrateofthedarkraven" xml:space="preserve">
+    <value>天鹰攻击成功率</value>
+  </data>
+  <data name="Name_AttackRatePvM" xml:space="preserve">
+    <value>对怪物攻击成功率</value>
+  </data>
+  <data name="Name_AttackRatePvP" xml:space="preserve">
+    <value>对玩家攻击成功率</value>
+  </data>
+  <data name="Name_AttackSpeed" xml:space="preserve">
+    <value>攻击速度</value>
+  </data>
+  <data name="Name_AttackSpeedAny" xml:space="preserve">
+    <value>通用攻击速度</value>
+  </data>
+  <data name="Description_AttackSpeedAny" xml:space="preserve">
+    <value>同时影响物理攻击速度和施法速度的通用攻击速度。</value>
+  </data>
+  <data name="Name_AttackSpeedbyWeapons" xml:space="preserve">
+    <value>武器提供的攻击速度</value>
+  </data>
+  <data name="Name_Attackspeedofthedarkraven" xml:space="preserve">
+    <value>天鹰攻击速度</value>
+  </data>
+  <data name="Name_BaseAgility" xml:space="preserve">
+    <value>基础敏捷</value>
+  </data>
+  <data name="Description_BaseAgility" xml:space="preserve">
+    <value>角色的基础敏捷。</value>
+  </data>
+  <data name="Name_BaseDamageBonusphysicalandwizardryminandmax" xml:space="preserve">
+    <value>基础伤害加成（物理和魔法，最小值和最大值）</value>
+  </data>
+  <data name="Description_BaseDamageBonusphysicalandwizardryminandmax" xml:space="preserve">
+    <value>伤害计算时，加到物理和魔法最小、最大基础伤害上的固定加成。</value>
+  </data>
+  <data name="Name_BaseDefense" xml:space="preserve">
+    <value>基础防御力</value>
+  </data>
+  <data name="Name_BaseEnergy" xml:space="preserve">
+    <value>基础智力</value>
+  </data>
+  <data name="Name_BaseLeadership" xml:space="preserve">
+    <value>基础统率</value>
+  </data>
+  <data name="Name_BaseMaxDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>基础最大伤害加成（物理和魔法）</value>
+  </data>
+  <data name="Description_BaseMaxDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>伤害计算时，加到物理和魔法最大基础伤害上的固定加成。</value>
+  </data>
+  <data name="Name_BaseMinDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>基础最小伤害加成（物理和魔法）</value>
+  </data>
+  <data name="Description_BaseMinDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>伤害计算时，加到物理和魔法最小基础伤害上的固定加成。</value>
+  </data>
+  <data name="Name_BaseStrength" xml:space="preserve">
+    <value>基础力量</value>
+  </data>
+  <data name="Description_BaseStrength" xml:space="preserve">
+    <value>角色的基础力量。</value>
+  </data>
+  <data name="Name_BaseVitality" xml:space="preserve">
+    <value>基础体力</value>
+  </data>
+  <data name="Name_BerserkerCurseMultiplierMST" xml:space="preserve">
+    <value>狂暴术诅咒伤害强化倍率（大师技能）</value>
+  </data>
+  <data name="Description_BerserkerCurseMultiplierMST" xml:space="preserve">
+    <value>狂暴术强化提供的诅咒伤害倍率，与最小、最大基础伤害相乘后叠加。</value>
+  </data>
+  <data name="Name_BerserkerHealthDecrement" xml:space="preserve">
+    <value>狂暴术生命值降低比例</value>
+  </data>
+  <data name="Description_BerserkerHealthDecrement" xml:space="preserve">
+    <value>狂暴术的生命值降低量，原始定义限定其最大值为 -10%。</value>
+  </data>
+  <data name="Name_BerserkerManaMultiplier" xml:space="preserve">
+    <value>狂暴术魔法值倍率</value>
+  </data>
+  <data name="Description_BerserkerManaMultiplier" xml:space="preserve">
+    <value>狂暴术的魔法值倍率，用于提高施法者的魔法值和各类伤害。</value>
+  </data>
+  <data name="Name_BerserkerMaximumCurseDamageBonus" xml:space="preserve">
+    <value>狂暴术最大诅咒伤害加成</value>
+  </data>
+  <data name="Name_BerserkerMaximumPhysicalDamageBonus" xml:space="preserve">
+    <value>狂暴术最大物理伤害加成</value>
+  </data>
+  <data name="Name_BerserkerMaximumWizardryDamageBonus" xml:space="preserve">
+    <value>狂暴术最大魔法伤害加成</value>
+  </data>
+  <data name="Name_BerserkerMinimumCurseDamageBonus" xml:space="preserve">
+    <value>狂暴术最小诅咒伤害加成</value>
+  </data>
+  <data name="Name_BerserkerMinimumPhysicalDamageBonus" xml:space="preserve">
+    <value>狂暴术最小物理伤害加成</value>
+  </data>
+  <data name="Name_BerserkerMinimumWizardryDamageBonus" xml:space="preserve">
+    <value>狂暴术最小魔法伤害加成</value>
+  </data>
+  <data name="Name_BerserkerProficiencyMultiplierMST" xml:space="preserve">
+    <value>狂暴术精通伤害倍率（大师技能）</value>
+  </data>
+  <data name="Description_BerserkerProficiencyMultiplierMST" xml:space="preserve">
+    <value>狂暴术精通伤害倍率：叠加到魔法伤害倍率，同时独立与魔法、诅咒最终伤害相乘后叠加。</value>
+  </data>
+  <data name="Name_BerserkerWizardryMultiplier" xml:space="preserve">
+    <value>狂暴术魔法伤害倍率</value>
+  </data>
+  <data name="Description_BerserkerWizardryMultiplier" xml:space="preserve">
+    <value>狂暴术的魔法伤害倍率，与最小、最大基础伤害相乘后叠加。</value>
+  </data>
+  <data name="Name_BleedingDamageMultiplier" xml:space="preserve">
+    <value>出血伤害倍率</value>
+  </data>
+  <data name="Name_BonusExperienceRate" xml:space="preserve">
+    <value>额外经验倍率</value>
+  </data>
+  <data name="Description_BonusExperienceRate" xml:space="preserve">
+    <value>叠加到基础经验倍率上的额外经验倍率。</value>
+  </data>
+  <data name="Name_BookBonusBaseDamageMST" xml:space="preserve">
+    <value>魔法书基础伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_BookRisePercentage" xml:space="preserve">
+    <value>魔法书增幅比例</value>
+  </data>
+  <data name="Name_BowStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>弓强化伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_Chancetofullyrecoverhealthwhengettinghit" xml:space="preserve">
+    <value>受击时完全恢复生命值概率</value>
+  </data>
+  <data name="Description_Chancetofullyrecoverhealthwhengettinghit" xml:space="preserve">
+    <value>三代翅膀属性。</value>
+  </data>
+  <data name="Name_Chancetofullyrecovermanawhengettinghit" xml:space="preserve">
+    <value>受击时完全恢复魔法值概率</value>
+  </data>
+  <data name="Description_Chancetofullyrecovermanawhengettinghit" xml:space="preserve">
+    <value>三代翅膀属性。</value>
+  </data>
+  <data name="Name_Chancetofullyreflectdamagewhengettinghit" xml:space="preserve">
+    <value>受击时完全反弹伤害概率</value>
+  </data>
+  <data name="Description_Chancetofullyreflectdamagewhengettinghit" xml:space="preserve">
+    <value>三代翅膀属性。</value>
+  </data>
+  <data name="Name_CharactertoMonstertransformation" xml:space="preserve">
+    <value>角色变身怪物编号</value>
+  </data>
+  <data name="Description_CharactertoMonstertransformation" xml:space="preserve">
+    <value>角色佩戴变身指环变成怪物时，此值大于 0，数值表示怪物外观编号。</value>
+  </data>
+  <data name="Name_ComboBonus" xml:space="preserve">
+    <value>连击加成</value>
+  </data>
+  <data name="Name_CriticalDamageBonus" xml:space="preserve">
+    <value>幸运一击伤害加成</value>
+  </data>
+  <data name="Description_CriticalDamageBonus" xml:space="preserve">
+    <value>触发幸运一击时，在伤害计算中追加的固定伤害。</value>
+  </data>
+  <data name="Name_CriticalDamageChance" xml:space="preserve">
+    <value>幸运一击概率</value>
+  </data>
+  <data name="Name_CrossBowMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>弩精通对玩家伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_CrossBowStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>弩强化伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_CurrentAbility" xml:space="preserve">
+    <value>当前技能值</value>
+  </data>
+  <data name="Name_CurrentHealth" xml:space="preserve">
+    <value>当前生命值</value>
+  </data>
+  <data name="Name_CurrentMana" xml:space="preserve">
+    <value>当前魔法值</value>
+  </data>
+  <data name="Name_CurrentShield" xml:space="preserve">
+    <value>当前防护值</value>
+  </data>
+  <data name="Name_CurseAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>诅咒攻击伤害增加倍率</value>
+  </data>
+  <data name="Description_CurseAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>与最小、最大基础诅咒伤害相乘后叠加的伤害增加比例。</value>
+  </data>
+  <data name="Name_CurseBaseDamageminandmax" xml:space="preserve">
+    <value>基础诅咒伤害（最小值和最大值）</value>
+  </data>
+  <data name="Name_DamageIncreaseBonusabsoluteWithequippedScepter" xml:space="preserve">
+    <value>装备权杖时的伤害加成（固定值）</value>
+  </data>
+  <data name="Name_DamageIncreaseBonusabsoluteWithequippedScepterCommandDivisorMST" xml:space="preserve">
+    <value>权杖伤害加成的统率除数（大师技能）</value>
+  </data>
+  <data name="Name_DamageReceiveFromDarkHorseMultiplier" xml:space="preserve">
+    <value>黑王马提供的承受伤害倍率</value>
+  </data>
+  <data name="Name_DamageReceiveMultiplier" xml:space="preserve">
+    <value>承受伤害倍率</value>
+  </data>
+  <data name="Name_DamageReflection" xml:space="preserve">
+    <value>伤害反射比例</value>
+  </data>
+  <data name="Name_DarkHorseLevel" xml:space="preserve">
+    <value>黑王马等级</value>
+  </data>
+  <data name="Name_DarkRavenBonusDamageMST" xml:space="preserve">
+    <value>天鹰伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_DarkRavenLevel" xml:space="preserve">
+    <value>天鹰等级</value>
+  </data>
+  <data name="Name_DefenseDecrement" xml:space="preserve">
+    <value>防御力降低比例</value>
+  </data>
+  <data name="Description_DefenseDecrement" xml:space="preserve">
+    <value>各类技能效果造成的防御力降低比例，与最终防御力相乘后扣除。</value>
+  </data>
+  <data name="Name_DefenseIgnoreChance" xml:space="preserve">
+    <value>无视防御概率</value>
+  </data>
+  <data name="Name_DefenseIncreaseBonusabsoluteWithequippedHorseMST" xml:space="preserve">
+    <value>骑乘黑王马时的防御加成（大师技能）</value>
+  </data>
+  <data name="Name_DefenseIncreaseBonusabsoluteWithequippedShieldMST" xml:space="preserve">
+    <value>装备盾牌时的防御加成（大师技能）</value>
+  </data>
+  <data name="Name_DefenseIncreaseMultiplierWithEquippedShield" xml:space="preserve">
+    <value>装备盾牌时的防御增加倍率</value>
+  </data>
+  <data name="Name_DefensePvM" xml:space="preserve">
+    <value>对怪物防御力</value>
+  </data>
+  <data name="Name_DefensePvP" xml:space="preserve">
+    <value>对玩家防御力</value>
+  </data>
+  <data name="Name_DefenseRatePvM" xml:space="preserve">
+    <value>对怪物防御成功率</value>
+  </data>
+  <data name="Name_DefenseRatePvMIncreaseBonusabsoluteWithequippedShieldMST" xml:space="preserve">
+    <value>装备盾牌时对怪物防御成功率加成（大师技能）</value>
+  </data>
+  <data name="Name_DefenseRatePvP" xml:space="preserve">
+    <value>对玩家防御成功率</value>
+  </data>
+  <data name="Name_DoubleDamageChance" xml:space="preserve">
+    <value>双倍伤害概率</value>
+  </data>
+  <data name="Name_DoubleWieldWeaponCount" xml:space="preserve">
+    <value>双持武器数量</value>
+  </data>
+  <data name="Name_DrainLifeStrengthenerBonusHealingMST" xml:space="preserve">
+    <value>摄魂咒强化治疗加成（大师技能）</value>
+  </data>
+  <data name="Name_DurabilityReductionFactor" xml:space="preserve">
+    <value>耐久度损耗系数</value>
+  </data>
+  <data name="Name_EarthDamageBonus" xml:space="preserve">
+    <value>土属性伤害加成</value>
+  </data>
+  <data name="Name_EarthResistance" xml:space="preserve">
+    <value>土属性抗性</value>
+  </data>
+  <data name="Name_EnergyRequirementreduction" xml:space="preserve">
+    <value>智力需求降低</value>
+  </data>
+  <data name="Description_EnergyRequirementreduction" xml:space="preserve">
+    <value>带有此属性的物品会按属性值降低所需智力。</value>
+  </data>
+  <data name="Name_EquippedWeaponCount" xml:space="preserve">
+    <value>已装备武器数量</value>
+  </data>
+  <data name="Name_ExcellentDamageBonus" xml:space="preserve">
+    <value>卓越一击伤害加成</value>
+  </data>
+  <data name="Description_ExcellentDamageBonus" xml:space="preserve">
+    <value>触发卓越一击时，在伤害计算中追加的固定伤害。</value>
+  </data>
+  <data name="Name_ExcellentDamageChance" xml:space="preserve">
+    <value>卓越一击概率</value>
+  </data>
+  <data name="Name_ExperienceRate" xml:space="preserve">
+    <value>经验倍率</value>
+  </data>
+  <data name="Description_ExperienceRate" xml:space="preserve">
+    <value>角色获得经验的倍率，默认为 1.0，可由印章等效果调整。</value>
+  </data>
+  <data name="Name_ExplosionBonusDamageMST" xml:space="preserve">
+    <value>爆裂击伤害加成（大师技能）</value>
+  </data>
+  <data name="Description_ExplosionBonusDamageMST" xml:space="preserve">
+    <value>火龙兽之书的爆裂击伤害加成，随火属性书技能强化提高，在伤害计算后期叠加。</value>
+  </data>
+  <data name="Name_ExtraProjectiles" xml:space="preserve">
+    <value>额外箭矢数量</value>
+  </data>
+  <data name="Description_ExtraProjectiles" xml:space="preserve">
+    <value>多重射击技能额外发射的箭矢数量。</value>
+  </data>
+  <data name="Name_FenrirBaseDamage" xml:space="preserve">
+    <value>炎狼兽基础伤害</value>
+  </data>
+  <data name="Name_FinalBerserkerhealthdecrement" xml:space="preserve">
+    <value>狂暴术最终生命值降低比例</value>
+  </data>
+  <data name="Name_FinalDamageIncreasePvP" xml:space="preserve">
+    <value>对玩家最终伤害增加</value>
+  </data>
+  <data name="Name_FinalDefense" xml:space="preserve">
+    <value>最终防御力</value>
+  </data>
+  <data name="Name_FireDamageBonus" xml:space="preserve">
+    <value>火属性伤害加成</value>
+  </data>
+  <data name="Name_FireResistance" xml:space="preserve">
+    <value>火属性抗性</value>
+  </data>
+  <data name="Name_Flagifthecharacterislocatedinasafezoneofagamemap" xml:space="preserve">
+    <value>是否处于安全区</value>
+  </data>
+  <data name="Description_Flagifthecharacterislocatedinasafezoneofagamemap" xml:space="preserve">
+    <value>角色在安全区时会额外恢复生命值和防护值。</value>
+  </data>
+  <data name="Name_Flagifthecharacterislocatedonanunderwatergamemap" xml:space="preserve">
+    <value>是否处于水下地图</value>
+  </data>
+  <data name="Description_Flagifthecharacterislocatedonanunderwatergamemap" xml:space="preserve">
+    <value>角色位于水下地图时，使用水下移动速度属性。</value>
+  </data>
+  <data name="Name_Flagifthecharacterisrestingsittingleaningorhanging" xml:space="preserve">
+    <value>是否正在休息</value>
+  </data>
+  <data name="Description_Flagifthecharacterisrestingsittingleaningorhanging" xml:space="preserve">
+    <value>角色坐下、倚靠或悬挂休息时，会额外恢复生命值和魔法值。</value>
+  </data>
+  <data name="Name_GloveWeaponBonusDamageMST" xml:space="preserve">
+    <value>拳刃伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_GloveWeaponMasteryDoubleDamageChanceMST" xml:space="preserve">
+    <value>拳刃精通双倍伤害概率（大师技能）</value>
+  </data>
+  <data name="Name_GreaterDamageBonus" xml:space="preserve">
+    <value>攻击力提高技能加成</value>
+  </data>
+  <data name="Name_GreaterDefenseBonus" xml:space="preserve">
+    <value>防御力提高技能加成</value>
+  </data>
+  <data name="Name_HasDoubleWield" xml:space="preserve">
+    <value>是否双持武器</value>
+  </data>
+  <data name="Description_HasDoubleWield" xml:space="preserve">
+    <value>双持武器提供 10% 物理伤害加成；仅剑士、魔剑士和格斗家可以双持。</value>
+  </data>
+  <data name="Name_Healthlossafterhittingatarget" xml:space="preserve">
+    <value>攻击命中后的生命值消耗</value>
+  </data>
+  <data name="Description_Healthlossafterhittingatarget" xml:space="preserve">
+    <value>由佩戴翅膀造成的生命值消耗。</value>
+  </data>
+  <data name="Name_HealthrecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>击杀怪物恢复生命值（固定值）</value>
+  </data>
+  <data name="Name_HealthrecoverafterMonsterkillmultiplierofmaxhealth" xml:space="preserve">
+    <value>击杀怪物恢复生命值（最大值比例）</value>
+  </data>
+  <data name="Name_HealthRecoveryAbsoluteIncrease" xml:space="preserve">
+    <value>生命值恢复增加（固定值）</value>
+  </data>
+  <data name="Name_HealthRecoveryMultiplier" xml:space="preserve">
+    <value>生命值恢复倍率</value>
+  </data>
+  <data name="Name_IceDamageBonus" xml:space="preserve">
+    <value>冰属性伤害加成</value>
+  </data>
+  <data name="Name_IceResistance" xml:space="preserve">
+    <value>冰属性抗性</value>
+  </data>
+  <data name="Name_IncreaseBlockBonus" xml:space="preserve">
+    <value>斗神-御防御成功率加成</value>
+  </data>
+  <data name="Name_InnovationDefenseDecrement" xml:space="preserve">
+    <value>破御阵防御力降低比例</value>
+  </data>
+  <data name="Description_InnovationDefenseDecrement" xml:space="preserve">
+    <value>破御阵效果造成的防御力降低比例，与最终防御力相乘后扣除。</value>
+  </data>
+  <data name="Name_Isasleep" xml:space="preserve">
+    <value>是否昏睡</value>
+  </data>
+  <data name="Description_Isasleep" xml:space="preserve">
+    <value>角色处于昏睡状态，受到攻击前无法移动。</value>
+  </data>
+  <data name="Name_Isbleeding" xml:space="preserve">
+    <value>是否出血</value>
+  </data>
+  <data name="Description_Isbleeding" xml:space="preserve">
+    <value>角色在一段时间内每秒受到出血伤害。</value>
+  </data>
+  <data name="Name_IsBookEquipped" xml:space="preserve">
+    <value>是否装备魔法书</value>
+  </data>
+  <data name="Name_IsBowEquipped" xml:space="preserve">
+    <value>是否装备弓</value>
+  </data>
+  <data name="Name_IsCrossBowEquipped" xml:space="preserve">
+    <value>是否装备弩</value>
+  </data>
+  <data name="Name_IsDinorantEquipped" xml:space="preserve">
+    <value>是否装备彩云兽</value>
+  </data>
+  <data name="Name_Isfrozen" xml:space="preserve">
+    <value>是否被冰封</value>
+  </data>
+  <data name="Description_Isfrozen" xml:space="preserve">
+    <value>角色受到冰封箭效果而无法移动。</value>
+  </data>
+  <data name="Name_IsGainHeroStatusQuestcompleted" xml:space="preserve">
+    <value>是否完成英雄资格任务</value>
+  </data>
+  <data name="Name_IsGloveWeaponEquipped" xml:space="preserve">
+    <value>是否装备拳刃</value>
+  </data>
+  <data name="Name_IsHorseEquipped" xml:space="preserve">
+    <value>是否装备黑王马</value>
+  </data>
+  <data name="Name_Isiced" xml:space="preserve">
+    <value>是否受到冰冻减速</value>
+  </data>
+  <data name="Description_Isiced" xml:space="preserve">
+    <value>角色只能缓慢移动。</value>
+  </data>
+  <data name="Name_Isinvisible" xml:space="preserve">
+    <value>是否隐身</value>
+  </data>
+  <data name="Description_Isinvisible" xml:space="preserve">
+    <value>管理员使用隐藏命令或玩家观战决斗时，此值大于 0。</value>
+  </data>
+  <data name="Name_IsMaceEquipped" xml:space="preserve">
+    <value>是否装备槌</value>
+  </data>
+  <data name="Name_IsMUHelperactive" xml:space="preserve">
+    <value>是否启用奇迹助手</value>
+  </data>
+  <data name="Name_IsOneHandedStaffEquipped" xml:space="preserve">
+    <value>是否装备单手法杖</value>
+  </data>
+  <data name="Name_IsOneHandedSwordEquipped" xml:space="preserve">
+    <value>是否装备单手剑</value>
+  </data>
+  <data name="Name_IsPetSkeletonEquipped" xml:space="preserve">
+    <value>是否装备幼龙骨架</value>
+  </data>
+  <data name="Name_Ispoisoned" xml:space="preserve">
+    <value>是否中毒</value>
+  </data>
+  <data name="Description_Ispoisoned" xml:space="preserve">
+    <value>角色中毒并持续损失生命值。</value>
+  </data>
+  <data name="Name_IsScepterEquipped" xml:space="preserve">
+    <value>是否装备权杖</value>
+  </data>
+  <data name="Name_IsShieldEquipped" xml:space="preserve">
+    <value>是否装备盾牌</value>
+  </data>
+  <data name="Name_IsShieldRecoveryActive" xml:space="preserve">
+    <value>是否启用防护值恢复</value>
+  </data>
+  <data name="Name_IsShieldRecoveryActiveEverwhere" xml:space="preserve">
+    <value>是否允许在所有区域恢复防护值</value>
+  </data>
+  <data name="Description_IsShieldRecoveryActiveEverwhere" xml:space="preserve">
+    <value>默认只有安全区可以恢复防护值；此属性大于或等于 1 时，地图任何区域均可恢复。</value>
+  </data>
+  <data name="Name_IsSkillComboAvailable" xml:space="preserve">
+    <value>是否可以使用连击</value>
+  </data>
+  <data name="Name_IsSpearEquipped" xml:space="preserve">
+    <value>是否装备矛</value>
+  </data>
+  <data name="Name_IsStickEquipped" xml:space="preserve">
+    <value>是否装备召唤法杖</value>
+  </data>
+  <data name="Name_Isstunned" xml:space="preserve">
+    <value>是否眩晕</value>
+  </data>
+  <data name="Description_Isstunned" xml:space="preserve">
+    <value>角色眩晕，无法移动。</value>
+  </data>
+  <data name="Name_IsTwoHandedStaffEquipped" xml:space="preserve">
+    <value>是否装备双手法杖</value>
+  </data>
+  <data name="Name_IsTwoHandedSwordEquipped" xml:space="preserve">
+    <value>是否装备双手剑</value>
+  </data>
+  <data name="Name_IsTwoHandedWeaponEquipped" xml:space="preserve">
+    <value>是否装备双手武器</value>
+  </data>
+  <data name="Name_IsVIP" xml:space="preserve">
+    <value>是否为贵宾账号</value>
+  </data>
+  <data name="Description_IsVIP" xml:space="preserve">
+    <value>表示账号是否为贵宾账号。</value>
+  </data>
+  <data name="Name_ItemDurationIncrease" xml:space="preserve">
+    <value>物品持续时间增加</value>
+  </data>
+  <data name="Name_LateDamageBonusanytype" xml:space="preserve">
+    <value>最终阶段伤害加成（所有类型）</value>
+  </data>
+  <data name="Description_LateDamageBonusanytype" xml:space="preserve">
+    <value>伤害计算时，在最终伤害值上追加的固定伤害。</value>
+  </data>
+  <data name="Name_LeadershipRequirementreduction" xml:space="preserve">
+    <value>统率需求降低</value>
+  </data>
+  <data name="Description_LeadershipRequirementreduction" xml:space="preserve">
+    <value>带有此属性的物品会按属性值降低所需统率。</value>
+  </data>
+  <data name="Name_Level" xml:space="preserve">
+    <value>角色等级</value>
+  </data>
+  <data name="Description_Level" xml:space="preserve">
+    <value>角色的等级。</value>
+  </data>
+  <data name="Name_LightningDamageBonus" xml:space="preserve">
+    <value>雷属性伤害加成</value>
+  </data>
+  <data name="Name_LightningResistance" xml:space="preserve">
+    <value>雷属性抗性</value>
+  </data>
+  <data name="Name_MaceBonusDamageMST" xml:space="preserve">
+    <value>槌伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_MaceMasteryStunChanceMST" xml:space="preserve">
+    <value>槌精通眩晕概率（大师技能）</value>
+  </data>
+  <data name="Name_MagicSpeed" xml:space="preserve">
+    <value>施法速度</value>
+  </data>
+  <data name="Name_ManarecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>击杀怪物恢复魔法值（固定值）</value>
+  </data>
+  <data name="Name_ManarecoverafterMonsterkillmultiplierofmaxmana" xml:space="preserve">
+    <value>击杀怪物恢复魔法值（最大值比例）</value>
+  </data>
+  <data name="Name_ManaRecoveryAbsoluteIncrease" xml:space="preserve">
+    <value>魔法值恢复增加（固定值）</value>
+  </data>
+  <data name="Name_ManaRecoveryMultiplier" xml:space="preserve">
+    <value>魔法值恢复倍率</value>
+  </data>
+  <data name="Name_ManaUsageReduction" xml:space="preserve">
+    <value>魔法值消耗减少比例</value>
+  </data>
+  <data name="Description_ManaUsageReduction" xml:space="preserve">
+    <value>技能所需魔法值中不被消耗的比例，取值范围为 0～1。</value>
+  </data>
+  <data name="Name_MasterExperienceRate" xml:space="preserve">
+    <value>大师经验倍率</value>
+  </data>
+  <data name="Name_MasterLevel" xml:space="preserve">
+    <value>大师等级</value>
+  </data>
+  <data name="Description_MasterLevel" xml:space="preserve">
+    <value>角色的大师等级。</value>
+  </data>
+  <data name="Name_MasterpointspermasterLevelup" xml:space="preserve">
+    <value>每次大师升级获得点数</value>
+  </data>
+  <data name="Description_MasterpointspermasterLevelup" xml:space="preserve">
+    <value>每提升一级大师等级获得的点数。</value>
+  </data>
+  <data name="Name_MasterSkillPhysicalBonusDamageMST" xml:space="preserve">
+    <value>大师技能物理伤害加成</value>
+  </data>
+  <data name="Description_MasterSkillPhysicalBonusDamageMST" xml:space="preserve">
+    <value>大师技能树共用的物理伤害加成属性，用于汇总计算后期追加的物理伤害。</value>
+  </data>
+  <data name="Name_MasteryMoveTargetChanceMST" xml:space="preserve">
+    <value>精通技能击退概率（大师技能）</value>
+  </data>
+  <data name="Description_MasteryMoveTargetChanceMST" xml:space="preserve">
+    <value>大师技能树共用的击退概率属性，用于汇总精通技能的效果。</value>
+  </data>
+  <data name="Name_MasteryStunChanceMST" xml:space="preserve">
+    <value>精通技能眩晕概率（大师技能）</value>
+  </data>
+  <data name="Description_MasteryStunChanceMST" xml:space="preserve">
+    <value>大师技能树共用的眩晕概率属性，用于汇总精通技能的效果。</value>
+  </data>
+  <data name="Name_MaximumAbility" xml:space="preserve">
+    <value>最大技能值</value>
+  </data>
+  <data name="Name_MaximumAllianceSize" xml:space="preserve">
+    <value>最大同盟规模</value>
+  </data>
+  <data name="Name_MaximumCurseBaseDamage" xml:space="preserve">
+    <value>最大基础诅咒伤害</value>
+  </data>
+  <data name="Name_Maximumdamageofthedarkraven" xml:space="preserve">
+    <value>天鹰最大伤害</value>
+  </data>
+  <data name="Name_MaximumGuildSize" xml:space="preserve">
+    <value>最大战盟人数</value>
+  </data>
+  <data name="Name_MaximumHealth" xml:space="preserve">
+    <value>最大生命值</value>
+  </data>
+  <data name="Name_MaximumMana" xml:space="preserve">
+    <value>最大魔法值</value>
+  </data>
+  <data name="Name_MaximumPhysicalBaseDamage" xml:space="preserve">
+    <value>最大基础物理伤害</value>
+  </data>
+  <data name="Name_MaximumPhysicalBaseDamageByRightWeapon" xml:space="preserve">
+    <value>右手武器最大基础物理伤害</value>
+  </data>
+  <data name="Name_MaximumPhysicalBaseDamageByWeapon" xml:space="preserve">
+    <value>武器最大基础物理伤害</value>
+  </data>
+  <data name="Name_MaximumShield" xml:space="preserve">
+    <value>最大防护值</value>
+  </data>
+  <data name="Name_Maximumshieldlevelpowintermediate" xml:space="preserve">
+    <value>最大防护值等级幂运算中间值</value>
+  </data>
+  <data name="Description_Maximumshieldlevelpowintermediate" xml:space="preserve">
+    <value>计算最大防护值时使用的中间值。</value>
+  </data>
+  <data name="Name_MaximumWizardryBaseDamage" xml:space="preserve">
+    <value>最大基础魔法伤害</value>
+  </data>
+  <data name="Name_MeleeAttackMode" xml:space="preserve">
+    <value>近战攻击模式</value>
+  </data>
+  <data name="Description_MeleeAttackMode" xml:space="preserve">
+    <value>弓箭手近战攻击模式的开关。</value>
+  </data>
+  <data name="Name_MeleeMaximumDamage" xml:space="preserve">
+    <value>近战最大伤害</value>
+  </data>
+  <data name="Description_MeleeMaximumDamage" xml:space="preserve">
+    <value>弓箭手近战最大伤害，叠加到近距离攻击中。</value>
+  </data>
+  <data name="Name_MeleeMinimumDamage" xml:space="preserve">
+    <value>近战最小伤害</value>
+  </data>
+  <data name="Description_MeleeMinimumDamage" xml:space="preserve">
+    <value>弓箭手近战最小伤害，叠加到近距离攻击中。</value>
+  </data>
+  <data name="Name_MinBerserkerhealthdecrement" xml:space="preserve">
+    <value>狂暴术生命值降低比例下限</value>
+  </data>
+  <data name="Name_MinimumCurseBaseDamage" xml:space="preserve">
+    <value>最小基础诅咒伤害</value>
+  </data>
+  <data name="Name_Minimumdamageofthedarkraven" xml:space="preserve">
+    <value>天鹰最小伤害</value>
+  </data>
+  <data name="Name_MinimumPhysicalBaseDamage" xml:space="preserve">
+    <value>最小基础物理伤害</value>
+  </data>
+  <data name="Name_MinimumPhysicalBaseDamageByRightWeapon" xml:space="preserve">
+    <value>右手武器最小基础物理伤害</value>
+  </data>
+  <data name="Name_MinimumPhysicalBaseDamageByWeapon" xml:space="preserve">
+    <value>武器最小基础物理伤害</value>
+  </data>
+  <data name="Name_MinimumWizardryAndCurseBaseDamageBonusMST" xml:space="preserve">
+    <value>最小基础魔法和诅咒伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_MinimumWizardryBaseDamage" xml:space="preserve">
+    <value>最小基础魔法伤害</value>
+  </data>
+  <data name="Name_MoneyDropAmountRate" xml:space="preserve">
+    <value>金币掉落数量倍率</value>
+  </data>
+  <data name="Description_MoneyDropAmountRate" xml:space="preserve">
+    <value>金币掉落数量的倍率。</value>
+  </data>
+  <data name="Name_MovementSpeed" xml:space="preserve">
+    <value>移动速度</value>
+  </data>
+  <data name="Description_MovementSpeed" xml:space="preserve">
+    <value>角色在普通地形上的移动速度。</value>
+  </data>
+  <data name="Name_MovementSpeedFactor" xml:space="preserve">
+    <value>移动速度系数</value>
+  </data>
+  <data name="Description_MovementSpeedFactor" xml:space="preserve">
+    <value>作用于角色最终移动速度的系数。</value>
+  </data>
+  <data name="Name_Nearbypartymembercount" xml:space="preserve">
+    <value>附近队友数量</value>
+  </data>
+  <data name="Description_Nearbypartymembercount" xml:space="preserve">
+    <value>当前附近的队友数量。</value>
+  </data>
+  <data name="Name_NovaStageDamage" xml:space="preserve">
+    <value>星辰一怒蓄力阶段伤害</value>
+  </data>
+  <data name="Description_NovaStageDamage" xml:space="preserve">
+    <value>星辰一怒当前蓄力阶段的伤害加成，取决于技能持续时间。</value>
+  </data>
+  <data name="Name_OneHandedStaffBonusBaseDamageMST" xml:space="preserve">
+    <value>单手法杖基础伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_OneHandedSwordBonusDamageMST" xml:space="preserve">
+    <value>单手剑伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_PetDurationIncrease" xml:space="preserve">
+    <value>宠物持续时间增加</value>
+  </data>
+  <data name="Name_PhysicalBaseDamageIncrease" xml:space="preserve">
+    <value>基础物理伤害增加</value>
+  </data>
+  <data name="Name_PhysicalBaseDamageminandmax" xml:space="preserve">
+    <value>基础物理伤害（最小值和最大值）</value>
+  </data>
+  <data name="Name_PointsperLevelup" xml:space="preserve">
+    <value>每次升级获得点数</value>
+  </data>
+  <data name="Description_PointsperLevelup" xml:space="preserve">
+    <value>每提升一级角色等级获得的点数。</value>
+  </data>
+  <data name="Name_PointsPerReset" xml:space="preserve">
+    <value>每次重置获得点数</value>
+  </data>
+  <data name="Description_PointsPerReset" xml:space="preserve">
+    <value>角色每次重置获得的点数，覆盖重置配置中的默认每次重置点数。</value>
+  </data>
+  <data name="Name_PoisonDamageBonus" xml:space="preserve">
+    <value>毒属性伤害加成</value>
+  </data>
+  <data name="Name_PoisonDamageMultiplier" xml:space="preserve">
+    <value>中毒伤害倍率</value>
+  </data>
+  <data name="Name_PoisonResistance" xml:space="preserve">
+    <value>毒属性抗性</value>
+  </data>
+  <data name="Name_PollutionBonusDamageMST" xml:space="preserve">
+    <value>幻兽伤害加成（大师技能）</value>
+  </data>
+  <data name="Description_PollutionBonusDamageMST" xml:space="preserve">
+    <value>污灵之书的幻兽伤害加成，随雷属性书技能强化提高，在伤害计算后期叠加。</value>
+  </data>
+  <data name="Name_RagefulBlowMasteryDurabilityDecreaseChanceMST" xml:space="preserve">
+    <value>霹雳回旋斩精通降低耐久度概率（大师技能）</value>
+  </data>
+  <data name="Name_RandomExperienceMaxMultiplier" xml:space="preserve">
+    <value>随机经验最大倍率</value>
+  </data>
+  <data name="Description_RandomExperienceMaxMultiplier" xml:space="preserve">
+    <value>随机经验收益的最大倍率。</value>
+  </data>
+  <data name="Name_RandomExperienceMinMultiplier" xml:space="preserve">
+    <value>随机经验最小倍率</value>
+  </data>
+  <data name="Description_RandomExperienceMinMultiplier" xml:space="preserve">
+    <value>随机经验收益的最小倍率。</value>
+  </data>
+  <data name="Name_RavenAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>天鹰攻击伤害增加倍率</value>
+  </data>
+  <data name="Description_RavenAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>与天鹰最小、最大基础伤害相乘后叠加的伤害增加比例。</value>
+  </data>
+  <data name="Name_Ravencriticaldamagechance" xml:space="preserve">
+    <value>天鹰幸运一击概率</value>
+  </data>
+  <data name="Name_Ravenexcdamagechance" xml:space="preserve">
+    <value>天鹰卓越一击概率</value>
+  </data>
+  <data name="Name_RegisteredRenas" xml:space="preserve">
+    <value>本轮已登记蕾娜数量</value>
+  </data>
+  <data name="Description_RegisteredRenas" xml:space="preserve">
+    <value>距离下一次物品登记奖励的当前进度。</value>
+  </data>
+  <data name="Name_RequiemBonusDamageMST" xml:space="preserve">
+    <value>安魂弥撒伤害加成（大师技能）</value>
+  </data>
+  <data name="Description_RequiemBonusDamageMST" xml:space="preserve">
+    <value>异灵之书的安魂弥撒伤害加成，随风属性书技能强化提高，在伤害计算后期叠加。</value>
+  </data>
+  <data name="Name_RequirementoftheIcarusmap" xml:space="preserve">
+    <value>天空之城进入条件</value>
+  </data>
+  <data name="Description_RequirementoftheIcarusmap" xml:space="preserve">
+    <value>只有佩戴翅膀、彩云兽或炎狼兽时才能进入天空之城。</value>
+  </data>
+  <data name="Name_RequirementoftheKanturuEventMapduringtheevent" xml:space="preserve">
+    <value>提炼之塔活动进入条件</value>
+  </data>
+  <data name="Description_RequirementoftheKanturuEventMapduringtheevent" xml:space="preserve">
+    <value>只有佩戴悬石时才能进入提炼之塔活动。</value>
+  </data>
+  <data name="Name_Resets" xml:space="preserve">
+    <value>角色重置次数</value>
+  </data>
+  <data name="Description_Resets" xml:space="preserve">
+    <value>当前角色的重置次数。</value>
+  </data>
+  <data name="Name_ScepterMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>权杖精通对玩家伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_ScepterPetBonusDamageMST" xml:space="preserve">
+    <value>权杖宠物伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_ScepterRisePercentage" xml:space="preserve">
+    <value>权杖增幅比例</value>
+  </data>
+  <data name="Name_ScepterStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>权杖强化伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_SDdecreaserateincrease" xml:space="preserve">
+    <value>降低目标防护值吸收比例</value>
+  </data>
+  <data name="Description_SDdecreaserateincrease" xml:space="preserve">
+    <value>对玩家攻击时，将目标防护值原本吸收的伤害按设定比例转为直接扣除生命值。</value>
+  </data>
+  <data name="Name_SDRateIncrease" xml:space="preserve">
+    <value>防护值伤害吸收比例增加</value>
+  </data>
+  <data name="Description_SDRateIncrease" xml:space="preserve">
+    <value>对玩家战斗时，按设定值提高防护值的伤害吸收比例。</value>
+  </data>
+  <data name="Name_ShieldBypassChance" xml:space="preserve">
+    <value>无视防护值概率</value>
+  </data>
+  <data name="Name_ShieldDefenseitem" xml:space="preserve">
+    <value>盾牌防御力</value>
+  </data>
+  <data name="Name_ShieldItemDefenseIncreaseMultiplier" xml:space="preserve">
+    <value>盾牌防御力增加倍率</value>
+  </data>
+  <data name="Name_ShieldrecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>击杀怪物恢复防护值（固定值）</value>
+  </data>
+  <data name="Name_ShieldrecoverafterMonsterkillmultiplierofmaxshield" xml:space="preserve">
+    <value>击杀怪物恢复防护值（最大值比例）</value>
+  </data>
+  <data name="Name_ShieldRecoveryAbsolute" xml:space="preserve">
+    <value>防护值恢复量（固定值）</value>
+  </data>
+  <data name="Name_ShieldRecoveryHiatus" xml:space="preserve">
+    <value>防护值恢复中断后的经过时间</value>
+  </data>
+  <data name="Description_ShieldRecoveryHiatus" xml:space="preserve">
+    <value>防护值恢复上次中断后经过的秒数；离开安全区、防护值受损或恢复至上限都会中断。</value>
+  </data>
+  <data name="Name_ShieldRecoveryMultiplier" xml:space="preserve">
+    <value>防护值恢复倍率</value>
+  </data>
+  <data name="Name_ShieldRecoveryRampFactor" xml:space="preserve">
+    <value>防护值恢复递增系数</value>
+  </data>
+  <data name="Description_ShieldRecoveryRampFactor" xml:space="preserve">
+    <value>防护值恢复的递增系数，随连续恢复的时间线性增长。</value>
+  </data>
+  <data name="Name_SkillBaseDamageBonusskillattribute" xml:space="preserve">
+    <value>技能基础伤害加成（技能属性）</value>
+  </data>
+  <data name="Name_SkillBaseDamageMultiplierskillattribute" xml:space="preserve">
+    <value>技能基础伤害倍率（技能属性）</value>
+  </data>
+  <data name="Name_SkillDamageBonus" xml:space="preserve">
+    <value>技能伤害加成</value>
+  </data>
+  <data name="Description_SkillDamageBonus" xml:space="preserve">
+    <value>使用技能进行伤害计算时追加的固定伤害。</value>
+  </data>
+  <data name="Name_SkillDamageMultiplier" xml:space="preserve">
+    <value>技能伤害倍率</value>
+  </data>
+  <data name="Name_Skillextramanacost" xml:space="preserve">
+    <value>技能额外魔法值消耗</value>
+  </data>
+  <data name="Description_Skillextramanacost" xml:space="preserve">
+    <value>无影箭效果造成的额外魔法值消耗。</value>
+  </data>
+  <data name="Name_SkillFinalDamageBonusskillattribute" xml:space="preserve">
+    <value>技能最终伤害加成（技能属性）</value>
+  </data>
+  <data name="Name_SkillFinalDamageMultiplierskillattribute" xml:space="preserve">
+    <value>技能最终伤害倍率（技能属性）</value>
+  </data>
+  <data name="Name_Skilllevel" xml:space="preserve">
+    <value>技能等级</value>
+  </data>
+  <data name="Description_Skilllevel" xml:space="preserve">
+    <value>技能的等级。</value>
+  </data>
+  <data name="Name_SleepStrengthenerBonusChanceMST" xml:space="preserve">
+    <value>昏睡术强化成功率加成（大师技能）</value>
+  </data>
+  <data name="Name_SoulBarrierDamageReceiveDecrement" xml:space="preserve">
+    <value>守护之魂减伤比例</value>
+  </data>
+  <data name="Description_SoulBarrierDamageReceiveDecrement" xml:space="preserve">
+    <value>守护之魂的减伤比例，与最终伤害相乘后扣除。</value>
+  </data>
+  <data name="Name_SoulBarrierManaTollPerReceivedHit" xml:space="preserve">
+    <value>守护之魂每次受击的魔法值消耗</value>
+  </data>
+  <data name="Description_SoulBarrierManaTollPerReceivedHit" xml:space="preserve">
+    <value>守护之魂减伤生效时必须满足的魔法值消耗要求。</value>
+  </data>
+  <data name="Name_SpearBonusDamageMST" xml:space="preserve">
+    <value>矛伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_SpearMasteryDoubleDamageChanceMST" xml:space="preserve">
+    <value>矛精通双倍伤害概率（大师技能）</value>
+  </data>
+  <data name="Name_StaffRisePercentage" xml:space="preserve">
+    <value>法杖增幅比例</value>
+  </data>
+  <data name="Name_Statsdefense" xml:space="preserve">
+    <value>角色属性提供的防御力</value>
+  </data>
+  <data name="Name_Statsmaxwizandcursebasedmg" xml:space="preserve">
+    <value>角色属性提供的最大基础魔法和诅咒伤害</value>
+  </data>
+  <data name="Name_Statsminwizandcursebasedmg" xml:space="preserve">
+    <value>角色属性提供的最小基础魔法和诅咒伤害</value>
+  </data>
+  <data name="Name_StickBonusBaseDamageMST" xml:space="preserve">
+    <value>召唤法杖基础伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_StickMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>召唤法杖精通对玩家伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_StrengthRequirementreduction" xml:space="preserve">
+    <value>力量需求降低</value>
+  </data>
+  <data name="Description_StrengthRequirementreduction" xml:space="preserve">
+    <value>带有此属性的物品会按属性值降低所需力量。</value>
+  </data>
+  <data name="Name_SummonedMonsterDefenseIncrease" xml:space="preserve">
+    <value>召唤怪物防御力增加</value>
+  </data>
+  <data name="Name_SummonedMonsterHealthIncrease" xml:space="preserve">
+    <value>召唤怪物生命值增加比例</value>
+  </data>
+  <data name="Name_SwellLifeHealthIncrease" xml:space="preserve">
+    <value>生命之光生命值增加</value>
+  </data>
+  <data name="Name_SwellLifeManaIncrease" xml:space="preserve">
+    <value>生命之光魔法值增加</value>
+  </data>
+  <data name="Name_TempDefenseBonusmultiplierwithShield" xml:space="preserve">
+    <value>盾牌防御加成倍率（临时值）</value>
+  </data>
+  <data name="Name_TempHalfweaponattackspeed" xml:space="preserve">
+    <value>武器攻击速度的一半（临时值）</value>
+  </data>
+  <data name="Name_TempInnovationdefensedecrement" xml:space="preserve">
+    <value>破御阵防御降低比例（临时值）</value>
+  </data>
+  <data name="Name_Theamountofammowhichisequipped" xml:space="preserve">
+    <value>已装备弹药数量</value>
+  </data>
+  <data name="Description_Theamountofammowhichisequipped" xml:space="preserve">
+    <value>只有弹药充足或弹药消耗比例为 0 时，才能使用某些技能。</value>
+  </data>
+  <data name="Name_Theamountofammowhichisrequiredtoperformcertainskills" xml:space="preserve">
+    <value>技能所需弹药数量</value>
+  </data>
+  <data name="Description_Theamountofammowhichisrequiredtoperformcertainskills" xml:space="preserve">
+    <value>只有弹药充足或此消耗值为 0 时，才能使用某些技能。</value>
+  </data>
+  <data name="Name_TotalAgility" xml:space="preserve">
+    <value>总敏捷</value>
+  </data>
+  <data name="Description_TotalAgility" xml:space="preserve">
+    <value>角色的总敏捷。</value>
+  </data>
+  <data name="Name_TotalAgilityRequirementValue" xml:space="preserve">
+    <value>装备敏捷需求计算值</value>
+  </data>
+  <data name="Description_TotalAgilityRequirementValue" xml:space="preserve">
+    <value>用于计算装备所需角色总敏捷的物品需求值；实际需求取决于物品选项、掉落等级和强化等级。</value>
+  </data>
+  <data name="Name_TotalEnergy" xml:space="preserve">
+    <value>总智力</value>
+  </data>
+  <data name="Name_TotalEnergyminus15" xml:space="preserve">
+    <value>总智力减去 15</value>
+  </data>
+  <data name="Description_TotalEnergyminus15" xml:space="preserve">
+    <value>总智力减去 15。</value>
+  </data>
+  <data name="Name_TotalEnergyRequirementValue" xml:space="preserve">
+    <value>装备智力需求计算值</value>
+  </data>
+  <data name="Description_TotalEnergyRequirementValue" xml:space="preserve">
+    <value>用于计算装备所需角色总智力的物品需求值；实际需求取决于物品选项、掉落等级和强化等级。</value>
+  </data>
+  <data name="Name_TotalLeadership" xml:space="preserve">
+    <value>总统率</value>
+  </data>
+  <data name="Name_TotalLeadershipRequirementValue" xml:space="preserve">
+    <value>装备统率需求计算值</value>
+  </data>
+  <data name="Description_TotalLeadershipRequirementValue" xml:space="preserve">
+    <value>用于计算装备所需角色总统率的物品需求值；实际需求取决于物品选项、掉落等级和强化等级。</value>
+  </data>
+  <data name="Name_TotalLevel" xml:space="preserve">
+    <value>总等级</value>
+  </data>
+  <data name="Description_TotalLevel" xml:space="preserve">
+    <value>角色等级与大师等级之和。</value>
+  </data>
+  <data name="Name_TotalRegisteredRenas" xml:space="preserve">
+    <value>累计已登记蕾娜数量</value>
+  </data>
+  <data name="Description_TotalRegisteredRenas" xml:space="preserve">
+    <value>历次累计登记的物品总数。</value>
+  </data>
+  <data name="Name_TotalStrength" xml:space="preserve">
+    <value>总力量</value>
+  </data>
+  <data name="Description_TotalStrength" xml:space="preserve">
+    <value>角色的总力量，包含基础力量及额外力量加成。</value>
+  </data>
+  <data name="Name_TotalStrengthandAgility" xml:space="preserve">
+    <value>总力量与总敏捷之和</value>
+  </data>
+  <data name="Name_TotalStrengthRequirementValue" xml:space="preserve">
+    <value>装备力量需求计算值</value>
+  </data>
+  <data name="Description_TotalStrengthRequirementValue" xml:space="preserve">
+    <value>用于计算装备所需角色总力量的物品需求值；实际需求取决于物品选项、掉落等级和强化等级。</value>
+  </data>
+  <data name="Name_TotalVitality" xml:space="preserve">
+    <value>总体力</value>
+  </data>
+  <data name="Name_TotalVitalityRequirementValue" xml:space="preserve">
+    <value>装备体力需求计算值</value>
+  </data>
+  <data name="Description_TotalVitalityRequirementValue" xml:space="preserve">
+    <value>用于计算装备所需角色总体力的物品需求值；实际需求取决于物品选项、掉落等级和强化等级。</value>
+  </data>
+  <data name="Name_TwoHandedStaffBonusBaseDamageMST" xml:space="preserve">
+    <value>双手法杖基础伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_TwoHandedStaffMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>双手法杖精通对玩家伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_TwoHandedSwordMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>双手剑精通对玩家伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_TwoHandedSwordStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>双手剑强化伤害加成（大师技能）</value>
+  </data>
+  <data name="Name_TwoHandedWeaponPhysicalDamageIncreaseAncientOption" xml:space="preserve">
+    <value>双手武器物理伤害增加（套装属性）</value>
+  </data>
+  <data name="Description_TwoHandedWeaponPhysicalDamageIncreaseAncientOption" xml:space="preserve">
+    <value>使用双手武器时，与最终伤害相乘后叠加的物理伤害增加比例。</value>
+  </data>
+  <data name="Name_UnderwaterMovementSpeed" xml:space="preserve">
+    <value>水下移动速度</value>
+  </data>
+  <data name="Description_UnderwaterMovementSpeed" xml:space="preserve">
+    <value>角色在水下地形上的移动速度。</value>
+  </data>
+  <data name="Name_VitalityRequirementreduction" xml:space="preserve">
+    <value>体力需求降低</value>
+  </data>
+  <data name="Description_VitalityRequirementreduction" xml:space="preserve">
+    <value>带有此属性的物品会按属性值降低所需体力。</value>
+  </data>
+  <data name="Name_VitalitySkillDamageMultiplier" xml:space="preserve">
+    <value>体力相关技能伤害倍率</value>
+  </data>
+  <data name="Name_WalkSpeed" xml:space="preserve">
+    <value>行走速度</value>
+  </data>
+  <data name="Name_WaterDamageBonus" xml:space="preserve">
+    <value>水属性伤害加成</value>
+  </data>
+  <data name="Name_WaterResistance" xml:space="preserve">
+    <value>水属性抗性</value>
+  </data>
+  <data name="Name_WeaknessPhysicalDamageDecrement" xml:space="preserve">
+    <value>虚弱效果物理伤害降低比例</value>
+  </data>
+  <data name="Description_WeaknessPhysicalDamageDecrement" xml:space="preserve">
+    <value>虚弱阵或相关攻击技能效果造成的物理伤害降低比例，与最终伤害相乘后扣除。</value>
+  </data>
+  <data name="Name_WeaponMasteryBonusAttackSpeedMST" xml:space="preserve">
+    <value>武器精通攻击速度加成（大师技能）</value>
+  </data>
+  <data name="Description_WeaponMasteryBonusAttackSpeedMST" xml:space="preserve">
+    <value>大师技能树共用的攻击速度加成属性，用于汇总精通技能的效果。</value>
+  </data>
+  <data name="Name_WindDamageBonus" xml:space="preserve">
+    <value>风属性伤害加成</value>
+  </data>
+  <data name="Name_WindResistance" xml:space="preserve">
+    <value>风属性抗性</value>
+  </data>
+  <data name="Name_WizardryAndCurseBaseDamageBonusminandmaxMST" xml:space="preserve">
+    <value>基础魔法和诅咒伤害加成（最小值和最大值，大师技能）</value>
+  </data>
+  <data name="Name_WizardryAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>魔法攻击伤害增加倍率</value>
+  </data>
+  <data name="Description_WizardryAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>与最小、最大基础魔法伤害相乘后叠加的伤害增加比例。</value>
+  </data>
+  <data name="Name_WizardryBaseDamageIncrease" xml:space="preserve">
+    <value>基础魔法伤害增加</value>
+  </data>
+  <data name="Name_WizardryBaseDamageminandmax" xml:space="preserve">
+    <value>基础魔法伤害（最小值和最大值）</value>
+  </data>
+  <data name="AggregateType_AddRaw" xml:space="preserve">
+    <value>基础值相加</value>
+  </data>
+  <data name="AggregateType_Multiplicate" xml:space="preserve">
+    <value>相乘</value>
+  </data>
+  <data name="AggregateType_AddFinal" xml:space="preserve">
+    <value>最终值相加</value>
+  </data>
+  <data name="AggregateType_Maximum" xml:space="preserve">
+    <value>取最大值</value>
+  </data>
+  <data name="Name_ShieldRecoveryActiveEverywhere" xml:space="preserve">
+    <value>允许在所有区域恢复防护值</value>
+  </data>
+  <data name="Name_WeaponAndArmorDurationIncreaseMST" xml:space="preserve">
+    <value>武器和防具耐久消耗减缓（大师技能）</value>
+  </data>
+  <data name="Name_JewelryAndWingsDurationIncreaseMST" xml:space="preserve">
+    <value>首饰和翅膀耐久消耗减缓（大师技能）</value>
+  </data>
+  <data name="Name_PetDurationIncreaseMST" xml:space="preserve">
+    <value>宠物耐久消耗减缓（大师技能）</value>
+  </data>
+  <data name="Name_TrainablePetDurationIncreaseMST" xml:space="preserve">
+    <value>黑王马和天鹰耐久消耗减缓（大师技能）</value>
+  </data>
+  <data name="Name_WeaponDurationIncrease" xml:space="preserve">
+    <value>武器耐久消耗减缓</value>
+  </data>
+  <data name="Name_SkillFinalDamageMultiplierPvEskillattribute" xml:space="preserve">
+    <value>技能最终伤害倍率（对怪物，技能属性）</value>
+  </data>
+  <data name="Name_MasterSkillValueskillattribute" xml:space="preserve">
+    <value>大师技能当前等级数值（技能属性）</value>
+  </data>
+  <data name="Description_ShieldRecoveryActiveEverywhere" xml:space="preserve">
+    <value>默认仅能在安全区恢复防护值。此属性值大于或等于 1 时，可在地图的所有区域恢复防护值。</value>
+  </data>
+</root>
