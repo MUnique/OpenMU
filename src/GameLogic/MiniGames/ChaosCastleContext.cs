@@ -236,11 +236,12 @@ public sealed class ChaosCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override async ValueTask ShowScoreAsync(Player player)
     {
-        if (this._highScoreTable is { } table)
+        if (this._highScoreTable is { } table
+            && this._gameStates.TryGetValue(player.Name, out var state))
         {
-            var isSuccessful = this._winner is not null;
-            var (name, score, bonusMoney, bonusExp) = table.First(t => t.Name == player.Name);
-            await player.InvokeViewPlugInAsync<IBloodCastleScoreTableViewPlugin>(p => p.ShowScoreTableAsync(isSuccessful, name, score, bonusExp, bonusMoney)).ConfigureAwait(false);
+            var isWinner = this._winner == player;
+            var (name, _, bonusExp, _) = table.First(t => t.Name == player.Name);
+            await player.InvokeViewPlugInAsync<IChaosCastleScoreTableViewPlugin>(p => p.ShowScoreTableAsync(isWinner, name, state.MonsterKillCount, state.PlayerKillCount, bonusExp)).ConfigureAwait(false);
         }
     }
 
@@ -251,7 +252,7 @@ public sealed class ChaosCastleContext : MiniGameContext
 
         if (this._gameStates.TryGetValue(e.KillerName, out var playerState))
         {
-            playerState.AddScore(PlayerKillPoints);
+            playerState.AddPlayerKill(PlayerKillPoints);
         }
     }
 
@@ -274,7 +275,7 @@ public sealed class ChaosCastleContext : MiniGameContext
 
             if (this._gameStates.TryGetValue(e.KillerName, out var playerState))
             {
-                playerState.AddScore(MonsterKillPoints);
+                playerState.AddMonsterKill(MonsterKillPoints);
             }
 
             // There is a 50 % chance, that a died monster explodes and moves players nearby(range 3) by one coordinate.
@@ -646,6 +647,8 @@ public sealed class ChaosCastleContext : MiniGameContext
     private sealed class PlayerGameState
     {
         private int _score;
+        private int _monsterKillCount;
+        private int _playerKillCount;
 
         public PlayerGameState(Player player)
         {
@@ -665,11 +668,27 @@ public sealed class ChaosCastleContext : MiniGameContext
 
         public int Score => this._score;
 
+        public int MonsterKillCount => this._monsterKillCount;
+
+        public int PlayerKillCount => this._playerKillCount;
+
         public int Rank { get; set; }
 
         public void AddScore(int value)
         {
             Interlocked.Add(ref this._score, value);
+        }
+
+        public void AddMonsterKill(int points)
+        {
+            Interlocked.Increment(ref this._monsterKillCount);
+            this.AddScore(points);
+        }
+
+        public void AddPlayerKill(int points)
+        {
+            Interlocked.Increment(ref this._playerKillCount);
+            this.AddScore(points);
         }
     }
 }

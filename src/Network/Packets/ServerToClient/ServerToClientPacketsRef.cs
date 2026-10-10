@@ -29855,7 +29855,7 @@ public readonly ref struct MiniGameScoreTableRef
     }
 
     /// <summary>
-    /// Gets or sets the result count.
+    /// Gets or sets the number of results. The client shares the code 0x93 with the BloodCastleScore (0xFF) and ChaosCastleScore (0xFE) at this index, so a score table must contain less than 200 results; the client holds up to 11.
     /// </summary>
     public byte ResultCount
     {
@@ -30015,7 +30015,7 @@ public readonly ref struct BloodCastleScoreRef
     }
 
     /// <summary>
-    /// Gets or sets the type.
+    /// Gets or sets identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.
     /// </summary>
     public byte Type
     {
@@ -30072,6 +30072,131 @@ public readonly ref struct BloodCastleScoreRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(BloodCastleScoreRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The chaos castle mini game ended and the score of the player is sent to the player.
+/// Causes reaction on client side: The client shows the experience and the killed monsters and players.
+/// </summary>
+public readonly ref struct ChaosCastleScoreRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleScoreRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChaosCastleScoreRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleScoreRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChaosCastleScoreRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            this.Type = 0xFE;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x93;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 29;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets if the player won the chaos castle.
+    /// </summary>
+    public bool Success
+    {
+        get => this._data[3..].GetBoolean();
+        set => this._data[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the player name.
+    /// </summary>
+    public string PlayerName
+    {
+        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the monster kill count.
+    /// </summary>
+    public uint MonsterKillCount
+    {
+        get => ReadUInt32LittleEndian(this._data[17..]);
+        set => WriteUInt32LittleEndian(this._data[17..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the bonus experience.
+    /// </summary>
+    public uint BonusExperience
+    {
+        get => ReadUInt32LittleEndian(this._data[21..]);
+        set => WriteUInt32LittleEndian(this._data[21..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player kill count.
+    /// </summary>
+    public uint PlayerKillCount
+    {
+        get => ReadUInt32LittleEndian(this._data[25..]);
+        set => WriteUInt32LittleEndian(this._data[25..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChaosCastleScore"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChaosCastleScoreRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChaosCastleScore"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChaosCastleScoreRef packet) => packet._data; 
 }
 
 
