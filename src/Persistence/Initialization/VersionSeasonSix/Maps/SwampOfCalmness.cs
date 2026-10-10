@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -642,7 +641,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 558;
-            monster.Designation = "Ice Napin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IceNapin);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -674,7 +673,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 559;
-            monster.Designation = "Shadow Master";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ShadowMaster);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;

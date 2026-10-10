@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StaffRiseEven" xml:space="preserve">
+    <value>The staff rise bonus per item level for even magic power staves.</value>
+  </data>
+  <data name="WeaponDamageIncrease" xml:space="preserve">
+    <value>The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.</value>
+  </data>
+  <data name="ShieldDefenseRateIncrease" xml:space="preserve">
+    <value>Defines the defense rate increase per item level for shields. It's 3 per item level until level 9, then it's always 1 more for each level.</value>
+  </data>
+  <data name="ShieldDefenseIncrease" xml:space="preserve">
+    <value>Defines the defense increase per item level for shields. It's always 1 per item level.</value>
+  </data>
+  <data name="RunningMovementSpeed" xml:space="preserve">
+    <value>Defines the running movement speed for boots and underwater gloves from item level 5.</value>
+  </data>
+  <data name="ArmorDefenseIncrease" xml:space="preserve">
+    <value>Defines the defense increase per item level for armors. It's 3 per item level until level 9, then it's always 1 more for each level.</value>
+  </data>
+  <data name="StaffRiseOdd" xml:space="preserve">
+    <value>The staff rise bonus per item level for odd magic power staves.</value>
+  </data>
+  <data name="TransformationRingSkinsTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Transformation Ring).</value>
+  </data>
+  <data name="JeweleryElementalResistances" xml:space="preserve">
+    <value>Defines the elemental resistances for jewelery. It's 1 per item level.</value>
+  </data>
+  <data name="FirstAndThirdWingsDamageIncrease" xml:space="preserve">
+    <value>Defines the damage increase multiplier for first and third level wings. It's 2 % per wing level.</value>
+  </data>
+  <data name="FirstAndSecondWingsDefenseBonus" xml:space="preserve">
+    <value>Defines the defense bonus per level for 1st and 2nd level wings.</value>
+  </data>
+  <data name="WingDamageAbsorb" xml:space="preserve">
+    <value>The damage absorb of wings per item level, 2 % less damage per level.</value>
+  </data>
+  <data name="AmmunitionDamageIncrease" xml:space="preserve">
+    <value>The damage increase % by ammunition item level.</value>
+  </data>
+  <data name="ScepterRiseEven" xml:space="preserve">
+    <value>The scepter rise bonus per item level for even magic power scepters.</value>
+  </data>
+  <data name="ScepterRiseOdd" xml:space="preserve">
+    <value>The scepter rise bonus per item level for odd magic power scepters.</value>
+  </data>
+  <data name="AmmunitionManaLoss" xml:space="preserve">
+    <value>The mana loss per skill hit per ammunition item level due to infinity arrow efect.</value>
+  </data>
+  <data name="AmmunitionDamageIncreasePerLevel" xml:space="preserve">
+    <value>The damage increase % per ammunition item level.</value>
+  </data>
+  <data name="ThirdWingsDefenseBonus" xml:space="preserve">
+    <value>Defines the defense bonus per level for 3rd level wings.</value>
+  </data>
+  <data name="SecondWingsDamageIncrease" xml:space="preserve">
+    <value>Defines the damage increase multiplier for second level wings. It's 1 % per wing level.</value>
+  </data>
+  <data name="TransformationRingSkinsSkeletonTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Skeleton Transformation Ring).</value>
+  </data>
+  <data name="TransformationRingSkinsPandaTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Panda Transformation Ring).</value>
+  </data>
+  <data name="TransformationRingSkinsSnowmanTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Snowman Transformation Ring).</value>
+  </data>
+  <data name="TransformationRingSkinsGameMasterTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Game Master Transformation Ring).</value>
+  </data>
+  <data name="TransformationRingSkinsChristmasTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Christmas Transformation Ring).</value>
+  </data>
+  <data name="TransformationRingSkinsJackOLanternTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Jack O'lantern Transformation Ring).</value>
+  </data>
+  <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
+    <value>Contains the skin numbers for the different levels of the transformation ring (Elite Skeleton Transformation Ring).</value>
+  </data>
+</root>

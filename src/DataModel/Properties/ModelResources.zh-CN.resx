@@ -6199,4 +6199,7 @@
   <data name="CastleSiegeConfiguration_CrownHoldTimeSeconds_Description" xml:space="preserve">
     <value>攻城方盟主在罗伦之冠上完成职印登录所需的时间，默认 30 秒。</value>
   </data>
+  <data name="ConfigurationUpdate_Key_Caption" xml:space="preserve">
+    <value>标识</value>
+  </data>
 </root>

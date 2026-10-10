@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the increase block power up effect.
@@ -30,7 +31,7 @@ public class IncreaseBlockPowerUpEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlockPowerUp;
-        magicEffect.Name = "Increase Block Power Up Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.IncreaseBlockPowerUpSkillEffect);
 
         this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.IncreaseBlock);
 

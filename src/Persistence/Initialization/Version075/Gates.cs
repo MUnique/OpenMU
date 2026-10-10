@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version075;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Gates initialization.
@@ -41,23 +42,23 @@ public class Gates : InitializerBase
     /// </remarks>
     private void CreateWarpEntries(IDictionary<short, ExitGate> gates)
     {
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Arena", 2000, 50, gates[50]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 2000, 10, gates[17]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 2000, 10, gates[27]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(4, "Devias", 2000, 20, gates[22]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(5, "Dungeon", 3000, 30, gates[2]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(6, "Dungeon2", 3500, 40, gates[6]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(7, "Dungeon3", 4000, 50, gates[10]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(8, "LostTower", 5000, 50, gates[42]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(9, "LostTower2", 5500, 50, gates[31]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(10, "LostTower3", 6000, 50, gates[33]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(11, "LostTower4", 6500, 60, gates[35]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(12, "LostTower5", 7000, 60, gates[37]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(13, "LostTower6", 7500, 70, gates[39]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(14, "LostTower7", 8000, 70, gates[41]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(1, LocalizedString.FromResource(() => WarpNames.Arena), 2000, 50, gates[50]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(2, LocalizedString.FromResource(() => WarpNames.Lorencia), 2000, 10, gates[17]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(3, LocalizedString.FromResource(() => WarpNames.Noria), 2000, 10, gates[27]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(4, LocalizedString.FromResource(() => WarpNames.Devias), 2000, 20, gates[22]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(5, LocalizedString.FromResource(() => WarpNames.Dungeon), 3000, 30, gates[2]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(6, LocalizedString.FromResource(() => WarpNames.Dungeon2), 3500, 40, gates[6]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(7, LocalizedString.FromResource(() => WarpNames.Dungeon3), 4000, 50, gates[10]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(8, LocalizedString.FromResource(() => WarpNames.LostTower), 5000, 50, gates[42]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(9, LocalizedString.FromResource(() => WarpNames.LostTower2), 5500, 50, gates[31]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(10, LocalizedString.FromResource(() => WarpNames.LostTower3), 6000, 50, gates[33]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(11, LocalizedString.FromResource(() => WarpNames.LostTower4), 6500, 60, gates[35]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(12, LocalizedString.FromResource(() => WarpNames.LostTower5), 7000, 60, gates[37]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(13, LocalizedString.FromResource(() => WarpNames.LostTower6), 7500, 70, gates[39]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(14, LocalizedString.FromResource(() => WarpNames.LostTower7), 8000, 70, gates[41]));
     }
 
-    private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)
+    private WarpInfo CreateWarpInfo(ushort index, LocalizedString name, int costs, int levelRequirement, ExitGate gate)
     {
         var warpInfo = this.Context.CreateNew<WarpInfo>();
         warpInfo.Index = index;

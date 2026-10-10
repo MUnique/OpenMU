@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Kanturu Relics map.
@@ -154,7 +153,7 @@ internal class KanturuRelics : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 105;
-            monster.Designation = "Canon Trap";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CanonTrap);
             monster.MoveRange = 0;
             monster.AttackRange = 4;
             monster.ViewRange = 2;
@@ -183,7 +182,7 @@ internal class KanturuRelics : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 106;
-            monster.Designation = "Laser Trap";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.LaserTrap);
             monster.MoveRange = 0;
             monster.AttackRange = 1;
             monster.ViewRange = 1;

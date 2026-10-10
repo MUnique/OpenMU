@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Barracks of Balgass map.
@@ -49,7 +48,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
         var flameOfCondor = this.Context.CreateNew<DropItemGroup>();
         flameOfCondor.SetGuid(this.MapNumber, 1);
         flameOfCondor.Chance = 0.001;
-        flameOfCondor.Description = "Flame of Condor";
+        flameOfCondor.Description = LocalizedString.FromResource(() => DropGroupDescriptions.FlameOfCondor);
         flameOfCondor.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 52));
         this.MapDefinition!.DropItemGroups.Add(flameOfCondor);
         this.GameConfiguration.DropItemGroups.Add(flameOfCondor);

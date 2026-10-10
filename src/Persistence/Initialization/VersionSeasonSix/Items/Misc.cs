@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializing of misc items which don't fit into the other categories.
@@ -70,7 +69,7 @@ public class Misc : InitializerBase
         dropItemGroup.SetGuid(itemDefinition.Group, itemDefinition.Number);
         dropItemGroup.PossibleItems.Add(itemDefinition);
         dropItemGroup.Chance = 0.01; // 1 Percent
-        dropItemGroup.Description = "The drop item group for Rena";
+        dropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.TheDropItemGroupForRena);
         dropItemGroup.MinimumMonsterLevel = 30;
         dropItemGroup.MaximumMonsterLevel = 255;
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
@@ -108,7 +107,7 @@ public class Misc : InitializerBase
             dropItemGroup.ItemLevel = level;
             dropItemGroup.PossibleItems.Add(itemDefinition);
             dropItemGroup.Chance = 0.003; // 0.3 Percent
-            dropItemGroup.Description = $"The drop item group for Symbol of Kundun (Level {level})";
+            dropItemGroup.Description = DropGroupDescriptions.ResourceManager.GetLocalizedString($"TheDropItemGroupForSymbolOfKundunLevel{level}");
             (dropItemGroup.MinimumMonsterLevel, dropItemGroup.MaximumMonsterLevel) = dropLevels[level - 1];
 
             this.GameConfiguration.DropItemGroups.Add(dropItemGroup);

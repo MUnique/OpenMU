@@ -2430,4 +2430,82 @@
   <data name="PingHandlerPlugIn_Description" xml:space="preserve">
     <value>处理客户端定期发送的 Ping，用于报告客户端仍在线。</value>
   </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟职位分配处理器</value>
+  </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟职位分配的数据包。</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
+    <value>孵化魔地活动视图</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Description" xml:space="preserve">
+    <value>向客户端发送孵化魔地活动状态和冰霜巨蛛的技能。</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>孵化魔地状态请求处理器</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理客户端查询孵化魔地活动状态的请求。</value>
+  </data>
+  <data name="ImperialGuardianGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>帝国军要塞数据包组处理器</value>
+  </data>
+  <data name="ImperialGuardianGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理帝国军要塞活动的数据包（0xF7）。</value>
+  </data>
+  <data name="ImperialGuardianEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>帝国军要塞入场请求处理器</value>
+  </data>
+  <data name="ImperialGuardianEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理通过辅佐官杰林特的对话窗口发送的帝国军要塞入场请求。</value>
+  </data>
+  <data name="ImperialGuardianViewPlugIn_Name" xml:space="preserve">
+    <value>帝国军要塞活动视图</value>
+  </data>
+  <data name="ImperialGuardianViewPlugIn_Description" xml:space="preserve">
+    <value>向客户端发送帝国军要塞的入场结果、倒计时和活动结果。</value>
+  </data>
+  <data name="GensGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>家族系统数据包组处理器</value>
+  </data>
+  <data name="GensGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理家族系统的数据包（0xF8）。</value>
+  </data>
+  <data name="GensJoinRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>加入家族请求处理器</value>
+  </data>
+  <data name="GensJoinRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理玩家加入家族的请求。</value>
+  </data>
+  <data name="GensLeaveRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>退出家族请求处理器</value>
+  </data>
+  <data name="GensLeaveRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理玩家退出家族的请求。</value>
+  </data>
+  <data name="GensRankingRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>家族排名请求处理器</value>
+  </data>
+  <data name="GensRankingRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理客户端打开家族信息窗口时发送的家族排名查询请求。</value>
+  </data>
+  <data name="GensViewPlugIn_Name" xml:space="preserve">
+    <value>家族系统视图</value>
+  </data>
+  <data name="GensViewPlugIn_Description" xml:space="preserve">
+    <value>显示家族相关请求的处理结果和当前玩家的家族信息。</value>
+  </data>
+  <data name="AssignPlayersToGensPlugIn_Name" xml:space="preserve">
+    <value>显示玩家家族归属</value>
+  </data>
+  <data name="AssignPlayersToGensPlugIn_Description" xml:space="preserve">
+    <value>显示视野内玩家的家族标志和阶级。</value>
+  </data>
+  <data name="GensRewardRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>家族排名奖励请求处理器</value>
+  </data>
+  <data name="GensRewardRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理玩家领取家族排名奖励的请求。</value>
+  </data>
 </root>

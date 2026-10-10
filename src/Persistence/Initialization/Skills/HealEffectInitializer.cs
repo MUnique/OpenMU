@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for the heal effect.
@@ -30,7 +31,7 @@ public class HealEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Heal;
-        magicEffect.Name = "Heal Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.HealEffect);
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();

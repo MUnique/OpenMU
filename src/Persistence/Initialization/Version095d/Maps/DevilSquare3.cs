@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
@@ -85,7 +84,7 @@ internal class DevilSquare3 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 64;
-            monster.Designation = "Orc Archer";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.OrcArcher);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -117,7 +116,7 @@ internal class DevilSquare3 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 65;
-            monster.Designation = "Elite Orc";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.EliteOrc);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -150,7 +149,7 @@ internal class DevilSquare3 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 67;
-            monster.Designation = "Metal Balrog";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.MetalBalrog);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;

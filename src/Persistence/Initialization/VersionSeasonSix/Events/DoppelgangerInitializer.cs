@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -45,8 +46,8 @@ internal class DoppelgangerInitializer : InitializerBase
             var doppelganger = this.Context.CreateNew<MiniGameDefinition>();
             doppelganger.SetGuid((short)MiniGameType.Doppelganger, (short)gameLevel);
             this.GameConfiguration.MiniGameDefinitions.Add(doppelganger);
-            doppelganger.Name = $"Doppelganger {gameLevel}";
-            doppelganger.Description = $"Event definition for the doppelganger event on map {MapNumbers[i]}.";
+            doppelganger.Name = MiniGameNames.ResourceManager.GetLocalizedString($"Doppelganger{gameLevel}");
+            doppelganger.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForTheDoppelgangerEventOnMap{MapNumbers[i]}");
             doppelganger.EnterDuration = TimeSpan.FromSeconds(30);
             doppelganger.GameDuration = TimeSpan.FromMinutes(10);
             doppelganger.ExitDuration = TimeSpan.FromMinutes(1);

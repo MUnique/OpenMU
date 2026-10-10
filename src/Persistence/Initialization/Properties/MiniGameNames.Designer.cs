@@ -97,5 +97,194 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ImperialGuardianSunday", resourceCulture);
             }
         }
+
+        /// <summary>Gets DevilSquare4 from the configuration name resources.</summary>
+        public static string DevilSquare4 {
+            get {
+                return ResourceManager.GetString("DevilSquare4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DevilSquare3 from the configuration name resources.</summary>
+        public static string DevilSquare3 {
+            get {
+                return ResourceManager.GetString("DevilSquare3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DevilSquare2 from the configuration name resources.</summary>
+        public static string DevilSquare2 {
+            get {
+                return ResourceManager.GetString("DevilSquare2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DevilSquare1 from the configuration name resources.</summary>
+        public static string DevilSquare1 {
+            get {
+                return ResourceManager.GetString("DevilSquare1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Doppelganger4 from the configuration name resources.</summary>
+        public static string Doppelganger4 {
+            get {
+                return ResourceManager.GetString("Doppelganger4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Doppelganger3 from the configuration name resources.</summary>
+        public static string Doppelganger3 {
+            get {
+                return ResourceManager.GetString("Doppelganger3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Doppelganger2 from the configuration name resources.</summary>
+        public static string Doppelganger2 {
+            get {
+                return ResourceManager.GetString("Doppelganger2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Doppelganger1 from the configuration name resources.</summary>
+        public static string Doppelganger1 {
+            get {
+                return ResourceManager.GetString("Doppelganger1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets KanturuRefineryTower from the configuration name resources.</summary>
+        public static string KanturuRefineryTower {
+            get {
+                return ResourceManager.GetString("KanturuRefineryTower", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle7 from the configuration name resources.</summary>
+        public static string ChaosCastle7 {
+            get {
+                return ResourceManager.GetString("ChaosCastle7", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle6 from the configuration name resources.</summary>
+        public static string ChaosCastle6 {
+            get {
+                return ResourceManager.GetString("ChaosCastle6", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle5 from the configuration name resources.</summary>
+        public static string ChaosCastle5 {
+            get {
+                return ResourceManager.GetString("ChaosCastle5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle4 from the configuration name resources.</summary>
+        public static string ChaosCastle4 {
+            get {
+                return ResourceManager.GetString("ChaosCastle4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle3 from the configuration name resources.</summary>
+        public static string ChaosCastle3 {
+            get {
+                return ResourceManager.GetString("ChaosCastle3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle2 from the configuration name resources.</summary>
+        public static string ChaosCastle2 {
+            get {
+                return ResourceManager.GetString("ChaosCastle2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastle1 from the configuration name resources.</summary>
+        public static string ChaosCastle1 {
+            get {
+                return ResourceManager.GetString("ChaosCastle1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle8 from the configuration name resources.</summary>
+        public static string BloodCastle8 {
+            get {
+                return ResourceManager.GetString("BloodCastle8", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle7 from the configuration name resources.</summary>
+        public static string BloodCastle7 {
+            get {
+                return ResourceManager.GetString("BloodCastle7", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle6 from the configuration name resources.</summary>
+        public static string BloodCastle6 {
+            get {
+                return ResourceManager.GetString("BloodCastle6", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle5 from the configuration name resources.</summary>
+        public static string BloodCastle5 {
+            get {
+                return ResourceManager.GetString("BloodCastle5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle4 from the configuration name resources.</summary>
+        public static string BloodCastle4 {
+            get {
+                return ResourceManager.GetString("BloodCastle4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle3 from the configuration name resources.</summary>
+        public static string BloodCastle3 {
+            get {
+                return ResourceManager.GetString("BloodCastle3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle2 from the configuration name resources.</summary>
+        public static string BloodCastle2 {
+            get {
+                return ResourceManager.GetString("BloodCastle2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastle1 from the configuration name resources.</summary>
+        public static string BloodCastle1 {
+            get {
+                return ResourceManager.GetString("BloodCastle1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DevilSquare7 from the configuration name resources.</summary>
+        public static string DevilSquare7 {
+            get {
+                return ResourceManager.GetString("DevilSquare7", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DevilSquare6 from the configuration name resources.</summary>
+        public static string DevilSquare6 {
+            get {
+                return ResourceManager.GetString("DevilSquare6", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DevilSquare5 from the configuration name resources.</summary>
+        public static string DevilSquare5 {
+            get {
+                return ResourceManager.GetString("DevilSquare5", resourceCulture);
+            }
+        }
     }
 }

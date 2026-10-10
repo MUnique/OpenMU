@@ -115,6 +115,6 @@ public partial class CharacterClass
     /// <inheritdoc />
     public override string ToString()
     {
-        return this.Name;
+        return this.Name.ToString() ?? string.Empty;
     }
 }

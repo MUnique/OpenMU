@@ -8,7 +8,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for box of luck items.
@@ -93,7 +92,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(boxOfLuck, 10); // Vine Set
         this.AddArmorSet(boxOfLuck, 11); // Silk Set
         this.AddArmorSet(boxOfLuck, 12); // Wind Set
-        this.AddMoneyDropFallback(box, 10000, boxOfLuck);
+        this.AddMoneyDropFallback(box, 10000, boxOfLuck, LocalizedString.FromResource(() => ItemDropDescriptions.BoxOfLuckMoney));
     }
 
     private ItemDefinition CreateBox(LocalizedString name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0)
@@ -112,17 +111,14 @@ internal class BoxOfLuck : InitializerBase
         return item;
     }
 
-    private void AddMoneyDropFallback(ItemDefinition item, int moneyAmount, ItemDropItemGroup baseGroup, LocalizedString? itemName = null)
+    private void AddMoneyDropFallback(ItemDefinition item, int moneyAmount, ItemDropItemGroup baseGroup, LocalizedString description)
     {
         var zenDrop = this.Context.CreateNew<ItemDropItemGroup>();
         zenDrop.ItemType = SpecialItemType.Money;
         zenDrop.MoneyAmount = moneyAmount;
         zenDrop.SourceItemLevel = baseGroup.SourceItemLevel;
         zenDrop.Chance = 1.0;
-        var neutralName = itemName?.ValueInNeutralLanguage;
-        zenDrop.Description = string.IsNullOrWhiteSpace(neutralName)
-            ? $"{baseGroup.Description.ValueInNeutralLanguage} - Money"
-            : $"{neutralName} - Money";
+        zenDrop.Description = description;
         item.DropItems.Add(zenDrop);
     }
 

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the soul potion effect.
@@ -30,7 +31,7 @@ public class SoulPotionEffectInitializer : InitializerBase
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.PotionOfSoul;
         magicEffect.SubType = 255 - (byte)MagicEffectNumber.PotionOfSoul;
-        magicEffect.Name = "Potion of Soul Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.PotionOfSoulEffect);
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

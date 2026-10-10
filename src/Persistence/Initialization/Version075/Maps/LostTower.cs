@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -922,7 +921,7 @@ internal class LostTower : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 103;
-            trap.Designation = "Meteorite Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.MeteoriteTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 3;
             trap.ViewRange = 1;

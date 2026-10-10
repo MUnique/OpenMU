@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -142,7 +143,7 @@ internal class BloodCastle6 : BloodCastleBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 125;
-            monster.Designation = "Chief Skeleton Warrior 6";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChiefSkeletonWarrior6);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 3;
@@ -174,7 +175,7 @@ internal class BloodCastle6 : BloodCastleBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 126;
-            monster.Designation = "Chief Skeleton Archer 6";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChiefSkeletonArcher6);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -206,7 +207,7 @@ internal class BloodCastle6 : BloodCastleBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 127;
-            monster.Designation = "Dark Skull Soldier 6";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkSkullSoldier6);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 3;
@@ -238,7 +239,7 @@ internal class BloodCastle6 : BloodCastleBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 128;
-            monster.Designation = "Giant Ogre 6";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GiantOgre6);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -271,7 +272,7 @@ internal class BloodCastle6 : BloodCastleBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 129;
-            monster.Designation = "Red Skeleton Knight 6";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.RedSkeletonKnight6);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 3;
@@ -303,7 +304,7 @@ internal class BloodCastle6 : BloodCastleBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 130;
-            monster.Designation = "Magic Skeleton 6";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.MagicSkeleton6);
             monster.MoveRange = 4;
             monster.AttackRange = 4;
             monster.ViewRange = 6;

@@ -327,4 +327,123 @@
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\CraftingNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CraftingNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\CraftingNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CraftingNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\DropGroupDescriptions.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DropGroupDescriptions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\DropGroupDescriptions.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DropGroupDescriptions.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\ItemDropDescriptions.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemDropDescriptions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemDropDescriptions.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemDropDescriptions.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\ItemSlotNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemSlotNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemSlotNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemSlotNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\LevelBonusDescriptions.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LevelBonusDescriptions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\LevelBonusDescriptions.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LevelBonusDescriptions.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\LevelBonusNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LevelBonusNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\LevelBonusNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LevelBonusNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\MagicEffectNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MagicEffectNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\MagicEffectNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MagicEffectNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\MasterSkillRootNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MasterSkillRootNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\MasterSkillRootNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MasterSkillRootNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\MiniGameEventTexts.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MiniGameEventTexts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\MiniGameEventTexts.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MiniGameEventTexts.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\MiniGameWaveTexts.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MiniGameWaveTexts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\MiniGameWaveTexts.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MiniGameWaveTexts.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\QuestNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>QuestNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\QuestNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>QuestNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\SkillComboNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SkillComboNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\SkillComboNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SkillComboNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\WarpNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>WarpNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\WarpNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WarpNames.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

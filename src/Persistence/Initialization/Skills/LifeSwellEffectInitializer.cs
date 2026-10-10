@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the greater fortitude effect.
@@ -30,7 +31,7 @@ public class LifeSwellEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitude;
-        magicEffect.Name = "Life Swell Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.LifeSwellSkillEffect);
         magicEffect.InformObservers = true;
         magicEffect.SubType = 4;
         magicEffect.SendDuration = false;

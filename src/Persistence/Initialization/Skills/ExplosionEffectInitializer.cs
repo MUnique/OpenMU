@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for the explosion effect (book of samut).
@@ -29,7 +30,7 @@ public class ExplosionEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Explosion;
-        magicEffect.Name = "Explosion Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.ExplosionEffect);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

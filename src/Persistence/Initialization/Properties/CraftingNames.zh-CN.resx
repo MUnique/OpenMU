@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ChaosWeapon" xml:space="preserve">
+    <value>玛雅武器合成</value>
+  </data>
+  <data name="DevilsSquareTicket" xml:space="preserve">
+    <value>恶魔广场入场道具合成</value>
+  </data>
+  <data name="FirstWings" xml:space="preserve">
+    <value>一代翅膀合成</value>
+  </data>
+  <data name="Plus11ItemCombination" xml:space="preserve">
+    <value>装备强化+11合成</value>
+  </data>
+  <data name="Plus10ItemCombination" xml:space="preserve">
+    <value>装备强化+10合成</value>
+  </data>
+  <data name="Dinorant" xml:space="preserve">
+    <value>彩云兽合成</value>
+  </data>
+  <data name="RestoreItemRemoveJOHOption" xml:space="preserve">
+    <value>还原装备（移除再生属性）</value>
+  </data>
+  <data name="RefineStone" xml:space="preserve">
+    <value>进化宝石提炼</value>
+  </data>
+  <data name="CherryBlossomEventMix" xml:space="preserve">
+    <value>樱花活动合成</value>
+  </data>
+  <data name="CompleteSecromicon" xml:space="preserve">
+    <value>完整的希克拉</value>
+  </data>
+  <data name="GuardianOptionLevel380" xml:space="preserve">
+    <value>380级装备属性追加</value>
+  </data>
+  <data name="ThirdWingsStage2" xml:space="preserve">
+    <value>三代翅膀合成（第二阶段）</value>
+  </data>
+  <data name="ThirdWingsStage1" xml:space="preserve">
+    <value>三代翅膀合成（第一阶段）</value>
+  </data>
+  <data name="SecondWings" xml:space="preserve">
+    <value>二代翅膀合成</value>
+  </data>
+  <data name="CapeOfLordFighter" xml:space="preserve">
+    <value>王者披风／武者披风合成</value>
+  </data>
+  <data name="FenrirUpgradeStage4" xml:space="preserve">
+    <value>炎狼兽强化（第四阶段）</value>
+  </data>
+  <data name="FenrirStage3" xml:space="preserve">
+    <value>炎狼兽合成（第3阶段）</value>
+  </data>
+  <data name="FenrirStage2" xml:space="preserve">
+    <value>炎狼兽合成（第2阶段）</value>
+  </data>
+  <data name="FenrirStage1" xml:space="preserve">
+    <value>炎狼兽合成（第1阶段）</value>
+  </data>
+  <data name="LargeShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（大）</value>
+  </data>
+  <data name="MediumShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（中）</value>
+  </data>
+  <data name="SmallShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（小）</value>
+  </data>
+  <data name="LifeStone" xml:space="preserve">
+    <value>生命之石</value>
+  </data>
+  <data name="IllusionTempleTicket" xml:space="preserve">
+    <value>幻影寺院入场道具合成</value>
+  </data>
+  <data name="BloodCastleTicket" xml:space="preserve">
+    <value>血色城堡入场道具合成</value>
+  </data>
+  <data name="Plus15ItemCombination" xml:space="preserve">
+    <value>装备强化+15合成</value>
+  </data>
+  <data name="Plus14ItemCombination" xml:space="preserve">
+    <value>装备强化+14合成</value>
+  </data>
+  <data name="Plus13ItemCombination" xml:space="preserve">
+    <value>装备强化+13合成</value>
+  </data>
+  <data name="Plus12ItemCombination" xml:space="preserve">
+    <value>装备强化+12合成</value>
+  </data>
+  <data name="PotionOfSoul" xml:space="preserve">
+    <value>灵魂药水</value>
+  </data>
+  <data name="PotionOfBless" xml:space="preserve">
+    <value>祝福药水</value>
+  </data>
+  <data name="Fruits" xml:space="preserve">
+    <value>果实</value>
+  </data>
+  <data name="RemoveSeedSphere" xml:space="preserve">
+    <value>移除荧光宝石</value>
+  </data>
+  <data name="MountSeedSphere" xml:space="preserve">
+    <value>镶嵌荧光宝石</value>
+  </data>
+  <data name="SeedSphereCreation" xml:space="preserve">
+    <value>荧光宝石合成</value>
+  </data>
+  <data name="SeedCreation" xml:space="preserve">
+    <value>荧之石抽取</value>
+  </data>
+  <data name="DarkRaven" xml:space="preserve">
+    <value>天鹰</value>
+  </data>
+  <data name="DarkHorse" xml:space="preserve">
+    <value>黑王马</value>
+  </data>
+  <data name="GemstoneRefinery" xml:space="preserve">
+    <value>原石提炼</value>
+  </data>
+</root>

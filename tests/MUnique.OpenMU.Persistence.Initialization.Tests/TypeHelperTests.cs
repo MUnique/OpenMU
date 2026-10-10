@@ -74,45 +74,9 @@ public class TypeHelperTests
         using (var context = databaseProvider.CreateNewContext())
         {
             var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
-            foreach (var monster in configuration.Monsters)
+            foreach (var caption in LocalizedCaption.FindAll(configuration))
             {
-                monster.Designation = monster.Designation.WithSourceKey(null);
-            }
-
-            foreach (var map in configuration.Maps)
-            {
-                map.Name = map.Name.WithSourceKey(null);
-            }
-
-            foreach (var item in configuration.Items)
-            {
-                item.Name = item.Name.WithSourceKey(null);
-            }
-
-            foreach (var characterClass in configuration.CharacterClasses)
-            {
-                characterClass.Name = characterClass.Name.WithSourceKey(null);
-            }
-
-            foreach (var optionType in configuration.ItemOptionTypes)
-            {
-                optionType.Name = optionType.Name.WithSourceKey(null);
-                optionType.Description = optionType.Description.WithSourceKey(null);
-            }
-
-            foreach (var option in configuration.ItemOptions)
-            {
-                option.Name = option.Name.WithSourceKey(null);
-            }
-
-            foreach (var combination in configuration.ItemOptionCombinationBonuses)
-            {
-                combination.Description = combination.Description.WithSourceKey(null);
-            }
-
-            foreach (var set in configuration.ItemSetGroups)
-            {
-                set.Name = set.Name.WithSourceKey(null);
+                caption.SetValue(caption.Value.WithSourceKey(null));
             }
 
             await context.SaveChangesAsync().ConfigureAwait(false);

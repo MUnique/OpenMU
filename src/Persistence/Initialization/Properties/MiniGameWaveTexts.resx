@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="TheBossWaveOfDevilSquare4" xml:space="preserve">
+    <value>The boss wave of devil square 4</value>
+  </data>
+  <data name="BewareOfTheBossesYouHave5MinutesLeft" xml:space="preserve">
+    <value>Beware of the bosses! You have 5 minutes left.</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare4" xml:space="preserve">
+    <value>The third wave of devil square 4</value>
+  </data>
+  <data name="StillAliveIHaveMoreForYou" xml:space="preserve">
+    <value>Still alive? I have more for you.</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare4" xml:space="preserve">
+    <value>The second wave of devil square 4</value>
+  </data>
+  <data name="LetsContinueWithSomeStrongerEnemies" xml:space="preserve">
+    <value>Lets continue with some stronger enemies ...</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare4" xml:space="preserve">
+    <value>The first wave of devil square 4</value>
+  </data>
+  <data name="TheBossWaveOfDevilSquare3" xml:space="preserve">
+    <value>The boss wave of devil square 3</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare3" xml:space="preserve">
+    <value>The third wave of devil square 3</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare3" xml:space="preserve">
+    <value>The second wave of devil square 3</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare3" xml:space="preserve">
+    <value>The first wave of devil square 3</value>
+  </data>
+  <data name="TheBossWaveOfDevilSquare2" xml:space="preserve">
+    <value>The boss wave of devil square 2</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare2" xml:space="preserve">
+    <value>The third wave of devil square 2</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare2" xml:space="preserve">
+    <value>The second wave of devil square 2</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare2" xml:space="preserve">
+    <value>The first wave of devil square 2</value>
+  </data>
+  <data name="TheBossWaveOfDevilSquare1" xml:space="preserve">
+    <value>The boss wave of devil square 1</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare1" xml:space="preserve">
+    <value>The third wave of devil square 1</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare1" xml:space="preserve">
+    <value>The second wave of devil square 1</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare1" xml:space="preserve">
+    <value>The first wave of devil square 1</value>
+  </data>
+  <data name="TheBossWaveOfDevilSquare7" xml:space="preserve">
+    <value>The boss wave of devil square 7</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare7" xml:space="preserve">
+    <value>The third wave of devil square 7</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare7" xml:space="preserve">
+    <value>The second wave of devil square 7</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare7" xml:space="preserve">
+    <value>The first wave of devil square 7</value>
+  </data>
+  <data name="TheBossWaveOfDevilSquare6" xml:space="preserve">
+    <value>The boss wave of devil square 6</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare6" xml:space="preserve">
+    <value>The third wave of devil square 6</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare6" xml:space="preserve">
+    <value>The second wave of devil square 6</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare6" xml:space="preserve">
+    <value>The first wave of devil square 6</value>
+  </data>
+  <data name="TheBossWaveOfDevilSquare5" xml:space="preserve">
+    <value>The boss wave of devil square 5</value>
+  </data>
+  <data name="TheThirdWaveOfDevilSquare5" xml:space="preserve">
+    <value>The third wave of devil square 5</value>
+  </data>
+  <data name="TheSecondWaveOfDevilSquare5" xml:space="preserve">
+    <value>The second wave of devil square 5</value>
+  </data>
+  <data name="TheFirstWaveOfDevilSquare5" xml:space="preserve">
+    <value>The first wave of devil square 5</value>
+  </data>
+</root>

@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="BoxOfLuckMoney" xml:space="preserve">
+    <value>Box of Luck - Money</value>
+  </data>
+  <data name="RingOfWarrior80Money" xml:space="preserve">
+    <value>Ring of Warrior 80 - Money</value>
+  </data>
+  <data name="RingOfWarrior80" xml:space="preserve">
+    <value>Ring of Warrior 80</value>
+  </data>
+  <data name="RingOfWarrior40Money" xml:space="preserve">
+    <value>Ring of Warrior 40 - Money</value>
+  </data>
+  <data name="RingOfWarrior40" xml:space="preserve">
+    <value>Ring of Warrior 40</value>
+  </data>
+  <data name="HeartOfDarkLordMoney" xml:space="preserve">
+    <value>Heart of Dark Lord - Money</value>
+  </data>
+  <data name="HeartOfDarkLord" xml:space="preserve">
+    <value>Heart of Dark Lord</value>
+  </data>
+  <data name="BoxOfKundunPlus5Money" xml:space="preserve">
+    <value>Box of Kundun+5 - Money</value>
+  </data>
+  <data name="BoxOfKundunPlus5" xml:space="preserve">
+    <value>Box of Kundun+5</value>
+  </data>
+  <data name="BoxOfKundunPlus4Money" xml:space="preserve">
+    <value>Box of Kundun+4 - Money</value>
+  </data>
+  <data name="BoxOfKundunPlus4" xml:space="preserve">
+    <value>Box of Kundun+4</value>
+  </data>
+  <data name="BoxOfKundunPlus3Money" xml:space="preserve">
+    <value>Box of Kundun+3 - Money</value>
+  </data>
+  <data name="BoxOfKundunPlus3" xml:space="preserve">
+    <value>Box of Kundun+3</value>
+  </data>
+  <data name="BoxOfKundunPlus2Money" xml:space="preserve">
+    <value>Box of Kundun+2 - Money</value>
+  </data>
+  <data name="BoxOfKundunPlus2" xml:space="preserve">
+    <value>Box of Kundun+2</value>
+  </data>
+  <data name="BoxOfKundunPlus1Money" xml:space="preserve">
+    <value>Box of Kundun+1 - Money</value>
+  </data>
+  <data name="BoxOfKundunPlus1" xml:space="preserve">
+    <value>Box of Kundun+1</value>
+  </data>
+  <data name="BoxOfHeavenMoney" xml:space="preserve">
+    <value>Box of Heaven - Money</value>
+  </data>
+  <data name="BoxOfHeaven" xml:space="preserve">
+    <value>Box of Heaven</value>
+  </data>
+  <data name="GoldMedalMoney" xml:space="preserve">
+    <value>Gold Medal - Money</value>
+  </data>
+  <data name="GoldMedal" xml:space="preserve">
+    <value>Gold Medal</value>
+  </data>
+  <data name="SilverMedalMoney" xml:space="preserve">
+    <value>Silver Medal - Money</value>
+  </data>
+  <data name="SilverMedal" xml:space="preserve">
+    <value>Silver Medal</value>
+  </data>
+  <data name="HeartOfLoveItemsPlus7ToPlus9Money" xml:space="preserve">
+    <value>Heart of Love (Items +7 to +9) - Money</value>
+  </data>
+  <data name="HeartOfLoveItemsPlus7ToPlus9" xml:space="preserve">
+    <value>Heart of Love (Items +7 to +9)</value>
+  </data>
+  <data name="HeartOfLoveJewelsEtc" xml:space="preserve">
+    <value>Heart of Love (Jewels etc.)</value>
+  </data>
+  <data name="FirecrackerItemsPlus7ToPlus9Money" xml:space="preserve">
+    <value>Firecracker (Items +7 to +9) - Money</value>
+  </data>
+  <data name="FirecrackerItemsPlus7ToPlus9" xml:space="preserve">
+    <value>Firecracker (Items +7 to +9)</value>
+  </data>
+  <data name="FirecrackerJewelsEtc" xml:space="preserve">
+    <value>Firecracker (Jewels etc.)</value>
+  </data>
+  <data name="StarOfTheSacredBirth" xml:space="preserve">
+    <value>Star of the Sacred Birth</value>
+  </data>
+  <data name="FirecrackerDropEffect" xml:space="preserve">
+    <value>Firecracker - Drop Effect</value>
+  </data>
+  <data name="ChristmasFirecrackerDropEffect" xml:space="preserve">
+    <value>Christmas Firecracker - Drop Effect</value>
+  </data>
+  <data name="ChristmasStarDropEffect" xml:space="preserve">
+    <value>Christmas Star - Drop Effect</value>
+  </data>
+  <data name="BlueRibbonBoxMoney" xml:space="preserve">
+    <value>Blue Ribbon Box - Money</value>
+  </data>
+  <data name="BlueRibbonBoxExcellentItems" xml:space="preserve">
+    <value>Blue Ribbon Box - Excellent Items</value>
+  </data>
+  <data name="BlueRibbonBoxNormalItems" xml:space="preserve">
+    <value>Blue Ribbon Box - Normal Items</value>
+  </data>
+  <data name="GreenRibbonBoxMoney" xml:space="preserve">
+    <value>Green Ribbon Box - Money</value>
+  </data>
+  <data name="GreenRibbonBoxExcellentItems" xml:space="preserve">
+    <value>Green Ribbon Box - Excellent Items</value>
+  </data>
+  <data name="GreenRibbonBoxNormalItems" xml:space="preserve">
+    <value>Green Ribbon Box - Normal Items</value>
+  </data>
+  <data name="RedRibbonBoxMoney" xml:space="preserve">
+    <value>Red Ribbon Box - Money</value>
+  </data>
+  <data name="DeepBlueCandyBoxMoney" xml:space="preserve">
+    <value>Deep Blue Candy Box - Money</value>
+  </data>
+  <data name="BlueChocolateBoxExcellentItems" xml:space="preserve">
+    <value>Blue Chocolate Box - Excellent Items</value>
+  </data>
+  <data name="BlueChocolateBoxMoney" xml:space="preserve">
+    <value>Blue Chocolate Box - Money</value>
+  </data>
+  <data name="VermilionCandyBoxMoney" xml:space="preserve">
+    <value>Vermilion Candy Box - Money</value>
+  </data>
+  <data name="VermilionCandyBoxExcellentItems" xml:space="preserve">
+    <value>Vermilion Candy Box - Excellent Items</value>
+  </data>
+  <data name="VermilionCandyBoxNormalItems" xml:space="preserve">
+    <value>Vermilion Candy Box - Normal Items</value>
+  </data>
+  <data name="RedChocolateBoxMoney" xml:space="preserve">
+    <value>Red Chocolate Box - Money</value>
+  </data>
+  <data name="RedChocolateBoxExcellentItems" xml:space="preserve">
+    <value>Red Chocolate Box - Excellent Items</value>
+  </data>
+  <data name="RedChocolateBoxNormalItems" xml:space="preserve">
+    <value>Red Chocolate Box - Normal Items</value>
+  </data>
+  <data name="LightPurpleCandyBoxMoney" xml:space="preserve">
+    <value>Light Purple Candy Box - Money</value>
+  </data>
+  <data name="LightPurpleCandyBoxExcellentItems" xml:space="preserve">
+    <value>Light Purple Candy Box - Excellent Items</value>
+  </data>
+  <data name="LightPurpleCandyBoxNormalItems" xml:space="preserve">
+    <value>Light Purple Candy Box - Normal Items</value>
+  </data>
+  <data name="PinkChocolateBoxMoney" xml:space="preserve">
+    <value>Pink Chocolate Box - Money</value>
+  </data>
+  <data name="PinkChocolateBoxExcellentItems" xml:space="preserve">
+    <value>Pink Chocolate Box - Excellent Items</value>
+  </data>
+  <data name="PinkChocolateBoxNormalItems" xml:space="preserve">
+    <value>Pink Chocolate Box - Normal Items</value>
+  </data>
+</root>

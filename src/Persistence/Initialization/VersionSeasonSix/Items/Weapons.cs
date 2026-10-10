@@ -11,7 +11,6 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -128,13 +127,13 @@ internal class Weapons : InitializerBase
     /// </remarks>
     public override void Initialize()
     {
-        this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
-        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
-        this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, "Scepter Rise (even)", "The scepter rise bonus per item level for even magic power scepters.");
-        this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, "Scepter Rise (odd)", "The scepter rise bonus per item level for odd magic power scepters.");
-        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % per ammunition item level.");
-        this._ammunitionManaLossAfterHitTable = this.CreateItemBonusTable(AmmunitionManaLossAfterHitByLevel, "Mana Loss After Hit (Bolts/Arrows)", "The mana loss per skill hit per ammunition item level due to infinity arrow efect.");
+        this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DamageIncreaseWeapons), LocalizedString.FromResource(() => LevelBonusDescriptions.WeaponDamageIncrease));
+        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, LocalizedString.FromResource(() => LevelBonusNames.StaffRiseEven), LocalizedString.FromResource(() => LevelBonusDescriptions.StaffRiseEven));
+        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, LocalizedString.FromResource(() => LevelBonusNames.StaffRiseOdd), LocalizedString.FromResource(() => LevelBonusDescriptions.StaffRiseOdd));
+        this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, LocalizedString.FromResource(() => LevelBonusNames.ScepterRiseEven), LocalizedString.FromResource(() => LevelBonusDescriptions.ScepterRiseEven));
+        this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, LocalizedString.FromResource(() => LevelBonusNames.ScepterRiseOdd), LocalizedString.FromResource(() => LevelBonusDescriptions.ScepterRiseOdd));
+        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DamageIncreasePercentBoltsArrows), LocalizedString.FromResource(() => LevelBonusDescriptions.AmmunitionDamageIncreasePerLevel));
+        this._ammunitionManaLossAfterHitTable = this.CreateItemBonusTable(AmmunitionManaLossAfterHitByLevel, LocalizedString.FromResource(() => LevelBonusNames.ManaLossAfterHitBoltsArrows), LocalizedString.FromResource(() => LevelBonusDescriptions.AmmunitionManaLoss));
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, LocalizedString.FromResource(() => ItemNames.Kris), 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ShortSword), 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);

@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the infinity arrow effect.
@@ -30,7 +31,7 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.InfiniteArrow;
-        magicEffect.Name = "Infinity Arrow Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.InfinityArrowSkillEffect);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = true;
         magicEffect.StopByDeath = true;

@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for the decrease block effect which results from Phoenix Shot (Rage Fighter) skill.
@@ -30,7 +31,7 @@ public class DecreaseBlockEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.DecreaseBlock;
-        magicEffect.Name = "Decrease Block Effect (Phoenix Shot)";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.DecreaseBlockEffectPhoenixShot);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

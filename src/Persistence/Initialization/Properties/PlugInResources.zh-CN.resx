@@ -321,4 +321,34 @@
   <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve"><value>让冰霜之城的冰铁剑魂使用突刺攻击，客户端会显示连击效果。</value></data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>将服务器端口移出动态端口范围</value></data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>此更新将游戏服务器和聊天服务器的端口从 55900 – 55999 移至 45900 – 45999（例如 55901 改为 45901，55980 改为 45980），因为原端口位于操作系统的动态端口范围内，可能已被占用。请相应调整防火墙、端口转发和 docker compose 文件。</value></data>
+  <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Name" xml:space="preserve">
+    <value>添加炎狼兽材料掉落组</value>
+  </data>
+  <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve">
+    <value>为狼魂要塞的所有怪物添加破烂的铠甲片（5%）、女神的智慧（2%）和猛兽的脚甲（0.5%）掉落。已通过其他掉落组在狼魂要塞掉落的材料会被跳过。</value>
+  </data>
+  <data name="FixVulcanusWarpIndexUpdatePlugIn_Name" xml:space="preserve">
+    <value>修正囚禁之岛传送索引</value>
+  </data>
+  <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
+    <value>将囚禁之岛传送条目的索引修正为Season 6客户端请求的42。</value>
+  </data>
+  <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加小翅膀和小披风</value>
+  </data>
+  <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充游戏商城缺失的小王者披风、小灾难之翼、小精灵之翼、小天使之翼、小恶魔之翼和小武者披风。已有相同编号的物品保持不变。</value>
+  </data>
+  <data name="FixDinorantOptionNumbersPlugIn_Name" xml:space="preserve">
+    <value>修正彩云兽属性编号</value>
+  </data>
+  <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve">
+    <value>为彩云兽的每项属性设置不同的编号，对应客户端属性字段中的各个二进制位。</value>
+  </data>
+  <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve">
+    <value>配置对话插件对应的NPC</value>
+  </data>
+  <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
+    <value>为处理NPC对话的插件配置对应的NPC，例如转生NPC或血色城堡大天使。</value>
+  </data>
 </root>

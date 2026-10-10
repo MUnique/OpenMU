@@ -33,4 +33,85 @@
   <data name="ImperialGuardianSunday" xml:space="preserve">
     <value>Event definition for the imperial guardian event on Sunday, which takes place on map 72.</value>
   </data>
+  <data name="EventDefinitionForDevilSquareEventLevel4" xml:space="preserve">
+    <value>Event definition for devil square event, level 4.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel3" xml:space="preserve">
+    <value>Event definition for devil square event, level 3.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel2" xml:space="preserve">
+    <value>Event definition for devil square event, level 2.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel1" xml:space="preserve">
+    <value>Event definition for devil square event, level 1.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap68" xml:space="preserve">
+    <value>Event definition for the doppelganger event on map 68.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap67" xml:space="preserve">
+    <value>Event definition for the doppelganger event on map 67.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap66" xml:space="preserve">
+    <value>Event definition for the doppelganger event on map 66.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap65" xml:space="preserve">
+    <value>Event definition for the doppelganger event on map 65.</value>
+  </data>
+  <data name="EventDefinitionForTheKanturuRefineryTowerEvent" xml:space="preserve">
+    <value>Event definition for the Kanturu Refinery Tower event.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel7" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 7.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel6" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 6.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel5" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 5.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel4" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 4.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel3" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 3.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel2" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 2.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel1" xml:space="preserve">
+    <value>Event definition for chaos castle event, level 1.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel8" xml:space="preserve">
+    <value>Event definition for blood castle event, level 8.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel7" xml:space="preserve">
+    <value>Event definition for blood castle event, level 7.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel6" xml:space="preserve">
+    <value>Event definition for blood castle event, level 6.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel5" xml:space="preserve">
+    <value>Event definition for blood castle event, level 5.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel4" xml:space="preserve">
+    <value>Event definition for blood castle event, level 4.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel3" xml:space="preserve">
+    <value>Event definition for blood castle event, level 3.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel2" xml:space="preserve">
+    <value>Event definition for blood castle event, level 2.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel1" xml:space="preserve">
+    <value>Event definition for blood castle event, level 1.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel7" xml:space="preserve">
+    <value>Event definition for devil square event, level 7.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel6" xml:space="preserve">
+    <value>Event definition for devil square event, level 6.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel5" xml:space="preserve">
+    <value>Event definition for devil square event, level 5.</value>
+  </data>
 </root>

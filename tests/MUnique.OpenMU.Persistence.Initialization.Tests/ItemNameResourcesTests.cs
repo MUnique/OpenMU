@@ -157,10 +157,10 @@ internal class ItemNameResourcesTests
                 var fallback = item.DropItems.Single(drop => drop.ItemType == SpecialItemType.Money && drop.SourceItemLevel == 0);
                 Assert.Multiple(() =>
                 {
-                    Assert.That(fallback.Description.Value, Is.EqualTo($"{name} - Money"));
                     Assert.That(fallback.Description.ValueInNeutralLanguage, Is.EqualTo($"{name} - Money"));
-                    Assert.That(fallback.Description.SourceKey, Is.Null);
-                    Assert.That(fallback.Description.SourceStamp, Is.Null);
+                    Assert.That(fallback.Description.SourceKey, Does.StartWith("ItemDropDescriptions/"));
+                    Assert.That(fallback.Description.IsUnchangedSinceSourceStamp, Is.True);
+                    Assert.That(fallback.Description.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.Not.Null.And.Not.Empty);
                     Assert.That(fallback.MoneyAmount, Is.EqualTo(moneyAmount));
                     Assert.That(fallback.Chance, Is.EqualTo(1.0));
                 });
