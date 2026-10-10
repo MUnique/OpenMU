@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Corrects Season 6 Power Slash Strengthener requirements and Fire Slash's defense reduction chance.
+/// Adds the chance effect of Dragon Slasher to decrease the defender's shield by a certain rate.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
