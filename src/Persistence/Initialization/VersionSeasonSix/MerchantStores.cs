@@ -569,6 +569,38 @@ internal partial class NpcInitialization
         return storage;
     }
 
+    /// <summary>
+    /// Creates the item storage for the 'Jeweler Raul' NPC in the Loren Market.
+    /// </summary>
+    /// <param name="number">The number of the NPC, used for the storage id.</param>
+    /// <returns>The created merchant store.</returns>
+    private ItemStorage CreateJewelerRaulStore(short number)
+    {
+        List<Item> itemList = new()
+        {
+            this.ItemHelper.CreateItem(0, 13, 14, 1, 0), // Jewel of Bless
+            this.ItemHelper.CreateItem(1, 14, 14, 1, 0), // Jewel of Soul
+            this.ItemHelper.CreateItem(2, 15, 12, 1, 0), // Jewel of Chaos
+            this.ItemHelper.CreateItem(3, 16, 14, 1, 0), // Jewel of Life
+            this.ItemHelper.CreateItem(4, 22, 14, 1, 0), // Jewel of Creation
+            this.ItemHelper.CreateItem(5, 31, 14, 1, 0), // Jewel of Guardian
+            this.ItemHelper.CreateItem(6, 42, 14, 1, 0), // Jewel of Harmony
+            this.ItemHelper.CreateItem(7, 41, 14, 1, 0), // Gemstone
+            this.ItemHelper.CreateItem(8, 43, 14, 1, 0), // Lower refine stone
+            this.ItemHelper.CreateItem(9, 44, 14, 1, 0), // Higher refine stone
+
+            this.ItemHelper.CreateItem(16, 32, 13, 1, 0), // Splinter of Armor
+            this.ItemHelper.CreateItem(17, 33, 13, 1, 0), // Bless of Guardian
+            this.ItemHelper.CreateItem(18, 34, 13, 1, 0), // Claw of Beast
+
+            this.ItemHelper.CreateItem(32, 10, 14, 1, 0), // Town Portal Scroll
+        };
+
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
+    }
+
     private ItemStorage CreateBoloStore(short number)
     {
         List<Item> itemList = new()

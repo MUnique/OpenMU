@@ -49,7 +49,7 @@ internal class ChineseMerchantNamesTests
     /// <param name="merchantCount">The number of merchants in that version.</param>
     [TestCase("075", 11)]
     [TestCase("095d", 11)]
-    [TestCase("Season6", 22)]
+    [TestCase("Season6", 23)] // 22 merchants + Jeweler Raul (546)
     public async Task InitializationIncludesChineseNamesAsync(string version, int merchantCount)
     {
         var provider = new InMemoryPersistenceContextProvider();
