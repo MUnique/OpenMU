@@ -70,8 +70,8 @@ documented separately:
 
 The *Game Event Publisher* plugin publishes notable events of the game to the
 whole server, so that external systems can react on them, for example a Discord
-integration. It's disabled by default; activate it when such a system is
-connected.
+integration (see [Discord notifications](../server-features/discord.md)). It's
+disabled by default; activate it when such a system is connected.
 
 It publishes:
 
@@ -79,9 +79,14 @@ It publishes:
 * the start and end of invasions, with the invaded maps,
 * the state changes of the castle siege, with the owner of the castle,
 * excellent and ancient items which are dropped by monsters,
+* the kills of boss monsters,
+* characters which reach a level or master level milestone,
 * global notices which game masters send with the `!` chat prefix.
 
-Each kind of event can be switched off in the plugin configuration.
+Each kind of event can be switched off in the plugin configuration. There you
+also define which monsters are bosses, by their monster numbers (e.g. 275 for
+Kundun), and which levels and master levels are milestones (by default, level
+400).
 
 ## Writing your own plugin
 

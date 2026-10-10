@@ -844,11 +844,47 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Boss monster numbers.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_BossMonsterNumbers_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_BossMonsterNumbers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_LevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_LevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_MasterLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_MasterLevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish ancient item drops.
         /// </summary>
         public static string GameEventPublisherConfiguration_PublishAncientItemDrops_Name {
             get {
                 return ResourceManager.GetString("GameEventPublisherConfiguration_PublishAncientItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish boss kills.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishBossKills_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishBossKills_Name", resourceCulture);
             }
         }
         
@@ -885,6 +921,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GameEventPublisherConfiguration_PublishInvasionEvents_Name {
             get {
                 return ResourceManager.GetString("GameEventPublisherConfiguration_PublishInvasionEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishLevelMilestones_Name", resourceCulture);
             }
         }
         
