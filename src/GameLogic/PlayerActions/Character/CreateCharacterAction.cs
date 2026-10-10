@@ -74,7 +74,7 @@ public class CreateCharacterAction
         character.CharacterSlot = freeSlot.Value;
         player.PersistenceContext.InitializeNewCharacter(character, characterClass);
         account.Characters.Add(character);
-        player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
+        player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(account, character, player.PersistenceContext, player.GameContext.Configuration, player.Logger);
         try
         {
             await player.SaveProgressAsync().ConfigureAwait(false);

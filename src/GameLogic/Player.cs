@@ -1987,13 +1987,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character '{selectedCharacter}' has no assigned character class.");
         }
 
-        // For characters which got created on the database or with the admin panel,
-        // it's possible that they're missing the inventory. In this case, we create it here
-        // and initialize with default items.
+        // For characters which got created on the database, it's possible that they're
+        // missing the inventory. In this case, we create it here and initialize it with
+        // default items, like for a newly created character.
         if (selectedCharacter!.Inventory is null)
         {
             selectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, selectedCharacter);
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this.Account!, selectedCharacter, this.PersistenceContext, this.GameContext.Configuration, this.Logger);
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;

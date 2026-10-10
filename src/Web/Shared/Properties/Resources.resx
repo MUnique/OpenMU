@@ -525,7 +525,7 @@ Level: {2} - {3}</value>
   <data name="MonsterLabel" xml:space="preserve"><value>Monster</value></data>
   <data name="MapsLabel" xml:space="preserve"><value>Maps</value></data>
   <data name="CharacterCreationHint" xml:space="preserve">
-    <value>The character gets the stat attributes of its class with their start values, starts on the home map of its class and gets an empty inventory and the default key configuration. The initial items and skills which the game gives to new characters are not added; add them on the edit page if needed.</value>
+    <value>The character gets the stat attributes of its class with their start values, starts on the home map of its class and gets an empty inventory and the default key configuration. Then the active "Character created" plugins run, which give it e.g. its initial items and skills, like in the game.</value>
   </data>
   <data name="CharacterNameRequired" xml:space="preserve">
     <value>Please enter a name.</value>
@@ -541,5 +541,8 @@ Level: {2} - {3}</value>
   </data>
   <data name="NoFreeCharacterSlot" xml:space="preserve">
     <value>The account has no free character slot. An account can have up to {0} characters.</value>
+  </data>
+  <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
+    <value>The character was created, but the "Character created" plugins failed, so it may be missing its initial items or skills: {0}</value>
   </data>
 </root>

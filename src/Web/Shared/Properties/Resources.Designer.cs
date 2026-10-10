@@ -1025,5 +1025,8 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>Gets the localized NoFreeCharacterSlot text.</summary>
         public static string NoFreeCharacterSlot => ResourceManager.GetString("NoFreeCharacterSlot", resourceCulture)!;
 
+        /// <summary>Gets the localized CharacterCreatedPlugInsFailed text.</summary>
+        public static string CharacterCreatedPlugInsFailed => ResourceManager.GetString("CharacterCreatedPlugInsFailed", resourceCulture)!;
+
     }
 }

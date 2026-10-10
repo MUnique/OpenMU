@@ -2,12 +2,20 @@
    Licensed under the MIT License. See LICENSE file in the project root for full license information.
    </copyright> *@
 
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.GameLogic
+@using MUnique.OpenMU.GameLogic.PlugIns
 @using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.PlugIns
+@using MUnique.OpenMU.Web.Shared.Components.Toast
 
 @inject IDataSource<GameConfiguration> GameConfigurationSource
+@inject IServiceProvider ServiceProvider
+@inject IToastService ToastService
+@inject ILogger<CharacterCreationForm> Logger
 
 @if (this._gameConfiguration is null)
 {
@@ -128,6 +136,34 @@ else
 
         this.Character.CharacterSlot = freeSlot;
         this.PersistenceContext.InitializeNewCharacter(this.Character, validCharacterClass);
+        this.InvokeCharacterCreatedPlugIns(this._gameConfiguration);
         await this.OnValidSubmit.InvokeAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Invokes the <see cref="ICharacterCreatedPlugIn"/>s, which give the character e.g. its initial items and skills.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <remarks>
+    /// They're the same plugins as the game server uses, with the same configuration.
+    /// When they fail, the character is created anyway, because it's complete without them.
+    /// </remarks>
+    private void InvokeCharacterCreatedPlugIns(GameConfiguration gameConfiguration)
+    {
+        if (this.ServiceProvider.GetService<PlugInManager>() is not { } plugInManager)
+        {
+            this.Logger.LogWarning("No plugin manager is available, so the character created plugins aren't invoked for character {Name}.", this.Character.Name);
+            return;
+        }
+
+        try
+        {
+            plugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this.Account, this.Character, this.PersistenceContext, gameConfiguration, this.Logger);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error when invoking the character created plugins for character {Name}.", this.Character.Name);
+            this.ToastService.ShowWarning(string.Format(Resources.CharacterCreatedPlugInsFailed, ex.Message));
+        }
     }
 }
