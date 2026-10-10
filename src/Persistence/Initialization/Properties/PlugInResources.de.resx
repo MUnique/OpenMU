@@ -770,6 +770,12 @@
   <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung lässt den Iron Knight von Raklion mit seinem Stich angreifen, den der Client mit einem Kombo-Effekt anzeigt.</value>
   </data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve">
+    <value>Juwelenbündel bei Juwelier Raul auf dem Loren-Markt hinzufügen</value>
+  </data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung lässt Juwelier Raul (546) auf dem Loren-Markt das Fenster für Juwelenbündel öffnen, in dem man wie bei Lahap Juwelen zu Bündeln zusammenfassen und wieder auflösen kann.</value>
+  </data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve">
     <value>Server-Ports aus dem dynamischen Portbereich verschieben</value>
   </data>

@@ -370,6 +370,8 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
   <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve"><value>Let the Iron Knight use its stab</value></data>
   <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve"><value>This update lets the Iron Knight of Raklion attack with its stab, which the client shows with a combo effect.</value></data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve"><value>Add Loren Market Jeweler Raul jewel bundles</value></data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve"><value>This update lets Jeweler Raul (546) of the Loren Market open the jewel bundle window, to combine jewels into bundles and disband them, like Lahap.</value></data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>Move server ports out of the dynamic port range</value></data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly.</value></data>
 </root>
