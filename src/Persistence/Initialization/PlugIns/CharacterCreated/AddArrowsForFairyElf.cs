@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.PlugIns;
@@ -28,9 +27,9 @@ public class AddArrowsForFairyElf : AddInitialItemPlugInBase
     }
 
     /// <inheritdoc />
-    protected override Item? CreateItem(Player player, Character createdCharacter)
+    protected override Item? CreateItem(IContext persistenceContext, GameConfiguration gameConfiguration, ILogger logger)
     {
-        if (base.CreateItem(player, createdCharacter) is { } item)
+        if (base.CreateItem(persistenceContext, gameConfiguration, logger) is { } item)
         {
             item.Durability = 255;
             return item;
