@@ -251,14 +251,15 @@ public sealed class SkillList : ISkillList, IDisposable
             return;
         }
 
-        var inventory = this._player.Inventory;
-        if (inventory!.EquippedItems.Contains(item))
-        {
-            await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
-        }
-        else
+        if (!eventArgs.IsEquipped || item.Durability == 0.0)
         {
             await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
+            return;
+        }
+
+        if (!eventArgs.HasDurabilityFactorChanged)
+        {
+            await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
         }
     }
 
