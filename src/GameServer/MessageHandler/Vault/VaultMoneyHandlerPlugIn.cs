@@ -7,9 +7,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Vault;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views.Vault;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handler for warehouse money packets.
@@ -35,6 +37,12 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
                 player.TryDepositVaultMoney((int)request.Amount);
                 break;
             case VaultMoveMoneyRequest.VaultMoneyMoveDirection.VaultToInventory:
+                if (player.IsVaultLocked)
+                {
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
+                    break;
+                }
+
                 player.TryTakeVaultMoney((int)request.Amount);
                 break;
             default:
