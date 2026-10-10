@@ -48,22 +48,20 @@ public class AddDragonSlasherShieldDamagePlugIn : UpdatePlugInBase
         var dragonSlasherShieldDamageChance = Stats.DragonSlasherShieldDamageChance.GetPersistent(gameConfiguration);
         var dragonSlasherShieldDamageRate = Stats.DragonSlasherShieldDamageRate.GetPersistent(gameConfiguration);
 
-        if (gameConfiguration.Skills.FirstOrDefault(skill => skill.Number == (short)SkillNumber.DragonSlasher) is { } dragonSlahser)
+        if (gameConfiguration.Skills.FirstOrDefault(skill => skill.Number == (short)SkillNumber.DragonSlasher) is { } dragonSlasher)
         {
-            this.AddAttributeRelationship(context, gameConfiguration, SkillNumber.DragonSlasher, dragonSlasherShieldDamageChance, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
-            this.AddAttributeRelationship(context, gameConfiguration, SkillNumber.DragonSlasher, dragonSlasherShieldDamageChance, 1.0f / 10000, Stats.TotalEnergy);
-            this.AddAttributeRelationship(context, gameConfiguration, SkillNumber.DragonSlasher, dragonSlasherShieldDamageRate, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
-            this.AddAttributeRelationship(context, gameConfiguration, SkillNumber.DragonSlasher, dragonSlasherShieldDamageRate, 1.0f / 3000, Stats.TotalEnergy);
+            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageChance, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
+            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageChance, 1.0f / 10000, Stats.TotalEnergy);
+            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageRate, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
+            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageRate, 1.0f / 3000, Stats.TotalEnergy);
         }
 
         return ValueTask.CompletedTask;
     }
 
-    private void AddAttributeRelationship(IContext context, GameConfiguration gameConfiguration, SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
+    private void AddAttributeRelationship(IContext context, GameConfiguration gameConfiguration, Skill dragonSlasher, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
     {
-        var skill = gameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
         var relationship = CharacterClassHelper.CreateAttributeRelationship(context, gameConfiguration, targetAttribute, multiplier, sourceAttribute, inputOperator, aggregateType);
-
-        skill.AttributeRelationships.Add(relationship);
+        dragonSlasher.AttributeRelationships.Add(relationship);
     }
 }

@@ -254,14 +254,12 @@ public sealed class SkillList : ISkillList, IDisposable
         if (!eventArgs.IsEquipped || item.Durability == 0.0)
         {
             await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
+            return;
         }
-        else if (!eventArgs.HasDurabilityFactorChanged)
+
+        if (!eventArgs.HasDurabilityFactorChanged)
         {
             await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
-        }
-        else
-        {
-            return;
         }
     }
 
