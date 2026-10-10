@@ -53,10 +53,10 @@ public static class PlayerMoneyExtensions
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="value">The value that should be moved to the vault.</param>
-    /// <returns><c>True</c>, if the player inventory had enough money to move; Otherwise, <c>false</c>.</returns>
+    /// <returns><c>True</c>, if the player inventory had enough money to move and the vault is not locked; Otherwise, <c>false</c>.</returns>
     public static bool TryDepositVaultMoney(this Player player, int value)
     {
-        if (player.Vault is null)
+        if (player.Vault is null || player.IsVaultLocked)
         {
             return false;
         }
@@ -79,10 +79,10 @@ public static class PlayerMoneyExtensions
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="value">The value that should be retrieved from the vault.</param>
-    /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
+    /// <returns><c>True</c>, if the vault is not locked, had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
     public static bool TryTakeVaultMoney(this Player player, int value)
     {
-        if (player.Vault is null)
+        if (player.Vault is null || player.IsVaultLocked)
         {
             return false;
         }

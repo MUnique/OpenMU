@@ -125,6 +125,75 @@ public class MoveItemActionTests
     }
 
     /// <summary>
+    /// Verifies that an item can't be moved from the inventory into a locked vault.
+    /// </summary>
+    [Test]
+    public async ValueTask InventoryToLockedVaultMoveKeepsItemInInventoryAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        player.Vault = vaultStorage;
+        player.IsVaultLocked = true;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+
+        var source = CreateItem(CreateDefinition(), 1);
+        await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.Vault).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(source));
+        Assert.That(vaultStorage.GetItem(0), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that items can't be rearranged inside a locked vault.
+    /// </summary>
+    [Test]
+    public async ValueTask VaultToVaultMoveWhileLockedKeepsItemInPlaceAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        player.Vault = vaultStorage;
+        player.IsVaultLocked = true;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+
+        var source = CreateItem(CreateDefinition(), 1);
+        await vaultStorage.AddItemAsync(0, source).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 0, Storages.Vault, 8, Storages.Vault).ConfigureAwait(false);
+
+        Assert.That(vaultStorage.GetItem(0), Is.SameAs(source));
+        Assert.That(vaultStorage.GetItem(8), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that money can't be moved from or to a locked vault.
+    /// </summary>
+    [Test]
+    public async ValueTask LockedVaultRejectsMoneyTransfersAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        vaultStorage.ItemStorage.Money = 500;
+        player.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        player.GameContext.Configuration.MaximumVaultMoney = 1_000_000;
+        player.Vault = vaultStorage;
+        player.Money = 100;
+        player.IsVaultLocked = true;
+
+        Assert.That(player.TryTakeVaultMoney(200), Is.False);
+        Assert.That(player.TryDepositVaultMoney(50), Is.False);
+        Assert.That(player.Money, Is.EqualTo(100));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(500));
+
+        player.IsVaultLocked = false;
+
+        Assert.That(player.TryTakeVaultMoney(200), Is.True);
+        Assert.That(player.Money, Is.EqualTo(300));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(300));
+    }
+
+    /// <summary>
     /// Verifies that a move to a slot outside grid bounds is rejected without mutation.
     /// </summary>
     [Test]

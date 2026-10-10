@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Vault;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views.Vault;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -28,6 +29,13 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        if (player.IsVaultLocked)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IUpdateVaultMoneyPlugIn>(p => p.UpdateVaultMoneyAsync(true)).ConfigureAwait(false);
+            return;
+        }
+
         VaultMoveMoneyRequest request = packet;
         switch (request.Direction)
         {
