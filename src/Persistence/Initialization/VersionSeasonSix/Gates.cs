@@ -447,6 +447,7 @@ public class Gates : InitializerBase
     private DuelConfiguration CreateDuelConfiguration(IDictionary<short, ExitGate> targetGates)
     {
         var duelConfig = this.Context.CreateNew<DuelConfiguration>();
+        duelConfig.Variant = DuelVariant.DuelArena;
         duelConfig.MaximumScore = 10;
         duelConfig.MinimumCharacterLevel = 30;
         duelConfig.EntranceFee = 30000;

@@ -13,15 +13,15 @@ using Nito.AsyncEx;
 /// </summary>
 public class DuelRoomManager
 {
-    private readonly DuelConfiguration _configuration;
+    private readonly DuelConfiguration? _configuration;
     private readonly AsyncLock _lock = new AsyncLock();
     private readonly DuelRoom?[] _duelRooms;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DuelRoomManager"/> class.
     /// </summary>
-    /// <param name="configuration">The configuration.</param>
-    public DuelRoomManager(DuelConfiguration configuration)
+    /// <param name="configuration">The configuration; <c>null</c>, if the game configuration doesn't define one.</param>
+    public DuelRoomManager(DuelConfiguration? configuration)
     {
         this._configuration = configuration;
         this._duelRooms = new DuelRoom?[this.MaxRoomCount];
@@ -41,12 +41,24 @@ public class DuelRoomManager
     /// <returns>A <see cref="ValueTask"/> with a free <see cref="DuelRoom"/>.</returns>
     public async ValueTask<DuelRoom?> GetFreeDuelRoomAsync(Player player1, Player player2, CancellationToken cancellationToken = default)
     {
+        if (this._configuration is not { } configuration)
+        {
+            return null;
+        }
+
+        if (configuration.Variant == DuelVariant.CurrentMap)
+        {
+            // A duel in the current map doesn't need an area of the duel arena. It also can't be
+            // watched, so it doesn't occupy one of the duel channels and isn't limited in count.
+            return new DuelRoom(null, player1, player2);
+        }
+
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
         for (int i = 0; i < this._duelRooms.Length; i++)
         {
             if (this._duelRooms[i] is null)
             {
-                var area = this._configuration.DuelAreas.First(a => a.Index == i);
+                var area = configuration.DuelAreas.First(a => a.Index == i);
 
                 return this._duelRooms[i] = new DuelRoom(area, player1, player2);
             }
@@ -63,7 +75,13 @@ public class DuelRoomManager
     public async ValueTask GiveBackDuelRoomAsync(DuelRoom duelRoom)
     {
         using var l = await this._lock.LockAsync().ConfigureAwait(false);
-        this._duelRooms[duelRoom.Index] = null;
+        var index = duelRoom.Index;
+        if (index >= 0 && index < this._duelRooms.Length && this._duelRooms[index] == duelRoom)
+        {
+            // Rooms of duels which take place in the current map were never added here,
+            // so only the room which actually occupies the slot is given back.
+            this._duelRooms[index] = null;
+        }
     }
 
     /// <summary>
