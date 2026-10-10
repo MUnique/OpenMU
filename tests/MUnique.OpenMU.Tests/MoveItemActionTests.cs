@@ -135,6 +135,7 @@ public class MoveItemActionTests
         player.Vault = vaultStorage;
         player.IsVaultLocked = true;
         player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
 
         var source = CreateItem(CreateDefinition(), 1);
         await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
@@ -156,6 +157,7 @@ public class MoveItemActionTests
         player.Vault = vaultStorage;
         player.IsVaultLocked = true;
         player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
 
         var source = CreateItem(CreateDefinition(), 1);
         await vaultStorage.AddItemAsync(0, source).ConfigureAwait(false);
