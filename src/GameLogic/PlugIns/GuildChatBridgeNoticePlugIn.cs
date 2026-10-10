@@ -38,18 +38,12 @@ public class GuildChatBridgeNoticePlugIn : IPlayerStateChangedPlugIn
             }
 
             using var context = player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration);
-            var bindings = await context.GetAsync<GuildChatBinding>().ConfigureAwait(false);
             var allianceId = membership.AllianceMasterGuildId ?? membership.GuildId;
+            var bindings = await context.GetGuildChatBindingsAsync(membership.GuildId, allianceId).ConfigureAwait(false);
             foreach (var binding in bindings)
             {
-                if (binding is { Scope: GuildChatScope.Guild } && binding.GuildId == membership.GuildId)
-                {
-                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GuildChatMirrored)).ConfigureAwait(false);
-                }
-                else if (binding is { Scope: GuildChatScope.Alliance } && binding.GuildId == allianceId)
-                {
-                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AllianceChatMirrored)).ConfigureAwait(false);
-                }
+                var message = binding.Scope == GuildChatScope.Guild ? nameof(PlayerMessage.GuildChatMirrored) : nameof(PlayerMessage.AllianceChatMirrored);
+                await player.ShowLocalizedBlueMessageAsync(message).ConfigureAwait(false);
             }
         }
         catch (Exception ex)

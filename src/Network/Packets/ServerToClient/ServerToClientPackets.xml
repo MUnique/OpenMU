@@ -11840,6 +11840,200 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>03</SubCode>
+      <Name>DiscordIntegrationInfo</Name>
+      <Length>224</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client requested the Discord integration info, and after the player unlinked the account.</SentWhen>
+      <CausedReaction>The client configures its Discord features with it: the Rich Presence, a button which opens the invite, the account link dialog and the notice that the chat is mirrored.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsAccountLinked</Name>
+          <Description>Defines if the account is linked to a Discord user.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>IsGuildChatBridged</Name>
+          <Description>Defines if the chat of the guild of the character is mirrored to a Discord channel.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Boolean</Type>
+          <Name>IsAllianceChatBridged</Name>
+          <Description>Defines if the chat of the alliance of the character is mirrored to a Discord channel.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Boolean</Type>
+          <Name>IsWorldChatBridged</Name>
+          <Description>Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>String</Type>
+          <Name>RichPresenceApplicationId</Name>
+          <Length>20</Length>
+          <Description>The id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none.</Description>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>String</Type>
+          <Name>RichPresenceLargeImageKey</Name>
+          <Length>32</Length>
+          <Description>The key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</Description>
+        </Field>
+        <Field>
+          <Index>60</Index>
+          <Type>String</Type>
+          <Name>RichPresenceSmallImageKey</Name>
+          <Length>32</Length>
+          <Description>The key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</Description>
+        </Field>
+        <Field>
+          <Index>92</Index>
+          <Type>String</Type>
+          <Name>InviteUrl</Name>
+          <Length>100</Length>
+          <Description>The invite link to the Discord server of the game server, e.g. 'https://discord.gg/abc123'. Empty, if the server has none.</Description>
+        </Field>
+        <Field>
+          <Index>192</Index>
+          <Type>String</Type>
+          <Name>LinkedUserName</Name>
+          <Length>32</Length>
+          <Description>The name of the Discord user which the account is linked to. Empty, if the account isn't linked.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>05</SubCode>
+      <Name>DiscordLinkCode</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client requested a code to link the account to a Discord user.</SentWhen>
+      <CausedReaction>The client shows the code, so that the player can enter it in Discord.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>DiscordLinkCodeResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>LinkCode</Name>
+          <Length>10</Length>
+          <Description>The one-time code, e.g. 'ABCD-EFGH'. The player enters it in Discord with '/link'.</Description>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>ValidMinutes</Name>
+          <Description>The number of minutes the code is valid.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>DiscordLinkCodeResult</Name>
+          <Description>The result of a request of a code to link the account to a Discord user.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The code was created.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotAvailable</Name>
+              <Description>Linking isn't available, e.g. because the server isn't connected to Discord.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TooSoon</Name>
+              <Description>A code was requested a moment ago. Every code replaces the previous one, so the server hands out new ones only every few seconds.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>07</SubCode>
+      <Name>ExternalChatMessage</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A message was written outside of the game, e.g. in a Discord channel which is bound to the chat of a guild, an alliance or the world chat. It's only sent to clients which requested the DiscordIntegrationInfo before; other clients get it as normal chat message, with a prefix in front of the sender.</SentWhen>
+      <CausedReaction>The client shows the message in the chat of its scope, marked with its source, so that it can't be mistaken for a message of a character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>ExternalChatSource</TypeName>
+          <Name>Source</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <TypeName>ExternalChatScope</TypeName>
+          <Name>Scope</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>String</Type>
+          <Name>SenderName</Name>
+          <Length>48</Length>
+          <Description>The name of the sender, without a prefix. It's not a character name, so it can't be whispered.</Description>
+        </Field>
+        <Field>
+          <Index>55</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ExternalChatSource</Name>
+          <Description>Where an external chat message was written.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Discord</Name>
+              <Description>The message was written in Discord.</Description>
+              <Value>0</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>ExternalChatScope</Name>
+          <Description>The chat of the game which an external chat message belongs to.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Guild</Name>
+              <Description>The chat of the guild.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Alliance</Name>
+              <Description>The chat of the alliance.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>World</Name>
+              <Description>The world chat, which all players of all game servers can read.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>

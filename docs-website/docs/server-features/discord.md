@@ -267,6 +267,33 @@ Without the intent, players use `/say <message>`. Discord only approves the
 intent for verified bots, which are in more than 100 Discord servers, with a
 reason.
 
+## The game client
+
+[MuMain](https://github.com/sven-n/MuMain), the open source game client, has
+its own Discord features. It asks the server how it's connected to Discord, when
+the character enters the game:
+
+* its **Discord** button opens the invite to your Discord server,
+* its **Rich Presence** shows the state of the player in the Discord profile,
+  with your Discord application,
+* players link and unlink their account in a dialog, without typing
+  `/discord link`,
+* messages written in Discord are shown as such, with the colours of the guild,
+  alliance or world chat, and can't be mistaken for messages of a character.
+
+For this, activate the feature plugin *Discord integration of the client* and
+fill its configuration:
+
+| Setting | Description |
+|---|---|
+| `InviteUrl` | The invite link to your Discord server, e.g. `https://discord.gg/abc123`. Create one which doesn't expire. |
+| `RichPresenceApplicationId` | The id of the Discord application which the client uses for the Rich Presence, usually the one of your bot (*General Information → Application ID* in the developer portal). |
+| `RichPresenceLargeImageKey`, `RichPresenceSmallImageKey` | The keys of the images of the Rich Presence, uploaded under *Rich Presence → Art Assets*. |
+
+Every player can read these values, so they must not contain secrets. Older game
+clients don't ask for them; they keep getting the messages from Discord as
+normal chat messages with the `@` prefix.
+
 ## Settings
 
 All settings are part of the `Discord` section of the configuration, so they can

@@ -1788,4 +1788,10 @@
   <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
     <value>Teilt Spielern beim Betreten des Spiels mit, ob der Chat ihrer Gilde oder Allianz nach Discord gespiegelt wird.</value>
   </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Name" xml:space="preserve">
+    <value>Discord-Integration des Clients</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
+    <value>Teilt Game-Clients, die danach fragen, mit, wie der Server mit Discord verbunden ist (Einladungslink, Rich-Presence-Anwendung, Kontoverknüpfung, gespiegelte Chats), lässt Spieler ihr Konto im Client verknüpfen und schickt ihnen in Discord geschriebene Nachrichten als solche.</value>
+  </data>
 </root>

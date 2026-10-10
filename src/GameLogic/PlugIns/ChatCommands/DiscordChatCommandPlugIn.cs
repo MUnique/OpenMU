@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.AccountLinking;
+using MUnique.OpenMU.GameLogic.PlayerActions.Discord;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -47,14 +47,7 @@ public class DiscordChatCommandPlugIn : ChatCommandPlugInBase<DiscordChatCommand
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordLinkCode), code, (int)AccountLinkService.CodeValidity.TotalMinutes).ConfigureAwait(false);
                 break;
             case DiscordChatCommandArgs.UnlinkAction:
-                if (await service.UnlinkAccountAsync(accountId, AccountLinkService.DiscordProvider).ConfigureAwait(false) is { } userId
-                    && player.GameContext is IGameServerContext gameServerContext)
-                {
-                    // The Discord bot removes the roles of the user.
-                    await gameServerContext.EventPublisher.GameEventAsync(
-                        new AccountUnlinkedEvent(gameServerContext.Id, DateTime.UtcNow, AccountLinkService.DiscordProvider, userId)).ConfigureAwait(false);
-                }
-
+                await DiscordIntegrationAction.UnlinkAsync(player).ConfigureAwait(false);
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordUnlinked)).ConfigureAwait(false);
                 break;
             default:

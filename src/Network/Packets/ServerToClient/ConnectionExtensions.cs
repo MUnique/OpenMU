@@ -6635,6 +6635,116 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="DiscordIntegrationInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isAccountLinked">Defines if the account is linked to a Discord user.</param>
+    /// <param name="isGuildChatBridged">Defines if the chat of the guild of the character is mirrored to a Discord channel.</param>
+    /// <param name="isAllianceChatBridged">Defines if the chat of the alliance of the character is mirrored to a Discord channel.</param>
+    /// <param name="isWorldChatBridged">Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.</param>
+    /// <param name="richPresenceApplicationId">The id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none.</param>
+    /// <param name="richPresenceLargeImageKey">The key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
+    /// <param name="richPresenceSmallImageKey">The key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
+    /// <param name="inviteUrl">The invite link to the Discord server of the game server, e.g. 'https://discord.gg/abc123'. Empty, if the server has none.</param>
+    /// <param name="linkedUserName">The name of the Discord user which the account is linked to. Empty, if the account isn't linked.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested the Discord integration info, and after the player unlinked the account.
+    /// Causes reaction on client side: The client configures its Discord features with it: the Rich Presence, a button which opens the invite, the account link dialog and the notice that the chat is mirrored.
+    /// </remarks>
+    public static async ValueTask SendDiscordIntegrationInfoAsync(this IConnection? connection, bool @isAccountLinked, bool @isGuildChatBridged, bool @isAllianceChatBridged, bool @isWorldChatBridged, string @richPresenceApplicationId, string @richPresenceLargeImageKey, string @richPresenceSmallImageKey, string @inviteUrl, string @linkedUserName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordIntegrationInfoRef.Length;
+            var packet = new DiscordIntegrationInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsAccountLinked = @isAccountLinked;
+            packet.IsGuildChatBridged = @isGuildChatBridged;
+            packet.IsAllianceChatBridged = @isAllianceChatBridged;
+            packet.IsWorldChatBridged = @isWorldChatBridged;
+            packet.RichPresenceApplicationId = @richPresenceApplicationId;
+            packet.RichPresenceLargeImageKey = @richPresenceLargeImageKey;
+            packet.RichPresenceSmallImageKey = @richPresenceSmallImageKey;
+            packet.InviteUrl = @inviteUrl;
+            packet.LinkedUserName = @linkedUserName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordLinkCode" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="linkCode">The one-time code, e.g. 'ABCD-EFGH'. The player enters it in Discord with '/link'.</param>
+    /// <param name="validMinutes">The number of minutes the code is valid.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested a code to link the account to a Discord user.
+    /// Causes reaction on client side: The client shows the code, so that the player can enter it in Discord.
+    /// </remarks>
+    public static async ValueTask SendDiscordLinkCodeAsync(this IConnection? connection, DiscordLinkCode.DiscordLinkCodeResult @result, string @linkCode, byte @validMinutes)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordLinkCodeRef.Length;
+            var packet = new DiscordLinkCodeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LinkCode = @linkCode;
+            packet.ValidMinutes = @validMinutes;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ExternalChatMessage" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="scope">The scope.</param>
+    /// <param name="senderName">The name of the sender, without a prefix. It's not a character name, so it can't be whispered.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the server when: A message was written outside of the game, e.g. in a Discord channel which is bound to the chat of a guild, an alliance or the world chat. It's only sent to clients which requested the DiscordIntegrationInfo before; other clients get it as normal chat message, with a prefix in front of the sender.
+    /// Causes reaction on client side: The client shows the message in the chat of its scope, marked with its source, so that it can't be mistaken for a message of a character.
+    /// </remarks>
+    public static async ValueTask SendExternalChatMessageAsync(this IConnection? connection, ExternalChatMessage.ExternalChatSource @source, ExternalChatMessage.ExternalChatScope @scope, string @senderName, string @message)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ExternalChatMessageRef.GetRequiredSize(message);
+            var packet = new ExternalChatMessageRef(connection.Output.GetSpan(length)[..length]);
+            packet.Source = @source;
+            packet.Scope = @scope;
+            packet.SenderName = @senderName;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="EventChipRegistrationResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

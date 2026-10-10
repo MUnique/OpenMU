@@ -88,6 +88,15 @@ also define which monsters are bosses, by their monster numbers (e.g. 275 for
 Kundun), and which levels and master levels are milestones (by default, level
 400).
 
+## Discord integration of the client
+
+The feature plugin *Discord integration of the client* tells game clients which
+ask for it how the server is connected to Discord: the invite link, the Discord
+application of the Rich Presence, the link of the account and which chats are
+mirrored. It also lets players link their account from the client, and sends
+them the messages written in Discord as such. See
+[Discord](../server-features/discord.md#the-game-client).
+
 ## Writing your own plugin
 
 Implementing a plugin is documented next to the code, in the
