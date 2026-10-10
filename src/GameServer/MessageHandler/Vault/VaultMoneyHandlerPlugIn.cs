@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views.Vault;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handler for warehouse money packets.
