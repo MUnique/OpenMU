@@ -13,6 +13,15 @@ using MUnique.OpenMU.Annotations;
 public partial class DuelConfiguration
 {
     /// <summary>
+    /// Gets or sets the variant of the duel, which defines where a duel takes place.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="DuelVariant.DuelArena"/> is the first value of the enum on purpose, so that
+    /// configurations which were created before this setting existed keep working like before.
+    /// </remarks>
+    public DuelVariant Variant { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum score at which the duel will end with a winner.
     /// </summary>
     public int MaximumScore { get; set; }

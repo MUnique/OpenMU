@@ -69,13 +69,14 @@ public sealed class DuelRoom : AsyncDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="DuelRoom" /> class.
     /// </summary>
-    /// <param name="area">The duel area.</param>
+    /// <param name="area">The duel area; <c>null</c>, if the duel takes place on the map where the duelists are standing.</param>
     /// <param name="requester">The requester.</param>
     /// <param name="opponent">The opponent.</param>
-    public DuelRoom(DuelArea area, Player requester, Player opponent)
+    public DuelRoom(DuelArea? area, Player requester, Player opponent)
     {
         this.Area = area;
-        this.Index = area.Index;
+        this.Index = area?.Index ?? 0;
+        this.Map = area?.FirstPlayerGate?.Map ?? requester.CurrentMap?.Definition;
         this.Requester = requester;
         this.Opponent = opponent;
         this.CreatedAt = DateTime.UtcNow;
@@ -85,14 +86,37 @@ public sealed class DuelRoom : AsyncDisposable
     }
 
     /// <summary>
-    /// Gets the area of the duel.
+    /// Gets the area of the duel, or <c>null</c>, if the duel takes place on the map where the duelists are standing.
     /// </summary>
-    public DuelArea Area { get; }
+    public DuelArea? Area { get; }
 
     /// <summary>
     /// Gets the index of the area of the duel.
     /// </summary>
+    /// <remarks>
+    /// It's the number of the duel channel which the client shows in its duel watch list.
+    /// A duel without an <see cref="Area"/> can't be watched, so it just uses the first index.
+    /// </remarks>
     public int Index { get; }
+
+    /// <summary>
+    /// Gets the map on which the duel takes place.
+    /// </summary>
+    /// <remarks>
+    /// For a duel in the current map, it's the map on which the duelists are when the duel is
+    /// accepted - they may have moved to another map since the duel was requested.
+    /// </remarks>
+    public GameMapDefinition? Map { get; internal set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the duel takes place on the map where the duelists were
+    /// standing when the duel started, instead of in an area of the duel arena.
+    /// </summary>
+    /// <remarks>
+    /// That's how the duel worked before the duel arena was introduced with Season 4.
+    /// Such a duel can't be watched by spectators, because everyone around sees it anyway.
+    /// </remarks>
+    public bool IsInCurrentMap => this.Area is null;
 
     /// <summary>
     /// Gets or sets the <see cref="DateTime"/> of the start of the duel.
@@ -194,6 +218,21 @@ public sealed class DuelRoom : AsyncDisposable
     }
 
     /// <summary>
+    /// Determines whether the two specified players are the two duelists of this duel.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="other">The other player.</param>
+    /// <remarks>
+    /// This matters for a duel which takes place in the current map: other players are around
+    /// there, so a hit or kill which involves one duelist and somebody else is not part of the
+    /// duel and keeps its usual consequences.
+    /// </remarks>
+    public bool AreDuelists(Player player, Player other)
+    {
+        return this.IsDuelist(player) && this.IsDuelist(other);
+    }
+
+    /// <summary>
     /// Removes the spectator from the room.
     /// </summary>
     /// <param name="spectator">The spectator which should be removed.</param>
@@ -234,8 +273,7 @@ public sealed class DuelRoom : AsyncDisposable
                 await Task.Delay(500, cancellationToken).ConfigureAwait(false);
             }
 
-            if (this.Requester.CurrentMap?.Definition != this.Area.FirstPlayerGate?.Map
-                || this.Opponent.CurrentMap?.Definition != this.Area.SecondPlayerGate?.Map)
+            if (!this.AreDuelistsOnDuelMap())
             {
                 throw new InvalidOperationException("Duel cannot start when any of the players left the duel map");
             }
@@ -303,20 +341,27 @@ public sealed class DuelRoom : AsyncDisposable
     /// Gets the spawn gate of the player.
     /// </summary>
     /// <param name="player">The player.</param>
-    /// <returns>The gate where the player is teleported to.</returns>
+    /// <returns>The gate where the player is teleported to; <c>null</c>, if the duel doesn't define one.</returns>
     public ExitGate? GetSpawnGate(Player player)
     {
+        if (this.Area is not { } area)
+        {
+            // A duel in the current map doesn't move the players, so they respawn where they
+            // would respawn without a duel, too.
+            return null;
+        }
+
         if (this.Opponent == player)
         {
-            return this.Area.SecondPlayerGate;
+            return area.SecondPlayerGate;
         }
 
         if (this.Requester == player)
         {
-            return this.Area.FirstPlayerGate;
+            return area.FirstPlayerGate;
         }
 
-        return this.Area.SpectatorsGate;
+        return area.SpectatorsGate;
     }
 
     /// <summary>
@@ -326,7 +371,7 @@ public sealed class DuelRoom : AsyncDisposable
     /// <returns>A <see cref="ValueTask"/> with the result.</returns>
     public async ValueTask<bool> TryAddSpectatorAsync(Player player)
     {
-        if (this.Area.SpectatorsGate is not { } spectatorsGate)
+        if (this.Area?.SpectatorsGate is not { } spectatorsGate)
         {
             return false;
         }
@@ -421,11 +466,29 @@ public sealed class DuelRoom : AsyncDisposable
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
+    private bool AreDuelistsOnDuelMap()
+    {
+        if (this.Area is { } area)
+        {
+            return this.Requester.CurrentMap?.Definition == area.FirstPlayerGate?.Map
+                   && this.Opponent.CurrentMap?.Definition == area.SecondPlayerGate?.Map;
+        }
+
+        return this.Requester.CurrentMap?.Definition == this.Map
+               && this.Opponent.CurrentMap?.Definition == this.Map;
+    }
+
     private async ValueTask MovePlayersToExitAsync()
     {
+        if (this.Area is not { } area)
+        {
+            // The duel took place where the players were standing, so there is nowhere to move them away from.
+            return;
+        }
+
         var duelConfig = this.Requester.GameContext.Configuration.DuelConfiguration;
         var exitGate = duelConfig?.Exit;
-        var duelArenaMapNumber = this.Area.FirstPlayerGate?.Map?.Number;
+        var duelArenaMapNumber = area.FirstPlayerGate?.Map?.Number;
 
         var players = this.AllPlayers
             .Where(p => p.CurrentMap?.MapId == duelArenaMapNumber);

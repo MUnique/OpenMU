@@ -1079,6 +1079,7 @@ internal sealed class BasicModelConverter
         var target = new BasicModel.DuelConfiguration();
         this._converted.Add(source, target);
         target.Id = source.Id;
+        target.Variant = source.Variant;
         target.MaximumScore = source.MaximumScore;
         target.EntranceFee = source.EntranceFee;
         target.MinimumCharacterLevel = source.MinimumCharacterLevel;

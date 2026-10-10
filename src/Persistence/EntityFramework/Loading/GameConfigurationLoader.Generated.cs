@@ -30,7 +30,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"IsFinalStep\", \"Order\", \"SkillComboDefinitionId\", \"SkillId\" from config.\"SkillComboStep\"",
         "select \"Id\", \"AttributeId\", \"BaseValue\", \"CharacterClassId\", \"IncreasableByPlayer\" from config.\"StatAttributeDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"GameConfigurationId\", \"ItemLevel\", \"ItemType\", \"MaximumMonsterLevel\", \"MinimumMonsterLevel\", \"MonsterId\" from config.\"DropItemGroup\"",
-        "select \"Id\", \"EntranceFee\", \"ExitId\", \"MaximumScore\", \"MaximumSpectatorsPerDuelRoom\", \"MinimumCharacterLevel\" from config.\"DuelConfiguration\"",
+        "select \"Id\", \"EntranceFee\", \"ExitId\", \"MaximumScore\", \"MaximumSpectatorsPerDuelRoom\", \"MinimumCharacterLevel\", \"Variant\" from config.\"DuelConfiguration\"",
         "select \"Id\", \"DuelConfigurationId\", \"FirstPlayerGateId\", \"Index\", \"SecondPlayerGateId\", \"SpectatorsGateId\" from config.\"DuelArea\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"Name\" from config.\"ItemLevelBonusTable\"",
         "select \"Id\", \"AdditionalValue\", \"ItemLevelBonusTableId\", \"Level\" from config.\"LevelBonus\"",
@@ -663,6 +663,7 @@ internal sealed partial class GameConfigurationLoader
             entity.MaximumScore = reader.GetInt32(3);
             entity.MaximumSpectatorsPerDuelRoom = reader.GetInt32(4);
             entity.MinimumCharacterLevel = reader.GetInt32(5);
+            entity.Variant = (global::MUnique.OpenMU.DataModel.Configuration.DuelVariant)reader.GetInt32(6);
             this._DuelConfiguration[entity.Id] = entity;
             this._DuelConfigurationRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2)));
         }

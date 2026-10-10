@@ -55,9 +55,11 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
             return;
         }
 
-        if (attackerPlayer.DuelRoom is not null || defender.DuelRoom is not null)
+        if (attackerPlayer.DuelRoom is { } duelRoom && duelRoom.AreDuelists(attackerPlayer, defender))
         {
-            // No self-defense during a duel.
+            // No self-defense between the two duelists. Everybody else keeps the right to
+            // defend himself, even when the attacker is dueling - which is possible when the
+            // duel takes place in the current map.
             return;
         }
 
