@@ -1610,12 +1610,12 @@ public class Stats
     public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);
 
     /// <summary>
-    /// Gets the Dragon Slaher skill's shield damage chance.
+    /// Gets the Dragon Slasher skill's shield damage chance.
     /// </summary>
     public static AttributeDefinition DragonSlasherShieldDamageChance { get; } = new(new Guid("F2A8D5C7-1E9B-43F6-A2D8-7C4E1B9A6F3D"), "Dragon Slasher Shield Damage Chance (skill attribute)", string.Empty);
 
     /// <summary>
-    /// Gets the Dragon Slaher skill's shield damage rate.
+    /// Gets the Dragon Slasher skill's shield damage rate.
     /// </summary>
     public static AttributeDefinition DragonSlasherShieldDamageRate { get; } = new(new Guid("A4E2F8C1-9D6B-47A3-B5E2-1F8C6D3A9B4E"), "Dragon Slasher Shield Damage Rate (skill attribute)", string.Empty)
     {

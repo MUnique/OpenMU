@@ -48,13 +48,16 @@ public class AddDragonSlasherShieldDamagePlugIn : UpdatePlugInBase
         var dragonSlasherShieldDamageChance = Stats.DragonSlasherShieldDamageChance.GetPersistent(gameConfiguration);
         var dragonSlasherShieldDamageRate = Stats.DragonSlasherShieldDamageRate.GetPersistent(gameConfiguration);
 
-        if (gameConfiguration.Skills.FirstOrDefault(skill => skill.Number == (short)SkillNumber.DragonSlasher) is { } dragonSlasher)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.DragonSlasher) is not { } dragonSlasher
+            || dragonSlasher.AttributeRelationships.Any(r => r.TargetAttribute == dragonSlasherShieldDamageChance))
         {
-            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageChance, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
-            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageChance, 1.0f / 10000, Stats.TotalEnergy);
-            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageRate, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
-            this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageRate, 1.0f / 3000, Stats.TotalEnergy);
+            return ValueTask.CompletedTask;
         }
+
+        this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageChance, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageChance, 1.0f / 10000, Stats.TotalEnergy);
+        this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageRate, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(context, gameConfiguration, dragonSlasher, dragonSlasherShieldDamageRate, 1.0f / 3000, Stats.TotalEnergy);
 
         return ValueTask.CompletedTask;
     }
