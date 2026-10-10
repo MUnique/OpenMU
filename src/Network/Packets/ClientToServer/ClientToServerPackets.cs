@@ -17516,6 +17516,261 @@ public readonly struct DuelChannelQuitRequest
 
 
 /// <summary>
+/// Is sent by the client when: The player requests to start a duel with another player. The clients before Season 4 send this packet, which has no sub code, instead of the DuelStartRequest.
+/// Causes reaction on server side: The server sends a DuelStartRequestSeason3 to the other player.
+/// </summary>
+public readonly struct DuelStartRequestSeason3
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DuelStartRequestSeason3"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DuelStartRequestSeason3(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DuelStartRequestSeason3"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DuelStartRequestSeason3(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xAA;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 15;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player name.
+    /// </summary>
+    public string PlayerName
+    {
+        get => this._data.Span.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="DuelStartRequestSeason3"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DuelStartRequestSeason3(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DuelStartRequestSeason3"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(DuelStartRequestSeason3 packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: A player requested to stop the duel. The clients before Season 4 send this packet instead of the DuelStopRequest.
+/// Causes reaction on server side: The server stops the duel.
+/// </summary>
+public readonly struct DuelStopRequestSeason3
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DuelStopRequestSeason3"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DuelStopRequestSeason3(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DuelStopRequestSeason3"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DuelStopRequestSeason3(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xAB;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3Header Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="DuelStopRequestSeason3"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DuelStopRequestSeason3(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DuelStopRequestSeason3"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(DuelStopRequestSeason3 packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: A player requested to start a duel with the sending player. The clients before Season 4 send this packet instead of the DuelStartResponse.
+/// Causes reaction on server side: Depending on the response, the server starts the duel, or not.
+/// </summary>
+public readonly struct DuelStartResponseSeason3
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DuelStartResponseSeason3"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DuelStartResponseSeason3(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DuelStartResponseSeason3"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DuelStartResponseSeason3(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xAC;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the response.
+    /// </summary>
+    public bool Response
+    {
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player name.
+    /// </summary>
+    public string PlayerName
+    {
+        get => this._data.Span.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="DuelStartResponseSeason3"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DuelStartResponseSeason3(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DuelStartResponseSeason3"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(DuelStartResponseSeason3 packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the client when: A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.
 /// Causes reaction on server side: The server sends an AvailableChatCommand message for each available chat command.
 /// </summary>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game server to client.</Description>
   <Structures>
@@ -9390,6 +9390,127 @@
           <Type>String</Type>
           <Name>Loser</Name>
           <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>AA</Code>
+      <Name>DuelStartResultSeason3</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client sent a DuelStartRequestSeason3, and it either failed or the requested player sent a response. It's the packet for the clients before Season 4, which don't know the result codes of the DuelStartResult and get the reason of a failure as a message instead.</SentWhen>
+      <CausedReaction>The client shows the started duel, or that it has not been started.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>DuelStartResultSeason3Type</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>OpponentId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>OpponentName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>DuelStartResultSeason3Type</Name>
+          <Description>Describes the result of a duel request at the clients before Season 4, which only know whether the duel started. The reason why it didn't start is sent as a message instead.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotStarted</Name>
+              <Description>The duel has not been started, e.g. because the opponent refused it.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Started</Name>
+              <Description>The duel has been started.</Description>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>AB</Code>
+      <Name>DuelEndSeason3</Name>
+      <Length>15</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a duel ended. It's the packet for the clients before Season 4, which is sent to each of the two duelists with its own data.</SentWhen>
+      <CausedReaction>The client updates its state and closes the duel.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>AC</Code>
+      <Name>DuelStartRequestSeason3</Name>
+      <Length>15</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After another client sent a DuelStartRequestSeason3, to ask the requested player for a response. It's the packet for the clients before Season 4.</SentWhen>
+      <CausedReaction>The client shows the duel request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>RequesterId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>RequesterName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>AD</Code>
+      <Name>DuelScoreSeason3</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the score of the duel has been changed. It's the packet for the clients before Season 4.</SentWhen>
+      <CausedReaction>The client updates the displayed duel score.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player1Id</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player2Id</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Player1Score</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Player2Score</Name>
         </Field>
       </Fields>
     </Packet>

@@ -3907,6 +3907,68 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for DuelStartRequestSeason3.
+    /// </summary>
+    [Test]
+    public void DuelStartRequestSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 15;
+        var actualLength = DuelStartRequestSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PlayerId' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerId' exceeds packet boundary");
+        
+        // Validate field 'PlayerName' boundary
+        Assert.That(5 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerName' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DuelStopRequestSeason3.
+    /// </summary>
+    [Test]
+    public void DuelStopRequestSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 3;
+        var actualLength = DuelStopRequestSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DuelStartResponseSeason3.
+    /// </summary>
+    [Test]
+    public void DuelStartResponseSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = DuelStartResponseSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Response' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Response' exceeds packet boundary");
+        
+        // Validate field 'PlayerId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerId' exceeds packet boundary");
+        
+        // Validate field 'PlayerName' boundary
+        Assert.That(6 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerName' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ChatCommandListRequest.
     /// </summary>
     [Test]

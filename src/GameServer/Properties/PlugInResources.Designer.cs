@@ -2338,6 +2338,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duel Ended (before Season 4)
+        /// </summary>
+        public static string DuelEndedPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("DuelEndedPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The implementation of the IDuelEndedPlugIn for the clients before Season 4, which get the end of the duel with its own packet code.
+        /// </summary>
+        public static string DuelEndedPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("DuelEndedPlugInSeason3_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duel Ended.
         /// </summary>
         public static string DuelEndedPlugIn_Name {
@@ -2352,6 +2370,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string DuelFinishedPlugIn_Description {
             get {
                 return ResourceManager.GetString("DuelFinishedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duel Finished (before Season 4)
+        /// </summary>
+        public static string DuelFinishedPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("DuelFinishedPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The implementation of the IDuelFinishedPlugIn for the clients before Season 4, which don't know a packet that names the winner.
+        /// </summary>
+        public static string DuelFinishedPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("DuelFinishedPlugInSeason3_Description", resourceCulture);
             }
         }
         
@@ -2464,6 +2500,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duel Start Request Handler (before Season 4)
+        /// </summary>
+        public static string DuelStartRequestHandlerPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("DuelStartRequestHandlerPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for duel start request packets of the clients before Season 4, which don't use a sub code.
+        /// </summary>
+        public static string DuelStartRequestHandlerPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("DuelStartRequestHandlerPlugInSeason3_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duel Start Request Handler.
         /// </summary>
         public static string DuelStartRequestHandlerPlugIn_Name {
@@ -2478,6 +2532,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string DuelStartResponseHandlerPlugIn_Description {
             get {
                 return ResourceManager.GetString("DuelStartResponseHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duel Start Response Handler (before Season 4)
+        /// </summary>
+        public static string DuelStartResponseHandlerPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("DuelStartResponseHandlerPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for duel start response packets of the clients before Season 4, which answer the request with its own packet code.
+        /// </summary>
+        public static string DuelStartResponseHandlerPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("DuelStartResponseHandlerPlugInSeason3_Description", resourceCulture);
             }
         }
         
@@ -2514,6 +2586,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string DuelStopResponseHandlerPlugIn_Description {
             get {
                 return ResourceManager.GetString("DuelStopResponseHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duel Stop Request Handler (before Season 4)
+        /// </summary>
+        public static string DuelStopRequestHandlerPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("DuelStopRequestHandlerPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for duel stop request packets of the clients before Season 4, which stop the duel with its own packet code.
+        /// </summary>
+        public static string DuelStopRequestHandlerPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("DuelStopRequestHandlerPlugInSeason3_Description", resourceCulture);
             }
         }
         
@@ -5704,6 +5794,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Duel Request (before Season 4)
+        /// </summary>
+        public static string ShowDuelRequestPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("ShowDuelRequestPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The implementation of the IShowDuelRequestPlugIn for the clients before Season 4, which get the duel request with its own packet code.
+        /// </summary>
+        public static string ShowDuelRequestPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("ShowDuelRequestPlugInSeason3_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Duel Request.
         /// </summary>
         public static string ShowDuelRequestPlugIn_Name {
@@ -5722,6 +5830,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Duel Request Result (before Season 4)
+        /// </summary>
+        public static string ShowDuelRequestResultPlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("ShowDuelRequestResultPlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The implementation of the IShowDuelRequestResultPlugIn for the clients before Season 4, which just know whether the duel started or not.
+        /// </summary>
+        public static string ShowDuelRequestResultPlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("ShowDuelRequestResultPlugInSeason3_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Duel Request Result.
         /// </summary>
         public static string ShowDuelRequestResultPlugIn_Name {
@@ -5736,6 +5862,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ShowDuelScoreUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("ShowDuelScoreUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Duel Score Update (before Season 4)
+        /// </summary>
+        public static string ShowDuelScoreUpdatePlugInSeason3_Name {
+            get {
+                return ResourceManager.GetString("ShowDuelScoreUpdatePlugInSeason3_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The implementation of the IShowDuelScoreUpdatePlugIn for the clients before Season 4, which get the score with its own packet code.
+        /// </summary>
+        public static string ShowDuelScoreUpdatePlugInSeason3_Description {
+            get {
+                return ResourceManager.GetString("ShowDuelScoreUpdatePlugInSeason3_Description", resourceCulture);
             }
         }
         

@@ -5351,6 +5351,106 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for DuelStartResultSeason3.
+    /// </summary>
+    [Test]
+    public void DuelStartResultSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = DuelStartResultSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'OpponentId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'OpponentId' exceeds packet boundary");
+        
+        // Validate field 'OpponentName' boundary
+        Assert.That(6 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'OpponentName' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DuelEndSeason3.
+    /// </summary>
+    [Test]
+    public void DuelEndSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 15;
+        var actualLength = DuelEndSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PlayerId' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerId' exceeds packet boundary");
+        
+        // Validate field 'PlayerName' boundary
+        Assert.That(5 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerName' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DuelStartRequestSeason3.
+    /// </summary>
+    [Test]
+    public void DuelStartRequestSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 15;
+        var actualLength = DuelStartRequestSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'RequesterId' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequesterId' exceeds packet boundary");
+        
+        // Validate field 'RequesterName' boundary
+        Assert.That(5 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequesterName' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DuelScoreSeason3.
+    /// </summary>
+    [Test]
+    public void DuelScoreSeason3_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 9;
+        var actualLength = DuelScoreSeason3Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Player1Id' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Player1Id' exceeds packet boundary");
+        
+        // Validate field 'Player2Id' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Player2Id' exceeds packet boundary");
+        
+        // Validate field 'Player1Score' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Player1Score' exceeds packet boundary");
+        
+        // Validate field 'Player2Score' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Player2Score' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for SkillStageUpdate.
     /// </summary>
     [Test]

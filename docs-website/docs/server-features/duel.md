@@ -81,6 +81,21 @@ The duel takes place where the two players stand, so:
 * the number of duels which run at the same time is not limited by the number
   of configured duel areas.
 
+## Clients before Season 4
+
+The duel arena was introduced with Season 4, and so was the packet which carries all duel
+messages with a sub code. The older clients have their own packet code for each duel message,
+which the server speaks as well, as soon as its client version is configured as Season 3 or
+older. For those clients:
+
+* the duel variant has to be **current map** — they don't know the duel arena map and can't be
+  teleported into it;
+* the client only learns whether the duel started, not why it didn't, so the reason is shown to
+  the player as a message;
+* the duel score is sent after every kill, and the client shows the end of the duel, but there
+  is no packet which names the winner, so it is not announced to those clients;
+* spectators don't exist, which fits the variant they use.
+
 ## Configuration
 
 The duel is configured in the admin panel, in the game configuration, as
@@ -99,5 +114,6 @@ The duel is configured in the admin panel, in the game configuration, as
 :::note
 Changing the variant only affects duels which start afterwards. Existing
 installations keep the duel arena variant, which was the only one before this
-setting existed.
+setting existed. A server for the clients before Season 4 needs the current map
+variant, because those clients don't have the duel arena map.
 :::
