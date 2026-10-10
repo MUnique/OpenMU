@@ -4265,6 +4265,42 @@
       <CausedReaction>The server sends an AvailableChatCommand message for each available chat command.</CausedReaction>
       <Fields />
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>02</SubCode>
+      <Name>DiscordIntegrationInfoRequest</Name>
+      <Caption>Request Discord integration info</Caption>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A client which supports the Discord integration requests how the server is connected to Discord. It's usually sent after the character entered the game world, and again when the player opens a Discord dialog. By sending it, the client also announces that it understands the ExternalChatMessage.</SentWhen>
+      <CausedReaction>The server sends a DiscordIntegrationInfo message, and from then on sends messages which were written in Discord as ExternalChatMessage.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>04</SubCode>
+      <Name>DiscordLinkCodeRequest</Name>
+      <Caption>Request Discord link code</Caption>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to link the account to a Discord user, e.g. with a button of a Discord dialog.</SentWhen>
+      <CausedReaction>The server creates a one-time code and sends it with a DiscordLinkCode message. The player enters the code in Discord to complete the link.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>06</SubCode>
+      <Name>DiscordUnlinkRequest</Name>
+      <Caption>Request Discord unlink</Caption>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to remove the link of the account to a Discord user.</SentWhen>
+      <CausedReaction>The server removes the link and sends an updated DiscordIntegrationInfo message.</CausedReaction>
+      <Fields />
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

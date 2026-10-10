@@ -6713,6 +6713,98 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for DiscordIntegrationInfo.
+    /// </summary>
+    [Test]
+    public void DiscordIntegrationInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 224;
+        var actualLength = DiscordIntegrationInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'IsAccountLinked' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsAccountLinked' exceeds packet boundary");
+        
+        // Validate field 'IsGuildChatBridged' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsGuildChatBridged' exceeds packet boundary");
+        
+        // Validate field 'IsAllianceChatBridged' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsAllianceChatBridged' exceeds packet boundary");
+        
+        // Validate field 'IsWorldChatBridged' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsWorldChatBridged' exceeds packet boundary");
+        
+        // Validate field 'RichPresenceApplicationId' boundary
+        Assert.That(8 + 20, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RichPresenceApplicationId' exceeds packet boundary");
+        
+        // Validate field 'RichPresenceLargeImageKey' boundary
+        Assert.That(28 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RichPresenceLargeImageKey' exceeds packet boundary");
+        
+        // Validate field 'RichPresenceSmallImageKey' boundary
+        Assert.That(60 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RichPresenceSmallImageKey' exceeds packet boundary");
+        
+        // Validate field 'InviteUrl' boundary
+        Assert.That(92 + 100, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'InviteUrl' exceeds packet boundary");
+        
+        // Validate field 'LinkedUserName' boundary
+        Assert.That(192 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'LinkedUserName' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DiscordLinkCode.
+    /// </summary>
+    [Test]
+    public void DiscordLinkCode_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = DiscordLinkCodeRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'LinkCode' boundary
+        Assert.That(5 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'LinkCode' exceeds packet boundary");
+        
+        // Validate field 'ValidMinutes' boundary
+        Assert.That(15 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ValidMinutes' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ExternalChatMessage.
+    /// </summary>
+    [Test]
+    public void ExternalChatMessage_PacketSizeValidation()
+    {
+        // Variable-length packet validation
+        // Test GetRequiredSize method with sample data
+        const string testString = "TestData";
+        var calculatedSize = ExternalChatMessageRef.GetRequiredSize(testString);
+        var expectedMinSize = Encoding.UTF8.GetByteCount(testString) + 1 + 55;
+        
+        Assert.That(calculatedSize, Is.GreaterThanOrEqualTo(expectedMinSize), 
+            "GetRequiredSize calculation incorrect for string field");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EventChipRegistrationResult.
     /// </summary>
     [Test]
