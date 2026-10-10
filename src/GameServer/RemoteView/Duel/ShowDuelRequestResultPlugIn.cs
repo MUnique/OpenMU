@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Duel;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -17,6 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ShowDuelRequestResultPlugIn_Name), Description = nameof(PlugInResources.ShowDuelRequestResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3A389377-71BC-4EEB-922E-00B343DF1893")]
+[MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class ShowDuelRequestResultPlugIn : IShowDuelRequestResultPlugIn
 {
     private readonly RemotePlayer _player;

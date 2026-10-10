@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game client to the game server.</Description>
   <Structures>
@@ -4251,6 +4251,66 @@
       <SentWhen>A player requested to quit the duel as a spectator.</SentWhen>
       <CausedReaction>The server will remove the player as spectator.</CausedReaction>
       <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>AA</Code>
+      <Name>DuelStartRequestSeason3</Name>
+      <Length>15</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to start a duel with another player. The clients before Season 4 send this packet, which has no sub code, instead of the DuelStartRequest.</SentWhen>
+      <CausedReaction>The server sends a DuelStartRequestSeason3 to the other player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>AB</Code>
+      <Name>DuelStopRequestSeason3</Name>
+      <Length>3</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requested to stop the duel. The clients before Season 4 send this packet instead of the DuelStopRequest.</SentWhen>
+      <CausedReaction>The server stops the duel.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>AC</Code>
+      <Name>DuelStartResponseSeason3</Name>
+      <Length>16</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requested to start a duel with the sending player. The clients before Season 4 send this packet instead of the DuelStartResponse.</SentWhen>
+      <CausedReaction>Depending on the response, the server starts the duel, or not.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Response</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>

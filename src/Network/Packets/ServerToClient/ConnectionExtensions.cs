@@ -5301,6 +5301,132 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="DuelStartResultSeason3" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="opponentId">The opponent id.</param>
+    /// <param name="opponentName">The opponent name.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client sent a DuelStartRequestSeason3, and it either failed or the requested player sent a response. It's the packet for the clients before Season 4, which don't know the result codes of the DuelStartResult and get the reason of a failure as a message instead.
+    /// Causes reaction on client side: The client shows the started duel, or that it has not been started.
+    /// </remarks>
+    public static async ValueTask SendDuelStartResultSeason3Async(this IConnection? connection, DuelStartResultSeason3.DuelStartResultSeason3Type @result, ushort @opponentId, string @opponentName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DuelStartResultSeason3Ref.Length;
+            var packet = new DuelStartResultSeason3Ref(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.OpponentId = @opponentId;
+            packet.OpponentName = @opponentName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DuelEndSeason3" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a duel ended. It's the packet for the clients before Season 4, which is sent to each of the two duelists with its own data.
+    /// Causes reaction on client side: The client updates its state and closes the duel.
+    /// </remarks>
+    public static async ValueTask SendDuelEndSeason3Async(this IConnection? connection, ushort @playerId, string @playerName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DuelEndSeason3Ref.Length;
+            var packet = new DuelEndSeason3Ref(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.PlayerName = @playerName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DuelStartRequestSeason3" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="requesterId">The requester id.</param>
+    /// <param name="requesterName">The requester name.</param>
+    /// <remarks>
+    /// Is sent by the server when: After another client sent a DuelStartRequestSeason3, to ask the requested player for a response. It's the packet for the clients before Season 4.
+    /// Causes reaction on client side: The client shows the duel request.
+    /// </remarks>
+    public static async ValueTask SendDuelStartRequestSeason3Async(this IConnection? connection, ushort @requesterId, string @requesterName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DuelStartRequestSeason3Ref.Length;
+            var packet = new DuelStartRequestSeason3Ref(connection.Output.GetSpan(length)[..length]);
+            packet.RequesterId = @requesterId;
+            packet.RequesterName = @requesterName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DuelScoreSeason3" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="player1Id">The player 1 id.</param>
+    /// <param name="player2Id">The player 2 id.</param>
+    /// <param name="player1Score">The player 1 score.</param>
+    /// <param name="player2Score">The player 2 score.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the score of the duel has been changed. It's the packet for the clients before Season 4.
+    /// Causes reaction on client side: The client updates the displayed duel score.
+    /// </remarks>
+    public static async ValueTask SendDuelScoreSeason3Async(this IConnection? connection, ushort @player1Id, ushort @player2Id, byte @player1Score, byte @player2Score)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DuelScoreSeason3Ref.Length;
+            var packet = new DuelScoreSeason3Ref(connection.Output.GetSpan(length)[..length]);
+            packet.Player1Id = @player1Id;
+            packet.Player2Id = @player2Id;
+            packet.Player1Score = @player1Score;
+            packet.Player2Score = @player2Score;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="SkillStageUpdate" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

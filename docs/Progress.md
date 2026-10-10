@@ -69,9 +69,9 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *SetQuestState*               | 0xA2              | 100%     | 2          |                                               |
 | PetItemCommand              | 0xA7              | 100%     | 5          |                                               |
 | RequestPetItemInfo          | 0xA9              | 100%     | 3          |                                               |
-| RequestDuelStart            | 0xAA              | 0%       | 4          |                                               |
-| RequestDuelEnd              | 0xAB              | 0%       | 2          |                                               |
-| RequestDuelOK               | 0xAC              | 0%       | 2          |                                               |
+| *RequestDuelStart*          | 0xAA              | 100%     | 4          | Duel of the clients before Season 4           |
+| *RequestDuelEnd*            | 0xAB              | 100%     | 2          | Duel of the clients before Season 4           |
+| *RequestDuelOK*             | 0xAC              | 100%     | 2          | Duel of the clients before Season 4           |
 | RequestEnterChaosCastle     | 0xAF              | 100%     | 4          |                                               |
 | TargetTeleport              | 0xB0              | 0%       | 3          |                                               |
 | ChangeServerAuth            | 0xB1              | 0%       | 0          |                                               |

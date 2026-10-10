@@ -927,11 +927,23 @@
   <data name="DuelEndedPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IDuelEndedPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="DuelEndedPlugInSeason3_Name" xml:space="preserve">
+    <value>Duel Ended (before Season 4)</value>
+  </data>
+  <data name="DuelEndedPlugInSeason3_Description" xml:space="preserve">
+    <value>The implementation of the IDuelEndedPlugIn for the clients before Season 4, which get the end of the duel with its own packet code.</value>
+  </data>
   <data name="DuelFinishedPlugIn_Name" xml:space="preserve">
     <value>Duel Finished</value>
   </data>
   <data name="DuelFinishedPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IDuelFinishedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelFinishedPlugInSeason3_Name" xml:space="preserve">
+    <value>Duel Finished (before Season 4)</value>
+  </data>
+  <data name="DuelFinishedPlugInSeason3_Description" xml:space="preserve">
+    <value>The implementation of the IDuelFinishedPlugIn for the clients before Season 4, which don't know a packet that names the winner.</value>
   </data>
   <data name="DuelHealthUpdatePlugIn_Name" xml:space="preserve">
     <value>Duel Health Update</value>
@@ -975,17 +987,35 @@
   <data name="ShowDuelRequestPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IShowDuelRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="ShowDuelRequestPlugInSeason3_Name" xml:space="preserve">
+    <value>Show Duel Request (before Season 4)</value>
+  </data>
+  <data name="ShowDuelRequestPlugInSeason3_Description" xml:space="preserve">
+    <value>The implementation of the IShowDuelRequestPlugIn for the clients before Season 4, which get the duel request with its own packet code.</value>
+  </data>
   <data name="ShowDuelRequestResultPlugIn_Name" xml:space="preserve">
     <value>Show Duel Request Result</value>
   </data>
   <data name="ShowDuelRequestResultPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IShowDuelRequestResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="ShowDuelRequestResultPlugInSeason3_Name" xml:space="preserve">
+    <value>Show Duel Request Result (before Season 4)</value>
+  </data>
+  <data name="ShowDuelRequestResultPlugInSeason3_Description" xml:space="preserve">
+    <value>The implementation of the IShowDuelRequestResultPlugIn for the clients before Season 4, which just know whether the duel started or not.</value>
+  </data>
   <data name="ShowDuelScoreUpdatePlugIn_Name" xml:space="preserve">
     <value>Show Duel Score Update</value>
   </data>
   <data name="ShowDuelScoreUpdatePlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IShowDuelScoreUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowDuelScoreUpdatePlugInSeason3_Name" xml:space="preserve">
+    <value>Show Duel Score Update (before Season 4)</value>
+  </data>
+  <data name="ShowDuelScoreUpdatePlugInSeason3_Description" xml:space="preserve">
+    <value>The implementation of the IShowDuelScoreUpdatePlugIn for the clients before Season 4, which get the score with its own packet code.</value>
   </data>
   <data name="AssignPlayersToGuildPlugIn_Name" xml:space="preserve">
     <value>Assign Players To Guild</value>
@@ -2199,17 +2229,35 @@
   <data name="DuelStartRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for duel start request packets (new duel system).</value>
   </data>
+  <data name="DuelStartRequestHandlerPlugInSeason3_Name" xml:space="preserve">
+    <value>Duel Start Request Handler (before Season 4)</value>
+  </data>
+  <data name="DuelStartRequestHandlerPlugInSeason3_Description" xml:space="preserve">
+    <value>Handler for duel start request packets of the clients before Season 4, which don't use a sub code.</value>
+  </data>
   <data name="DuelStartResponseHandlerPlugIn_Name" xml:space="preserve">
     <value>Duel Start Response Handler</value>
   </data>
   <data name="DuelStartResponseHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for duel start response packets (new duel system).</value>
   </data>
+  <data name="DuelStartResponseHandlerPlugInSeason3_Name" xml:space="preserve">
+    <value>Duel Start Response Handler (before Season 4)</value>
+  </data>
+  <data name="DuelStartResponseHandlerPlugInSeason3_Description" xml:space="preserve">
+    <value>Handler for duel start response packets of the clients before Season 4, which answer the request with its own packet code.</value>
+  </data>
   <data name="DuelStopResponseHandlerPlugIn_Name" xml:space="preserve">
     <value>Duel Stop Response Handler</value>
   </data>
   <data name="DuelStopResponseHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for duel stop request packets (new duel system).</value>
+  </data>
+  <data name="DuelStopRequestHandlerPlugInSeason3_Name" xml:space="preserve">
+    <value>Duel Stop Request Handler (before Season 4)</value>
+  </data>
+  <data name="DuelStopRequestHandlerPlugInSeason3_Description" xml:space="preserve">
+    <value>Handler for duel stop request packets of the clients before Season 4, which stop the duel with its own packet code.</value>
   </data>
   <data name="LogInOutGroup_Name" xml:space="preserve">
     <value>Log In &amp; Out Group</value>
