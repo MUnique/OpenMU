@@ -214,6 +214,14 @@ public partial class Captions : IDisposable
         }
     }
 
+    private void SelectAll()
+    {
+        foreach (var change in this.FilteredChanges)
+        {
+            change.Selected = true;
+        }
+    }
+
     private void SelectNone()
     {
         foreach (var change in this.FilteredChanges)

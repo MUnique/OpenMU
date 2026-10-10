@@ -36,8 +36,10 @@ number of these captions by type, so they can be linked as well. See
 | Customized | Your text differs from the built-in one, because it was changed (e.g. in the admin panel) or its origin is unknown. | No |
 
 You can filter the list by language and kind, select or deselect single changes
-and apply the selection. Customized texts are only overwritten if you select
-them explicitly. Like configuration updates, the changes require a restart of
+and apply the selection. **Select all**, **Select recommended**, and **Select none**
+only affect the changes matching the current filters. **Select all** includes
+customized texts; it only selects them, and you must still apply the changes to
+save them. Customized texts are only overwritten if you select them explicitly. Like configuration updates, the changes require a restart of
 the server process to take effect.
 
 ## Link built-in captions

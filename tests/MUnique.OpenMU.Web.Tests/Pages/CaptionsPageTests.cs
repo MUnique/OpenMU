@@ -161,6 +161,41 @@ public class CaptionsPageTests
         Assert.That(cut.Markup, Does.Contain(string.Format(Resources.LinkedBuiltInCaptions, 1, 0)));
     }
 
+    /// <summary>
+    /// Selecting all includes customized text, respects both filters, and does not save until applied.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task SelectAll_RespectsFiltersAndRequiresApplyAsync()
+    {
+        var designation = new LocalizedString("Captions||zh-CN=Custom Chinese").WithSourceKey(SourceKey);
+        await this.CreateConfigurationAsync(designation).ConfigureAwait(false);
+        var cut = this._context.Render<Captions>();
+        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.CaptionsReviewTitle)));
+        cut.FindAll("button").Single(b => b.TextContent.Trim() == Resources.SelectNone).Click();
+
+        cut.FindAll("select")[0].Change("zh-CN");
+        cut.FindAll("select")[1].Change(nameof(CaptionChangeKind.Customized));
+        Assert.That(cut.FindAll("tbody tr"), Has.Count.EqualTo(1));
+        cut.FindAll("button").Single(b => b.TextContent.Trim() == Resources.SelectAll).Click();
+        Assert.That(cut.Find("tbody input").HasAttribute("checked"), Is.True);
+
+        cut.FindAll("select")[0].Change(string.Empty);
+        cut.FindAll("select")[1].Change(string.Empty);
+        Assert.That(cut.FindAll("tbody input[checked]"), Has.Count.EqualTo(1));
+        using (var context = this._persistenceContextProvider.CreateNewContext())
+        {
+            var monster = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single().Monsters.Single();
+            Assert.That(monster.Designation.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("Custom Chinese"));
+        }
+
+        cut.FindAll("button").Single(b => b.TextContent.Trim() == Resources.ApplySelectedChanges).Click();
+        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(string.Format(Resources.AppliedCaptionChanges, 1))));
+        using var savedContext = this._persistenceContextProvider.CreateNewContext();
+        var savedMonster = (await savedContext.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single().Monsters.Single();
+        Assert.That(savedMonster.Designation.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("配置名称"));
+    }
+
     private async Task<MonsterDefinition> CreateConfigurationAsync(LocalizedString designation, params (Guid Id, LocalizedString Designation)[] additionalMonsters)
     {
         using var context = this._persistenceContextProvider.CreateNewContext();

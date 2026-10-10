@@ -130,6 +130,7 @@ else
             }
         </select>
         <button class="btn btn-outline-secondary" type="button" @onclick="this.SelectRecommended">@Resources.SelectRecommended</button>
+        <button class="btn btn-outline-secondary" type="button" @onclick="this.SelectAll" disabled="@this._isBusy">@Resources.SelectAll</button>
         <button class="btn btn-outline-secondary" type="button" @onclick="this.SelectNone">@Resources.SelectNone</button>
     </div>
 
