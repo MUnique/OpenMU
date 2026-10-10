@@ -502,24 +502,6 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
         set => base.CastleSiegeConfiguration = value;
     }
 
-    /// <summary>
-    /// Gets the raw object of <see cref="CashShopConfiguration" />.
-    /// </summary>
-    [System.Text.Json.Serialization.JsonPropertyName("cashShopConfiguration")]
-    public CashShopConfiguration RawCashShopConfiguration
-    {
-        get => base.CashShopConfiguration as CashShopConfiguration;
-        set => base.CashShopConfiguration = value;
-    }
-
-    /// <inheritdoc/>
-    [System.Text.Json.Serialization.JsonIgnore]
-    public override MUnique.OpenMU.DataModel.Configuration.CashShopConfiguration CashShopConfiguration
-    {
-        get => base.CashShopConfiguration;
-        set => base.CashShopConfiguration = value;
-    }
-
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

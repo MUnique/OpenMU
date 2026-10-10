@@ -47,27 +47,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <summary>
-    /// Gets the raw collection of <see cref="PassivePowerUps" />.
-    /// </summary>
-    [System.Text.Json.Serialization.JsonPropertyName("passivePowerUps")]
-    public ICollection<PowerUpDefinition> RawPassivePowerUps { get; } = new List<PowerUpDefinition>();
-    
-    /// <inheritdoc/>
-    [System.Text.Json.Serialization.JsonIgnore]
-    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PassivePowerUps
-    {
-        get => base.PassivePowerUps ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPassivePowerUps);
-        protected set
-        {
-            this.PassivePowerUps.Clear();
-            foreach (var item in value)
-            {
-                this.PassivePowerUps.Add(item);
-            }
-        }
-    }
-
-    /// <summary>
     /// Gets the raw object of <see cref="Root" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("root")]
