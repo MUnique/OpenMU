@@ -347,6 +347,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("DataInitialization095d_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides initial data for Version 0.97k.
+        /// </summary>
+        public static string DataInitialization097k_Description {
+            get {
+                return ResourceManager.GetString("DataInitialization097k_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version 0.97k Initialization.
+        /// </summary>
+        public static string DataInitialization097k_Name {
+            get {
+                return ResourceManager.GetString("DataInitialization097k_Name", resourceCulture);
+            }
+        }
         /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Name text.</summary>
         public static string AddCrescentMoonSlashForDarkKnight_Name => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Name", resourceCulture)!;
 

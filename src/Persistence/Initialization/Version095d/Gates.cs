@@ -33,6 +33,48 @@ public class Gates : InitializerBase
     }
 
     /// <summary>
+    /// Creates an exit gate and adds it to the map.
+    /// </summary>
+    /// <param name="map">The map.</param>
+    /// <param name="x1">The x1 coordinate.</param>
+    /// <param name="y1">The y1 coordinate.</param>
+    /// <param name="x2">The x2 coordinate.</param>
+    /// <param name="y2">The y2 coordinate.</param>
+    /// <param name="direction">The direction, where 0 means undefined.</param>
+    /// <param name="isSpawnGate">If set to <c>true</c>, the gate is a spawn gate.</param>
+    /// <returns>The created exit gate.</returns>
+    protected ExitGate CreateExitGate(GameMapDefinition map, byte x1, byte y1, byte x2, byte y2, byte direction, bool isSpawnGate = false)
+    {
+        if (map is null)
+        {
+            throw new ArgumentNullException(nameof(map));
+        }
+
+        if (x1 > x2)
+        {
+            throw new ArgumentException("x1 > x2");
+        }
+
+        if (y1 > y2)
+        {
+            throw new ArgumentException("y1 > y2");
+        }
+
+        var gate = this.Context.CreateNew<ExitGate>();
+        gate.Map = map;
+        gate.X1 = x1;
+        gate.Y1 = y1;
+        gate.X2 = x2;
+        gate.Y2 = y2;
+
+        // different to all other configurations, 0 means 'Undefined', so we just assume that we can cast it to Direction without adding 1.
+        gate.Direction = (Direction)direction;
+        gate.IsSpawnGate = isSpawnGate;
+        map.ExitGates.Add(gate);
+        return gate;
+    }
+
+    /// <summary>
     /// Creates the warp entries.
     /// </summary>
     /// <param name="gates">The gates.</param>
@@ -64,37 +106,6 @@ public class Gates : InitializerBase
         warpInfo.LevelRequirement = levelRequirement;
         warpInfo.Gate = gate;
         return warpInfo;
-    }
-
-    private ExitGate CreateExitGate(GameMapDefinition map, byte x1, byte y1, byte x2, byte y2, byte direction, bool isSpawnGate = false)
-    {
-        if (map is null)
-        {
-            throw new ArgumentNullException(nameof(map));
-        }
-
-        if (x1 > x2)
-        {
-            throw new ArgumentException("x1 > x2");
-        }
-
-        if (y1 > y2)
-        {
-            throw new ArgumentException("y1 > y2");
-        }
-
-        var gate = this.Context.CreateNew<ExitGate>();
-        gate.Map = map;
-        gate.X1 = x1;
-        gate.Y1 = y1;
-        gate.X2 = x2;
-        gate.Y2 = y2;
-
-        // different to all other configurations, 0 means 'Undefined', so we just assume that we can cast it to Direction without adding 1.
-        gate.Direction = (Direction)direction;
-        gate.IsSpawnGate = isSpawnGate;
-        map.ExitGates.Add(gate);
-        return gate;
     }
 
     /// <summary>

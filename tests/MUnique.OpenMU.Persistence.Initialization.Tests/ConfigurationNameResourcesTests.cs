@@ -84,13 +84,14 @@ internal class ConfigurationNameResourcesTests
     public async Task ResourceKeysMatchInitializedEntitiesAsync()
     {
         var usedSourceKeys = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var version in new[] { "075", "095d", "Season6" })
+        foreach (var version in new[] { "075", "095d", "097k", "Season6" })
         {
             var provider = new InMemoryPersistenceContextProvider();
             DataInitializationBase initializer = version switch
             {
                 "075" => new Version075.DataInitialization(provider, NullLoggerFactory.Instance),
                 "095d" => new Version095d.DataInitialization(provider, NullLoggerFactory.Instance),
+                "097k" => new Version097k.DataInitialization(provider, NullLoggerFactory.Instance),
                 _ => new VersionSeasonSix.DataInitialization(provider, NullLoggerFactory.Instance),
             };
             await initializer.CreateInitialDataAsync(1, false).ConfigureAwait(false);

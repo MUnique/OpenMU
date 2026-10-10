@@ -77,7 +77,15 @@ public class Quest : InitializerBase
         this.CreateQuestItem(FeatherOfDarkPhoenixNumber, LocalizedString.FromResource(() => ItemNames.FeatherOfDarkPhoenix), 0, 2);
     }
 
-    private void CreateQuestItem(byte number, LocalizedString name, byte dropLevel, byte height, byte maximumLevel = 0)
+    /// <summary>
+    /// Creates a quest item of group 14.
+    /// </summary>
+    /// <param name="number">The item number.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="dropLevel">The drop level.</param>
+    /// <param name="height">The height.</param>
+    /// <param name="maximumLevel">The maximum item level.</param>
+    protected void CreateQuestItem(byte number, LocalizedString name, byte dropLevel, byte height, byte maximumLevel = 0)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

@@ -21,7 +21,7 @@ users.
 |---|---|
 | `-autostart` | Automatically initializes the game servers and starts the TCP listeners of all (sub-)servers |
 | `-reinit` | Recreates and reinitializes the database. Has no effect when `-demo` is used. |
-| `-version:[season6\|0.75\|0.95d]` | Defines the version of the game client. Only has an effect with `-reinit` or `-demo` and affects the initial data creation. Default: `season6` |
+| `-version:[season6\|0.75\|0.95d\|0.97k]` | Defines the version of the game client. Only has an effect with `-reinit` or `-demo` and affects the initial data creation. Default: `season6` |
 | `-demo` | Instead of an external database, in-memory repositories are used and the data is initialized at each start. Only for testing, not for production — player progress is **not saved**. |
 | `-deamon` | Deactivates handling of console inputs |
 | `-adminpanel:[enabled\|disabled]` | Defines whether the admin panel is available. If disabled, `-autostart` is applied automatically. Default: `enabled` |

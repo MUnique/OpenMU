@@ -54,6 +54,7 @@ internal class ItemNameResourcesTests
     /// <returns>The task.</returns>
     [TestCase("075")]
     [TestCase("095d")]
+    [TestCase("097k")]
     [TestCase("Season6")]
     public async Task ItemNamesUseCaptionWorkflowAsync(string version)
     {
@@ -62,6 +63,7 @@ internal class ItemNameResourcesTests
         {
             "075" => new Version075.DataInitialization(provider, NullLoggerFactory.Instance),
             "095d" => new Version095d.DataInitialization(provider, NullLoggerFactory.Instance),
+            "097k" => new Version097k.DataInitialization(provider, NullLoggerFactory.Instance),
             _ => new VersionSeasonSix.DataInitialization(provider, NullLoggerFactory.Instance),
         };
         await initializer.CreateInitialDataAsync(1, false).ConfigureAwait(false);

@@ -51,6 +51,12 @@
   <data name="DataInitialization095d_Description" xml:space="preserve">
     <value>提供 0.95d 的初始数据。</value>
   </data>
+  <data name="DataInitialization097k_Name" xml:space="preserve">
+    <value>0.97k 数据初始化</value>
+  </data>
+  <data name="DataInitialization097k_Description" xml:space="preserve">
+    <value>提供 0.97k 的初始数据。</value>
+  </data>
   <data name="DataInitialization_Name" xml:space="preserve">
     <value>Season 6 Episode 3 数据初始化</value>
   </data>

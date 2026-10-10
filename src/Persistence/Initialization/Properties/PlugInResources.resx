@@ -110,6 +110,12 @@
   <data name="DataInitialization095d_Description" xml:space="preserve">
     <value>Provides initial data for Version 0.95d</value>
   </data>
+  <data name="DataInitialization097k_Name" xml:space="preserve">
+    <value>Version 0.97k Initialization</value>
+  </data>
+  <data name="DataInitialization097k_Description" xml:space="preserve">
+    <value>Provides initial data for Version 0.97k</value>
+  </data>
   <data name="DataInitialization_Name" xml:space="preserve">
     <value>Season 6 Episode 3 Initialization</value>
   </data>

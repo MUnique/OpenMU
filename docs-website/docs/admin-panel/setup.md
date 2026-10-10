@@ -43,7 +43,7 @@ choices:
 Every supported version has its own data initialization, which creates the
 matching items, monsters, maps, skills and servers. The list contains the
 versions which are available in your OpenMU build — Season 6 Episode 3 is the
-main one, plus older versions such as 0.75 and 0.95d.
+main one, plus older versions such as 0.75, 0.95d and 0.97k.
 
 ### 2. Number of game servers
 
