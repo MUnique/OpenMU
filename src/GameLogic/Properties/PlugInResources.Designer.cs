@@ -4506,5 +4506,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
         public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration of the client.
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such..
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -2615,4 +2615,28 @@
   <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for cash shop gift requests (0xD2, 0x04 identifier).</value>
   </data>
+  <data name="DiscordIntegrationInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Discord integration info request handler</value>
+  </data>
+  <data name="DiscordIntegrationInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Discord integration info (F5 02).</value>
+  </data>
+  <data name="DiscordLinkCodeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Discord link code request handler</value>
+  </data>
+  <data name="DiscordLinkCodeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of a code to link the account to a Discord user (F5 04).</value>
+  </data>
+  <data name="DiscordUnlinkRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Discord unlink request handler</value>
+  </data>
+  <data name="DiscordUnlinkRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request to remove the link of the account to a Discord user (F5 06).</value>
+  </data>
+  <data name="DiscordIntegrationViewPlugIn_Name" xml:space="preserve">
+    <value>Discord integration view</value>
+  </data>
+  <data name="DiscordIntegrationViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the Discord integration info, the link code and the messages written in Discord to the game client.</value>
+  </data>
 </root>

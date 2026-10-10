@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Discord.ChatBridge;
 
 using System.Text;
 using System.Text.RegularExpressions;
+using MUnique.OpenMU.GameLogic.Discord;
 
 /// <summary>
 /// Converts the texts of chat messages between the game and Discord.
@@ -16,7 +17,7 @@ public static partial class DiscordChatText
     /// The prefix of the names of Discord users in the game. Character names can't contain it,
     /// so Discord users can't pretend to be a character in the game.
     /// </summary>
-    public const char DiscordSenderPrefix = '@';
+    public const char DiscordSenderPrefix = BridgedChatSender.Prefix;
 
     /// <summary>
     /// The maximum length of a sender name in the game.

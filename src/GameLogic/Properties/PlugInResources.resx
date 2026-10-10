@@ -1631,4 +1631,10 @@
   <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
     <value>Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord.</value>
   </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Name" xml:space="preserve">
+    <value>Discord integration of the client</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
+    <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
+  </data>
 </root>

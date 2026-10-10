@@ -2565,4 +2565,28 @@
   <data name="PingHandlerPlugIn_Description" xml:space="preserve">
     <value>Verarbeitet den Ping, den der Client periodisch sendet, und der meldet, dass er aktiv ist.</value>
   </data>
+  <data name="DiscordIntegrationInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für die Anfrage der Discord-Integrationsinfo</value>
+  </data>
+  <data name="DiscordIntegrationInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Anfrage der Discord-Integrationsinfo (F5 02).</value>
+  </data>
+  <data name="DiscordLinkCodeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für die Anfrage eines Discord-Verknüpfungscodes</value>
+  </data>
+  <data name="DiscordLinkCodeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Anfrage eines Codes, um das Konto mit einem Discord-Benutzer zu verknüpfen (F5 04).</value>
+  </data>
+  <data name="DiscordUnlinkRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für das Aufheben der Discord-Verknüpfung</value>
+  </data>
+  <data name="DiscordUnlinkRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet die Anfrage, die Verknüpfung des Kontos mit einem Discord-Benutzer aufzuheben (F5 06).</value>
+  </data>
+  <data name="DiscordIntegrationViewPlugIn_Name" xml:space="preserve">
+    <value>Ansicht der Discord-Integration</value>
+  </data>
+  <data name="DiscordIntegrationViewPlugIn_Description" xml:space="preserve">
+    <value>Sendet die Discord-Integrationsinfo, den Verknüpfungscode und die in Discord geschriebenen Nachrichten an den Game-Client.</value>
+  </data>
 </root>
