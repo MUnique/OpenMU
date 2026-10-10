@@ -39,7 +39,8 @@ You can filter the list by language and kind, select or deselect single changes
 and apply the selection. **Select all**, **Select recommended**, and **Select none**
 only affect the changes matching the current filters. **Select all** includes
 customized texts; it only selects them, and you must still apply the changes to
-save them. Customized texts are only overwritten if you select them explicitly. Like configuration updates, the changes require a restart of
+save them. Customized texts are only overwritten if you select them explicitly.
+Like configuration updates, the changes require a restart of
 the server process to take effect.
 
 ## Link built-in captions
