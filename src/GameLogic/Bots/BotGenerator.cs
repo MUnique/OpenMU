@@ -277,22 +277,6 @@ internal sealed class BotGenerator
         }
     }
 
-    private static byte[] CreateDefaultKeyConfiguration()
-    {
-        // Mirrors CreateCharacterAction: bind Q to the healing potion and W to the mana potion,
-        // leave E and R unbound. An all-zero blob would otherwise bind the apple (a heal) to all slots.
-        const byte healingPotion = 1;
-        const byte manaPotion = 4;
-        const byte unbound = 0xFF;
-
-        var keyConfiguration = new byte[30];
-        keyConfiguration[21] = healingPotion; // Q
-        keyConfiguration[22] = manaPotion; // W
-        keyConfiguration[23] = unbound; // E
-        keyConfiguration[25] = unbound; // R
-        return keyConfiguration;
-    }
-
     /// <summary>
     /// Builds a shuffled queue of character classes with even quotas across <paramref name="classes"/>,
     /// so the generated population is balanced instead of relying on the variance of independent random
@@ -560,28 +544,9 @@ internal sealed class BotGenerator
         }
 
         var character = context.CreateNew<Character>();
-        character.CharacterClass = characterClass;
         character.Name = name;
         character.CharacterSlot = slot;
-        character.CreateDate = DateTime.UtcNow;
-        character.KeyConfiguration = CreateDefaultKeyConfiguration();
-
-        // Distinct, because a character class may define the same stat attribute more than once (data
-        // which got duplicated by an update); a character must never hold an attribute twice.
-        foreach (var attribute in characterClass.StatAttributes
-                     .DistinctBy(a => a.Attribute)
-                     .Select(a => context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
-        {
-            character.Attributes.Add(attribute);
-        }
-
-        character.CurrentMap = characterClass.HomeMap;
-        var spawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-        if (spawnGate is not null)
-        {
-            character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
-            character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
-        }
+        context.InitializeNewCharacter(character, characterClass);
 
         var levelAttribute = character.Attributes.First(a => a.Definition == Stats.Level);
         levelAttribute.Value = level;
@@ -605,8 +570,7 @@ internal sealed class BotGenerator
             : level;
         this.LearnClassSkills(context, character, characterClass, highestLevelReached);
 
-        character.Inventory = context.CreateNew<ItemStorage>();
-        character.Inventory.Money = StartMoney;
+        character.Inventory!.Money = StartMoney;
 
         // A fresh character starts like a regular player's new character - weapon only, no armor -
         // and loots its first set like everyone else. Veterans keep the basic set, without which
