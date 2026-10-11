@@ -350,3 +350,54 @@ using static System.Buffers.Binary.BinaryPrimitives;    /// <summary>
             Doppelganger = 6,
     }
 
+    /// <summary>
+    /// Defines the currency in which the price of an item in a player shop is defined. The value is also the bit index in the currency mask of the PlayerShopCurrenciesExtended message.
+    /// </summary>
+    public enum ShopCurrencyType
+    {
+        /// <summary>
+        /// Zen, the money in the inventory.
+        /// </summary>
+            Zen = 0,
+
+        /// <summary>
+        /// Jewel of Bless (item group 14, number 13).
+        /// </summary>
+            JewelOfBless = 1,
+
+        /// <summary>
+        /// Jewel of Soul (item group 14, number 14).
+        /// </summary>
+            JewelOfSoul = 2,
+
+        /// <summary>
+        /// Jewel of Chaos (item group 12, number 15).
+        /// </summary>
+            JewelOfChaos = 3,
+
+        /// <summary>
+        /// Jewel of Creation (item group 14, number 22).
+        /// </summary>
+            JewelOfCreation = 4,
+
+        /// <summary>
+        /// Jewel of Life (item group 14, number 16).
+        /// </summary>
+            JewelOfLife = 5,
+
+        /// <summary>
+        /// WCoin (C), an account coin.
+        /// </summary>
+            WCoinC = 6,
+
+        /// <summary>
+        /// WCoin (P), an account coin.
+        /// </summary>
+            WCoinP = 7,
+
+        /// <summary>
+        /// Goblin Points, an account coin.
+        /// </summary>
+            GoblinPoints = 8,
+    }
+

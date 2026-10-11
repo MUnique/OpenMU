@@ -49,17 +49,19 @@
           <Index>0</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>MoneyPrice</Name>
+          <Description>The price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items.</Description>
         </Field>
         <Field>
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PriceItemType</Name>
-          <Description>Contains the item group in the highest 4 bits, and the item number in the remaining ones.</Description>
+          <Description>When RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>RequiredItemAmount</Name>
+          <Description>The number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items.</Description>
         </Field>
         <Field>
           <Index>8</Index>
@@ -4481,6 +4483,11 @@
               <Description>The requested player has item block active.</Description>
               <Value>9</Value>
             </EnumValue>
+            <EnumValue>
+              <Name>LackOfPriceCurrency</Name>
+              <Description>The player has not enough of the currency (jewels or account coins) in which the price of the item is defined.</Description>
+              <Value>10</Value>
+            </EnumValue>
           </Values>
         </Enum>
       </Enums>
@@ -4554,6 +4561,24 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>0A</SubCode>
+      <Name>PlayerShopCurrenciesExtended</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game world, and before the player shop of the own player or of another player is shown.</SentWhen>
+      <CausedReaction>The client offers only the enabled currencies when the player sets an item price in his player shop.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrencyMask</Name>
+          <Description>The bit mask of the currencies which are enabled for prices in player shops. Bit N corresponds to the ShopCurrencyType with value N, e.g. bit 0 is Zen. A value of 0 means that the feature is disabled and only Zen prices with PlayerShopSetItemPrice are supported.</Description>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>

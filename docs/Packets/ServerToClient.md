@@ -81,6 +81,7 @@
   * [C1 3F 06 - PlayerShopBuyResult (by server)](C1-3F-06-PlayerShopBuyResult_by-server.md)
   * [C1 3F 06 - PlayerShopBuyResultExtended (by server)](C1-3F-06-PlayerShopBuyResultExtended_by-server.md)
   * [C1 3F 08 - PlayerShopItemSoldToPlayer (by server)](C1-3F-08-PlayerShopItemSoldToPlayer_by-server.md)
+  * [C1 3F 0A - PlayerShopCurrenciesExtended (by server)](C1-3F-0A-PlayerShopCurrenciesExtended_by-server.md)
   * [C1 3F 12 - ClosePlayerShopDialog (by server)](C1-3F-12-ClosePlayerShopDialog_by-server.md)
   * [C1 3F 2 - PlayerShopOpenSuccessful (by server)](C1-3F-2-PlayerShopOpenSuccessful_by-server.md)
   * [C1 3F 3 - PlayerShopClosed (by server)](C1-3F-3-PlayerShopClosed_by-server.md)
