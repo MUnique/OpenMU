@@ -123,9 +123,13 @@ internal class CrywolfInitializer : InitializerBase
     }
 
     /// <summary>
-    /// Adds the terrains of the crywolf map while it's occupied and during the war, if they don't exist yet.
-    /// Like the terrain files of the client, their numbers are the ones of the occupation states (1 and 2).
+    /// Adds the terrains of the crywolf map in peace, while it's occupied and during the war, if they don't exist yet.
+    /// Their numbers are the ones of the occupation states (0 to 2), like the terrain files of the client.
     /// </summary>
+    /// <remarks>
+    /// In peace, the client loads the normal terrain file of the map, but its blocked tiles match the ones of
+    /// <c>Terrain35_PEACE.att</c> better than the ones of <c>Terrain35.att</c>.
+    /// </remarks>
     internal void CreateTerrainVariants()
     {
         if (this.GetMap() is not { } map)
@@ -133,7 +137,7 @@ internal class CrywolfInitializer : InitializerBase
             return;
         }
 
-        foreach (var (number, description, fileName) in new (short, string, string)[] { (1, "Occupied", "Terrain35_OCCUPIED.att"), (2, "War", "Terrain35_WAR.att") })
+        foreach (var (number, description, fileName) in new (short, string, string)[] { (0, "Peace", "Terrain35_PEACE.att"), (1, "Occupied", "Terrain35_OCCUPIED.att"), (2, "War", "Terrain35_WAR.att") })
         {
             if (map.TerrainVariants.Any(variant => variant.Number == number)
                 || TerrainUpdateHelper.ReadTerrainResource(fileName) is not { } terrainData)
@@ -162,7 +166,7 @@ internal class CrywolfInitializer : InitializerBase
 
         var warpInfo = this.Context.CreateNew<WarpInfo>();
         warpInfo.Index = WarpIndex;
-        warpInfo.Name = "Crywolf";
+        warpInfo.Name = LocalizedString.FromResource(() => WarpNames.Crywolf);
         warpInfo.Costs = 10000;
         warpInfo.LevelRequirement = 190;
         warpInfo.Gate = gate;

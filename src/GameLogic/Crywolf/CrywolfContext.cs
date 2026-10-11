@@ -1013,12 +1013,10 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         }
 
         // Like the client, which loads the terrain of the occupation state by itself, the server uses the terrain
-        // variant of the map with the number of the occupation state. In peace, it's the normal terrain.
+        // variant of the map with the number of the occupation state. Without it, it uses the normal terrain.
         // The crywolf map has no other changes of the terrain at runtime, so it's just replaced.
-        var terrainVariant = this.Occupation == CrywolfOccupationState.Peace
-            ? null
-            : map.Definition.TerrainVariants.FirstOrDefault(variant => variant.Number == (short)this.Occupation);
-        if (terrainVariant is null && this.Occupation != CrywolfOccupationState.Peace)
+        var terrainVariant = map.Definition.TerrainVariants.FirstOrDefault(variant => variant.Number == (short)this.Occupation);
+        if (terrainVariant is null)
         {
             this._logger.LogWarning("The terrain of the crywolf map for the occupation state {occupation} is missing.", this.Occupation);
         }

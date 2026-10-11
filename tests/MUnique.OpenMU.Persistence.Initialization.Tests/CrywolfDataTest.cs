@@ -54,6 +54,15 @@ internal class CrywolfDataTest
 
         gameConfiguration.WarpList.Remove(gameConfiguration.WarpList.Single(warp => warp.Index == 26));
         map.TerrainVariants.Clear();
+        foreach (var spawn in map.MonsterSpawns.Where(spawn => spawn.MonsterDefinition!.Number is >= 340 and <= 349).ToList())
+        {
+            map.MonsterSpawns.Remove(spawn);
+        }
+
+        foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 340 and <= 349).ToList())
+        {
+            gameConfiguration.Monsters.Remove(monster);
+        }
 
         var update = new AddCrywolfEventUpdatePlugIn();
         await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
@@ -81,7 +90,9 @@ internal class CrywolfDataTest
         var map = GetMap(gameConfiguration);
         foreach (var number in new short[] { 340, 341, 344, 345, 348, 349 })
         {
-            Assert.That(gameConfiguration.Monsters.Where(monster => monster.Number == number).ToList(), Has.Count.EqualTo(1), $"Monster {number}");
+            var monsters = gameConfiguration.Monsters.Where(monster => monster.Number == number).ToList();
+            Assert.That(monsters, Has.Count.EqualTo(1), $"Monster {number}");
+            Assert.That(monsters[0].Designation.SourceKey, Is.Not.Null, $"The name of the monster {number}");
         }
 
         var eventSpawns = map.MonsterSpawns.Where(spawn => spawn.SpawnTrigger == SpawnTrigger.OnceAtWaveStart).ToList();
@@ -109,8 +120,9 @@ internal class CrywolfDataTest
         var warp = gameConfiguration.WarpList.Single(warp => warp.Index == 26);
         Assert.That(warp.Gate?.Map, Is.SameAs(map));
         Assert.That(warp.LevelRequirement, Is.EqualTo(190));
+        Assert.That(warp.Name.SourceKey, Is.Not.Null);
 
-        Assert.That(map.TerrainVariants.Select(variant => variant.Number), Is.EquivalentTo(new short[] { 1, 2 }));
+        Assert.That(map.TerrainVariants.Select(variant => variant.Number), Is.EquivalentTo(new short[] { 0, 1, 2 }));
         AssertTerrainSwitch(map);
     }
 

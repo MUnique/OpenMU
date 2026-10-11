@@ -173,6 +173,26 @@ public class CrywolfContextTest
     }
 
     /// <summary>
+    /// Tests that the terrain of the map is replaced by its variant of the peace, when the fortress is in peace.
+    /// </summary>
+    [Test]
+    public async Task PeaceUsesTheTerrainOfPeaceAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        var map = (await gameContext.GetMapAsync(0).ConfigureAwait(false))!;
+        var blocked = new Point(100, 100);
+        var peaceTerrain = new byte[(256 * 256) + 3];
+        peaceTerrain[3 + blocked.X + (blocked.Y << 8)] = (byte)TerrainAttributeType.Blocked;
+        map.Definition.TerrainVariants.Add(new Persistence.BasicModel.GameMapTerrainVariant { Number = (short)CrywolfOccupationState.Peace, TerrainData = peaceTerrain });
+        Assert.That(map.Terrain.WalkMap[blocked.X, blocked.Y], Is.True, "precondition");
+
+        var (context, _, _) = await CreateContextAsync(gameContext).ConfigureAwait(false);
+
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Peace));
+        Assert.That(map.Terrain.WalkMap[blocked.X, blocked.Y], Is.False);
+    }
+
+    /// <summary>
     /// Tests that the benefits apply after the fortress has been defended, but not before the first battle.
     /// </summary>
     [Test]
