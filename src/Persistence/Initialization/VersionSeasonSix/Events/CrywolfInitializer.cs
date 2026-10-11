@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -56,12 +57,12 @@ internal class CrywolfInitializer : InitializerBase
     /// </summary>
     internal void CreateMonsters()
     {
-        this.CreateMonster(340, "Dark Elf", 135, 1_500_000, 800, 900, 900, 1500, 370, 6, 6, 10, 23);
-        this.CreateMonster(341, "Soram", 134, 100_000, 600, 700, 500, 1500, 397, 6, 4, 7, 25);
-        this.CreateMonster(344, "Balram", 134, 90_000, 600, 700, 500, 1500, 370, 6, 7, 7, 23);
-        this.CreateMonster(345, "Death Spirit", 134, 95_000, 600, 700, 500, 1500, 397, 6, 6, 7, 25);
-        this.CreateMonster(348, "Tanker", 133, 450_000, 800, 1000, 840, 1500, 370, 0, 6, 7, 23);
-        this.CreateMonster(349, "Balgass", 135, 500_000, 1000, 1500, 800, 2000, 370, 6, 6, 7, 23);
+        this.CreateMonster(340, LocalizedString.FromResource(() => MonsterNames.DarkElf340), 135, 1_500_000, 800, 900, 900, 1500, 370, 6, 6, 10, 23);
+        this.CreateMonster(341, LocalizedString.FromResource(() => MonsterNames.Soram), 134, 100_000, 600, 700, 500, 1500, 397, 6, 4, 7, 25);
+        this.CreateMonster(344, LocalizedString.FromResource(() => MonsterNames.Balram), 134, 90_000, 600, 700, 500, 1500, 370, 6, 7, 7, 23);
+        this.CreateMonster(345, LocalizedString.FromResource(() => MonsterNames.DeathSpirit), 134, 95_000, 600, 700, 500, 1500, 397, 6, 6, 7, 25);
+        this.CreateMonster(348, LocalizedString.FromResource(() => MonsterNames.Tanker), 133, 450_000, 800, 1000, 840, 1500, 370, 0, 6, 7, 23);
+        this.CreateMonster(349, LocalizedString.FromResource(() => MonsterNames.Balgass), 135, 500_000, 1000, 1500, 800, 2000, 370, 6, 6, 7, 23);
     }
 
     /// <summary>
@@ -180,7 +181,7 @@ internal class CrywolfInitializer : InitializerBase
 
     private void CreateMonster(
         short number,
-        string designation,
+        LocalizedString designation,
         byte level,
         int health,
         int minimumDamage,

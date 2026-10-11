@@ -3282,5 +3282,33 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Soldier", resourceCulture);
             }
         }
+
+        /// <summary>Gets DarkElf340 from the configuration name resources.</summary>
+        public static string DarkElf340 {
+            get {
+                return ResourceManager.GetString("DarkElf340", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DeathSpirit from the configuration name resources.</summary>
+        public static string DeathSpirit {
+            get {
+                return ResourceManager.GetString("DeathSpirit", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Tanker from the configuration name resources.</summary>
+        public static string Tanker {
+            get {
+                return ResourceManager.GetString("Tanker", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Balgass from the configuration name resources.</summary>
+        public static string Balgass {
+            get {
+                return ResourceManager.GetString("Balgass", resourceCulture);
+            }
+        }
     }
 }
