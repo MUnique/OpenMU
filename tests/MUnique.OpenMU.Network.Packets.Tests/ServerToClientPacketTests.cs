@@ -3147,6 +3147,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for CharacterStatIncreaseResponse097.
+    /// </summary>
+    [Test]
+    public void CharacterStatIncreaseResponse097_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 10;
+        var actualLength = CharacterStatIncreaseResponse097Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Success' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Success' exceeds packet boundary");
+        
+        // Validate field 'Attribute' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Attribute' exceeds packet boundary");
+        
+        // Validate field 'UpdatedDependentMaximumStat' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'UpdatedDependentMaximumStat' exceeds packet boundary");
+        
+        // Validate field 'UpdatedMaximumAbility' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'UpdatedMaximumAbility' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for CharacterStatIncreaseResponseExtended.
     /// </summary>
     [Test]
@@ -3253,6 +3283,56 @@ public class PacketStructureTests
         
         // Validate field 'MaximumNegativeFruitPoints' boundary
         Assert.That(22 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumNegativeFruitPoints' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CharacterLevelUpdate097.
+    /// </summary>
+    [Test]
+    public void CharacterLevelUpdate097_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 22;
+        var actualLength = CharacterLevelUpdate097Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Level' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds packet boundary");
+        
+        // Validate field 'LevelUpPoints' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'LevelUpPoints' exceeds packet boundary");
+        
+        // Validate field 'MaximumHealth' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumHealth' exceeds packet boundary");
+        
+        // Validate field 'MaximumMana' boundary
+        Assert.That(10 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumMana' exceeds packet boundary");
+        
+        // Validate field 'MaximumAbility' boundary
+        Assert.That(12 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumAbility' exceeds packet boundary");
+        
+        // Validate field 'FruitPoints' boundary
+        Assert.That(14 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'FruitPoints' exceeds packet boundary");
+        
+        // Validate field 'MaximumFruitPoints' boundary
+        Assert.That(16 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumFruitPoints' exceeds packet boundary");
+        
+        // Validate field 'NegativeFruitPoints' boundary
+        Assert.That(18 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'NegativeFruitPoints' exceeds packet boundary");
+        
+        // Validate field 'MaximumNegativeFruitPoints' boundary
+        Assert.That(20 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'MaximumNegativeFruitPoints' exceeds packet boundary");
     }
 

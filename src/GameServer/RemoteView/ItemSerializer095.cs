@@ -33,6 +33,9 @@ using MUnique.OpenMU.PlugIns;
 /// s = skill
 /// o = option level
 /// x = exc option flags.
+///
+/// Since version 0.97, the second wings use the exc option flags for their additional options,
+/// and the bits 0x10 and 0x20 of index 3 for the number of their item option.
 /// </remarks>
 [Guid("4BD85C02-C43E-494D-B6B8-767ED94E09F0")]
 [PlugIn]
@@ -73,9 +76,15 @@ public class ItemSerializer095 : IItemSerializer
 
             target[1] |= (byte)(optionLevel & 3);
             target[3] |= (byte)((optionLevel & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).
+
+            // The second wings can have different options, which are set at 0x10 and 0x20.
+            if (itemOption?.ItemOption?.Number > 0)
+            {
+                target[3] |= (byte)((itemOption.ItemOption.Number & 0b11) << 4);
+            }
         }
 
-        target[3] |= GetExcellentByte(item);
+        target[3] |= ItemSerializerHelper.GetExcellentByte(item);
 
         if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
         {
@@ -96,18 +105,5 @@ public class ItemSerializer095 : IItemSerializer
     public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
     {
         throw new NotImplementedException();
-    }
-
-    private static byte GetExcellentByte(Item item)
-    {
-        byte result = 0;
-        var excellentOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
-
-        foreach (var option in excellentOptions)
-        {
-            result |= (byte)(1 << (option.ItemOption!.Number - 1));
-        }
-
-        return result;
     }
 }

@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -41,18 +42,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
 
         if (addedPoints <= 1)
         {
-#pragma warning disable SA1118 // Parameter should not span multiple lines
-            await connection.SendCharacterStatIncreaseResponseAsync(
-                addedPoints > 0,
-                attribute.GetStatType(),
-                attribute == Stats.BaseEnergy
-                    ? this._player.Attributes![Stats.MaximumMana].ToUInt16Clamped()
-                    : attribute == Stats.BaseVitality
-                        ? this._player.Attributes![Stats.MaximumHealth].ToUInt16Clamped()
-                        : default,
-                this._player.Attributes![Stats.MaximumShield].ToUInt16Clamped(),
-                this._player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
-#pragma warning restore SA1118 // Parameter should not span multiple lines
+            await this.SendSinglePointResultAsync(connection, attribute, addedPoints > 0).ConfigureAwait(false);
             return;
         }
 
@@ -73,5 +63,41 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
         };
 
         await player.WarpToAsync(currentGate).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends the result of a stat increase by a single point to the client.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="attribute">The increased attribute.</param>
+    /// <param name="success">If set to <c>true</c>, the point was added.</param>
+    protected virtual async ValueTask SendSinglePointResultAsync(IConnection connection, AttributeDefinition attribute, bool success)
+    {
+        await connection.SendCharacterStatIncreaseResponseAsync(
+            success,
+            attribute.GetStatType(),
+            this.GetDependentMaximumStat(attribute),
+            this._player.Attributes![Stats.MaximumShield].ToUInt16Clamped(),
+            this._player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the maximum value of the stat which depends on the increased attribute.
+    /// </summary>
+    /// <param name="attribute">The increased attribute.</param>
+    /// <returns>The maximum mana for energy, the maximum health for vitality, otherwise 0.</returns>
+    protected ushort GetDependentMaximumStat(AttributeDefinition attribute)
+    {
+        if (attribute == Stats.BaseEnergy)
+        {
+            return this._player.Attributes![Stats.MaximumMana].ToUInt16Clamped();
+        }
+
+        if (attribute == Stats.BaseVitality)
+        {
+            return this._player.Attributes![Stats.MaximumHealth].ToUInt16Clamped();
+        }
+
+        return default;
     }
 }
