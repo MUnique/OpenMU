@@ -36,8 +36,11 @@ number of these captions by type, so they can be linked as well. See
 | Customized | Your text differs from the built-in one, because it was changed (e.g. in the admin panel) or its origin is unknown. | No |
 
 You can filter the list by language and kind, select or deselect single changes
-and apply the selection. Customized texts are only overwritten if you select
-them explicitly. Like configuration updates, the changes require a restart of
+and apply the selection. **Select all**, **Select recommended**, and **Select none**
+only affect the changes matching the current filters. **Select all** includes
+customized texts; it only selects them, and you must still apply the changes to
+save them. Customized texts are only overwritten if you select them explicitly.
+Like configuration updates, the changes require a restart of
 the server process to take effect.
 
 ## Link built-in captions
@@ -149,3 +152,12 @@ Item option combination bonus descriptions (Fenrir movement bonuses and socket
 package bonuses) also use built-in resources. For an existing configuration, link
 the names and review the translations on this page before applying them. Custom
 descriptions are preserved unless explicitly selected.
+
+## Attribute display text
+
+Built-in attribute names and descriptions can be displayed in Simplified Chinese.
+Global base attribute values also translate the aggregation operation. In attribute
+editors, a translated hint appears below the original name or description.
+The input still edits the stored English text, which configuration updates use to
+identify attributes. Unknown or customized text is shown unchanged.
+These display translations do not require linking or applying configuration names.

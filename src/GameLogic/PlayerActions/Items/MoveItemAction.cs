@@ -288,9 +288,7 @@ public class MoveItemAction
             return Movement.None;
         }
 
-        if (fromStorage.Storage == player.Vault
-            && toStorage.Storage == player.Inventory
-            && player.IsVaultLocked)
+        if (player.IsVaultLocked && fromStorage.Storage == player.Vault)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
             return Movement.None;
