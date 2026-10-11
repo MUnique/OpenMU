@@ -10,14 +10,14 @@ namespace MUnique.OpenMU.Web.Shared.Components.Modal;
 public class ModalInstance
 {
     private readonly ModalReference _reference;
-    private readonly Action _onClose;
+    private readonly Action<ModalInstance> _onClose;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ModalInstance"/> class.
     /// </summary>
     /// <param name="reference">The modal reference.</param>
-    /// <param name="onClose">The close action.</param>
-    internal ModalInstance(ModalReference reference, Action onClose)
+    /// <param name="onClose">The close action, invoked with this instance after the result was set.</param>
+    internal ModalInstance(ModalReference reference, Action<ModalInstance> onClose)
     {
         this._reference = reference;
         this._onClose = onClose;
@@ -31,7 +31,7 @@ public class ModalInstance
     public Task CloseAsync(ModalResult result)
     {
         this._reference.TrySetResult(result);
-        this._onClose();
+        this._onClose(this);
         return Task.CompletedTask;
     }
 
