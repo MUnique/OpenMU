@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// the fortress can be warped to, and the map has the terrains of the occupation states.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrywolfEventUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrywolfEventUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9C4E1A73-2F58-4B6D-8E09-5A3D7C1F2B84")]
 public class AddCrywolfEventUpdatePlugIn : UpdatePlugInBase
 {

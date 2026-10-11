@@ -335,6 +335,12 @@
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
     <value>将囚禁之岛传送条目的索引修正为Season 6客户端请求的42。</value>
   </data>
+  <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加狼魂要塞活动</value>
+  </data>
+  <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加狼魂要塞活动的怪物及其刷新点，使要塞的神狼雕像和护台始终位于地图上，并添加要塞的传送条目和各占领状态的地形。</value>
+  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加小翅膀和小披风</value>
   </data>
