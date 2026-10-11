@@ -49,17 +49,19 @@
           <Index>0</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>MoneyPrice</Name>
+          <Description>The price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items.</Description>
         </Field>
         <Field>
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PriceItemType</Name>
-          <Description>Contains the item group in the highest 4 bits, and the item number in the remaining ones.</Description>
+          <Description>When RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>RequiredItemAmount</Name>
+          <Description>The number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items.</Description>
         </Field>
         <Field>
           <Index>8</Index>
@@ -4481,6 +4483,11 @@
               <Description>The requested player has item block active.</Description>
               <Value>9</Value>
             </EnumValue>
+            <EnumValue>
+              <Name>LackOfPriceCurrency</Name>
+              <Description>The player has not enough of the currency (jewels or account coins) in which the price of the item is defined.</Description>
+              <Value>10</Value>
+            </EnumValue>
           </Values>
         </Enum>
       </Enums>
@@ -4554,6 +4561,44 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>0A</SubCode>
+      <Name>PlayerShopPriceTypesExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.</SentWhen>
+      <CausedReaction>The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopPriceType</TypeName>
+          <Name>PriceTypes</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PlayerShopPriceType</Name>
+          <Description>A price type which is allowed for prices in player shops, in addition to zen.</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>PriceItemType</Name>
+              <Description>The value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>

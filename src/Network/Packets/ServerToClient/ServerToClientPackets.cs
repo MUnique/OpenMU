@@ -123,7 +123,7 @@ public readonly struct PlayerShopItemExtended
     }
 
     /// <summary>
-    /// Gets or sets the money price.
+    /// Gets or sets the price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items.
     /// </summary>
     public uint MoneyPrice
     {
@@ -132,7 +132,7 @@ public readonly struct PlayerShopItemExtended
     }
 
     /// <summary>
-    /// Gets or sets contains the item group in the highest 4 bits, and the item number in the remaining ones.
+    /// Gets or sets when RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen.
     /// </summary>
     public ushort PriceItemType
     {
@@ -141,7 +141,7 @@ public readonly struct PlayerShopItemExtended
     }
 
     /// <summary>
-    /// Gets or sets the required item amount.
+    /// Gets or sets the number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items.
     /// </summary>
     public ushort RequiredItemAmount
     {
@@ -12001,6 +12001,11 @@ public readonly struct PlayerShopBuyResultExtended
         /// The requested player has item block active.
         /// </summary>
             ItemBlock = 9,
+
+        /// <summary>
+        /// The player has not enough of the currency (jewels or account coins) in which the price of the item is defined.
+        /// </summary>
+            LackOfPriceCurrency = 10,
     }
 
     private readonly Memory<byte> _data;
@@ -12264,6 +12269,131 @@ public readonly struct PlayerShopItemListExtended
     /// <param name="structLength">The length of <see cref="PlayerShopItemExtended"/> from which the size will be calculated.</param>
           
     public static int GetRequiredSize(int itemsCount, int structLength) => itemsCount * structLength + 55;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.
+/// Causes reaction on client side: The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.
+/// </summary>
+public readonly struct PlayerShopPriceTypesExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypesExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopPriceTypesExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypesExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private PlayerShopPriceTypesExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x3F;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0A;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="PlayerShopPriceType"/> of the specified index.
+    /// </summary>
+        public PlayerShopPriceType this[int index] => new (this._data.Slice(5 + index * PlayerShopPriceType.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopPriceTypesExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator PlayerShopPriceTypesExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="PlayerShopPriceTypesExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(PlayerShopPriceTypesExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="PlayerShopPriceType"/>.
+    /// </summary>
+    /// <param name="priceTypesCount">The count of <see cref="PlayerShopPriceType"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int priceTypesCount) => priceTypesCount * PlayerShopPriceType.Length + 5;
+
+
+/// <summary>
+/// A price type which is allowed for prices in player shops, in addition to zen..
+/// </summary>
+public readonly struct PlayerShopPriceType
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceType"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopPriceType(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.
+    /// </summary>
+    public ushort PriceItemType
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+}
 }
 
 

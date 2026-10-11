@@ -1696,6 +1696,9 @@
   <data name="CaptionChangeKind_Customized" xml:space="preserve">
     <value>Customized</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
   <data name="SelectRecommended" xml:space="preserve">
     <value>Select recommended</value>
   </data>

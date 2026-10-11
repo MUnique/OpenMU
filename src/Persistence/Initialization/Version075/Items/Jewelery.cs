@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for jewelery (rings and pendants).
@@ -37,7 +36,7 @@ internal class Jewelery : InitializerBase
     public sealed override void Initialize()
     {
         this._healthRecoverOptionDefinition = this.CreateOption(LocalizedString.FromResource(() => ItemOptionNames.HealthRecoverForJewelery), Stats.HealthRecoveryMultiplier, 0.01f, ItemOptionDefinitionNumbers.JeweleryHealth);
-        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 1 per item level.");
+        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.ElementalResistancesJewelery), LocalizedString.FromResource(() => LevelBonusDescriptions.JeweleryElementalResistances));
         this.CreateItems();
     }
 
@@ -96,7 +95,15 @@ internal class Jewelery : InitializerBase
         ring.BasePowerUpAttributes.Add(powerUp);
         powerUp.BaseValue = 0;
         powerUp.TargetAttribute = Stats.TransformationSkin.GetPersistent(this.GameConfiguration);
-        powerUp.BonusPerLevelTable = this.CreateItemBonusTable(transformationSkins.Select(v => (float)v).ToArray(), $"Transformation Ring Skins ({name})", $"Contains the skin numbers for the different levels of the transformation ring ({name}).");
+        if (!LocalizedStringResources.TryResolve(name.SourceKey, out _, out var ringKey))
+        {
+            throw new InvalidOperationException("A built-in transformation ring must have a resource-backed name.");
+        }
+
+        powerUp.BonusPerLevelTable = this.CreateItemBonusTable(
+            transformationSkins.Select(v => (float)v).ToArray(),
+            LevelBonusNames.ResourceManager.GetLocalizedString($"TransformationRingSkins{ringKey}"),
+            LevelBonusDescriptions.ResourceManager.GetLocalizedString($"TransformationRingSkins{ringKey}"));
 
         foreach (var characterClass in this.GameConfiguration.CharacterClasses)
         {

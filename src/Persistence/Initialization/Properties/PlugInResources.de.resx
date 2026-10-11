@@ -764,4 +764,28 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung konfiguriert die NPCs der Plugins, die das Gespräch mit einem NPC behandeln, z. B. den Reset-NPC oder den Erzengel der Blutburg.</value>
   </data>
+  <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve">
+    <value>Iron Knight nutzt seinen Stich</value>
+  </data>
+  <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung lässt den Iron Knight von Raklion mit seinem Stich angreifen, den der Client mit einem Kombo-Effekt anzeigt.</value>
+  </data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve">
+    <value>Juwelenbündel bei Juwelier Raul auf dem Loren-Markt hinzufügen</value>
+  </data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung lässt Juwelier Raul (546) auf dem Loren-Markt das Fenster für Juwelenbündel öffnen, in dem man wie bei Lahap Juwelen zu Bündeln zusammenfassen und wieder auflösen kann.</value>
+  </data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve">
+    <value>Server-Ports aus dem dynamischen Portbereich verschieben</value>
+  </data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung verschiebt die Ports der Spielserver und des Chatservers von 55900 – 55999 nach 45900 – 45999 (z. B. 55901 nach 45901 und 55980 nach 45980), da die bisherigen Ports im dynamischen Portbereich des Betriebssystems liegen und bereits belegt sein können. Firewall, Portweiterleitungen und Docker-Compose-Dateien müssen entsprechend angepasst werden.</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop hinzufügen</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Cash-Shop-Konfiguration mit den Paketen des Cash-Shop-Skripts 512.2012.084 des Spielclients hinzu, sowie die Gegenstände, die angewendet werden, wenn sie aus dem Cash-Shop-Lager verwendet werden (Charakterkarten, Tresor- und Inventarerweiterung).</value>
+  </data>
 </root>

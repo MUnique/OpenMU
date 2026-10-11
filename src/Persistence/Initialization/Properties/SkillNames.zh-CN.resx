@@ -24,4 +24,799 @@
   <data name="SelupanFall" xml:space="preserve">
     <value>冰霜巨蛛坠击</value>
   </data>
+  <data name="Ice" xml:space="preserve">
+    <value>冰封术</value>
+  </data>
+  <data name="Lightning" xml:space="preserve">
+    <value>掌心雷</value>
+  </data>
+  <data name="EnergyBall" xml:space="preserve">
+    <value>能量球</value>
+  </data>
+  <data name="TripleShot" xml:space="preserve">
+    <value>多重箭</value>
+  </data>
+  <data name="Slash" xml:space="preserve">
+    <value>天地十字剑</value>
+  </data>
+  <data name="SummonGoblin" xml:space="preserve">
+    <value>召唤哥布林</value>
+  </data>
+  <data name="GreaterDamage" xml:space="preserve">
+    <value>战神之力</value>
+  </data>
+  <data name="GreaterDefense" xml:space="preserve">
+    <value>守护之光</value>
+  </data>
+  <data name="Heal" xml:space="preserve">
+    <value>治疗术</value>
+  </data>
+  <data name="FlameOfEvilMonster" xml:space="preserve">
+    <value>邪恶火焰（怪物）</value>
+  </data>
+  <data name="Poison" xml:space="preserve">
+    <value>毒咒术</value>
+  </data>
+  <data name="Meteorite" xml:space="preserve">
+    <value>陨石术</value>
+  </data>
+  <data name="PowerWave" xml:space="preserve">
+    <value>真空波</value>
+  </data>
+  <data name="Cyclone" xml:space="preserve">
+    <value>旋风斩</value>
+  </data>
+  <data name="FallingSlash" xml:space="preserve">
+    <value>地裂斩</value>
+  </data>
+  <data name="Lunge" xml:space="preserve">
+    <value>牙突刺</value>
+  </data>
+  <data name="Twister" xml:space="preserve">
+    <value>龙卷风</value>
+  </data>
+  <data name="Flame" xml:space="preserve">
+    <value>火龙术</value>
+  </data>
+  <data name="Teleport" xml:space="preserve">
+    <value>瞬间移动</value>
+  </data>
+  <data name="FireBall" xml:space="preserve">
+    <value>火球术</value>
+  </data>
+  <data name="Uppercut" xml:space="preserve">
+    <value>升龙击</value>
+  </data>
+  <data name="Defense" xml:space="preserve">
+    <value>圣盾防御</value>
+  </data>
+  <data name="AquaBeam" xml:space="preserve">
+    <value>极光术</value>
+  </data>
+  <data name="Hellfire" xml:space="preserve">
+    <value>地狱火</value>
+  </data>
+  <data name="EvilSpirit" xml:space="preserve">
+    <value>黑龙波</value>
+  </data>
+  <data name="SummonBali" xml:space="preserve">
+    <value>召唤巴里</value>
+  </data>
+  <data name="SummonDarkKnight" xml:space="preserve">
+    <value>召唤暗黑骑士</value>
+  </data>
+  <data name="SummonEliteYeti" xml:space="preserve">
+    <value>召唤雪人王</value>
+  </data>
+  <data name="SummonAssassin" xml:space="preserve">
+    <value>召唤暗杀者</value>
+  </data>
+  <data name="SummonStoneGolem" xml:space="preserve">
+    <value>召唤石巨人</value>
+  </data>
+  <data name="FireBreath" xml:space="preserve">
+    <value>火焰吐息</value>
+  </data>
+  <data name="Inferno" xml:space="preserve">
+    <value>毁灭烈焰</value>
+  </data>
+  <data name="Cometfall" xml:space="preserve">
+    <value>爆炎术</value>
+  </data>
+  <data name="TwistingSlash" xml:space="preserve">
+    <value>霹雳回旋斩</value>
+  </data>
+  <data name="Impale" xml:space="preserve">
+    <value>钻云枪</value>
+  </data>
+  <data name="GenericMonsterSkill" xml:space="preserve">
+    <value>通用怪物技能</value>
+  </data>
+  <data name="ForceWave" xml:space="preserve">
+    <value>冲击</value>
+  </data>
+  <data name="DeathStab" xml:space="preserve">
+    <value>袭风刺</value>
+  </data>
+  <data name="RagefulBlow" xml:space="preserve">
+    <value>雷霆裂闪</value>
+  </data>
+  <data name="StrikeOfDestruction" xml:space="preserve">
+    <value>毁灭一击</value>
+  </data>
+  <data name="InfinityArrow" xml:space="preserve">
+    <value>无影箭</value>
+  </data>
+  <data name="PlasmaStorm" xml:space="preserve">
+    <value>等离子风暴</value>
+  </data>
+  <data name="PowerSlash" xml:space="preserve">
+    <value>天雷闪</value>
+  </data>
+  <data name="DrainLife" xml:space="preserve">
+    <value>摄魂咒</value>
+  </data>
+  <data name="Earthshake" xml:space="preserve">
+    <value>地裂</value>
+  </data>
+  <data name="Decay" xml:space="preserve">
+    <value>毒炎术</value>
+  </data>
+  <data name="IceStorm" xml:space="preserve">
+    <value>暴风雪</value>
+  </data>
+  <data name="LightningShock" xml:space="preserve">
+    <value>烈光闪</value>
+  </data>
+  <data name="MultiShot" xml:space="preserve">
+    <value>五重箭</value>
+  </data>
+  <data name="DoppelgangerSelfExplosion" xml:space="preserve">
+    <value>生魂分身自爆</value>
+  </data>
+  <data name="KillingBlow" xml:space="preserve">
+    <value>幽冥青狼拳</value>
+  </data>
+  <data name="BeastUppercut" xml:space="preserve">
+    <value>斗气爆裂拳</value>
+  </data>
+  <data name="Pollution" xml:space="preserve">
+    <value>幻兽</value>
+  </data>
+  <data name="Requiem" xml:space="preserve">
+    <value>安魂弥撒</value>
+  </data>
+  <data name="Explosion" xml:space="preserve">
+    <value>爆裂击</value>
+  </data>
+  <data name="PhoenixShot" xml:space="preserve">
+    <value>凤凰射击</value>
+  </data>
+  <data name="IncreaseBlock" xml:space="preserve">
+    <value>斗神-御</value>
+  </data>
+  <data name="IncreaseHealth" xml:space="preserve">
+    <value>斗神-命</value>
+  </data>
+  <data name="IgnoreDefense" xml:space="preserve">
+    <value>斗神-破</value>
+  </data>
+  <data name="DragonSlasher" xml:space="preserve">
+    <value>嗜血之龙</value>
+  </data>
+  <data name="DragonRoar" xml:space="preserve">
+    <value>炎龙拳</value>
+  </data>
+  <data name="DarkSide" xml:space="preserve">
+    <value>幽冥光速拳</value>
+  </data>
+  <data name="ChainDrive" xml:space="preserve">
+    <value>回旋踢</value>
+  </data>
+  <data name="GiganticStorm" xml:space="preserve">
+    <value>闪电轰顶</value>
+  </data>
+  <data name="ExpansionOfWizardry" xml:space="preserve">
+    <value>法神附体</value>
+  </data>
+  <data name="Innovation" xml:space="preserve">
+    <value>破御阵</value>
+  </data>
+  <data name="Weakness" xml:space="preserve">
+    <value>虚弱阵</value>
+  </data>
+  <data name="Sleep" xml:space="preserve">
+    <value>昏睡术</value>
+  </data>
+  <data name="Berserker" xml:space="preserve">
+    <value>狂暴术</value>
+  </data>
+  <data name="DamageReflection" xml:space="preserve">
+    <value>伤害反射</value>
+  </data>
+  <data name="ChainLightning" xml:space="preserve">
+    <value>链雷咒</value>
+  </data>
+  <data name="Nova" xml:space="preserve">
+    <value>星辰一怒</value>
+  </data>
+  <data name="SoulBarrier" xml:space="preserve">
+    <value>守护之魂</value>
+  </data>
+  <data name="TeleportAlly" xml:space="preserve">
+    <value>小挪移</value>
+  </data>
+  <data name="ChaoticDiseier" xml:space="preserve">
+    <value>黑暗之力</value>
+  </data>
+  <data name="FireScream" xml:space="preserve">
+    <value>火舞旋风</value>
+  </data>
+  <data name="ElectricSpike" xml:space="preserve">
+    <value>圣极光</value>
+  </data>
+  <data name="IncreaseCriticalDamage" xml:space="preserve">
+    <value>会心伤害提升</value>
+  </data>
+  <data name="Summon" xml:space="preserve">
+    <value>星云召唤</value>
+  </data>
+  <data name="FireBurst" xml:space="preserve">
+    <value>星云火链</value>
+  </data>
+  <data name="FlameStrike" xml:space="preserve">
+    <value>烈焰强击</value>
+  </data>
+  <data name="Recovery" xml:space="preserve">
+    <value>防护值恢复</value>
+  </data>
+  <data name="IceArrow" xml:space="preserve">
+    <value>冰封箭</value>
+  </data>
+  <data name="Penetration" xml:space="preserve">
+    <value>穿透箭</value>
+  </data>
+  <data name="FireSlash" xml:space="preserve">
+    <value>玄月斩</value>
+  </data>
+  <data name="SwellLife" xml:space="preserve">
+    <value>生命之光</value>
+  </data>
+  <data name="RecoverManaMonsterKills" xml:space="preserve">
+    <value>击杀怪物恢复魔法</value>
+  </data>
+  <data name="RecoverHPFromMonsterKills" xml:space="preserve">
+    <value>击杀怪物恢复生命</value>
+  </data>
+  <data name="IncreaseMinimumAttackPower" xml:space="preserve">
+    <value>最小攻击力提升</value>
+  </data>
+  <data name="RecoverSDFromMonsterKills" xml:space="preserve">
+    <value>击杀怪物恢复SD</value>
+  </data>
+  <data name="DecreaseMana" xml:space="preserve">
+    <value>魔法消耗降低</value>
+  </data>
+  <data name="IncreasePvPAttackRate" xml:space="preserve">
+    <value>PvP攻击成功率提升</value>
+  </data>
+  <data name="IncreaseMaximumMana" xml:space="preserve">
+    <value>最大魔法值提升</value>
+  </data>
+  <data name="IncreaseMaximumHP" xml:space="preserve">
+    <value>最大生命值提升</value>
+  </data>
+  <data name="IncreaseAttackSuccessRate" xml:space="preserve">
+    <value>攻击成功率提升</value>
+  </data>
+  <data name="IncreaseDefenseSuccessRate" xml:space="preserve">
+    <value>防御成功率提升</value>
+  </data>
+  <data name="IncreasesDefense" xml:space="preserve">
+    <value>防御力提升</value>
+  </data>
+  <data name="DurabilityReduction3" xml:space="preserve">
+    <value>耐久度降低(3)</value>
+  </data>
+  <data name="DurabilityReduction2" xml:space="preserve">
+    <value>耐久度降低(2)</value>
+  </data>
+  <data name="DurabilityReduction1" xml:space="preserve">
+    <value>耐久度降低(1)</value>
+  </data>
+  <data name="IncreaseIceResistance" xml:space="preserve">
+    <value>冰属性抗性提升</value>
+  </data>
+  <data name="IncreaseLightningResistance" xml:space="preserve">
+    <value>雷属性抗性提升</value>
+  </data>
+  <data name="IncreasePoisonResistance" xml:space="preserve">
+    <value>毒属性抗性提升</value>
+  </data>
+  <data name="IncreasesAGRecoveryRate" xml:space="preserve">
+    <value>AG恢复率提升</value>
+  </data>
+  <data name="IncreaseHPRecoveryRate" xml:space="preserve">
+    <value>生命恢复率提升</value>
+  </data>
+  <data name="IncreaseManaRecoveryRate" xml:space="preserve">
+    <value>魔法恢复率提升</value>
+  </data>
+  <data name="IncreaseSDRecoveryRate" xml:space="preserve">
+    <value>SD恢复率提升</value>
+  </data>
+  <data name="IncreaseMaximumSD" xml:space="preserve">
+    <value>最大SD提升</value>
+  </data>
+  <data name="IncreasePvPDefenseRate" xml:space="preserve">
+    <value>PvP防御成功率提升</value>
+  </data>
+  <data name="StaminaIncreaseStrengthener" xml:space="preserve">
+    <value>体力提升强化</value>
+  </data>
+  <data name="DefSuccessRateIncMastery" xml:space="preserve">
+    <value>防御成功率精通</value>
+  </data>
+  <data name="DefSuccessRateIncPowUp" xml:space="preserve">
+    <value>防御成功率强化</value>
+  </data>
+  <data name="EquippedWeaponMastery" xml:space="preserve">
+    <value>装备武器精通</value>
+  </data>
+  <data name="EquippedWeaponStrengthener" xml:space="preserve">
+    <value>装备武器强化</value>
+  </data>
+  <data name="DragonRoarStrengthener" xml:space="preserve">
+    <value>炎龙拳强化</value>
+  </data>
+  <data name="DarkSideStrengthener" xml:space="preserve">
+    <value>幽冥光速拳强化</value>
+  </data>
+  <data name="ChainDriveStrengthener" xml:space="preserve">
+    <value>回旋踢强化</value>
+  </data>
+  <data name="WeaponMastery" xml:space="preserve">
+    <value>武器精通</value>
+  </data>
+  <data name="BeastUppercutMastery" xml:space="preserve">
+    <value>斗气爆裂拳精通</value>
+  </data>
+  <data name="BeastUppercutStrengthener" xml:space="preserve">
+    <value>斗气爆裂拳强化</value>
+  </data>
+  <data name="KillingBlowMastery" xml:space="preserve">
+    <value>幽冥青狼拳精通</value>
+  </data>
+  <data name="KillingBlowStrengthener" xml:space="preserve">
+    <value>幽冥青狼拳强化</value>
+  </data>
+  <data name="PetDurabilityStr" xml:space="preserve">
+    <value>宠物耐久强化</value>
+  </data>
+  <data name="DarkSpiritStr3" xml:space="preserve">
+    <value>黑鹰强化(3)</value>
+  </data>
+  <data name="DarkSpiritStr2" xml:space="preserve">
+    <value>黑鹰强化(2)</value>
+  </data>
+  <data name="DarkSpiritStr" xml:space="preserve">
+    <value>黑鹰强化</value>
+  </data>
+  <data name="CommandAttackInc" xml:space="preserve">
+    <value>统率攻击力提升</value>
+  </data>
+  <data name="ShieldMastery" xml:space="preserve">
+    <value>盾牌精通</value>
+  </data>
+  <data name="ShieldStrengthener" xml:space="preserve">
+    <value>盾牌强化</value>
+  </data>
+  <data name="ScepterMastery" xml:space="preserve">
+    <value>权杖精通</value>
+  </data>
+  <data name="ScepterStrengthener" xml:space="preserve">
+    <value>权杖强化</value>
+  </data>
+  <data name="UseScepterPetStr" xml:space="preserve">
+    <value>使用权杖时的宠物强化</value>
+  </data>
+  <data name="FireScreamStren" xml:space="preserve">
+    <value>火舞旋风强化</value>
+  </data>
+  <data name="CritDMGIncPowUp3" xml:space="preserve">
+    <value>会心伤害提升(3)</value>
+  </data>
+  <data name="CritDMGIncPowUp2" xml:space="preserve">
+    <value>会心伤害提升(2)</value>
+  </data>
+  <data name="CriticalDMGIncPowUp" xml:space="preserve">
+    <value>会心伤害提升</value>
+  </data>
+  <data name="EarthshakeMastery" xml:space="preserve">
+    <value>地裂精通</value>
+  </data>
+  <data name="EarthshakeStreng" xml:space="preserve">
+    <value>地裂强化</value>
+  </data>
+  <data name="DarkHorseStreng1" xml:space="preserve">
+    <value>黑王马强化(1)</value>
+  </data>
+  <data name="FireBurstMastery" xml:space="preserve">
+    <value>星云火链精通</value>
+  </data>
+  <data name="FireBurstStreng" xml:space="preserve">
+    <value>星云火链强化</value>
+  </data>
+  <data name="ForceWaveStreng" xml:space="preserve">
+    <value>冲击强化</value>
+  </data>
+  <data name="Force" xml:space="preserve">
+    <value>斗气</value>
+  </data>
+  <data name="BloodAttackStrengthen" xml:space="preserve">
+    <value>嗜血攻击强化</value>
+  </data>
+  <data name="IceStrengthener" xml:space="preserve">
+    <value>冰封术强化</value>
+  </data>
+  <data name="MagicMastery" xml:space="preserve">
+    <value>魔法精通</value>
+  </data>
+  <data name="EvilSpiritStrengthen" xml:space="preserve">
+    <value>黑龙波强化</value>
+  </data>
+  <data name="InfernoStrengthener" xml:space="preserve">
+    <value>毁灭烈焰强化</value>
+  </data>
+  <data name="FlameStrengthener" xml:space="preserve">
+    <value>火龙术强化</value>
+  </data>
+  <data name="PowerSlashStreng" xml:space="preserve">
+    <value>天雷闪强化</value>
+  </data>
+  <data name="TwistingSlashStren" xml:space="preserve">
+    <value>霹雳回旋斩强化</value>
+  </data>
+  <data name="BlastStrengthener" xml:space="preserve">
+    <value>爆裂强化</value>
+  </data>
+  <data name="LightningStrengthener" xml:space="preserve">
+    <value>掌心雷强化</value>
+  </data>
+  <data name="CycloneStrengthener" xml:space="preserve">
+    <value>旋风斩强化</value>
+  </data>
+  <data name="MinimumWizCurseInc" xml:space="preserve">
+    <value>最小魔法/诅咒攻击力提升</value>
+  </data>
+  <data name="BerserkerProficiency" xml:space="preserve">
+    <value>狂暴术熟练</value>
+  </data>
+  <data name="BerserkerStrengthener" xml:space="preserve">
+    <value>狂暴术强化</value>
+  </data>
+  <data name="OtherWorldTomeMastery" xml:space="preserve">
+    <value>异界之书精通</value>
+  </data>
+  <data name="OtherWorldTomeStreng" xml:space="preserve">
+    <value>异界之书强化</value>
+  </data>
+  <data name="StickMastery" xml:space="preserve">
+    <value>法杖精通</value>
+  </data>
+  <data name="StickStrengthener" xml:space="preserve">
+    <value>法杖强化</value>
+  </data>
+  <data name="DrainLifeStrengthener" xml:space="preserve">
+    <value>摄魂咒强化</value>
+  </data>
+  <data name="LightningShockStr" xml:space="preserve">
+    <value>烈光闪强化</value>
+  </data>
+  <data name="ChainLightningStr" xml:space="preserve">
+    <value>链雷咒强化</value>
+  </data>
+  <data name="SleepStrengthener" xml:space="preserve">
+    <value>昏睡术强化</value>
+  </data>
+  <data name="LightningTomeMastery" xml:space="preserve">
+    <value>雷之书精通</value>
+  </data>
+  <data name="LightningTomeStren" xml:space="preserve">
+    <value>雷之书强化</value>
+  </data>
+  <data name="WindTomeMastery" xml:space="preserve">
+    <value>风之书精通</value>
+  </data>
+  <data name="WindTomeStrengthener" xml:space="preserve">
+    <value>风之书强化</value>
+  </data>
+  <data name="FireTomeMastery" xml:space="preserve">
+    <value>火之书精通</value>
+  </data>
+  <data name="FireTomeStrengthener" xml:space="preserve">
+    <value>火之书强化</value>
+  </data>
+  <data name="MinimumAttPowerInc" xml:space="preserve">
+    <value>最小攻击力提升</value>
+  </data>
+  <data name="InfinityArrowStr" xml:space="preserve">
+    <value>无影箭强化</value>
+  </data>
+  <data name="CrossbowMastery" xml:space="preserve">
+    <value>弩精通</value>
+  </data>
+  <data name="CrossbowStrengthener" xml:space="preserve">
+    <value>弩强化</value>
+  </data>
+  <data name="BowMastery" xml:space="preserve">
+    <value>弓精通</value>
+  </data>
+  <data name="BowStrengthener" xml:space="preserve">
+    <value>弓强化</value>
+  </data>
+  <data name="IceArrowStrengthener" xml:space="preserve">
+    <value>冰封箭强化</value>
+  </data>
+  <data name="DefenseIncreaseMastery" xml:space="preserve">
+    <value>防御力提升精通</value>
+  </data>
+  <data name="DefenseIncreaseStr" xml:space="preserve">
+    <value>防御力提升强化</value>
+  </data>
+  <data name="AttackIncreaseMastery" xml:space="preserve">
+    <value>攻击力提升精通</value>
+  </data>
+  <data name="AttackIncreaseStr" xml:space="preserve">
+    <value>攻击力提升强化</value>
+  </data>
+  <data name="SummonedMonsterStr2" xml:space="preserve">
+    <value>召唤兽强化(2)</value>
+  </data>
+  <data name="TripleShotMastery" xml:space="preserve">
+    <value>多重箭精通</value>
+  </data>
+  <data name="TripleShotStrengthener" xml:space="preserve">
+    <value>多重箭强化</value>
+  </data>
+  <data name="PenetrationStrengthener" xml:space="preserve">
+    <value>穿透箭强化</value>
+  </data>
+  <data name="SummonedMonsterStr1" xml:space="preserve">
+    <value>召唤兽强化(1)</value>
+  </data>
+  <data name="HealStrengthener" xml:space="preserve">
+    <value>治疗术强化</value>
+  </data>
+  <data name="MinimumWizardryInc" xml:space="preserve">
+    <value>最小魔法攻击力提升</value>
+  </data>
+  <data name="SoulBarrierProficie" xml:space="preserve">
+    <value>守护之魂熟练</value>
+  </data>
+  <data name="SoulBarrierStrength" xml:space="preserve">
+    <value>守护之魂强化</value>
+  </data>
+  <data name="TwoHandedStaffMast" xml:space="preserve">
+    <value>双手杖精通</value>
+  </data>
+  <data name="TwoHandedStaffStren" xml:space="preserve">
+    <value>双手杖强化</value>
+  </data>
+  <data name="OneHandedStaffMast" xml:space="preserve">
+    <value>单手杖精通</value>
+  </data>
+  <data name="OneHandedStaffStren" xml:space="preserve">
+    <value>单手杖强化</value>
+  </data>
+  <data name="HellfireStrengthener" xml:space="preserve">
+    <value>地狱火强化</value>
+  </data>
+  <data name="DecayStrengthener" xml:space="preserve">
+    <value>毒炎术强化</value>
+  </data>
+  <data name="PoisonStrengthener" xml:space="preserve">
+    <value>毒咒术强化</value>
+  </data>
+  <data name="EvilSpiritStreng" xml:space="preserve">
+    <value>黑龙波强化</value>
+  </data>
+  <data name="ExpansionOfWizMas" xml:space="preserve">
+    <value>法神附体精通</value>
+  </data>
+  <data name="ExpansionOfWizStreng" xml:space="preserve">
+    <value>法神附体强化</value>
+  </data>
+  <data name="SwellLifeStrengt" xml:space="preserve">
+    <value>生命之光强化</value>
+  </data>
+  <data name="SpearMastery" xml:space="preserve">
+    <value>矛精通</value>
+  </data>
+  <data name="SpearStrengthener" xml:space="preserve">
+    <value>矛强化</value>
+  </data>
+  <data name="MaceMastery" xml:space="preserve">
+    <value>锤精通</value>
+  </data>
+  <data name="MaceStrengthener" xml:space="preserve">
+    <value>锤强化</value>
+  </data>
+  <data name="OneHandedSwordMast" xml:space="preserve">
+    <value>单手剑精通</value>
+  </data>
+  <data name="OneHandedSwordStren" xml:space="preserve">
+    <value>单手剑强化</value>
+  </data>
+  <data name="TwoHandedSwordMast" xml:space="preserve">
+    <value>双手剑精通</value>
+  </data>
+  <data name="TwoHandedSwordStren" xml:space="preserve">
+    <value>双手剑强化</value>
+  </data>
+  <data name="MaximumManaIncrease" xml:space="preserve">
+    <value>最大魔法值提升</value>
+  </data>
+  <data name="MaximumLifeIncrease" xml:space="preserve">
+    <value>最大生命值提升</value>
+  </data>
+  <data name="StrikeOfDestrStr" xml:space="preserve">
+    <value>毁灭一击强化</value>
+  </data>
+  <data name="DeathStabStrengthener" xml:space="preserve">
+    <value>袭风刺强化</value>
+  </data>
+  <data name="RagefulBlowMastery" xml:space="preserve">
+    <value>雷霆裂闪精通</value>
+  </data>
+  <data name="RagefulBlowStreng" xml:space="preserve">
+    <value>雷霆裂闪强化</value>
+  </data>
+  <data name="TwistingSlashMastery" xml:space="preserve">
+    <value>霹雳回旋斩精通</value>
+  </data>
+  <data name="TwistingSlashStreng" xml:space="preserve">
+    <value>霹雳回旋斩强化</value>
+  </data>
+  <data name="LungeStrengthener" xml:space="preserve">
+    <value>牙突刺强化</value>
+  </data>
+  <data name="FallingSlashStreng" xml:space="preserve">
+    <value>地裂斩强化</value>
+  </data>
+  <data name="SlashStrengthener" xml:space="preserve">
+    <value>天地十字剑强化</value>
+  </data>
+  <data name="AttackSuccRateInc" xml:space="preserve">
+    <value>攻击成功率提升</value>
+  </data>
+  <data name="PvPAttackRate" xml:space="preserve">
+    <value>PvP攻击成功率</value>
+  </data>
+  <data name="MonsterAttackManaInc" xml:space="preserve">
+    <value>攻击怪物魔法恢复</value>
+  </data>
+  <data name="MonsterAttackLifeInc" xml:space="preserve">
+    <value>攻击怪物生命恢复</value>
+  </data>
+  <data name="MinimumAttackPowerInc" xml:space="preserve">
+    <value>最小攻击力提升</value>
+  </data>
+  <data name="SwellLifeProficiency" xml:space="preserve">
+    <value>生命之光熟练</value>
+  </data>
+  <data name="MonsterAttackSDInc" xml:space="preserve">
+    <value>攻击怪物SD恢复</value>
+  </data>
+  <data name="ManaReduction" xml:space="preserve">
+    <value>魔法消耗降低</value>
+  </data>
+  <data name="DefenseSuccessRateInc" xml:space="preserve">
+    <value>防御成功率提升</value>
+  </data>
+  <data name="DefenseIncrease" xml:space="preserve">
+    <value>防御力提升</value>
+  </data>
+  <data name="DurabilityReduction3Name" xml:space="preserve">
+    <value>耐久度降低(3)</value>
+  </data>
+  <data name="IceResistanceIncrease" xml:space="preserve">
+    <value>冰属性抗性提升</value>
+  </data>
+  <data name="LightningResistanceInc" xml:space="preserve">
+    <value>雷属性抗性提升</value>
+  </data>
+  <data name="PoisonResistanceInc" xml:space="preserve">
+    <value>毒属性抗性提升</value>
+  </data>
+  <data name="AutomaticAGRecInc" xml:space="preserve">
+    <value>AG自动恢复提升</value>
+  </data>
+  <data name="AutomaticHPRecInc" xml:space="preserve">
+    <value>生命自动恢复提升</value>
+  </data>
+  <data name="AutomaticManaRecInc" xml:space="preserve">
+    <value>魔法自动恢复提升</value>
+  </data>
+  <data name="SDRecoverySpeedInc" xml:space="preserve">
+    <value>SD恢复速度提升</value>
+  </data>
+  <data name="MaximumSDIncrease" xml:space="preserve">
+    <value>最大SD提升</value>
+  </data>
+  <data name="PvPDefenceRateInc" xml:space="preserve">
+    <value>PvP防御成功率提升</value>
+  </data>
+  <data name="Charge" xml:space="preserve">
+    <value>冲锋</value>
+  </data>
+  <data name="ShieldBurn" xml:space="preserve">
+    <value>护盾燃烧</value>
+  </data>
+  <data name="SpellOfPursuit" xml:space="preserve">
+    <value>追击符咒</value>
+  </data>
+  <data name="SpellOfRestriction" xml:space="preserve">
+    <value>束缚符咒</value>
+  </data>
+  <data name="SpellOfProtection" xml:space="preserve">
+    <value>守护符咒</value>
+  </data>
+  <data name="PotionOfSoul" xml:space="preserve">
+    <value>灵魂药水</value>
+  </data>
+  <data name="PotionOfBless" xml:space="preserve">
+    <value>祝福药水</value>
+  </data>
+  <data name="PhysicalAttackImmunity" xml:space="preserve">
+    <value>物理攻击免疫</value>
+  </data>
+  <data name="MagicAttackImmunity" xml:space="preserve">
+    <value>魔法攻击免疫</value>
+  </data>
+  <data name="SummonMonster" xml:space="preserve">
+    <value>召唤怪物</value>
+  </data>
+  <data name="FireBlast" xml:space="preserve">
+    <value>火焰爆破</value>
+  </data>
+  <data name="ManaRays" xml:space="preserve">
+    <value>魔力射线</value>
+  </data>
+  <data name="AbolishMagic" xml:space="preserve">
+    <value>解除魔法</value>
+  </data>
+  <data name="CancelInvisibility" xml:space="preserve">
+    <value>解除隐身</value>
+  </data>
+  <data name="Invisibility" xml:space="preserve">
+    <value>隐身术</value>
+  </data>
+  <data name="SwellMana" xml:space="preserve">
+    <value>魔力增幅</value>
+  </data>
+  <data name="CancelStun" xml:space="preserve">
+    <value>解除眩晕</value>
+  </data>
+  <data name="Stun" xml:space="preserve">
+    <value>眩晕</value>
+  </data>
+  <data name="SpiralSlash" xml:space="preserve">
+    <value>螺旋斩</value>
+  </data>
+  <data name="Starfall" xml:space="preserve">
+    <value>星落</value>
+  </data>
+  <data name="Lance" xml:space="preserve">
+    <value>长枪突刺</value>
+  </data>
+  <data name="CrescentMoonSlash" xml:space="preserve">
+    <value>月牙斩</value>
+  </data>
+  <data name="NovaStart" xml:space="preserve">
+    <value>星辰一怒（蓄力）</value>
+  </data>
+  <data name="SummonSoldier" xml:space="preserve">
+    <value>召唤士兵</value>
+  </data>
 </root>

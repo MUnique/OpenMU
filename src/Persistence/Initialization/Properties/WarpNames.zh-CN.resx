@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="LostTower7" xml:space="preserve">
+    <value>失落之塔7</value>
+  </data>
+  <data name="LostTower6" xml:space="preserve">
+    <value>失落之塔6</value>
+  </data>
+  <data name="LostTower5" xml:space="preserve">
+    <value>失落之塔5</value>
+  </data>
+  <data name="LostTower4" xml:space="preserve">
+    <value>失落之塔4</value>
+  </data>
+  <data name="LostTower3" xml:space="preserve">
+    <value>失落之塔3</value>
+  </data>
+  <data name="LostTower2" xml:space="preserve">
+    <value>失落之塔2</value>
+  </data>
+  <data name="LostTower" xml:space="preserve">
+    <value>失落之塔</value>
+  </data>
+  <data name="Dungeon3" xml:space="preserve">
+    <value>地下城3</value>
+  </data>
+  <data name="Dungeon2" xml:space="preserve">
+    <value>地下城2</value>
+  </data>
+  <data name="Dungeon" xml:space="preserve">
+    <value>地下城</value>
+  </data>
+  <data name="Devias" xml:space="preserve">
+    <value>冰风谷</value>
+  </data>
+  <data name="Noria" xml:space="preserve">
+    <value>仙踪林</value>
+  </data>
+  <data name="Lorencia" xml:space="preserve">
+    <value>勇者大陆</value>
+  </data>
+  <data name="Arena" xml:space="preserve">
+    <value>竞技场</value>
+  </data>
+  <data name="LaCleon" xml:space="preserve">
+    <value>冰霜之城</value>
+  </data>
+  <data name="Karutan2" xml:space="preserve">
+    <value>卡伦特2</value>
+  </data>
+  <data name="Karutan1" xml:space="preserve">
+    <value>卡伦特1</value>
+  </data>
+  <data name="KanturuRuins3" xml:space="preserve">
+    <value>坎特鲁废墟3</value>
+  </data>
+  <data name="Elveland3" xml:space="preserve">
+    <value>幻术园3</value>
+  </data>
+  <data name="LorenMarket" xml:space="preserve">
+    <value>罗兰市集</value>
+  </data>
+  <data name="Vulcanus" xml:space="preserve">
+    <value>囚禁之岛</value>
+  </data>
+  <data name="Raklion" xml:space="preserve">
+    <value>冰霜之城</value>
+  </data>
+  <data name="PeaceSwamp" xml:space="preserve">
+    <value>安宁池</value>
+  </data>
+  <data name="Elveland2" xml:space="preserve">
+    <value>幻术园2</value>
+  </data>
+  <data name="Elveland" xml:space="preserve">
+    <value>幻术园</value>
+  </data>
+  <data name="KanturuRelics" xml:space="preserve">
+    <value>坎特鲁遗址</value>
+  </data>
+  <data name="KanturuRuins2" xml:space="preserve">
+    <value>坎特鲁废墟2</value>
+  </data>
+  <data name="KanturuRuins1" xml:space="preserve">
+    <value>坎特鲁废墟1</value>
+  </data>
+  <data name="Aida2" xml:space="preserve">
+    <value>幽暗森林2</value>
+  </data>
+  <data name="Aida1" xml:space="preserve">
+    <value>幽暗森林1</value>
+  </data>
+  <data name="Icarus" xml:space="preserve">
+    <value>天空之城</value>
+  </data>
+  <data name="Tarkan2" xml:space="preserve">
+    <value>死亡沙漠2</value>
+  </data>
+  <data name="Tarkan" xml:space="preserve">
+    <value>死亡沙漠</value>
+  </data>
+  <data name="Atlans3" xml:space="preserve">
+    <value>亚特兰蒂斯3</value>
+  </data>
+  <data name="Atlans2" xml:space="preserve">
+    <value>亚特兰蒂斯2</value>
+  </data>
+  <data name="Atlans" xml:space="preserve">
+    <value>亚特兰蒂斯</value>
+  </data>
+  <data name="Devias4" xml:space="preserve">
+    <value>冰风谷4</value>
+  </data>
+  <data name="Devias3" xml:space="preserve">
+    <value>冰风谷3</value>
+  </data>
+  <data name="Devias2" xml:space="preserve">
+    <value>冰风谷2</value>
+  </data>
+</root>

@@ -26,7 +26,7 @@ public static class AuthEndpoints
     /// Maps the endpoints which set, remove and check the authentication cookie.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <returns>The endpoint route builder.</returns>
+    /// <returns>The same endpoint route builder, to allow chaining of further calls.</returns>
     public static IEndpointRouteBuilder MapAdminPanelAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost(

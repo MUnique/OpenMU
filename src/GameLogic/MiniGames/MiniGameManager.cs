@@ -140,6 +140,21 @@ public sealed class MiniGameManager : IMiniGameManager
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> TryRejoinAsync(Player player)
+    {
+        foreach (var game in this._miniGames.Values)
+        {
+            if (game is { IsDisposed: false, IsDisposing: false }
+                && await game.TryRejoinAsync(player).ConfigureAwait(false))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc />
     public async ValueTask RemoveAsync(MiniGameContext miniGameContext)
     {
         using var l = await this._lock.LockAsync().ConfigureAwait(false);

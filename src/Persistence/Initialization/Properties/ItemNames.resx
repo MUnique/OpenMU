@@ -2073,4 +2073,13 @@
   <data name="RageFighterCharacterCard" xml:space="preserve">
     <value>Rage Fighter Character Card</value>
   </data>
+  <data name="SignOfDimensions" xml:space="preserve">
+    <value>Sign of Dimensions</value>
+  </data>
+  <data name="DoppelgangerFreeTicket" xml:space="preserve">
+    <value>Doppelganger Free Ticket</value>
+  </data>
+  <data name="MirrorOfDimensions" xml:space="preserve">
+    <value>Mirror of Dimensions</value>
+  </data>
 </root>

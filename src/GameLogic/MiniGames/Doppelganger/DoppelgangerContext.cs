@@ -293,6 +293,24 @@ public sealed class DoppelgangerContext : MiniGameContext
     }
 
     /// <inheritdoc />
+    protected override async ValueTask OnObjectAddedToMapAsync((GameMap Map, ILocateable Object) args)
+    {
+        await base.OnObjectAddedToMapAsync(args).ConfigureAwait(false);
+
+        // Players which are added while playing rejoined the game after they lost their connection.
+        // The play info is sent periodically, but the state and the goal count only when they change.
+        if (args.Object is Player player && this.State == MiniGameState.Playing)
+        {
+            var shownGoalCount = Math.Min(Volatile.Read(ref this._goalCount), this._definition.MaximumGoalCount);
+            await player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(async p =>
+            {
+                await p.ShowStateAsync(DoppelgangerState.Playing).ConfigureAwait(false);
+                await p.ShowMonsterGoalAsync(shownGoalCount, this._definition.MaximumGoalCount).ConfigureAwait(false);
+            }).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     protected override async ValueTask OnObjectRemovedFromMapAsync((GameMap Map, ILocateable Object) args)
     {
         if (args.Object is Player player)

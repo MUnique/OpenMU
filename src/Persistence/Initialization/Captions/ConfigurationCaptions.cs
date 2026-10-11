@@ -176,13 +176,14 @@ public static class ConfigurationCaptions
     }
 
     /// <summary>
-    /// Gets an exact-name fallback key for option definitions, whose older wing variants have random identifiers.
+    /// Gets an exact-text fallback key for built-in caption types whose older instances can have random identifiers.
     /// </summary>
     /// <param name="caption">The caption.</param>
     /// <returns>The owner type, neutral name and property, or <see langword="null"/> for other objects.</returns>
-    internal static (string OwnerType, string NeutralText, string PropertyName)? GetOptionNameKey(LocalizedCaption caption)
+    internal static (string OwnerType, string NeutralText, string PropertyName)? GetNeutralNameKey(LocalizedCaption caption)
     {
-        return caption.Owner is ItemOptionDefinition
+        return caption.Owner is ItemOptionDefinition or ItemLevelBonusTable or DropItemGroup or MiniGameChangeEvent
+            or MiniGameSpawnWave or WarpInfo or MagicEffectDefinition or MasterSkillRoot or SkillComboDefinition
             ? (GetTypeName(caption.Owner), caption.Value.ValueInNeutralLanguage, caption.Property.Name)
             : null;
     }
@@ -205,13 +206,17 @@ public static class ConfigurationCaptions
             .Select(g => g.Key!.Value)
             .ToHashSet();
 
+        // Several drop or event objects may share a caption, but they must all refer to the same source.
         var referencesByName = reference.Entries
-            .Where(entry => !targetIds.Contains(entry.Key))
-            .GroupBy(entry => entry.OptionNameKey)
-            .Where(group => group.Key is not null && group.Count() == 1)
-            .ToDictionary(group => group.Key!.Value, group => group.Single().Value);
+            .GroupBy(entry => entry.NeutralNameKey)
+            .Where(group => group.Key is not null
+                            && (group.Count() == 1
+                                || (group.Key.Value.OwnerType != nameof(ItemOptionDefinition)
+                                    && group.Select(entry => entry.Value.SourceKey).Distinct(StringComparer.Ordinal).Count() == 1)))
+            .ToDictionary(group => group.Key!.Value, group => group.First().Value);
         var ambiguousTargetNames = targets
-            .GroupBy(GetOptionNameKey)
+            .Where(caption => caption.Owner is ItemOptionDefinition)
+            .GroupBy(GetNeutralNameKey)
             .Where(group => group.Key is not null && group.Count() > 1)
             .Select(group => group.Key!.Value)
             .ToHashSet();
@@ -229,7 +234,7 @@ public static class ConfigurationCaptions
                 && (GetNumberKey(caption) is not { } numberKey
                     || ambiguousTargetNumbers.Contains(numberKey)
                     || !referencesByNumber.TryGetValue(numberKey, out referenceValue))
-                && (GetOptionNameKey(caption) is not { } nameKey
+                && (GetNeutralNameKey(caption) is not { } nameKey
                     || ambiguousTargetNames.Contains(nameKey)
                     || !referencesByName.TryGetValue(nameKey, out referenceValue)))
             {

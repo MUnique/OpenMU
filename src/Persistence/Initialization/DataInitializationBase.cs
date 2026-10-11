@@ -276,7 +276,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private async ValueTask CreateGameServerDefinitionsAsync(GameServerConfiguration gameServerConfiguration, int numberOfServers)
     {
-        var port = 55901;
+        var port = 45901;
         for (int i = 0; i < numberOfServers; i++)
         {
             var server = this.Context!.CreateNew<GameServerDefinition>();
@@ -310,7 +310,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
         server.SetGuid(0);
         endPoint.Client = client;
-        endPoint.NetworkPort = 55980;
+        endPoint.NetworkPort = 45980;
         server.Endpoints.Add(endPoint);
     }
 

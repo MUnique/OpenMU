@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ThisOptionIsAddedByTheChaosMachineWithAJewelOfGuardianOnLevel380Items" xml:space="preserve">
+    <value>Diese Option wird von der Chaos-Maschine mit einem Juwel des Wächters zu Gegenständen der Stufe 380 hinzugefügt.</value>
+  </data>
+  <data name="BlackFenrirMovementSpeed" xml:space="preserve">
+    <value>Option des schwarzen Fenrir: Bewegungsgeschwindigkeit</value>
+  </data>
+  <data name="BlackFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>Option des schwarzen Fenrir: Bewegungsgeschwindigkeit unter Wasser</value>
+  </data>
+  <data name="BlueFenrirMovementSpeed" xml:space="preserve">
+    <value>Option des blauen Fenrir: Bewegungsgeschwindigkeit</value>
+  </data>
+  <data name="BlueFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>Option des blauen Fenrir: Bewegungsgeschwindigkeit unter Wasser</value>
+  </data>
+  <data name="GoldFenrirMovementSpeed" xml:space="preserve">
+    <value>Option des goldenen Fenrir: Bewegungsgeschwindigkeit</value>
+  </data>
+  <data name="GoldFenrirUnderwaterMovementSpeed" xml:space="preserve">
+    <value>Option des goldenen Fenrir: Bewegungsgeschwindigkeit unter Wasser</value>
+  </data>
+  <data name="SocketPackageDoubleDamageChance" xml:space="preserve">
+    <value>Sockel-Paketoption: Chance auf doppelten Schaden 3%</value>
+  </data>
+  <data name="SocketPackageIgnoreDefenseChance" xml:space="preserve">
+    <value>Sockel-Paketoption: Chance, Verteidigung zu ignorieren 1%</value>
+  </data>
+</root>

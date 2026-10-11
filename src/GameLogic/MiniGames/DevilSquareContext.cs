@@ -57,7 +57,7 @@ public sealed class DevilSquareContext : MiniGameContext
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
         var sortedFinishers = finishers
-            .Select(f => this._gameStates[f.Name])
+            .Select(this.GetGameStateOfFinisher)
             .WhereNotNull()
             .OrderBy(state => state.Score)
             .ToList();
@@ -93,6 +93,19 @@ public sealed class DevilSquareContext : MiniGameContext
         }
     }
 
+    private PlayerGameState? GetGameStateOfFinisher(Player finisher)
+    {
+        if (!this._gameStates.TryGetValue(finisher.Name, out var state))
+        {
+            return null;
+        }
+
+        // The score is kept by the character name, so it's kept when the player rejoined the game
+        // after it lost its connection. The rewards must be given to its current player object, though.
+        state.Player = finisher;
+        return state;
+    }
+
     private sealed class PlayerGameState
     {
         private int _score;
@@ -107,7 +120,11 @@ public sealed class DevilSquareContext : MiniGameContext
             this.Player = player;
         }
 
-        public Player Player { get; }
+        /// <summary>
+        /// Gets or sets the player of the character. It's replaced by the new player
+        /// object of the same character, when it rejoined the game after it lost its connection.
+        /// </summary>
+        public Player Player { get; set; }
 
         public int Score => this._score;
 

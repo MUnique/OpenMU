@@ -1,9 +1,10 @@
-// <copyright file="CastleSiegeStateMachineTests.cs" company="MUnique">
+﻿// <copyright file="CastleSiegeStateMachineTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -267,6 +268,27 @@ public class CastleSiegeStateMachineTests
         await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
 
         Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Idle2));
+    }
+
+    /// <summary>
+    /// Verifies that a state transition is reported to the <see cref="ICastleSiegeStateChangedPlugIn"/>.
+    /// </summary>
+    [Test]
+    public async ValueTask StateChangeIsReportedToPlugInAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
+        var recorder = new StateChangeRecordingPlugIn();
+        plugInManager.RegisterPlugInAtPlugInPoint<ICastleSiegeStateChangedPlugIn>(recorder);
+        fixture.GameContext.SetupGet(game => game.PlugInManager).Returns(plugInManager);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        timeProvider.Advance(TimeSpan.FromHours(12));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.That(recorder.Changes, Is.EqualTo(new[] { (CastleSiegeState.RegisterGuild, CastleSiegeState.Idle2) }));
     }
 
     /// <summary>
@@ -729,6 +751,18 @@ public class CastleSiegeStateMachineTests
         Mock<IGameContext> GameContext,
         Guid RegisteredGuildId,
         List<string> Notifications);
+
+    [Guid("8D96455D-B16B-4E02-91DE-5DF862FB4386")]
+    private sealed class StateChangeRecordingPlugIn : ICastleSiegeStateChangedPlugIn
+    {
+        public List<(CastleSiegeState Previous, CastleSiegeState Current)> Changes { get; } = new();
+
+        public ValueTask CastleSiegeStateChangedAsync(IGameContext gameContext, CastleSiegeContext castleSiege, CastleSiegeState previousState)
+        {
+            this.Changes.Add((previousState, castleSiege.CurrentState));
+            return ValueTask.CompletedTask;
+        }
+    }
 
     private sealed class ManualTimeProvider : TimeProvider
     {

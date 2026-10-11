@@ -33,4 +33,85 @@
   <data name="ImperialGuardianSunday" xml:space="preserve">
     <value>星期日的帝国要塞活动配置，使用地图 72。</value>
   </data>
+  <data name="EventDefinitionForDevilSquareEventLevel4" xml:space="preserve">
+    <value>恶魔广场4的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel3" xml:space="preserve">
+    <value>恶魔广场3的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel2" xml:space="preserve">
+    <value>恶魔广场2的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel1" xml:space="preserve">
+    <value>恶魔广场1的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap68" xml:space="preserve">
+    <value>地图68的生魂广场活动配置。</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap67" xml:space="preserve">
+    <value>地图67的生魂广场活动配置。</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap66" xml:space="preserve">
+    <value>地图66的生魂广场活动配置。</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap65" xml:space="preserve">
+    <value>地图65的生魂广场活动配置。</value>
+  </data>
+  <data name="EventDefinitionForTheKanturuRefineryTowerEvent" xml:space="preserve">
+    <value>提炼之塔活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel7" xml:space="preserve">
+    <value>赤色要塞7的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel6" xml:space="preserve">
+    <value>赤色要塞6的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel5" xml:space="preserve">
+    <value>赤色要塞5的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel4" xml:space="preserve">
+    <value>赤色要塞4的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel3" xml:space="preserve">
+    <value>赤色要塞3的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel2" xml:space="preserve">
+    <value>赤色要塞2的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel1" xml:space="preserve">
+    <value>赤色要塞1的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel8" xml:space="preserve">
+    <value>血色城堡8的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel7" xml:space="preserve">
+    <value>血色城堡7的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel6" xml:space="preserve">
+    <value>血色城堡6的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel5" xml:space="preserve">
+    <value>血色城堡5的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel4" xml:space="preserve">
+    <value>血色城堡4的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel3" xml:space="preserve">
+    <value>血色城堡3的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel2" xml:space="preserve">
+    <value>血色城堡2的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel1" xml:space="preserve">
+    <value>血色城堡1的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel7" xml:space="preserve">
+    <value>恶魔广场7的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel6" xml:space="preserve">
+    <value>恶魔广场6的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel5" xml:space="preserve">
+    <value>恶魔广场5的活动配置。</value>
+  </data>
 </root>

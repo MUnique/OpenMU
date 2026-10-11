@@ -1569,8 +1569,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             moveToNextSafezone = true;
         }
 
-        if (this.CurrentMiniGame is { })
+        if (this.CurrentMiniGame is { } miniGame)
         {
+            if (this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                // The connection got lost, so the player may come back while the game is still running.
+                miniGame.RememberDisconnectedPlayer(this);
+            }
+
             moveToNextSafezone = true;
         }
 
@@ -1981,16 +1987,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character '{selectedCharacter}' has no assigned character class.");
         }
 
-        // For characters which got created on the database or with the admin panel,
-        // it's possible that they're missing the inventory. In this case, we create it here
-        // and initialize with default items.
+        // For characters which got created on the database, it's possible that they're
+        // missing the inventory. In this case, we create it here and initialize it with
+        // default items, like for a newly created character.
         if (selectedCharacter!.Inventory is null)
         {
             selectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, selectedCharacter);
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this.Account!, selectedCharacter, this.PersistenceContext, this.GameContext.Configuration, this.Logger);
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
+        await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
@@ -2211,9 +2218,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 itemDefenseFactor = 6;
             }
-            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0) // MG
+            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0)
             {
-                itemDefenseFactor = 7;
+                itemDefenseFactor = 7; // MG classes
             }
             else
             {

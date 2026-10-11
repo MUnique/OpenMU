@@ -264,4 +264,10 @@
   <data name="This is a custom plugin point which collects all view plugins which are suitable for a specific game client version." xml:space="preserve">
     <value>收集适用于特定客户端版本的所有显示插件。</value>
   </data>
+  <data name="Skill animation counter strategies" xml:space="preserve">
+    <value>技能动画计数策略</value>
+  </data>
+  <data name="Plugins which describe how the game client counts the animations of specific skills." xml:space="preserve">
+    <value>用于定义游戏客户端如何计算特定技能动画次数的插件。</value>
+  </data>
 </root>

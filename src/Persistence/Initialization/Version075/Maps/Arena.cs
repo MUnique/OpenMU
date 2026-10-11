@@ -36,7 +36,7 @@ internal class Arena : Initialization.BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override LocalizedString MapName => Name;
+    protected override LocalizedString MapName => LocalizedString.FromResource(() => MapNames.Arena);
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

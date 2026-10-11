@@ -47,6 +47,20 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         _ = Task.Run(() => this.RunSummonPartyAsync(player, cancellationTokenSource));
     }
 
+    private static async ValueTask SendSummonCanceledMessageAsync(Player player)
+    {
+        if (player.Party is not { } party)
+        {
+            return;
+        }
+
+        foreach (var member in party.PartyList.OfType<Player>())
+        {
+            await member.InvokeViewPlugInAsync<IChatViewPlugIn>(
+                p => p.ChatMessageAsync(member.GetLocalizedMessage(nameof(PlayerMessage.SummonPartyCanceled)), player.Name, ChatMessageType.Party)).ConfigureAwait(false);
+        }
+    }
+
     private async ValueTask RunSummonPartyAsync(Player player, CancellationTokenSource cancellationTokenSource)
     {
         var cancellationToken = cancellationTokenSource.Token;
@@ -92,20 +106,6 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         {
             player.SkillCancelTokenSource?.Dispose();
             player.SkillCancelTokenSource = null;
-        }
-    }
-
-    private static async ValueTask SendSummonCanceledMessageAsync(Player player)
-    {
-        if (player.Party is not { } party)
-        {
-            return;
-        }
-
-        foreach (var member in party.PartyList.OfType<Player>())
-        {
-            await member.InvokeViewPlugInAsync<IChatViewPlugIn>(
-                p => p.ChatMessageAsync(member.GetLocalizedMessage(nameof(PlayerMessage.SummonPartyCanceled)), player.Name, ChatMessageType.Party)).ConfigureAwait(false);
         }
     }
 

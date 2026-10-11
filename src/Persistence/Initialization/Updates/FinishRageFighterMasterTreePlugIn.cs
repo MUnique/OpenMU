@@ -76,7 +76,8 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
             charClass.AttributeCombinations.Add(defenseRatePvmToIncreaseBlockBonus);
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, increaseBlockBonus));
 
-            if (charClass.Number == 8 || charClass.Number == 10 || charClass.Number == 11) // Elf classes
+            // Elf classes
+            if (charClass.Number == 8 || charClass.Number == 10 || charClass.Number == 11)
             {
                 var ammunitionConsumptionRateToSkillExtraManaCost = context.CreateNew<AttributeRelationship>(
                     skillExtraManaCost,
@@ -89,7 +90,8 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
                 charClass.AttributeCombinations.Add(ammunitionConsumptionRateToSkillExtraManaCost);
             }
 
-            if (charClass.Number == 24 || charClass.Number == 25) // Rage Fighter classes
+            // Rage Fighter classes
+            if (charClass.Number == 24 || charClass.Number == 25)
             {
                 var gloveWeaponMasteryDoubleDamageChanceToDoubleDamageChance = context.CreateNew<AttributeRelationship>(
                     doubleDamageChance,

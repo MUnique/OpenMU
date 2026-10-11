@@ -526,6 +526,7 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
         public MonsterDropOverview(MonsterDefinition monster, GameMapDefinition map)
         {
             this.Monster = monster;
+
             // Not every monster has a level attribute, e.g. destructibles.
             this.Level = (int)(monster.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.Level)?.Value ?? 0);
             var groups = monster.DropItemGroups.ToList();
