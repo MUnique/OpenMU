@@ -1752,4 +1752,67 @@
   <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
     <value>Antike Gegenstände veröffentlichen</value>
   </data>
+  <data name="CastleSiegePlugIn_Name" xml:space="preserve">
+    <value>Burgbelagerung</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Animationszähler für Twister</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Beschreibt, wie der Spielclient die Animationen von Twister zählt: Jede Animation wird gezählt, und die Treffer enthalten keinen Animationszähler.</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Animationszähler für Evil Spirit</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Beschreibt, wie der Spielclient die Animationen von Evil Spirit zählt: Jede Animation wird gezählt.</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Animationszähler für Multi-Shot</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Beschreibt, wie der Spielclient die Animationen von Multi-Shot zählt: Die Treffer enthalten keinen Animationszähler.</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop-Version</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Description" xml:space="preserve">
+    <value>Sendet dem Spieler beim Betreten des Spiels die Versionen des Cash-Shop-Skripts und -Banners.</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Description" xml:space="preserve">
+    <value>Der Cash-Shop im Spiel. Ist er deaktiviert, kann der Cash-Shop nicht geöffnet werden. Seine Konfiguration enthält die Einstellungen, z. B. zu Geschenken und zur Lagergröße.</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Name" xml:space="preserve">
+    <value>Goblin-Punkte für Spielzeit</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Description" xml:space="preserve">
+    <value>Gibt Spielern Goblin-Punkte des Cash-Shops für ihre Spielzeit.</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Tresorerweiterungszertifikat</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Erweitert den Tresor des Kontos, wenn ein Spieler das Tresorerweiterungszertifikat aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Magischer Rucksack</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter eine Inventarerweiterung hinzu, wenn ein Spieler den Magischen Rucksack aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Summoner-Charakterkarte</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Schaltet die Klasse Summoner für das Konto frei, wenn ein Spieler die Summoner-Charakterkarte aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Rage-Fighter-Charakterkarte</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Schaltet die Klasse Rage Fighter für das Konto frei, wenn ein Spieler die Rage-Fighter-Charakterkarte aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
 </root>

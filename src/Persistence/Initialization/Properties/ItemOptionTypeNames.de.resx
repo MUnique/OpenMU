@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="AncientBonusOption" xml:space="preserve">
+    <value>Ancient-Bonusoption</value>
+  </data>
+  <data name="AncientOption" xml:space="preserve">
+    <value>Ancient-Option</value>
+  </data>
+  <data name="BlackFenrirOption" xml:space="preserve">
+    <value>Option des schwarzen Fenrir</value>
+  </data>
+  <data name="BlueFenrirOption" xml:space="preserve">
+    <value>Option des blauen Fenrir</value>
+  </data>
+  <data name="DarkHorseOption" xml:space="preserve">
+    <value>Option des Dunklen Pferdes</value>
+  </data>
+  <data name="ExcellentOption" xml:space="preserve">
+    <value>Exzellente Option</value>
+  </data>
+  <data name="GoldFenrirOption" xml:space="preserve">
+    <value>Option des goldenen Fenrir</value>
+  </data>
+  <data name="GuardianOption" xml:space="preserve">
+    <value>Wächter-Option</value>
+  </data>
+  <data name="JewelOfHarmonyOption" xml:space="preserve">
+    <value>Option des Juwels der Harmonie</value>
+  </data>
+  <data name="LuckCriticalDamageChance5" xml:space="preserve">
+    <value>Glück (Chance auf kritischen Schaden 5%)</value>
+  </data>
+  <data name="SocketBonusOption" xml:space="preserve">
+    <value>Sockel-Bonusoption</value>
+  </data>
+  <data name="SocketOption" xml:space="preserve">
+    <value>Sockeloption</value>
+  </data>
+  <data name="WingOption" xml:space="preserve">
+    <value>Flügeloption</value>
+  </data>
+</root>

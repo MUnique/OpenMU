@@ -348,4 +348,10 @@
   <data name="KanturuState_End_Caption" xml:space="preserve">
     <value>Ende</value>
   </data>
+  <data name="KanturuTerrainArea_StartX_Caption" xml:space="preserve">
+    <value>Start-X</value>
+  </data>
+  <data name="KanturuTerrainArea_StartY_Caption" xml:space="preserve">
+    <value>Start-Y</value>
+  </data>
 </root>
