@@ -57,6 +57,65 @@ internal class Quests : InitializerBase
         this.CreateNewQuests();
     }
 
+    /// <summary>
+    /// Creates the quest 'Treasures of MU', which evolves the character class from the first to the second class.
+    /// </summary>
+    /// <param name="characterClass">The character class.</param>
+    /// <param name="itemNumber">The number of the required quest item of group 14.</param>
+    /// <remarks>See also http://muonlinefanz.com/guide/quests/treasure/.</remarks>
+    protected void TreasuresOfMu(CharacterClassNumber characterClass, byte itemNumber)
+    {
+        var sebinaThePriestess = this.GameConfiguration.Monsters.First(m => m.Number == 235);
+        var treasuresOfMu = this.Context.CreateNew<QuestDefinition>();
+        treasuresOfMu.SetGuid(QuestConstants.LegacyQuestGroup, 1, (byte)characterClass);
+        sebinaThePriestess.Quests.Add(treasuresOfMu);
+        treasuresOfMu.QuestGiver = sebinaThePriestess;
+        treasuresOfMu.Group = QuestConstants.LegacyQuestGroup;
+        treasuresOfMu.Number = 1;
+        treasuresOfMu.RequiredStartMoney = 2000000;
+        treasuresOfMu.MinimumCharacterLevel = 150;
+        treasuresOfMu.QualifiedCharacter = this.GetCharacterClass(characterClass);
+        treasuresOfMu.Name = $"Treasures of MU ({treasuresOfMu.QualifiedCharacter?.Name})";
+        this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76);
+
+        // Rewards:
+        var pointReward = this.Context.CreateNew<QuestReward>();
+        pointReward.Value = 10;
+        pointReward.RewardType = QuestRewardType.LevelUpPoints;
+        treasuresOfMu.Rewards.Add(pointReward);
+        var characterClassEvolution = this.Context.CreateNew<QuestReward>();
+        characterClassEvolution.RewardType = QuestRewardType.CharacterEvolutionFirstToSecond;
+        treasuresOfMu.Rewards.Add(characterClassEvolution);
+    }
+
+    /// <summary>
+    /// Creates the quest 'Find the Scroll of Emperor'.
+    /// </summary>
+    /// <param name="characterClass">The character class.</param>
+    /// <remarks>See also http://muonlinefanz.com/guide/quests/scroll/.</remarks>
+    protected void FindScrollOfEmperor(CharacterClassNumber characterClass)
+    {
+        var sebinaThePriestess = this.GameConfiguration.Monsters.First(m => m.Number == 235);
+        var findScrollOfEmperor = this.Context.CreateNew<QuestDefinition>();
+        findScrollOfEmperor.SetGuid(QuestConstants.LegacyQuestGroup, 0, (byte)characterClass);
+        sebinaThePriestess.Quests.Add(findScrollOfEmperor);
+        findScrollOfEmperor.QuestGiver = sebinaThePriestess;
+        findScrollOfEmperor.Group = QuestConstants.LegacyQuestGroup;
+        findScrollOfEmperor.Number = 0;
+        findScrollOfEmperor.RequiredStartMoney = 1000000;
+        findScrollOfEmperor.MinimumCharacterLevel = 150;
+        findScrollOfEmperor.QualifiedCharacter = this.GetCharacterClass(characterClass);
+        findScrollOfEmperor.Name = $"Find the 'Scroll of Emperor' ({findScrollOfEmperor.QualifiedCharacter?.Name})";
+
+        this.AddItemRequirement(findScrollOfEmperor, 14, Quest.ScrollOfEmperorNumber, 0, 45, 60);
+
+        // Rewards:
+        var pointReward = this.Context.CreateNew<QuestReward>();
+        pointReward.Value = 10;
+        pointReward.RewardType = QuestRewardType.LevelUpPoints;
+        findScrollOfEmperor.Rewards.Add(pointReward);
+    }
+
     private QuestDefinition CreateQuest(
         string name,
         short @group,
@@ -261,56 +320,6 @@ internal class Quests : InitializerBase
 
         heroStatus.Rewards.Add(pointReward);
         heroStatus.Rewards.Add(attributeReward);
-    }
-
-    // See also http://muonlinefanz.com/guide/quests/treasure/
-    private void TreasuresOfMu(CharacterClassNumber characterClass, byte itemNumber)
-    {
-        var sebinaThePriestess = this.GameConfiguration.Monsters.First(m => m.Number == 235);
-        var treasuresOfMu = this.Context.CreateNew<QuestDefinition>();
-        treasuresOfMu.SetGuid(QuestConstants.LegacyQuestGroup, 1, (byte)characterClass);
-        sebinaThePriestess.Quests.Add(treasuresOfMu);
-        treasuresOfMu.QuestGiver = sebinaThePriestess;
-        treasuresOfMu.Group = QuestConstants.LegacyQuestGroup;
-        treasuresOfMu.Number = 1;
-        treasuresOfMu.RequiredStartMoney = 2000000;
-        treasuresOfMu.MinimumCharacterLevel = 150;
-        treasuresOfMu.QualifiedCharacter = this.GetCharacterClass(characterClass);
-        treasuresOfMu.Name = $"Treasures of MU ({treasuresOfMu.QualifiedCharacter?.Name})";
-        this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76);
-
-        // Rewards:
-        var pointReward = this.Context.CreateNew<QuestReward>();
-        pointReward.Value = 10;
-        pointReward.RewardType = QuestRewardType.LevelUpPoints;
-        treasuresOfMu.Rewards.Add(pointReward);
-        var characterClassEvolution = this.Context.CreateNew<QuestReward>();
-        characterClassEvolution.RewardType = QuestRewardType.CharacterEvolutionFirstToSecond;
-        treasuresOfMu.Rewards.Add(characterClassEvolution);
-    }
-
-    // See also http://muonlinefanz.com/guide/quests/scroll/
-    private void FindScrollOfEmperor(CharacterClassNumber characterClass)
-    {
-        var sebinaThePriestess = this.GameConfiguration.Monsters.First(m => m.Number == 235);
-        var findScrollOfEmperor = this.Context.CreateNew<QuestDefinition>();
-        findScrollOfEmperor.SetGuid(QuestConstants.LegacyQuestGroup, 0, (byte)characterClass);
-        sebinaThePriestess.Quests.Add(findScrollOfEmperor);
-        findScrollOfEmperor.QuestGiver = sebinaThePriestess;
-        findScrollOfEmperor.Group = QuestConstants.LegacyQuestGroup;
-        findScrollOfEmperor.Number = 0;
-        findScrollOfEmperor.RequiredStartMoney = 1000000;
-        findScrollOfEmperor.MinimumCharacterLevel = 150;
-        findScrollOfEmperor.QualifiedCharacter = this.GetCharacterClass(characterClass);
-        findScrollOfEmperor.Name = $"Find the 'Scroll of Emperor' ({findScrollOfEmperor.QualifiedCharacter?.Name})";
-
-        this.AddItemRequirement(findScrollOfEmperor, 14, Quest.ScrollOfEmperorNumber, 0, 45, 60);
-
-        // Rewards:
-        var pointReward = this.Context.CreateNew<QuestReward>();
-        pointReward.Value = 10;
-        pointReward.RewardType = QuestRewardType.LevelUpPoints;
-        findScrollOfEmperor.Rewards.Add(pointReward);
     }
 
     private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, byte minimumMonsterLevel, byte maximumMonsterLevel)

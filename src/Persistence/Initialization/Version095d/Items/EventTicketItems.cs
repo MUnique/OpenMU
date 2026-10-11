@@ -33,7 +33,19 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(19, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSInvitation), 4, false);
     }
 
-    private void CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, byte maxItemLevel, bool dropsFromMonster, params byte[] dropLevels)
+    /// <summary>
+    /// Creates an event ticket item. When more than one drop level is given, the item level is
+    /// determined by the level of the dropping monster.
+    /// </summary>
+    /// <param name="number">The item number.</param>
+    /// <param name="group">The item group.</param>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="maxItemLevel">The maximum item level.</param>
+    /// <param name="dropsFromMonster">If set to <c>true</c>, the item drops from monsters by the general drop rules.</param>
+    /// <param name="dropLevels">The minimum monster levels for each item level, starting at item level 1.</param>
+    protected void CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, byte maxItemLevel, bool dropsFromMonster, params byte[] dropLevels)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

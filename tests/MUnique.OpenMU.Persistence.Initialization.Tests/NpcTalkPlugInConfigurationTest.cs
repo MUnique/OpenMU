@@ -27,6 +27,7 @@ internal class NpcTalkPlugInConfigurationTest
     /// <param name="version">The version of the data.</param>
     [TestCase("075")]
     [TestCase("095d")]
+    [TestCase("097k")]
     [TestCase("season6")]
     public async Task NewDatabaseConfiguresDefaultNpcsAsync(string version)
     {
@@ -98,6 +99,7 @@ internal class NpcTalkPlugInConfigurationTest
         {
             "075" => new Version075.DataInitialization(contextProvider, new NullLoggerFactory()),
             "095d" => new Version095d.DataInitialization(contextProvider, new NullLoggerFactory()),
+            "097k" => new Version097k.DataInitialization(contextProvider, new NullLoggerFactory()),
             _ => new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory()),
         };
         await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
