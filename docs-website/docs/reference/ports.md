@@ -63,6 +63,7 @@ publish the new ports. You have two options:
 | 443 | HTTPS, when configured — see [All-in-one deployment](../deployment/all-in-one.md) |
 
 In the [distributed deployment](../deployment/distributed.md), and in the
-all-in-one deployment with its
-[optional monitoring stack](../deployment/all-in-one.md#optional-monitoring-with-grafana),
+all-in-one deployments with their optional monitoring stack (with
+[nginx](../deployment/all-in-one.md#optional-monitoring-with-grafana) or
+[Traefik](../deployment/all-in-one-traefik.md#optional-monitoring-with-grafana)),
 the reverse proxy also serves Grafana under the sub-path `/grafana/` of the same port.

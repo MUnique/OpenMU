@@ -50,8 +50,9 @@ certain players, of a certain server, or of a certain logger. See
 
 ### Grafana (all-in-one, optional)
 
-When the all-in-one deployment runs with its
-[optional monitoring stack](../deployment/all-in-one.md#optional-monitoring-with-grafana),
+When the all-in-one deployment runs with its optional monitoring stack (with
+[nginx](../deployment/all-in-one.md#optional-monitoring-with-grafana) or
+[Traefik](../deployment/all-in-one-traefik.md#optional-monitoring-with-grafana)),
 the server additionally exports its logs, metrics and traces, and the navigation
 menu shows the Grafana entries described below next to the log files.
 
