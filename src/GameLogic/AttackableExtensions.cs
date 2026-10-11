@@ -232,10 +232,10 @@ public static class AttackableExtensions
                 dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
 
                 var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
-                var pveSkillMultiplier = skillAttributes[Stats.SkillFinalMultiplierPve];
-                if (!isPvp && pveSkillMultiplier > 0)
+                var pvmSkillMultiplier = skillAttributes[Stats.SkillFinalMultiplierPvm];
+                if (!isPvp && pvmSkillMultiplier > 0)
                 {
-                    multiplier = pveSkillMultiplier;
+                    multiplier = pvmSkillMultiplier;
                 }
                 else if (skillMultiplier > 0)
                 {
@@ -306,7 +306,7 @@ public static class AttackableExtensions
             }
         }
 
-        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll);
+        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll, skill);
     }
 
     /// <summary>
@@ -317,13 +317,21 @@ public static class AttackableExtensions
     /// <param name="attributes">The attributes.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="manaToll">The mana reduction amount that is traded for damage (e.g. from Soul Barrier).</param>
+    /// <param name="skill">The <paramref name="attacker"/>'s skill.</param>
     /// <returns>The calculated hit info.</returns>
-    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0)
+    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null)
     {
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
         {
             return new HitInfo(damage, 0, attributes, manaToll);
+        }
+
+        if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
+            && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
+        {
+            var shieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
+            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll);
         }
 
         var shieldRatio = 0.90;
