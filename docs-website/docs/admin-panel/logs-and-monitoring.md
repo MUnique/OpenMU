@@ -48,6 +48,14 @@ makes good use of log scopes, so you can configure it to log only the actions of
 certain players, of a certain server, or of a certain logger. See
 [Startup parameters](../deployment/startup-parameters.md#logging).
 
+### Grafana (all-in-one, optional)
+
+When the all-in-one deployment runs with its optional monitoring stack (with
+[nginx](../deployment/all-in-one.md#optional-monitoring-with-grafana) or
+[Traefik](../deployment/all-in-one-traefik.md#optional-monitoring-with-grafana)),
+the server additionally exports its logs, metrics and traces, and the navigation
+menu shows the Grafana entries described below next to the log files.
+
 ## Distributed deployment
 
 In a [distributed deployment](../deployment/distributed.md), the subsystems run
@@ -76,6 +84,7 @@ Grafana:
 | Operator | Editor |
 | Viewer | Viewer — can still search logs and traces |
 
+This applies to the optional Grafana of the all-in-one deployment as well.
 Like the admin panel itself, Grafana is reachable without a login until the
 [first user](authentication.md#the-first-user) exists.
 

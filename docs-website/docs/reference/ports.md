@@ -62,5 +62,8 @@ publish the new ports. You have two options:
 | 80 | Admin panel (and the reverse proxy in the docker deployments) |
 | 443 | HTTPS, when configured — see [All-in-one deployment](../deployment/all-in-one.md) |
 
-In the [distributed deployment](../deployment/distributed.md), the reverse proxy
-also serves Grafana under the sub-path `/grafana/` of the same port.
+In the [distributed deployment](../deployment/distributed.md), and in the
+all-in-one deployments with their optional monitoring stack (with
+[nginx](../deployment/all-in-one.md#optional-monitoring-with-grafana) or
+[Traefik](../deployment/all-in-one-traefik.md#optional-monitoring-with-grafana)),
+the reverse proxy also serves Grafana under the sub-path `/grafana/` of the same port.

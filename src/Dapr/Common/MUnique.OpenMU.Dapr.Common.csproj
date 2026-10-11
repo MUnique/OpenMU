@@ -22,9 +22,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.OpenApi" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
@@ -32,5 +29,6 @@
     <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
     <ProjectReference Include="..\ServerClients\MUnique.OpenMU.ServerClients.csproj" />
+    <ProjectReference Include="..\..\Telemetry\MUnique.OpenMU.Telemetry.csproj" />
   </ItemGroup>
 </Project>

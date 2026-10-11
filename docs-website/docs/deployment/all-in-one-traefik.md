@@ -103,6 +103,34 @@ Then run it:
 docker compose -f docker-compose.prod.yml up -d
 ```
 
+## Optional: monitoring with Grafana
+
+Like the [all-in-one deployment with nginx](all-in-one.md#optional-monitoring-with-grafana),
+this variant comes with an optional observability backend in
+`docker-compose.monitoring.yml`. OpenMU then exports its logs, metrics and traces
+with OpenTelemetry, and Grafana is available under `/grafana/` of the admin panel
+host, with the login of the admin panel — see
+[Logs and monitoring](../admin-panel/logs-and-monitoring.md).
+
+Add it as another file to the commands above:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+```
+
+or, with HTTPS:
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
+```
+
+With HTTPS, also set the environment variable `GRAFANA_ROOT_URL` to the public
+address of Grafana, e.g. `https://admin.domain.com/grafana/`.
+
+Traefik asks the admin panel for every request to Grafana with a `forwardAuth`
+middleware (`/auth/proxy?loginRedirect=true`). The admin panel answers with the
+user and its Grafana role, or sends a browser without a login to its login page.
+
 ## Admin panel users
 
 The admin panel authenticates its users itself, so there is no basic
