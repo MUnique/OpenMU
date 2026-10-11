@@ -2565,4 +2565,52 @@
   <data name="PingHandlerPlugIn_Description" xml:space="preserve">
     <value>Verarbeitet den Ping, den der Client periodisch sendet, und der meldet, dass er aktiv ist.</value>
   </data>
+  <data name="CashShopGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gruppen-Handler für den Cash-Shop</value>
+  </data>
+  <data name="CashShopGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für Cash-Shop-Pakete (Kennung 0xD2).</value>
+  </data>
+  <data name="CashShopOpenStateHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für den Öffnungszustand des Cash-Shops</value>
+  </data>
+  <data name="CashShopOpenStateHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für das Öffnen und Schließen des Cash-Shops (Kennung 0xD2, 0x02).</value>
+  </data>
+  <data name="CashShopPointInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für Punkteinformationsanfragen des Cash-Shops</value>
+  </data>
+  <data name="CashShopPointInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für Anfragen nach Punkteinformationen des Cash-Shops (Kennung 0xD2, 0x01).</value>
+  </data>
+  <data name="CashShopStorageListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für Lagerlistenanfragen des Cash-Shops</value>
+  </data>
+  <data name="CashShopStorageListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für Anfragen nach der Lagerliste des Cash-Shops (Kennung 0xD2, 0x05).</value>
+  </data>
+  <data name="CashShopViewPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop-Ansicht</value>
+  </data>
+  <data name="CashShopViewPlugIn_Description" xml:space="preserve">
+    <value>Die Standardimplementierung von ICashShopViewPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
+  </data>
+  <data name="CashShopItemBuyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für Kaufanfragen des Cash-Shops</value>
+  </data>
+  <data name="CashShopItemBuyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für Kaufanfragen im Cash-Shop (Kennung 0xD2, 0x03).</value>
+  </data>
+  <data name="CashShopStorageItemConsumeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für Verwendungsanfragen von Cash-Shop-Lagergegenständen</value>
+  </data>
+  <data name="CashShopStorageItemConsumeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für Anfragen zur Verwendung eines Gegenstands aus dem Cash-Shop-Lager (Kennung 0xD2, 0x0B).</value>
+  </data>
+  <data name="CashShopItemGiftRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für Geschenkanfragen des Cash-Shops</value>
+  </data>
+  <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für Geschenkanfragen im Cash-Shop (Kennung 0xD2, 0x04).</value>
+  </data>
 </root>

@@ -3114,4 +3114,88 @@
   <data name="CastleSiegeConfiguration_CrownHoldTimeSeconds_Description" xml:space="preserve">
     <value>Die Zeit, die der Allianzmeister der Angreifer an der Krone verbringen muss, um das Siegel zu registrieren; standardmäßig 30 Sekunden.</value>
   </data>
+  <data name="Account_WCoinC_Description" xml:space="preserve">
+    <value>Die verfügbaren WCoin (C) des Cash-Shops.</value>
+  </data>
+  <data name="Account_WCoinP_Description" xml:space="preserve">
+    <value>Die verfügbaren WCoin (P) des Cash-Shops.</value>
+  </data>
+  <data name="Account_GoblinPoints_Caption" xml:space="preserve">
+    <value>Goblin-Punkte</value>
+  </data>
+  <data name="Account_GoblinPoints_Description" xml:space="preserve">
+    <value>Die verfügbaren Goblin-Punkte des Cash-Shops.</value>
+  </data>
+  <data name="AccountState_GameMaster_Caption" xml:space="preserve">
+    <value>Spielleiter</value>
+  </data>
+  <data name="CharacterStatus_GameMaster_Caption" xml:space="preserve">
+    <value>Spielleiter</value>
+  </data>
+  <data name="BattleType_Soccer_Caption" xml:space="preserve">
+    <value>Fußball</value>
+  </data>
+  <data name="Character_PositionX_Caption" xml:space="preserve">
+    <value>X-Position</value>
+  </data>
+  <data name="Character_PositionY_Caption" xml:space="preserve">
+    <value>Y-Position</value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Caption" xml:space="preserve">
+    <value>Aktualisiert am</value>
+  </data>
+  <data name="DropItemGroup_Chance_Caption" xml:space="preserve">
+    <value>Wahrscheinlichkeit</value>
+  </data>
+  <data name="MagicEffectDefinition_Chance_Caption" xml:space="preserve">
+    <value>Wahrscheinlichkeit</value>
+  </data>
+  <data name="GameClientDefinition_Season_Caption" xml:space="preserve">
+    <value>Saison</value>
+  </data>
+  <data name="ItemDefinition_IsTradable_Caption" xml:space="preserve">
+    <value>Handelbar</value>
+  </data>
+  <data name="ItemDefinition_IsTradable_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand mit einem anderen Spieler gehandelt werden kann.</value>
+  </data>
+  <data name="ItemDefinition_IsDroppable_Caption" xml:space="preserve">
+    <value>Fallen lassbar</value>
+  </data>
+  <data name="ItemDefinition_IsDroppable_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand auf den Boden fallen gelassen werden kann. Dies steuert nicht die Drops von Monstern.</value>
+  </data>
+  <data name="ItemDefinition_IsStorable_Caption" xml:space="preserve">
+    <value>Im Tresor lagerbar</value>
+  </data>
+  <data name="ItemDefinition_IsStorable_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand im Tresor gelagert werden kann.</value>
+  </data>
+  <data name="ItemDefinition_IsSellableToNpc_Caption" xml:space="preserve">
+    <value>An NPC verkaufbar</value>
+  </data>
+  <data name="ItemDefinition_IsSellableToNpc_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand an einen NPC-Händler verkauft werden kann.</value>
+  </data>
+  <data name="ItemDefinition_IsPersonalStoreSellable_Caption" xml:space="preserve">
+    <value>Im persönlichen Laden verkaufbar</value>
+  </data>
+  <data name="ItemDefinition_IsPersonalStoreSellable_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand in einem persönlichen Laden angeboten werden kann.</value>
+  </data>
+  <data name="ItemDefinition_IsRepairable_Caption" xml:space="preserve">
+    <value>Normal reparierbar</value>
+  </data>
+  <data name="ItemDefinition_IsRepairable_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand von einem NPC oder über die Reparaturfunktion des Inventars repariert werden kann. Spezielle Methoden zur Wiederherstellung der Haltbarkeit sind davon nicht betroffen.</value>
+  </data>
+  <data name="MiniGameTerrainChange_StartX_Caption" xml:space="preserve">
+    <value>Start-X</value>
+  </data>
+  <data name="MiniGameTerrainChange_StartY_Caption" xml:space="preserve">
+    <value>Start-Y</value>
+  </data>
+  <data name="SkillTargetRestriction_Party_Caption" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
 </root>

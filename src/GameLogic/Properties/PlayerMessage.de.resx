@@ -913,4 +913,16 @@ Verwendete Fruchtpunkte: {16}
 Verwendete negative Fruchtpunkte: {17}
 Inventarerweiterungen: {18}</value>
   </data>
+  <data name="GoblinPointsForPlayTime" xml:space="preserve">
+    <value>Sie haben {0} Goblin-Punkte für Ihre Spielzeit erhalten.</value>
+  </data>
+  <data name="CashShopVaultExtended" xml:space="preserve">
+    <value>Ihr Tresor wurde erweitert.</value>
+  </data>
+  <data name="CashShopInventoryExtended" xml:space="preserve">
+    <value>Ihr Inventar wurde erweitert. Wählen Sie Ihren Charakter erneut aus, um den neuen Platz zu nutzen.</value>
+  </data>
+  <data name="CashShopCharacterClassUnlocked" xml:space="preserve">
+    <value>Sie können jetzt einen Charakter der Klasse {0} erstellen.</value>
+  </data>
 </root>
