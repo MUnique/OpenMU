@@ -11489,28 +11489,28 @@ public readonly ref struct PlayerShopItemListExtendedRef
 
 
 /// <summary>
-/// Is sent by the server when: After entering the game world, and before the player shop of the own player or of another player is shown.
-/// Causes reaction on client side: The client offers only the enabled currencies when the player sets an item price in his player shop.
+/// Is sent by the server when: After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.
+/// Causes reaction on client side: The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.
 /// </summary>
-public readonly ref struct PlayerShopCurrenciesExtendedRef
+public readonly ref struct PlayerShopPriceTypesExtendedRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PlayerShopCurrenciesExtendedRef"/> struct.
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypesExtendedRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PlayerShopCurrenciesExtendedRef(Span<byte> data)
+    public PlayerShopPriceTypesExtendedRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PlayerShopCurrenciesExtendedRef"/> struct.
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypesExtendedRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PlayerShopCurrenciesExtendedRef(Span<byte> data, bool initialize)
+    private PlayerShopPriceTypesExtendedRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -11518,7 +11518,7 @@ public readonly ref struct PlayerShopCurrenciesExtendedRef
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
+            header.Length = (byte)data.Length;
             header.SubCode = SubCode;
         }
     }
@@ -11540,37 +11540,76 @@ public readonly ref struct PlayerShopCurrenciesExtendedRef
     public static byte SubCode => 0x0A;
 
     /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 8;
-
-    /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the bit mask of the currencies which are enabled for prices in player shops. Bit N corresponds to the ShopCurrencyType with value N, e.g. bit 0 is Zen. A value of 0 means that the feature is disabled and only Zen prices with PlayerShopSetItemPrice are supported.
+    /// Gets or sets the count.
     /// </summary>
-    public uint CurrencyMask
+    public byte Count
     {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
+        get => this._data[4];
+        set => this._data[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopCurrenciesExtended"/>.
+    /// Gets the <see cref="PlayerShopPriceTypeRef"/> of the specified index.
+    /// </summary>
+        public PlayerShopPriceTypeRef this[int index] => new (this._data[(5 + index * PlayerShopPriceTypeRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopPriceTypesExtended"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PlayerShopCurrenciesExtendedRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator PlayerShopPriceTypesExtendedRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PlayerShopCurrenciesExtended"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PlayerShopPriceTypesExtended"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PlayerShopCurrenciesExtendedRef packet) => packet._data; 
+    public static implicit operator Span<byte>(PlayerShopPriceTypesExtendedRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="PlayerShopPriceTypeRef"/>.
+    /// </summary>
+    /// <param name="priceTypesCount">The count of <see cref="PlayerShopPriceTypeRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int priceTypesCount) => priceTypesCount * PlayerShopPriceTypeRef.Length + 5;
+
+
+/// <summary>
+/// A price type which is allowed for prices in player shops, in addition to zen..
+/// </summary>
+public readonly ref struct PlayerShopPriceTypeRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopPriceTypeRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.
+    /// </summary>
+    public ushort PriceItemType
+    {
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
+    }
+}
 }
 
 

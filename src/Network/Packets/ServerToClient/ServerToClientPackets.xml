@@ -4566,19 +4566,39 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>3F</Code>
       <SubCode>0A</SubCode>
-      <Name>PlayerShopCurrenciesExtended</Name>
-      <Length>8</Length>
+      <Name>PlayerShopPriceTypesExtended</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen>After entering the game world, and before the player shop of the own player or of another player is shown.</SentWhen>
-      <CausedReaction>The client offers only the enabled currencies when the player sets an item price in his player shop.</CausedReaction>
+      <SentWhen>After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.</SentWhen>
+      <CausedReaction>The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>CurrencyMask</Name>
-          <Description>The bit mask of the currencies which are enabled for prices in player shops. Bit N corresponds to the ShopCurrencyType with value N, e.g. bit 0 is Zen. A value of 0 means that the feature is disabled and only Zen prices with PlayerShopSetItemPrice are supported.</Description>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopPriceType</TypeName>
+          <Name>PriceTypes</Name>
+          <ItemCountField>Count</ItemCountField>
         </Field>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>PlayerShopPriceType</Name>
+          <Description>A price type which is allowed for prices in player shops, in addition to zen.</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>PriceItemType</Name>
+              <Description>The value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>

@@ -341,56 +341,5 @@
         </EnumValue>
       </Values>
     </Enum>
-    <Enum>
-      <Name>ShopCurrencyType</Name>
-      <Description>Defines the currency in which the price of an item in a player shop is defined. The value is also the bit index in the currency mask of the PlayerShopCurrenciesExtended message.</Description>
-      <Values>
-        <EnumValue>
-          <Name>Zen</Name>
-          <Description>Zen, the money in the inventory.</Description>
-          <Value>0</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>JewelOfBless</Name>
-          <Description>Jewel of Bless (item group 14, number 13).</Description>
-          <Value>1</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>JewelOfSoul</Name>
-          <Description>Jewel of Soul (item group 14, number 14).</Description>
-          <Value>2</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>JewelOfChaos</Name>
-          <Description>Jewel of Chaos (item group 12, number 15).</Description>
-          <Value>3</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>JewelOfCreation</Name>
-          <Description>Jewel of Creation (item group 14, number 22).</Description>
-          <Value>4</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>JewelOfLife</Name>
-          <Description>Jewel of Life (item group 14, number 16).</Description>
-          <Value>5</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>WCoinC</Name>
-          <Description>WCoin (C), an account coin.</Description>
-          <Value>6</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>WCoinP</Name>
-          <Description>WCoin (P), an account coin.</Description>
-          <Value>7</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>GoblinPoints</Name>
-          <Description>Goblin Points, an account coin.</Description>
-          <Value>8</Value>
-        </EnumValue>
-      </Values>
-    </Enum>
   </Enums>
 </PacketDefinitions>

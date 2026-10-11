@@ -1545,8 +1545,8 @@ public readonly ref struct PlayerShopCloseOtherRef
 
 
 /// <summary>
-/// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop, in one of the currencies which are enabled on the server (see PlayerShopCurrenciesExtended).
-/// Causes reaction on server side: The price is set for the specified item, if the currency is enabled and the price is within the configured limits. Works only if the shop is currently closed. The server responds with a PlayerShopSetItemPriceResponse.
+/// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop, in zen or in one of the price types which are allowed by the server (see PlayerShopPriceTypesExtended).
+/// Causes reaction on server side: The price is set for the specified item, if its price type is allowed and the amount is within the configured limits. Works only if the shop is currently closed. The server responds with a PlayerShopSetItemPriceResponse.
 /// </summary>
 public readonly ref struct PlayerShopSetItemPriceExtendedRef
 {
@@ -1598,7 +1598,7 @@ public readonly ref struct PlayerShopSetItemPriceExtendedRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 10;
+    public static int Length => 13;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -1606,30 +1606,39 @@ public readonly ref struct PlayerShopSetItemPriceExtendedRef
     public C3HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
+    /// Gets or sets the price in zen, or in account coins when PriceItemType is one of the account coin values. Encoded like the price of PlayerShopItemExtended.
+    /// </summary>
+    public uint MoneyPrice
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, when RequiredItemAmount is greater than 0. Otherwise, 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P) and 0xFFF2 = Goblin Points define an account coin price; any other value a zen price. Encoded like the price of PlayerShopItemExtended.
+    /// </summary>
+    public ushort PriceItemType
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of pieces of the item which is defined by PriceItemType; 0, if the price is not paid with items. Encoded like the price of PlayerShopItemExtended.
+    /// </summary>
+    public ushort RequiredItemAmount
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
     /// Gets or sets the item slot.
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[4];
-        set => this._data[4] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the currency.
-    /// </summary>
-    public ShopCurrencyType Currency
-    {
-        get => (ShopCurrencyType)this._data[5];
-        set => this._data[5] = (byte)value;
-    }
-
-    /// <summary>
-    /// Gets or sets the price amount in the specified currency. For jewels, it's the number of jewel pieces.
-    /// </summary>
-    public uint Price
-    {
-        get => ReadUInt32LittleEndian(this._data[6..]);
-        set => WriteUInt32LittleEndian(this._data[6..], value);
+        get => this._data[12];
+        set => this._data[12] = value;
     }
 
     /// <summary>

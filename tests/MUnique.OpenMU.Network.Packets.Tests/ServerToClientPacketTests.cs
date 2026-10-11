@@ -2425,21 +2425,17 @@ public class PacketStructureTests
     }
 
     /// <summary>
-    /// Tests the packet size calculation for PlayerShopCurrenciesExtended.
+    /// Tests the packet size calculation for PlayerShopPriceTypesExtended.
     /// </summary>
     [Test]
-    public void PlayerShopCurrenciesExtended_PacketSizeValidation()
+    public void PlayerShopPriceTypesExtended_PacketSizeValidation()
     {
-        // Fixed-length packet validation
-        const int expectedLength = 8;
-        var actualLength = PlayerShopCurrenciesExtendedRef.Length;
+        // Basic packet validation
+        // Validate header type and field boundaries
         
-        Assert.That(actualLength, Is.EqualTo(expectedLength), 
-            "Packet length mismatch: declared length does not match calculated size");
-        
-        // Validate field 'CurrencyMask' boundary
-        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
-            "Field 'CurrencyMask' exceeds packet boundary");
+        // Field 'Count' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
     }
 
     /// <summary>
