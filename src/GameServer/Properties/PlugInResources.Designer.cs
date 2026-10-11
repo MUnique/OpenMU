@@ -7540,5 +7540,23 @@ namespace MUnique.OpenMU.GameServer.Properties {
 
         /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
         public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized UpdateLevelPlugIn097_Name text.</summary>
+        public static string UpdateLevelPlugIn097_Name => ResourceManager.GetString("UpdateLevelPlugIn097_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized UpdateLevelPlugIn097_Description text.</summary>
+        public static string UpdateLevelPlugIn097_Description => ResourceManager.GetString("UpdateLevelPlugIn097_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized StatIncreaseResultPlugIn097_Name text.</summary>
+        public static string StatIncreaseResultPlugIn097_Name => ResourceManager.GetString("StatIncreaseResultPlugIn097_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized StatIncreaseResultPlugIn097_Description text.</summary>
+        public static string StatIncreaseResultPlugIn097_Description => ResourceManager.GetString("StatIncreaseResultPlugIn097_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AppearanceSerializer097_Name text.</summary>
+        public static string AppearanceSerializer097_Name => ResourceManager.GetString("AppearanceSerializer097_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AppearanceSerializer097_Description text.</summary>
+        public static string AppearanceSerializer097_Description => ResourceManager.GetString("AppearanceSerializer097_Description", resourceCulture)!;
     }
 }

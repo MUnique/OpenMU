@@ -2565,4 +2565,22 @@
   <data name="PingHandlerPlugIn_Description" xml:space="preserve">
     <value>Verarbeitet den Ping, den der Client periodisch sendet, und der meldet, dass er aktiv ist.</value>
   </data>
+  <data name="UpdateLevelPlugIn097_Name" xml:space="preserve">
+    <value>Level aktualisieren (097)</value>
+  </data>
+  <data name="UpdateLevelPlugIn097_Description" xml:space="preserve">
+    <value>Sendet den Levelaufstieg eines Charakters an den Spielclient der Version 0.97, der das Schild nicht kennt.</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn097_Name" xml:space="preserve">
+    <value>Ergebnis der Werterhöhung (097)</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn097_Description" xml:space="preserve">
+    <value>Sendet das Ergebnis einer Werterhöhung an den Spielclient der Version 0.97, der das Schild nicht kennt.</value>
+  </data>
+  <data name="AppearanceSerializer097_Name" xml:space="preserve">
+    <value>Serialisierer für das Aussehen 0.97</value>
+  </data>
+  <data name="AppearanceSerializer097_Description" xml:space="preserve">
+    <value>Serialisierer für das Aussehen eines Spielers, kompatibel mit dem Client der Version 0.97</value>
+  </data>
 </root>

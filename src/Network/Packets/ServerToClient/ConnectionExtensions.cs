@@ -3162,6 +3162,40 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="CharacterStatIncreaseResponse097" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="success">The success.</param>
+    /// <param name="attribute">The attribute.</param>
+    /// <param name="updatedDependentMaximumStat">The updated dependent maximum stat.</param>
+    /// <param name="updatedMaximumAbility">The updated maximum ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the server processed a character stat increase request packet.
+    /// Causes reaction on client side: If it was successful, adds a point to the requested stat type.
+    /// </remarks>
+    public static async ValueTask SendCharacterStatIncreaseResponse097Async(this IConnection? connection, bool @success, CharacterStatAttribute @attribute, ushort @updatedDependentMaximumStat, ushort @updatedMaximumAbility)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterStatIncreaseResponse097Ref.Length;
+            var packet = new CharacterStatIncreaseResponse097Ref(connection.Output.GetSpan(length)[..length]);
+            packet.Success = @success;
+            packet.Attribute = @attribute;
+            packet.UpdatedDependentMaximumStat = @updatedDependentMaximumStat;
+            packet.UpdatedMaximumAbility = @updatedMaximumAbility;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="CharacterStatIncreaseResponseExtended" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3261,6 +3295,50 @@ public static class ConnectionExtensions
             packet.MaximumHealth = @maximumHealth;
             packet.MaximumMana = @maximumMana;
             packet.MaximumShield = @maximumShield;
+            packet.MaximumAbility = @maximumAbility;
+            packet.FruitPoints = @fruitPoints;
+            packet.MaximumFruitPoints = @maximumFruitPoints;
+            packet.NegativeFruitPoints = @negativeFruitPoints;
+            packet.MaximumNegativeFruitPoints = @maximumNegativeFruitPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterLevelUpdate097" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="level">The level.</param>
+    /// <param name="levelUpPoints">The level up points.</param>
+    /// <param name="maximumHealth">The maximum health.</param>
+    /// <param name="maximumMana">The maximum mana.</param>
+    /// <param name="maximumAbility">The maximum ability.</param>
+    /// <param name="fruitPoints">The fruit points.</param>
+    /// <param name="maximumFruitPoints">The maximum fruit points.</param>
+    /// <param name="negativeFruitPoints">The negative fruit points.</param>
+    /// <param name="maximumNegativeFruitPoints">The maximum negative fruit points.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a character leveled up.
+    /// Causes reaction on client side: Updates the level (and other related stats) in the game client and shows an effect.
+    /// </remarks>
+    public static async ValueTask SendCharacterLevelUpdate097Async(this IConnection? connection, ushort @level, ushort @levelUpPoints, ushort @maximumHealth, ushort @maximumMana, ushort @maximumAbility, ushort @fruitPoints, ushort @maximumFruitPoints, ushort @negativeFruitPoints, ushort @maximumNegativeFruitPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterLevelUpdate097Ref.Length;
+            var packet = new CharacterLevelUpdate097Ref(connection.Output.GetSpan(length)[..length]);
+            packet.Level = @level;
+            packet.LevelUpPoints = @levelUpPoints;
+            packet.MaximumHealth = @maximumHealth;
+            packet.MaximumMana = @maximumMana;
             packet.MaximumAbility = @maximumAbility;
             packet.FruitPoints = @fruitPoints;
             packet.MaximumFruitPoints = @maximumFruitPoints;

@@ -2430,4 +2430,22 @@
   <data name="PingHandlerPlugIn_Description" xml:space="preserve">
     <value>处理客户端定期发送的 Ping，用于报告客户端仍在线。</value>
   </data>
+  <data name="UpdateLevelPlugIn097_Name" xml:space="preserve">
+    <value>等级更新（0.97）</value>
+  </data>
+  <data name="UpdateLevelPlugIn097_Description" xml:space="preserve">
+    <value>向 0.97 版游戏客户端发送角色升级信息，该版本没有护盾。</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn097_Name" xml:space="preserve">
+    <value>属性提升结果（0.97）</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn097_Description" xml:space="preserve">
+    <value>向 0.97 版游戏客户端发送属性提升结果，该版本没有护盾。</value>
+  </data>
+  <data name="AppearanceSerializer097_Name" xml:space="preserve">
+    <value>角色外观序列化（0.97）</value>
+  </data>
+  <data name="AppearanceSerializer097_Description" xml:space="preserve">
+    <value>适用于 0.97 版客户端的角色外观序列化实现。</value>
+  </data>
 </root>

@@ -6038,6 +6038,41 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>06</SubCode>
+      <Name>CharacterStatIncreaseResponse097</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the server processed a character stat increase request packet.</SentWhen>
+      <CausedReaction>If it was successful, adds a point to the requested stat type.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatAttribute</TypeName>
+          <Name>Attribute</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>UpdatedDependentMaximumStat</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>UpdatedMaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>06</SubCode>
       <Name>CharacterStatIncreaseResponseExtended</Name>
       <Length>24</Length>
       <Direction>ServerToClient</Direction>
@@ -6175,6 +6210,63 @@
         </Field>
         <Field>
           <Index>22</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumNegativeFruitPoints</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>05</SubCode>
+      <Name>CharacterLevelUpdate097</Name>
+      <Length>22</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a character leveled up.</SentWhen>
+      <CausedReaction>Updates the level (and other related stats) in the game client and shows an effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>NegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
           <Type>ShortLittleEndian</Type>
           <Name>MaximumNegativeFruitPoints</Name>
         </Field>

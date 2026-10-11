@@ -11,8 +11,10 @@ using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.GameServer.RemoteView.Character;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
@@ -116,6 +118,28 @@ public class ViewPlugInContainerTest
         var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
 
         Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(Season6PlugIn)));
+    }
+
+    /// <summary>
+    /// Tests that the level and stat increase plugins of version 0.97, which send packets without the shield,
+    /// are selected for the clients of version 0.97, but not for clients of later versions.
+    /// </summary>
+    /// <param name="season">The season of the client.</param>
+    /// <param name="episode">The episode of the client.</param>
+    /// <param name="expectVersion097">If set to <c>true</c>, the plugins of version 0.97 are expected.</param>
+    [TestCase(0, 97, true)]
+    [TestCase(6, 3, false)]
+    public void SelectPlugInsWithoutShieldForVersion097(byte season, byte episode, bool expectVersion097)
+    {
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
+        manager.RegisterPlugIn<IUpdateLevelPlugIn, UpdateLevelPlugIn>();
+        manager.RegisterPlugIn<IUpdateLevelPlugIn, UpdateLevelPlugIn097>();
+        manager.RegisterPlugIn<IStatIncreaseResultPlugIn, StatIncreaseResultPlugIn>();
+        manager.RegisterPlugIn<IStatIncreaseResultPlugIn, StatIncreaseResultPlugIn097>();
+        var container = new ViewPlugInContainer(this.CreatePlayer(manager), new ClientVersion(season, episode, ClientLanguage.Korean), manager);
+
+        Assert.That(container.GetPlugIn<IUpdateLevelPlugIn>()!.GetType(), Is.EqualTo(expectVersion097 ? typeof(UpdateLevelPlugIn097) : typeof(UpdateLevelPlugIn)));
+        Assert.That(container.GetPlugIn<IStatIncreaseResultPlugIn>()!.GetType(), Is.EqualTo(expectVersion097 ? typeof(StatIncreaseResultPlugIn097) : typeof(StatIncreaseResultPlugIn)));
     }
 
     private RemotePlayer CreatePlayer(PlugInManager plugInManager)

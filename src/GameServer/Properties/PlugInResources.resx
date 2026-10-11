@@ -2615,4 +2615,22 @@
   <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for cash shop gift requests (0xD2, 0x04 identifier).</value>
   </data>
+  <data name="UpdateLevelPlugIn097_Name" xml:space="preserve">
+    <value>Update Level (097)</value>
+  </data>
+  <data name="UpdateLevelPlugIn097_Description" xml:space="preserve">
+    <value>Sends the level up of a character to the game client of version 0.97, which doesn't know the shield.</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn097_Name" xml:space="preserve">
+    <value>Stat Increase Result (097)</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn097_Description" xml:space="preserve">
+    <value>Sends the result of a stat increase to the game client of version 0.97, which doesn't know the shield.</value>
+  </data>
+  <data name="AppearanceSerializer097_Name" xml:space="preserve">
+    <value>AppearanceSerializer097</value>
+  </data>
+  <data name="AppearanceSerializer097_Description" xml:space="preserve">
+    <value>Serializer for the appearance of a player, compatible with the client of version 0.97</value>
+  </data>
 </root>
