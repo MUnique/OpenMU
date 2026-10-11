@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
@@ -139,7 +140,7 @@ public abstract class InitializerBase : IInitializer
     /// <param name="name">The name.</param>
     /// <param name="description">The description.</param>
     /// <returns>The created table.</returns>
-    protected ItemLevelBonusTable CreateItemBonusTable(float[] values, string name, string description)
+    protected ItemLevelBonusTable CreateItemBonusTable(float[] values, LocalizedString name, LocalizedString description)
     {
         var table = this.Context.CreateNew<ItemLevelBonusTable>();
         this.GameConfiguration.ItemLevelBonusTables.Add(table);

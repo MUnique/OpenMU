@@ -11,7 +11,6 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Helper class to create weapon item definitions.
@@ -88,10 +87,10 @@ internal class Weapons : InitializerBase
     /// </summary>
     public override void Initialize()
     {
-        this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
-        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
-        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % by ammunition item level.");
+        this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DamageIncreaseWeapons), LocalizedString.FromResource(() => LevelBonusDescriptions.WeaponDamageIncrease));
+        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, LocalizedString.FromResource(() => LevelBonusNames.StaffRiseEven), LocalizedString.FromResource(() => LevelBonusDescriptions.StaffRiseEven));
+        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, LocalizedString.FromResource(() => LevelBonusNames.StaffRiseOdd), LocalizedString.FromResource(() => LevelBonusDescriptions.StaffRiseOdd));
+        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DamageIncreasePercentBoltsArrows), LocalizedString.FromResource(() => LevelBonusDescriptions.AmmunitionDamageIncrease));
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, LocalizedString.FromResource(() => ItemNames.Kris), 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ShortSword), 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1);

@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StaffRiseEven" xml:space="preserve">
+    <value>Staff Rise (even)</value>
+  </data>
+  <data name="DamageIncreaseWeapons" xml:space="preserve">
+    <value>Damage Increase (Weapons)</value>
+  </data>
+  <data name="DefenseRateIncreaseShields" xml:space="preserve">
+    <value>Defense Rate Increase (Shields)</value>
+  </data>
+  <data name="DefenseIncreaseShields" xml:space="preserve">
+    <value>Defense Increase (Shields)</value>
+  </data>
+  <data name="RunningMovementSpeed" xml:space="preserve">
+    <value>Running Movement Speed</value>
+  </data>
+  <data name="DefenseIncreaseArmors" xml:space="preserve">
+    <value>Defense Increase (Armors)</value>
+  </data>
+  <data name="StaffRiseOdd" xml:space="preserve">
+    <value>Staff Rise (odd)</value>
+  </data>
+  <data name="TransformationRingSkinsTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Transformation Ring)</value>
+  </data>
+  <data name="ElementalResistancesJewelery" xml:space="preserve">
+    <value>Elemental resistances (Jewelery)</value>
+  </data>
+  <data name="DamageIncrease1stAnd3rdWings" xml:space="preserve">
+    <value>Damage Increase (1st and 3rd Wings)</value>
+  </data>
+  <data name="DefenseBonus1stAnd2ndWings" xml:space="preserve">
+    <value>Defense Bonus (1st and 2nd Wings)</value>
+  </data>
+  <data name="WingAbsorb" xml:space="preserve">
+    <value>Wing absorb</value>
+  </data>
+  <data name="DamageIncreasePercentBoltsArrows" xml:space="preserve">
+    <value>Damage Increase % (Bolts/Arrows)</value>
+  </data>
+  <data name="ScepterRiseEven" xml:space="preserve">
+    <value>Scepter Rise (even)</value>
+  </data>
+  <data name="ScepterRiseOdd" xml:space="preserve">
+    <value>Scepter Rise (odd)</value>
+  </data>
+  <data name="ManaLossAfterHitBoltsArrows" xml:space="preserve">
+    <value>Mana Loss After Hit (Bolts/Arrows)</value>
+  </data>
+  <data name="DefenseBonus3rdWings" xml:space="preserve">
+    <value>Defense Bonus (3rd Wings)</value>
+  </data>
+  <data name="DamageIncrease2ndWings" xml:space="preserve">
+    <value>Damage Increase (2nd Wings)</value>
+  </data>
+  <data name="TransformationRingSkinsSkeletonTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Skeleton Transformation Ring)</value>
+  </data>
+  <data name="TransformationRingSkinsPandaTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Panda Transformation Ring)</value>
+  </data>
+  <data name="TransformationRingSkinsSnowmanTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Snowman Transformation Ring)</value>
+  </data>
+  <data name="TransformationRingSkinsGameMasterTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Game Master Transformation Ring)</value>
+  </data>
+  <data name="TransformationRingSkinsChristmasTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Christmas Transformation Ring)</value>
+  </data>
+  <data name="TransformationRingSkinsJackOLanternTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Jack O'lantern Transformation Ring)</value>
+  </data>
+  <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
+    <value>Transformation Ring Skins (Elite Skeleton Transformation Ring)</value>
+  </data>
+</root>

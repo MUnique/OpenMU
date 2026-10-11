@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.Reflection;
+
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -12,7 +13,6 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
@@ -188,7 +188,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         moneyDropItemGroup.SetGuid(1);
         moneyDropItemGroup.Chance = 0.5;
         moneyDropItemGroup.ItemType = SpecialItemType.Money;
-        moneyDropItemGroup.Description = "The common money drop item group (50 % drop chance)";
+        moneyDropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.TheCommonMoneyDropItemGroup50PercentDropChance);
         this.GameConfiguration.DropItemGroups.Add(moneyDropItemGroup);
         BaseMapInitializer.RegisterDefaultDropItemGroup(moneyDropItemGroup);
 
@@ -196,7 +196,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         randomItemDropItemGroup.SetGuid(2);
         randomItemDropItemGroup.Chance = 0.3;
         randomItemDropItemGroup.ItemType = SpecialItemType.RandomItem;
-        randomItemDropItemGroup.Description = "The common drop item group for random items (30 % drop chance)";
+        randomItemDropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.TheCommonDropItemGroupForRandomItems30PercentDropChance);
         this.GameConfiguration.DropItemGroups.Add(randomItemDropItemGroup);
         BaseMapInitializer.RegisterDefaultDropItemGroup(randomItemDropItemGroup);
 
@@ -208,7 +208,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
             excellentItemDropItemGroup.ItemType = SpecialItemType.Excellent;
             excellentItemDropItemGroup.ItemLevel = 0;
             excellentItemDropItemGroup.Description =
-                "The common drop item group for random excellent items (0.01 % drop chance)";
+                LocalizedString.FromResource(() => DropGroupDescriptions.TheCommonDropItemGroupForRandomExcellentItems001PercentDropChance);
             this.GameConfiguration.DropItemGroups.Add(excellentItemDropItemGroup);
             BaseMapInitializer.RegisterDefaultDropItemGroup(excellentItemDropItemGroup);
         }
@@ -217,7 +217,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         jewelsDropItemGroup.SetGuid(4);
         jewelsDropItemGroup.Chance = 0.001;
         jewelsDropItemGroup.ItemType = SpecialItemType.Jewel;
-        jewelsDropItemGroup.Description = "The jewels drop item group (0.1 % drop chance)";
+        jewelsDropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.TheJewelsDropItemGroup01PercentDropChance);
         this.GameConfiguration.DropItemGroups.Add(jewelsDropItemGroup);
         BaseMapInitializer.RegisterDefaultDropItemGroup(jewelsDropItemGroup);
     }

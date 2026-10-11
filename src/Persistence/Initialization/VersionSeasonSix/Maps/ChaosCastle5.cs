@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -158,7 +157,7 @@ internal class ChaosCastle5 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 170;
-            monster.Designation = "Chaos Castle 9";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChaosCastle9);
             monster.MoveRange = 50;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -190,7 +189,7 @@ internal class ChaosCastle5 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 171;
-            monster.Designation = "Chaos Castle 10";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChaosCastle10);
             monster.MoveRange = 50;
             monster.AttackRange = 6;
             monster.ViewRange = 7;

@@ -278,4 +278,562 @@
   <data name="Condra" xml:space="preserve"><value>Condra</value></data>
   <data name="Narcondra" xml:space="preserve"><value>Narcondra</value></data>
   <data name="David" xml:space="preserve"><value>David</value></data>
+  <data name="MeteoriteTrap" xml:space="preserve">
+    <value>Meteorite Trap</value>
+  </data>
+  <data name="CrossbowGuard" xml:space="preserve">
+    <value>Crossbow Guard</value>
+  </data>
+  <data name="LanceTrap" xml:space="preserve">
+    <value>Lance Trap</value>
+  </data>
+  <data name="FireTrap" xml:space="preserve">
+    <value>Fire Trap</value>
+  </data>
+  <data name="IronStickTrap" xml:space="preserve">
+    <value>Iron Stick Trap</value>
+  </data>
+  <data name="BerdyshGuard" xml:space="preserve">
+    <value>Berdysh Guard</value>
+  </data>
+  <data name="SeaWorm" xml:space="preserve">
+    <value>Sea Worm</value>
+  </data>
+  <data name="Soccerball" xml:space="preserve">
+    <value>Soccerball</value>
+  </data>
+  <data name="ArenaGuard" xml:space="preserve">
+    <value>Arena Guard</value>
+  </data>
+  <data name="Bali" xml:space="preserve">
+    <value>Bali</value>
+  </data>
+  <data name="GoldenArcher" xml:space="preserve">
+    <value>Golden Archer</value>
+  </data>
+  <data name="CursedKing" xml:space="preserve">
+    <value>Cursed King</value>
+  </data>
+  <data name="EliteOrc" xml:space="preserve">
+    <value>Elite Orc</value>
+  </data>
+  <data name="OrcArcher" xml:space="preserve">
+    <value>Orc Archer</value>
+  </data>
+  <data name="MetalBalrog" xml:space="preserve">
+    <value>Metal Balrog</value>
+  </data>
+  <data name="RedDragon" xml:space="preserve">
+    <value>Red Dragon</value>
+  </data>
+  <data name="GoldenTitan" xml:space="preserve">
+    <value>Golden Titan</value>
+  </data>
+  <data name="GoldenSoldier" xml:space="preserve">
+    <value>Golden Soldier</value>
+  </data>
+  <data name="GoldenBudgeDragon" xml:space="preserve">
+    <value>Golden Budge Dragon</value>
+  </data>
+  <data name="LaserTrap" xml:space="preserve">
+    <value>Laser Trap</value>
+  </data>
+  <data name="CanonTrap" xml:space="preserve">
+    <value>Canon Trap</value>
+  </data>
+  <data name="CherryBlossomTree" xml:space="preserve">
+    <value>Cherry Blossom Tree</value>
+  </data>
+  <data name="CherryBlossomSpirit" xml:space="preserve">
+    <value>Cherry Blossom Spirit</value>
+  </data>
+  <data name="GensVanert" xml:space="preserve">
+    <value>Gens Vanert</value>
+  </data>
+  <data name="SpiderEggs2" xml:space="preserve">
+    <value>Spider Eggs 2</value>
+  </data>
+  <data name="SpiderEggs1" xml:space="preserve">
+    <value>Spider Eggs 1</value>
+  </data>
+  <data name="SpiderEggs3" xml:space="preserve">
+    <value>Spider Eggs 3</value>
+  </data>
+  <data name="WanderingMerchantZyro" xml:space="preserve">
+    <value>Wandering Merchant Zyro</value>
+  </data>
+  <data name="FireworksGirl" xml:space="preserve">
+    <value>Fireworks Girl</value>
+  </data>
+  <data name="MercenaryGuildFelicia" xml:space="preserve">
+    <value>Mercenary Guild Felicia</value>
+  </data>
+  <data name="DelgadoLuckyCoins" xml:space="preserve">
+    <value>Delgado - Lucky Coins</value>
+  </data>
+  <data name="AngelaTheSupplier" xml:space="preserve">
+    <value>Angela the Supplier</value>
+  </data>
+  <data name="PamelaTheSupplier" xml:space="preserve">
+    <value>Pamela the Supplier</value>
+  </data>
+  <data name="Guard" xml:space="preserve">
+    <value>Guard</value>
+  </data>
+  <data name="CrownSwitch2" xml:space="preserve">
+    <value>Crown Switch2</value>
+  </data>
+  <data name="CrownSwitch1" xml:space="preserve">
+    <value>Crown Switch1</value>
+  </data>
+  <data name="Crown" xml:space="preserve">
+    <value>Crown</value>
+  </data>
+  <data name="MarketUnionMemberJulia" xml:space="preserve">
+    <value>Market Union Member Julia</value>
+  </data>
+  <data name="LeoTheHelper" xml:space="preserve">
+    <value>Leo The Helper</value>
+  </data>
+  <data name="GensDuprian" xml:space="preserve">
+    <value>Gens Duprian</value>
+  </data>
+  <data name="SlingshotDefense" xml:space="preserve">
+    <value>Slingshot Defense</value>
+  </data>
+  <data name="SlingshotAttack" xml:space="preserve">
+    <value>Slingshot Attack</value>
+  </data>
+  <data name="CastleGateSwitch" xml:space="preserve">
+    <value>Castle Gate Switch</value>
+  </data>
+  <data name="GatekeeperTitus" xml:space="preserve">
+    <value>Gatekeeper Titus</value>
+  </data>
+  <data name="Trap" xml:space="preserve">
+    <value>Trap</value>
+  </data>
+  <data name="Statue" xml:space="preserve">
+    <value>Statue</value>
+  </data>
+  <data name="RushGate" xml:space="preserve">
+    <value>Rush Gate</value>
+  </data>
+  <data name="StarGate" xml:space="preserve">
+    <value>Star Gate</value>
+  </data>
+  <data name="GayionTheGladiator" xml:space="preserve">
+    <value>Gayion The Gladiator</value>
+  </data>
+  <data name="Forsaker" xml:space="preserve">
+    <value>Forsaker</value>
+  </data>
+  <data name="Defender" xml:space="preserve">
+    <value>Defender</value>
+  </data>
+  <data name="EricTheGuard" xml:space="preserve">
+    <value>Eric the Guard</value>
+  </data>
+  <data name="Jerry" xml:space="preserve">
+    <value>Jerry</value>
+  </data>
+  <data name="Raymond" xml:space="preserve">
+    <value>Raymond</value>
+  </data>
+  <data name="Lucas" xml:space="preserve">
+    <value>Lucas</value>
+  </data>
+  <data name="LionGate" xml:space="preserve">
+    <value>Lion Gate</value>
+  </data>
+  <data name="EvilGate" xml:space="preserve">
+    <value>Evil Gate</value>
+  </data>
+  <data name="HeadMounter" xml:space="preserve">
+    <value>Head Mounter</value>
+  </data>
+  <data name="Banshee" xml:space="preserve">
+    <value>Banshee</value>
+  </data>
+  <data name="OcelotTheLord" xml:space="preserve">
+    <value>Ocelot the Lord</value>
+  </data>
+  <data name="DualBerserker" xml:space="preserve">
+    <value>Dual Berserker</value>
+  </data>
+  <data name="DarkGhost" xml:space="preserve">
+    <value>Dark Ghost</value>
+  </data>
+  <data name="AticlesHead" xml:space="preserve">
+    <value>Aticle's Head</value>
+  </data>
+  <data name="Hammerize" xml:space="preserve">
+    <value>Hammerize</value>
+  </data>
+  <data name="DevilLord" xml:space="preserve">
+    <value>Devil Lord</value>
+  </data>
+  <data name="CombatInstructor" xml:space="preserve">
+    <value>Combat Instructor</value>
+  </data>
+  <data name="QuarterMaster" xml:space="preserve">
+    <value>Quarter Master</value>
+  </data>
+  <data name="Fred" xml:space="preserve">
+    <value>Fred</value>
+  </data>
+  <data name="ChaosCastle14" xml:space="preserve">
+    <value>Chaos Castle 14</value>
+  </data>
+  <data name="ChaosCastle13" xml:space="preserve">
+    <value>Chaos Castle 13</value>
+  </data>
+  <data name="ChaosCastle12" xml:space="preserve">
+    <value>Chaos Castle 12</value>
+  </data>
+  <data name="ChaosCastle11" xml:space="preserve">
+    <value>Chaos Castle 11</value>
+  </data>
+  <data name="ChaosCastle10" xml:space="preserve">
+    <value>Chaos Castle 10</value>
+  </data>
+  <data name="ChaosCastle9" xml:space="preserve">
+    <value>Chaos Castle 9</value>
+  </data>
+  <data name="ChaosCastle8" xml:space="preserve">
+    <value>Chaos Castle 8</value>
+  </data>
+  <data name="ChaosCastle7" xml:space="preserve">
+    <value>Chaos Castle 7</value>
+  </data>
+  <data name="ChaosCastle6" xml:space="preserve">
+    <value>Chaos Castle 6</value>
+  </data>
+  <data name="ChaosCastle5" xml:space="preserve">
+    <value>Chaos Castle 5</value>
+  </data>
+  <data name="ChaosCastle4" xml:space="preserve">
+    <value>Chaos Castle 4</value>
+  </data>
+  <data name="ChaosCastle3" xml:space="preserve">
+    <value>Chaos Castle 3</value>
+  </data>
+  <data name="ChaosCastle2" xml:space="preserve">
+    <value>Chaos Castle 2</value>
+  </data>
+  <data name="ChaosCastle1" xml:space="preserve">
+    <value>Chaos Castle 1</value>
+  </data>
+  <data name="MagicSkeleton8" xml:space="preserve">
+    <value>Magic Skeleton 8</value>
+  </data>
+  <data name="RedSkeletonKnight8" xml:space="preserve">
+    <value>Red Skeleton Knight 8</value>
+  </data>
+  <data name="GiantOgre8" xml:space="preserve">
+    <value>Giant Ogre 8</value>
+  </data>
+  <data name="DarkSkullSoldier8" xml:space="preserve">
+    <value>Dark Skull Soldier 8</value>
+  </data>
+  <data name="ChiefSkeletonArcher8" xml:space="preserve">
+    <value>Chief Skeleton Archer 8</value>
+  </data>
+  <data name="ChiefSkeletonWarrior8" xml:space="preserve">
+    <value>Chief Skeleton Warrior 8</value>
+  </data>
+  <data name="Archangel" xml:space="preserve">
+    <value>Archangel</value>
+  </data>
+  <data name="CastleGate" xml:space="preserve">
+    <value>Castle Gate</value>
+  </data>
+  <data name="StatueOfSaint" xml:space="preserve">
+    <value>Statue of Saint</value>
+  </data>
+  <data name="MagicSkeleton7" xml:space="preserve">
+    <value>Magic Skeleton 7</value>
+  </data>
+  <data name="RedSkeletonKnight7" xml:space="preserve">
+    <value>Red Skeleton Knight 7</value>
+  </data>
+  <data name="GiantOgre7" xml:space="preserve">
+    <value>Giant Ogre 7</value>
+  </data>
+  <data name="DarkSkullSoldier7" xml:space="preserve">
+    <value>Dark Skull Soldier 7</value>
+  </data>
+  <data name="ChiefSkeletonArcher7" xml:space="preserve">
+    <value>Chief Skeleton Archer 7</value>
+  </data>
+  <data name="ChiefSkeletonWarrior7" xml:space="preserve">
+    <value>Chief Skeleton Warrior 7</value>
+  </data>
+  <data name="MagicSkeleton6" xml:space="preserve">
+    <value>Magic Skeleton 6</value>
+  </data>
+  <data name="RedSkeletonKnight6" xml:space="preserve">
+    <value>Red Skeleton Knight 6</value>
+  </data>
+  <data name="GiantOgre6" xml:space="preserve">
+    <value>Giant Ogre 6</value>
+  </data>
+  <data name="DarkSkullSoldier6" xml:space="preserve">
+    <value>Dark Skull Soldier 6</value>
+  </data>
+  <data name="ChiefSkeletonArcher6" xml:space="preserve">
+    <value>Chief Skeleton Archer 6</value>
+  </data>
+  <data name="ChiefSkeletonWarrior6" xml:space="preserve">
+    <value>Chief Skeleton Warrior 6</value>
+  </data>
+  <data name="MagicSkeleton5" xml:space="preserve">
+    <value>Magic Skeleton 5</value>
+  </data>
+  <data name="RedSkeletonKnight5" xml:space="preserve">
+    <value>Red Skeleton Knight 5</value>
+  </data>
+  <data name="GiantOgre5" xml:space="preserve">
+    <value>Giant Ogre 5</value>
+  </data>
+  <data name="DarkSkullSoldier5" xml:space="preserve">
+    <value>Dark Skull Soldier 5</value>
+  </data>
+  <data name="ChiefSkeletonArcher5" xml:space="preserve">
+    <value>Chief Skeleton Archer 5</value>
+  </data>
+  <data name="ChiefSkeletonWarrior5" xml:space="preserve">
+    <value>Chief Skeleton Warrior 5</value>
+  </data>
+  <data name="MagicSkeleton4" xml:space="preserve">
+    <value>Magic Skeleton 4</value>
+  </data>
+  <data name="RedSkeletonKnight4" xml:space="preserve">
+    <value>Red Skeleton Knight 4</value>
+  </data>
+  <data name="GiantOgre4" xml:space="preserve">
+    <value>Giant Ogre 4</value>
+  </data>
+  <data name="DarkSkullSoldier4" xml:space="preserve">
+    <value>Dark Skull Soldier 4</value>
+  </data>
+  <data name="ChiefSkeletonArcher4" xml:space="preserve">
+    <value>Chief Skeleton Archer 4</value>
+  </data>
+  <data name="ChiefSkeletonWarrior4" xml:space="preserve">
+    <value>Chief Skeleton Warrior 4</value>
+  </data>
+  <data name="MagicSkeleton3" xml:space="preserve">
+    <value>Magic Skeleton 3</value>
+  </data>
+  <data name="RedSkeletonKnight3" xml:space="preserve">
+    <value>Red Skeleton Knight 3</value>
+  </data>
+  <data name="GiantOgre3" xml:space="preserve">
+    <value>Giant Ogre 3</value>
+  </data>
+  <data name="DarkSkullSoldier3" xml:space="preserve">
+    <value>Dark Skull Soldier 3</value>
+  </data>
+  <data name="ChiefSkeletonArcher3" xml:space="preserve">
+    <value>Chief Skeleton Archer 3</value>
+  </data>
+  <data name="ChiefSkeletonWarrior3" xml:space="preserve">
+    <value>Chief Skeleton Warrior 3</value>
+  </data>
+  <data name="MagicSkeleton2" xml:space="preserve">
+    <value>Magic Skeleton 2</value>
+  </data>
+  <data name="RedSkeletonKnight2" xml:space="preserve">
+    <value>Red Skeleton Knight 2</value>
+  </data>
+  <data name="GiantOgre2" xml:space="preserve">
+    <value>Giant Ogre 2</value>
+  </data>
+  <data name="DarkSkullSoldier2" xml:space="preserve">
+    <value>Dark Skull Soldier 2</value>
+  </data>
+  <data name="ChiefSkeletonArcher2" xml:space="preserve">
+    <value>Chief Skeleton Archer 2</value>
+  </data>
+  <data name="ChiefSkeletonWarrior2" xml:space="preserve">
+    <value>Chief Skeleton Warrior 2</value>
+  </data>
+  <data name="MagicSkeleton1" xml:space="preserve">
+    <value>Magic Skeleton 1</value>
+  </data>
+  <data name="RedSkeletonKnight1" xml:space="preserve">
+    <value>Red Skeleton Knight 1</value>
+  </data>
+  <data name="GiantOgre1" xml:space="preserve">
+    <value>Giant Ogre 1</value>
+  </data>
+  <data name="DarkSkullSoldier1" xml:space="preserve">
+    <value>Dark Skull Soldier 1</value>
+  </data>
+  <data name="ChiefSkeletonArcher1" xml:space="preserve">
+    <value>Chief Skeleton Archer 1</value>
+  </data>
+  <data name="ChiefSkeletonWarrior1" xml:space="preserve">
+    <value>Chief Skeleton Warrior 1</value>
+  </data>
+  <data name="Doppelganger" xml:space="preserve">
+    <value>Doppelganger</value>
+  </data>
+  <data name="ShadowMaster" xml:space="preserve">
+    <value>Shadow Master</value>
+  </data>
+  <data name="IceNapin" xml:space="preserve">
+    <value>Ice Napin</value>
+  </data>
+  <data name="DestructiveOgreArcher" xml:space="preserve">
+    <value>Destructive Ogre Archer</value>
+  </data>
+  <data name="DestructiveOgreSoldier" xml:space="preserve">
+    <value>Destructive Ogre Soldier</value>
+  </data>
+  <data name="WhiteWizard" xml:space="preserve">
+    <value>White Wizard</value>
+  </data>
+  <data name="GoldenTantallos" xml:space="preserve">
+    <value>Golden Tantallos</value>
+  </data>
+  <data name="GoldenWheel" xml:space="preserve">
+    <value>Golden Wheel</value>
+  </data>
+  <data name="GoldenLizardKing" xml:space="preserve">
+    <value>Golden Lizard King</value>
+  </data>
+  <data name="GoldenVepar" xml:space="preserve">
+    <value>Golden Vepar</value>
+  </data>
+  <data name="GoldenDragon" xml:space="preserve">
+    <value>Golden Dragon</value>
+  </data>
+  <data name="GoldenGoblin" xml:space="preserve">
+    <value>Golden Goblin</value>
+  </data>
+  <data name="CapturedStoneStatue10" xml:space="preserve">
+    <value>Captured Stone Statue (10)</value>
+  </data>
+  <data name="CapturedStoneStatue9" xml:space="preserve">
+    <value>Captured Stone Statue (9)</value>
+  </data>
+  <data name="CapturedStoneStatue8" xml:space="preserve">
+    <value>Captured Stone Statue (8)</value>
+  </data>
+  <data name="CapturedStoneStatue7" xml:space="preserve">
+    <value>Captured Stone Statue (7)</value>
+  </data>
+  <data name="CapturedStoneStatue6" xml:space="preserve">
+    <value>Captured Stone Statue (6)</value>
+  </data>
+  <data name="CapturedStoneStatue5" xml:space="preserve">
+    <value>Captured Stone Statue (5)</value>
+  </data>
+  <data name="CapturedStoneStatue4" xml:space="preserve">
+    <value>Captured Stone Statue (4)</value>
+  </data>
+  <data name="CapturedStoneStatue3" xml:space="preserve">
+    <value>Captured Stone Statue (3)</value>
+  </data>
+  <data name="CapturedStoneStatue2" xml:space="preserve">
+    <value>Captured Stone Statue (2)</value>
+  </data>
+  <data name="CapturedStoneStatue1" xml:space="preserve">
+    <value>Captured Stone Statue (1)</value>
+  </data>
+  <data name="CursedStatue" xml:space="preserve">
+    <value>Cursed Statue</value>
+  </data>
+  <data name="JewelerRaul" xml:space="preserve">
+    <value>Jeweler Raul</value>
+  </data>
+  <data name="ChristineTheGeneralGoodsMerchant" xml:space="preserve">
+    <value>Christine the General Goods Merchant</value>
+  </data>
+  <data name="GoldenCompensationBox" xml:space="preserve">
+    <value>Golden Compensation Box</value>
+  </data>
+  <data name="CompensationBox" xml:space="preserve">
+    <value>Compensation Box</value>
+  </data>
+  <data name="TransformedSnowman" xml:space="preserve">
+    <value>Transformed Snowman</value>
+  </data>
+  <data name="CursedSanta" xml:space="preserve">
+    <value>Cursed Santa</value>
+  </data>
+  <data name="LittleSantaPink" xml:space="preserve">
+    <value>Little Santa Pink</value>
+  </data>
+  <data name="LittleSantaOrange" xml:space="preserve">
+    <value>Little Santa Orange</value>
+  </data>
+  <data name="LittleSantaBlack" xml:space="preserve">
+    <value>Little Santa Black</value>
+  </data>
+  <data name="LittleSantaWhite" xml:space="preserve">
+    <value>Little Santa White</value>
+  </data>
+  <data name="LittleSantaBlue" xml:space="preserve">
+    <value>Little Santa Blue</value>
+  </data>
+  <data name="LittleSantaRed" xml:space="preserve">
+    <value>Little Santa Red</value>
+  </data>
+  <data name="LittleSantaGreen" xml:space="preserve">
+    <value>Little Santa Green</value>
+  </data>
+  <data name="LittleSantaYellow" xml:space="preserve">
+    <value>Little Santa Yellow</value>
+  </data>
+  <data name="Snowman" xml:space="preserve">
+    <value>Snowman</value>
+  </data>
+  <data name="Gatekeeper" xml:space="preserve">
+    <value>Gatekeeper</value>
+  </data>
+  <data name="IllusionSorcerer" xml:space="preserve">
+    <value>Illusion Sorcerer</value>
+  </data>
+  <data name="MUAllies" xml:space="preserve">
+    <value>MU Allies</value>
+  </data>
+  <data name="BattleGuard2" xml:space="preserve">
+    <value>Battle Guard2</value>
+  </data>
+  <data name="BattleGuard1" xml:space="preserve">
+    <value>Battle Guard1</value>
+  </data>
+  <data name="Guardian" xml:space="preserve">
+    <value>Guardian</value>
+  </data>
+  <data name="Shield" xml:space="preserve">
+    <value>Shield</value>
+  </data>
+  <data name="IllusionItemStorage" xml:space="preserve">
+    <value>Illusion Item Storage</value>
+  </data>
+  <data name="AllianceItemStorage" xml:space="preserve">
+    <value>Alliance Item Storage</value>
+  </data>
+  <data name="IllusionElder" xml:space="preserve">
+    <value>Illusion Elder</value>
+  </data>
+  <data name="MUAlliesGeneral" xml:space="preserve">
+    <value>MU Allies General</value>
+  </data>
+  <data name="StoneStatue" xml:space="preserve">
+    <value>Stone Statue</value>
+  </data>
+  <data name="EliteSkillSoldier" xml:space="preserve">
+    <value>Elite Skill Soldier</value>
+  </data>
+  <data name="GameMaster" xml:space="preserve">
+    <value>GameMaster</value>
+  </data>
+  <data name="Soldier" xml:space="preserve">
+    <value>Soldier</value>
+  </data>
 </root>
