@@ -2613,4 +2613,16 @@
   <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Paket-Handler für Geschenkanfragen im Cash-Shop (Kennung 0xD2, 0x04).</value>
   </data>
+  <data name="PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Spielerladen - Preis festlegen (mit Währung)</value>
+  </data>
+  <data name="PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler, der Preise in einer Währung für einen Gegenstand im Spielerladen festlegt (3F 09).</value>
+  </data>
+  <data name="ShowShopCurrenciesExtendedPlugIn_Name" xml:space="preserve">
+    <value>Währungen des Ladens anzeigen (erweitert)</value>
+  </data>
+  <data name="ShowShopCurrenciesExtendedPlugIn_Description" xml:space="preserve">
+    <value>Die erweiterte Implementierung von IShowShopCurrenciesPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
+  </data>
 </root>

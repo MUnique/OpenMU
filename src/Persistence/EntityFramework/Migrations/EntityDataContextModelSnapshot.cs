@@ -2101,11 +2101,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int?>("StorePrice")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("StorePriceCoinType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("StorePriceItemDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DefinitionId");
 
                     b.HasIndex("ItemStorageId");
+
+                    b.HasIndex("StorePriceItemDefinitionId");
 
                     b.ToTable("Item", "data");
                 });
@@ -5007,9 +5015,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("ItemStorageId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawStorePriceItemDefinition")
+                        .WithMany()
+                        .HasForeignKey("StorePriceItemDefinitionId");
+
                     b.Navigation("RawDefinition");
 
                     b.Navigation("RawItemStorage");
+
+                    b.Navigation("RawStorePriceItemDefinition");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearance", b =>

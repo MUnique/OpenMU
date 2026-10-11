@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 
 /// <summary>
@@ -36,6 +37,14 @@ public class OpenStoreAction
         if (player.ShopStorage?.Items.Any(i => i.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption)) ?? true)
         {
             player.Logger.LogWarning("OpenStore request failed: Items with an harmony option can't be traded. Player: [{0}], StoreName: [{1}]", character.Name, character.StoreName);
+            return;
+        }
+
+        if (player.ShopStorage.Items.FirstOrDefault(i => i.GetStorePrice() is { } price && !ShopPrices.IsAllowed(player.GameContext, price)) is { } itemWithDisallowedPrice)
+        {
+            var price = itemWithDisallowedPrice.GetStorePrice()!.Value;
+            player.Logger.LogWarning("OpenStore request failed: The price of item {0} isn't allowed. Player: [{1}], StoreName: [{2}]", itemWithDisallowedPrice, character.Name, character.StoreName);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerShopCurrencyNotAllowed), player.GetCurrencyName(price)).ConfigureAwait(false);
             return;
         }
 

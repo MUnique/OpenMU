@@ -1815,4 +1815,22 @@
   <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
     <value>Schaltet die Klasse Rage Fighter für das Konto frei, wenn ein Spieler die Rage-Fighter-Charakterkarte aus dem Cash-Shop-Lager verwendet.</value>
   </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Währungen für persönliche Läden</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Description" xml:space="preserve">
+    <value>Erlaubt Spielern, die Preise der Gegenstände in ihrem persönlichen Laden auch in konfigurierten Gegenständen wie Juwelen oder in Konto-Münzen festzulegen. Nur der Open-Source-Client zeigt diese Preise an; bei anderen Clients können sie per Chat-Befehl festgelegt werden.</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Währungen für persönliche Läden nach dem Betreten des Spiels anzeigen</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Teilt dem Client beim Betreten des Spiels mit, welche Währungen für die Preise persönlicher Läden verwendet werden können.</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Ladenpreis</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Legt den Preis eines Gegenstands des eigenen persönlichen Ladens in einer der aktivierten Währungen fest, z. B. '/shopprice 1 10 bless'. Ohne Argumente werden die Preise aufgelistet.</value>
+  </data>
 </root>
