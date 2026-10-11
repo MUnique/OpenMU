@@ -58,6 +58,30 @@ public class NonCachingRepositoryProviderTests
         Assert.That(repositories, Has.All.InstanceOf<AccountRepository>());
     }
 
+    /// <summary>
+    /// Tests that concurrent first accesses through the shared <see cref="CacheAwareRepositoryProvider"/>
+    /// of the <see cref="PersistenceContextProvider"/> succeed. In the distributed deployment, the game server
+    /// host accesses it from its startup and from the incoming requests of the web server at the same time.
+    /// </summary>
+    [Test]
+    public async Task ConcurrentFirstAccessesThroughCacheAwareProviderSucceedAsync()
+    {
+        var provider = new CacheAwareRepositoryProvider(NullLoggerFactory.Instance, null);
+        using var start = new ManualResetEventSlim();
+        var accesses = Enumerable.Range(0, 8)
+            .Select(_ => Task.Run(() =>
+            {
+                start.Wait();
+                return provider.GetRepository(typeof(Account));
+            }))
+            .ToList();
+
+        start.Set();
+        var repositories = await Task.WhenAll(accesses).ConfigureAwait(false);
+
+        Assert.That(repositories, Has.All.InstanceOf<AccountRepository>());
+    }
+
     private static NonCachingRepositoryProvider CreateProvider()
     {
         return new NonCachingRepositoryProvider(NullLoggerFactory.Instance, null, null, new ContextStack());
