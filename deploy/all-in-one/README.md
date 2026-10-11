@@ -16,3 +16,7 @@ docker compose up -d --no-build
 The admin panel is then available at http://localhost/ with the user `admin` and
 the password `openmu` — [change that](../../docs-website/docs/admin-panel/users.md)
 before the server is reachable from the internet.
+
+To additionally export logs, metrics and traces to a bundled Grafana under
+http://localhost/grafana/, add `-f docker-compose.yml -f docker-compose.monitoring.yml`
+to the command — see [monitoring](../../docs-website/docs/deployment/all-in-one.md#optional-monitoring-with-grafana).

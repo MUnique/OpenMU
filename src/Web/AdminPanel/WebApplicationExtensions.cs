@@ -19,6 +19,7 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
+using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
@@ -63,6 +64,7 @@ public static class WebApplicationExtensions
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
+            AdminPanelEnvironment.IsGrafanaAvailable = builder.Configuration.IsOtlpExportConfigured();
         }
 
         services.AddControllers()

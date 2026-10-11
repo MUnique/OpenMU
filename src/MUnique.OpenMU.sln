@@ -174,6 +174,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Measurements", "..\tests\MUnique.OpenMU.Measurements\MUnique.OpenMU.Measurements.csproj", "{EE59F521-F048-400D-B7D5-399C3240760F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Telemetry", "Telemetry\MUnique.OpenMU.Telemetry.csproj", "{F47C2D09-28F0-49B3-B8C2-89345356B0BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -398,6 +400,10 @@ Global
 		{C9F5A7D2-4B18-4E3C-9A67-5D2B8F41C0E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9F5A7D2-4B18-4E3C-9A67-5D2B8F41C0E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9F5A7D2-4B18-4E3C-9A67-5D2B8F41C0E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F47C2D09-28F0-49B3-B8C2-89345356B0BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F47C2D09-28F0-49B3-B8C2-89345356B0BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F47C2D09-28F0-49B3-B8C2-89345356B0BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F47C2D09-28F0-49B3-B8C2-89345356B0BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

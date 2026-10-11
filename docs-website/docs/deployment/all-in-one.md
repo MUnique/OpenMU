@@ -82,6 +82,41 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot
 
 It makes sense to add a cron job (e.g. once a week) on your host machine for that.
 
+## Optional: monitoring with Grafana
+
+`docker-compose.monitoring.yml` adds an observability backend, the `otel-lgtm`
+container ([grafana/otel-lgtm](https://github.com/grafana/docker-otel-lgtm)) with
+an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana. OpenMU then
+exports its logs, metrics and traces with
+[OpenTelemetry](https://opentelemetry.io/) (OTLP), and Grafana is available under
+`/grafana/` with the login of the admin panel — see
+[Logs and monitoring](../admin-panel/logs-and-monitoring.md). The log files are
+written as before.
+
+Add it as another file to the commands above:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d --no-build
+```
+
+or, with HTTPS:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
+```
+
+With HTTPS, also set the environment variable `GRAFANA_ROOT_URL` to the public
+address of Grafana, e.g. `https://example.org/grafana/`.
+
+The container needs roughly 0.5–1 GB of additional memory and keeps its data in
+the `otel-lgtm-data` volume. It's meant for smaller setups; for a bigger one, run
+the components separately or use a hosted service, and point the
+`OTEL_EXPORTER_OTLP_ENDPOINT` environment variable of the `openmu-startup`
+container to it. As in the
+[distributed deployment](distributed.md#otel_exporter_otlp_endpoint), the other
+standard OpenTelemetry variables work as well. The log levels of the export are
+the ones of the [Serilog configuration](startup-parameters.md#logging).
+
 ## What's next
 
 The server is automatically started and initialized for Season 6. You can start
