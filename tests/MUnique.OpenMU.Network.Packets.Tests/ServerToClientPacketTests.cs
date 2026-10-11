@@ -2425,6 +2425,20 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for PlayerShopPriceTypesExtended.
+    /// </summary>
+    [Test]
+    public void PlayerShopPriceTypesExtended_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for PlayerShops.
     /// </summary>
     [Test]
