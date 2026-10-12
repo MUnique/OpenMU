@@ -28,7 +28,7 @@ It creates a new folder `OpenMU` with the repository contents inside.
 cd OpenMU/deploy/all-in-one
 ```
 
-:::warning[Use OpenMU 0.9.11 or newer]
+:::warning[Use OpenMU 0.9.12 or newer]
 The deployment files on `master` rely on the [built-in login](../admin-panel/authentication.md)
 of the admin panel, which the docker images up to version 0.9.10 don't have yet.
 These older images expected the basic authentication of nginx with an `.htpasswd`
