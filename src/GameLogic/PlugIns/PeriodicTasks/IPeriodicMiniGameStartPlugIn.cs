@@ -21,7 +21,9 @@ public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>, I
     /// <param name="gameContext">The game context.</param>
     /// <param name="miniGameDefinition">The mini game definition.</param>
     /// <returns>
-    /// The duration until next start.
+    /// The duration until next start; <see cref="TimeSpan.Zero"/> while entering is open,
+    /// including on servers where the event is disabled but a run is still open;
+    /// <c>null</c> when no start is scheduled and, on excluded servers, when no run is open.
     /// </returns>
     ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition);
 

@@ -69,6 +69,13 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
             return ValueTask.FromResult<TimeSpan?>(TimeSpan.Zero);
         }
 
+        // The scope comes last on purpose: an open or prepared run is reported even on
+        // excluded servers, so in-flight runs finish gracefully instead of going silent.
+        if (!this.IsEnabledOnContext(gameContext))
+        {
+            return ValueTask.FromResult<TimeSpan?>(null);
+        }
+
         var timeNow = new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks);
         var nextRun = this.Configuration?.Timetable.Where(time => time > timeNow).Order().FirstOrDefault();
         return ValueTask.FromResult(nextRun - timeNow);
