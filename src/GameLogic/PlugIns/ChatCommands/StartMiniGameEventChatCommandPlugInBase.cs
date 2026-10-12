@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
-using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Base class for the game master chat commands which (re-)start a mini game event.
@@ -36,6 +35,13 @@ public abstract class StartMiniGameEventChatCommandPlugInBase : IChatCommandPlug
 
         var eventName = player.GameContext.Configuration.MiniGameDefinitions.FirstOrDefault(d => d.Type == this.MiniGameType)?.Name
             ?? this.MiniGameType.ToString();
+        if (IsDisabledOnServer(player.GameContext, gameStarter))
+        {
+            player.Logger.LogInformation("Game master {player} tried to force-start {event} on a game server where it is disabled.", player, eventName);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartUnavailableFormat), eventName).ConfigureAwait(false);
+            return;
+        }
+
         if (gameStarter.IsEventActive(player.GameContext))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceRestartFormat), eventName).ConfigureAwait(false);
@@ -50,5 +56,22 @@ public abstract class StartMiniGameEventChatCommandPlugInBase : IChatCommandPlug
         await gameStarter.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
 
         gameStarter.ForceStart();
+    }
+
+    /// <summary>
+    /// Determines whether the event is disabled on the game master's server.
+    /// A disabled event is never force-started: the force would be consumed without
+    /// starting anything, while the disposal above would still have removed open
+    /// games and the game master would be told the event starts here.
+    /// </summary>
+    /// <param name="gameContext">The game context of the game master.</param>
+    /// <param name="gameStarter">The start plug-in of the event.</param>
+    /// <returns><c>true</c> if the event doesn't run on the server; otherwise, <c>false</c>.</returns>
+    internal static bool IsDisabledOnServer(IGameContext gameContext, IPeriodicMiniGameStartPlugIn gameStarter)
+    {
+        // Goes through the plug-in instead of reading its configuration: the concrete
+        // configuration type varies per event, and the configuration interface is
+        // invariant, so matching a specific configuration type never fires.
+        return !gameStarter.IsEnabledOn(gameContext);
     }
 }

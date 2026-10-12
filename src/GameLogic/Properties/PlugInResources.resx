@@ -1161,6 +1161,12 @@
   <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
     <value>Timetable</value>
   </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Name" xml:space="preserve">
+    <value>Active on servers</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Description" xml:space="preserve">
+    <value>Restricts the event to the selected game servers. An empty selection means the event runs on all servers.</value>
+  </data>
   <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
     <value>Pre-start message delay</value>
   </data>

@@ -2176,6 +2176,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active on servers.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restricts the event to the selected game servers. An empty selection means the event runs on all servers..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
         /// </summary>
         public static string PhoenixShotSkillPlugIn_Description {

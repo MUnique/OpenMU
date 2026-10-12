@@ -1380,6 +1380,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MiniGameForceStartInitiatedFormat", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} event is not available on this game server..
+        /// </summary>
+        public static string MiniGameForceStartUnavailableFormat {
+            get {
+                return ResourceManager.GetString("MiniGameForceStartUnavailableFormat", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} starts in {1} minutes..

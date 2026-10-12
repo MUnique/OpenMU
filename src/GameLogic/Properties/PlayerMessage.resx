@@ -504,6 +504,9 @@
   <data name="MiniGameForceStartInitiatedFormat" xml:space="preserve">
     <value>{0} will start soon.</value>
   </data>
+  <data name="MiniGameForceStartUnavailableFormat" xml:space="preserve">
+    <value>The {0} event is not available on this game server.</value>
+  </data>
   <data name="KillAllMonstersFormat" xml:space="preserve">
     <value>Killed {0} monster(s).</value>
   </data>
