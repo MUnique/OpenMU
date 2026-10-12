@@ -46,7 +46,7 @@ public class MiniGameForceStartCommandTests
     [Test]
     public async Task ForceStartIsSkippedOnExcludedServerAsync()
     {
-        var (player, strategyMock, _) = await this.CreatePlayerOnServerAsync(serverId: 0, allowedServerIds: new List<byte> { 1 }).ConfigureAwait(false);
+        var (player, strategyMock, _) = await this.CreatePlayerOnServerAsync(isEnabled: false).ConfigureAwait(false);
 
         await new StartBloodCastleEventChatCommandPlugIn().HandleCommandAsync(player, "/startbc").ConfigureAwait(false);
 
@@ -59,7 +59,7 @@ public class MiniGameForceStartCommandTests
     [Test]
     public async Task ForceStartRunsOnAllowedServerAsync()
     {
-        var (player, strategyMock, _) = await this.CreatePlayerOnServerAsync(serverId: 1, allowedServerIds: new List<byte> { 1 }).ConfigureAwait(false);
+        var (player, strategyMock, _) = await this.CreatePlayerOnServerAsync(isEnabled: true).ConfigureAwait(false);
 
         await new StartBloodCastleEventChatCommandPlugIn().HandleCommandAsync(player, "/startbc").ConfigureAwait(false);
 
@@ -73,7 +73,7 @@ public class MiniGameForceStartCommandTests
     public void DisabledOnExcludedServer()
     {
         var contextMock = this.CreateServerContextMock(serverId: 0);
-        var strategyMock = this.CreateStrategyMock(new MiniGameStartConfigurationStub { AllowedServerIds = new List<byte> { 1 } });
+        var strategyMock = this.CreateStrategyMock(isEnabled: false);
 
         Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(contextMock.Object, strategyMock.Object), Is.True);
     }
@@ -85,9 +85,38 @@ public class MiniGameForceStartCommandTests
     public void EnabledOnListedServer()
     {
         var contextMock = this.CreateServerContextMock(serverId: 1);
-        var strategyMock = this.CreateStrategyMock(new MiniGameStartConfigurationStub { AllowedServerIds = new List<byte> { 1 } });
+        var strategyMock = this.CreateStrategyMock(isEnabled: true);
 
         Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(contextMock.Object, strategyMock.Object), Is.False);
+    }
+
+    /// <summary>
+    /// A real blood castle plug-in reports disabled on an excluded server. This pins the
+    /// regression where the guard matched a configuration type no real plug-in implements.
+    /// </summary>
+    [Test]
+    public void RealBloodCastlePlugInIsDisabledOnExcludedServer()
+    {
+        var plugIn = new BloodCastleStartPlugIn
+        {
+            Configuration = new BloodCastleStartConfiguration { AllowedServerIds = new List<byte> { 1 } },
+        };
+
+        Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(this.CreateServerContextMock(serverId: 0).Object, plugIn), Is.True);
+    }
+
+    /// <summary>
+    /// A real blood castle plug-in reports enabled on a listed server.
+    /// </summary>
+    [Test]
+    public void RealBloodCastlePlugInIsEnabledOnListedServer()
+    {
+        var plugIn = new BloodCastleStartPlugIn
+        {
+            Configuration = new BloodCastleStartConfiguration { AllowedServerIds = new List<byte> { 1 } },
+        };
+
+        Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(this.CreateServerContextMock(serverId: 1).Object, plugIn), Is.False);
     }
 
     /// <summary>
@@ -96,10 +125,12 @@ public class MiniGameForceStartCommandTests
     [Test]
     public void EnabledWithoutGameServer()
     {
-        var contextMock = new Mock<IGameContext>();
-        var strategyMock = this.CreateStrategyMock(new MiniGameStartConfigurationStub { AllowedServerIds = new List<byte> { 1 } });
+        var plugIn = new BloodCastleStartPlugIn
+        {
+            Configuration = new BloodCastleStartConfiguration { AllowedServerIds = new List<byte> { 1 } },
+        };
 
-        Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(contextMock.Object, strategyMock.Object), Is.False);
+        Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(new Mock<IGameContext>().Object, plugIn), Is.False);
     }
 
     /// <summary>
@@ -108,10 +139,9 @@ public class MiniGameForceStartCommandTests
     [Test]
     public void EnabledWithoutConfiguration()
     {
-        var contextMock = this.CreateServerContextMock(serverId: 0);
-        var strategyMock = this.CreateStrategyMock(null);
+        var plugIn = new BloodCastleStartPlugIn();
 
-        Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(contextMock.Object, strategyMock.Object), Is.False);
+        Assert.That(StartMiniGameEventChatCommandPlugInBase.IsDisabledOnServer(this.CreateServerContextMock(serverId: 0).Object, plugIn), Is.False);
     }
 
     private Mock<IGameContext> CreateServerContextMock(byte serverId)
@@ -121,15 +151,15 @@ public class MiniGameForceStartCommandTests
         return contextMock;
     }
 
-    private Mock<IPeriodicMiniGameStartPlugIn> CreateStrategyMock(MiniGameStartConfiguration? configuration)
+    private Mock<IPeriodicMiniGameStartPlugIn> CreateStrategyMock(bool isEnabled)
     {
         var strategyMock = new Mock<IPeriodicMiniGameStartPlugIn>();
         strategyMock.SetupGet(s => s.Key).Returns(MiniGameType.BloodCastle);
-        strategyMock.As<ISupportCustomConfiguration<MiniGameStartConfiguration>>().SetupGet(s => s.Configuration).Returns(configuration!);
+        strategyMock.Setup(s => s.IsEnabledOn(It.IsAny<IGameContext>())).Returns(isEnabled);
         return strategyMock;
     }
 
-    private async ValueTask<(Player Player, Mock<IPeriodicMiniGameStartPlugIn> Strategy, GameServerContext Context)> CreatePlayerOnServerAsync(byte serverId, IList<byte> allowedServerIds)
+    private async ValueTask<(Player Player, Mock<IPeriodicMiniGameStartPlugIn> Strategy, GameServerContext Context)> CreatePlayerOnServerAsync(bool isEnabled)
     {
         var gameConfigurationMock = new Mock<GameConfiguration>();
         var mapMock = new Mock<GameMapDefinition>();
@@ -149,7 +179,7 @@ public class MiniGameForceStartCommandTests
         serverConfigurationMock.SetupGet(c => c.Maps).Returns(gameConfigurationMock.Object.Maps);
         var definition = new GameServerDefinition
         {
-            ServerID = serverId,
+            ServerID = 0,
             GameConfiguration = gameConfigurationMock.Object,
             ServerConfiguration = serverConfigurationMock.Object,
         };
@@ -157,9 +187,7 @@ public class MiniGameForceStartCommandTests
         var strategyMock = new Mock<IPeriodicMiniGameStartPlugIn>();
         strategyMock.SetupGet(s => s.Key).Returns(MiniGameType.BloodCastle);
         strategyMock.Setup(s => s.IsEventActive(It.IsAny<IGameContext>())).Returns(false);
-        strategyMock.As<ISupportCustomConfiguration<MiniGameStartConfiguration>>()
-            .SetupGet(s => s.Configuration)
-            .Returns(new MiniGameStartConfigurationStub { AllowedServerIds = allowedServerIds });
+        strategyMock.Setup(s => s.IsEnabledOn(It.IsAny<IGameContext>())).Returns(isEnabled);
 
         var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
         plugInManager.RegisterPlugInAtPlugInPoint<IPeriodicMiniGameStartPlugIn>(strategyMock.Object);
@@ -187,12 +215,5 @@ public class MiniGameForceStartCommandTests
 
         var player = await PlayerTestHelper.CreatePlayerAsync(context).ConfigureAwait(false);
         return (player, strategyMock, context);
-    }
-
-    /// <summary>
-    /// A minimal mini game start configuration for the command tests.
-    /// </summary>
-    private sealed class MiniGameStartConfigurationStub : MiniGameStartConfiguration
-    {
     }
 }

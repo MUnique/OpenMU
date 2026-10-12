@@ -29,13 +29,14 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     public TConfiguration? Configuration { get; set; }
 
     /// <summary>
-    /// Forces to start the task on the next start check, on every game server
-    /// on which the task is enabled.
+    /// Forces the task to start on the next start check of the game server which
+    /// owns this plug-in instance: every game server runs its own instance, so a
+    /// force only ever reaches the server on which it was requested.
     /// </summary>
     public void ForceStart()
     {
-        // A generation counter instead of a shared boolean, so that every game server
-        // consumes a forced start independently instead of racing for a single flag.
+        // A generation counter instead of a boolean, so that a forced start which
+        // arrives while a run is being prepared isn't lost by a concurrent consume.
         Interlocked.Increment(ref this._forceGeneration);
     }
 
@@ -174,8 +175,8 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     /// </returns>
     protected virtual bool IsItTimeToStart(IGameContext gameContext)
     {
-        // The state lookup creates the per-context state on first use; the per-state force
-        // consumption is what makes forced starts reach every game server independently.
+        // The state lookup creates the per-context state on first use; the per-state
+        // force consumption keeps a forced start pending until this server starts.
         var state = this.GetStateByGameContext(gameContext);
         return IsForcedStartPending(state, Volatile.Read(ref this._forceGeneration))
             || (this.Configuration?.IsItTimeToStart(gameContext.ServerTimeZone) ?? false);

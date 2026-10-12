@@ -32,6 +32,9 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
+    public bool IsEnabledOn(IGameContext gameContext) => this.IsEnabledOnContext(gameContext);
+
+    /// <inheritdoc />
     public virtual async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
     {
         Announcements.TryRemove((this.GetType(), gameContext), out _);

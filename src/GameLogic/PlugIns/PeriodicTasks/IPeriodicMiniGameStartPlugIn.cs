@@ -44,6 +44,13 @@ public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>, I
     bool IsEventActive(IGameContext gameContext);
 
     /// <summary>
+    /// Determines whether the event runs on the game server which owns the given game context.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> if the event runs in this context; otherwise, <c>false</c>.</returns>
+    bool IsEnabledOn(IGameContext gameContext);
+
+    /// <summary>
     /// Disposes all currently tracked game instances of this kind on the given game context.
     /// Disposing removes all remaining players from the games, so that a new event can be
     /// started with fresh instances.

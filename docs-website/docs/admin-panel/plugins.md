@@ -63,9 +63,10 @@ no-PvP server doesn't become a risk-free farm.
 
 A few semantics worth knowing:
 
-* A forced start (game master command or admin action) starts the event on
-  every listed server. A game master on an excluded server only gets a note
-  that the event isn't available there; nothing starts.
+* A forced start (game master command or admin action) starts the event on the
+  server where it was requested — every game server runs its own copy, so a
+  force never crosses servers. A game master on an excluded server only gets a
+  note that the event isn't available there; nothing starts.
 * Removing a server from the list stops new runs there, but a running event
   always finishes and cleans up. Open mini-game lobbies stay joinable until
   they end.

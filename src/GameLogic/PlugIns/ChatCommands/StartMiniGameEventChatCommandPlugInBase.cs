@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
-using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Base class for the game master chat commands which (re-)start a mini game event.
@@ -61,16 +60,18 @@ public abstract class StartMiniGameEventChatCommandPlugInBase : IChatCommandPlug
 
     /// <summary>
     /// Determines whether the event is disabled on the game master's server.
-    /// A disabled event is never force-started: forcing would start it on other servers
-    /// while the game master is told it started here.
+    /// A disabled event is never force-started: the force would be consumed without
+    /// starting anything, while the disposal above would still have removed open
+    /// games and the game master would be told the event starts here.
     /// </summary>
     /// <param name="gameContext">The game context of the game master.</param>
     /// <param name="gameStarter">The start plug-in of the event.</param>
     /// <returns><c>true</c> if the event doesn't run on the server; otherwise, <c>false</c>.</returns>
     internal static bool IsDisabledOnServer(IGameContext gameContext, IPeriodicMiniGameStartPlugIn gameStarter)
     {
-        return gameStarter is ISupportCustomConfiguration<MiniGameStartConfiguration> configured
-            && gameContext is IGameServerContext serverContext
-            && configured.Configuration?.IsEnabledOnServer(serverContext.Id) == false;
+        // Goes through the plug-in instead of reading its configuration: the concrete
+        // configuration type varies per event, and the configuration interface is
+        // invariant, so matching a specific configuration type never fires.
+        return !gameStarter.IsEnabledOn(gameContext);
     }
 }
