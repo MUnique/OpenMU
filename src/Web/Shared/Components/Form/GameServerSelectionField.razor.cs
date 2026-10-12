@@ -95,6 +95,10 @@ public partial class GameServerSelectionField
         {
             selection.Remove(serverId);
         }
+        else
+        {
+            // Already selected, nothing to do.
+        }
 
         this.CurrentValue = selection;
     }

@@ -24,16 +24,14 @@ public class GameServerSelectionFieldTests
 {
     private BunitContext _context = null!;
 
-    private IPersistenceContextProvider _provider = null!;
-
     /// <summary>
     /// Seeds two game servers and wires the component services.
     /// </summary>
     [SetUp]
     public void SetUp()
     {
-        this._provider = new InMemoryPersistenceContextProvider();
-        using (var context = this._provider.CreateNewConfigurationContext())
+        var provider = new InMemoryPersistenceContextProvider();
+        using (var context = provider.CreateNewConfigurationContext())
         {
             var normal = context.CreateNew<GameServerDefinition>();
             normal.ServerID = 0;
@@ -49,7 +47,7 @@ public class GameServerSelectionFieldTests
         this._context = new BunitContext();
         this._context.Services.AddSingleton<IChangeNotificationService, ChangeNotificationService>();
         this._context.Services.AddLogging();
-        this._context.Services.AddSingleton(this._provider);
+        this._context.Services.AddSingleton<IPersistenceContextProvider>(provider);
     }
 
     /// <summary>
