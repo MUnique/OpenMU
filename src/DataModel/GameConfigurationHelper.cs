@@ -82,6 +82,7 @@ public static class GameConfigurationHelper
         { typeof(ExitGate), c => c.Maps.SelectMany(m => m.ExitGates) },
         { typeof(EnterGate), c => c.Maps.SelectMany(m => m.EnterGates) },
         { typeof(BattleZoneDefinition), c => c.Maps.Select(m => m.BattleZone).WhereNotNull() },
+        { typeof(GameMapTerrainVariant), c => c.Maps.SelectMany(m => m.TerrainVariants) },
         {
             typeof(MonsterSpawnArea), c => c.Maps.SelectMany(m => m.MonsterSpawns)
                 .Concat(c.MiniGameDefinitions.SelectMany(m => m.ChangeEvents).Select(e => e.SpawnArea).WhereNotNull())

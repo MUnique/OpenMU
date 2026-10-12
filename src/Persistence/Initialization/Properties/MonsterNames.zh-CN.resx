@@ -836,4 +836,16 @@
   <data name="Soldier" xml:space="preserve">
     <value>士兵</value>
   </data>
+  <data name="DarkElf340" xml:space="preserve">
+    <value>暗黑指挥官</value>
+  </data>
+  <data name="DeathSpirit" xml:space="preserve">
+    <value>暗黑咒术师</value>
+  </data>
+  <data name="Tanker" xml:space="preserve">
+    <value>暗黑重装兵</value>
+  </data>
+  <data name="Balgass" xml:space="preserve">
+    <value>巴尔盖斯</value>
+  </data>
 </root>

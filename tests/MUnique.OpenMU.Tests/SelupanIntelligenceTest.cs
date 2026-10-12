@@ -57,7 +57,7 @@ public class SelupanIntelligenceTest
         var (monster, _) = await CreateSelupanAsync(gameContext, new RaklionEventDefinition()).ConfigureAwait(false);
         var player = await CreatePlayerAsync(gameContext, new Point(102, 100)).ConfigureAwait(false);
 
-        await SelupanIntelligence.PushAwayAsync(monster, player, 4).ConfigureAwait(false);
+        await monster.PushAwayAsync(player, 4).ConfigureAwait(false);
 
         Assert.That(player.Position, Is.EqualTo(new Point(106, 100)));
     }
@@ -73,7 +73,7 @@ public class SelupanIntelligenceTest
         var player = await CreatePlayerAsync(gameContext, new Point(102, 100)).ConfigureAwait(false);
         monster.CurrentMap.Terrain.WalkMap[104, 100] = false;
 
-        await SelupanIntelligence.PushAwayAsync(monster, player, 4).ConfigureAwait(false);
+        await monster.PushAwayAsync(player, 4).ConfigureAwait(false);
 
         Assert.That(player.Position, Is.EqualTo(new Point(103, 100)));
     }

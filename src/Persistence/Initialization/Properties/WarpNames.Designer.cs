@@ -245,6 +245,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets Crywolf from the configuration name resources.</summary>
+        public static string Crywolf {
+            get {
+                return ResourceManager.GetString("Crywolf", resourceCulture);
+            }
+        }
+
         /// <summary>Gets Aida2 from the configuration name resources.</summary>
         public static string Aida2 {
             get {

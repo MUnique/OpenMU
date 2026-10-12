@@ -5776,4 +5776,37 @@
   <data name="WarpInfo_Gate_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="GameMapTerrainVariant_TypeCaption" xml:space="preserve">
+    <value>Terrain Variant</value>
+  </data>
+  <data name="GameMapTerrainVariant_TypeCaptionPlural" xml:space="preserve">
+    <value>Terrain Variants</value>
+  </data>
+  <data name="GameMapTerrainVariant_TypeDescription" xml:space="preserve">
+    <value>An alternative terrain of a map, which replaces its terrain in a certain state.</value>
+  </data>
+  <data name="GameMapTerrainVariant_Number_Caption" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="GameMapTerrainVariant_Number_Description" xml:space="preserve">
+    <value>The number, which identifies the variant on its map, e.g. the state in which it applies.</value>
+  </data>
+  <data name="GameMapTerrainVariant_Description_Caption" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="GameMapTerrainVariant_Description_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameMapTerrainVariant_TerrainData_Caption" xml:space="preserve">
+    <value>Terrain Data</value>
+  </data>
+  <data name="GameMapTerrainVariant_TerrainData_Description" xml:space="preserve">
+    <value>Content of the *.att file in the original server.</value>
+  </data>
+  <data name="GameMapDefinition_TerrainVariants_Caption" xml:space="preserve">
+    <value>Terrain Variants</value>
+  </data>
+  <data name="GameMapDefinition_TerrainVariants_Description" xml:space="preserve">
+    <value>Alternative terrains of the map, which replace its terrain in a certain state, e.g. while the crywolf fortress is occupied.</value>
+  </data>
 </root>

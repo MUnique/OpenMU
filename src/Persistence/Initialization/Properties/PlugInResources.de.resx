@@ -746,6 +746,12 @@
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert den Index des Warp-Eintrags von Vulkanus auf 42, den der Spielclient von Season 6 anfordert.</value>
   </data>
+  <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve">
+    <value>Crywolf-Event hinzufügen</value>
+  </data>
+  <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Monster des Crywolf-Events und ihre Spawns hinzu, lässt die Statue und die Altäre der Festung immer auf der Karte, und fügt den Warp-Eintrag der Festung und die Geländevarianten der Besetzungszustände hinzu.</value>
+  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>Kleine Flügel und Umhänge hinzufügen</value>
   </data>
