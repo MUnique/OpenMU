@@ -7,6 +7,12 @@ The compose files in this folder are documented on the documentation website:
 * [Deployment overview](../../docs-website/docs/deployment/overview.md) — how
   this variant compares to the others
 
+> [!WARNING]
+> These files need the image `munique/openmu` in version 0.9.12 or newer. Older
+> images rely on an `.htpasswd` file which isn't here anymore, so their admin
+> panel would be reachable without a login. Run `docker compose pull` if you
+> pulled the image before.
+
 Short version, for a local test:
 
 ```bash

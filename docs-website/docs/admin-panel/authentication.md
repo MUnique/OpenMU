@@ -11,6 +11,15 @@ The admin panel authenticates its users itself. Earlier versions relied on the
 basic authentication of the reverse proxy against an `.htpasswd` file; that file
 is gone, and so are the proxy configurations which used it.
 
+:::warning[Requires OpenMU 0.9.12 or newer]
+The built-in login is part of OpenMU 0.9.12 and newer. The docker images up to
+0.9.10 still rely on the `.htpasswd` file of the reverse proxy. Don't combine
+such an image with the current deployment files, which no longer contain that
+file: the admin panel would then be reachable by anybody, without a login. Run
+`docker compose pull` to get the current image, or check out the git tag of the
+version you run (e.g. `v0.9.10`).
+:::
+
 What you get instead:
 
 * a real login page with a logout,

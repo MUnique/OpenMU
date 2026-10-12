@@ -28,6 +28,23 @@ It creates a new folder `OpenMU` with the repository contents inside.
 cd OpenMU/deploy/all-in-one
 ```
 
+:::warning[Use OpenMU 0.9.12 or newer]
+The deployment files on `master` rely on the [built-in login](../admin-panel/authentication.md)
+of the admin panel, which the docker images up to version 0.9.10 don't have yet.
+These older images expected the basic authentication of nginx with an `.htpasswd`
+file, which isn't part of these files anymore — combined with them, the admin
+panel is reachable by **anybody, without a login**.
+
+If you pulled `munique/openmu` before, get the current image first:
+
+```bash
+docker compose pull
+```
+
+To keep running an older image, check out the matching git tag instead (e.g.
+`git checkout v0.9.10`), so that the deployment files and the image fit together.
+:::
+
 ## Option A — for local testing
 
 To use the official docker image, just run:
