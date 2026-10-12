@@ -14,9 +14,13 @@ public static class ItemStorePriceExtensions
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The price; <c>null</c>, if the item has no price.</returns>
+    /// <remarks>
+    /// An amount of 0 or less is treated as no price, so that such an item can't be bought for nothing.
+    /// Setting a price never stores it, but a modified database could contain it.
+    /// </remarks>
     public static ShopPrice? GetStorePrice(this Item item)
     {
-        return item.StorePrice is { } amount
+        return item.StorePrice is { } amount and > 0
             ? new ShopPrice(amount, item.StorePriceItemDefinition, item.StorePriceCoinType)
             : null;
     }

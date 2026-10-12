@@ -8,6 +8,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.Views.PlayerShop;
+using MUnique.OpenMU.GameServer.MessageHandler.PlayerShop;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.GameServer.RemoteView.PlayerShop;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -33,6 +36,22 @@ public class PlayerShopCurrenciesRemoteViewTests
         await view.ShowShopCurrenciesAsync([JewelOfBless], [CashShopCoinType.GoblinPoints]).ConfigureAwait(false);
 
         Assert.That(output.ToArray(), Is.EqualTo(new byte[] { 0xC1, 9, 0x3F, 0x0A, 2, 0x0D, 0xE0, 0xF2, 0xFF }));
+    }
+
+    /// <summary>
+    /// Tests that a truncated set price request is ignored instead of throwing.
+    /// </summary>
+    [Test]
+    public async Task TruncatedSetPriceRequestIsIgnoredAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var handler = new PlayerShopSetItemPriceExtendedPacketHandlerPlugIn();
+        var packet = new byte[] { 0xC3, 8, 0x3F, 0x09, 0, 0, 0, 0 };
+
+        await handler.HandlePacketAsync(player, packet).ConfigureAwait(false);
+
+        Moq.Mock.Get(player.ViewPlugIns.GetPlugIn<IItemPriceSetResponsePlugIn>()!)
+            .Verify(v => v.ItemPriceSetResponseAsync(Moq.It.IsAny<byte>(), Moq.It.IsAny<ItemPriceResult>()), Moq.Times.Never);
     }
 
     /// <summary>

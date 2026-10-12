@@ -24,6 +24,15 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
     /// </summary>
     private const int PiecesPerBundleLevel = 10;
 
+    /// <summary>
+    /// The highest level of a bundle which the jewel mix creates: bundles of 10, 20 or 30 pieces have the levels 0 to 2.
+    /// </summary>
+    /// <remarks>
+    /// Bundles with a higher level can't be created by players, and unstacking them doesn't give their pieces back,
+    /// so they're not accepted as payment.
+    /// </remarks>
+    private const byte MaximumBundleLevel = 2;
+
     /// <inheritdoc />
     public ShopPaymentResult CheckFunds(Player buyer, ShopPrice price)
     {
@@ -105,6 +114,10 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
     /// <param name="rows">The available rows.</param>
     /// <param name="price">The price.</param>
     /// <returns>The selected rows; <c>null</c>, if no combination matches the price exactly.</returns>
+    /// <remarks>
+    /// The work and memory grow with the price, so it's only called when the rows sum up to at least the price.
+    /// That bounds the price by the items which the buyer actually has, not by a configured maximum.
+    /// </remarks>
     internal static IReadOnlyList<(Item Item, int Pieces)>? SelectRows(IReadOnlyList<(Item Item, int Pieces)> rows, int price)
     {
         // A subset sum, because bundles can't be split: reachedBy[sum] is the index of the row which
@@ -176,7 +189,7 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
             {
                 rows.Add((item, 1));
             }
-            else if (bundleDefinitions.Any(bundle => ShopPrice.IsSameItem(bundle, definition)))
+            else if (item.Level <= MaximumBundleLevel && bundleDefinitions.Any(bundle => ShopPrice.IsSameItem(bundle, definition)))
             {
                 rows.Add((item, (item.Level + 1) * PiecesPerBundleLevel));
             }

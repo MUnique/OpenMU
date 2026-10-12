@@ -28,7 +28,7 @@ public class OpenStoreAction
             return;
         }
 
-        if (player.ShopStorage?.Items.Any(i => !i.StorePrice.HasValue) ?? true)
+        if (player.ShopStorage?.Items.Any(i => i.GetStorePrice() is null) ?? true)
         {
             player.Logger.LogWarning("OpenStore request failed: Not all store items have a price assigned. Player: [{0}], StoreName: [{1}]", character.Name, character.StoreName);
             return;

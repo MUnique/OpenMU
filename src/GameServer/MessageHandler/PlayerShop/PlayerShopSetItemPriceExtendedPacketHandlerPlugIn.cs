@@ -36,6 +36,12 @@ internal class PlayerShopSetItemPriceExtendedPacketHandlerPlugIn : ISubPacketHan
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        if (packet.Length < PlayerShopSetItemPriceExtended.Length)
+        {
+            player.Logger.LogWarning("Ignoring truncated player shop set item price packet of length {Length}.", packet.Length);
+            return;
+        }
+
         PlayerShopSetItemPriceExtended message = packet;
         player.Logger.LogDebug(
             "Player [{0}] sets price of slot {1} to {2}/{3}/{4}",

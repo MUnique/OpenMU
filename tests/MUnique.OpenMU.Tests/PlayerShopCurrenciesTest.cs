@@ -238,6 +238,57 @@ public class PlayerShopCurrenciesTest
     }
 
     /// <summary>
+    /// Tests that an item with a stored price of 0, which can only come from a modified database,
+    /// is not sold for nothing.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWithZeroPriceIsNotSoldAsync()
+    {
+        var (seller, buyer) = await this.CreatePlayersAsync().ConfigureAwait(false);
+        var soldItem = await this.AddStoreItemAsync(seller, new ShopPrice(1, this._jewelOfBless)).ConfigureAwait(false);
+        soldItem.StorePrice = 0;
+        seller.ShopStorage!.StoreOpen = true;
+
+        await new BuyRequestAction().BuyItemAsync(buyer, seller, StoreSlot).ConfigureAwait(false);
+
+        Mock.Get(buyer.ViewPlugIns.GetPlugIn<IPlayerShopBuyRequestResultPlugIn>()!).Verify(v => v.ShowResultAsync(seller, ItemBuyResult.NameMismatchOrPriceMissing, null), Times.Once);
+        Assert.That(seller.ShopStorage.Items, Does.Contain(soldItem));
+        Assert.That(soldItem.GetStorePrice(), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that a bundle with a higher level than the jewel mix creates doesn't count as payment,
+    /// because it couldn't be unstacked into its pieces.
+    /// </summary>
+    [Test]
+    public async ValueTask BundleAboveMixLevelsIsNotAcceptedAsync()
+    {
+        var (seller, buyer) = await this.CreatePlayersAsync().ConfigureAwait(false);
+        var soldItem = await this.AddStoreItemAsync(seller, new ShopPrice(40, this._jewelOfBless)).ConfigureAwait(false);
+        seller.ShopStorage!.StoreOpen = true;
+        var bundle = await this.AddInventoryItemAsync(buyer, 12, this._jewelOfBlessBundle, level: 3).ConfigureAwait(false);
+
+        await new BuyRequestAction().BuyItemAsync(buyer, seller, StoreSlot).ConfigureAwait(false);
+
+        Mock.Get(buyer.ViewPlugIns.GetPlugIn<IPlayerShopBuyRequestResultPlugIn>()!).Verify(v => v.ShowResultAsync(seller, ItemBuyResult.LackOfPriceCurrency, null), Times.Once);
+        Assert.That(buyer.Inventory!.Items, Does.Contain(bundle));
+        Assert.That(seller.ShopStorage.Items, Does.Contain(soldItem));
+    }
+
+    /// <summary>
+    /// Tests that the admin panel shows readable captions for the account coin settings, which can't be derived
+    /// from the property names.
+    /// </summary>
+    [Test]
+    public void ConfigurationHasCaptions()
+    {
+        var english = System.Globalization.CultureInfo.GetCultureInfo("en");
+
+        Assert.That(typeof(PlayerShopCurrenciesConfiguration).GetPropertyCaption(nameof(PlayerShopCurrenciesConfiguration.IsWCoinCAllowed), english), Is.EqualTo("Is WCoin (C) Allowed"));
+        Assert.That(typeof(PlayerShopCurrenciesConfiguration).GetPropertyCaption(nameof(PlayerShopCurrenciesConfiguration.IsWCoinPAllowed), english), Is.EqualTo("Is WCoin (P) Allowed"));
+    }
+
+    /// <summary>
     /// Tests the selection of jewel items which pay a price exactly.
     /// </summary>
     /// <param name="pieces">The pieces of the available items.</param>

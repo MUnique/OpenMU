@@ -47,7 +47,7 @@ public class BuyRequestAction
         }
 
         var item = requestedPlayer.ShopStorage.GetItem(slot);
-        if (item?.StorePrice is null)
+        if (item?.GetStorePrice() is not { } price)
         {
             player.Logger.LogDebug("Item unavailable, Slot {0}", slot);
             await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.NameMismatchOrPriceMissing, null)).ConfigureAwait(false);
@@ -68,7 +68,6 @@ public class BuyRequestAction
             return;
         }
 
-        var price = item.GetStorePrice()!.Value;
         if (price.Kind != ShopPriceKind.Zen && !player.SupportsShopCurrencies())
         {
             // The client can't show such items, so it should never request them.
