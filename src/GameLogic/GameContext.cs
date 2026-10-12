@@ -87,7 +87,7 @@ public class GameContext : AsyncDisposable, IGameContext
             this.MiniGames.GameMapCreated += (_, map) => this.GameMapCreated?.Invoke(this, map);
             this.MiniGames.GameMapRemoved += (_, map) => this.GameMapRemoved?.Invoke(this, map);
             this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
-            this.DuelRoomManager = new DuelRoomManager(this.Configuration.DuelConfiguration!);
+            this.DuelRoomManager = new DuelRoomManager(this.Configuration.DuelConfiguration);
             this.ExperienceTable = CreateExpTable(this.Configuration.ExperienceFormula ?? DefaultExperienceFormula, this.Configuration.MaximumLevel);
             this.MasterExperienceTable = CreateExpTable(this.Configuration.MasterExperienceFormula ?? DefaultMasterExperienceFormula, this.Configuration.MaximumMasterLevel);
         }

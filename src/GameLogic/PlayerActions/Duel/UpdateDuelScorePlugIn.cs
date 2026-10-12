@@ -23,11 +23,10 @@ public class UpdateDuelScorePlugIn : IAttackableGotKilledPlugIn
     /// <param name="killer">The killer.</param>
     public async ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
     {
-        if (killer is Player { DuelRoom: not null } killerPlayer
-            && killed is Player { DuelRoom: not null } killedPlayer
-            && killerPlayer.DuelRoom == killedPlayer.DuelRoom)
+        if (killer is Player { DuelRoom: { } duelRoom } killerPlayer
+            && killed is Player killedPlayer
+            && duelRoom.AreDuelists(killerPlayer, killedPlayer))
         {
-            var duelRoom = killerPlayer.DuelRoom;
             using var l = await duelRoom.Lock.LockAsync().ConfigureAwait(false);
             if (duelRoom.State is not DuelState.DuelStarted)
             {

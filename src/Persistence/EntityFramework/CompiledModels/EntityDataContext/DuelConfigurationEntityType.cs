@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.DuelConfiguration",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.DuelConfiguration),
                 baseEntityType,
-                propertyCount: 6,
+                propertyCount: 7,
                 navigationCount: 2,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 1,
@@ -77,6 +77,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DuelConfiguration).GetField("<MinimumCharacterLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             minimumCharacterLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var variant = runtimeEntityType.AddProperty(
+                "Variant",
+                typeof(MUnique.OpenMU.DataModel.Configuration.DuelVariant),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DuelConfiguration).GetProperty("Variant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DuelConfiguration).GetField("<Variant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            variant.SetSentinelFromProviderValue(0);
+            variant.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var key = runtimeEntityType.AddKey(
                 new[] { id });

@@ -51,7 +51,7 @@ public class GensBattleZonePlugIn : IPlayerKillPenaltyExemptionPlugIn, IWarpGate
         if (attackable is not Player victim
             || (killer as Player ?? (killer as Monster)?.SummonedBy) is not { } killerPlayer
             || killerPlayer == victim
-            || killerPlayer.DuelRoom is not null
+            || (killerPlayer.DuelRoom is { } duelRoom && duelRoom.AreDuelists(killerPlayer, victim))
             || GensFeaturePlugIn.GetConfiguration(victim.GameContext) is not { } configuration
             || !AreEnemiesInBattleZone(killerPlayer, victim, configuration)
             || killerPlayer.SelectedCharacter is not { } killerCharacter

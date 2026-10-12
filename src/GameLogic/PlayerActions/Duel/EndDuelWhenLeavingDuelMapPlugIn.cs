@@ -37,7 +37,7 @@ public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
         }
 
         // When respawning during the duel, don't end the duel
-        var removedFromDuelMap = duelRoom.Area.FirstPlayerGate?.Map == map.Definition;
+        var removedFromDuelMap = duelRoom.Map == map.Definition;
         if (removedFromDuelMap
             && duelRoom.IsDuelist(player)
             && duelRoom.State is (DuelState.DuelStarted or DuelState.DuelAccepted)

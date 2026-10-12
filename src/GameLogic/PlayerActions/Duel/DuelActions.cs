@@ -95,14 +95,8 @@ public class DuelActions
             return;
         }
 
-        if (duelConfig.DuelAreas.FirstOrDefault(area => area.Index == duelRoom.Index) is not { } duelArea)
-        {
-            player.Logger.LogError("Duel area with index {index} was not found.", duelRoom.Index);
-            await duelRoom.ResetAndDisposeAsync(DuelStartResult.FailedByError).ConfigureAwait(false);
-            return;
-        }
-
-        if (duelArea.FirstPlayerGate is null || duelArea.SecondPlayerGate is null)
+        if (duelRoom.Area is { } duelArea
+            && (duelArea.FirstPlayerGate is null || duelArea.SecondPlayerGate is null))
         {
             player.Logger.LogError("Duel area with index {index} has missing exit gates.", duelRoom.Index);
             await duelRoom.ResetAndDisposeAsync(DuelStartResult.FailedByError).ConfigureAwait(false);
@@ -115,8 +109,16 @@ public class DuelActions
         target.TryRemoveMoney(duelConfig.EntranceFee);
         duelRoom.State = DuelState.DuelAccepted;
 
-        await duelRoom.Requester.WarpToAsync(duelArea.FirstPlayerGate).ConfigureAwait(false);
-        await duelRoom.Opponent.WarpToAsync(duelArea.SecondPlayerGate).ConfigureAwait(false);
+        if (duelRoom.Area is { FirstPlayerGate: { } firstPlayerGate, SecondPlayerGate: { } secondPlayerGate })
+        {
+            await duelRoom.Requester.WarpToAsync(firstPlayerGate).ConfigureAwait(false);
+            await duelRoom.Opponent.WarpToAsync(secondPlayerGate).ConfigureAwait(false);
+        }
+        else
+        {
+            // Both duelists are on the same map, which has been checked above.
+            duelRoom.Map = player.CurrentMap?.Definition;
+        }
 
         _ = Task.Run(duelRoom.RunDuelAsync);
     }
@@ -209,8 +211,9 @@ public class DuelActions
             return;
         }
 
-        if (config.DuelAreas.FirstOrDefault(area => area.Index == duelRoom.Index) is not { } area)
+        if (duelRoom.Area is not { } area)
         {
+            // A duel in the current map has no spectators.
             return;
         }
 

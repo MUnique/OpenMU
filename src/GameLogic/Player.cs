@@ -723,8 +723,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom)
             {
                 await duelRoom.CancelDuelAsync().ConfigureAwait(false);
-                if (this.GameContext.Configuration.DuelConfiguration?.Exit is { } exit)
+                if (!duelRoom.IsInCurrentMap
+                    && this.GameContext.Configuration.DuelConfiguration?.Exit is { } exit)
                 {
+                    // Without this, the player would log in at the duel arena again.
+                    // A duel in the current map took place where the player wants to stay.
                     await this._mapTransitions.PlaceAtGateAsync(exit).ConfigureAwait(false);
                 }
             }
@@ -1390,8 +1393,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="killedPlayer">The player killed.</param>
     internal async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
     {
-        if (this.DuelRoom?.State == DuelState.DuelStarted)
+        if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom
+            && duelRoom.AreDuelists(this, killedPlayer))
         {
+            // Killing the opponent is the point of a duel. Killing anybody else - which is
+            // possible when the duel takes place in the current map - is not covered by it.
             return;
         }
 

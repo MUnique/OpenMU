@@ -1507,6 +1507,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("MinimumCharacterLevel")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Variant")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExitId");
