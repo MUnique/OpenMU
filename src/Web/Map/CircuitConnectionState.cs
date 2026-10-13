@@ -24,7 +24,11 @@ public sealed class CircuitConnectionState : CircuitHandler
     /// <summary>
     /// Occurs when the browser reconnected after a temporary connection loss.
     /// </summary>
-    public event Func<ValueTask>? ConnectionRestored;
+    /// <remarks>
+    /// It's raised before the circuit carries js interop calls again, so handlers must not call
+    /// the browser right away, and must not block.
+    /// </remarks>
+    public event EventHandler? ConnectionRestored;
 
     /// <summary>
     /// Gets a value indicating whether the browser is currently reachable.
@@ -43,15 +47,17 @@ public sealed class CircuitConnectionState : CircuitHandler
     }
 
     /// <inheritdoc />
-    public override async Task OnConnectionUpAsync(Circuit circuit, CancellationToken cancellationToken)
+    public override Task OnConnectionUpAsync(Circuit circuit, CancellationToken cancellationToken)
     {
         var wasDown = !this._isConnected;
         this._isConnected = true;
 
-        if (wasDown && this.ConnectionRestored is { } handler)
+        if (wasDown)
         {
-            await handler().ConfigureAwait(false);
+            this.ConnectionRestored?.Invoke(this, EventArgs.Empty);
         }
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

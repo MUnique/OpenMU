@@ -76,17 +76,17 @@ public class JsInteropQueueTests
     }
 
     /// <summary>
-    /// Tests that a full queue drops further calls, reports it once, and accepts calls again
-    /// after the pending ones were discarded.
+    /// Tests that a full queue drops further calls, and that the resynchronization is requested
+    /// once the browser received the calls which were queued before, but not while it doesn't answer.
     /// </summary>
     /// <returns>The task of this test.</returns>
     [Test]
-    public async Task OverflowIsReportedOnceAndResetByDiscardAsync()
+    public async Task ResynchronizationIsRequestedWhenTheBrowserCaughtUpAsync()
     {
         var browser = new BlockingBrowser();
         await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => true);
-        var overflows = 0;
-        queue.Overflowed += () => Interlocked.Increment(ref overflows);
+        var resynchronizations = 0;
+        queue.ResynchronizationRequired += () => Interlocked.Increment(ref resynchronizations);
 
         // The first call is taken by the pump and blocks there, the others fill the channel.
         await queue.InvokeVoidAsync("call", -1).ConfigureAwait(false);
@@ -96,19 +96,20 @@ public class JsInteropQueueTests
             await queue.InvokeVoidAsync("call", i).ConfigureAwait(false);
         }
 
-        Assert.That(overflows, Is.EqualTo(1));
         Assert.That(queue.PendingCount, Is.EqualTo(JsInteropQueue.Capacity));
+        Assert.That(resynchronizations, Is.Zero, "a browser which doesn't answer gets no rebuild");
+
+        browser.Release();
+        Assert.That(SpinWait.SpinUntil(() => Volatile.Read(ref resynchronizations) == 1, Timeout), Is.True);
+
+        await queue.InvokeVoidAsync("dropped", 1).ConfigureAwait(false);
+        Assert.That(queue.PendingCount, Is.Zero, "calls are dropped until the pending ones were discarded");
 
         queue.DiscardPending();
-        Assert.That(queue.PendingCount, Is.EqualTo(0));
-
-        for (var i = 0; i < JsInteropQueue.Capacity + 1; i++)
-        {
-            await queue.InvokeVoidAsync("call", i).ConfigureAwait(false);
-        }
-
-        Assert.That(overflows, Is.EqualTo(2), "an overflow after the reset is reported again");
-        browser.Release();
+        await queue.InvokeVoidAsync("accepted", 2).ConfigureAwait(false);
+        Assert.That(SpinWait.SpinUntil(() => browser.Identifiers.Contains("accepted"), Timeout), Is.True);
+        Assert.That(browser.Identifiers, Does.Not.Contain("dropped"));
+        Assert.That(resynchronizations, Is.EqualTo(1));
     }
 
     /// <summary>
@@ -181,8 +182,9 @@ public class JsInteropQueueTests
         {
             this._mock
                 .Setup(r => r.InvokeAsync<IJSVoidResult>(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<object?[]>()))
-                .Returns(() =>
+                .Returns((string identifier, CancellationToken _, object?[] _) =>
                 {
+                    this.Identifiers.Enqueue(identifier);
                     this.Started.Set();
                     return new ValueTask<IJSVoidResult>(this._answer.Task);
                 });
@@ -191,6 +193,8 @@ public class JsInteropQueueTests
         public IJSRuntime Object => this._mock.Object;
 
         public ManualResetEventSlim Started { get; } = new();
+
+        public ConcurrentQueue<string> Identifiers { get; } = new();
 
         public void Release() => this._answer.TrySetResult(null!);
     }

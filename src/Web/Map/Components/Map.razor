@@ -100,7 +100,16 @@
             {
                 // The component was disposed while the map was created. The controller would
                 // otherwise stay registered as an observer of the game map forever.
-                await controller.DisposeAsync();
+                try
+                {
+                    await controller.DisposeAsync();
+                }
+                catch (Exception ex)
+                {
+                    // The component is gone, so an exception would only end up in the render loop.
+                    this.Logger.LogError(ex, "Error when disposing the map controller of a disposed map component.");
+                }
+
                 return controller;
             }
 

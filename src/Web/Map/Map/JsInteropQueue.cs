@@ -21,10 +21,12 @@ using Microsoft.JSInterop.Infrastructure;
 /// freezes the map for the players. Through this queue, the game logic only pays for writing the
 /// call into a channel. The pump delivers the calls in their original order, so an object is still
 /// added before it moves and moves before it's removed.
-/// When the browser can't keep up and the queue is full, further calls are dropped and
-/// <see cref="Overflowed"/> is raised once. The owner then rebuilds the state of the browser from
-/// scratch (see <see cref="DiscardPending"/>), because that's the only state which is known to be
-/// right after a gap. Calls which expect a result are passed through to the inner runtime.
+/// When the browser can't keep up and the queue is full, further calls are dropped. As soon as the
+/// browser received the calls which were queued before, <see cref="ResynchronizationRequired"/> is
+/// raised, and the owner rebuilds the state of the browser from scratch (see <see cref="DiscardPending"/>),
+/// because that's the only state which is known to be right after a gap. Waiting for the browser to
+/// catch up first keeps a browser which doesn't answer at all from causing one rebuild after another.
+/// Calls which expect a result are passed through to the inner runtime.
 /// </remarks>
 public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
 {
@@ -33,6 +35,12 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
     /// reading, because even the initial population of a crowded map takes far less calls.
     /// </summary>
     public const int Capacity = 4096;
+
+    private const int NotOverflowed = 0;
+
+    private const int Overflowed = 1;
+
+    private const int CaughtUp = 2;
 
     /// <summary>
     /// The time which the disposal waits for the call which the pump is currently delivering.
@@ -46,7 +54,10 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
     private readonly CancellationTokenSource _disposeCts = new();
     private readonly Task _pump;
 
-    private int _overflowed;
+    /// <summary>
+    /// The overflow state, one of <see cref="NotOverflowed"/>, <see cref="Overflowed"/> and <see cref="CaughtUp"/>.
+    /// </summary>
+    private int _overflowState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsInteropQueue"/> class.
@@ -67,17 +78,17 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
             // With 'Wait', TryWrite returns false when the queue is full, instead of dropping a call silently.
             FullMode = BoundedChannelFullMode.Wait,
         });
-        this._pump = Task.Run(this.PumpAsync);
+        this._pump = Task.Run(() => this.PumpAsync().AsTask());
     }
 
     /// <summary>
-    /// Occurs once when the queue ran full and started to drop calls.
+    /// Occurs once after the queue ran full, when the browser received the calls which were queued before.
     /// </summary>
     /// <remarks>
-    /// It's raised on the thread of the dropped call, which may hold a lock of the game map,
+    /// It's raised on the pump, which doesn't deliver further calls until the handlers returned,
     /// so handlers must not block.
     /// </remarks>
-    public event Action? Overflowed;
+    public event Action? ResynchronizationRequired;
 
     /// <summary>
     /// Gets the number of calls which wait for the browser.
@@ -107,12 +118,12 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
 
         // After an overflow, nothing is queued until the rebuild discarded the rest. Moving or
         // removing an object whose addition was dropped would only confuse the browser.
-        if (Volatile.Read(ref this._overflowed) == 0
+        if (Volatile.Read(ref this._overflowState) == NotOverflowed
             && !this._channel.Writer.TryWrite(new QueuedCall(identifier, args, cancellationToken))
-            && Interlocked.Exchange(ref this._overflowed, 1) == 0)
+            && !this._disposeCts.IsCancellationRequested
+            && Interlocked.CompareExchange(ref this._overflowState, Overflowed, NotOverflowed) == NotOverflowed)
         {
             this._logger.LogWarning("The browser doesn't keep up with the live map ({Capacity} calls pending); dropping calls until the map is resynchronized.", Capacity);
-            this.Overflowed?.Invoke();
         }
 
         return default;
@@ -133,7 +144,7 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
             discarded++;
         }
 
-        Interlocked.Exchange(ref this._overflowed, 0);
+        Interlocked.Exchange(ref this._overflowState, NotOverflowed);
         this._logger.LogDebug("Discarded {Count} pending live map calls.", discarded);
     }
 
@@ -145,8 +156,10 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
             return;
         }
 
-        this._channel.Writer.TryComplete();
+        // Cancelled first, so that a call which fails to be written into the completed channel
+        // isn't taken for an overflow.
         await this._disposeCts.CancelAsync().ConfigureAwait(false);
+        this._channel.Writer.TryComplete();
         try
         {
             // Bounded, because a call which the browser never answers would hold the disposal forever.
@@ -159,18 +172,25 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
         catch (TimeoutException)
         {
             // The pump ends with that call. The token source has to stay alive until then.
+            _ = this._pump.ContinueWith(_ => this._disposeCts.Dispose(), CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return;
         }
 
         this._disposeCts.Dispose();
     }
 
-    private async Task PumpAsync()
+    private async ValueTask PumpAsync()
     {
         var disposeToken = this._disposeCts.Token;
         await foreach (var call in this._channel.Reader.ReadAllAsync(disposeToken).ConfigureAwait(false))
         {
             await this.DeliverAsync(call, disposeToken).ConfigureAwait(false);
+
+            if (this._channel.Reader.Count == 0
+                && Interlocked.CompareExchange(ref this._overflowState, CaughtUp, Overflowed) == Overflowed)
+            {
+                this.ResynchronizationRequired?.Invoke();
+            }
         }
     }
 

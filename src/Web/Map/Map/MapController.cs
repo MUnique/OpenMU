@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.Map.ViewPlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Controller which contains the logic for the shown game map.
@@ -40,7 +41,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     private readonly ObserverToWorldViewAdapter _adapterToWorldView;
     private readonly CancellationTokenSource _disposeCts = new();
     private readonly CircuitConnectionState _circuitState;
-    private readonly SemaphoreSlim _resyncLock = new(1, 1);
+    private readonly AsyncLock _resyncLock = new();
 
     private int _disposeState;
 
@@ -65,7 +66,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
 
         // The view plugins call the browser through the queue, so the game logic never waits for the browser.
         this._jsQueue = new JsInteropQueue(jsRuntime, this.Logger, () => circuitState.IsConnected);
-        this._jsQueue.Overflowed += this.OnJsQueueOverflowed;
+        this._jsQueue.ResynchronizationRequired += this.OnResynchronizationRequired;
         this._adapterToWorldView = new ObserverToWorldViewAdapter(this, byte.MaxValue);
 
         var viewPlugIns = new CustomPlugInContainer<IViewPlugIn>();
@@ -81,7 +82,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
 
         this.ViewPlugIns = viewPlugIns;
 
-        this._circuitState.ConnectionRestored += this.OnConnectionRestoredAsync;
+        this._circuitState.ConnectionRestored += this.OnConnectionRestored;
     }
 
     /// <inheritdoc />
@@ -143,18 +144,22 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
             return;
         }
 
-        this._circuitState.ConnectionRestored -= this.OnConnectionRestoredAsync;
-        this._jsQueue.Overflowed -= this.OnJsQueueOverflowed;
+        this._circuitState.ConnectionRestored -= this.OnConnectionRestored;
+        this._jsQueue.ResynchronizationRequired -= this.OnResynchronizationRequired;
 
-        var holdsResyncLock = false;
+        IDisposable? resyncLock = null;
         try
         {
             await this._disposeCts.CancelAsync().ConfigureAwait(false);
 
             // A resynchronization between its unregistration and its registration would otherwise
             // put this disposed controller back on the game map, where nothing would remove it again.
-            holdsResyncLock = await this._resyncLock.WaitAsync(ResyncSettleTimeout).ConfigureAwait(false);
-            if (!holdsResyncLock)
+            try
+            {
+                using var timeout = new CancellationTokenSource(ResyncSettleTimeout);
+                resyncLock = await this._resyncLock.LockAsync(timeout.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
             {
                 this.Logger.LogWarning("Timed out waiting for the resynchronization of map view '{MapIdentifier}' before disposing it.", this._identifier);
             }
@@ -174,33 +179,28 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
         }
         finally
         {
+            resyncLock?.Dispose();
             this._disposeCts.Dispose();
-
-            // A semaphore which a resynchronization still holds must not be disposed, because its release would throw.
-            if (holdsResyncLock)
-            {
-                this._resyncLock.Dispose();
-            }
         }
     }
 
     /// <summary>
     /// Resynchronizes the map after the browser reconnected, because the calls were dropped while it was away.
     /// </summary>
-    /// <returns>The <see cref="ValueTask"/> of this async operation.</returns>
-    private ValueTask OnConnectionRestoredAsync()
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The event arguments.</param>
+    private void OnConnectionRestored(object? sender, EventArgs e)
     {
-        // It must not run inline: blazor awaits its circuit handlers before the circuit carries
-        // js interop calls again, and the registration needs the observer lock as a writer.
+        // It must not run inline: the circuit doesn't carry js interop calls yet, and the
+        // registration needs the observer lock as a writer.
         this.ScheduleResync("reconnected");
-        return ValueTask.CompletedTask;
     }
 
     /// <summary>
     /// Resynchronizes the map after the browser fell so far behind that calls were dropped.
-    /// It's raised by the game logic which hit the full queue, so it only schedules the resynchronization.
+    /// It's raised by the pump of the queue, so it only schedules the resynchronization.
     /// </summary>
-    private void OnJsQueueOverflowed()
+    private void OnResynchronizationRequired()
     {
         this.ScheduleResync("fell behind");
     }
@@ -225,21 +225,25 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
         });
     }
 
-    private async Task ResyncAsync(string reason)
+    private async ValueTask ResyncAsync(string reason)
     {
+        CancellationToken disposeToken;
+        IDisposable resyncLock;
         try
         {
-            await Task.Delay(ResyncDelay, this._disposeCts.Token).ConfigureAwait(false);
+            // Taken once, because the token source is disposed with this controller.
+            disposeToken = this._disposeCts.Token;
+            await Task.Delay(ResyncDelay, disposeToken).ConfigureAwait(false);
 
             // The browser can go down and up repeatedly, and the resynchronizations must not overlap.
-            await this._resyncLock.WaitAsync(this._disposeCts.Token).ConfigureAwait(false);
+            resyncLock = await this._resyncLock.LockAsync(disposeToken).ConfigureAwait(false);
         }
         catch (Exception e) when (e is OperationCanceledException or ObjectDisposedException)
         {
             return;
         }
 
-        try
+        using (resyncLock)
         {
             if (Volatile.Read(ref this._disposeState) != 0 || !this._circuitState.IsConnected)
             {
@@ -256,7 +260,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
 
             // Objects which left the map while calls were dropped were never removed in the browser,
             // so it starts off empty and gets the current state with the registration.
-            await this._jsQueue.InvokeVoidAsync($"{this._identifier}.world.clear", this._disposeCts.Token).ConfigureAwait(false);
+            await this._jsQueue.InvokeVoidAsync($"{this._identifier}.world.clear", disposeToken).ConfigureAwait(false);
 
             if (Volatile.Read(ref this._disposeState) != 0)
             {
@@ -264,10 +268,6 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
             }
 
             await this._gameServer.RegisterMapObserverAsync(this._mapId, this).ConfigureAwait(false);
-        }
-        finally
-        {
-            this._resyncLock.Release();
         }
     }
 }
