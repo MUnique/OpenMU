@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
-using System.ComponentModel;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
@@ -52,7 +51,7 @@ public sealed class SkillAttributeSystem : AttributeSystem
         base.Dispose(disposing);
     }
 
-    private void OnSkillEntryChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnSkillEntryChanged(object? sender, EventArgs e)
     {
         this._levelElement.Value = this._skillEntry.Level;
     }
