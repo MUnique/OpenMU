@@ -430,7 +430,6 @@ public class SpeedHackAntiCheatTests
     {
         var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
         var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
         player.Position = StartPoint;
 
         var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
