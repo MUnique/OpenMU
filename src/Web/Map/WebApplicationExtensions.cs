@@ -23,6 +23,7 @@ public static class WebApplicationExtensions
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
         builder.Services.AddScoped<IMapFactory, JavascriptMapFactory>();
+        builder.Services.AddCircuitConnectionState();
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;
