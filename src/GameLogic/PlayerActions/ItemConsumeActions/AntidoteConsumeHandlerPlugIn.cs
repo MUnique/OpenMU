@@ -32,9 +32,9 @@ public class AntidoteConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             {
                 await poisonEffect.DisposeAsync().ConfigureAwait(false);
             }
-            else if (player.MagicEffectList.TryGetEffect(IceEffectNumber, out var defenseReductionEffect))
+            else if (player.MagicEffectList.TryGetEffect(IceEffectNumber, out var iceEffect))
             {
-                await defenseReductionEffect.DisposeAsync().ConfigureAwait(false);
+                await iceEffect.DisposeAsync().ConfigureAwait(false);
             }
             else
             {
