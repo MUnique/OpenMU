@@ -10,7 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// <summary>
 /// An attribute system which considers items of a character.
 /// </summary>
-public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
+public sealed class ItemAwareAttributeSystem : AttributeSystem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemAwareAttributeSystem" /> class.
@@ -45,33 +45,6 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
     /// Gets or sets the item set power ups.
     /// </summary>
     public IReadOnlyList<PowerUpWrapper>? ItemSetPowerUps { get; set; }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        this.AttributeValueChanged = null;
-        foreach (var attribute in this)
-        {
-            attribute.ValueChanged -= this.OnAttributeValueChanged;
-        }
-
-        foreach (var powerUpWrapper in this.ItemPowerUps.SelectMany(p => p.Value))
-        {
-            powerUpWrapper.Dispose();
-        }
-
-        this.ItemPowerUps.Clear();
-
-        if (this.ItemSetPowerUps is { } itemSetPowerUps)
-        {
-            foreach (var powerUp in itemSetPowerUps)
-            {
-                powerUp.Dispose();
-            }
-
-            this.ItemSetPowerUps = null;
-        }
-    }
 
     /// <inheritdoc />
     public override string ToString()
@@ -114,6 +87,26 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
         base.OnAttributeRemoved(attribute);
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// Also releases the power-ups of the items, because they wrap elements of the item configuration.
+    /// </remarks>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this.AttributeValueChanged = null;
+            foreach (var attribute in this)
+            {
+                attribute.ValueChanged -= this.OnAttributeValueChanged;
+            }
+
+            this.ReleaseItemPowerUps();
+        }
+
+        base.Dispose(disposing);
+    }
+
     /// <summary>
     /// Gets the stat attributes of the character and its account, without duplicates.
     /// The attribute system holds exactly one attribute per <see cref="AttributeDefinition"/>, so a
@@ -129,6 +122,26 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
     {
         return character.Attributes.Concat(account.Attributes)
             .DistinctBy(attribute => attribute.Definition);
+    }
+
+    private void ReleaseItemPowerUps()
+    {
+        foreach (var powerUpWrapper in this.ItemPowerUps.SelectMany(p => p.Value))
+        {
+            powerUpWrapper.Dispose();
+        }
+
+        this.ItemPowerUps.Clear();
+
+        if (this.ItemSetPowerUps is { } itemSetPowerUps)
+        {
+            foreach (var powerUp in itemSetPowerUps)
+            {
+                powerUp.Dispose();
+            }
+
+            this.ItemSetPowerUps = null;
+        }
     }
 
     /// <summary>
