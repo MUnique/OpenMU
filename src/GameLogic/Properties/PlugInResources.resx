@@ -1428,6 +1428,9 @@
   <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>Alert Debounce Seconds</value></data>
   <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve"><value>Max Warnings</value></data>
   <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve"><value>Disconnect On Violation</value></data>
+  <data name="SpeedHackDetectConfiguration_ObserveOnly_Caption" xml:space="preserve"><value>Observe Only</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption" xml:space="preserve"><value>Violation Score Reject Threshold</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption" xml:space="preserve"><value>Violation Score Half Life Minutes</value></data>
   <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>Auto Ban</value></data>
   <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y</value></data>
   <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X</value></data>
