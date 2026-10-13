@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// Base class for different kind of packet handler interfaces.
 /// </summary>
 /// <typeparam name="THandler">The type of the handler interface.</typeparam>
-public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byte, THandler>, IDisposable
+public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byte, THandler>
     where THandler : class, IPacketHandlerPlugInBase
 {
     /// <summary>
@@ -29,8 +29,12 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
 
     private readonly IClientVersionProvider _clientVersionProvider;
 
+    /// <summary>
+    /// The services for the creation of the handlers. It's never disposed: it only holds services which this
+    /// container doesn't own (the player, the plugin manager and the logger factory), and disposing a
+    /// <see cref="ServiceContainer"/> disposes its services.
+    /// </summary>
     private readonly ServiceContainer _serviceContainer;
-    private bool _disposedValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PacketHandlerPlugInContainer{THandler}" /> class.
@@ -74,27 +78,27 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    /// <remarks>
+    /// Also disposes the handlers which were created for this container alone, e.g. the
+    /// <see cref="GroupPacketHandlerPlugIn"/>s of a player, which are containers themselves.
+    /// The shared handlers of the <see cref="HandlerCache"/> stay untouched.
+    /// </remarks>
+    protected override void Dispose(bool disposing)
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        this.Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
-    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!this._disposedValue)
+        if (this.IsDisposed)
         {
-            if (disposing)
-            {
-                this._serviceContainer.Dispose();
-            }
+            return;
+        }
 
-            this._disposedValue = true;
+        // Unsubscribe from the plugin manager first, so that no handler gets created while the owned ones are disposed.
+        base.Dispose(disposing);
+        if (disposing)
+        {
+            this._clientVersionProvider.ClientVersionChanged -= this.OnClientVersionChanged;
+            foreach (var ownedHandler in this.KnownPlugIns.Where(IsOwnedHandler).OfType<IDisposable>())
+            {
+                ownedHandler.Dispose();
+            }
         }
     }
 
@@ -181,6 +185,16 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
         }
     }
 
+    /// <summary>
+    /// Determines whether the handler was created for this container alone, so that its lifetime ends with this container.
+    /// </summary>
+    /// <param name="handler">The handler.</param>
+    /// <returns><c>true</c>, if the handler isn't a shared instance of the <see cref="HandlerCache"/>.</returns>
+    private static bool IsOwnedHandler(THandler handler)
+    {
+        return !(HandlerCache.TryGetValue(handler.GetType(), out var sharedHandler) && ReferenceEquals(sharedHandler, handler));
+    }
+
     private THandler CreatePlugIn(Type plugInType)
     {
         if (!HandlerCache.TryGetValue(plugInType, out var plugIn))
@@ -202,6 +216,12 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
 
     private void OnClientVersionChanged(object? sender, EventArgs e)
     {
+        if (this.IsDisposed)
+        {
+            // A group handler which got disposed by its parent container during the same event invocation.
+            return;
+        }
+
         this.Logger.LogWarning("Client version changed");
 
         foreach (var knownPlugIn in this.KnownPlugIns)
@@ -210,6 +230,10 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
             {
                 this.DeactivatePlugIn(knownPlugIn);
                 this.RemovePlugIn(knownPlugIn);
+                if (IsOwnedHandler(knownPlugIn) && knownPlugIn is IDisposable ownedHandler)
+                {
+                    ownedHandler.Dispose();
+                }
             }
         }
 

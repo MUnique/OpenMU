@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.PlugIns.Tests;
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.Tests;
 
 /// <summary>
 /// Tests for the <see cref="PlugInManager"/>.
@@ -124,5 +126,43 @@ public class CustomPlugInContainerTest
         container.AddPlugIn(new TestCustomPlugIn2(), true);
         Assert.That(container.GetPlugIn<ITestCustomPlugIn>(), Is.Not.Null);
         Assert.That(container.GetPlugIn<IAnotherCustomPlugIn>(), Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Tests if a disposed container no longer follows the plugin manager, i.e. that it unsubscribed from its events.
+    /// </summary>
+    [Test]
+    public void DisposedContainerIgnoresActivatedPlugIns()
+    {
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
+        var container = new CustomTestPlugInContainer(manager);
+        container.Dispose();
+
+        manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
+
+        Assert.That(container.GetPlugIn<ITestCustomPlugIn>(), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests if a disposed container isn't kept alive by the plugin manager, which usually lives as long as the server.
+    /// </summary>
+    [Test]
+    public void DisposedContainerIsNotKeptAliveByManager()
+    {
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
+        manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
+
+        var containerReference = CreateAndDisposeContainer(manager);
+
+        CollectibleAssert.IsCollected(containerReference, "disposed plugin container");
+        GC.KeepAlive(manager);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference CreateAndDisposeContainer(PlugInManager manager)
+    {
+        var container = new CustomTestPlugInContainer(manager);
+        container.Dispose();
+        return new WeakReference(container);
     }
 }
