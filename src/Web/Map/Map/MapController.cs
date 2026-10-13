@@ -65,7 +65,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
         this.Logger = loggerFactory.CreateLogger(this.GetType());
 
         // The view plugins call the browser through the queue, so the game logic never waits for the browser.
-        this._jsQueue = new JsInteropQueue(jsRuntime, this.Logger, () => circuitState.IsConnected);
+        this._jsQueue = new JsInteropQueue(jsRuntime, this.Logger, circuitState);
         this._jsQueue.ResynchronizationRequired += this.OnResynchronizationRequired;
         this._adapterToWorldView = new ObserverToWorldViewAdapter(this, byte.MaxValue);
 

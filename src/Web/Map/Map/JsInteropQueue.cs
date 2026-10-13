@@ -30,12 +30,6 @@ using Microsoft.JSInterop.Infrastructure;
 /// </remarks>
 public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
 {
-    /// <summary>
-    /// The maximum number of calls which wait for the browser. A browser which reaches it stopped
-    /// reading, because even the initial population of a crowded map takes far less calls.
-    /// </summary>
-    public const int Capacity = 4096;
-
     private const int NotOverflowed = 0;
 
     private const int Overflowed = 1;
@@ -49,7 +43,7 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
 
     private readonly IJSRuntime _inner;
     private readonly ILogger _logger;
-    private readonly Func<bool> _isBrowserConnected;
+    private readonly CircuitConnectionState _circuitState;
     private readonly Channel<QueuedCall> _channel;
     private readonly CancellationTokenSource _disposeCts = new();
     private readonly Task _pump;
@@ -64,12 +58,12 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
     /// </summary>
     /// <param name="inner">The runtime which actually calls the browser.</param>
     /// <param name="logger">The logger.</param>
-    /// <param name="isBrowserConnected">Returns if the browser is currently reachable. While it isn't, calls are dropped.</param>
-    public JsInteropQueue(IJSRuntime inner, ILogger logger, Func<bool> isBrowserConnected)
+    /// <param name="circuitState">The connection state of the browser circuit. While the browser isn't reachable, calls are dropped.</param>
+    public JsInteropQueue(IJSRuntime inner, ILogger logger, CircuitConnectionState circuitState)
     {
         this._inner = inner;
         this._logger = logger;
-        this._isBrowserConnected = isBrowserConnected;
+        this._circuitState = circuitState;
         this._channel = Channel.CreateBounded<QueuedCall>(new BoundedChannelOptions(Capacity)
         {
             SingleReader = true,
@@ -89,6 +83,12 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
     /// so handlers must not block.
     /// </remarks>
     public event Action? ResynchronizationRequired;
+
+    /// <summary>
+    /// Gets the maximum number of calls which wait for the browser. A browser which reaches it stopped
+    /// reading, because even the initial population of a crowded map takes far less calls.
+    /// </summary>
+    public static int Capacity => 4096;
 
     /// <summary>
     /// Gets the number of calls which wait for the browser.
@@ -111,7 +111,7 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
 
         if (this._disposeCts.IsCancellationRequested
             || cancellationToken.IsCancellationRequested
-            || !this._isBrowserConnected())
+            || !this._circuitState.IsConnected)
         {
             return default;
         }

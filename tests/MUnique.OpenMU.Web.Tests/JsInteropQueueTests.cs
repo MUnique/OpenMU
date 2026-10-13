@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
 using Moq;
+using MUnique.OpenMU.Web.Map;
 using MUnique.OpenMU.Web.Map.Map;
 
 /// <summary>
@@ -28,7 +29,7 @@ public class JsInteropQueueTests
     public async Task VoidCallDoesNotWaitForTheBrowserAsync()
     {
         var browser = new BlockingBrowser();
-        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => true);
+        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, new CircuitConnectionState());
 
         var call = queue.InvokeVoidAsync("map.world.objectMoved", 1);
 
@@ -45,7 +46,7 @@ public class JsInteropQueueTests
     public async Task CallsAreDeliveredInOrderAsync()
     {
         var browser = new RecordingBrowser();
-        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => true);
+        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, new CircuitConnectionState());
 
         for (var i = 0; i < 100; i++)
         {
@@ -64,11 +65,12 @@ public class JsInteropQueueTests
     public async Task CallsAreDroppedWhileDisconnectedAsync()
     {
         var browser = new RecordingBrowser();
-        var isConnected = false;
-        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => isConnected);
+        var circuitState = new CircuitConnectionState();
+        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, circuitState);
 
+        await circuitState.OnConnectionDownAsync(null!, CancellationToken.None).ConfigureAwait(false);
         await queue.InvokeVoidAsync("call", 1).ConfigureAwait(false);
-        isConnected = true;
+        await circuitState.OnConnectionUpAsync(null!, CancellationToken.None).ConfigureAwait(false);
         await queue.InvokeVoidAsync("call", 2).ConfigureAwait(false);
 
         Assert.That(SpinWait.SpinUntil(() => !browser.Calls.IsEmpty, Timeout), Is.True);
@@ -84,7 +86,7 @@ public class JsInteropQueueTests
     public async Task ResynchronizationIsRequestedWhenTheBrowserCaughtUpAsync()
     {
         var browser = new BlockingBrowser();
-        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => true);
+        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, new CircuitConnectionState());
         var resynchronizations = 0;
         queue.ResynchronizationRequired += () => Interlocked.Increment(ref resynchronizations);
 
@@ -122,7 +124,7 @@ public class JsInteropQueueTests
         var browser = new Mock<IJSRuntime>();
         browser.Setup(r => r.InvokeAsync<int>("answer", It.IsAny<CancellationToken>(), It.IsAny<object?[]>()))
             .Returns(ValueTask.FromResult(42));
-        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => true);
+        await using var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, new CircuitConnectionState());
 
         var result = await queue.InvokeAsync<int>("answer", CancellationToken.None, []).ConfigureAwait(false);
 
@@ -137,7 +139,7 @@ public class JsInteropQueueTests
     public async Task DisposeDoesNotWaitForAnUnansweredCallAsync()
     {
         var browser = new BlockingBrowser();
-        var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, () => true);
+        var queue = new JsInteropQueue(browser.Object, NullLogger.Instance, new CircuitConnectionState());
         await queue.InvokeVoidAsync("call", 1).ConfigureAwait(false);
         Assert.That(browser.Started.Wait(Timeout), Is.True);
 
