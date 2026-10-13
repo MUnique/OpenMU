@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Consume handler for the antidote potion. It removes the poison effect from the player.
+/// Consume handler for the antidote potion. It removes the poison or defense reduction effect from the player.
 /// </summary>
 [Guid("F838B348-DAA5-475B-BCED-41A076D08948")]
 [PlugIn]
@@ -18,6 +18,7 @@ using MUnique.OpenMU.PlugIns;
 public class AntidoteConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
     private const short PoisonEffectNumber = 0x37;
+    private const short DefenseReductionEffectNumber = 0x3A;
 
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.Antidote;
@@ -27,9 +28,17 @@ public class AntidoteConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     {
         if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
-            if (player.MagicEffectList.TryGetEffect(PoisonEffectNumber, out var effect))
+            if (player.MagicEffectList.TryGetEffect(PoisonEffectNumber, out var poisonEffect))
             {
-                effect.Dispose();
+                await poisonEffect.DisposeAsync().ConfigureAwait(false);
+            }
+            else if (player.MagicEffectList.TryGetEffect(DefenseReductionEffectNumber, out var defenseReductionEffect))
+            {
+                await defenseReductionEffect.DisposeAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                // No other effect to remove
             }
 
             return true;
