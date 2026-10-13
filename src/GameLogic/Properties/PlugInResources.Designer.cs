@@ -4372,6 +4372,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized SpeedHackDetectConfiguration_DisconnectOnViolation_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_DisconnectOnViolation_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_DisconnectOnViolation_Caption", resourceCulture)!;
 
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ObserveOnly_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ObserveOnly_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ObserveOnly_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption", resourceCulture)!;
+
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;
 
