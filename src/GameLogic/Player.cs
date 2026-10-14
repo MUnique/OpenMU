@@ -81,6 +81,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
+    private readonly MapPowerUps _mapPowerUps = new();
+
     private CancellationTokenSource? _respawnAfterDeathCts;
 
     private Character? _selectedCharacter;
@@ -717,8 +719,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
 
-            (this.SkillList as IDisposable)?.Dispose();
-            this.SkillList = null;
+            this.ReleaseSkillList();
 
             if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom)
             {
@@ -1528,6 +1529,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._observerToWorldViewAdapter.Dispose();
         this._movement.Dispose();
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
+        this.ReleaseSkillList();
+        this.ReleaseAttributeSystem();
         this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
 
@@ -1863,34 +1866,44 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void RaisePlayerEnteredMap(GameMap map)
     {
         this.PlayerEnteredMap?.Invoke(this, (this, map));
-        if (map.Definition.CharacterPowerUpDefinitions is { Count: > 0 } powerUpDefinitions
-            && this.Attributes is { } attributes)
+        if (this.Attributes is { } attributes)
         {
-            foreach (var powerUpDefinition in powerUpDefinitions)
-            {
-                if (powerUpDefinition.TargetAttribute is null)
-                {
-                    continue;
-                }
-
-                var powerUps = PowerUpWrapper.CreateByPowerUpDefinition(powerUpDefinition, attributes);
-                powerUps.ForEach(p =>
-                {
-                    this.PlayerLeftMap += OnPlayerLeftMap;
-
-                    void OnPlayerLeftMap(object? o, (Player, GameMap) args)
-                    {
-                        this.PlayerLeftMap -= OnPlayerLeftMap;
-                        p.Dispose();
-                    }
-                });
-            }
+            this._mapPowerUps.Apply(map.Definition, attributes);
         }
     }
 
     private void RaisePlayerLeftMap(GameMap map)
     {
+        this._mapPowerUps.Remove();
         this.PlayerLeftMap?.Invoke(this, (this, map));
+    }
+
+    /// <summary>
+    /// Releases the attribute system of the character which was in the game.
+    /// </summary>
+    /// <remarks>
+    /// Its power-ups wrap elements of the game configuration (item options, item base values, map
+    /// power-ups), which live as long as the server. Until they are disposed, the configuration keeps
+    /// the attribute system and, through its event handlers, this whole player alive.
+    /// </remarks>
+    private void ReleaseAttributeSystem()
+    {
+        this._mapPowerUps.Remove();
+        if (this.Attributes is { } attributes)
+        {
+            // The ammunition amount of some classes is a stat attribute, which belongs to the character.
+            attributes.GetOrCreateAttribute(Stats.AmmunitionAmount).ValueChanged -= this.OnAmmunitionAmountChanged;
+            attributes.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Releases the skill list of the character which was in the game, including the power-ups of its passive skills.
+    /// </summary>
+    private void ReleaseSkillList()
+    {
+        (this.SkillList as IDisposable)?.Dispose();
+        this.SkillList = null;
     }
 
     /// <summary>
@@ -2000,12 +2013,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
         this.AddMissingStatAttributes();
 
+        // The previous character of this connection may still hold its attribute system.
+        this.ReleaseAttributeSystem();
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
 
         this._storages.CreateForCharacter(selectedCharacter);
+        this.ReleaseSkillList();
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
         if (this.DetermineComboDefinition() is { } comboDefinition)

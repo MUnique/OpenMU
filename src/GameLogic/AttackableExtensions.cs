@@ -708,16 +708,7 @@ public static class AttackableExtensions
             return skillAttributes;
         }
 
-        skillAttributes = skillEntry.Attributes = new AttributeSystem([], [], []);
-        var levelElement = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
-        skillEntry.PropertyChanged += (_, _) => levelElement.Value = skillEntry.Level;
-        skillAttributes.AddElement(levelElement, Stats.SkillLevel);
-        foreach (var relationship in baseSkills.SelectMany(s => s.AttributeRelationships))
-        {
-            skillAttributes.AddAttributeRelationship(relationship, attackerSystem, relationship.AggregateType);
-        }
-
-        return skillAttributes;
+        return skillEntry.Attributes = new SkillAttributeSystem(skillEntry, baseSkills.SelectMany(s => s.AttributeRelationships), attackerSystem);
     }
 
     /// <summary>
