@@ -18,6 +18,8 @@ public static class ItemExtensions
     private const byte StaffItemGroup = 5;
     private const byte ShieldItemGroup = 6;
 
+    private const int HighLevelTransformationRingMinLevel = 50;
+
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
 
     private static readonly float[] DurabilityFactors = { 0.2f, 0.3f, 0.5f };
@@ -370,6 +372,12 @@ public static class ItemExtensions
     {
         requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
 
+        if (item.IsTransformationRing() && item.Level > 2 && requirement.Attribute == Stats.Level)
+        {
+            // Poison Bull Fighter, Thunder Lich and Death Cow rings require level 50 to wear
+            return (requirement.Attribute, Math.Max(requirement.MinimumValue, HighLevelTransformationRingMinLevel));
+        }
+
         if (RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
         {
             if (!item.IsWearable())
@@ -395,7 +403,7 @@ public static class ItemExtensions
                 var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
                 if (itemOption != null)
                 {
-                    value += itemOption.Level * 4;
+                    value += itemOption.Level * (item.IsArmorItem() ? 5 : 4);
                 }
             }
 
