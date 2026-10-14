@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -72,7 +73,7 @@ public class BotSkillHandlerTest
         var characterClass = player.SelectedCharacter!.CharacterClass!;
         var (_, orb) = CreateOrb(characterClass, 9, "Evil Spirit", 12);
         orb.Requirements.Add(new AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 500 });
-        var item = new Item { Definition = orb, Durability = 1, ItemSlot = 12 };
+        var item = new Item { Definition = orb, Durability = 1, ItemSlot = 12};
 
         Assert.That(BotSkillHandler.WantsSkillItem(player, item), Is.False);
     }
@@ -128,6 +129,7 @@ public class BotSkillHandlerTest
         {
             this.Requirements = new List<AttributeRequirement>();
             this.QualifiedCharacters = new List<CharacterClass>();
+            this.BasePowerUpAttributes = new List<ItemBasePowerUpDefinition>();
         }
     }
 }
