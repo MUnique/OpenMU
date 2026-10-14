@@ -56,4 +56,9 @@ public class GensMember
     /// Gets or sets the time when the character left its last gens.
     /// </summary>
     public DateTime? LeftAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time when the character claimed its last monthly reward.
+    /// </summary>
+    public DateTime? RewardClaimedAt { get; set; }
 }

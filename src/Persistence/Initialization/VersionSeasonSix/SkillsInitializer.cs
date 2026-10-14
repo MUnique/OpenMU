@@ -378,7 +378,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.CycloneStrengthenerDuelMaster, LocalizedString.FromResource(() => SkillNames.CycloneStrengthener), CharacterClasses.DuelMaster, DamageType.Physical, 22, 2, manaConsumption: 9);
         this.CreateSkill(SkillNumber.LightningStrengthenerDuelMaster, LocalizedString.FromResource(() => SkillNames.LightningStrengthener), CharacterClasses.DuelMaster, DamageType.Physical, 3, 6, manaConsumption: 20, levelRequirement: 13, energyRequirement: 100, elementalModifier: ElementalType.Lightning);
         this.CreateSkill(SkillNumber.TwistingSlashStrengthenerDuelMaster, LocalizedString.FromResource(() => SkillNames.TwistingSlashStren), CharacterClasses.DuelMaster, DamageType.Physical, 3, 2, 10, 10);
-        this.CreateSkill(SkillNumber.PowerSlashStreng, LocalizedString.FromResource(() => SkillNames.PowerSlashStreng), CharacterClasses.DuelMaster, damage: 3, distance: 5, manaConsumption: 15, energyRequirement: 100);
+        this.CreateSkill(SkillNumber.PowerSlashStreng, LocalizedString.FromResource(() => SkillNames.PowerSlashStreng), CharacterClasses.DuelMaster, damage: 3, distance: 5, manaConsumption: 15);
         this.CreateSkill(SkillNumber.FlameStrengthenerDuelMaster, LocalizedString.FromResource(() => SkillNames.FlameStrengthener), CharacterClasses.DuelMaster, DamageType.Physical, 3, 6, manaConsumption: 55, levelRequirement: 35, energyRequirement: 100, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.BlastStrengthenerDuelMaster, LocalizedString.FromResource(() => SkillNames.BlastStrengthener), CharacterClasses.DuelMaster, DamageType.Physical, 22, 3, manaConsumption: 165, levelRequirement: 80, energyRequirement: 150, elementalModifier: ElementalType.Lightning);
         this.CreateSkill(SkillNumber.WeaponMasteryDuelMaster, LocalizedString.FromResource(() => SkillNames.WeaponMastery), CharacterClasses.DuelMaster, damage: 22, skillType: SkillType.PassiveBoost);
@@ -676,7 +676,11 @@ internal class SkillsInitializer : SkillsInitializerBase
 
         this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
-        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplierPve, 3.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplierPvm, 3.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.DragonSlasherShieldDamageChance, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.DragonSlasherShieldDamageChance, 1.0f / 10000, Stats.TotalEnergy);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.DragonSlasherShieldDamageRate, 0.1f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.DragonSlasherShieldDamageRate, 1.0f / 3000, Stats.TotalEnergy);
 
         // Other (mirror relationships)
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);

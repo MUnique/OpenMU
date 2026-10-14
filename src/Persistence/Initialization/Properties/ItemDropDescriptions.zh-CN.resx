@@ -177,4 +177,28 @@
   <data name="PinkChocolateBoxNormalItems" xml:space="preserve">
     <value>粉色巧克力盒：普通物品</value>
   </data>
+  <data name="ShiningJewelleryCaseJewels" xml:space="preserve">
+    <value>闪耀首饰盒：宝石</value>
+  </data>
+  <data name="ShiningJewelleryCaseMoney" xml:space="preserve">
+    <value>闪耀首饰盒：金币</value>
+  </data>
+  <data name="ElegantJewelleryCaseJewels" xml:space="preserve">
+    <value>精致首饰盒：宝石</value>
+  </data>
+  <data name="ElegantJewelleryCaseMoney" xml:space="preserve">
+    <value>精致首饰盒：金币</value>
+  </data>
+  <data name="SteelJewelleryCaseJewels" xml:space="preserve">
+    <value>钢铁首饰盒：宝石</value>
+  </data>
+  <data name="SteelJewelleryCaseMoney" xml:space="preserve">
+    <value>钢铁首饰盒：金币</value>
+  </data>
+  <data name="OldJewelleryCaseJewels" xml:space="preserve">
+    <value>古旧首饰盒：宝石</value>
+  </data>
+  <data name="OldJewelleryCaseMoney" xml:space="preserve">
+    <value>古旧首饰盒：金币</value>
+  </data>
 </root>

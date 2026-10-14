@@ -3198,4 +3198,22 @@
   <data name="SkillTargetRestriction_Party_Caption" xml:space="preserve">
     <value>Gruppe</value>
   </data>
+  <data name="GameMapTerrainVariant_TypeCaption" xml:space="preserve">
+    <value>Geländevariante</value>
+  </data>
+  <data name="GameMapTerrainVariant_TypeCaptionPlural" xml:space="preserve">
+    <value>Geländevarianten</value>
+  </data>
+  <data name="GameMapTerrainVariant_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="GameMapTerrainVariant_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="GameMapTerrainVariant_TerrainData_Caption" xml:space="preserve">
+    <value>Geländedaten</value>
+  </data>
+  <data name="GameMapDefinition_TerrainVariants_Caption" xml:space="preserve">
+    <value>Geländevarianten</value>
+  </data>
 </root>

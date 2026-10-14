@@ -20,3 +20,7 @@ first user exists it lets you in without a login, so
 [create one](../../docs-website/docs/admin-panel/users.md) — or set
 `OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` beforehand — before the server is
 reachable from the internet.
+
+To additionally export logs, metrics and traces to a bundled Grafana under
+http://admin.docker.localhost/grafana/, add `-f docker-compose.monitoring.yml`
+to the command — see [monitoring](../../docs-website/docs/deployment/all-in-one-traefik.md#optional-monitoring-with-grafana).

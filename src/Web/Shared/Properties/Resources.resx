@@ -545,4 +545,28 @@ Level: {2} - {3}</value>
   <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
     <value>The character was created, but the "Character created" plugins failed, so it may be missing its initial items or skills: {0}</value>
   </data>
+  <data name="GameServerSelection_AllServersHint" xml:space="preserve">
+    <value>No selection means the event runs on all game servers, including ones added later. Use Select all to pin the current servers instead.</value>
+  </data>
+  <data name="GameServerSelection_SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="GameServerSelection_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="GameServerSelection_NoServers" xml:space="preserve">
+    <value>No game servers found.</value>
+  </data>
+  <data name="GameServerSelection_PvpBadge" xml:space="preserve">
+    <value>PvP</value>
+  </data>
+  <data name="GameServerSelection_PveBadge" xml:space="preserve">
+    <value>PvE</value>
+  </data>
+  <data name="GameServerSelection_UnknownServer" xml:space="preserve">
+    <value>Server {0} (no longer available)</value>
+  </data>
+  <data name="GameServerSelection_LoadFailed" xml:space="preserve">
+    <value>Could not load the game servers. Close the dialog and try again.</value>
+  </data>
 </root>

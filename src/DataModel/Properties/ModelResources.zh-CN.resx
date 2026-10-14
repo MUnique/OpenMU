@@ -6202,4 +6202,22 @@
   <data name="ConfigurationUpdate_Key_Caption" xml:space="preserve">
     <value>标识</value>
   </data>
+  <data name="GameMapTerrainVariant_TypeCaption" xml:space="preserve">
+    <value>地形变体</value>
+  </data>
+  <data name="GameMapTerrainVariant_TypeCaptionPlural" xml:space="preserve">
+    <value>地形变体</value>
+  </data>
+  <data name="GameMapTerrainVariant_Number_Caption" xml:space="preserve">
+    <value>编号</value>
+  </data>
+  <data name="GameMapTerrainVariant_Description_Caption" xml:space="preserve">
+    <value>说明</value>
+  </data>
+  <data name="GameMapTerrainVariant_TerrainData_Caption" xml:space="preserve">
+    <value>地形数据</value>
+  </data>
+  <data name="GameMapDefinition_TerrainVariants_Caption" xml:space="preserve">
+    <value>地形变体</value>
+  </data>
 </root>

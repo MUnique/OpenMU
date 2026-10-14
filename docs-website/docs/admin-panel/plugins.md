@@ -51,6 +51,30 @@ the same plugin can behave differently for different clients.
 The custom plugin configuration can also contain a *custom plugin source*, which
 is how a plugin can be adapted without rebuilding the server.
 
+## Periodic event server scope
+
+Periodic tasks — invasions, Happy Hour, Blood Castle, Devil Square and the
+like — run on every game server by default, each with its own copy of the
+event. Their configuration has an **Active on servers** list: leave it empty
+to keep the default, or tick selected servers to run the event only there.
+Restricting an open-world event to selected servers keeps it contested —
+players can't clear it on one server and farm it again on another, and a
+no-PvP server doesn't become a risk-free farm.
+
+A few semantics worth knowing:
+
+* A forced start (game master command or admin action) starts the event on the
+  server where it was requested — every game server runs its own copy, so a
+  force never crosses servers. A game master on an excluded server only gets a
+  note that the event isn't available there; nothing starts.
+* Removing a server from the list stops new runs there, but a running event
+  always finishes and cleans up. Open mini-game lobbies stay joinable until
+  they end.
+* An explicit selection pins today's servers: servers added later don't run
+  the event until ticked. Leave the list empty to include future servers.
+  Make sure the event server has headroom (`MaximumPlayers`) for players
+  coming over from other servers.
+
 ## When do changes take effect?
 
 Activation state is stored in the configuration. Depending on the extension
