@@ -73,7 +73,7 @@ public class BotSkillHandlerTest
         var characterClass = player.SelectedCharacter!.CharacterClass!;
         var (_, orb) = CreateOrb(characterClass, 9, "Evil Spirit", 12);
         orb.Requirements.Add(new AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 500 });
-        var item = new Item { Definition = orb, Durability = 1, ItemSlot = 12};
+        var item = new Item { Definition = orb, Durability = 1, ItemSlot = 12 };
 
         Assert.That(BotSkillHandler.WantsSkillItem(player, item), Is.False);
     }
