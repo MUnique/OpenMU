@@ -39,6 +39,7 @@ using MUnique.OpenMU.Startup.TestActors;
 using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.API;
+using MUnique.OpenMU.Web.Map;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
 using Nito.AsyncEx.Synchronous;
@@ -351,6 +352,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<GameServerContainer>()
             .AddSingleton<IGameServerInstanceManager>(provider => provider.GetService<GameServerContainer>()!)
             .AddScoped<IMapFactory, JavascriptMapFactory>()
+            .AddCircuitConnectionState()
             .AddSingleton<SetupService>()
             .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
             .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
