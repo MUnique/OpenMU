@@ -48,7 +48,7 @@ public class PlayerLosesMoneyAfterDeathPlugIn : IAttackableGotKilledPlugIn, ISup
         inventoryLoss = Math.Min(inventoryLoss, player.Money);
         vaultLoss = Math.Min(vaultLoss, player.Account?.Vault?.Money ?? 0);
         player.TryRemoveMoney(inventoryLoss);
-        player.TryTakeVaultMoney(vaultLoss);
+        player.TryTakeVaultMoney((uint)vaultLoss);
     }
 
     /// <inheritdoc/>

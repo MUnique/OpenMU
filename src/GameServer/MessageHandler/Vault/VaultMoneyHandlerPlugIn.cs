@@ -34,7 +34,7 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
         switch (request.Direction)
         {
             case VaultMoveMoneyRequest.VaultMoneyMoveDirection.InventoryToVault:
-                player.TryDepositVaultMoney((int)request.Amount);
+                player.TryDepositVaultMoney(request.Amount);
                 break;
             case VaultMoveMoneyRequest.VaultMoneyMoveDirection.VaultToInventory:
                 if (player.IsVaultLocked)
@@ -43,7 +43,7 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
                     break;
                 }
 
-                player.TryTakeVaultMoney((int)request.Amount);
+                player.TryTakeVaultMoney(request.Amount);
                 break;
             default:
                 throw new InvalidEnumArgumentException($"The direction {request.Direction} is not a valid value.");
