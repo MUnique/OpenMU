@@ -9,18 +9,30 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// <summary>
 /// Provides calculations for the weekly Castle Siege state schedule.
 /// </summary>
+/// <remarks>
+/// The configured day, hour and minute of each state are wall-clock times in the server time zone,
+/// like the timetables of the periodic events. All inputs and results are UTC.
+/// Because of daylight saving time, a local week is not always 168 hours long, so the
+/// boundaries are always converted per concrete week.
+/// </remarks>
 internal sealed class CastleSiegeSchedule
 {
     private static readonly TimeSpan WeekDuration = TimeSpan.FromDays(7);
 
     private readonly IReadOnlyList<ScheduledState> _states;
+    private readonly TimeZoneInfo _serverTimeZone;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeSchedule"/> class.
     /// </summary>
     /// <param name="entries">The configured state schedule.</param>
-    public CastleSiegeSchedule(IEnumerable<CastleSiegeStateScheduleEntry> entries)
+    /// <param name="serverTimeZone">
+    /// The server time zone used to interpret the configured times.
+    /// Pass <see cref="TimeZoneInfo.Utc"/> to interpret them as UTC.
+    /// </param>
+    public CastleSiegeSchedule(IEnumerable<CastleSiegeStateScheduleEntry> entries, TimeZoneInfo serverTimeZone)
     {
+        this._serverTimeZone = serverTimeZone;
         this._states = entries
             .Select(entry => new ScheduledState(entry.State, GetStartOfWeek(entry)))
             .OrderBy(entry => entry.StartOfWeek)
@@ -55,27 +67,20 @@ internal sealed class CastleSiegeSchedule
     public CastleSiegeStatePeriod GetCurrentPeriod(DateTime utcNow)
     {
         utcNow = EnsureUtc(utcNow);
-        var weekStart = utcNow.Date.AddDays(-(int)utcNow.DayOfWeek);
-        var elapsedInWeek = utcNow - weekStart;
-        var stateIndex = -1;
-        for (var i = this._states.Count - 1; i >= 0; i--)
+        var weekStart = this.GetLocalWeekStart(utcNow);
+        for (var weekOffset = 0; weekOffset >= -1; weekOffset--)
         {
-            if (this._states[i].StartOfWeek <= elapsedInWeek)
+            var week = weekStart.AddDays(7 * weekOffset);
+            for (var i = this._states.Count - 1; i >= 0; i--)
             {
-                stateIndex = i;
-                break;
+                if (this.GetStartUtc(week, this._states[i]) <= utcNow)
+                {
+                    return this.CreateScheduledPeriod(week, i);
+                }
             }
         }
 
-        if (stateIndex < 0)
-        {
-            stateIndex = this._states.Count - 1;
-            weekStart -= WeekDuration;
-        }
-
-        var scheduledState = this._states[stateIndex];
-        var stateStartUtc = weekStart + scheduledState.StartOfWeek;
-        return new(scheduledState.State, stateStartUtc, stateStartUtc + this.GetDuration(scheduledState.State));
+        throw new InvalidOperationException("The current Castle Siege state could not be determined.");
     }
 
     /// <summary>
@@ -111,7 +116,8 @@ internal sealed class CastleSiegeSchedule
     public CastleSiegeStatePeriod CreatePeriod(CastleSiegeState state, DateTime startUtc)
     {
         startUtc = EnsureUtc(startUtc);
-        return new(state, startUtc, startUtc + this.GetDuration(state));
+        var startLocal = TimeZoneInfo.ConvertTimeFromUtc(startUtc, this._serverTimeZone);
+        return new(state, startUtc, this.ToUtc(startLocal + this.GetDuration(state)));
     }
 
     /// <summary>
@@ -124,11 +130,11 @@ internal sealed class CastleSiegeSchedule
     {
         startUtc = EnsureUtc(startUtc);
         var successor = this.GetScheduledState(this.GetNextState(state));
-        var weekStart = startUtc.Date.AddDays(-(int)startUtc.DayOfWeek);
-        var endUtc = weekStart + successor.StartOfWeek;
+        var weekStart = this.GetLocalWeekStart(startUtc);
+        var endUtc = this.GetStartUtc(weekStart, successor);
         if (endUtc <= startUtc)
         {
-            endUtc += WeekDuration;
+            endUtc = this.GetStartUtc(weekStart.AddDays(7), successor);
         }
 
         return new(state, startUtc, endUtc);
@@ -143,20 +149,6 @@ internal sealed class CastleSiegeSchedule
     {
         var index = this.GetStateIndex(state);
         return this._states[(index + 1) % this._states.Count].State;
-    }
-
-    /// <summary>
-    /// Gets the configured duration of a state.
-    /// </summary>
-    /// <param name="state">The state.</param>
-    /// <returns>The duration.</returns>
-    public TimeSpan GetDuration(CastleSiegeState state)
-    {
-        var index = this.GetStateIndex(state);
-        var start = this._states[index].StartOfWeek;
-        var end = this._states[(index + 1) % this._states.Count].StartOfWeek;
-        var duration = end - start;
-        return duration > TimeSpan.Zero ? duration : duration + WeekDuration;
     }
 
     private static TimeSpan GetStartOfWeek(CastleSiegeStateScheduleEntry entry)
@@ -196,9 +188,60 @@ internal sealed class CastleSiegeSchedule
     {
         utcNow = EnsureUtc(utcNow);
         var scheduledState = this.GetScheduledState(state);
-        var weekStart = utcNow.Date.AddDays(-(int)utcNow.DayOfWeek);
-        var startUtc = weekStart + scheduledState.StartOfWeek;
-        return startUtc <= utcNow ? startUtc : startUtc - WeekDuration;
+        var weekStart = this.GetLocalWeekStart(utcNow);
+        var startUtc = this.GetStartUtc(weekStart, scheduledState);
+        return startUtc <= utcNow ? startUtc : this.GetStartUtc(weekStart.AddDays(-7), scheduledState);
+    }
+
+    /// <summary>
+    /// Gets the configured wall-clock duration of a state, which is the distance to the next state in the schedule.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <returns>The duration.</returns>
+    private TimeSpan GetDuration(CastleSiegeState state)
+    {
+        var index = this.GetStateIndex(state);
+        var start = this._states[index].StartOfWeek;
+        var end = this._states[(index + 1) % this._states.Count].StartOfWeek;
+        var duration = end - start;
+        return duration > TimeSpan.Zero ? duration : duration + WeekDuration;
+    }
+
+    private CastleSiegeStatePeriod CreateScheduledPeriod(DateTime weekStart, int stateIndex)
+    {
+        var successorIndex = (stateIndex + 1) % this._states.Count;
+        var successorWeekStart = successorIndex > stateIndex ? weekStart : weekStart.AddDays(7);
+        return new(
+            this._states[stateIndex].State,
+            this.GetStartUtc(weekStart, this._states[stateIndex]),
+            this.GetStartUtc(successorWeekStart, this._states[successorIndex]));
+    }
+
+    /// <summary>
+    /// Gets the local start of the week (Sunday at midnight, unspecified kind) which contains the UTC time.
+    /// </summary>
+    private DateTime GetLocalWeekStart(DateTime utc)
+    {
+        var local = TimeZoneInfo.ConvertTimeFromUtc(utc, this._serverTimeZone);
+        return DateTime.SpecifyKind(local.Date.AddDays(-(int)local.DayOfWeek), DateTimeKind.Unspecified);
+    }
+
+    private DateTime GetStartUtc(DateTime localWeekStart, ScheduledState state) => this.ToUtc(localWeekStart + state.StartOfWeek);
+
+    /// <summary>
+    /// Converts a wall-clock time of the server time zone to UTC.
+    /// A time which does not exist because the clock was set forward is moved forward by the length of the gap,
+    /// and an ambiguous time resolves to the standard time.
+    /// </summary>
+    private DateTime ToUtc(DateTime local)
+    {
+        local = DateTime.SpecifyKind(local, DateTimeKind.Unspecified);
+        if (this._serverTimeZone.IsInvalidTime(local))
+        {
+            return DateTime.SpecifyKind(local - this._serverTimeZone.BaseUtcOffset, DateTimeKind.Utc);
+        }
+
+        return TimeZoneInfo.ConvertTimeToUtc(local, this._serverTimeZone);
     }
 
     private int GetStateIndex(CastleSiegeState state)
