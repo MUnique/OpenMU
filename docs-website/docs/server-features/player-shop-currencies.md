@@ -5,8 +5,6 @@ sidebar_position: 5
 description: Prices of items in personal stores in items like jewels, and in account coins, in addition to zen.
 ---
 
-# Player shop currencies
-
 In a personal store, the price of an item is usually defined in zen. With the
 plugin **Player shop currencies**, players can define the price of each item in
 one of these currencies, too:

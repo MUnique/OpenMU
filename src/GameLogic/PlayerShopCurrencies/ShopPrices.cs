@@ -65,7 +65,7 @@ public static class ShopPrices
             return true;
         }
 
-        return PlayerShopCurrenciesFeaturePlugIn.GetConfiguration(gameContext) is { } configuration
+        return PlayerShopCurrenciesFeaturePlugIn.GetActiveConfiguration(gameContext) is { } configuration
                && (price.Kind == ShopPriceKind.Item
                    ? configuration.PriceItems.Any(item => ShopPrice.IsSameItem(item, price.PriceItem))
                    : Coins.Any(coin => coin.CoinType == price.CoinType && coin.IsAllowed(configuration)));
@@ -78,7 +78,7 @@ public static class ShopPrices
     /// <returns>The item definitions; empty, if the feature is deactivated.</returns>
     public static IReadOnlyList<ItemDefinition> GetAllowedPriceItems(IGameContext gameContext)
     {
-        return PlayerShopCurrenciesFeaturePlugIn.GetConfiguration(gameContext)?.PriceItems.ToList() ?? [];
+        return PlayerShopCurrenciesFeaturePlugIn.GetActiveConfiguration(gameContext)?.PriceItems.ToList() ?? [];
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static class ShopPrices
     /// <returns>The coin types; empty, if the feature is deactivated.</returns>
     public static IReadOnlyList<CashShopCoinType> GetAllowedCoinTypes(IGameContext gameContext)
     {
-        if (PlayerShopCurrenciesFeaturePlugIn.GetConfiguration(gameContext) is not { } configuration)
+        if (PlayerShopCurrenciesFeaturePlugIn.GetActiveConfiguration(gameContext) is not { } configuration)
         {
             return [];
         }
@@ -104,7 +104,7 @@ public static class ShopPrices
     /// <returns>The maximum amount.</returns>
     public static int GetMaximumAmount(IGameContext gameContext, ShopPriceKind kind)
     {
-        var configuration = PlayerShopCurrenciesFeaturePlugIn.GetConfiguration(gameContext) ?? new PlayerShopCurrenciesConfiguration();
+        var configuration = PlayerShopCurrenciesFeaturePlugIn.GetActiveConfiguration(gameContext) ?? new PlayerShopCurrenciesConfiguration();
         return kind switch
         {
             ShopPriceKind.Item => Math.Min(
@@ -217,7 +217,7 @@ public static class ShopPrices
     /// <returns>The value task.</returns>
     public static async ValueTask ShowAllowedPricesAsync(this Player player)
     {
-        if (PlayerShopCurrenciesFeaturePlugIn.GetConfiguration(player.GameContext) is null)
+        if (PlayerShopCurrenciesFeaturePlugIn.GetActiveConfiguration(player.GameContext) is null)
         {
             return;
         }

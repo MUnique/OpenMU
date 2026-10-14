@@ -145,11 +145,12 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
         }
 
         var result = new List<(Item Item, int Pieces)>();
-        for (var sum = price; sum > 0;)
+        var remaining = price;
+        while (remaining > 0)
         {
-            var row = ordered[reachedBy[sum]];
+            var row = ordered[reachedBy[remaining]];
             result.Add(row);
-            sum -= row.Pieces;
+            remaining -= row.Pieces;
         }
 
         return result;

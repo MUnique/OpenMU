@@ -63,7 +63,7 @@ const sidebars = {
         'server-features/test-actors',
         'server-features/gens',
         'server-features/cash-shop',
-        'server-features/player-shop-currencies',
+        "server-features/player-shop-currencies",
       ],
     },
     {

@@ -30,7 +30,7 @@ public class PlayerShopCurrenciesFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <returns>The configuration; <c>null</c>, if the feature is deactivated.</returns>
-    public static PlayerShopCurrenciesConfiguration? GetConfiguration(IGameContext gameContext)
+    public static PlayerShopCurrenciesConfiguration? GetActiveConfiguration(IGameContext gameContext)
     {
         return gameContext.FeaturePlugIns.GetPlugIn<PlayerShopCurrenciesFeaturePlugIn>() is { } plugIn
             ? plugIn.Configuration ?? new PlayerShopCurrenciesConfiguration()
