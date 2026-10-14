@@ -54,7 +54,9 @@ internal class GensRewardItemsTest
 
         foreach (var number in CaseNumbers)
         {
-            Assert.That(gameConfiguration.Items.Count(definition => definition.Group == 14 && definition.Number == number), Is.EqualTo(1));
+            var item = gameConfiguration.Items.Single(definition => definition.Group == 14 && definition.Number == number);
+            Assert.That(item.Name.SourceKey, Is.Not.Null, item.Name);
+            Assert.That(item.DropItems.Select(group => group.Description.SourceKey), Has.All.Not.Null, item.Name);
         }
     }
 

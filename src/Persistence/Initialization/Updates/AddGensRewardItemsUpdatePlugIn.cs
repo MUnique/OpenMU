@@ -45,9 +45,9 @@ public class AddGensRewardItemsUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        foreach (var (number, name, money) in GensRewardItems.Cases)
+        foreach (var jewelleryCase in GensRewardItems.Cases)
         {
-            GensRewardItems.CreateCase(context, gameConfiguration, number, name, money);
+            GensRewardItems.CreateCase(context, gameConfiguration, jewelleryCase);
         }
 
         return ValueTask.CompletedTask;

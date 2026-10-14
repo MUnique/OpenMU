@@ -4878,5 +4878,33 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("MirrorOfDimensions", resourceCulture);
             }
         }
+
+        /// <summary>Gets ShiningJewelleryCase from the configuration name resources.</summary>
+        public static string ShiningJewelleryCase {
+            get {
+                return ResourceManager.GetString("ShiningJewelleryCase", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElegantJewelleryCase from the configuration name resources.</summary>
+        public static string ElegantJewelleryCase {
+            get {
+                return ResourceManager.GetString("ElegantJewelleryCase", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SteelJewelleryCase from the configuration name resources.</summary>
+        public static string SteelJewelleryCase {
+            get {
+                return ResourceManager.GetString("SteelJewelleryCase", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets OldJewelleryCase from the configuration name resources.</summary>
+        public static string OldJewelleryCase {
+            get {
+                return ResourceManager.GetString("OldJewelleryCase", resourceCulture);
+            }
+        }
     }
 }
