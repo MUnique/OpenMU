@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("7234fcb7-0540-4051-b9eb-7d308d4e24f0"), entityTypeCount: 121)
+            : base(skipDetectChanges: false, modelId: new Guid("2abbc1b4-6781-42c1-9377-9317b4da8025"), entityTypeCount: 121)
         {
         }
 
@@ -250,6 +250,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             IncreasableItemOptionEntityType.CreateForeignKey3(increasableItemOption, powerUpDefinition);
             ItemEntityType.CreateForeignKey1(item, itemDefinition);
             ItemEntityType.CreateForeignKey2(item, itemStorage);
+            ItemEntityType.CreateForeignKey3(item, itemDefinition);
             ItemAppearanceEntityType.CreateForeignKey1(itemAppearance, appearanceData);
             ItemAppearanceEntityType.CreateForeignKey2(itemAppearance, itemDefinition);
             ItemAppearanceItemOptionTypeEntityType.CreateForeignKey1(itemAppearanceItemOptionType, itemAppearance);

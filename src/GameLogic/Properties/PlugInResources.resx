@@ -1616,4 +1616,22 @@
   <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
     <value>Publish ancient item drops</value>
   </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Player shop currencies</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Description" xml:space="preserve">
+    <value>Allows players to set the prices of the items in their personal store in configured items like jewels, or in account coins, too. Only the open source client shows these prices; with other clients, they can be set by chat command.</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Show player shop currencies after entering the game</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Tells the client which currencies can be used for the prices of personal stores, when the player enters the game.</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Shop price chat command</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets the price of an item of the own personal store in one of the enabled currencies, e.g. '/shopprice 1 10 bless'. Without arguments, it lists the prices.</value>
+  </data>
 </root>

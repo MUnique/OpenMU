@@ -2419,6 +2419,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows players to set the prices of the items in their personal store in configured items like jewels, or in account coins, too. Only the open source client shows these prices; with other clients, they can be set by chat command..
+        /// </summary>
+        public static string PlayerShopCurrenciesFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrenciesFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player shop currencies.
+        /// </summary>
+        public static string PlayerShopCurrenciesFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrenciesFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker..
         /// </summary>
         public static string PollutionSkillPlugIn_Description {
@@ -3024,6 +3042,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets the price of an item of the own personal store in one of the enabled currencies, e.g. &apos;/shopprice 1 10 bless&apos;. Without arguments, it lists the prices..
+        /// </summary>
+        public static string ShopPriceChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShopPriceChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shop price chat command.
+        /// </summary>
+        public static string ShopPriceChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShopPriceChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/fireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowFireworksEffectChatCommandPlugIn_Description {
@@ -3074,6 +3110,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name {
             get {
                 return ResourceManager.GetString("ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells the client which currencies can be used for the prices of personal stores, when the player enters the game..
+        /// </summary>
+        public static string ShowShopCurrenciesAfterEnterWorldPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesAfterEnterWorldPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show player shop currencies after entering the game.
+        /// </summary>
+        public static string ShowShopCurrenciesAfterEnterWorldPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesAfterEnterWorldPlugIn_Name", resourceCulture);
             }
         }
         

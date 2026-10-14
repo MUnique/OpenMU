@@ -1571,6 +1571,150 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close your store to change its prices..
+        /// </summary>
+        public static string PlayerShopCloseToChangePrices {
+            get {
+                return ResourceManager.GetString("PlayerShopCloseToChangePrices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You paid {0} {1}..
+        /// </summary>
+        public static string PlayerShopCoinsPaid {
+            get {
+                return ResourceManager.GetString("PlayerShopCoinsPaid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You received {0} {1} for an item of your store..
+        /// </summary>
+        public static string PlayerShopCoinsReceived {
+            get {
+                return ResourceManager.GetString("PlayerShopCoinsReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prices in {0} are not allowed in personal stores..
+        /// </summary>
+        public static string PlayerShopCurrencyNotAllowed {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrencyNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your store is empty..
+        /// </summary>
+        public static string PlayerShopIsEmpty {
+            get {
+                return ResourceManager.GetString("PlayerShopIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your items can&apos;t pay exactly {0} {1}. Bundles are not split, and there is no change..
+        /// </summary>
+        public static string PlayerShopItemPriceNotPayableExactly {
+            get {
+                return ResourceManager.GetString("PlayerShopItemPriceNotPayableExactly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need {0} {1} to buy this item..
+        /// </summary>
+        public static string PlayerShopNotEnoughCurrency {
+            get {
+                return ResourceManager.GetString("PlayerShopNotEnoughCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage: {0} [position 1-32] [amount] [currency]. Without arguments, the prices of your store are listed..
+        /// </summary>
+        public static string PlayerShopPriceCommandUsage {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceCommandUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no item at position {0} of your store..
+        /// </summary>
+        public static string PlayerShopPriceItemNotFound {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceItemNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your character level is too low to sell items in a personal store..
+        /// </summary>
+        public static string PlayerShopPriceLevelTooLow {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceLevelTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #{0} {1} - {2} {3}.
+        /// </summary>
+        public static string PlayerShopPriceListEntry {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceListEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #{0} {1} - no price.
+        /// </summary>
+        public static string PlayerShopPriceListEntryWithoutPrice {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceListEntryWithoutPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of the item at position {0} has been removed..
+        /// </summary>
+        public static string PlayerShopPriceRemoved {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of the item at position {0} is now {1} {2}..
+        /// </summary>
+        public static string PlayerShopPriceSet {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price can be at most {0} {1}..
+        /// </summary>
+        public static string PlayerShopPriceTooHigh {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceTooHigh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown currency &apos;{0}&apos;. Available: {1}..
+        /// </summary>
+        public static string PlayerShopUnknownCurrency {
+            get {
+                return ResourceManager.GetString("PlayerShopUnknownCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
         /// </summary>
         public static string RaklionBattleFailed {
@@ -1648,6 +1792,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string RaklionSelupanDefeated {
             get {
                 return ResourceManager.GetString("RaklionSelupanDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Goblin Points.
+        /// </summary>
+        public static string ShopCurrencyGoblinPoints {
+            get {
+                return ResourceManager.GetString("ShopCurrencyGoblinPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WCoin (C).
+        /// </summary>
+        public static string ShopCurrencyWCoinC {
+            get {
+                return ResourceManager.GetString("ShopCurrencyWCoinC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WCoin (P).
+        /// </summary>
+        public static string ShopCurrencyWCoinP {
+            get {
+                return ResourceManager.GetString("ShopCurrencyWCoinP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen.
+        /// </summary>
+        public static string ShopCurrencyZen {
+            get {
+                return ResourceManager.GetString("ShopCurrencyZen", resourceCulture);
             }
         }
         

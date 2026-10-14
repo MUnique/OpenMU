@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
@@ -164,6 +165,12 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(config, referenceHandler);
             }
 
+            if (plugInType == typeof(PlayerShopCurrenciesFeaturePlugIn))
+            {
+                // The default configuration of the plug-in can't reference the items, because it's created without a game configuration.
+                plugInConfiguration.SetConfiguration(this.CreatePlayerShopCurrenciesConfiguration(), referenceHandler);
+            }
+
             if (plugInType.IsAssignableTo(typeof(NpcTalkPlugInBase)))
             {
                 // The default configuration of the plug-in can't reference the NPC, because it's created without a game configuration.
@@ -211,6 +218,29 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// Creates the game client definition.
     /// </summary>
     protected abstract void CreateGameClientDefinition();
+
+    private PlayerShopCurrenciesConfiguration CreatePlayerShopCurrenciesConfiguration()
+    {
+        var configuration = new PlayerShopCurrenciesConfiguration();
+        ItemIdentifier[] jewels =
+        [
+            ItemConstants.JewelOfBless,
+            ItemConstants.JewelOfSoul,
+            ItemConstants.JewelOfChaos,
+            ItemConstants.JewelOfCreation,
+            ItemConstants.JewelOfLife,
+        ];
+
+        foreach (var jewel in jewels)
+        {
+            if (this.GameConfiguration.Items.FirstOrDefault(item => item.Group == jewel.Group && item.Number == jewel.Number) is { } definition)
+            {
+                configuration.PriceItems.Add(definition);
+            }
+        }
+
+        return configuration;
+    }
 
     private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration, ReferenceHandler referenceHandler)
     {

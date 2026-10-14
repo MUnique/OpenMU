@@ -72,7 +72,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"AddPercentage\", \"FailResult\", \"MaximumAmount\", \"MaximumItemLevel\", \"MinimumAmount\", \"MinimumItemLevel\", \"NpcPriceDivisor\", \"Reference\", \"SimpleCraftingSettingsId\", \"SuccessResult\" from config.\"ItemCraftingRequiredItem\"",
         "select \"Id\", \"AddLevel\", \"Durability\", \"ItemDefinitionId\", \"RandomMaximumLevel\", \"RandomMinimumLevel\", \"Reference\", \"SimpleCraftingSettingsId\" from config.\"ItemCraftingResultItem\"",
         "select \"Id\", \"Money\" from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))",
-        "select \"Id\", \"DefinitionId\", \"Durability\", \"HasSkill\", \"ItemSlot\", \"ItemStorageId\", \"Level\", \"PetExperience\", \"SocketCount\", \"StorePrice\" from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))",
+        "select \"Id\", \"DefinitionId\", \"Durability\", \"HasSkill\", \"ItemSlot\", \"ItemStorageId\", \"Level\", \"PetExperience\", \"SocketCount\", \"StorePrice\", \"StorePriceCoinType\", \"StorePriceItemDefinitionId\" from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))",
         "select \"Id\", \"Index\", \"ItemId\", \"ItemOptionId\", \"Level\" from data.\"ItemOptionLink\" where (\"ItemId\" in (select \"Id\" from (select * from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))) \"Item\"))",
         "select \"Id\", \"Group\", \"MaximumCharacterLevel\", \"MinimumCharacterLevel\", \"MonsterDefinitionId\", \"Name\", \"Number\", \"QualifiedCharacterId\", \"QuestGiverId\", \"RefuseNumber\", \"Repeatable\", \"RequiredStartMoney\", \"RequiresClientAction\", \"StartingNumber\" from config.\"QuestDefinition\"",
         "select \"Id\", \"DropItemGroupId\", \"ItemId\", \"MinimumNumber\", \"QuestDefinitionId\" from config.\"QuestItemRequirement\"",
@@ -216,7 +216,7 @@ internal sealed partial class GameConfigurationLoader
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage> _ItemStorage = new();
     private readonly global::System.Collections.Generic.List<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage> _ItemStorageRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.Item> _Item = new();
-    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.Item Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemRows = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.Item Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _ItemRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionLink> _ItemOptionLink = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionLink Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemOptionLinkRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition> _QuestDefinition = new();
@@ -1399,8 +1399,10 @@ internal sealed partial class GameConfigurationLoader
             entity.PetExperience = reader.GetInt32(7);
             entity.SocketCount = reader.GetInt32(8);
             if (!reader.IsDBNull(9)) { entity.StorePrice = reader.GetInt32(9); }
+            if (!reader.IsDBNull(10)) { entity.StorePriceCoinType = (global::MUnique.OpenMU.DataModel.Configuration.CashShopCoinType)reader.GetInt32(10); }
+            if (!reader.IsDBNull(11)) { entity.StorePriceItemDefinitionId = reader.GetGuid(11); }
             this._Item[entity.Id] = entity;
-            this._ItemRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
+            this._ItemRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(5) ? null : reader.GetGuid(5), reader.IsDBNull(11) ? null : reader.GetGuid(11)));
         }
     }
 
@@ -2183,6 +2185,14 @@ internal sealed partial class GameConfigurationLoader
             if (row.Key1 is { } id)
             {
                 row.Entity.RawItemStorage = this.GetItemStorage(id);
+            }
+        }
+
+        foreach (var row in this._ItemRows)
+        {
+            if (row.Key2 is { } id)
+            {
+                row.Entity.RawStorePriceItemDefinition = this.GetItemDefinition(id);
             }
         }
 
