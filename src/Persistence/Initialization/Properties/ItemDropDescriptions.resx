@@ -177,4 +177,28 @@
   <data name="PinkChocolateBoxNormalItems" xml:space="preserve">
     <value>Pink Chocolate Box - Normal Items</value>
   </data>
+  <data name="ShiningJewelleryCaseJewels" xml:space="preserve">
+    <value>Shining Jewellery Case - Jewels</value>
+  </data>
+  <data name="ShiningJewelleryCaseMoney" xml:space="preserve">
+    <value>Shining Jewellery Case - Money</value>
+  </data>
+  <data name="ElegantJewelleryCaseJewels" xml:space="preserve">
+    <value>Elegant Jewellery Case - Jewels</value>
+  </data>
+  <data name="ElegantJewelleryCaseMoney" xml:space="preserve">
+    <value>Elegant Jewellery Case - Money</value>
+  </data>
+  <data name="SteelJewelleryCaseJewels" xml:space="preserve">
+    <value>Steel Jewellery Case - Jewels</value>
+  </data>
+  <data name="SteelJewelleryCaseMoney" xml:space="preserve">
+    <value>Steel Jewellery Case - Money</value>
+  </data>
+  <data name="OldJewelleryCaseJewels" xml:space="preserve">
+    <value>Old Jewellery Case - Jewels</value>
+  </data>
+  <data name="OldJewelleryCaseMoney" xml:space="preserve">
+    <value>Old Jewellery Case - Money</value>
+  </data>
 </root>

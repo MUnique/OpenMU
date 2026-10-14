@@ -2014,6 +2014,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("RankingPosition")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("RewardClaimedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterId")

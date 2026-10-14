@@ -433,5 +433,61 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("PinkChocolateBoxNormalItems", resourceCulture);
             }
         }
+
+        /// <summary>Gets ShiningJewelleryCaseJewels from the configuration name resources.</summary>
+        public static string ShiningJewelleryCaseJewels {
+            get {
+                return ResourceManager.GetString("ShiningJewelleryCaseJewels", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ShiningJewelleryCaseMoney from the configuration name resources.</summary>
+        public static string ShiningJewelleryCaseMoney {
+            get {
+                return ResourceManager.GetString("ShiningJewelleryCaseMoney", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElegantJewelleryCaseJewels from the configuration name resources.</summary>
+        public static string ElegantJewelleryCaseJewels {
+            get {
+                return ResourceManager.GetString("ElegantJewelleryCaseJewels", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElegantJewelleryCaseMoney from the configuration name resources.</summary>
+        public static string ElegantJewelleryCaseMoney {
+            get {
+                return ResourceManager.GetString("ElegantJewelleryCaseMoney", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SteelJewelleryCaseJewels from the configuration name resources.</summary>
+        public static string SteelJewelleryCaseJewels {
+            get {
+                return ResourceManager.GetString("SteelJewelleryCaseJewels", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SteelJewelleryCaseMoney from the configuration name resources.</summary>
+        public static string SteelJewelleryCaseMoney {
+            get {
+                return ResourceManager.GetString("SteelJewelleryCaseMoney", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets OldJewelleryCaseJewels from the configuration name resources.</summary>
+        public static string OldJewelleryCaseJewels {
+            get {
+                return ResourceManager.GetString("OldJewelleryCaseJewels", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets OldJewelleryCaseMoney from the configuration name resources.</summary>
+        public static string OldJewelleryCaseMoney {
+            get {
+                return ResourceManager.GetString("OldJewelleryCaseMoney", resourceCulture);
+            }
+        }
     }
 }

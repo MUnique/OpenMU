@@ -2082,4 +2082,16 @@
   <data name="MirrorOfDimensions" xml:space="preserve">
     <value>次元魔镜</value>
   </data>
+  <data name="ShiningJewelleryCase" xml:space="preserve">
+    <value>闪耀首饰盒</value>
+  </data>
+  <data name="ElegantJewelleryCase" xml:space="preserve">
+    <value>精致首饰盒</value>
+  </data>
+  <data name="SteelJewelleryCase" xml:space="preserve">
+    <value>钢铁首饰盒</value>
+  </data>
+  <data name="OldJewelleryCase" xml:space="preserve">
+    <value>古旧首饰盒</value>
+  </data>
 </root>

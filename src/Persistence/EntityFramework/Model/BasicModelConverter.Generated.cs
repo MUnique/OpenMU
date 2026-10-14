@@ -1609,6 +1609,7 @@ internal sealed class BasicModelConverter
         target.RankingPosition = source.RankingPosition;
         target.JoinedAt = source.JoinedAt;
         target.LeftAt = source.LeftAt;
+        target.RewardClaimedAt = source.RewardClaimedAt;
         return target;
     }
 
