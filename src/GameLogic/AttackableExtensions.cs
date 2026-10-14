@@ -417,6 +417,13 @@ public static class AttackableExtensions
             return false;
         }
 
+        if (hitInfo is null)
+        {
+            // The attack was blocked (e.g. guard NPC, safezone, or another attack restriction),
+            // so no elemental effect may be applied.
+            return false;
+        }
+
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
         var skipModifier = skillEntry.Skill.SkipElementalModifier;
@@ -463,6 +470,13 @@ public static class AttackableExtensions
     {
         if (!target.IsAlive)
         {
+            return false;
+        }
+
+        if (hitInfo is null)
+        {
+            // The attack was blocked (e.g. safezone or another attack restriction),
+            // so no elemental effect may be applied.
             return false;
         }
 
