@@ -32,6 +32,9 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
+    public bool IsEnabledOn(IGameContext gameContext) => this.IsEnabledOnContext(gameContext);
+
+    /// <inheritdoc />
     public virtual async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
     {
         Announcements.TryRemove((this.GetType(), gameContext), out _);
@@ -67,6 +70,13 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         if (gameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null) is { State: MiniGameState.Open })
         {
             return ValueTask.FromResult<TimeSpan?>(TimeSpan.Zero);
+        }
+
+        // The scope comes last on purpose: an open or prepared run is reported even on
+        // excluded servers, so in-flight runs finish gracefully instead of going silent.
+        if (!this.IsEnabledOnContext(gameContext))
+        {
+            return ValueTask.FromResult<TimeSpan?>(null);
         }
 
         var timeNow = new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks);

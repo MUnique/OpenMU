@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.Network.Analyzer;
 
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 /// <summary>
 /// The class of the main entry point.
 /// </summary>
+[SupportedOSPlatform("windows")]
 internal static class Program
 {
     /// <summary>

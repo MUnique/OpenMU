@@ -1161,6 +1161,12 @@
   <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
     <value>Timetable</value>
   </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Name" xml:space="preserve">
+    <value>Active on servers</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Description" xml:space="preserve">
+    <value>Restricts the event to the selected game servers. An empty selection means the event runs on all servers.</value>
+  </data>
   <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
     <value>Pre-start message delay</value>
   </data>
@@ -1422,6 +1428,9 @@
   <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>Alert Debounce Seconds</value></data>
   <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve"><value>Max Warnings</value></data>
   <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve"><value>Disconnect On Violation</value></data>
+  <data name="SpeedHackDetectConfiguration_ObserveOnly_Caption" xml:space="preserve"><value>Observe Only</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption" xml:space="preserve"><value>Violation Score Reject Threshold</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption" xml:space="preserve"><value>Violation Score Half Life Minutes</value></data>
   <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>Auto Ban</value></data>
   <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y</value></data>
   <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X</value></data>
@@ -1438,6 +1447,18 @@
   </data>
   <data name="RaklionPlugIn_Description" xml:space="preserve">
     <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
+  </data>
+  <data name="CrywolfPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Event</value>
+  </data>
+  <data name="CrywolfPlugIn_Description" xml:space="preserve">
+    <value>The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event.</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /crywolf</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends.</value>
   </data>
   <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
     <value>Imperial Guardian event</value>
@@ -1570,5 +1591,29 @@
   </data>
   <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
     <value>Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage.</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>Game Event Publisher</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>Publish mini game events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>Publish invasion events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>Publish castle siege events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>Publish global notices of game masters</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>Publish excellent item drops</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>Publish ancient item drops</value>
   </data>
 </root>

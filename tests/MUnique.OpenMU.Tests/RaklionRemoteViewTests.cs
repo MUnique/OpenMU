@@ -95,4 +95,28 @@ public class RaklionRemoteViewTests
         Assert.That(heal.AttackerId, Is.EqualTo(0x1234));
         Assert.That(heal.TargetId, Is.EqualTo(0x1234), "Without a target, Selupan is the target of its skill.");
     }
+
+    /// <summary>
+    /// Tests the packet of the stab of an iron knight, which the client only shows with the monster skill number 33.
+    /// </summary>
+    [Test]
+    public async Task IronKnightStabPacketAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new RaklionEventViewPlugIn(player);
+        var ironKnight = new Mock<IAttacker>();
+        ironKnight.Setup(s => s.Id).Returns(0x1234);
+        var target = new Mock<IAttackable>();
+        target.Setup(t => t.Id).Returns(0x0567);
+
+        await view.ShowIronKnightStabAsync(ironKnight.Object, target.Object).ConfigureAwait(false);
+
+        var data = output.ToArray().AsMemory();
+        Assert.That(data.Length, Is.EqualTo(MonsterSkillAnimation.Length));
+
+        var stab = (MonsterSkillAnimation)data;
+        Assert.That(stab.SkillNumber, Is.EqualTo(33));
+        Assert.That(stab.AttackerId, Is.EqualTo(0x1234));
+        Assert.That(stab.TargetId, Is.EqualTo(0x0567), "The client searches the target by the id as it is, so the flag of a successful skill must not be set.");
+    }
 }

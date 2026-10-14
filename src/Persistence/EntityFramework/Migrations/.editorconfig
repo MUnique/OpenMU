@@ -3,3 +3,5 @@
 # re-fix them on every migration.
 [*.cs]
 dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1413.severity = none
+dotnet_diagnostic.SA1633.severity = none

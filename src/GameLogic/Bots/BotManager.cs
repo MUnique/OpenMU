@@ -257,48 +257,6 @@ public sealed class BotManager
         this.LogWaitingBuffers(formation.UnplacedBuffers);
     }
 
-    private async ValueTask CreatePartiesAsync(IGameContext gameContext, IReadOnlyList<IReadOnlyList<OfflinePlayer>> parties)
-    {
-        foreach (var members in parties)
-        {
-            var party = gameContext.PartyManager.CreateParty();
-            var added = 0;
-            foreach (var member in members)
-            {
-                if (!await party.AddAsync(member).ConfigureAwait(false))
-                {
-                    break;
-                }
-
-                added++;
-            }
-
-            var leader = members[0];
-            if (added < members.Count)
-            {
-                leader.Logger.LogWarning(
-                    "Bot party around '{Leader}' lost {Missing} of {Count} members on join; they regroup on the next pass.",
-                    leader.Name,
-                    members.Count - added,
-                    members.Count);
-            }
-
-            leader.Logger.LogDebug(
-                "Formed bot party of {Count} around '{Leader}' (level {Level}).",
-                added,
-                leader.Name,
-                BotResetHandler.GetEffectiveLevel(leader));
-        }
-    }
-
-    private void LogWaitingBuffers(IReadOnlyList<OfflinePlayer> waitingBuffers)
-    {
-        foreach (var buffer in waitingBuffers)
-        {
-            buffer.Logger.LogDebug("Buffer '{Name}' found no party and hunts solo.", buffer.Name);
-        }
-    }
-
     private static string GetKey(string loginName, byte slot) => $"{loginName}/{slot}";
 
     /// <summary>
@@ -339,6 +297,48 @@ public sealed class BotManager
                 // connection is still opening while it is being closed during a shutdown race.
                 bot.Logger.LogWarning(ex, "Error while disposing bot '{Key}' ({Reason}).", key, reason);
             }
+        }
+    }
+
+    private async ValueTask CreatePartiesAsync(IGameContext gameContext, IReadOnlyList<IReadOnlyList<OfflinePlayer>> parties)
+    {
+        foreach (var members in parties)
+        {
+            var party = gameContext.PartyManager.CreateParty();
+            var added = 0;
+            foreach (var member in members)
+            {
+                if (!await party.AddAsync(member).ConfigureAwait(false))
+                {
+                    break;
+                }
+
+                added++;
+            }
+
+            var leader = members[0];
+            if (added < members.Count)
+            {
+                leader.Logger.LogWarning(
+                    "Bot party around '{Leader}' lost {Missing} of {Count} members on join; they regroup on the next pass.",
+                    leader.Name,
+                    members.Count - added,
+                    members.Count);
+            }
+
+            leader.Logger.LogDebug(
+                "Formed bot party of {Count} around '{Leader}' (level {Level}).",
+                added,
+                leader.Name,
+                BotResetHandler.GetEffectiveLevel(leader));
+        }
+    }
+
+    private void LogWaitingBuffers(IReadOnlyList<OfflinePlayer> waitingBuffers)
+    {
+        foreach (var buffer in waitingBuffers)
+        {
+            buffer.Logger.LogDebug("Buffer '{Name}' found no party and hunts solo.", buffer.Name);
         }
     }
 

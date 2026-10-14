@@ -15,7 +15,7 @@ public sealed class DevilSquareContext : MiniGameContext
 {
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
 
-    private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
+    private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquareContext"/> class.
@@ -57,12 +57,12 @@ public sealed class DevilSquareContext : MiniGameContext
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
         var sortedFinishers = finishers
-            .Select(f => this._gameStates[f.Name])
+            .Select(this.GetGameStateOfFinisher)
             .WhereNotNull()
-            .OrderBy(state => state.Score)
+            .OrderByDescending(state => state.Score)
             .ToList();
 
-        var scoreList = new List<(string Name, int Score, int BonusMoney, int BonusExp)>();
+        var scoreList = new List<(string Name, int Score, int BonusExp, int BonusMoney)>();
         int rank = 0;
         foreach (var state in sortedFinishers)
         {
@@ -73,8 +73,8 @@ public sealed class DevilSquareContext : MiniGameContext
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
-                givenMoney,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
+                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
+                givenMoney));
         }
 
         this._highScoreTable = scoreList.AsReadOnly();
@@ -93,6 +93,19 @@ public sealed class DevilSquareContext : MiniGameContext
         }
     }
 
+    private PlayerGameState? GetGameStateOfFinisher(Player finisher)
+    {
+        if (!this._gameStates.TryGetValue(finisher.Name, out var state))
+        {
+            return null;
+        }
+
+        // The score is kept by the character name, so it's kept when the player rejoined the game
+        // after it lost its connection. The rewards must be given to its current player object, though.
+        state.Player = finisher;
+        return state;
+    }
+
     private sealed class PlayerGameState
     {
         private int _score;
@@ -107,7 +120,11 @@ public sealed class DevilSquareContext : MiniGameContext
             this.Player = player;
         }
 
-        public Player Player { get; }
+        /// <summary>
+        /// Gets or sets the player of the character. It's replaced by the new player
+        /// object of the same character, when it rejoined the game after it lost its connection.
+        /// </summary>
+        public Player Player { get; set; }
 
         public int Score => this._score;
 

@@ -39,6 +39,7 @@ public class BackupService : IBackupService
         ("GensMember_", typeof(BasicModel.GensMember)),
         ("GensAbuse_", typeof(BasicModel.GensAbuse)),
         ("CastleSiegeData_", typeof(BasicModel.CastleSiegeData)),
+        ("CrywolfData_", typeof(BasicModel.CrywolfData)),
     ];
 
     private readonly IPersistenceContextProvider _contextProvider;
@@ -94,6 +95,7 @@ public class BackupService : IBackupService
         }
 
         await ExportAsync<CastleSiegeData, BasicModel.CastleSiegeData>(archive, "CastleSiegeData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<CrywolfData, BasicModel.CrywolfData>(archive, "CrywolfData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -166,24 +168,6 @@ public class BackupService : IBackupService
                 this.FillObject(context, basicModelObj, rootObject, createdObjects);
                 await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
-        }
-    }
-
-    private async Task ExportAdminUsersAsync(
-        ZipArchive archive,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-    {
-        var items = await this._adminUserRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
-        var serializer = new JsonObjectSerializer();
-        foreach (var item in items)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var entryName = $"AdminUser_{item.Id}.json";
-            var entry = archive.CreateEntry(entryName);
-            await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
-            await serializer.SerializeAsync(item, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -284,6 +268,11 @@ public class BackupService : IBackupService
         if (basicModelType == typeof(BasicModel.CastleSiegeData))
         {
             return deserializer.Deserialize<BasicModel.CastleSiegeData>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.CrywolfData))
+        {
+            return deserializer.Deserialize<BasicModel.CrywolfData>(ms, referenceHandler);
         }
 
         if (basicModelType == typeof(BasicModel.GensMember))
@@ -412,6 +401,24 @@ public class BackupService : IBackupService
             BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
         return prop?.GetSetMethod(nonPublic: true) is not null ? prop : null;
+    }
+
+    private async Task ExportAdminUsersAsync(
+        ZipArchive archive,
+        IdReferenceHandler sharedHandler,
+        CancellationToken cancellationToken)
+    {
+        var items = await this._adminUserRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        var serializer = new JsonObjectSerializer();
+        foreach (var item in items)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var entryName = $"AdminUser_{item.Id}.json";
+            var entry = archive.CreateEntry(entryName);
+            await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await serializer.SerializeAsync(item, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private object GetOrCreateObject(IContext context, object basicModelObj, Dictionary<Guid, object> createdObjects)

@@ -1007,5 +1007,50 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>Gets the localized MapsLabel text.</summary>
         public static string MapsLabel => ResourceManager.GetString("MapsLabel", resourceCulture)!;
 
+        /// <summary>Gets the localized CharacterCreationHint text.</summary>
+        public static string CharacterCreationHint => ResourceManager.GetString("CharacterCreationHint", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterNameRequired text.</summary>
+        public static string CharacterNameRequired => ResourceManager.GetString("CharacterNameRequired", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterNameInvalid text.</summary>
+        public static string CharacterNameInvalid => ResourceManager.GetString("CharacterNameInvalid", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterClassRequired text.</summary>
+        public static string CharacterClassRequired => ResourceManager.GetString("CharacterClassRequired", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterClassWithoutHomeMap text.</summary>
+        public static string CharacterClassWithoutHomeMap => ResourceManager.GetString("CharacterClassWithoutHomeMap", resourceCulture)!;
+
+        /// <summary>Gets the localized NoFreeCharacterSlot text.</summary>
+        public static string NoFreeCharacterSlot => ResourceManager.GetString("NoFreeCharacterSlot", resourceCulture)!;
+
+        /// <summary>Gets the localized CharacterCreatedPlugInsFailed text.</summary>
+        public static string CharacterCreatedPlugInsFailed => ResourceManager.GetString("CharacterCreatedPlugInsFailed", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_AllServersHint text.</summary>
+        public static string GameServerSelection_AllServersHint => ResourceManager.GetString("GameServerSelection_AllServersHint", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_SelectAll text.</summary>
+        public static string GameServerSelection_SelectAll => ResourceManager.GetString("GameServerSelection_SelectAll", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_Clear text.</summary>
+        public static string GameServerSelection_Clear => ResourceManager.GetString("GameServerSelection_Clear", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_NoServers text.</summary>
+        public static string GameServerSelection_NoServers => ResourceManager.GetString("GameServerSelection_NoServers", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_LoadFailed text.</summary>
+        public static string GameServerSelection_LoadFailed => ResourceManager.GetString("GameServerSelection_LoadFailed", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_PvpBadge text.</summary>
+        public static string GameServerSelection_PvpBadge => ResourceManager.GetString("GameServerSelection_PvpBadge", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_PveBadge text.</summary>
+        public static string GameServerSelection_PveBadge => ResourceManager.GetString("GameServerSelection_PveBadge", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerSelection_UnknownServer text.</summary>
+        public static string GameServerSelection_UnknownServer => ResourceManager.GetString("GameServerSelection_UnknownServer", resourceCulture)!;
+
     }
 }

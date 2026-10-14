@@ -139,7 +139,7 @@ services:
     ports:
       - "44405:44405" # connect server of the first client version
       - "44406:44406" # connect server of the second client version, e.g. of season 6
-      - "55980:55980" # chat server
+      - "45980:45980" # chat server
     environment:
       DAPR_HTTP_ENDPOINT: http://centralServer-dapr:3500
       DAPR_GRPC_ENDPOINT: http://centralServer-dapr:50001
@@ -226,8 +226,8 @@ services:
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "8080"
-      - "55901:55901"
-      - "55902:55902"
+      - "45901:45901"
+      - "45902:45902"
     environment:
       GS_ID: 0
       DAPR_HTTP_ENDPOINT: http://gameServer0-dapr:3500
@@ -272,8 +272,8 @@ services:
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "8080"
-      - "55903:55903"
-      - "55904:55904"
+      - "45903:45903"
+      - "45904:45904"
     environment:
       GS_ID: 1
       DAPR_HTTP_ENDPOINT: http://gameServer1-dapr:3500

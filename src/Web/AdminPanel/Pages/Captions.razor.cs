@@ -22,6 +22,8 @@ public partial class Captions : IDisposable
 {
     private const string NeutralFilterValue = "-";
 
+    private readonly CancellationTokenSource _disposeCts = new();
+
     private CaptionComparison? _comparison;
 
     private List<ChangeViewModel> _changes = [];
@@ -41,8 +43,6 @@ public partial class Captions : IDisposable
     private Stopwatch _stepStopwatch = new();
 
     private CancellationTokenSource? _linkProgressRefresh;
-
-    private readonly CancellationTokenSource _disposeCts = new();
 
     /// <summary>
     /// The version of the linking state; it's incremented when captions are linked,
@@ -211,6 +211,14 @@ public partial class Captions : IDisposable
         foreach (var change in this.FilteredChanges)
         {
             change.Selected = change.Change.IsRecommended;
+        }
+    }
+
+    private void SelectAll()
+    {
+        foreach (var change in this.FilteredChanges)
+        {
+            change.Selected = true;
         }
     }
 

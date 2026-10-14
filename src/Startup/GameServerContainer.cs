@@ -55,6 +55,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="setupService">The setup service.</param>
     /// <param name="changeMediator">The change mediator.</param>
+    /// <param name="gameEventListeners">The listeners for the game events.</param>
     /// <param name="packetArchive">The archive for the traffic of observed accounts.</param>
     public GameServerContainer(
         ILoggerFactory loggerFactory,
@@ -69,6 +70,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         PlugInManager plugInManager,
         SetupService setupService,
         IConfigurationChangeMediator changeMediator,
+        IEnumerable<IGameEventListener> gameEventListeners,
         IPacketArchive? packetArchive = null)
         : base(setupService, loggerFactory.CreateLogger<GameServerContainer>())
     {
@@ -85,7 +87,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         this._changeMediator = changeMediator;
 
         this._logger = this._loggerFactory.CreateLogger<GameServerContainer>();
-        this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer);
+        this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer, gameEventListeners, this._loggerFactory.CreateLogger<InMemoryEventPublisher>());
         this._mapHostLocator = new InProcessMapHostLocator(this._gameServers);
         this._packetArchive = packetArchive;
     }

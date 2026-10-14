@@ -240,6 +240,9 @@ public class SkillListTest
         {
             HasSkill = true,
             Definition = itemDefinition.Object,
+
+            // A broken item (durability 0) doesn't grant its skill.
+            Durability = 1,
         };
         return item;
     }

@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="BoxOfLuckMoney" xml:space="preserve">
+    <value>幸运宝箱：金币</value>
+  </data>
+  <data name="RingOfWarrior80Money" xml:space="preserve">
+    <value>勇士之戒80：金币</value>
+  </data>
+  <data name="RingOfWarrior80" xml:space="preserve">
+    <value>勇士之戒80</value>
+  </data>
+  <data name="RingOfWarrior40Money" xml:space="preserve">
+    <value>勇士之戒40：金币</value>
+  </data>
+  <data name="RingOfWarrior40" xml:space="preserve">
+    <value>勇士之戒40</value>
+  </data>
+  <data name="HeartOfDarkLordMoney" xml:space="preserve">
+    <value>圣导师之心：金币</value>
+  </data>
+  <data name="HeartOfDarkLord" xml:space="preserve">
+    <value>圣导师之心</value>
+  </data>
+  <data name="BoxOfKundunPlus5Money" xml:space="preserve">
+    <value>昆顿宝箱+5：金币</value>
+  </data>
+  <data name="BoxOfKundunPlus5" xml:space="preserve">
+    <value>昆顿宝箱+5</value>
+  </data>
+  <data name="BoxOfKundunPlus4Money" xml:space="preserve">
+    <value>昆顿宝箱+4：金币</value>
+  </data>
+  <data name="BoxOfKundunPlus4" xml:space="preserve">
+    <value>昆顿宝箱+4</value>
+  </data>
+  <data name="BoxOfKundunPlus3Money" xml:space="preserve">
+    <value>昆顿宝箱+3：金币</value>
+  </data>
+  <data name="BoxOfKundunPlus3" xml:space="preserve">
+    <value>昆顿宝箱+3</value>
+  </data>
+  <data name="BoxOfKundunPlus2Money" xml:space="preserve">
+    <value>昆顿宝箱+2：金币</value>
+  </data>
+  <data name="BoxOfKundunPlus2" xml:space="preserve">
+    <value>昆顿宝箱+2</value>
+  </data>
+  <data name="BoxOfKundunPlus1Money" xml:space="preserve">
+    <value>昆顿宝箱+1：金币</value>
+  </data>
+  <data name="BoxOfKundunPlus1" xml:space="preserve">
+    <value>昆顿宝箱+1</value>
+  </data>
+  <data name="BoxOfHeavenMoney" xml:space="preserve">
+    <value>天界宝箱：金币</value>
+  </data>
+  <data name="BoxOfHeaven" xml:space="preserve">
+    <value>天界宝箱</value>
+  </data>
+  <data name="GoldMedalMoney" xml:space="preserve">
+    <value>金勋章：金币</value>
+  </data>
+  <data name="GoldMedal" xml:space="preserve">
+    <value>金勋章</value>
+  </data>
+  <data name="SilverMedalMoney" xml:space="preserve">
+    <value>银勋章：金币</value>
+  </data>
+  <data name="SilverMedal" xml:space="preserve">
+    <value>银勋章</value>
+  </data>
+  <data name="HeartOfLoveItemsPlus7ToPlus9Money" xml:space="preserve">
+    <value>爱情之心（+7～+9物品）：金币</value>
+  </data>
+  <data name="HeartOfLoveItemsPlus7ToPlus9" xml:space="preserve">
+    <value>爱情之心（+7～+9物品）</value>
+  </data>
+  <data name="HeartOfLoveJewelsEtc" xml:space="preserve">
+    <value>爱情之心（宝石等）</value>
+  </data>
+  <data name="FirecrackerItemsPlus7ToPlus9Money" xml:space="preserve">
+    <value>烟花（+7～+9物品）：金币</value>
+  </data>
+  <data name="FirecrackerItemsPlus7ToPlus9" xml:space="preserve">
+    <value>烟花（+7～+9物品）</value>
+  </data>
+  <data name="FirecrackerJewelsEtc" xml:space="preserve">
+    <value>烟花（宝石等）</value>
+  </data>
+  <data name="StarOfTheSacredBirth" xml:space="preserve">
+    <value>圣诞之星</value>
+  </data>
+  <data name="FirecrackerDropEffect" xml:space="preserve">
+    <value>烟花：掉落特效</value>
+  </data>
+  <data name="ChristmasFirecrackerDropEffect" xml:space="preserve">
+    <value>圣诞烟花：掉落特效</value>
+  </data>
+  <data name="ChristmasStarDropEffect" xml:space="preserve">
+    <value>圣诞之星：掉落特效</value>
+  </data>
+  <data name="BlueRibbonBoxMoney" xml:space="preserve">
+    <value>蓝色圣诞箱：金币</value>
+  </data>
+  <data name="BlueRibbonBoxExcellentItems" xml:space="preserve">
+    <value>蓝色圣诞箱：卓越物品</value>
+  </data>
+  <data name="BlueRibbonBoxNormalItems" xml:space="preserve">
+    <value>蓝色圣诞箱：普通物品</value>
+  </data>
+  <data name="GreenRibbonBoxMoney" xml:space="preserve">
+    <value>绿色圣诞箱：金币</value>
+  </data>
+  <data name="GreenRibbonBoxExcellentItems" xml:space="preserve">
+    <value>绿色圣诞箱：卓越物品</value>
+  </data>
+  <data name="GreenRibbonBoxNormalItems" xml:space="preserve">
+    <value>绿色圣诞箱：普通物品</value>
+  </data>
+  <data name="RedRibbonBoxMoney" xml:space="preserve">
+    <value>红色圣诞箱：金币</value>
+  </data>
+  <data name="DeepBlueCandyBoxMoney" xml:space="preserve">
+    <value>深蓝糖果盒：金币</value>
+  </data>
+  <data name="BlueChocolateBoxExcellentItems" xml:space="preserve">
+    <value>蓝色巧克力盒：卓越物品</value>
+  </data>
+  <data name="BlueChocolateBoxMoney" xml:space="preserve">
+    <value>蓝色巧克力盒：金币</value>
+  </data>
+  <data name="VermilionCandyBoxMoney" xml:space="preserve">
+    <value>朱红糖果盒：金币</value>
+  </data>
+  <data name="VermilionCandyBoxExcellentItems" xml:space="preserve">
+    <value>朱红糖果盒：卓越物品</value>
+  </data>
+  <data name="VermilionCandyBoxNormalItems" xml:space="preserve">
+    <value>朱红糖果盒：普通物品</value>
+  </data>
+  <data name="RedChocolateBoxMoney" xml:space="preserve">
+    <value>红色巧克力盒：金币</value>
+  </data>
+  <data name="RedChocolateBoxExcellentItems" xml:space="preserve">
+    <value>红色巧克力盒：卓越物品</value>
+  </data>
+  <data name="RedChocolateBoxNormalItems" xml:space="preserve">
+    <value>红色巧克力盒：普通物品</value>
+  </data>
+  <data name="LightPurpleCandyBoxMoney" xml:space="preserve">
+    <value>淡紫糖果盒：金币</value>
+  </data>
+  <data name="LightPurpleCandyBoxExcellentItems" xml:space="preserve">
+    <value>淡紫糖果盒：卓越物品</value>
+  </data>
+  <data name="LightPurpleCandyBoxNormalItems" xml:space="preserve">
+    <value>淡紫糖果盒：普通物品</value>
+  </data>
+  <data name="PinkChocolateBoxMoney" xml:space="preserve">
+    <value>粉色巧克力盒：金币</value>
+  </data>
+  <data name="PinkChocolateBoxExcellentItems" xml:space="preserve">
+    <value>粉色巧克力盒：卓越物品</value>
+  </data>
+  <data name="PinkChocolateBoxNormalItems" xml:space="preserve">
+    <value>粉色巧克力盒：普通物品</value>
+  </data>
+</root>

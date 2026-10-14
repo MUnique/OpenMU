@@ -1689,4 +1689,193 @@
   <data name="CaptionsCheckingLinkable" xml:space="preserve">
     <value>Es wird geprüft, ob integrierte Beschriftungen noch nicht verknüpft sind ...</value>
   </data>
+  <data name="Tracing" xml:space="preserve">
+    <value>Ablaufverfolgung</value>
+  </data>
+  <data name="InstalledOn" xml:space="preserve">
+    <value>Installiert am {0}.</value>
+  </data>
+  <data name="MajorVersion" xml:space="preserve">
+    <value>Hauptversion</value>
+  </data>
+  <data name="MinorVersion" xml:space="preserve">
+    <value>Nebenversion</value>
+  </data>
+  <data name="CastleSiege" xml:space="preserve">
+    <value>Burgbelagerung</value>
+  </data>
+  <data name="CastleSiegeHitPoints" xml:space="preserve">
+    <value>LP</value>
+  </data>
+  <data name="CastleSiegePersistent" xml:space="preserve">
+    <value>Dauerhaft</value>
+  </data>
+  <data name="Party" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="RoleCashShop" xml:space="preserve">
+    <value>Nur Cash-Shop-Münzen</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Alle auswählen</value>
+  </data>
+  <data name="CashShopCoinsOf" xml:space="preserve">
+    <value>Cash-Shop-Münzen von {0}</value>
+  </data>
+  <data name="CashShopCoinsDescription" xml:space="preserve">
+    <value>Die angezeigten Guthaben sind die zuletzt gespeicherten. Gewährte Münzen bleiben ausstehend, bis der Spielserver sie anwendet, was beim nächsten Öffnen des Cash-Shops durch den Spieler geschieht.</value>
+  </data>
+  <data name="CashShopCoinsAccountNotFound" xml:space="preserve">
+    <value>Das Konto existiert nicht.</value>
+  </data>
+  <data name="CashShopGrantCoins" xml:space="preserve">
+    <value>Münzen gewähren</value>
+  </data>
+  <data name="CashShopCoinType" xml:space="preserve">
+    <value>Münze</value>
+  </data>
+  <data name="CashShopAmount" xml:space="preserve">
+    <value>Betrag</value>
+  </data>
+  <data name="CashShopGrants" xml:space="preserve">
+    <value>Gewährungen</value>
+  </data>
+  <data name="CashShopGrantedBy" xml:space="preserve">
+    <value>Gewährt von</value>
+  </data>
+  <data name="CashShopReference" xml:space="preserve">
+    <value>Referenz</value>
+  </data>
+  <data name="CashShopAppliedAt" xml:space="preserve">
+    <value>Angewendet</value>
+  </data>
+  <data name="CashShopPending" xml:space="preserve">
+    <value>Ausstehend</value>
+  </data>
+  <data name="CashShopPendingAmount" xml:space="preserve">
+    <value>{0} ausstehend</value>
+  </data>
+  <data name="CashShopNoGrants" xml:space="preserve">
+    <value>Es wurden noch keine Münzen gewährt.</value>
+  </data>
+  <data name="CashShopAmountMustNotBeZero" xml:space="preserve">
+    <value>Der Betrag darf nicht null sein. Verwenden Sie einen negativen Betrag, um Münzen abzuziehen.</value>
+  </data>
+  <data name="CashShopCoinsGranted" xml:space="preserve">
+    <value>Die Münzen wurden gewährt.</value>
+  </data>
+  <data name="CashShopCoins" xml:space="preserve">
+    <value>Münzen</value>
+  </data>
+  <data name="CashShopCatalog" xml:space="preserve">
+    <value>Cash-Shop</value>
+  </data>
+  <data name="CashShopCatalogDescription" xml:space="preserve">
+    <value>Der Spielclient zeigt die Pakete, Namen, Preise und Laufzeiten aus seinem eigenen Cash-Shop-Skript an. Hier bearbeiten Sie die Serverseite davon: welche Pakete zum Verkauf stehen, welche Gegenstände geliefert und welche Preise berechnet werden. Pakete und Produkte werden über die Nummern des Client-Skripts identifiziert, halten Sie sie daher identisch mit dem Skript der konfigurierten Version; ein abweichender Preis wird vom Client nicht angezeigt.</value>
+  </data>
+  <data name="CashShopNotConfigured" xml:space="preserve">
+    <value>Der Cash-Shop ist nicht konfiguriert. Installieren Sie das Konfigurationsupdate 'Cash-Shop hinzufügen', um den Katalog des Spielclients hinzuzufügen.</value>
+  </data>
+  <data name="CashShopVersions" xml:space="preserve">
+    <value>Versionen des Client-Skripts</value>
+  </data>
+  <data name="CashShopScriptVersion" xml:space="preserve">
+    <value>Skript</value>
+  </data>
+  <data name="CashShopSaleZone" xml:space="preserve">
+    <value>Verkaufszone</value>
+  </data>
+  <data name="CashShopYear" xml:space="preserve">
+    <value>Jahr</value>
+  </data>
+  <data name="CashShopYearId" xml:space="preserve">
+    <value>Id innerhalb des Jahres</value>
+  </data>
+  <data name="CashShopPackages" xml:space="preserve">
+    <value>Pakete</value>
+  </data>
+  <data name="CashShopOnlyForSale" xml:space="preserve">
+    <value>Nur Pakete im Verkauf</value>
+  </data>
+  <data name="CashShopPackageSequence" xml:space="preserve">
+    <value>Paketnummer</value>
+  </data>
+  <data name="CashShopProductSequence" xml:space="preserve">
+    <value>Produktnummer</value>
+  </data>
+  <data name="CashShopPriceSequence" xml:space="preserve">
+    <value>Preisnummer</value>
+  </data>
+  <data name="CashShopPrice" xml:space="preserve">
+    <value>Preis</value>
+  </data>
+  <data name="CashShopBundlePrice" xml:space="preserve">
+    <value>Bündelpreis</value>
+  </data>
+  <data name="CashShopForSale" xml:space="preserve">
+    <value>Im Verkauf</value>
+  </data>
+  <data name="CashShopGiftable" xml:space="preserve">
+    <value>Verschenkbar</value>
+  </data>
+  <data name="CashShopBundle" xml:space="preserve">
+    <value>Bündel</value>
+  </data>
+  <data name="CashShopSellable" xml:space="preserve">
+    <value>Verkaufbar</value>
+  </data>
+  <data name="CashShopProducts" xml:space="preserve">
+    <value>Produkte</value>
+  </data>
+  <data name="CashShopBundleProductsDescription" xml:space="preserve">
+    <value>Ein Bündel liefert alle seine Produkte zum Bündelpreis.</value>
+  </data>
+  <data name="CashShopPriceOptionsDescription" xml:space="preserve">
+    <value>Die Produkte sind Preisoptionen, von denen der Spieler eine zu ihrem Preis kauft.</value>
+  </data>
+  <data name="CashShopItem" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="CashShopQuantity" xml:space="preserve">
+    <value>Menge</value>
+  </data>
+  <data name="CashShopDurationHours" xml:space="preserve">
+    <value>Dauer (Stunden)</value>
+  </data>
+  <data name="CashShopAddPackage" xml:space="preserve">
+    <value>Paket hinzufügen</value>
+  </data>
+  <data name="CashShopAddProduct" xml:space="preserve">
+    <value>Produkt hinzufügen</value>
+  </data>
+  <data name="CashShopDeletePackage" xml:space="preserve">
+    <value>Paket löschen</value>
+  </data>
+  <data name="CashShopDeletePackageQuestion" xml:space="preserve">
+    <value>Möchten Sie dieses Paket wirklich löschen?</value>
+  </data>
+  <data name="CashShopIssueNoProducts" xml:space="preserve">
+    <value>Das Paket hat keine Produkte.</value>
+  </data>
+  <data name="CashShopIssueDuplicatePackageSequence" xml:space="preserve">
+    <value>Ein anderes Paket hat die Nummer {0}.</value>
+  </data>
+  <data name="CashShopIssueDuplicatePriceSequence" xml:space="preserve">
+    <value>Mehrere Produkte haben die Preisnummer {0}.</value>
+  </data>
+  <data name="CashShopIssueMissingItem" xml:space="preserve">
+    <value>Produkt {0} hat keinen Gegenstand.</value>
+  </data>
+  <data name="CashShopIssueTimeLimited" xml:space="preserve">
+    <value>Produkt {0} ist zeitlich begrenzt, was noch nicht unterstützt wird.</value>
+  </data>
+  <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
+    <value>Der Bündelpreis ist negativ.</value>
+  </data>
+  <data name="CashShopIssueNegativePrice" xml:space="preserve">
+    <value>Produkt {0} hat einen negativen Preis.</value>
+  </data>
+  <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
+    <value>Produkt {0} hat eine Menge kleiner als 1.</value>
+  </data>
 </root>

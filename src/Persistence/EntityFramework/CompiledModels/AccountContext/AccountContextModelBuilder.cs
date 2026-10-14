@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("8b99359b-a111-4b0d-b8f0-fca6f18076e4"), entityTypeCount: 45)
+            : base(skipDetectChanges: false, modelId: new Guid("8a99115a-7399-483b-bc24-680edf0632bb"), entityTypeCount: 46)
         {
         }
 
@@ -33,6 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             var characterDropItemGroup = CharacterDropItemGroupEntityType.Create(this);
             var characterQuestState = CharacterQuestStateEntityType.Create(this);
             var constValueAttribute = ConstValueAttributeEntityType.Create(this);
+            var crywolfData = CrywolfDataEntityType.Create(this);
             var dropItemGroupItemDefinition = DropItemGroupItemDefinitionEntityType.Create(this);
             var friend = FriendEntityType.Create(this);
             var gameMapDefinitionDropItemGroup = GameMapDefinitionDropItemGroupEntityType.Create(this);
@@ -109,6 +110,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             CharacterDropItemGroupEntityType.CreateAnnotations(characterDropItemGroup);
             CharacterQuestStateEntityType.CreateAnnotations(characterQuestState);
             ConstValueAttributeEntityType.CreateAnnotations(constValueAttribute);
+            CrywolfDataEntityType.CreateAnnotations(crywolfData);
             DropItemGroupItemDefinitionEntityType.CreateAnnotations(dropItemGroupItemDefinition);
             FriendEntityType.CreateAnnotations(friend);
             GameMapDefinitionDropItemGroupEntityType.CreateAnnotations(gameMapDefinitionDropItemGroup);

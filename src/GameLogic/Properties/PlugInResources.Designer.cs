@@ -628,6 +628,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends..
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /crywolf.
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event..
+        /// </summary>
+        public static string CrywolfPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Event.
+        /// </summary>
+        public static string CrywolfPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/disconnect &lt;char&gt;&apos;. Disconnects a player from the game server..
         /// </summary>
         public static string DisconnectChatCommandPlugIn_Description {
@@ -840,6 +876,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string FruitConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("FruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish ancient item drops.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishAncientItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishAncientItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish castle siege events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish excellent item drops.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishExcellentItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishExcellentItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish global notices of game masters.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishGlobalNotices_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishGlobalNotices_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish invasion events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishInvasionEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishInvasionEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish mini game events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishMiniGameEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishMiniGameEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration..
+        /// </summary>
+        public static string GameEventPublisherPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GameEventPublisherPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game Event Publisher.
+        /// </summary>
+        public static string GameEventPublisherPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2103,6 +2211,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Active on servers.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restricts the event to the selected game servers. An empty selection means the event runs on all servers..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Description", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
         /// </summary>
@@ -4245,6 +4371,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_DisconnectOnViolation_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_DisconnectOnViolation_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_DisconnectOnViolation_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ObserveOnly_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ObserveOnly_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ObserveOnly_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption", resourceCulture)!;
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;

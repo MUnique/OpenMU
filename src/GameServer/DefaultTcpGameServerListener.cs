@@ -57,7 +57,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     /// <param name="stateObserver">The connect server.</param>
     /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="listenerPort">The port to listen on instead of the <see cref="GameServerEndpoint.NetworkPort"/> of the endpoint, e.g.
+    /// <param name="listenerPort">The port to listen on instead of the <see cref="ServerEndpoint.NetworkPort"/> of the endpoint, e.g.
     /// the same port in every container of the distributed deployment. When it's set, it's also the published port, unless
     /// the endpoint defines an <see cref="GameServerEndpoint.AlternativePublishedPort"/>.</param>
     public DefaultTcpGameServerListener(GameServerEndpoint endPoint, ServerInfo gameServerInfo, IGameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory, int? listenerPort)

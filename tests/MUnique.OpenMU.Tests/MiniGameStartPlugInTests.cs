@@ -553,6 +553,9 @@ public class MiniGameStartPlugInTests
         public IReadOnlyList<GameMap> Maps => this.Games.Select(game => game.Map).ToList();
 
         /// <inheritdoc />
+        public ValueTask<bool> TryRejoinAsync(Player player) => ValueTask.FromResult(false);
+
+        /// <inheritdoc />
         public ValueTask<MiniGameContext> GetOrCreateAsync(MiniGameDefinition miniGameDefinition, Player requester)
         {
             if (this.GameToCreate is { } game)

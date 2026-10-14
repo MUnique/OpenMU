@@ -13,14 +13,14 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 public partial class AdminUsers
 {
+    private IList<AdminUser> _users = new List<AdminUser>();
+    private bool _isLoading = true;
+    private bool _isCreationRequestHandled;
+
     /// <summary>
     /// Gets the relative url of this page which directly opens the dialog to create a user.
     /// </summary>
     public static string CreateUserUrl => "users?create=true";
-
-    private IList<AdminUser> _users = new List<AdminUser>();
-    private bool _isLoading = true;
-    private bool _isCreationRequestHandled;
 
     /// <summary>
     /// Gets or sets a value indicating whether the dialog to create a user should be opened right away.
