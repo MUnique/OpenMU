@@ -81,6 +81,12 @@ public class OpenStoreAction
         {
             character.IsStoreOpened = false;
             await this.OpenStoreAsync(player, character.StoreName).ConfigureAwait(false);
+            if (player.ShopStorage?.StoreOpen ?? false)
+            {
+                // The client forgot the prices of the store items when the player logged out; it
+                // restores them from the item list.
+                await player.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(player, true)).ConfigureAwait(false);
+            }
         }
         else
         {
