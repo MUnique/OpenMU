@@ -483,7 +483,10 @@ public class SpeedHackAntiCheatTests
 
         Assert.That(plugin.GetWarningCount(player), Is.EqualTo(0));
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
-        Assert.That(player.IsWalking, Is.True);
+        // The walker runs on real time, so the one-step walk may already be finished here.
+        // The target is read first, because the walker sets the position before it clears the target.
+        var fastTarget = fastSteps[^1].To;
+        Assert.That(player.WalkTarget == fastTarget || player.Position == fastTarget, Is.True, "The walk was not performed.");
         var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
         Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
     }
