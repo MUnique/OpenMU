@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
