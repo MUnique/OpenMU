@@ -22,7 +22,7 @@ public abstract class FixTransformationRingRulesUpdatePlugInBase : UpdatePlugInB
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 10, 14, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 10, 15, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
