@@ -90,4 +90,7 @@
   <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
     <value>Contains the skin numbers for the different levels of the transformation ring (Elite Skeleton Transformation Ring).</value>
   </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>Increases maximum health by 20% at item level 5.</value>
+  </data>
 </root>

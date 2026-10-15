@@ -87,4 +87,7 @@
   <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
     <value>Transformation Ring Skins (Elite Skeleton Transformation Ring)</value>
   </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>Transformation Ring Health Bonus (Death Cow)</value>
+  </data>
 </root>

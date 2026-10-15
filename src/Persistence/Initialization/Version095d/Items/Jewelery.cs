@@ -43,7 +43,7 @@ internal class Jewelery : Version075.Items.Jewelery
             LocalizedString.FromResource(() => ItemNames.TransformationRing),
             0,
             200,
-            20, // It's actually lvl 50 for the last 3
+            20,
             CharacterTransformationSkin.BudgeDragon,
             CharacterTransformationSkin.Giant,
             CharacterTransformationSkin.SkeletonWarrior,

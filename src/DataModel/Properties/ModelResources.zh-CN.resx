@@ -6220,4 +6220,10 @@
   <data name="GameMapDefinition_TerrainVariants_Caption" xml:space="preserve">
     <value>地形变体</value>
   </data>
+  <data name="AttributeRequirement_MinimumItemLevel_Caption" xml:space="preserve">
+    <value>最低物品等级</value>
+  </data>
+  <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
+    <value>此要求开始生效的物品等级。留空表示始终生效。</value>
+  </data>
 </root>

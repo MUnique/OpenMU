@@ -128,6 +128,7 @@ public class BotSkillHandlerTest
         {
             this.Requirements = new List<AttributeRequirement>();
             this.QualifiedCharacters = new List<CharacterClass>();
+            this.BasePowerUpAttributes = new List<ItemBasePowerUpDefinition>();
         }
     }
 }

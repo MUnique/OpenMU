@@ -73,14 +73,16 @@ public abstract class InitializerBase : IInitializer
     /// <param name="item">The item.</param>
     /// <param name="attribute">The attribute.</param>
     /// <param name="requiredValue">The required value.</param>
-    protected void CreateItemRequirementIfNeeded(ItemDefinition item, AttributeDefinition attribute, int requiredValue)
+    /// <param name="minimumItemLevel">The minimum item level at which the requirement applies.</param>
+    protected void CreateItemRequirementIfNeeded(ItemDefinition item, AttributeDefinition attribute, int requiredValue, byte? minimumItemLevel = null)
     {
-        if (requiredValue == 0)
+        if (requiredValue == 0 && minimumItemLevel is null)
         {
             return;
         }
 
         var requirement = this.CreateRequirement(attribute, requiredValue);
+        requirement.MinimumItemLevel = minimumItemLevel;
         item.Requirements.Add(requirement);
     }
 

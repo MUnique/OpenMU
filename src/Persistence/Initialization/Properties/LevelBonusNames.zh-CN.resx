@@ -87,4 +87,7 @@
   <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
     <value>变身戒指外观（骷髅战士变身指环属性）</value>
   </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>变身戒指生命加成 (死亡牛)</value>
+  </data>
 </root>
