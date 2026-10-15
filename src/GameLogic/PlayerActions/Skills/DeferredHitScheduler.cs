@@ -219,11 +219,14 @@ public sealed class DeferredHitScheduler
                 return false;
             }
         }
-        else if (!target.IsInRange(this._origin.Position, range))
+        else
         {
             // Unshaped areas are centered on the caster, like the query at cast time.
-            this.LogDrop(skill, target, "out of range");
-            return false;
+            if (!target.IsInRange(this._origin.Position, range))
+            {
+                this.LogDrop(skill, target, "out of range");
+                return false;
+            }
         }
 
         return true;

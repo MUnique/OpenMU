@@ -197,10 +197,10 @@ public class AreaSkillAttackAction
             isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
         }
 
-        rotation = AreaSkillTargetSelector.CorrectRotationForLockedTarget(player, skill, extraTargetId, rotation);
+        var effectiveRotation = AreaSkillTargetSelector.CorrectRotationForLockedTarget(player, skill, extraTargetId, rotation);
 
         IAttackable? extraTarget = null;
-        var targets = AreaSkillTargetSelector.GetTargets(player, targetAreaCenter, skill, rotation, extraTargetId);
+        var targets = AreaSkillTargetSelector.GetTargets(player, targetAreaCenter, skill, effectiveRotation, extraTargetId);
         if (skill.AreaSkillSettings is not { } areaSkillSettings
             || AreaSkillSettingsAreDefault(areaSkillSettings))
         {
@@ -217,7 +217,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, effectiveRotation, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -241,6 +241,7 @@ public class AreaSkillAttackAction
         var extraProjectiles = DeferredHitScheduler.GetExtraProjectiles(player, areaSkillSettings);
         var projectileCount = 1;
         var attackRounds = areaSkillSettings.MaximumNumberOfHitsPerTarget;
+        var effectiveRotation = rotation;
 
         if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
         {
@@ -258,12 +259,12 @@ public class AreaSkillAttackAction
                 // In this case we just calculate the angle on server side, so that lags
                 // or desynced positions may not have such a big impact
                 var angle = (float)player.Position.GetAngleDegreeTo(extraTarget.Position);
-                rotation = (byte)((angle / 360.0f) * AreaSkillTargetSelector.RotationByteScale);
+                effectiveRotation = (byte)((angle / 360.0f) * AreaSkillTargetSelector.RotationByteScale);
             }
         }
 
         ValueTask ApplyToTargetAsync(IAttackable target) => this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo);
-        var scheduler = new DeferredHitScheduler(player, skillEntry, skill, areaSkillSettings, targetAreaCenter, rotation, extraTargetId, extraProjectiles, ApplyToTargetAsync);
+        var scheduler = new DeferredHitScheduler(player, skillEntry, skill, areaSkillSettings, targetAreaCenter, effectiveRotation, extraTargetId, extraProjectiles, ApplyToTargetAsync);
 
         // Process each projectile separately
         for (int projectileIndex = 0; projectileIndex < projectileCount; projectileIndex++)
@@ -293,7 +294,7 @@ public class AreaSkillAttackAction
                         extraTarget = target;
                     }
 
-                    if (!IsTargetAvailable(target, player, filter, rotation, projectileIndex, extraProjectiles))
+                    if (!IsTargetAvailable(target, player, filter, effectiveRotation, projectileIndex, extraProjectiles))
                     {
                         continue;
                     }
