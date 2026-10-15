@@ -214,7 +214,6 @@ public class MoveItemAction
                || !currentMap.Definition.TryGetRequirementError(player, out _);
     }
 
-
     /// <summary>
     /// Gets the storage information.
     /// </summary>

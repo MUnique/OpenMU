@@ -1329,6 +1329,12 @@
   <data name="ChangeTerrainAttributesViewPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IChangeTerrainAttributesViewPlugin which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="ChaosCastleScoreTableViewPlugin_Name" xml:space="preserve">
+    <value>Chaos Castle Score Table View</value>
+  </data>
+  <data name="ChaosCastleScoreTableViewPlugin_Description" xml:space="preserve">
+    <value>The default implementation of the IChaosCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
   <data name="ChaosCastleStateViewPlugIn_Name" xml:space="preserve">
     <value>Chaos Castle State View</value>
   </data>
@@ -2644,5 +2650,17 @@
   </data>
   <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for cash shop gift requests (0xD2, 0x04 identifier).</value>
+  </data>
+  <data name="PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Set Price (with currency)</value>
+  </data>
+  <data name="PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which sets prices in a currency for an item in the player shop (3F 09).</value>
+  </data>
+  <data name="ShowShopCurrenciesExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Shop Currencies Extended</value>
+  </data>
+  <data name="ShowShopCurrenciesExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
 </root>

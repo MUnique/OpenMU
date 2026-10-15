@@ -79,8 +79,8 @@ public class DragonRoarSkillPlugIn : IAreaSkillPlugIn
             if (i <= 3 || Rand.NextRandomBool())
             {
                 // first three 100% chance, others 50% chance
-                await extraTarget.AttackByAsync(attacker, skillEntry, false, 1, false).ConfigureAwait(false);
-                await extraTarget.TryApplyElementalEffectsAsync(attacker, skillEntry).ConfigureAwait(false);
+                var extraHitInfo = await extraTarget.AttackByAsync(attacker, skillEntry, false, 1, false).ConfigureAwait(false);
+                await extraTarget.TryApplyElementalEffectsAsync(attacker, skillEntry, extraHitInfo).ConfigureAwait(false);
 
                 for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
                 {

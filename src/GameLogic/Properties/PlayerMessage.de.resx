@@ -925,4 +925,64 @@ Inventarerweiterungen: {18}</value>
   <data name="CashShopCharacterClassUnlocked" xml:space="preserve">
     <value>Sie können jetzt einen Charakter der Klasse {0} erstellen.</value>
   </data>
+  <data name="ShopCurrencyZen" xml:space="preserve">
+    <value>Zen</value>
+  </data>
+  <data name="ShopCurrencyWCoinC" xml:space="preserve">
+    <value>WCoin (C)</value>
+  </data>
+  <data name="ShopCurrencyWCoinP" xml:space="preserve">
+    <value>WCoin (P)</value>
+  </data>
+  <data name="ShopCurrencyGoblinPoints" xml:space="preserve">
+    <value>Goblin-Punkte</value>
+  </data>
+  <data name="PlayerShopCurrencyNotAllowed" xml:space="preserve">
+    <value>Preise in {0} sind in persönlichen Läden nicht erlaubt.</value>
+  </data>
+  <data name="PlayerShopPriceTooHigh" xml:space="preserve">
+    <value>Der Preis darf höchstens {0} {1} betragen.</value>
+  </data>
+  <data name="PlayerShopNotEnoughCurrency" xml:space="preserve">
+    <value>Sie benötigen {0} {1}, um diesen Gegenstand zu kaufen.</value>
+  </data>
+  <data name="PlayerShopItemPriceNotPayableExactly" xml:space="preserve">
+    <value>Ihre Gegenstände ergeben nicht genau {0} {1}. Bündel werden nicht aufgeteilt, und es gibt kein Wechselgeld.</value>
+  </data>
+  <data name="PlayerShopCoinsReceived" xml:space="preserve">
+    <value>Sie haben {0} {1} für einen Gegenstand Ihres Ladens erhalten.</value>
+  </data>
+  <data name="PlayerShopCoinsPaid" xml:space="preserve">
+    <value>Sie haben {0} {1} bezahlt.</value>
+  </data>
+  <data name="PlayerShopPriceCommandUsage" xml:space="preserve">
+    <value>Verwendung: {0} [Position 1-32] [Betrag] [Währung]. Ohne Argumente werden die Preise Ihres Ladens aufgelistet.</value>
+  </data>
+  <data name="PlayerShopUnknownCurrency" xml:space="preserve">
+    <value>Unbekannte Währung '{0}'. Verfügbar: {1}.</value>
+  </data>
+  <data name="PlayerShopCloseToChangePrices" xml:space="preserve">
+    <value>Schließen Sie Ihren Laden, um die Preise zu ändern.</value>
+  </data>
+  <data name="PlayerShopPriceSet" xml:space="preserve">
+    <value>Der Preis des Gegenstands an Position {0} beträgt jetzt {1} {2}.</value>
+  </data>
+  <data name="PlayerShopPriceRemoved" xml:space="preserve">
+    <value>Der Preis des Gegenstands an Position {0} wurde entfernt.</value>
+  </data>
+  <data name="PlayerShopPriceItemNotFound" xml:space="preserve">
+    <value>An Position {0} Ihres Ladens befindet sich kein Gegenstand.</value>
+  </data>
+  <data name="PlayerShopPriceLevelTooLow" xml:space="preserve">
+    <value>Ihre Charakterstufe ist zu niedrig, um Gegenstände in einem persönlichen Laden zu verkaufen.</value>
+  </data>
+  <data name="PlayerShopIsEmpty" xml:space="preserve">
+    <value>Ihr Laden ist leer.</value>
+  </data>
+  <data name="PlayerShopPriceListEntry" xml:space="preserve">
+    <value>#{0} {1} - {2} {3}</value>
+  </data>
+  <data name="PlayerShopPriceListEntryWithoutPrice" xml:space="preserve">
+    <value>#{0} {1} - kein Preis</value>
+  </data>
 </root>

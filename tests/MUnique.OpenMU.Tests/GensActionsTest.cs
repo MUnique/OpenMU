@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -214,12 +215,12 @@ public class GensActionsTest
 
     /// <summary>
     /// Tests that the request of the gens reward is always answered at a gens npc, because the client waits for it.
-    /// The rewards aren't implemented yet, so a member of the gens of the npc is not eligible.
+    /// A member with a rank without reward is not eligible.
     /// </summary>
     [Test]
     public async Task RequestRewardAsync()
     {
-        var player = await CreatePlayerAsync(DuprianNpcNumber).ConfigureAwait(false);
+        var player = await CreatePlayerAsync(DuprianNpcNumber, CreateWholeMonthRewardConfiguration()).ConfigureAwait(false);
         var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IGensViewPlugIn>()!);
 
         await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
@@ -235,6 +236,55 @@ public class GensActionsTest
 
         await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
         view.Verify(v => v.ShowRewardResultAsync(It.IsAny<GensRewardResult>()), Times.Exactly(3), "A request for the gens of another npc is ignored.");
+    }
+
+    /// <summary>
+    /// Tests that a member gets the reward items of its rank once per month.
+    /// </summary>
+    [Test]
+    public async Task ClaimRewardAsync()
+    {
+        var configuration = CreateWholeMonthRewardConfiguration();
+        configuration.Rewards = new List<GensRankReward> { new() { Rank = 1, ItemGroup = 14, ItemNumber = 141, Count = 3 } };
+        var player = await CreatePlayerAsync(DuprianNpcNumber, configuration).ConfigureAwait(false);
+        AddRewardItemDefinition(player);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IGensViewPlugIn>()!);
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+        player.GensMember!.Rank = 1;
+
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.Success), Times.Once);
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.AlreadyClaimed), Times.Once);
+        Assert.That(player.Inventory!.Items.Count(item => item.Definition is { Group: 14, Number: 141 }), Is.EqualTo(3));
+        Assert.That(player.GensMember.RewardClaimedAt, Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Tests that the reward is only given in the reward period, and only when the inventory has enough space.
+    /// </summary>
+    [Test]
+    public async Task RewardRequirementsAsync()
+    {
+        var configuration = CreateWholeMonthRewardConfiguration();
+        configuration.Rewards = new List<GensRankReward> { new() { Rank = 1, ItemGroup = 14, ItemNumber = 141, Count = 1000 } };
+        var player = await CreatePlayerAsync(DuprianNpcNumber, configuration).ConfigureAwait(false);
+        AddRewardItemDefinition(player);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IGensViewPlugIn>()!);
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+        player.GensMember!.Rank = 1;
+
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.InventoryFull), Times.Once);
+        Assert.That(player.Inventory!.Items.Any(item => item.Definition is { Group: 14, Number: 141 }), Is.False);
+        Assert.That(player.GensMember.RewardClaimedAt, Is.Null);
+
+        var otherDay = DateTime.UtcNow.Day == 1 ? 2 : 1;
+        configuration.RewardStartDay = otherDay;
+        configuration.RewardEndDay = otherDay;
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.OutsideRewardPeriod), Times.Once);
     }
 
     /// <summary>
@@ -266,6 +316,17 @@ public class GensActionsTest
         player.Attributes![Stats.Level] = 50;
         player.OpenedNpc = CreateNpc(npcNumber);
         return player;
+    }
+
+    private static GensConfiguration CreateWholeMonthRewardConfiguration()
+    {
+        // The reward period covers the whole month, so that the tests don't depend on the current day.
+        return new GensConfiguration { RewardStartDay = 1, RewardEndDay = 31 };
+    }
+
+    private static void AddRewardItemDefinition(Player player)
+    {
+        player.GameContext.Configuration.Items.Add(new ItemDefinition { Group = 14, Number = 141, Width = 1, Height = 1, Durability = 1 });
     }
 
     private static NonPlayerCharacter CreateNpc(short number)

@@ -131,7 +131,7 @@ oder hinter einer Firewall sind) und Sie ihn auf Ihrem Computer oder in Ihrem pr
 	  <value>Server-Zeitzone</value>
 	</data>
 	<data name="SystemConfiguration_TimeZoneId_Description" xml:space="preserve">
-	  <value>Die Zeitzonen-ID, mit der die Zeiten periodischer Event-Zeitpläne (z. B. Invasionen, Blutburg, Devil Square) interpretiert werden. IANA-IDs werden empfohlen, z. B. 'Europe/Berlin'. Wenn leer, wird UTC verwendet.</value>
+	  <value>Die Zeitzonen-ID, mit der die Zeiten periodischer Event-Zeitpläne (z. B. Invasionen, Blutburg, Devil Square) und des Castle-Siege-Zeitplans interpretiert werden. IANA-IDs werden empfohlen, z. B. 'Europe/Berlin'. Wenn leer, wird UTC verwendet.</value>
 	</data>
 	<data name="SystemConfiguration_Name" xml:space="preserve">
 	  <value>Systemkonfiguration</value>

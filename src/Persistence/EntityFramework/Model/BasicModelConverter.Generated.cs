@@ -1609,6 +1609,7 @@ internal sealed class BasicModelConverter
         target.RankingPosition = source.RankingPosition;
         target.JoinedAt = source.JoinedAt;
         target.LeftAt = source.LeftAt;
+        target.RewardClaimedAt = source.RewardClaimedAt;
         return target;
     }
 
@@ -1714,6 +1715,8 @@ internal sealed class BasicModelConverter
 
         target.SocketCount = source.SocketCount;
         target.StorePrice = source.StorePrice;
+        target.StorePriceItemDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.StorePriceItemDefinition)!;
+        target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
         return target;
     }
