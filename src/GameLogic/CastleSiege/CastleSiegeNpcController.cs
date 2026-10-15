@@ -174,9 +174,12 @@ public sealed class CastleSiegeNpcController
     /// </summary>
     /// <param name="runtime">The structure runtime.</param>
     /// <returns>A task that represents the asynchronous respawn operation.</returns>
-    public ValueTask RespawnAsync(CastleSiegeNpcRuntime runtime)
+    public async ValueTask RespawnAsync(CastleSiegeNpcRuntime runtime)
     {
-        return this.EnsureSpawnedAsync(runtime);
+        await this.EnsureSpawnedAsync(runtime).ConfigureAwait(false);
+
+        // A re-purchased gate is a new object, so its lever has to point to it again.
+        this.AssociateLevers();
     }
 
     /// <summary>

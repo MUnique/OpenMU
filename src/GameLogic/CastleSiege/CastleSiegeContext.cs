@@ -130,7 +130,7 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the remaining time of the current state.
     /// </summary>
-    public TimeSpan RemainingTime => this.GetRemainingTime(DateTime.UtcNow);
+    public TimeSpan RemainingTime => this.GetRemainingTime(this._timeProvider.GetUtcNow().UtcDateTime);
 
     /// <summary>
     /// Gets a snapshot of the Life Stones which are currently placed by participating guilds.
@@ -303,6 +303,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// <returns>A task that represents the asynchronous save operation.</returns>
     public async ValueTask SaveFinalGuildListAsync()
     {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
         using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
             typeof(CastleSiegeData),
             false,
