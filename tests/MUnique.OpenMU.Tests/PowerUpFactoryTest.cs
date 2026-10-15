@@ -87,6 +87,31 @@ public class PowerUpFactoryTest
     }
 
     /// <summary>
+    /// Tests that a configured maximum-health power-up applies its bonus only at the specified item level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <param name="expectedMultiplier">The expected maximum-health multiplier.</param>
+    [TestCase(4, 1)]
+    [TestCase(5, 1.2f)]
+    public void ItemBasePowerUpLevelBonusAppliesAtConfiguredLevel(byte itemLevel, float expectedMultiplier)
+    {
+        var item = this.GetItemWithBasePowerUp();
+        item.Level = itemLevel;
+        var powerUp = item.Definition!.BasePowerUpAttributes.Single();
+        powerUp.TargetAttribute = Stats.MaximumHealth;
+        powerUp.BaseValue = 1;
+        powerUp.AggregateType = AggregateType.Multiplicate;
+        var bonusTable = new Mock<ItemLevelBonusTable>();
+        bonusTable.Setup(table => table.BonusPerLevel).Returns([new LevelBonus(5, 0.2f)]);
+        powerUp.BonusPerLevelTable = bonusTable.Object;
+
+        var result = this.GetPowerUpFactory().GetPowerUps(item, this.GetAttributeSystem()).Single();
+
+        Assert.That(result.Value, Is.EqualTo(expectedMultiplier));
+        Assert.That(result.AggregateType, Is.EqualTo(AggregateType.Multiplicate));
+    }
+
+    /// <summary>
     /// Tests if the power ups don't get created if the item has no more durability.
     /// </summary>
     [Test]

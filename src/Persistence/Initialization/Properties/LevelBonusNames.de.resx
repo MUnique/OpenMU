@@ -87,4 +87,7 @@
   <data name="DamageIncrease2ndWings" xml:space="preserve">
     <value>Schadenserhöhung (Flügel der 2. Stufe)</value>
   </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>Transformationsring-Lebensbonus (Todeskuh)</value>
+  </data>
 </root>

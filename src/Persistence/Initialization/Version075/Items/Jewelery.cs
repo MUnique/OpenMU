@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Initializer for jewelery (rings and pendants).
@@ -90,6 +91,10 @@ internal class Jewelery : InitializerBase
         ring.Height = 1;
 
         this.CreateItemRequirementIfNeeded(ring, Stats.Level, requiredlevel);
+        if (number == 10)
+        {
+            TransformationRingConfiguration.ConfigureHighLevelTransformationRing(this.Context, this.GameConfiguration, ring);
+        }
 
         var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
         ring.BasePowerUpAttributes.Add(powerUp);

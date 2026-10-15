@@ -236,12 +236,6 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 targetAttribute ?? attribute.TargetAttribute,
                 attributeHolder);
         }
-
-        if (item.IsTransformationRing() && item.Level == 5)
-        {
-            // Death Cow transformation ring => +20% health
-            yield return new PowerUpWrapper(new ConstantElement(1.2f, AggregateType.Multiplicate), Stats.MaximumHealth, attributeHolder);
-        }
     }
 
     private IEnumerable<PowerUpWrapper> GetPowerUpsOfItemOptions(Item item, AttributeSystem attributeHolder)

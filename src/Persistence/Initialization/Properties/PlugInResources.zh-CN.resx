@@ -359,4 +359,10 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
     <value>为处理NPC对话的插件配置对应的NPC，例如转生NPC或血色城堡大天使。</value>
   </data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>修正变身戒指规则</value>
+  </data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>变身戒指等级 3 至 5 需要角色等级达到 50，并为死亡牛戒指增加 20% 最大生命值加成。</value>
+  </data>
 </root>

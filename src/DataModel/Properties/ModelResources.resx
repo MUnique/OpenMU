@@ -5809,4 +5809,10 @@
   <data name="GameMapDefinition_TerrainVariants_Description" xml:space="preserve">
     <value>Alternative terrains of the map, which replace its terrain in a certain state, e.g. while the crywolf fortress is occupied.</value>
   </data>
+  <data name="AttributeRequirement_MinimumItemLevel_Caption" xml:space="preserve">
+    <value>Minimum Item Level</value>
+  </data>
+  <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
+    <value>The item level at which this requirement starts to apply. Leave unset to always apply the requirement.</value>
+  </data>
 </root>

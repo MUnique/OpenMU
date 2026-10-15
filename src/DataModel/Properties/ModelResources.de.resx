@@ -3216,4 +3216,10 @@
   <data name="GameMapDefinition_TerrainVariants_Caption" xml:space="preserve">
     <value>Geländevarianten</value>
   </data>
+  <data name="AttributeRequirement_MinimumItemLevel_Caption" xml:space="preserve">
+    <value>Mindest-Gegenstandsstufe</value>
+  </data>
+  <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
+    <value>Die Gegenstandsstufe, ab der diese Anforderung gilt. Nicht gesetzt: Die Anforderung gilt immer.</value>
+  </data>
 </root>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.BasicModel;
@@ -85,6 +86,29 @@ public class ItemRequirementCalculationTest
 
         Assert.That(agilityValue.Item1, Is.EqualTo(Stats.TotalAgility));
         Assert.That(agilityValue.Item2, Is.EqualTo(30));
+    }
+
+    /// <summary>
+    /// Tests that a requirement can be made conditional on the item's level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <param name="expectedRequirement">The expected requirement.</param>
+    [TestCase(2, 0)]
+    [TestCase(3, 50)]
+    public void RequirementStartsAtConfiguredItemLevel(byte itemLevel, int expectedRequirement)
+    {
+        var item = new Item { Level = itemLevel };
+        var requirement = new Persistence.BasicModel.AttributeRequirement
+        {
+            Attribute = Stats.Level,
+            MinimumValue = 50,
+            MinimumItemLevel = 3,
+        };
+
+        var result = item.GetRequirement(requirement);
+
+        Assert.That(result.Attr, Is.EqualTo(Stats.Level));
+        Assert.That(result.Value, Is.EqualTo(expectedRequirement));
     }
 
     /// <summary>

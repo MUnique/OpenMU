@@ -18,8 +18,6 @@ public static class ItemExtensions
     private const byte StaffItemGroup = 5;
     private const byte ShieldItemGroup = 6;
 
-    private const int HighLevelTransformationRingMinLevel = 50;
-
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
 
     private static readonly float[] DurabilityFactors = { 0.2f, 0.3f, 0.5f };
@@ -372,17 +370,15 @@ public static class ItemExtensions
     {
         requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
 
-        if (item.IsTransformationRing() && item.Level > 2 && requirement.Attribute == Stats.Level)
-        {
-            // Poison Bull Fighter, Thunder Lich and Death Cow rings require level 50 to wear
-            return (requirement.Attribute, Math.Max(requirement.MinimumValue, HighLevelTransformationRingMinLevel));
-        }
+        var minimumValue = requirement.MinimumItemLevel is { } minimumItemLevel && item.Level < minimumItemLevel
+            ? 0
+            : requirement.MinimumValue;
 
         if (RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
         {
             if (!item.IsWearable())
             {
-                return (totalAttribute, requirement.MinimumValue);
+                return (totalAttribute, minimumValue);
             }
 
             var multiplier = 3;
@@ -393,17 +389,17 @@ public static class ItemExtensions
                 // Summoner books, which increase the curse damage by their book rise, are calculated differently.
                 if (item.IsBook(out _))
                 {
-                    return (totalAttribute, item.CalculateBookEnergyRequirement(requirement.MinimumValue));
+                    return (totalAttribute, item.CalculateBookEnergyRequirement(minimumValue));
                 }
             }
 
-            var value = item.CalculateRequirement(requirement.MinimumValue, multiplier);
+            var value = item.CalculateRequirement(minimumValue, multiplier);
             if (value > 0 && totalAttribute == Stats.TotalStrength)
             {
                 var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
                 if (itemOption != null)
                 {
-                    value += itemOption.Level * (item.IsArmorItem() ? 5 : 4);
+                    value += itemOption.Level * 4;
                 }
             }
 
@@ -425,7 +421,7 @@ public static class ItemExtensions
             return (totalAttribute, value);
         }
 
-        return (requirement.Attribute, requirement.MinimumValue);
+        return (requirement.Attribute, minimumValue);
     }
 
     /// <summary>

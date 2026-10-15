@@ -45,7 +45,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"GameConfigurationId\", \"Group\", \"Height\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"SkillId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
-        "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"ItemDefinitionId\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
+        "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
         "select \"Id\", \"AlwaysApplies\", \"CountDistinct\", \"GameConfigurationId\", \"MinimumItemCount\", \"Name\", \"OptionsId\", \"SetLevel\" from config.\"ItemSetGroup\"",
         "select \"Id\", \"AncientSetDiscriminator\", \"BonusOptionId\", \"ItemDefinitionId\", \"ItemSetGroupId\" from config.\"ItemOfItemSet\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"ItemSlots\" from config.\"ItemSlotType\"",
@@ -912,9 +912,10 @@ internal sealed partial class GameConfigurationLoader
             var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement();
             entity.Id = reader.GetGuid(0);
             if (!reader.IsDBNull(1)) { entity.AttributeId = reader.GetGuid(1); }
-            entity.MinimumValue = reader.GetInt32(4);
+            if (!reader.IsDBNull(4)) { entity.MinimumItemLevel = (global::System.Byte)reader.GetInt16(4); }
+            entity.MinimumValue = reader.GetInt32(5);
             this._AttributeRequirement[entity.Id] = entity;
-            this._AttributeRequirementRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(5) ? null : reader.GetGuid(5), reader.IsDBNull(6) ? null : reader.GetGuid(6)));
+            this._AttributeRequirementRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(7) ? null : reader.GetGuid(7)));
         }
     }
 

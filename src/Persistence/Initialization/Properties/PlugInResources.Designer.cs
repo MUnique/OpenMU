@@ -539,6 +539,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixSummonerCurseSkillsPlugIn_Description text.</summary>
         public static string FixSummonerCurseSkillsPlugIn_Description => ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixTransformationRingRulesUpdatePlugIn_Name text.</summary>
+        public static string FixTransformationRingRulesUpdatePlugIn_Name => ResourceManager.GetString("FixTransformationRingRulesUpdatePlugIn_Name", resourceCulture);
+
+        /// <summary>Gets the localized FixTransformationRingRulesUpdatePlugIn_Description text.</summary>
+        public static string FixTransformationRingRulesUpdatePlugIn_Description => ResourceManager.GetString("FixTransformationRingRulesUpdatePlugIn_Description", resourceCulture);
+        
         /// <summary>Gets the localized AddAreaSkillSettingsUpdatePlugIn_Name text.</summary>
         public static string AddAreaSkillSettingsUpdatePlugIn_Name => ResourceManager.GetString("AddAreaSkillSettingsUpdatePlugIn_Name", resourceCulture)!;
 

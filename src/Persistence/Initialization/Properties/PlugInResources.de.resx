@@ -794,4 +794,10 @@
   <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt die Cash-Shop-Konfiguration mit den Paketen des Cash-Shop-Skripts 512.2012.084 des Spielclients hinzu, sowie die Gegenstände, die angewendet werden, wenn sie aus dem Cash-Shop-Lager verwendet werden (Charakterkarten, Tresor- und Inventarerweiterung).</value>
   </data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Transformationsring-Regeln korrigieren</value>
+  </data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Erfordert Charakterlevel 50 für Transformationsring-Level 3 bis 5 und ergänzt den 20%igen Lebensbonus des Todeskuh-Rings.</value>
+  </data>
 </root>

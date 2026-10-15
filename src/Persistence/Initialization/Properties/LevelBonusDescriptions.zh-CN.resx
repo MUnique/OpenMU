@@ -90,4 +90,7 @@
   <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
     <value>记录变身戒指各等级的外观编号（骷髅战士变身指环属性）。</value>
   </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>在物品等级 5 时最大生命值提高 20%。</value>
+  </data>
 </root>

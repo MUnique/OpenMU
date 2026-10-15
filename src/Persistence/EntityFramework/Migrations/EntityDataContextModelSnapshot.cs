@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
-    [DbContext(typeof(EntityDataContext))]
+    [DbContext(typeof(MUnique.OpenMU.Persistence.EntityFramework.EntityDataContext))]
     partial class EntityDataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -293,6 +293,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
+
+                    b.Property<byte?>("MinimumItemLevel")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("MinimumValue")
                         .HasColumnType("integer");

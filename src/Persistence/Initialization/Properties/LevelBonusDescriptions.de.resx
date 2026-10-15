@@ -90,4 +90,7 @@
   <data name="SecondWingsDamageIncrease" xml:space="preserve">
     <value>Definiert den Multiplikator der Schadenserhöhung für Flügel der 2. Stufe. Es ist 1 % pro Flügellevel.</value>
   </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>Erhöht das maximale Leben auf Gegenstandsstufe 5 um 20%.</value>
+  </data>
 </root>
