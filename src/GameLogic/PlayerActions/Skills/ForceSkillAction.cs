@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -50,12 +49,9 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
             return targetedTarget.GetAsEnumerable();
         }
 
-        var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(player.Position, skill.Range + 4)
-                    .Where(a => a != player)
-                    .Where(a => !a.IsAtSafezone())
-                    .Where(a => player.GameContext.Configuration.AreaSkillHitsPlayer || a is NonPlayerCharacter).ToList()
-            ?? [];
+        var targetsInRange = player.CurrentMap is { } map
+            ? AreaSkillTargetSelector.WhereAttackableByDefault(map.GetAttackablesInRange(player.Position, skill.Range + 4), player, skill).ToList()
+            : [];
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {

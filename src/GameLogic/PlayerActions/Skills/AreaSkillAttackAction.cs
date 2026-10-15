@@ -274,7 +274,7 @@ public class AreaSkillAttackAction
                 break;
             }
 
-            var scheduledIds = new HashSet<ushort>();
+            var consideredIds = new HashSet<ushort>();
             for (int attackRound = 0; attackRound < attackRounds; attackRound++)
             {
                 if (attackCount >= maxAttacks)
@@ -300,6 +300,7 @@ public class AreaSkillAttackAction
                     }
 
                     var distance = player.GetDistanceTo(target);
+                    consideredIds.Add(target.Id);
                     if (!RollHitChance(areaSkillSettings, distance, attackRound, attackCount, minAttacks))
                     {
                         continue;
@@ -308,7 +309,6 @@ public class AreaSkillAttackAction
                     var distanceDelay = areaSkillSettings.DelayPerOneDistance * distance;
                     var attackDelay = currentDelay + distanceDelay;
                     attackCount++;
-                    scheduledIds.Add(target.Id);
 
                     await scheduler.DeliverHitAsync(target, attackDelay, projectileIndex).ConfigureAwait(false);
 
@@ -320,7 +320,7 @@ public class AreaSkillAttackAction
 
                 if (areaSkillSettings.UseDeferredHits && filter is null)
                 {
-                    scheduler.ScheduleWavefrontSweeps(new HashSet<ushort>(scheduledIds), attackRound, maxAttacks - attackCount, currentDelay);
+                    scheduler.ScheduleWavefrontSweeps(new HashSet<ushort>(consideredIds), attackRound, maxAttacks - attackCount, currentDelay);
                 }
 
                 currentDelay += areaSkillSettings.DelayBetweenHits;

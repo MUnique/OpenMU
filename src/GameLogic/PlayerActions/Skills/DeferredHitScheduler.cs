@@ -82,7 +82,7 @@ public sealed class DeferredHitScheduler
         }
         else
         {
-            this.ScheduleHit(target.Id, attackDelay, projectileIndex);
+            this.ScheduleHit(target, attackDelay, projectileIndex);
         }
     }
 
@@ -90,34 +90,24 @@ public sealed class DeferredHitScheduler
     /// Schedules wavefront ticks which hit newcomers at the distance ring the
     /// projectile reaches at that moment, so nothing behind the wavefront is hit late.
     /// </summary>
-    /// <param name="scheduledIds">Identifiers of targets already scheduled at cast time.</param>
+    /// <param name="excludedIds">Identifiers of targets already evaluated at cast time, whether their roll succeeded or not.</param>
     /// <param name="attackRound">The attack round the ticks belong to.</param>
     /// <param name="remainingAttacks">Maximum additional hits of this round.</param>
     /// <param name="roundDelay">Delay of the round start.</param>
-    public void ScheduleWavefrontSweeps(HashSet<ushort> scheduledIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)
+    public void ScheduleWavefrontSweeps(HashSet<ushort> excludedIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)
     {
         if (remainingAttacks <= 0)
         {
             return;
         }
 
-        var reach = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, this._skill).Range;
-        var perDistance = this._settings.DelayPerOneDistance;
-        var steps = perDistance > TimeSpan.Zero ? Math.Max(reach, 1) : 1;
-        var state = new SweepState();
-        for (var step = 1; step <= steps; step++)
+        var ticks = this.CollectWavefrontTicks(excludedIds, attackRound, remainingAttacks, roundDelay);
+        if (ticks.Count == 0)
         {
-            var minDistance = perDistance > TimeSpan.Zero ? step - 1.0 : 0.0;
-            var maxDistance = perDistance > TimeSpan.Zero ? (double)step : double.MaxValue;
-            var tickDelay = perDistance > TimeSpan.Zero ? roundDelay + (perDistance * step) : roundDelay;
-            if (tickDelay == TimeSpan.Zero)
-            {
-                // No time passed since the snapshot; newcomers cannot exist yet.
-                continue;
-            }
-
-            this.ScheduleWavefrontTick(new WavefrontTick(scheduledIds, state, attackRound, remainingAttacks, minDistance, maxDistance, tickDelay));
+            return;
         }
+
+        _ = Task.Run(() => this.RunWavefrontSweepAsync(ticks, remainingAttacks));
     }
 
     /// <summary>
@@ -131,14 +121,62 @@ public sealed class DeferredHitScheduler
         return settings is { UseFrustumFilter: true, ProjectileCount: > 1 } ? (int)player.Attributes![Stats.ExtraProjectiles] : 0;
     }
 
-    private void ScheduleHit(ushort targetId, TimeSpan delay, int projectileIndex)
+    private List<WavefrontTick> CollectWavefrontTicks(HashSet<ushort> excludedIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)
+    {
+        var reach = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, this._skill).Range;
+        var perDistance = this._settings.DelayPerOneDistance;
+        var steps = perDistance > TimeSpan.Zero ? Math.Max(reach, 1) : 1;
+        var state = new SweepState();
+        var ticks = new List<WavefrontTick>();
+        for (var step = 1; step <= steps; step++)
+        {
+            var minDistance = perDistance > TimeSpan.Zero ? step - 1.0 : 0.0;
+            var maxDistance = perDistance > TimeSpan.Zero ? (double)step : double.MaxValue;
+            var tickDelay = perDistance > TimeSpan.Zero ? roundDelay + (perDistance * step) : roundDelay;
+            if (tickDelay == TimeSpan.Zero)
+            {
+                // No time passed since the snapshot; newcomers cannot exist yet.
+                continue;
+            }
+
+            ticks.Add(new WavefrontTick(excludedIds, state, attackRound, remainingAttacks, minDistance, maxDistance, tickDelay));
+        }
+
+        return ticks;
+    }
+
+    private async Task RunWavefrontSweepAsync(List<WavefrontTick> ticks, int remainingAttacks)
+    {
+        try
+        {
+            // One task walks all rings of the round instead of one task per ring.
+            var previousDelay = TimeSpan.Zero;
+            foreach (var tick in ticks)
+            {
+                if (tick.State.IsExhausted(remainingAttacks))
+                {
+                    break;
+                }
+
+                await Task.Delay(tick.Delay - previousDelay).ConfigureAwait(false);
+                previousDelay = tick.Delay;
+                await this.ApplyWavefrontTickAsync(tick).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            this._player.Logger.LogError(ex, "Error during area skill wavefront sweep.");
+        }
+    }
+
+    private void ScheduleHit(IAttackable target, TimeSpan delay, int projectileIndex)
     {
         _ = Task.Run(async () =>
         {
             try
             {
                 await Task.Delay(delay).ConfigureAwait(false);
-                await this.ApplyDeferredHitAsync(targetId, projectileIndex).ConfigureAwait(false);
+                await this.ApplyDeferredHitAsync(target, projectileIndex).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -147,14 +185,9 @@ public sealed class DeferredHitScheduler
         });
     }
 
-    private async ValueTask ApplyDeferredHitAsync(ushort targetId, int projectileIndex)
+    private async ValueTask ApplyDeferredHitAsync(IAttackable target, int projectileIndex)
     {
         if (!this.CanExecute(out var skill))
-        {
-            return;
-        }
-
-        if (this._player.GetObject(targetId) is not IAttackable target)
         {
             return;
         }
@@ -255,22 +288,6 @@ public sealed class DeferredHitScheduler
         this._player.Logger.LogDebug("Deferred hit dropped: skill={Skill}, target={TargetId}, reason={Reason}", skill.Name, target.Id, reason);
     }
 
-    private void ScheduleWavefrontTick(WavefrontTick tick)
-    {
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Task.Delay(tick.Delay).ConfigureAwait(false);
-                await this.ApplyWavefrontTickAsync(tick).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                this._player.Logger.LogError(ex, "Error during area skill wavefront tick.");
-            }
-        });
-    }
-
     private async ValueTask ApplyWavefrontTickAsync(WavefrontTick tick)
     {
         if (!this.CanExecute(out var skill))
@@ -286,14 +303,19 @@ public sealed class DeferredHitScheduler
         // Same query center and radius as at cast time. The guard above ensures
         // the player is still on the cast map.
         var (queryCenter, queryRange) = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, skill);
+        if (this._origin.CurrentMap is not { } map)
+        {
+            return;
+        }
+
         var candidates = AreaSkillTargetSelector.WhereAttackableByDefault(
-            this._origin.CurrentMap!.GetAttackablesInRange(queryCenter, queryRange),
+            map.GetAttackablesInRange(queryCenter, queryRange),
             this._player,
             skill);
 
         foreach (var target in candidates)
         {
-            if (tick.ScheduledIds.Contains(target.Id) || !target.IsAlive)
+            if (tick.ExcludedIds.Contains(target.Id) || !target.IsAlive)
             {
                 continue;
             }
@@ -405,7 +427,7 @@ public sealed class DeferredHitScheduler
     /// One wavefront tick: hits newcomers at the distance ring the projectile
     /// reaches after <see cref="Delay"/>.
     /// </summary>
-    /// <param name="ScheduledIds">Identifiers of targets already scheduled at cast time.</param>
+    /// <param name="ExcludedIds">Identifiers of targets already evaluated at cast time; the sweep only hits newcomers.</param>
     /// <param name="State">Shared state of the ticks of one attack round.</param>
     /// <param name="AttackRound">The attack round the tick belongs to.</param>
     /// <param name="RemainingAttacks">Maximum additional hits of this round.</param>
@@ -413,7 +435,7 @@ public sealed class DeferredHitScheduler
     /// <param name="MaxDistance">Inclusive maximum distance from the cast origin.</param>
     /// <param name="Delay">Delay until the wavefront reaches the ring.</param>
     private sealed record WavefrontTick(
-        HashSet<ushort> ScheduledIds,
+        HashSet<ushort> ExcludedIds,
         SweepState State,
         int AttackRound,
         int RemainingAttacks,

@@ -104,7 +104,8 @@ internal class AreaSkillSettingsUpdateTest
     }
 
     /// <summary>
-    /// Tests that applying the update twice doesn't duplicate any settings.
+    /// Tests that applying the update twice doesn't duplicate any settings
+    /// and keeps the repaired values.
     /// </summary>
     [Test]
     public async Task ApplyingUpdateTwiceChangesNothingAsync()
@@ -116,8 +117,61 @@ internal class AreaSkillSettingsUpdateTest
         var settingsCount = (await context.GetAsync<AreaSkillSettings>().ConfigureAwait(false)).Count();
 
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var settingsCountAfterSecondRun = (await context.GetAsync<AreaSkillSettings>().ConfigureAwait(false)).Count();
 
-        Assert.That((await context.GetAsync<AreaSkillSettings>().ConfigureAwait(false)).Count(), Is.EqualTo(settingsCount));
+        Assert.Multiple(() =>
+        {
+            Assert.That(settingsCountAfterSecondRun, Is.EqualTo(settingsCount));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.Twister).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.Twister).FrustumDistance, Is.EqualTo(6f));
+            Assert.That(gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.ForceWave).SkillType, Is.EqualTo(SkillType.DirectHit));
+        });
+    }
+
+    /// <summary>
+    /// Tests that the 0.75 update repairs the delayed skills and skips the
+    /// skills which don't exist in that game version.
+    /// </summary>
+    [Test]
+    public async Task Update075RepairsDelayedSkillsAsync()
+    {
+        var (context, gameConfiguration) = await CreateConfigurationAsync(provider => new Version075.DataInitialization(provider, new NullLoggerFactory())).ConfigureAwait(false);
+        using var _ = context;
+        GetSettings(gameConfiguration, SkillNumber.Twister).MinimumNumberOfHitsPerTarget = 0;
+        GetSettings(gameConfiguration, SkillNumber.EvilSpirit).MinimumNumberOfHitsPerTarget = 0;
+        GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget = 0;
+
+        await new AddAreaSkillSettingsUpdatePlugIn075().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.Twister).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.EvilSpirit).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Tests that the 0.95d update repairs the delayed skills and skips the
+    /// skills which don't exist in that game version.
+    /// </summary>
+    [Test]
+    public async Task Update095dRepairsDelayedSkillsAsync()
+    {
+        var (context, gameConfiguration) = await CreateConfigurationAsync(provider => new Version095d.DataInitialization(provider, new NullLoggerFactory())).ConfigureAwait(false);
+        using var _ = context;
+        GetSettings(gameConfiguration, SkillNumber.Twister).MinimumNumberOfHitsPerTarget = 0;
+        GetSettings(gameConfiguration, SkillNumber.EvilSpirit).MinimumNumberOfHitsPerTarget = 0;
+        GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget = 0;
+
+        await new AddAreaSkillSettingsUpdatePlugIn095d().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.Twister).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.EvilSpirit).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
+        });
     }
 
     private static AreaSkillSettings GetSettings(GameConfiguration gameConfiguration, SkillNumber skillNumber)
@@ -127,9 +181,13 @@ internal class AreaSkillSettingsUpdateTest
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()
     {
+        return await CreateConfigurationAsync(provider => new VersionSeasonSix.DataInitialization(provider, new NullLoggerFactory())).ConfigureAwait(false);
+    }
+
+    private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateConfigurationAsync(Func<InMemoryPersistenceContextProvider, DataInitializationBase> createInitialization)
+    {
         var contextProvider = new InMemoryPersistenceContextProvider();
-        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
-        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+        await createInitialization(contextProvider).CreateInitialDataAsync(1, true).ConfigureAwait(false);
 
         var context = contextProvider.CreateNewContext();
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();

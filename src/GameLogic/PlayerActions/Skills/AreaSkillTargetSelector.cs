@@ -123,8 +123,9 @@ public static class AreaSkillTargetSelector
     /// <remarks>
     /// Only skills which shape their area around the aimed point (target area
     /// filter, effect range) are queried around it. Frustum skills and all other
-    /// skills hit around the caster, like the reference implementations do — the
-    /// aimed point of a melee-range skill must not extend its reach.
+    /// skills hit around the caster: the client-aimed point of a melee-range
+    /// skill must not extend its reach beyond the skill range, and the client
+    /// position can lag the server-side one. Verified in-game.
     /// </remarks>
     internal static (Point Center, int Range) GetQueryCenterAndRange(Point casterPosition, Point targetAreaCenter, Skill skill)
     {

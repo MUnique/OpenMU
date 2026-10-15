@@ -250,21 +250,19 @@ public record FrustumBasedTargetFilter
     {
         var rotationVectors = this._rotationVectors[rotation];
 
-        // Rounded (not truncated), so the frustum does not shrink asymmetrically
-        // by up to one tile at its edges.
         Vector4 resultX = default;
         Vector4 resultY = default;
-        resultX.X = (int)Math.Round(rotationVectors[0].X) + attackerPosition.X;
-        resultY.X = (int)Math.Round(rotationVectors[0].Y) + attackerPosition.Y;
+        resultX.X = (int)rotationVectors[0].X + attackerPosition.X;
+        resultY.X = (int)rotationVectors[0].Y + attackerPosition.Y;
 
-        resultX.Y = (int)Math.Round(rotationVectors[1].X) + attackerPosition.X;
-        resultY.Y = (int)Math.Round(rotationVectors[1].Y) + attackerPosition.Y;
+        resultX.Y = (int)rotationVectors[1].X + attackerPosition.X;
+        resultY.Y = (int)rotationVectors[1].Y + attackerPosition.Y;
 
-        resultX.Z = (int)Math.Round(rotationVectors[2].X) + attackerPosition.X;
-        resultY.Z = (int)Math.Round(rotationVectors[2].Y) + attackerPosition.Y;
+        resultX.Z = (int)rotationVectors[2].X + attackerPosition.X;
+        resultY.Z = (int)rotationVectors[2].Y + attackerPosition.Y;
 
-        resultX.W = (int)Math.Round(rotationVectors[3].X) + attackerPosition.X;
-        resultY.W = (int)Math.Round(rotationVectors[3].Y) + attackerPosition.Y;
+        resultX.W = (int)rotationVectors[3].X + attackerPosition.X;
+        resultY.W = (int)rotationVectors[3].Y + attackerPosition.Y;
 
         return (resultX, resultY);
     }
