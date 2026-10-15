@@ -16,6 +16,9 @@ using MUnique.OpenMU.PlugIns;
 /// Version 2 additionally fixes the Hellfire, Decay and Ice Storm skills'
 /// range, effect radius and delay.
 /// Version 3 additionally sets the projectile count of the Triple Shot skill.
+/// Version 4 guarantees the first hit of Flame, Twister and Evil Spirit and
+/// extends the Twister frustum to its skill range, so delayed projectiles
+/// still hit distant targets.
 /// Every step only fills in missing values or corrects seeded ones, so
 /// customized values are preserved and re-running stays a no-op.
 /// </remarks>
@@ -47,20 +50,20 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => false;
 
     /// <inheritdoc />
-    public override int Version => 3;
+    public override int Version => 4;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2024, 10, 25, 19, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 09, 30, 12, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 10, 15, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Flame, false, default, default, default, true, TimeSpan.Zero, TimeSpan.FromMilliseconds(500), 0, 2, default, 0.5f, targetAreaDiameter: 2, useTargetAreaFilter: true);
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Twister, true, 1.5f, 1.5f, 4f, true, TimeSpan.FromMilliseconds(300), TimeSpan.FromMilliseconds(1000), 0, 2, default, 0.7f);
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.EvilSpirit, false, default, default, default, true, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(1000), 0, 2, default, 0.7f, newRange: 7);
+        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Flame, false, default, default, default, true, TimeSpan.Zero, TimeSpan.FromMilliseconds(500), 1, 2, default, 0.5f, targetAreaDiameter: 2, useTargetAreaFilter: true);
+        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Twister, true, 1.5f, 1.5f, 6f, true, TimeSpan.FromMilliseconds(300), TimeSpan.FromMilliseconds(1000), 1, 2, default, 0.7f);
+        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.EvilSpirit, false, default, default, default, true, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(1000), 1, 2, default, 0.7f, newRange: 7);
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.AquaBeam, true, 1.5f, 1.5f, 8f);
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Cometfall, false, default, default, default, targetAreaDiameter: 2, useTargetAreaFilter: true);
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.TripleShot, true, 1f, 4.5f, 7f, true, TimeSpan.FromMilliseconds(50), maximumHitsPerTarget: 3, maximumHitsPerAttack: 3);
