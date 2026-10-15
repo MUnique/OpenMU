@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.FixTransformationRingRulesUpdatePlugIn_Name), Description = nameof(PlugInResources.FixTransformationRingRulesUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("A7451A17-98C9-4915-A21C-344ABA2F02C8")]
-public class FixTransformationRingRulesUpdatePlugIn095d : FixTransformationRingRulesUpdatePlugInBase
+public class FixTransformationRingRulesUpdatePlugIn095D : FixTransformationRingRulesUpdatePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
