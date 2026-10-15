@@ -83,6 +83,27 @@ internal class AreaSkillSettingsUpdateTest
     }
 
     /// <summary>
+    /// Tests that the update keeps Force Wave targeted while preserving its
+    /// frustum settings.
+    /// </summary>
+    [Test]
+    public async Task UpdateKeepsForceWaveTargetedAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var forceWave = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.ForceWave);
+        forceWave.SkillType = SkillType.AreaSkillAutomaticHits;
+
+        await new AddAreaSkillSettingsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(forceWave.SkillType, Is.EqualTo(SkillType.DirectHit));
+            Assert.That(forceWave.AreaSkillSettings?.UseFrustumFilter, Is.True);
+        });
+    }
+
+    /// <summary>
     /// Tests that applying the update twice doesn't duplicate any settings.
     /// </summary>
     [Test]

@@ -19,6 +19,8 @@ using MUnique.OpenMU.PlugIns;
 /// Version 4 guarantees the first hit of Flame, Twister and Evil Spirit and
 /// extends the Twister frustum to its skill range, so delayed projectiles
 /// still hit distant targets.
+/// Version 5 keeps Force Wave targeted again: it needs the frustum settings,
+/// but its skill type must stay DirectHit for its targeted skill action.
 /// Every step only fills in missing values or corrects seeded ones, so
 /// customized values are preserved and re-running stays a no-op.
 /// </remarks>
@@ -50,7 +52,7 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => false;
 
     /// <inheritdoc />
-    public override int Version => 4;
+    public override int Version => 5;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2024, 10, 25, 19, 0, 0, DateTimeKind.Utc);
@@ -97,6 +99,24 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
 
         this.FixHellfireDecayAndIceStorm(context, gameConfiguration);
         EnsureTripleShotProjectileCount(gameConfiguration);
+        RestoreForceWaveSkillType(gameConfiguration);
+    }
+
+    /// <summary>
+    /// Restores the skill type of Force Wave. It is a targeted skill
+    /// (<see cref="SkillType.DirectHit"/>) with frustum settings for its skill
+    /// action; previous versions of this update flipped it to
+    /// <see cref="SkillType.AreaSkillAutomaticHits"/>, which broke its targeted
+    /// skill action on existing databases.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    private static void RestoreForceWaveSkillType(GameConfiguration gameConfiguration)
+    {
+        var forceWave = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ForceWave);
+        if (forceWave is not null)
+        {
+            forceWave.SkillType = SkillType.DirectHit;
+        }
     }
 
     /// <summary>
