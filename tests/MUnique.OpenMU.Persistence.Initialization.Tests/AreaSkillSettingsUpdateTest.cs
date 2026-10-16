@@ -68,6 +68,9 @@ internal class AreaSkillSettingsUpdateTest
         GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget = 0;
         var iceStorm = GetSettings(gameConfiguration, SkillNumber.IceStorm);
         iceStorm.DelayBetweenHits = TimeSpan.FromMilliseconds(200);
+        var tripleShotMastery = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.TripleShotMastery);
+        tripleShotMastery.AreaSkillSettings = context.CreateNew<AreaSkillSettings>();
+        tripleShotMastery.AreaSkillSettings.DelayBetweenHits = TimeSpan.FromMilliseconds(999);
 
         await new AddAreaSkillSettingsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
@@ -79,6 +82,13 @@ internal class AreaSkillSettingsUpdateTest
             Assert.That(GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
             Assert.That(GetSettings(gameConfiguration, SkillNumber.IceStorm).DelayBetweenHits, Is.EqualTo(TimeSpan.Zero));
             Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShot).ProjectileCount, Is.EqualTo(3));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShot).DelayBetweenHits, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.MultiShot).ProjectileCount, Is.EqualTo(5));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.MultiShot).MaximumNumberOfHitsPerTarget, Is.EqualTo(5));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.MultiShot).MaximumNumberOfHitsPerAttack, Is.EqualTo(5));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.MultiShot).DelayBetweenHits, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShotMastery).DelayBetweenHits, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShotMastery).ProjectileCount, Is.EqualTo(3));
         });
     }
 

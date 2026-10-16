@@ -238,7 +238,7 @@ public class AreaSkillAttackAction
 
         var orderedTargets = targets.ToList();
         FrustumBasedTargetFilter? filter = null;
-        var extraProjectiles = DeferredHitScheduler.GetExtraProjectiles(player, areaSkillSettings);
+        var extraProjectiles = DeferredHitScheduler.GetExtraProjectiles(player, skillEntry, areaSkillSettings);
         var projectileCount = 1;
         var attackRounds = areaSkillSettings.MaximumNumberOfHitsPerTarget;
         var effectiveRotation = rotation;
@@ -259,7 +259,7 @@ public class AreaSkillAttackAction
                 // In this case we just calculate the angle on server side, so that lags
                 // or desynced positions may not have such a big impact
                 var angle = (float)player.Position.GetAngleDegreeTo(extraTarget.Position);
-                effectiveRotation = (byte)((angle / 360.0f) * AreaSkillTargetSelector.RotationByteScale);
+                effectiveRotation = AreaSkillTargetSelector.ConvertAngleToRotation(angle);
             }
         }
 

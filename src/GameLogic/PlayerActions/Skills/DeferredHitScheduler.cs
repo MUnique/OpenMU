@@ -111,14 +111,38 @@ public sealed class DeferredHitScheduler
     }
 
     /// <summary>
-    /// Determines the number of extra projectiles from the attacker's attributes.
+    /// Determines the number of extra projectiles from the attacker's attributes
+    /// and from mastery skills on the cast skill entry (e.g. Triple Shot Mastery).
     /// </summary>
     /// <param name="player">The attacking player.</param>
+    /// <param name="skillEntry">The used skill entry.</param>
     /// <param name="settings">The area skill settings.</param>
     /// <returns>The number of extra projectiles.</returns>
-    internal static int GetExtraProjectiles(Player player, AreaSkillSettings settings)
+    internal static int GetExtraProjectiles(Player player, SkillEntry skillEntry, AreaSkillSettings settings)
     {
-        return settings is { UseFrustumFilter: true, ProjectileCount: > 1 } ? (int)player.Attributes![Stats.ExtraProjectiles] : 0;
+        if (settings is not { UseFrustumFilter: true, ProjectileCount: > 1 })
+        {
+            return 0;
+        }
+
+        // Items (e.g. certain bows) grant extra projectiles through the character's attributes.
+        var extraProjectiles = (int)player.Attributes![Stats.ExtraProjectiles];
+
+        // Mastery bonuses live on the master definition of the cast skill chain and are
+        // evaluated at the learned level; the character's attributes never see them.
+        if (skillEntry.Skill is { } skill)
+        {
+            foreach (var chainSkill in new[] { skill }.Concat(skill.GetBaseSkills()))
+            {
+                if (chainSkill.MasterDefinition?.TargetAttribute == Stats.ExtraProjectiles
+                    && player.SkillList?.GetSkill((ushort)chainSkill.Number) is { } masteryEntry)
+                {
+                    extraProjectiles += (int)masteryEntry.CalculateValue();
+                }
+            }
+        }
+
+        return extraProjectiles;
     }
 
     private List<WavefrontTick> CollectWavefrontTicks(HashSet<ushort> excludedIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)

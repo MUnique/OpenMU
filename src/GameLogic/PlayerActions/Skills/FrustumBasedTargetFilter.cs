@@ -125,8 +125,11 @@ public record FrustumBasedTargetFilter
             return 1;
         }
 
-        // The overlap decreases over higher distance
-        var overlap = (1.0 / Math.Floor(distance)) / (this.ProjectileCount + extraProjectiles);
+        // The fan converges at the caster: one tile out the arrows haven't diverged
+        // yet, so every lane still covers the center. That requires a point-blank
+        // overlap of (N-2)/N for N projectiles, fading with distance as the fan spreads.
+        var totalProjectiles = this.ProjectileCount + extraProjectiles;
+        var overlap = Math.Max(0.0, (totalProjectiles - 2.0) / totalProjectiles) / Math.Floor(distance);
         overlap += 0.001; // Adding a small epsilon to make it slightly more tolerant in the comparisons
         return overlap;
     }
