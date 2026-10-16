@@ -308,6 +308,7 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
         target.MinimumValue = source.MinimumValue;
+        target.MinimumItemLevel = source.MinimumItemLevel;
         return target;
     }
 

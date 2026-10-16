@@ -399,7 +399,7 @@ public static class ItemExtensions
                 var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
                 if (itemOption != null)
                 {
-                    value += itemOption.Level * 4;
+                    value += itemOption.Level * (item.IsArmorItem() ? 5 : 4);
                 }
             }
 
