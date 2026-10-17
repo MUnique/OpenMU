@@ -76,6 +76,7 @@ public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Set
         /// <summary>
         /// Gets or sets the character name to set master level-up points for.
         /// </summary>
+        [ValueReference(ChatCommandValueReference.CharacterName)]
         public string? CharacterName { get; set; }
     }
 }

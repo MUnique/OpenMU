@@ -13,5 +13,6 @@ public class BanAccChatCommandArgs : ArgumentsBase
     /// Gets or sets the account name.
     /// </summary>
     [Argument("acc")]
+    [ValueReference(ChatCommandValueReference.AccountName)]
     public string? AccountName { get; set; }
 }
