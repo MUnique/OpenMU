@@ -40,7 +40,7 @@ internal class ExtraProjectilesScopingTest
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
-        SimulateLegacyDatabase(context, gameConfiguration);
+        SimulateLegacyDatabase(gameConfiguration);
 
         var update = new ScopeExtraProjectilesPlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -93,7 +93,7 @@ internal class ExtraProjectilesScopingTest
         });
     }
 
-    private static void SimulateLegacyDatabase(IContext context, GameConfiguration gameConfiguration)
+    private static void SimulateLegacyDatabase(GameConfiguration gameConfiguration)
     {
         // The legacy database knew neither the skill-scoped attribute nor the exclusive mastery pool,
         // so the mastery bonus was applied to the generic pool which every projectile skill uses.

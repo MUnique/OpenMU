@@ -48,15 +48,13 @@ public class AddMasterSkillPassivePowerUpsPlugIn : UpdatePlugInBase
     /// Gets the version of this update.
     /// </summary>
     /// <remarks>
-    /// Version 2: the castable master skills (e.g. the triple shot mastery) were missing
-    /// their passive power-ups, because version 1 was applied before the data was complete.
+    /// Version 2: castable master skills were missing their passive power-ups.
     /// </remarks>
     public override int Version => 2;
 
     /// <inheritdoc />
     /// <remarks>
-    /// The passive power-ups of the castable master skills need the target attribute which
-    /// <see cref="FinishElfMasterTreePlugIn"/> sets, e.g. the extra projectiles of the triple shot mastery.
+    /// Needs the target attribute which <see cref="FinishElfMasterTreePlugIn"/> sets.
     /// </remarks>
     public override DateTime UpdatedAt => new(2026, 10, 17, 12, 0, 0, DateTimeKind.Utc);
 
