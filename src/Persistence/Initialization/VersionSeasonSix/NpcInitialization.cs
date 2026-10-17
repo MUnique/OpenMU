@@ -1160,7 +1160,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = spirit.Number;
-            def.Designation = "Illusion Sorc. Spirit";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.IllusionSorcererSpirit);
             def.MoveRange = 3;
             def.AttackRange = spirit.AttackRange;
             def.ViewRange = spirit.ViewRange;

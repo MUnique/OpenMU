@@ -260,7 +260,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         gameConfiguration.Items.Add(relic);
         relic.Group = 14;
         relic.Number = 64;
-        relic.Name = "Cursed Castle Water";
+        relic.Name = LocalizedString.FromResource(() => ItemNames.CursedCastleWater);
         relic.Width = 1;
         relic.Height = 1;
         relic.Durability = 1;
@@ -283,7 +283,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
 
             var def = context.CreateNew<MonsterDefinition>();
             def.Number = spirit.Number;
-            def.Designation = "Illusion Sorc. Spirit";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.IllusionSorcererSpirit);
             def.MoveRange = 3;
             def.AttackRange = spirit.AttackRange;
             def.ViewRange = spirit.ViewRange;
@@ -455,7 +455,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         var protection = context.CreateNew<MagicEffectDefinition>();
         gameConfiguration.MagicEffects.Add(protection);
         protection.Number = protectionEffectNumber;
-        protection.Name = "Illusion Temple - Order of Protection";
+        protection.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleOrderOfProtection);
         protection.InformObservers = true;
         protection.StopByDeath = true;
         protection.Duration = context.CreateNew<PowerUpDefinitionValue>();
@@ -471,7 +471,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         var restraint = context.CreateNew<MagicEffectDefinition>();
         gameConfiguration.MagicEffects.Add(restraint);
         restraint.Number = restraintEffectNumber;
-        restraint.Name = "Illusion Temple - Restraint";
+        restraint.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleRestraint);
         restraint.InformObservers = true;
         restraint.StopByDeath = true;
         restraint.Duration = context.CreateNew<PowerUpDefinitionValue>();

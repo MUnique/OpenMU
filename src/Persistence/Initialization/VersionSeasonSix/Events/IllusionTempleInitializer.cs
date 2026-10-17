@@ -79,7 +79,7 @@ internal class IllusionTempleInitializer : InitializerBase
         var protection = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(protection);
         protection.Number = (short)MagicEffectNumber.IllusionTempleProtection;
-        protection.Name = "Illusion Temple - Order of Protection";
+        protection.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleOrderOfProtection);
         protection.InformObservers = true;
         protection.StopByDeath = true;
         protection.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
@@ -95,7 +95,7 @@ internal class IllusionTempleInitializer : InitializerBase
         var restraint = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(restraint);
         restraint.Number = (short)MagicEffectNumber.IllusionTempleRestraint;
-        restraint.Name = "Illusion Temple - Restraint";
+        restraint.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleRestraint);
         restraint.InformObservers = true;
         restraint.StopByDeath = true;
         restraint.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
@@ -122,8 +122,8 @@ internal class IllusionTempleInitializer : InitializerBase
         var illusionTemple = this.Context.CreateNew<MiniGameDefinition>();
         illusionTemple.SetGuid((short)MiniGameType.IllusionTemple, level);
         this.GameConfiguration.MiniGameDefinitions.Add(illusionTemple);
-        illusionTemple.Name = $"Illusion Temple {level}";
-        illusionTemple.Description = $"Event definition for illusion temple, level {level}.";
+        illusionTemple.Name = MiniGameNames.ResourceManager.GetLocalizedString($"IllusionTemple{level}");
+        illusionTemple.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForIllusionTempleEventLevel{level}");
         illusionTemple.EnterDuration = TimeSpan.FromMinutes(5);
         illusionTemple.GameDuration = TimeSpan.FromMinutes(15);
         illusionTemple.ExitDuration = TimeSpan.FromMinutes(1);

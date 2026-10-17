@@ -40,10 +40,8 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(51, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
         this.CreateEventItem(50, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
 
-        // The sacred relic of the illusion temple keeps a plain neutral name for now: the name used
-        // here comes from this event's implementation rather than from the game client, so it should
-        // be confirmed against the client before it is linked to a resource and translated.
-        this.CreateEventItem(64, 14, 1, 1, "Cursed Castle Water", false);
+        // The sacred relic, which the client knows as ITEM_CURSED_CASTLE_WATER.
+        this.CreateEventItem(64, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.CursedCastleWater), false);
 
         // Doppelganger:
         if (this.CreateDoppelgangerItems() is { } signOfDimensionsDropGroup)

@@ -114,4 +114,22 @@
   <data name="EventDefinitionForDevilSquareEventLevel5" xml:space="preserve">
     <value>Event definition for devil square event, level 5.</value>
   </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel1" xml:space="preserve">
+    <value>Event definition for illusion temple, level 1.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel2" xml:space="preserve">
+    <value>Event definition for illusion temple, level 2.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel3" xml:space="preserve">
+    <value>Event definition for illusion temple, level 3.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel4" xml:space="preserve">
+    <value>Event definition for illusion temple, level 4.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel5" xml:space="preserve">
+    <value>Event definition for illusion temple, level 5.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel6" xml:space="preserve">
+    <value>Event definition for illusion temple, level 6.</value>
+  </data>
 </root>

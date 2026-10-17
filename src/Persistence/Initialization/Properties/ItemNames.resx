@@ -2094,4 +2094,7 @@
   <data name="OldJewelleryCase" xml:space="preserve">
     <value>Old Jewellery Case</value>
   </data>
+  <data name="CursedCastleWater" xml:space="preserve">
+    <value>Cursed Castle Water</value>
+  </data>
 </root>

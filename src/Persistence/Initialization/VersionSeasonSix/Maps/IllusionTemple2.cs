@@ -21,7 +21,6 @@ internal class IllusionTemple2 : BaseMapInitializer
     internal const byte Number = 46;
 
     /// <summary>
-    /// <summary>
     /// The positions of the roaming "Illusion Sorc. Spirit" monsters in the arena.
     /// </summary>
     private static readonly (byte X, byte Y)[] SorcererSpiritPositions =

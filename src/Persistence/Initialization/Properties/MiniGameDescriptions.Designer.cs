@@ -286,5 +286,47 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel5", resourceCulture);
             }
         }
+
+        /// <summary>Gets EventDefinitionForIllusionTempleEventLevel1 from the configuration name resources.</summary>
+        public static string EventDefinitionForIllusionTempleEventLevel1 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForIllusionTempleEventLevel2 from the configuration name resources.</summary>
+        public static string EventDefinitionForIllusionTempleEventLevel2 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForIllusionTempleEventLevel3 from the configuration name resources.</summary>
+        public static string EventDefinitionForIllusionTempleEventLevel3 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForIllusionTempleEventLevel4 from the configuration name resources.</summary>
+        public static string EventDefinitionForIllusionTempleEventLevel4 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForIllusionTempleEventLevel5 from the configuration name resources.</summary>
+        public static string EventDefinitionForIllusionTempleEventLevel5 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForIllusionTempleEventLevel6 from the configuration name resources.</summary>
+        public static string EventDefinitionForIllusionTempleEventLevel6 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel6", resourceCulture);
+            }
+        }
     }
 }
