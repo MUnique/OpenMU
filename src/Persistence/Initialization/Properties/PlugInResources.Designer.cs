@@ -677,6 +677,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixCharStatsForceWavePlugInBase_Description text.</summary>
         public static string FixCharStatsForceWavePlugInBase_Description => ResourceManager.GetString("FixCharStatsForceWavePlugInBase_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixOrbRequirementsPlugInBase_Name text.</summary>
+        public static string FixOrbRequirementsPlugInBase_Name => ResourceManager.GetString("FixOrbRequirementsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixOrbRequirementsPlugInBase_Description text.</summary>
+        public static string FixOrbRequirementsPlugInBase_Description => ResourceManager.GetString("FixOrbRequirementsPlugInBase_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FinishElfMasterTreePlugIn_Name text.</summary>
         public static string FinishElfMasterTreePlugIn_Name => ResourceManager.GetString("FinishElfMasterTreePlugIn_Name", resourceCulture)!;
 

@@ -261,6 +261,8 @@
   <data name="AddItemDropGroupForJewelsUpdate075_Description" xml:space="preserve"><value>创建宝石专属物品掉落组，默认概率为 5%。</value></data>
   <data name="FixCharStatsForceWavePlugInBase_Name" xml:space="preserve"><value>修正魔法师防御换算系数</value></data>
   <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve"><value>修正魔法师敏捷转化为防御力的系数。</value></data>
+  <data name="FixOrbRequirementsPlugInBase_Name" xml:space="preserve"><value>修正技能之石需求</value></data>
+  <data name="FixOrbRequirementsPlugInBase_Description" xml:space="preserve"><value>修正用于学习技能的石头、水晶和卷轴的智力、力量和敏捷需求。例如：治疗之石、防御之石和攻击之石原本需要 100 点智力，而不是 52、72 和 92 点。</value></data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>补全弓箭手大师技能树</value></data>
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>补全弓箭手大师技能树并修正部分技能数值，为部分高级弓弩补充缺失的第 4 支箭。</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>添加物品登记属性</value></data>

@@ -548,6 +548,12 @@
   <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert den Multiplikator von Beweglichkeit zu Verteidigung beim DW.</value>
   </data>
+  <data name="FixOrbRequirementsPlugInBase_Name" xml:space="preserve">
+    <value>Anforderungen der Kugeln korrigieren</value>
+  </data>
+  <data name="FixOrbRequirementsPlugInBase_Description" xml:space="preserve">
+    <value>Korrigiert die Anforderungen an Energie, Stärke und Beweglichkeit der Kugeln, Kristalle und Schriftrollen, mit denen Fähigkeiten erlernt werden. Z.B. erforderten die Kugeln Heal, Greater Defense und Greater Damage 100 Energie statt 52, 72 und 92.</value>
+  </data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve">
     <value>Meisterbaum der Elfe fertigstellen</value>
   </data>
