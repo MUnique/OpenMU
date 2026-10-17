@@ -453,7 +453,6 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.MapSkillsToEffects();
         this.InitializeMasterSkillData();
         MasterSkillPassivePowerUps.AddMissing(this.Context, this.GameConfiguration);
-        MasterSkillAreaSkillSettings.Sync(this.Context, this.GameConfiguration);
         this.CreateSpecialSummonMonsters();
         this.CreateSkillCombos();
         this.InitializeSkillAttributes();

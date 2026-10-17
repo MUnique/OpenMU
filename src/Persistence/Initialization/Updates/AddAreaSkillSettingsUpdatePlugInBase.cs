@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
-using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 
 /// <summary>
 /// This update adds the area skill settings for skills like evil spirit, so that they work properly again.
@@ -16,7 +15,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 /// v3: Triple Shot projectile count.
 /// v4: guaranteed first hit for Flame, Twister and Evil Spirit; Twister frustum matched to its range.
 /// v5: Force Wave stays DirectHit while keeping its frustum settings.
-/// v6: Triple/Multi Shot 100 ms spacing, Multi Shot 5 arrows, mastery settings sync.
+/// v6: Triple/Multi Shot 100 ms spacing, Multi Shot 5 arrows, mastery settings propagated.
 /// Re-applies seeded values on every run, overwriting owner tweaks to the same fields; missing skills are skipped.
 /// </remarks>
 public abstract class AddAreaSkillSettingsUpdatePlugInBase : UpdatePlugInBase
@@ -79,13 +78,28 @@ public abstract class AddAreaSkillSettingsUpdatePlugInBase : UpdatePlugInBase
                 continue;
             }
 
-            MasterSkillAreaSkillSettings.CopySettings(context, gameConfiguration, areaSkillSettings, skill);
+            CopyAreaSkillSettings(context, gameConfiguration, areaSkillSettings, skill);
         }
 
         this.FixHellfireDecayAndIceStorm(context, gameConfiguration);
         EnsureProjectileCount(gameConfiguration, SkillNumber.TripleShot, 3);
         EnsureProjectileCount(gameConfiguration, SkillNumber.MultiShot, 5);
-        MasterSkillAreaSkillSettings.Sync(context, gameConfiguration);
+    }
+
+    /// <summary>
+    /// Copies the area skill settings onto the specified skill, preserving the target row identity.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="source">The settings to copy.</param>
+    /// <param name="target">The skill receiving the copy.</param>
+    private static void CopyAreaSkillSettings(IContext context, GameConfiguration gameConfiguration, AreaSkillSettings source, Skill target)
+    {
+        var targetSettings = target.AreaSkillSettings ?? context.CreateNew<AreaSkillSettings>();
+        var id = targetSettings.GetId();
+        targetSettings.AssignValuesOf(source, gameConfiguration);
+        targetSettings.SetGuid(id);
+        target.AreaSkillSettings = targetSettings;
     }
 
     /// <summary>
