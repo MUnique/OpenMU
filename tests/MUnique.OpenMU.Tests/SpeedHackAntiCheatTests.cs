@@ -388,6 +388,64 @@ public class SpeedHackAntiCheatTests
     }
 
     /// <summary>
+    /// Tests that quickly clicking short walks on a horse is not flagged (false positive from the field:
+    /// a game master on a horse got banned). The client reports the tile it's about to enter as the
+    /// start of each walk, so every click runs one tile ahead of the time which passed.
+    /// </summary>
+    [Test]
+    public async Task TestQuickShortWalksOnHorseDoNotTriggerViolationAsync()
+    {
+        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 17, 0, 0, 0, DateTimeKind.Utc));
+        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        player.Attributes![Stats.MovementSpeed] = 17; // horse
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        plugin.Configuration!.WalkSpeedToleranceMs = 900;
+
+        WalkingStep[] seedSteps = [new() { From = StartPoint, To = new Point((byte)(StartPoint.X + 1), StartPoint.Y), Direction = Direction.East }];
+        await plugin.WalkCheatCheckAsync(player, seedSteps, new SpeedHackCheckEventArgs()).ConfigureAwait(false);
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
+
+        var severities = new List<SpeedHackViolationSeverity>();
+        for (int i = 1; i <= plugin.Configuration.MaxAllowedWalkStartOffset; i++)
+        {
+            var from = new Point((byte)(StartPoint.X + i), StartPoint.Y);
+            WalkingStep[] steps = [new() { From = from, To = new Point((byte)(from.X + 1), from.Y), Direction = Direction.East }];
+            var args = new SpeedHackCheckEventArgs();
+            await plugin.WalkCheatCheckAsync(player, steps, args).ConfigureAwait(false);
+            severities.Add(args.Severity);
+            timeProvider.Advance(TimeSpan.FromMilliseconds(3));
+        }
+
+        Assert.That(severities, Is.All.EqualTo(SpeedHackViolationSeverity.None));
+        Assert.That(plugin.GetWarningCount(player), Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that a game master is never banned, even when exceeding the warning limit.
+    /// </summary>
+    [Test]
+    public async Task TestGameMasterIsNotBannedAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        player.Account!.State = AccountState.GameMaster;
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+
+        for (int i = 0; i < 12; i++)
+        {
+            var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
+            var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
+            player.Position = nextFrom;
+            plugin.SetLastAlertTime(player, DateTime.MinValue);
+
+            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
+            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
+        }
+
+        Assert.That(plugin.GetWarningCount(player), Is.GreaterThan(plugin.Configuration!.MaxWarnings));
+        Assert.That(player.Account.State, Is.EqualTo(AccountState.GameMaster));
+    }
+
+    /// <summary>
     /// Tests that a rejected walk does not stop the currently running walk.
     /// Stopping first and validating second freezes the server position while
     /// the client keeps moving, which cascades into follow-up violations.
@@ -527,6 +585,7 @@ public class SpeedHackAntiCheatTests
         var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
         var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
         plugin.Configuration!.WalkSpeedToleranceMs = 900;
+        plugin.Configuration.MaxAllowedWalkStartOffset = 3; // keeps the walk credit at the 900 ms tolerance
         plugin.Configuration.ViolationScoreRejectThreshold = 4.0;
 
         WalkingStep[] seedSteps = [new() { From = StartPoint, To = new Point((byte)(StartPoint.X + 1), StartPoint.Y), Direction = Direction.East }];
