@@ -178,10 +178,6 @@ public class ItemRuleFlagsTests
         definition.Height = 1;
         definition.Durability = 10;
         setRule(definition);
-        if (definition.ItemSlot is { })
-        {
-            definitionMock.Setup(d => d.ItemSlot!.ItemSlots).Returns(new List<int>());
-        }
 
         var item = new Mock<Item>();
         item.SetupAllProperties();

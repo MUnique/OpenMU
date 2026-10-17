@@ -90,10 +90,12 @@ public class ItemRequirementCalculationTest
     }
 
     /// <summary>
-    /// Tests that an armor item adds 5 strength per item-option level.
+    /// Tests that an armor item adds 5 strength per item-option level, whether it's equipped or not.
     /// </summary>
-    [Test]
-    public void ArmorOptionAdds5Strength()
+    /// <param name="currentSlot">The current item slot.</param> 
+    [TestCase(2)]
+    [TestCase(12)]
+    public void ArmorOptionAdds5Strength(byte currentSlot)
     {
         var item = new Item();
         item.Definition = new ItemDefinition();
@@ -101,6 +103,7 @@ public class ItemRequirementCalculationTest
         item.Definition.Group = 7;
         item.Definition.ItemSlot = new ItemSlotType();
         item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.HelmSlot);
+        item.ItemSlot = currentSlot;
         item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
 
