@@ -985,4 +985,7 @@ Inventarerweiterungen: {18}</value>
   <data name="PlayerShopPriceListEntryWithoutPrice" xml:space="preserve">
     <value>#{0} {1} - kein Preis</value>
   </data>
+  <data name="ItemBoxRequiresLevel" xml:space="preserve">
+    <value>Du musst Level {0} sein, um diese Box zu öffnen.</value>
+  </data>
 </root>
