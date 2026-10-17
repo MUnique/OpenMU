@@ -64,12 +64,6 @@ public sealed class IllusionTempleContext : MiniGameContext
     private const short RelicItemNumber = 64;
 
     /// <summary>
-    /// How long it takes after a scored point for the next stone statue to spawn - matches the
-    /// original event's regen delay.
-    /// </summary>
-    private static readonly TimeSpan StatueRespawnDelay = TimeSpan.FromSeconds(5);
-
-    /// <summary>
     /// The lowest NPC number of the roaming "Illusion Sorc. Spirit" arena monsters, across all temples.
     /// </summary>
     private const short ArenaMonsterRangeStart = 386;
@@ -142,6 +136,12 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <c>IllusionTempleInitializer.CreateSpecialSkillEffects</c>.
     /// </summary>
     private const short RestraintEffectNumber = 211;
+
+    /// <summary>
+    /// How long it takes after a scored point for the next stone statue to spawn - matches the
+    /// original event's regen delay.
+    /// </summary>
+    private static readonly TimeSpan StatueRespawnDelay = TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// Team A and Team B.
@@ -241,24 +241,6 @@ public sealed class IllusionTempleContext : MiniGameContext
     protected override Player? Winner => this.Score.LeadingTeam is { } leadingTeam
         ? this._teams.FirstOrDefault(entry => entry.Value == leadingTeam).Key
         : null;
-
-    /// <inheritdoc />
-    /// <remarks>
-    /// This event decides its winners by team, not by party: every member of the leading team won.
-    /// The temporary parties created at game start can't be used for that, because a party is disposed
-    /// as soon as fewer than two of its members remain, which would silently drop the rewards of
-    /// everyone but the first winner.
-    /// </remarks>
-    protected override bool IsWinner(Player player)
-        => this.Score.LeadingTeam is { } leadingTeam
-           && this._teams.TryGetValue(player, out var team)
-           && team == leadingTeam;
-
-    /// <inheritdoc />
-    /// <remarks>
-    /// The winning team takes the role of the winning party here - see <see cref="IsWinner"/>.
-    /// </remarks>
-    protected override bool IsInWinningParty(Player player) => this.IsWinner(player);
 
     /// <inheritdoc />
     /// <remarks>
@@ -405,48 +387,20 @@ public sealed class IllusionTempleContext : MiniGameContext
         // The next statue doesn't appear immediately - just like in the original event, there's a
         // short delay after a scored point. This runs in the background so the delivering player's
         // action isn't held up by it.
-        _ = Task.Run(async () =>
-        {
-            try
+        _ = Task.Run(
+            async () =>
             {
-                await Task.Delay(StatueRespawnDelay, this.GameEndedToken).ConfigureAwait(false);
-                await this.SpawnRandomStatueAsync().ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                // The event ended before the respawn delay elapsed.
-            }
-        }, this.GameEndedToken);
-    }
-
-    /// <summary>
-    /// Spawns the stone statue at a random position from the map's pool of statue spawn points.
-    /// </summary>
-    private async ValueTask SpawnRandomStatueAsync()
-    {
-        try
-        {
-            var statueSpawns = this.Map.Definition.MonsterSpawns
-                .Where(spawn => spawn.MonsterDefinition?.Number == StatueNPC)
-                .ToList();
-            if (statueSpawns.Count == 0)
-            {
-                this.Logger.LogWarning("No stone statue spawn points found on map {Map}.", this.Map.Definition.Name);
-                return;
-            }
-
-            var spawnArea = statueSpawns[Rand.NextInt(0, statueSpawns.Count)];
-            var statue = new NonPlayerCharacter(spawnArea, spawnArea.MonsterDefinition!, this.Map);
-            statue.Initialize();
-            await this.Map.AddAsync(statue).ConfigureAwait(false);
-            statue.OnSpawn();
-
-            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStatueSpawnedMessage)).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Unexpected error while spawning the illusion temple stone statue.");
-        }
+                try
+                {
+                    await Task.Delay(StatueRespawnDelay, this.GameEndedToken).ConfigureAwait(false);
+                    await this.SpawnRandomStatueAsync().ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // The event ended before the respawn delay elapsed.
+                }
+            },
+            this.GameEndedToken);
     }
 
     /// <summary>
@@ -490,90 +444,43 @@ public sealed class IllusionTempleContext : MiniGameContext
     }
 
     /// <summary>
-    /// Skill 210 - grants the caster a temporary damage reduction.
+    /// Handles a player claiming his reward after the result dialog has been shown, in reaction to the
+    /// <c>IllusionTempleRewardRequest</c> (0xBF05) packet - the client sends it when the player clicks the
+    /// "Close" button on the result dialog. Experience has already been granted automatically in
+    /// <see cref="GameEndedAsync"/>, so this only grants the remaining reward types (e.g. an item drop)
+    /// to winners, and finally sends the requesting player to the map's configured safezone -
+    /// regardless of whether he won, lost, or already claimed his reward before.
     /// </summary>
-    private async ValueTask<bool> UseOrderOfProtectionAsync(Player player)
+    /// <param name="player">The player who claims his reward.</param>
+    public async ValueTask ClaimRewardAsync(Player player)
     {
-        var effectDefinition = player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == OrderOfProtectionEffectNumber);
-        if (effectDefinition is null)
+        if (this._claimedRewards.TryAdd(player, true) && this.IsWinner(player))
         {
-            return false;
+            var rank = this._winnerRanks.GetValueOrDefault(player, 1);
+            await this.GiveRewardsAndGetBonusScoreAsync(player, rank, reward => !IsExperienceReward(reward)).ConfigureAwait(false);
         }
 
-        var elements = effectDefinition.PowerUpDefinitions
-            .Select(powerUp => new MagicEffect.ElementWithTarget(player.Attributes!.CreateElement(powerUp), powerUp.TargetAttribute!))
-            .ToArray();
-        var duration = effectDefinition.Duration?.ConstantValue.Value ?? 15f;
-        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration), effectDefinition, elements);
-        await player.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
-
-        // Subscribed only after the effect list accepted it: an effect which is replaced right away
-        // would otherwise report itself as ended before it ever applied.
-        this.NotifyWhenSkillEffectEnds(magicEffect, OrderOfProtectionSkillNumber, player);
-        return true;
+        await this.RemoveRelicFromInventoryAsync(player).ConfigureAwait(false);
+        await player.WarpToSafezoneAsync().ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Skill 211 - roots the target in place for a while, within <see cref="SpecialSkillMaximumDistance"/>.
-    /// </summary>
-    private async ValueTask<bool> UseRestraintAsync(Player player, IAttackable? target)
-    {
-        if (target is null
-            || !this.IsHostileTarget(player, target)
-            || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
-        {
-            return false;
-        }
+    /// <inheritdoc />
+    /// <remarks>
+    /// This event decides its winners by team, not by party: every member of the leading team won.
+    /// The temporary parties created at game start can't be used for that, because a party is disposed
+    /// as soon as fewer than two of its members remain, which would silently drop the rewards of
+    /// everyone but the first winner.
+    /// </remarks>
+    protected override bool IsWinner(Player player)
+        => this.Score.LeadingTeam is { } leadingTeam
+           && this._teams.TryGetValue(player, out var team)
+           && team == leadingTeam;
 
-        var effectDefinition = player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == RestraintEffectNumber);
-        if (effectDefinition is null)
-        {
-            return false;
-        }
-
-        var elements = effectDefinition.PowerUpDefinitions
-            .Select(powerUp => new MagicEffect.ElementWithTarget(target.Attributes.CreateElement(powerUp), powerUp.TargetAttribute!))
-            .ToArray();
-        var duration = effectDefinition.Duration?.ConstantValue.Value ?? 15f;
-        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration), effectDefinition, elements);
-        await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
-        this.NotifyWhenSkillEffectEnds(magicEffect, RestraintSkillNumber, target);
-        return true;
-    }
-
-    /// <summary>
-    /// Skill 212 - teleports the caster next to the current relic carrier. Fails if the caster is
-    /// stunned or frozen, nobody currently carries the relic, or the caster is the carrier himself.
-    /// </summary>
-    private async ValueTask<bool> UseTrackingAsync(Player player)
-    {
-        if (this._relicCarrier is not { } carrier
-            || carrier == player
-            || player.Attributes![Stats.IsStunned] > 0
-            || player.Attributes![Stats.IsFrozen] > 0)
-        {
-            return false;
-        }
-
-        await player.MoveAsync(carrier.Position).ConfigureAwait(false);
-        return true;
-    }
-
-    /// <summary>
-    /// Skill 213 - instantly halves the target's current shield, within <see cref="SpecialSkillMaximumDistance"/>.
-    /// </summary>
-    private ValueTask<bool> UseWeakenAsync(Player player, IAttackable? target)
-    {
-        if (target is null
-            || !this.IsHostileTarget(player, target)
-            || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
-        {
-            return ValueTask.FromResult(false);
-        }
-
-        target.Attributes[Stats.CurrentShield] /= 2;
-        return ValueTask.FromResult(true);
-    }
+    /// <inheritdoc />
+    /// <remarks>
+    /// The winning team takes the role of the winning party here - see <see cref="IsWinner"/>.
+    /// </remarks>
+    protected override bool IsInWinningParty(Player player) => this.IsWinner(player);
 
     /// <inheritdoc />
     /// <remarks>
@@ -665,25 +572,6 @@ public sealed class IllusionTempleContext : MiniGameContext
         // The cyclic state update runs until the game ends - the token makes sure that it doesn't
         // outlive the context and keeps sending to players who already left the event.
         _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken).ConfigureAwait(false), this.GameEndedToken);
-    }
-
-    /// <summary>
-    /// Awards skill points to a player, capped at <see cref="MaximumSkillPoints"/>, and informs him
-    /// about his new balance.
-    /// </summary>
-    /// <param name="player">The player who is awarded the points.</param>
-    /// <param name="amount">The number of points to award.</param>
-    private async ValueTask AwardSkillPointsAsync(Player player, int amount)
-    {
-        if (!this._teams.ContainsKey(player))
-        {
-            return;
-        }
-
-        var newBalance = (byte)Math.Clamp(this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) + amount, 0, MaximumSkillPoints);
-        this._skillPoints[player] = newBalance;
-
-        await player.InvokeViewPlugInAsync<IIllusionTempleSkillPointUpdateViewPlugin>(p => p.UpdateSkillPointsAsync(newBalance)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -786,37 +674,6 @@ public sealed class IllusionTempleContext : MiniGameContext
         }
     }
 
-    /// <summary>
-    /// Drops the holy relic on the ground, if the specified player currently carries it. Works for any
-    /// reason the player stops carrying it that isn't already a ground drop by itself (death, leaving
-    /// the event) - a voluntary drop through the normal drop-item action is instead caught by
-    /// <see cref="OnItemDroppedOnMap"/>, which is the single place that actually clears
-    /// <see cref="_relicCarrier"/> and announces it, so that both paths behave the same and don't
-    /// announce the drop twice.
-    /// </summary>
-    /// <param name="player">The player who might carry the relic.</param>
-    private async ValueTask DropRelicIfCarriedByAsync(Player player)
-    {
-        if (player != this._relicCarrier)
-        {
-            return;
-        }
-
-        var relicItem = player.Inventory?.Items
-            .FirstOrDefault(i => IsRelicDefinition(i.Definition));
-
-        if (relicItem is null || player.CurrentMap is not { } map)
-        {
-            this._relicCarrier = null;
-            return;
-        }
-
-        var droppedItem = new DroppedItem(relicItem, player.Position, map, player);
-        await map.AddAsync(droppedItem).ConfigureAwait(false);
-        await player.Inventory!.RemoveItemAsync(relicItem).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
-    }
-
     /// <inheritdoc />
     /// <remarks>
     /// Catches every way the holy relic can end up on the ground - a voluntary drop through the normal
@@ -899,27 +756,6 @@ public sealed class IllusionTempleContext : MiniGameContext
         await base.ShowScoreAsync(player).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Handles a player claiming his reward after the result dialog has been shown, in reaction to the
-    /// <c>IllusionTempleRewardRequest</c> (0xBF05) packet - the client sends it when the player clicks the
-    /// "Close" button on the result dialog. Experience has already been granted automatically in
-    /// <see cref="GameEndedAsync"/>, so this only grants the remaining reward types (e.g. an item drop)
-    /// to winners, and finally sends the requesting player to the map's configured safezone -
-    /// regardless of whether he won, lost, or already claimed his reward before.
-    /// </summary>
-    /// <param name="player">The player who claims his reward.</param>
-    public async ValueTask ClaimRewardAsync(Player player)
-    {
-        if (this._claimedRewards.TryAdd(player, true) && this.IsWinner(player))
-        {
-            var rank = this._winnerRanks.GetValueOrDefault(player, 1);
-            await this.GiveRewardsAndGetBonusScoreAsync(player, rank, reward => !IsExperienceReward(reward)).ConfigureAwait(false);
-        }
-
-        await this.RemoveRelicFromInventoryAsync(player).ConfigureAwait(false);
-        await player.WarpToSafezoneAsync().ConfigureAwait(false);
-    }
-
     /// <inheritdoc />
     /// <remarks>
     /// The rewards are only granted to the members of the leading team, which <see cref="IsWinner"/>
@@ -972,6 +808,180 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <returns><c>true</c>, if it's an experience reward; otherwise, <c>false</c>.</returns>
     private static bool IsExperienceReward(MiniGameReward reward)
         => reward.RewardType is MiniGameRewardType.Experience or MiniGameRewardType.ExperiencePerRemainingSeconds;
+
+    /// <summary>
+    /// Determines whether the given item definition is the event's sacred relic.
+    /// </summary>
+    /// <param name="itemDefinition">The item definition to check.</param>
+    /// <returns><c>true</c>, if it's the sacred relic; otherwise, <c>false</c>.</returns>
+    private static bool IsRelicDefinition(ItemDefinition? itemDefinition)
+        => itemDefinition is { Group: RelicItemGroup, Number: RelicItemNumber };
+
+    /// <summary>
+    /// Spawns the stone statue at a random position from the map's pool of statue spawn points.
+    /// </summary>
+    private async ValueTask SpawnRandomStatueAsync()
+    {
+        try
+        {
+            var statueSpawns = this.Map.Definition.MonsterSpawns
+                .Where(spawn => spawn.MonsterDefinition?.Number == StatueNPC)
+                .ToList();
+            if (statueSpawns.Count == 0)
+            {
+                this.Logger.LogWarning("No stone statue spawn points found on map {Map}.", this.Map.Definition.Name);
+                return;
+            }
+
+            var spawnArea = statueSpawns[Rand.NextInt(0, statueSpawns.Count)];
+            var statue = new NonPlayerCharacter(spawnArea, spawnArea.MonsterDefinition!, this.Map);
+            statue.Initialize();
+            await this.Map.AddAsync(statue).ConfigureAwait(false);
+            statue.OnSpawn();
+
+            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStatueSpawnedMessage)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Unexpected error while spawning the illusion temple stone statue.");
+        }
+    }
+
+    /// <summary>
+    /// Skill 210 - grants the caster a temporary damage reduction.
+    /// </summary>
+    private async ValueTask<bool> UseOrderOfProtectionAsync(Player player)
+    {
+        var effectDefinition = player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == OrderOfProtectionEffectNumber);
+        if (effectDefinition is null)
+        {
+            return false;
+        }
+
+        var elements = effectDefinition.PowerUpDefinitions
+            .Select(powerUp => new MagicEffect.ElementWithTarget(player.Attributes!.CreateElement(powerUp), powerUp.TargetAttribute!))
+            .ToArray();
+        var duration = effectDefinition.Duration?.ConstantValue.Value ?? 15f;
+        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration), effectDefinition, elements);
+        await player.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+
+        // Subscribed only after the effect list accepted it: an effect which is replaced right away
+        // would otherwise report itself as ended before it ever applied.
+        this.NotifyWhenSkillEffectEnds(magicEffect, OrderOfProtectionSkillNumber, player);
+        return true;
+    }
+
+    /// <summary>
+    /// Skill 211 - roots the target in place for a while, within <see cref="SpecialSkillMaximumDistance"/>.
+    /// </summary>
+    private async ValueTask<bool> UseRestraintAsync(Player player, IAttackable? target)
+    {
+        if (target is null
+            || !this.IsHostileTarget(player, target)
+            || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
+        {
+            return false;
+        }
+
+        var effectDefinition = player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == RestraintEffectNumber);
+        if (effectDefinition is null)
+        {
+            return false;
+        }
+
+        var elements = effectDefinition.PowerUpDefinitions
+            .Select(powerUp => new MagicEffect.ElementWithTarget(target.Attributes.CreateElement(powerUp), powerUp.TargetAttribute!))
+            .ToArray();
+        var duration = effectDefinition.Duration?.ConstantValue.Value ?? 15f;
+        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration), effectDefinition, elements);
+        await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+        this.NotifyWhenSkillEffectEnds(magicEffect, RestraintSkillNumber, target);
+        return true;
+    }
+
+    /// <summary>
+    /// Skill 212 - teleports the caster next to the current relic carrier. Fails if the caster is
+    /// stunned or frozen, nobody currently carries the relic, or the caster is the carrier himself.
+    /// </summary>
+    private async ValueTask<bool> UseTrackingAsync(Player player)
+    {
+        if (this._relicCarrier is not { } carrier
+            || carrier == player
+            || player.Attributes![Stats.IsStunned] > 0
+            || player.Attributes![Stats.IsFrozen] > 0)
+        {
+            return false;
+        }
+
+        await player.MoveAsync(carrier.Position).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Skill 213 - instantly halves the target's current shield, within <see cref="SpecialSkillMaximumDistance"/>.
+    /// </summary>
+    private ValueTask<bool> UseWeakenAsync(Player player, IAttackable? target)
+    {
+        if (target is null
+            || !this.IsHostileTarget(player, target)
+            || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
+        {
+            return ValueTask.FromResult(false);
+        }
+
+        target.Attributes[Stats.CurrentShield] /= 2;
+        return ValueTask.FromResult(true);
+    }
+
+    /// <summary>
+    /// Awards skill points to a player, capped at <see cref="MaximumSkillPoints"/>, and informs him
+    /// about his new balance.
+    /// </summary>
+    /// <param name="player">The player who is awarded the points.</param>
+    /// <param name="amount">The number of points to award.</param>
+    private async ValueTask AwardSkillPointsAsync(Player player, int amount)
+    {
+        if (!this._teams.ContainsKey(player))
+        {
+            return;
+        }
+
+        var newBalance = (byte)Math.Clamp(this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) + amount, 0, MaximumSkillPoints);
+        this._skillPoints[player] = newBalance;
+
+        await player.InvokeViewPlugInAsync<IIllusionTempleSkillPointUpdateViewPlugin>(p => p.UpdateSkillPointsAsync(newBalance)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drops the holy relic on the ground, if the specified player currently carries it. Works for any
+    /// reason the player stops carrying it that isn't already a ground drop by itself (death, leaving
+    /// the event) - a voluntary drop through the normal drop-item action is instead caught by
+    /// <see cref="OnItemDroppedOnMap"/>, which is the single place that actually clears
+    /// <see cref="_relicCarrier"/> and announces it, so that both paths behave the same and don't
+    /// announce the drop twice.
+    /// </summary>
+    /// <param name="player">The player who might carry the relic.</param>
+    private async ValueTask DropRelicIfCarriedByAsync(Player player)
+    {
+        if (player != this._relicCarrier)
+        {
+            return;
+        }
+
+        var relicItem = player.Inventory?.Items
+            .FirstOrDefault(i => IsRelicDefinition(i.Definition));
+
+        if (relicItem is null || player.CurrentMap is not { } map)
+        {
+            this._relicCarrier = null;
+            return;
+        }
+
+        var droppedItem = new DroppedItem(relicItem, player.Position, map, player);
+        await map.AddAsync(droppedItem).ConfigureAwait(false);
+        await player.Inventory!.RemoveItemAsync(relicItem).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Determines whether the given target may be hit by one of the caster's offensive special skills:
@@ -1034,14 +1044,6 @@ public sealed class IllusionTempleContext : MiniGameContext
         await player.PersistenceContext.DeleteAsync(relicItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
     }
-
-    /// <summary>
-    /// Determines whether the given item definition is the event's sacred relic.
-    /// </summary>
-    /// <param name="itemDefinition">The item definition to check.</param>
-    /// <returns><c>true</c>, if it's the sacred relic; otherwise, <c>false</c>.</returns>
-    private static bool IsRelicDefinition(ItemDefinition? itemDefinition)
-        => itemDefinition is { Group: RelicItemGroup, Number: RelicItemNumber };
 
     /// <summary>
     /// Moves a player to his team's starting chamber.

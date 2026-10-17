@@ -7,8 +7,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
-using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization for the Illusion Temple 4.

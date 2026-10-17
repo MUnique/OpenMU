@@ -303,8 +303,6 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.SetGuid(def.Number);
         }
 
-        this.CreateIllusionSorcererSpirits();
-
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 215;
@@ -1129,6 +1127,8 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
+
+        this.CreateIllusionSorcererSpirits();
     }
 
     /// <summary>

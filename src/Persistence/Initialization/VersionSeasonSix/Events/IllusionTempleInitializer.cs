@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
@@ -70,45 +71,6 @@ internal class IllusionTempleInitializer : InitializerBase
     }
 
     /// <summary>
-    /// Creates the magic effects used by the event's special skills (210 - Order of Protection and
-    /// 211 - Restraint). The other two special skills (212 - Tracking and 213 - Weaken) act instantly
-    /// and don't need a magic effect of their own.
-    /// </summary>
-    private void CreateSpecialSkillEffects()
-    {
-        var protection = this.Context.CreateNew<MagicEffectDefinition>();
-        this.GameConfiguration.MagicEffects.Add(protection);
-        protection.Number = (short)MagicEffectNumber.IllusionTempleProtection;
-        protection.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleOrderOfProtection);
-        protection.InformObservers = true;
-        protection.StopByDeath = true;
-        protection.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        protection.Duration.ConstantValue!.Value = 15; // 15 seconds
-
-        var protectionPowerUp = this.Context.CreateNew<PowerUpDefinition>();
-        protection.PowerUpDefinitions.Add(protectionPowerUp);
-        protectionPowerUp.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
-        protectionPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        protectionPowerUp.Boost.ConstantValue.Value = 0.50f; // 50 % damage reduction
-        protectionPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-
-        var restraint = this.Context.CreateNew<MagicEffectDefinition>();
-        this.GameConfiguration.MagicEffects.Add(restraint);
-        restraint.Number = (short)MagicEffectNumber.IllusionTempleRestraint;
-        restraint.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleRestraint);
-        restraint.InformObservers = true;
-        restraint.StopByDeath = true;
-        restraint.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        restraint.Duration.ConstantValue!.Value = 15; // 15 seconds
-
-        var restraintPowerUp = this.Context.CreateNew<PowerUpDefinition>();
-        restraint.PowerUpDefinitions.Add(restraintPowerUp);
-        restraintPowerUp.TargetAttribute = Stats.IsFrozen.GetPersistent(this.GameConfiguration);
-        restraintPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        restraintPowerUp.Boost.ConstantValue.Value = 1;
-    }
-
-    /// <summary>
     /// Creates a new <see cref="MiniGameDefinition" /> for a illusion temple event.
     /// </summary>
     /// <param name="level">The level of the event.</param>
@@ -147,6 +109,45 @@ internal class IllusionTempleInitializer : InitializerBase
         this.CreateRewards(level, illusionTemple);
 
         return illusionTemple;
+    }
+
+    /// <summary>
+    /// Creates the magic effects used by the event's special skills (210 - Order of Protection and
+    /// 211 - Restraint). The other two special skills (212 - Tracking and 213 - Weaken) act instantly
+    /// and don't need a magic effect of their own.
+    /// </summary>
+    private void CreateSpecialSkillEffects()
+    {
+        var protection = this.Context.CreateNew<MagicEffectDefinition>();
+        this.GameConfiguration.MagicEffects.Add(protection);
+        protection.Number = (short)MagicEffectNumber.IllusionTempleProtection;
+        protection.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleOrderOfProtection);
+        protection.InformObservers = true;
+        protection.StopByDeath = true;
+        protection.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        protection.Duration.ConstantValue!.Value = 15; // 15 seconds
+
+        var protectionPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+        protection.PowerUpDefinitions.Add(protectionPowerUp);
+        protectionPowerUp.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
+        protectionPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        protectionPowerUp.Boost.ConstantValue.Value = 0.50f; // 50 % damage reduction
+        protectionPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+
+        var restraint = this.Context.CreateNew<MagicEffectDefinition>();
+        this.GameConfiguration.MagicEffects.Add(restraint);
+        restraint.Number = (short)MagicEffectNumber.IllusionTempleRestraint;
+        restraint.Name = LocalizedString.FromResource(() => MagicEffectNames.IllusionTempleRestraint);
+        restraint.InformObservers = true;
+        restraint.StopByDeath = true;
+        restraint.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        restraint.Duration.ConstantValue!.Value = 15; // 15 seconds
+
+        var restraintPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+        restraint.PowerUpDefinitions.Add(restraintPowerUp);
+        restraintPowerUp.TargetAttribute = Stats.IsFrozen.GetPersistent(this.GameConfiguration);
+        restraintPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        restraintPowerUp.Boost.ConstantValue.Value = 1;
     }
 
     private void CreateRewards(byte level, MiniGameDefinition illusionTemple)

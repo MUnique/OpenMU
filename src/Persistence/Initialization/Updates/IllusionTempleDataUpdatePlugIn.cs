@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 using MUnique.OpenMU.PlugIns;
 
@@ -25,6 +26,16 @@ using MUnique.OpenMU.PlugIns;
 [Guid("032FECC5-932E-4161-A50A-DF7D07AF3866")]
 public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
 {
+    /// <summary>
+    /// The plug in name.
+    /// </summary>
+    internal const string PlugInName = "Illusion Temple Data";
+
+    /// <summary>
+    /// The plug in description.
+    /// </summary>
+    internal const string PlugInDescription = "This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC.";
+
     /// <summary>
     /// The number of the Mirage NPC, which opens the illusion temple dialog.
     /// </summary>
@@ -163,16 +174,6 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         (398, 85, 25500, 595, 615, 450, 760, 275, 4, 4, 800, 1600),
         (399, 85, 25500, 615, 635, 470, 820, 303, 4, 4, 800, 1600),
     };
-
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Illusion Temple Data";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC.";
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
