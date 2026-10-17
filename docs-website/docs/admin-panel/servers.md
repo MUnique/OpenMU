@@ -132,11 +132,12 @@ The card at the top of the page sends a message to the players.
 
 1. Type the text.
 2. Choose the message type:
-   - *Golden (center)*: the golden message in the centre of the screen, like `/goldnotice`.
-   - *Blue (system)*: a blue system message in the chat.
-   - *Slide (top band)*: a notice which scrolls once through the band at the top
-     of the screen, like `/slidenotice`. Clients older than season 1 don't have this
-     band and get the golden message instead.
+   * *Golden (center)*: the golden message in the centre of the screen, like
+     `/goldnotice`.
+   * *Blue (system)*: a blue system message in the chat.
+   * *Slide (top band)*: a notice which scrolls once through the band at the
+     top of the screen, like `/slidenotice`. Clients older than season 1 don't
+     have this band and get the golden message instead.
 3. Choose the target: *All game servers*, or one specific started game server.
 4. Click **Send**.
 
