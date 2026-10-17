@@ -1878,4 +1878,7 @@
   <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
     <value>Produkt {0} hat eine Menge kleiner als 1.</value>
   </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>Terrain-Editor</value>
+  </data>
 </root>

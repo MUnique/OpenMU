@@ -1052,5 +1052,98 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>Gets the localized GameServerSelection_UnknownServer text.</summary>
         public static string GameServerSelection_UnknownServer => ResourceManager.GetString("GameServerSelection_UnknownServer", resourceCulture)!;
 
+        /// <summary>Gets the localized TerrainEditorTerrain text.</summary>
+        public static string TerrainEditorTerrain => ResourceManager.GetString("TerrainEditorTerrain", resourceCulture)!;
+
+        /// <summary>Gets the localized DefaultTerrain text.</summary>
+        public static string DefaultTerrain => ResourceManager.GetString("DefaultTerrain", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainTool text.</summary>
+        public static string TerrainTool => ResourceManager.GetString("TerrainTool", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainToolBrush text.</summary>
+        public static string TerrainToolBrush => ResourceManager.GetString("TerrainToolBrush", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainToolRectangle text.</summary>
+        public static string TerrainToolRectangle => ResourceManager.GetString("TerrainToolRectangle", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainToolFill text.</summary>
+        public static string TerrainToolFill => ResourceManager.GetString("TerrainToolFill", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainBrushSize text.</summary>
+        public static string TerrainBrushSize => ResourceManager.GetString("TerrainBrushSize", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditMode text.</summary>
+        public static string TerrainEditMode => ResourceManager.GetString("TerrainEditMode", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditModeAdd text.</summary>
+        public static string TerrainEditModeAdd => ResourceManager.GetString("TerrainEditModeAdd", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditModeRemove text.</summary>
+        public static string TerrainEditModeRemove => ResourceManager.GetString("TerrainEditModeRemove", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditModeReplace text.</summary>
+        public static string TerrainEditModeReplace => ResourceManager.GetString("TerrainEditModeReplace", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainAttributes text.</summary>
+        public static string TerrainAttributes => ResourceManager.GetString("TerrainAttributes", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainWalkable text.</summary>
+        public static string TerrainWalkable => ResourceManager.GetString("TerrainWalkable", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainOtherAttributes text.</summary>
+        public static string TerrainOtherAttributes => ResourceManager.GetString("TerrainOtherAttributes", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainLegend text.</summary>
+        public static string TerrainLegend => ResourceManager.GetString("TerrainLegend", resourceCulture)!;
+
+        /// <summary>Gets the localized Redo text.</summary>
+        public static string Redo => ResourceManager.GetString("Redo", resourceCulture)!;
+
+        /// <summary>Gets the localized ImportTerrain text.</summary>
+        public static string ImportTerrain => ResourceManager.GetString("ImportTerrain", resourceCulture)!;
+
+        /// <summary>Gets the localized ImportTerrainHint text.</summary>
+        public static string ImportTerrainHint => ResourceManager.GetString("ImportTerrainHint", resourceCulture)!;
+
+        /// <summary>Gets the localized DownloadServerTerrain text.</summary>
+        public static string DownloadServerTerrain => ResourceManager.GetString("DownloadServerTerrain", resourceCulture)!;
+
+        /// <summary>Gets the localized DownloadServerTerrainHint text.</summary>
+        public static string DownloadServerTerrainHint => ResourceManager.GetString("DownloadServerTerrainHint", resourceCulture)!;
+
+        /// <summary>Gets the localized DownloadClientTerrain text.</summary>
+        public static string DownloadClientTerrain => ResourceManager.GetString("DownloadClientTerrain", resourceCulture)!;
+
+        /// <summary>Gets the localized DownloadClientTerrainHint text.</summary>
+        public static string DownloadClientTerrainHint => ResourceManager.GetString("DownloadClientTerrainHint", resourceCulture)!;
+
+        /// <summary>Gets the localized InvalidTerrainFile text.</summary>
+        public static string InvalidTerrainFile => ResourceManager.GetString("InvalidTerrainFile", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainImported text.</summary>
+        public static string TerrainImported => ResourceManager.GetString("TerrainImported", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditorShortcutPaint text.</summary>
+        public static string TerrainEditorShortcutPaint => ResourceManager.GetString("TerrainEditorShortcutPaint", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditorShortcutPan text.</summary>
+        public static string TerrainEditorShortcutPan => ResourceManager.GetString("TerrainEditorShortcutPan", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditorShortcutZoom text.</summary>
+        public static string TerrainEditorShortcutZoom => ResourceManager.GetString("TerrainEditorShortcutZoom", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainEditorRestartHint text.</summary>
+        public static string TerrainEditorRestartHint => ResourceManager.GetString("TerrainEditorRestartHint", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainTransferFailed text.</summary>
+        public static string TerrainTransferFailed => ResourceManager.GetString("TerrainTransferFailed", resourceCulture)!;
+
+        /// <summary>Gets the localized ZoomIn text.</summary>
+        public static string ZoomIn => ResourceManager.GetString("ZoomIn", resourceCulture)!;
+
+        /// <summary>Gets the localized ZoomOut text.</summary>
+        public static string ZoomOut => ResourceManager.GetString("ZoomOut", resourceCulture)!;
+
     }
 }

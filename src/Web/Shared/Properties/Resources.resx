@@ -569,4 +569,97 @@ Level: {2} - {3}</value>
   <data name="GameServerSelection_LoadFailed" xml:space="preserve">
     <value>Could not load the game servers. Close the dialog and try again.</value>
   </data>
+  <data name="TerrainEditorTerrain" xml:space="preserve">
+    <value>Terrain</value>
+  </data>
+  <data name="DefaultTerrain" xml:space="preserve">
+    <value>Default terrain</value>
+  </data>
+  <data name="TerrainTool" xml:space="preserve">
+    <value>Tool</value>
+  </data>
+  <data name="TerrainToolBrush" xml:space="preserve">
+    <value>Brush</value>
+  </data>
+  <data name="TerrainToolRectangle" xml:space="preserve">
+    <value>Rectangle</value>
+  </data>
+  <data name="TerrainToolFill" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="TerrainBrushSize" xml:space="preserve">
+    <value>Brush size</value>
+  </data>
+  <data name="TerrainEditMode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="TerrainEditModeAdd" xml:space="preserve">
+    <value>Add attributes</value>
+  </data>
+  <data name="TerrainEditModeRemove" xml:space="preserve">
+    <value>Remove attributes</value>
+  </data>
+  <data name="TerrainEditModeReplace" xml:space="preserve">
+    <value>Replace all attributes</value>
+  </data>
+  <data name="TerrainAttributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="TerrainWalkable" xml:space="preserve">
+    <value>Walkable</value>
+  </data>
+  <data name="TerrainOtherAttributes" xml:space="preserve">
+    <value>Other attributes</value>
+  </data>
+  <data name="TerrainLegend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="ImportTerrain" xml:space="preserve">
+    <value>Import terrain file</value>
+  </data>
+  <data name="ImportTerrainHint" xml:space="preserve">
+    <value>Accepts the *.att file of the server and the EncTerrain*.att file of the client.</value>
+  </data>
+  <data name="DownloadServerTerrain" xml:space="preserve">
+    <value>Server terrain file</value>
+  </data>
+  <data name="DownloadServerTerrainHint" xml:space="preserve">
+    <value>Downloads the terrain in the *.att format of the original server.</value>
+  </data>
+  <data name="DownloadClientTerrain" xml:space="preserve">
+    <value>Client terrain file</value>
+  </data>
+  <data name="DownloadClientTerrainHint" xml:space="preserve">
+    <value>Downloads the encrypted terrain file of the game client. Place it as Data\World{0}\EncTerrain{0}.att in the client.</value>
+  </data>
+  <data name="InvalidTerrainFile" xml:space="preserve">
+    <value>The file is neither a terrain file of the server nor of the client.</value>
+  </data>
+  <data name="TerrainImported" xml:space="preserve">
+    <value>The terrain file was imported. Save to apply it.</value>
+  </data>
+  <data name="TerrainEditorShortcutPaint" xml:space="preserve">
+    <value>Left click to edit the tiles with the selected tool</value>
+  </data>
+  <data name="TerrainEditorShortcutPan" xml:space="preserve">
+    <value>Right click and drag to pan the terrain</value>
+  </data>
+  <data name="TerrainEditorShortcutZoom" xml:space="preserve">
+    <value>Mouse wheel to zoom</value>
+  </data>
+  <data name="TerrainEditorRestartHint" xml:space="preserve">
+    <value>Changed terrains are applied to the game after restarting the game servers. Players need the client terrain file, too, to see the change.</value>
+  </data>
+  <data name="TerrainTransferFailed" xml:space="preserve">
+    <value>The edited terrain could not be transferred: {0}</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>Zoom in</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>Zoom out</value>
+  </data>
 </root>
