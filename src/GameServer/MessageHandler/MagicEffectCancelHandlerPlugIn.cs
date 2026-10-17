@@ -26,7 +26,7 @@ internal class MagicEffectCancelHandlerPlugIn : IPacketHandlerPlugIn
     private const int InfinityArrowStrengSkillId = 441;
 
     /// <inheritdoc/>
-    public bool IsEncryptionExpected => true;
+    public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
     public byte Key => MagicEffectCancelRequest.Code;
