@@ -1957,4 +1957,7 @@
   <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
     <value>Product {0} has a quantity below 1.</value>
   </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>Terrain Editor</value>
+  </data>
 </root>

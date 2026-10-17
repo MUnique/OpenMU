@@ -1786,4 +1786,7 @@
   <data name="GameMap" xml:space="preserve">
     <value>地图</value>
   </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>地形编辑器</value>
+  </data>
 </root>

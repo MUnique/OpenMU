@@ -55,7 +55,7 @@ with `-adminpanel:disabled`.
 | [Game configuration](game-configuration.md) | Everything about the game world: system settings, items, monsters, skills, maps, drops, … |
 | [Plugins](plugins.md) | Activate, deactivate and configure plugins |
 | [Chat commands](chat-commands.md) | Which in-game commands exist and who may use them |
-| [Map editor](map-editor.md) | Edit monster spawn areas and gates graphically |
+| [Map editor](map-editor.md) | Edit monster spawn areas, gates and the [terrain](map-editor.md#terrain-editor) graphically |
 | [Live map](live-map.md) | Watch what happens on a map in real time |
 | [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana with logs, metrics and traces |
 | [Users](users.md) | The users which may log into the admin panel |
