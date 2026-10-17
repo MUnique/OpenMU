@@ -403,6 +403,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         {
             this.Logger.LogError(ex, "{context}: Unexpected error during dispose: {ex}", this, ex);
         }
+
+        try
+        {
+            // Separately, so that the map is released even if a previous step failed.
+            await this.TearDownMapAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "{context}: Unexpected error during the teardown of the map: {ex}", this, ex);
+        }
     }
 
     /// <summary>
@@ -840,6 +850,21 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
 
         await this.DisposeAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Frees the map of this game. Every run of a game creates its own map instance, and the NPCs on it
+    /// are registered for configuration changes, which would keep the map alive for as long as the server runs.
+    /// </summary>
+    private async ValueTask TearDownMapAsync()
+    {
+        // Players which weren't part of the game (e.g. a game master) may still be on the map.
+        foreach (var player in this.Map.GetPlayers())
+        {
+            await player.WarpToSafezoneAsync().ConfigureAwait(false);
+        }
+
+        await this.Map.TearDownAsync().ConfigureAwait(false);
     }
 
     private async ValueTask MovePlayersToSafezoneAsync()

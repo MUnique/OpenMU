@@ -34,4 +34,32 @@ public static class CollectibleAssert
 
         Assert.That(reference.IsAlive, Is.False, $"The {description} is still reachable after it was released.");
     }
+
+    /// <summary>
+    /// Asserts that the object of the weak reference gets collected by the garbage collector within the timeout.
+    /// Use it when the release finishes asynchronously, e.g. a background loop which ends after a cancellation.
+    /// </summary>
+    /// <param name="reference">The weak reference to the released object.</param>
+    /// <param name="description">The description of the object, for the failure message.</param>
+    /// <param name="timeout">The time to wait for the object to become unreachable.</param>
+    /// <returns>The task.</returns>
+    [SuppressMessage("Major Code Smell", "S1215:\"GC.Collect\" should not be called", Justification = "Forcing a collection is what this assertion is for.")]
+    public static async Task IsCollectedAsync(WeakReference reference, string description, TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow.Add(timeout);
+        while (DateTime.UtcNow < deadline)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            if (!reference.IsAlive)
+            {
+                return;
+            }
+
+            await Task.Delay(50).ConfigureAwait(false);
+        }
+
+        IsCollected(reference, description);
+    }
 }

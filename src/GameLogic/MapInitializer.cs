@@ -102,7 +102,7 @@ public class MapInitializer : IMapInitializer
             this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
         }
 
-        this._configurationChangeMediator?.RegisterForNew<MonsterSpawnArea, GameMap>(createdMap, async (spawnArea, map) =>
+        var newSpawnRegistration = this._configurationChangeMediator?.RegisterForNew<MonsterSpawnArea, GameMap>(createdMap, async (spawnArea, map) =>
         {
             if (!Equals(spawnArea.GameMap, map.Definition))
             {
@@ -116,6 +116,11 @@ public class MapInitializer : IMapInitializer
 
             this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
         });
+
+        if (newSpawnRegistration is not null)
+        {
+            createdMap.RegisterOwnedRegistration(newSpawnRegistration);
+        }
 
         this._logger.LogDebug("Finished creating monster instances for map {createdMap}", createdMap.Definition.Name);
     }
@@ -180,6 +185,13 @@ public class MapInitializer : IMapInitializer
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
+        if (createdMap.IsTornDown)
+        {
+            // E.g. a spawn wave of a mini game which ended in the meantime.
+            this._logger.LogDebug("Skipping spawn {spawn}, because its map is torn down.", spawnArea);
+            return null;
+        }
+
         var monsterDef = spawnArea.MonsterDefinition!;
         NonPlayerCharacter npc;
 
@@ -226,6 +238,13 @@ public class MapInitializer : IMapInitializer
             npc.SpawnIndex = spawnIndex;
             npc.Initialize();
             await createdMap.AddAsync(npc).ConfigureAwait(false);
+            if (createdMap.IsTornDown)
+            {
+                // The map got torn down while the NPC was created, so the teardown may have missed it.
+                await npc.DisposeAsync().ConfigureAwait(false);
+                return null;
+            }
+
             npc.OnSpawn();
             if (spawnArea.SpawnTrigger is SpawnTrigger.Automatic or SpawnTrigger.Wandering)
             {
@@ -286,7 +305,10 @@ public class MapInitializer : IMapInitializer
             attackableNpc.RegisterDisposable(definitionRegistration);
         }
 
-        this._configurationChangeMediator?.RegisterObject(
+        // The mediator keeps the registrations below under the configuration, which is shared by every
+        // instance of the map. So they are owned by the NPC as well, and released when it's disposed, e.g.
+        // when the map of a mini game is torn down.
+        var spawnAreaRegistration = this._configurationChangeMediator?.RegisterObject(
             spawnArea,
             spawnedObject,
             async (unregisterAction, area, o) =>
@@ -336,9 +358,13 @@ public class MapInitializer : IMapInitializer
                 this._spawnedMonsters.TryRemove(spawnArea, out var _);
             });
 
-        if (spawnedObject.Definition.MerchantStore is { } merchantStore)
+        if (spawnAreaRegistration is not null)
         {
-            this._configurationChangeMediator?.RegisterObject(merchantStore, spawnedObject, async (_, itemStorage, o) =>
+            spawnedObject.RegisterDisposable(spawnAreaRegistration);
+        }
+
+        if (spawnedObject.Definition.MerchantStore is { } merchantStore
+            && this._configurationChangeMediator?.RegisterObject(merchantStore, spawnedObject, async (_, itemStorage, o) =>
             {
                 await o.ForEachObservingAsync<Player>(
                     async player =>
@@ -351,7 +377,9 @@ public class MapInitializer : IMapInitializer
                         }
                     },
                     false).ConfigureAwait(false);
-            });
+            }) is { } storeRegistration)
+        {
+            spawnedObject.RegisterDisposable(storeRegistration);
         }
     }
 
