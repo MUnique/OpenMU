@@ -19,5 +19,5 @@ public class FixOrbRequirementsPlugIn095D : FixOrbRequirementsPlugInBase
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />
-    private protected override IReadOnlyList<(byte Number, int Energy, int Strength, int Agility)> Corrections => FairyElfOrbs;
+    private protected override IReadOnlyList<(byte Group, byte Number, int Energy, int Strength, int Agility)> Corrections => FairyElfOrbs;
 }
