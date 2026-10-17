@@ -97,10 +97,24 @@ public static class AreaSkillTargetSelector
             && player.IsInRange(lockedTarget.Position, skill.Range))
         {
             var angleToTarget = (float)player.Position.GetAngleDegreeTo(lockedTarget.Position);
-            return (byte)(angleToTarget / 360.0f * RotationByteScale);
+            return ConvertAngleToRotation(angleToTarget);
         }
 
         return rotation;
+    }
+
+    /// <summary>
+    /// Converts a direction angle into the rotation byte of the skill packets.
+    /// The value is rounded, not truncated: truncation drops up to one full
+    /// step (about 1.4 degrees), which is enough to push a diagonally adjacent
+    /// target out of a side projectile lane whose overlap ends right at the
+    /// frustum center.
+    /// </summary>
+    /// <param name="angle">The direction angle in degrees.</param>
+    /// <returns>The rotation byte.</returns>
+    internal static byte ConvertAngleToRotation(float angle)
+    {
+        return (byte)Math.Round(angle / 360.0f * RotationByteScale, MidpointRounding.AwayFromZero);
     }
 
     /// <summary>

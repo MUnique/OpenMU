@@ -66,7 +66,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.Cyclone, LocalizedString.FromResource(() => SkillNames.Cyclone), CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, DamageType.Physical, distance: 2, manaConsumption: 9, movesToTarget: true, movesTarget: true);
         this.CreateSkill(SkillNumber.Slash, LocalizedString.FromResource(() => SkillNames.Slash), CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, DamageType.Physical, distance: 2, manaConsumption: 10, movesToTarget: true, movesTarget: true);
         this.CreateSkill(SkillNumber.TripleShot, LocalizedString.FromResource(() => SkillNames.TripleShot), CharacterClasses.FairyElf, DamageType.Physical, distance: 6, manaConsumption: 5, skillType: SkillType.AreaSkillAutomaticHits);
-        this.AddAreaSkillSettings(SkillNumber.TripleShot, true, 1f, 4.5f, 7f, true, TimeSpan.FromMilliseconds(50), maximumHitsPerTarget: 3, maximumHitsPerAttack: 3, projectileCount: 3);
+        this.AddAreaSkillSettings(SkillNumber.TripleShot, true, 1f, 4.5f, 7f, true, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), maximumHitsPerTarget: 3, maximumHitsPerAttack: 3, projectileCount: 3);
         this.CreateSkill(SkillNumber.Heal, LocalizedString.FromResource(() => SkillNames.Heal), CharacterClasses.FairyElf, distance: 6, manaConsumption: 20, energyRequirement: 52, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.GreaterDefense, LocalizedString.FromResource(() => SkillNames.GreaterDefense), CharacterClasses.FairyElf, distance: 6, manaConsumption: 30, energyRequirement: 72, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.GreaterDamage, LocalizedString.FromResource(() => SkillNames.GreaterDamage), CharacterClasses.FairyElf, distance: 6, manaConsumption: 40, energyRequirement: 92, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
@@ -82,6 +82,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.FlameofEvil, LocalizedString.FromResource(() => SkillNames.FlameOfEvilMonster), damage: 120, manaConsumption: 160, levelRequirement: 60, energyRequirement: 100);
 
         this.InitializeEffects();
+        this.AddSkillAttributeRelationships();
         this.MapSkillsToEffects();
         this.CreateSpecialSummonMonsters();
         this.FixMagicEffectNumbers();
@@ -148,5 +149,15 @@ internal class SkillsInitializer : SkillsInitializerBase
             var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)effectOfSkill.Value);
             skill.MagicEffectDef = effect;
         }
+    }
+
+    /// <summary>
+    /// Adds the skill attribute relationships, e.g. that triple shot uses the extra projectiles pool.
+    /// </summary>
+    private void AddSkillAttributeRelationships()
+    {
+        var tripleShot = this.GameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.TripleShot);
+        tripleShot.AttributeRelationships.Add(
+            CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillExtraProjectiles, 1, Stats.ExtraProjectiles));
     }
 }

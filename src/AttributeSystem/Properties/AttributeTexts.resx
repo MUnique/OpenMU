@@ -379,7 +379,7 @@
     <value>Extra Projectiles</value>
   </data>
   <data name="Description_ExtraProjectiles" xml:space="preserve">
-    <value>The number of extra projectiles shot with triple shot skill.</value>
+    <value>The number of extra projectiles which is added to every multi-projectile skill which uses them.</value>
   </data>
   <data name="Name_FenrirBaseDamage" xml:space="preserve">
     <value>Fenrir Base Damage</value>
@@ -963,6 +963,12 @@
   <data name="Description_Skillextramanacost" xml:space="preserve">
     <value>Caused by infinity arrow effect</value>
   </data>
+  <data name="Name_SkillExtraProjectiles" xml:space="preserve">
+    <value>Skill Extra Projectiles</value>
+  </data>
+  <data name="Description_SkillExtraProjectiles" xml:space="preserve">
+    <value>The number of extra projectiles which a multi-projectile skill actually shoots.</value>
+  </data>
   <data name="Name_SkillFinalDamageBonusskillattribute" xml:space="preserve">
     <value>Skill Final Damage Bonus (skill attribute)</value>
   </data>
@@ -1124,6 +1130,12 @@
   </data>
   <data name="Description_TotalVitalityRequirementValue" xml:space="preserve">
     <value>The total vitality requirement value of an item, which is used to calculate the required total vitality of a character to equip an item. The required total vitality depends on the options, drop level and level of the item.</value>
+  </data>
+  <data name="Name_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>Triple Shot Extra Projectiles</value>
+  </data>
+  <data name="Description_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>The number of extra projectiles granted by the triple shot mastery.</value>
   </data>
   <data name="Name_TwoHandedStaffBonusBaseDamageMST" xml:space="preserve">
     <value>Two Handed Staff Bonus Base Damage (MST)</value>
