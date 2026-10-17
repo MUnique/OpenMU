@@ -1,4 +1,4 @@
-// <copyright file="BaseInvasionPlugIn.cs" company="MUnique">
+﻿// <copyright file="BaseInvasionPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -248,11 +248,21 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     protected override async ValueTask OnStartedAsync(InvasionGameServerState state)
     {
         await this.SpawnMobsOnMapsAsync(state).ConfigureAwait(false);
+
+        var maps = GetAnnouncedMapDefinitions(state);
+        await state.Context.PlugInManager.NotifyPlugInsAsync<IInvasionStartedPlugIn>(
+            p => p.InvasionStartedAsync(state.Context, this, maps),
+            state.Context.LoggerFactory.CreateLogger(this.GetType())).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnFinishedAsync(InvasionGameServerState state)
     {
+        var maps = GetAnnouncedMapDefinitions(state);
+        await state.Context.PlugInManager.NotifyPlugInsAsync<IInvasionEndedPlugIn>(
+            p => p.InvasionEndedAsync(state.Context, this, maps),
+            state.Context.LoggerFactory.CreateLogger(this.GetType())).ConfigureAwait(false);
+
         await state.Context.ForEachPlayerAsync(p => this.TrySendEndMessageAsync(p, state)).ConfigureAwait(false);
 
         if (this.EventType is not null)
@@ -296,6 +306,18 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
                 // This indicates an unexpected state or configuration mismatch.
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the definitions of the maps which are announced to the players as invaded.
+    /// </summary>
+    /// <param name="state">The current invasion state.</param>
+    /// <returns>The definitions of the announced maps.</returns>
+    private static List<GameMapDefinition> GetAnnouncedMapDefinitions(InvasionGameServerState state)
+    {
+        return state.Context.Configuration.Maps
+            .Where(map => state.AnnouncedMapIds.Contains((ushort)map.Number))
+            .ToList();
     }
 
     /// <summary>

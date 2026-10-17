@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
@@ -72,14 +73,16 @@ public abstract class InitializerBase : IInitializer
     /// <param name="item">The item.</param>
     /// <param name="attribute">The attribute.</param>
     /// <param name="requiredValue">The required value.</param>
-    protected void CreateItemRequirementIfNeeded(ItemDefinition item, AttributeDefinition attribute, int requiredValue)
+    /// <param name="minimumItemLevel">The minimum item level at which the requirement applies.</param>
+    protected void CreateItemRequirementIfNeeded(ItemDefinition item, AttributeDefinition attribute, int requiredValue, byte? minimumItemLevel = null)
     {
-        if (requiredValue == 0)
+        if (requiredValue == 0 && minimumItemLevel is null)
         {
             return;
         }
 
         var requirement = this.CreateRequirement(attribute, requiredValue);
+        requirement.MinimumItemLevel = minimumItemLevel;
         item.Requirements.Add(requirement);
     }
 
@@ -139,7 +142,7 @@ public abstract class InitializerBase : IInitializer
     /// <param name="name">The name.</param>
     /// <param name="description">The description.</param>
     /// <returns>The created table.</returns>
-    protected ItemLevelBonusTable CreateItemBonusTable(float[] values, string name, string description)
+    protected ItemLevelBonusTable CreateItemBonusTable(float[] values, LocalizedString name, LocalizedString description)
     {
         var table = this.Context.CreateNew<ItemLevelBonusTable>();
         this.GameConfiguration.ItemLevelBonusTables.Add(table);

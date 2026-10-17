@@ -56,11 +56,71 @@ skills, the vault, and the account's settings.
 This is the [generic edit page](game-configuration.md#the-generic-edit-pages),
 i.e. a direct view of the data model. It is powerful and it is easy to create
 inconsistent data with it.
-
-In particular, **creating characters here is not supported** — character creation
-involves initialization logic which the web interface does not run yet. Create
-characters in the game client.
 :::
+
+### Creating a character
+
+**Create** below the characters of an account asks only for the **name** and the
+**character class**. The character is then set up with the same data as one which
+a player creates in the game:
+
+* it gets the stat attributes of its class (level, strength, agility, …) with
+  their start values,
+* it starts on the home map of its class, at a random spawn position,
+* it gets an inventory and the default key configuration,
+* it takes the first free character slot of the account,
+* the active *Character created* [plugins](plugins.md) run, which give it e.g.
+  the initial items and skills of its class, like a weapon or the arrows of an
+  elf. These are the same plugins with the same configuration as in the game,
+  so deactivating one on the plugins page affects both.
+
+The name has to match the **character name regex** of the
+[game configuration](game-configuration.md). The admin panel can create
+characters of every class, including the ones which can't be created in the game
+(e.g. a second class or a locked class). An account which already has the
+maximum number of characters can't get another one.
+
+Everything else, e.g. the level, the stats or more items, can be edited on the
+edit page of the character afterwards.
+
+### Editing skills and the master skill tree
+
+The **Learned Skills** of a character are split into two parts:
+
+* The **regular skills** are listed with a **Remove** button each. **Add Skill**
+  offers the skills which the character class can learn.
+* The **master skill tree** looks like the one in the game: one column per master
+  skill root and one row per rank. Enter the level of a master skill in its
+  field — `0` removes it. A level is limited to the range the skill allows.
+
+Below each master skill name you see the skills it requires (`↑`). Like in the
+game, a master skill needs its required skills and a skill of the previous rank
+at level 10 or higher. Skills whose requirements are not met yet are dimmed; a
+skill which has a level although its requirements are not met gets a red dashed
+border. The admin panel doesn't prevent this, so you can fix inconsistent data
+in any order.
+
+Changing a level by hand does not change the character's **Master Level Up
+Points**. **Reset Master Skill Tree** removes all master skills after a
+confirmation and adds the spent points (the sum of all master skill levels) back
+to the master level up points, so the player can distribute them again.
+
+All changes are stored when you save the page.
+
+### Granting cash shop coins
+
+**Coins** next to an account opens its [cash shop](../server-features/cash-shop.md)
+coins: the balances of **WCoin (C)**, **WCoin (P)** and **Goblin Points**, and the
+latest grants. Below the balances you grant coins to the account; a negative
+amount takes coins again, but never below zero. It needs the administrator role.
+API keys with the cash shop role grant coins through the
+[API](authentication.md#granting-cash-shop-coins) instead.
+
+A grant doesn't change the balance right away, it's *pending* until the game
+server applies it — the next time the player opens the cash shop, even when the
+player is online. That's why the balances can't be edited directly: the game
+server keeps the account of an online player in memory and would overwrite such a
+change.
 
 ### Changing a password
 

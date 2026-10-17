@@ -207,7 +207,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
     protected void ChangeDinorantAttackSpeedOption(GameConfiguration gameConfiguration)
     {
         var dinorantOption = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0080-0000-0000-000000000000"));
-        dinorantOption ??= gameConfiguration.ItemOptions.FirstOrDefault(io => io.Name == "Dinorant Options"); // 0.95d
+        dinorantOption ??= gameConfiguration.ItemOptions.FirstOrDefault(io => io.Name.ValueInNeutralLanguage == "Dinorant Options"); // 0.95d
 
         if (dinorantOption is not null
             && dinorantOption.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } dinoAttackSpeed)

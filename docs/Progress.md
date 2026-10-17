@@ -83,7 +83,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *LoggedIn*                    | 0xB8              | 100%     | 1          |                                               |
 | RequestGuildMarkCastleOwner | 0xB9              | 0%       | 1          |                                               |
 | *JewelMix*                    | 0xBC              | 100%     | 4          |                                               |
-| CrywolfGroup                | 0xBD              | 0%       | 10         |                                               |
+| *CrywolfGroup*              | 0xBD              | 100%     | 10         |                                               |
 | GuildAssignStatus           | 0xBE              | 0%       | 1          |                                               |
 | IllusionTempleGroup         | 0xBF              | 100%     | 10         | Team-based PvP mini game: relic pickup/delivery, scoring, skill points, special skills, rewards |
 | FriendListRequest           | 0xC0              | 0%       | 0          | Not needed, friend list is sent automatically |
@@ -98,6 +98,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *ChatRoomCreate*              | 0xCA              | 100%     | 2          |                                               |
 | *ChatRoomInvitationReq*       | 0xCB              | 100%     | 2          |                                               |
 | KanturuGroup                | 0xD1              | 0%       | 10         |                                               |
+| CashShopGroup               | 0xD2              | 90%      | 10         | Opening, points, the storage list, buying, gifting and using items. The event item list and items which expire are missing. |
 | *AreaSkillHit*                | 0xDB              | 100%     | 10         |                                               |
 | GuildAssignType             | 0xE2              | 0%       | 2          |                                               |
 | RequestAllyJoinLeave        | 0xE5              | 0%       | 3          |                                               |
@@ -114,11 +115,10 @@ complexity and effort). Complexity 0 means we wont implement it.
 |   - *Character focus request* | 0xF315            |      |          |                                               |
 |   - *Save key configuration* | 0xF330            |      |          |                                               |
 |   - *Master skill level increase request* | 0xF352            |      |          |                                               
-| CashShopGroup               | 0xF5              | 0%       | 10         | Low priority                                  |
-| GensGroup                   | 0xF8              | 70%      | 8          | Joining and leaving a gens, the battle zone, contribution and ranking. The party, guild and alliance rules, the chat and the rewards are missing. |
+| *GensGroup*                 | 0xF8              | 100%     | 8          |                                               |
 |   - *Join gens request* | 0xF801            |      |          |                                               |
 |   - *Leave gens request* | 0xF803            |      |          |                                               |
-|   - *Gens reward request* | 0xF809            |      |          | Answered, the rewards are not implemented yet |
+|   - *Gens reward request* | 0xF809            |      |          |                                               |
 |   - *Gens ranking request* | 0xF80B            |      |          | Answered with the gens info of the player (0xF807) |
 | *Hit*                         | 0x11      | 100%     | 10         |                                               |
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |

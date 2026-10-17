@@ -33,4 +33,85 @@
   <data name="ImperialGuardianSunday" xml:space="preserve">
     <value>Imperial Guardian Sunday</value>
   </data>
+  <data name="DevilSquare4" xml:space="preserve">
+    <value>Devil Square 4</value>
+  </data>
+  <data name="DevilSquare3" xml:space="preserve">
+    <value>Devil Square 3</value>
+  </data>
+  <data name="DevilSquare2" xml:space="preserve">
+    <value>Devil Square 2</value>
+  </data>
+  <data name="DevilSquare1" xml:space="preserve">
+    <value>Devil Square 1</value>
+  </data>
+  <data name="Doppelganger4" xml:space="preserve">
+    <value>Doppelganger 4</value>
+  </data>
+  <data name="Doppelganger3" xml:space="preserve">
+    <value>Doppelganger 3</value>
+  </data>
+  <data name="Doppelganger2" xml:space="preserve">
+    <value>Doppelganger 2</value>
+  </data>
+  <data name="Doppelganger1" xml:space="preserve">
+    <value>Doppelganger 1</value>
+  </data>
+  <data name="KanturuRefineryTower" xml:space="preserve">
+    <value>Kanturu Refinery Tower</value>
+  </data>
+  <data name="ChaosCastle7" xml:space="preserve">
+    <value>Chaos Castle 7</value>
+  </data>
+  <data name="ChaosCastle6" xml:space="preserve">
+    <value>Chaos Castle 6</value>
+  </data>
+  <data name="ChaosCastle5" xml:space="preserve">
+    <value>Chaos Castle 5</value>
+  </data>
+  <data name="ChaosCastle4" xml:space="preserve">
+    <value>Chaos Castle 4</value>
+  </data>
+  <data name="ChaosCastle3" xml:space="preserve">
+    <value>Chaos Castle 3</value>
+  </data>
+  <data name="ChaosCastle2" xml:space="preserve">
+    <value>Chaos Castle 2</value>
+  </data>
+  <data name="ChaosCastle1" xml:space="preserve">
+    <value>Chaos Castle 1</value>
+  </data>
+  <data name="BloodCastle8" xml:space="preserve">
+    <value>Blood Castle 8</value>
+  </data>
+  <data name="BloodCastle7" xml:space="preserve">
+    <value>Blood Castle 7</value>
+  </data>
+  <data name="BloodCastle6" xml:space="preserve">
+    <value>Blood Castle 6</value>
+  </data>
+  <data name="BloodCastle5" xml:space="preserve">
+    <value>Blood Castle 5</value>
+  </data>
+  <data name="BloodCastle4" xml:space="preserve">
+    <value>Blood Castle 4</value>
+  </data>
+  <data name="BloodCastle3" xml:space="preserve">
+    <value>Blood Castle 3</value>
+  </data>
+  <data name="BloodCastle2" xml:space="preserve">
+    <value>Blood Castle 2</value>
+  </data>
+  <data name="BloodCastle1" xml:space="preserve">
+    <value>Blood Castle 1</value>
+  </data>
+  <data name="DevilSquare7" xml:space="preserve">
+    <value>Devil Square 7</value>
+  </data>
+  <data name="DevilSquare6" xml:space="preserve">
+    <value>Devil Square 6</value>
+  </data>
+  <data name="DevilSquare5" xml:space="preserve">
+    <value>Devil Square 5</value>
+  </data>
 </root>

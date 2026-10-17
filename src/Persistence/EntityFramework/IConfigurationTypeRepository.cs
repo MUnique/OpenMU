@@ -19,4 +19,9 @@ internal interface IConfigurationTypeRepository
     /// </summary>
     /// <param name="changedInstance">The changed instance.</param>
     void UpdateCachedInstances(object changedInstance);
+
+    /// <summary>
+    /// Refreshes the caches of all game configurations, after objects were added to or removed from them.
+    /// </summary>
+    void RefreshCaches();
 }

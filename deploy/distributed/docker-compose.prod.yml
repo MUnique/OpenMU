@@ -43,51 +43,19 @@ services:
     restart: "unless-stopped"
     environment:
       GF_SERVER_ROOT_URL: https://${DOMAIN_NAME}/grafana/
-  redis-state:
-    restart: "unless-stopped"
-  dapr-placement:
-    restart: "unless-stopped"
-  rabbit:
-    restart: "unless-stopped"
-  database:
-    restart: "unless-stopped"
 
-  connectServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  loginServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  friendServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  guildServer:
-    restart: "unless-stopped"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  chatServer:
-    restart: "unless-stopped"
+  centralServer:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   adminPanel:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-  
+
   gameServer0:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   gameServer1:
-    restart: "unless-stopped"
     environment:
       ASPNETCORE_ENVIRONMENT: Production

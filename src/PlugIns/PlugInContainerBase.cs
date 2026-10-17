@@ -11,10 +11,13 @@ using Nito.AsyncEx;
 /// </summary>
 /// <remarks>
 /// It is used by the <see cref="PlugInProxyTypeGenerator"/> to implement proxies with Roslyn.
+/// The container subscribes to the events of its <see cref="PlugInManager"/>, which usually lives as long as the
+/// whole server. A container with a shorter lifetime (e.g. one per player) has to be disposed to unsubscribe again,
+/// otherwise the manager keeps it and everything it references alive.
 /// </remarks>
 /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
 /// <seealso cref="IPlugInContainer{TPlugIn}" />
-public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
+public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>, IDisposable
     where TPlugIn : class
 {
     private readonly IList<TPlugIn> _knownPlugIns = new List<TPlugIn>();
@@ -45,6 +48,11 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     protected AsyncReaderWriterLock Lock { get; } = new();
 
     /// <summary>
+    /// Gets a value indicating whether this instance is disposed.
+    /// </summary>
+    protected bool IsDisposed { get; private set; }
+
+    /// <summary>
     /// Gets the currently active plug ins.
     /// </summary>
     /// <value>
@@ -62,6 +70,13 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
             using var l = this.Lock.ReaderLock();
             return this._knownPlugIns.ToList();
         }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
@@ -121,6 +136,26 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     protected virtual void AfterDeactivatePlugInType(TPlugIn deactivatedPlugIn)
     {
         // can be overwritten to do additional stuff after deactivating the plugin.
+    }
+
+    /// <summary>
+    /// Releases the subscriptions to the <see cref="Manager"/>.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.IsDisposed)
+        {
+            return;
+        }
+
+        this.IsDisposed = true;
+        if (disposing)
+        {
+            this.Manager.PlugInActivated -= this.OnPlugInActivated;
+            this.Manager.PlugInDeactivated -= this.OnPlugInDeactivated;
+            this.Manager.PlugInConfigurationChanged -= this.OnPlugInConfigurationChanged;
+        }
     }
 
     /// <summary>

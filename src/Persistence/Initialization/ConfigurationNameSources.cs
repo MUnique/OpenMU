@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.Runtime.CompilerServices;
+
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Registers the resources of the built-in configuration names as sources of <see cref="LocalizedString"/>s,
@@ -28,6 +28,24 @@ public static class ConfigurationNameSources
         RegisterIfNeeded(nameof(MiniGameNames), MiniGameNames.ResourceManager);
         RegisterIfNeeded(nameof(MiniGameDescriptions), MiniGameDescriptions.ResourceManager);
         RegisterIfNeeded(nameof(SkillNames), SkillNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemOptionNames), ItemOptionNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemOptionTypeNames), ItemOptionTypeNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemOptionDescriptions), ItemOptionDescriptions.ResourceManager);
+        RegisterIfNeeded(nameof(ItemSetNames), ItemSetNames.ResourceManager);
+        RegisterIfNeeded(nameof(ArmorSetNames), ArmorSetNames.ResourceManager);
+        RegisterIfNeeded(nameof(CraftingNames), CraftingNames.ResourceManager);
+        RegisterIfNeeded(nameof(DropGroupDescriptions), DropGroupDescriptions.ResourceManager);
+        RegisterIfNeeded(nameof(ItemDropDescriptions), ItemDropDescriptions.ResourceManager);
+        RegisterIfNeeded(nameof(ItemSlotNames), ItemSlotNames.ResourceManager);
+        RegisterIfNeeded(nameof(LevelBonusDescriptions), LevelBonusDescriptions.ResourceManager);
+        RegisterIfNeeded(nameof(LevelBonusNames), LevelBonusNames.ResourceManager);
+        RegisterIfNeeded(nameof(MagicEffectNames), MagicEffectNames.ResourceManager);
+        RegisterIfNeeded(nameof(MasterSkillRootNames), MasterSkillRootNames.ResourceManager);
+        RegisterIfNeeded(nameof(MiniGameEventTexts), MiniGameEventTexts.ResourceManager);
+        RegisterIfNeeded(nameof(MiniGameWaveTexts), MiniGameWaveTexts.ResourceManager);
+        RegisterIfNeeded(nameof(QuestNames), QuestNames.ResourceManager);
+        RegisterIfNeeded(nameof(SkillComboNames), SkillComboNames.ResourceManager);
+        RegisterIfNeeded(nameof(WarpNames), WarpNames.ResourceManager);
     }
 
     /// <summary>

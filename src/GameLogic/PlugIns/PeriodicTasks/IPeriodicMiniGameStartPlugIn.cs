@@ -21,7 +21,9 @@ public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>, I
     /// <param name="gameContext">The game context.</param>
     /// <param name="miniGameDefinition">The mini game definition.</param>
     /// <returns>
-    /// The duration until next start.
+    /// The duration until next start; <see cref="TimeSpan.Zero"/> while entering is open,
+    /// including on servers where the event is disabled but a run is still open;
+    /// <c>null</c> when no start is scheduled and, on excluded servers, when no run is open.
     /// </returns>
     ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition);
 
@@ -40,6 +42,13 @@ public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>, I
     /// <param name="gameContext">The game context.</param>
     /// <returns><c>true</c> if an event is currently active; otherwise, <c>false</c>.</returns>
     bool IsEventActive(IGameContext gameContext);
+
+    /// <summary>
+    /// Determines whether the event runs on the game server which owns the given game context.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> if the event runs in this context; otherwise, <c>false</c>.</returns>
+    bool IsEnabledOn(IGameContext gameContext);
 
     /// <summary>
     /// Disposes all currently tracked game instances of this kind on the given game context.

@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Level2ndWingOptions" xml:space="preserve">
+    <value>2nd Wing Options</value>
+  </data>
+  <data name="Level3rdWingOptions" xml:space="preserve">
+    <value>3rd Wing Options</value>
+  </data>
+  <data name="AgnisAncientSet" xml:space="preserve">
+    <value>Agnis (Ancient Set)</value>
+  </data>
+  <data name="AncientBonusOfTotalAgility" xml:space="preserve">
+    <value>Ancient Bonus of Total Agility</value>
+  </data>
+  <data name="AncientBonusOfTotalEnergy" xml:space="preserve">
+    <value>Ancient Bonus of Total Energy</value>
+  </data>
+  <data name="AncientBonusOfTotalStrength" xml:space="preserve">
+    <value>Ancient Bonus of Total Strength</value>
+  </data>
+  <data name="AncientBonusOfTotalVitality" xml:space="preserve">
+    <value>Ancient Bonus of Total Vitality</value>
+  </data>
+  <data name="AnonymousAncientSet" xml:space="preserve">
+    <value>Anonymous (Ancient Set)</value>
+  </data>
+  <data name="AnubisAncientSet" xml:space="preserve">
+    <value>Anubis (Ancient Set)</value>
+  </data>
+  <data name="ApolloAncientSet" xml:space="preserve">
+    <value>Apollo (Ancient Set)</value>
+  </data>
+  <data name="ArgoAncientSet" xml:space="preserve">
+    <value>Argo (Ancient Set)</value>
+  </data>
+  <data name="AruanAncientSet" xml:space="preserve">
+    <value>Aruan (Ancient Set)</value>
+  </data>
+  <data name="BarnakeAncientSet" xml:space="preserve">
+    <value>Barnake (Ancient Set)</value>
+  </data>
+  <data name="BaseDamageBonusPhysicalAndWizardryMinAndMaxOption" xml:space="preserve">
+    <value>Base Damage Bonus (physical and wizardry, min and max) Option</value>
+  </data>
+  <data name="BaseDefenseOption" xml:space="preserve">
+    <value>Base Defense Option</value>
+  </data>
+  <data name="BerserkerAncientSet" xml:space="preserve">
+    <value>Berserker (Ancient Set)</value>
+  </data>
+  <data name="BroyAncientSet" xml:space="preserve">
+    <value>Broy (Ancient Set)</value>
+  </data>
+  <data name="CapeOfEmperorOptions" xml:space="preserve">
+    <value>Cape of Emperor Options</value>
+  </data>
+  <data name="CapeOfFighterOptions" xml:space="preserve">
+    <value>Cape of Fighter Options</value>
+  </data>
+  <data name="CapeOfLordOptions" xml:space="preserve">
+    <value>Cape of Lord Options</value>
+  </data>
+  <data name="CapeOfOverruleOptions" xml:space="preserve">
+    <value>Cape of Overrule Options</value>
+  </data>
+  <data name="CetoAncientSet" xml:space="preserve">
+    <value>Ceto (Ancient Set)</value>
+  </data>
+  <data name="ChronoAncientSet" xml:space="preserve">
+    <value>Chrono (Ancient Set)</value>
+  </data>
+  <data name="CloudAncientSet" xml:space="preserve">
+    <value>Cloud (Ancient Set)</value>
+  </data>
+  <data name="CompleteSetBonusLevel10" xml:space="preserve">
+    <value>Complete Set Bonus (Level 10)</value>
+  </data>
+  <data name="CompleteSetBonusLevel11" xml:space="preserve">
+    <value>Complete Set Bonus (Level 11)</value>
+  </data>
+  <data name="CompleteSetBonusLevel12" xml:space="preserve">
+    <value>Complete Set Bonus (Level 12)</value>
+  </data>
+  <data name="CompleteSetBonusLevel13" xml:space="preserve">
+    <value>Complete Set Bonus (Level 13)</value>
+  </data>
+  <data name="CompleteSetBonusLevel14" xml:space="preserve">
+    <value>Complete Set Bonus (Level 14)</value>
+  </data>
+  <data name="CompleteSetBonusLevel15" xml:space="preserve">
+    <value>Complete Set Bonus (Level 15)</value>
+  </data>
+  <data name="CompleteSetBonusAnyLevel" xml:space="preserve">
+    <value>Complete Set Bonus (any level)</value>
+  </data>
+  <data name="CurseBaseDamageMinAndMaxOption" xml:space="preserve">
+    <value>Curse Base Damage (min and max) Option</value>
+  </data>
+  <data name="DarkHorseOptions" xml:space="preserve">
+    <value>Dark Horse Options</value>
+  </data>
+  <data name="DefenseRatePvMOption" xml:space="preserve">
+    <value>Defense Rate (PvM) Option</value>
+  </data>
+  <data name="DinorantOptions" xml:space="preserve">
+    <value>Dinorant Options</value>
+  </data>
+  <data name="DrakeAncientSet" xml:space="preserve">
+    <value>Drake (Ancient Set)</value>
+  </data>
+  <data name="EliteSkeletonTransformationRing" xml:space="preserve">
+    <value>Elite Skeleton Transformation Ring</value>
+  </data>
+  <data name="ElvianAncientSet" xml:space="preserve">
+    <value>Elvian (Ancient Set)</value>
+  </data>
+  <data name="EnisAncientSet" xml:space="preserve">
+    <value>Enis (Ancient Set)</value>
+  </data>
+  <data name="EpleteAncientSet" xml:space="preserve">
+    <value>Eplete (Ancient Set)</value>
+  </data>
+  <data name="EvisAncientSet" xml:space="preserve">
+    <value>Evis (Ancient Set)</value>
+  </data>
+  <data name="ExcellentDefenseOptions" xml:space="preserve">
+    <value>Excellent Defense Options</value>
+  </data>
+  <data name="ExcellentPhysicalAttackOptions" xml:space="preserve">
+    <value>Excellent Physical Attack Options</value>
+  </data>
+  <data name="ExcellentWizardryAttackOptions" xml:space="preserve">
+    <value>Excellent Wizardry Attack Options</value>
+  </data>
+  <data name="FaseAncientSet" xml:space="preserve">
+    <value>Fase (Ancient Set)</value>
+  </data>
+  <data name="FenrirOptions" xml:space="preserve">
+    <value>Fenrir Options</value>
+  </data>
+  <data name="GaiaAncientSet" xml:space="preserve">
+    <value>Gaia (Ancient Set)</value>
+  </data>
+  <data name="GaionAncientSet" xml:space="preserve">
+    <value>Gaion (Ancient Set)</value>
+  </data>
+  <data name="GarudaAncientSet" xml:space="preserve">
+    <value>Garuda (Ancient Set)</value>
+  </data>
+  <data name="GuardianOptionArmor" xml:space="preserve">
+    <value>Guardian Option (Armor)</value>
+  </data>
+  <data name="GuardianOptionBoots" xml:space="preserve">
+    <value>Guardian Option (Boots)</value>
+  </data>
+  <data name="GuardianOptionGloves" xml:space="preserve">
+    <value>Guardian Option (Gloves)</value>
+  </data>
+  <data name="GuardianOptionHelm" xml:space="preserve">
+    <value>Guardian Option (Helm)</value>
+  </data>
+  <data name="GuardianOptionPants" xml:space="preserve">
+    <value>Guardian Option (Pants)</value>
+  </data>
+  <data name="GuardianOptionWeapon" xml:space="preserve">
+    <value>Guardian Option (Weapon)</value>
+  </data>
+  <data name="GywenAncientSet" xml:space="preserve">
+    <value>Gywen (Ancient Set)</value>
+  </data>
+  <data name="HarmonyDefenseOptions" xml:space="preserve">
+    <value>Harmony Defense Options</value>
+  </data>
+  <data name="HarmonyPhysicalAttackOptions" xml:space="preserve">
+    <value>Harmony Physical Attack Options</value>
+  </data>
+  <data name="HarmonyWizardryAttackOptions" xml:space="preserve">
+    <value>Harmony Wizardry Attack Options</value>
+  </data>
+  <data name="HealthRecoverForJewelery" xml:space="preserve">
+    <value>Health recover for jewelery</value>
+  </data>
+  <data name="HerasAncientSet" xml:space="preserve">
+    <value>Heras (Ancient Set)</value>
+  </data>
+  <data name="HyonAncientSet" xml:space="preserve">
+    <value>Hyon (Ancient Set)</value>
+  </data>
+  <data name="HyperionAncientSet" xml:space="preserve">
+    <value>Hyperion (Ancient Set)</value>
+  </data>
+  <data name="JeweleryOptionMaximumAbility" xml:space="preserve">
+    <value>Jewelery option Maximum Ability</value>
+  </data>
+  <data name="JeweleryOptionMaximumMana" xml:space="preserve">
+    <value>Jewelery option Maximum Mana</value>
+  </data>
+  <data name="KantataAncientSet" xml:space="preserve">
+    <value>Kantata (Ancient Set)</value>
+  </data>
+  <data name="KarisAncientSet" xml:space="preserve">
+    <value>Karis (Ancient Set)</value>
+  </data>
+  <data name="Luck" xml:space="preserve">
+    <value>Luck</value>
+  </data>
+  <data name="MinetAncientSet" xml:space="preserve">
+    <value>Minet (Ancient Set)</value>
+  </data>
+  <data name="MistAncientSet" xml:space="preserve">
+    <value>Mist (Ancient Set)</value>
+  </data>
+  <data name="MurenAncientSet" xml:space="preserve">
+    <value>Muren (Ancient Set)</value>
+  </data>
+  <data name="OdinAncientSet" xml:space="preserve">
+    <value>Odin (Ancient Set)</value>
+  </data>
+  <data name="PhysicalBaseDamageMinAndMaxOption" xml:space="preserve">
+    <value>Physical Base Damage (min and max) Option</value>
+  </data>
+  <data name="RaveAncientSet" xml:space="preserve">
+    <value>Rave (Ancient Set)</value>
+  </data>
+  <data name="SemedenAncientSet" xml:space="preserve">
+    <value>Semeden (Ancient Set)</value>
+  </data>
+  <data name="SkeletonTransformationRing" xml:space="preserve">
+    <value>Skeleton Transformation Ring</value>
+  </data>
+  <data name="SocketBonusOptionsArmors" xml:space="preserve">
+    <value>Socket Bonus Options (Armors)</value>
+  </data>
+  <data name="SocketBonusOptionsPhysical" xml:space="preserve">
+    <value>Socket Bonus Options (Physical)</value>
+  </data>
+  <data name="SocketBonusOptionsWizardry" xml:space="preserve">
+    <value>Socket Bonus Options (Wizardry)</value>
+  </data>
+  <data name="SocketOptionsEarth" xml:space="preserve">
+    <value>Socket Options (Earth)</value>
+  </data>
+  <data name="SocketOptionsFire" xml:space="preserve">
+    <value>Socket Options (Fire)</value>
+  </data>
+  <data name="SocketOptionsIce" xml:space="preserve">
+    <value>Socket Options (Ice)</value>
+  </data>
+  <data name="SocketOptionsLightning" xml:space="preserve">
+    <value>Socket Options (Lightning)</value>
+  </data>
+  <data name="SocketOptionsWater" xml:space="preserve">
+    <value>Socket Options (Water)</value>
+  </data>
+  <data name="SocketOptionsWind" xml:space="preserve">
+    <value>Socket Options (Wind)</value>
+  </data>
+  <data name="SylionAncientSet" xml:space="preserve">
+    <value>Sylion (Ancient Set)</value>
+  </data>
+  <data name="ViciousAncientSet" xml:space="preserve">
+    <value>Vicious (Ancient Set)</value>
+  </data>
+  <data name="WarriorAncientSet" xml:space="preserve">
+    <value>Warrior (Ancient Set)</value>
+  </data>
+  <data name="WingOfDimensionOptions" xml:space="preserve">
+    <value>Wing of Dimension Options</value>
+  </data>
+  <data name="WingOfEternalOptions" xml:space="preserve">
+    <value>Wing of Eternal Options</value>
+  </data>
+  <data name="WingOfIllusionOptions" xml:space="preserve">
+    <value>Wing of Illusion Options</value>
+  </data>
+  <data name="WingOfRuinOptions" xml:space="preserve">
+    <value>Wing of Ruin Options</value>
+  </data>
+  <data name="WingOfStormOptions" xml:space="preserve">
+    <value>Wing of Storm Options</value>
+  </data>
+  <data name="WingsOfCurseOptions" xml:space="preserve">
+    <value>Wings of Curse Options</value>
+  </data>
+  <data name="WingsOfDarknessOptions" xml:space="preserve">
+    <value>Wings of Darkness Options</value>
+  </data>
+  <data name="WingsOfDespairOptions" xml:space="preserve">
+    <value>Wings of Despair Options</value>
+  </data>
+  <data name="WingsOfDragonOptions" xml:space="preserve">
+    <value>Wings of Dragon Options</value>
+  </data>
+  <data name="WingsOfElfOptions" xml:space="preserve">
+    <value>Wings of Elf Options</value>
+  </data>
+  <data name="WingsOfHeavenOptions" xml:space="preserve">
+    <value>Wings of Heaven Options</value>
+  </data>
+  <data name="WingsOfSatanOptions" xml:space="preserve">
+    <value>Wings of Satan Options</value>
+  </data>
+  <data name="WingsOfSoulOptions" xml:space="preserve">
+    <value>Wings of Soul Options</value>
+  </data>
+  <data name="WingsOfSpiritsOptions" xml:space="preserve">
+    <value>Wings of Spirits Options</value>
+  </data>
+  <data name="WizardryBaseDamageMinAndMaxOption" xml:space="preserve">
+    <value>Wizardry Base Damage (min and max) Option</value>
+  </data>
+</root>

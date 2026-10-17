@@ -18,7 +18,7 @@ using Nito.AsyncEx;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
-/// A state publisher for a <see cref="IManageableServer"/>,
+/// A state publisher for the <see cref="IManageableServer"/>s of this process,
 /// which can be handled with a corresponding <see cref="ManagableServerRegistry"/>.
 /// The server registration is deferred to <see cref="StartedAsync"/> which is called after the web application
 /// has started (i.e. the HTTP API is already available), breaking the circular startup dependency with the Dapr sidecar.
@@ -35,8 +35,7 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
     private readonly IServiceProvider _serviceProvider;
     private readonly AsyncLock _lock = new();
 
-    private IManageableServer? _server;
-    private ServerStateData? _data;
+    private IReadOnlyList<(IManageableServer Server, ServerStateData Data)>? _servers;
 
     private Task? _heartbeatTask;
     private CancellationTokenSource? _heartbeatCancellationTokenSource;
@@ -45,7 +44,7 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
     /// Initializes a new instance of the <see cref="ManagableServerStatePublisher"/> class.
     /// </summary>
     /// <param name="daprClient">The dapr client.</param>
-    /// <param name="serviceProvider">The service provider used to lazily resolve <see cref="IManageableServer"/>.</param>
+    /// <param name="serviceProvider">The service provider used to lazily resolve the <see cref="IManageableServer"/>s.</param>
     /// <param name="logger">The logger.</param>
     public ManagableServerStatePublisher(DaprClient daprClient, IServiceProvider serviceProvider, ILogger<ManagableServerStatePublisher> logger)
     {
@@ -118,15 +117,18 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
 
     private async Task InitializeServerAsync(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested && this._server is null)
+        while (!cancellationToken.IsCancellationRequested && this._servers is null)
         {
             try
             {
-                var server = this._serviceProvider.GetRequiredService<IManageableServer>();
-                server.PropertyChanged -= this.OnPropertyChanged; // Ensure single subscription in case of retry
-                server.PropertyChanged += this.OnPropertyChanged;
-                this._data = new ServerStateData(server);
-                this._server = server;
+                var servers = this._serviceProvider.GetManageableServers().ToList();
+                foreach (var server in servers)
+                {
+                    server.PropertyChanged -= this.OnPropertyChanged; // Ensure single subscription in case of retry
+                    server.PropertyChanged += this.OnPropertyChanged;
+                }
+
+                this._servers = servers.Select(server => (server, new ServerStateData(server))).ToList();
             }
             catch (Exception ex)
             {
@@ -138,7 +140,7 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
 
     private async Task PublishCurrentStateAsync()
     {
-        if (this._server is null || this._data is null)
+        if (this._servers is not { } servers)
         {
             return;
         }
@@ -149,14 +151,17 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
             return;
         }
 
-        try
+        foreach (var (server, data) in servers)
         {
-            this._data.UpdateState(this._server);
-            await this._daprClient.PublishEventAsync("pubsub", TopicName, this._data).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Error sending server status update");
+            try
+            {
+                data.UpdateState(server);
+                await this._daprClient.PublishEventAsync("pubsub", TopicName, data).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error sending server status update of server {0}", server.Id);
+            }
         }
     }
 

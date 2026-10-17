@@ -22,6 +22,11 @@ public static class TypeHelper
     private static readonly ConcurrentDictionary<(Assembly Origin, Type BaseType), Type> BaseToPersistentTypes = new();
 
     /// <summary>
+    /// The generated persistent type registries of the assemblies, prepared for lookups; <c>null</c> for assemblies without one.
+    /// </summary>
+    private static readonly ConcurrentDictionary<Assembly, RegistryLookup?> Registries = new();
+
+    /// <summary>
     /// Gets the ef core type of <typeparamref name="TBase"/>.
     /// </summary>
     /// <typeparam name="TBase">Base type of the data model.</typeparam>
@@ -46,7 +51,29 @@ public static class TypeHelper
             return baseType;
         }
 
+        if (GetRegistry(origin)?.ByBaseType.TryGetValue(baseType, out var persistentType) ?? false)
+        {
+            return persistentType.Type;
+        }
+
         return BaseToPersistentTypes.GetOrAdd((origin, baseType), static key => key.Origin.GetTypes().First(t => t.BaseType == key.BaseType));
+    }
+
+    /// <summary>
+    /// Finds the persistent type of the given type in the generated <see cref="IPersistentTypeRegistry"/> of the originating assembly.
+    /// </summary>
+    /// <param name="origin">The originating assembly of the persistent type.</param>
+    /// <param name="type">The persistent type, or its base type of the data model.</param>
+    /// <returns>The persistent type; <c>null</c>, if the assembly has no registry, or if it doesn't contain the type.</returns>
+    public static PersistentType? FindPersistentType(this Assembly origin, Type type)
+    {
+        if (GetRegistry(origin) is not { } registry)
+        {
+            return null;
+        }
+
+        var types = type.Assembly == origin ? registry.ByType : registry.ByBaseType;
+        return types.GetValueOrDefault(type);
     }
 
     /// <summary>
@@ -61,6 +88,11 @@ public static class TypeHelper
     public static TBase CreateNew<TBase>(this Assembly origin, params object?[] args)
         where TBase : class
     {
+        if (args.Length == 0 && origin.FindPersistentType(typeof(TBase))?.CreateInstance() is TBase instance)
+        {
+            return instance;
+        }
+
         var persistentType = origin.GetPersistentTypeOf<TBase>();
         if (args.Length == 0)
         {
@@ -81,6 +113,11 @@ public static class TypeHelper
     /// </returns>
     public static object CreateNew(this Assembly origin, Type type, params object?[] args)
     {
+        if (args.Length == 0 && origin.FindPersistentType(type)?.CreateInstance() is { } instance)
+        {
+            return instance;
+        }
+
         var persistentType = origin.GetPersistentTypeOf(type);
         if (args.Length == 0)
         {
@@ -122,5 +159,38 @@ public static class TypeHelper
         }
 
         return false;
+    }
+
+    private static RegistryLookup? GetRegistry(Assembly origin)
+    {
+        return Registries.GetOrAdd(
+            origin,
+            static assembly => assembly.GetCustomAttribute<PersistentTypeRegistryAttribute>() is { } attribute
+                               && Activator.CreateInstance(attribute.RegistryType) is IPersistentTypeRegistry registry
+                ? new RegistryLookup(registry)
+                : null);
+    }
+
+    /// <summary>
+    /// The persistent types of a <see cref="IPersistentTypeRegistry"/>, by their type and by their base type.
+    /// </summary>
+    private sealed class RegistryLookup
+    {
+        public RegistryLookup(IPersistentTypeRegistry registry)
+        {
+            foreach (var persistentType in registry.Types)
+            {
+                this.ByType.TryAdd(persistentType.Type, persistentType);
+                if (persistentType.BaseType is { } baseType && baseType.Assembly != persistentType.Type.Assembly)
+                {
+                    // Like Assembly.GetTypes().First(t => t.BaseType == baseType), the first type wins.
+                    this.ByBaseType.TryAdd(baseType, persistentType);
+                }
+            }
+        }
+
+        public Dictionary<Type, PersistentType> ByType { get; } = new();
+
+        public Dictionary<Type, PersistentType> ByBaseType { get; } = new();
     }
 }

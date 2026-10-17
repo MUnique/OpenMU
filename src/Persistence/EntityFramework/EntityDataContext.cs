@@ -46,6 +46,11 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<CastleSiegeData> CastleSiegeData => this.Set<CastleSiegeData>();
 
     /// <summary>
+    /// Gets the persistent state of the crywolf event.
+    /// </summary>
+    internal DbSet<CrywolfData> CrywolfData => this.Set<CrywolfData>();
+
+    /// <summary>
     /// Gets the Castle Siege guild registrations.
     /// </summary>
     internal DbSet<CastleSiegeGuildRegistration> CastleSiegeGuildRegistrations => this.Set<CastleSiegeGuildRegistration>();
@@ -59,6 +64,16 @@ public class EntityDataContext : ExtendedTypeContext
     /// Gets pending Castle Siege participant rewards.
     /// </summary>
     internal DbSet<CastleSiegePendingReward> CastleSiegePendingRewards => this.Set<CastleSiegePendingReward>();
+
+    /// <summary>
+    /// Gets the items of the cash shop storages of the accounts.
+    /// </summary>
+    internal DbSet<CashShopStorageItem> CashShopStorageItems => this.Set<CashShopStorageItem>();
+
+    /// <summary>
+    /// Gets the grants of cash shop coins to the accounts.
+    /// </summary>
+    internal DbSet<CashShopCoinGrant> CashShopCoinGrants => this.Set<CashShopCoinGrant>();
 
     /// <summary>
     /// Gets the gens memberships of the characters.
@@ -114,6 +129,8 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CastleSiegePendingReward>().Apply();
         modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
         modelBuilder.Entity<CastleSiegeNpcState>().Apply();
+        modelBuilder.Entity<CashShopStorageItem>().Apply();
+        modelBuilder.Entity<CashShopCoinGrant>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();

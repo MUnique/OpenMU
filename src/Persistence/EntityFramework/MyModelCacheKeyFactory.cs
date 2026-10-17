@@ -38,7 +38,8 @@ public class MyModelCacheKeyFactory : ModelCacheKeyFactory
     {
         if (context is TypedContext typedContext)
         {
-            return (typeof(TypedContext), typedContext.EditType);
+            // The design time model is a different one than the read-optimized runtime model, so it needs another key.
+            return (typeof(TypedContext), typedContext.EditType, designTime);
         }
 
         return base.Create(context, designTime);

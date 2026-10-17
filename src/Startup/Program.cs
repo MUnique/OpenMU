@@ -36,13 +36,16 @@ using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Startup.TestActors;
+using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.API;
+using MUnique.OpenMU.Web.Map;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
 using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;
+using Serilog.Extensions.Logging;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -52,15 +55,10 @@ internal sealed class Program : IDisposable
     private static bool _confirmExit;
     private static SystemConfiguration? _systemConfiguration;
 
-    /// <summary>
-    /// Gets the resolved server time zone (from <see cref="SystemConfiguration.TimeZoneId"/>),
-    /// used to interpret the times of periodic event schedules. Defaults to <see cref="TimeZoneInfo.Utc"/>.
-    /// </summary>
-    internal static TimeZoneInfo ServerTimeZone { get; private set; } = TimeZoneInfo.Utc;
-
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
     private readonly Serilog.ILogger _logger;
+    private readonly LoggerProviderCollection _loggerProviders = new();
     private readonly IConfiguration _configuration;
 
     private IHost? _serverHost;
@@ -82,8 +80,15 @@ internal sealed class Program : IDisposable
         this._configuration = configuration;
         this._logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
+            .WriteTo.Providers(this._loggerProviders)
             .CreateLogger();
     }
+
+    /// <summary>
+    /// Gets the resolved server time zone (from <see cref="SystemConfiguration.TimeZoneId"/>),
+    /// used to interpret the times of periodic event schedules. Defaults to <see cref="TimeZoneInfo.Utc"/>.
+    /// </summary>
+    internal static TimeZoneInfo ServerTimeZone { get; private set; } = TimeZoneInfo.Utc;
 
     /// <summary>
     /// The main method.
@@ -230,6 +235,16 @@ internal sealed class Program : IDisposable
         }
     }
 
+    private static IPacketCaptureService CreatePacketCaptureService(IServiceProvider serviceProvider)
+    {
+        var serverProvider = serviceProvider.GetService<IServerProvider>()
+                             ?? throw new InvalidOperationException($"{nameof(IServerProvider)} not registered.");
+        var bufferSize = _systemConfiguration?.NetworkAnalyzerLiveBufferSize ?? 0;
+        return new PacketCaptureService(
+            serverProvider,
+            bufferSize > 0 ? bufferSize : LiveCapturedConnection.DefaultMaximumPacketCount);
+    }
+
     private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         if (e.IsTerminating)
@@ -240,6 +255,35 @@ internal sealed class Program : IDisposable
         {
             this._logger.Error(e.ExceptionObject as Exception, "Unhandled exception: {0}", e.ExceptionObject);
         }
+    }
+
+    /// <summary>
+    /// Adds the logging with Serilog and, if an OTLP endpoint is configured, the export of
+    /// logs, metrics and traces with OpenTelemetry.
+    /// </summary>
+    /// <param name="builder">The web application builder.</param>
+    /// <remarks>
+    /// Serilog stays in charge of the log levels, the console and the log files.
+    /// It writes to the logger providers of the host as well, of which only the OpenTelemetry
+    /// one is left - otherwise, the console of the host would get every entry twice.
+    /// </remarks>
+    private void AddLoggingAndTelemetry(WebApplicationBuilder builder)
+    {
+        if (!builder.Configuration.IsOtlpExportConfigured())
+        {
+            builder.Host.UseSerilog(this._logger);
+            return;
+        }
+
+        builder.Logging.ClearProviders();
+        builder.AddOpenTelemetry("openmu");
+
+        var metricsRegistry = new MetricsRegistry();
+        metricsRegistry.AddNetworkMeters();
+        metricsRegistry.AddMeters(GameLogic.Metrics.Meters);
+        builder.AddOpenTelemetryMetrics(metricsRegistry);
+
+        builder.Host.UseSerilog(this._logger, providers: this._loggerProviders);
     }
 
     private async Task<IHost> CreateHostAsync(string[] args)
@@ -254,7 +298,7 @@ internal sealed class Program : IDisposable
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Host.UseSerilog(this._logger);
+        this.AddLoggingAndTelemetry(builder);
         if (addAdminPanel)
         {
             // The storage of the admin panel users has to be registered before the panel itself,
@@ -308,6 +352,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<GameServerContainer>()
             .AddSingleton<IGameServerInstanceManager>(provider => provider.GetService<GameServerContainer>()!)
             .AddScoped<IMapFactory, JavascriptMapFactory>()
+            .AddCircuitConnectionState()
             .AddSingleton<SetupService>()
             .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
             .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
@@ -666,16 +711,6 @@ internal sealed class Program : IDisposable
         }
 
         return contextProvider;
-    }
-
-    private static IPacketCaptureService CreatePacketCaptureService(IServiceProvider serviceProvider)
-    {
-        var serverProvider = serviceProvider.GetService<IServerProvider>()
-                             ?? throw new InvalidOperationException($"{nameof(IServerProvider)} not registered.");
-        var bufferSize = _systemConfiguration?.NetworkAnalyzerLiveBufferSize ?? 0;
-        return new PacketCaptureService(
-            serverProvider,
-            bufferSize > 0 ? bufferSize : LiveCapturedConnection.DefaultMaximumPacketCount);
     }
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)

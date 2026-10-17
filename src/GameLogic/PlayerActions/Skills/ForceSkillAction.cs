@@ -42,6 +42,17 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Force Wave always hits, even if an outdated configuration defines it as an area skill.
+    /// </remarks>
+    protected override bool IsDirectHitSkill(Skill skill)
+    {
+        return base.IsDirectHitSkill(skill)
+               || skill.Number == ForceWaveSkillId
+               || skill.Number == ForceWaveStrengSkillId;
+    }
+
+    /// <inheritdoc/>
     protected override IEnumerable<IAttackable> DetermineTargets(Player player, IAttackable targetedTarget, Skill skill)
     {
         if (skill.Number != ForceWaveSkillId && skill.Number != ForceWaveStrengSkillId)
@@ -49,11 +60,9 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
             return targetedTarget.GetAsEnumerable();
         }
 
-        var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(player.Position, skill.Range + 4)
-                    .Where(a => a != player)
-                    .Where(a => !a.IsAtSafezone()).ToList()
-            ?? [];
+        var targetsInRange = player.CurrentMap is { } map
+            ? AreaSkillTargetSelector.WhereAttackableByDefault(map.GetAttackablesInRange(player.Position, skill.Range + 4), player, skill).ToList()
+            : [];
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {

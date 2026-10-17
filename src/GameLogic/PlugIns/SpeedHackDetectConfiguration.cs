@@ -14,9 +14,13 @@ public class SpeedHackDetectConfiguration
     /// <summary>
     /// Gets or sets a value indicating whether to auto-ban players that are cheating with speedhacks.
     /// </summary>
-    [DefaultValue(true)]
+    /// <remarks>
+    /// The checks are heuristics based on the time when the server processes the packets, so they
+    /// can be affected by network jitter. Because a ban is a heavy action, it's disabled by default.
+    /// </remarks>
+    [DefaultValue(false)]
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_AutoBan_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
-    public bool AutoBan { get; set; } = true;
+    public bool AutoBan { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to disconnect players that are cheating with speedhacks.
@@ -24,6 +28,15 @@ public class SpeedHackDetectConfiguration
     [DefaultValue(true)]
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_DisconnectOnViolation_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool DisconnectOnViolation { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether violations are only detected and logged,
+    /// without rejecting walks, resynchronizing, warning, banning or disconnecting.
+    /// Useful to trial the detection on a live server before enforcing it.
+    /// </summary>
+    [DefaultValue(false)]
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_ObserveOnly_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+    public bool ObserveOnly { get; set; }
 
     /// <summary>
     /// Gets or sets the threshold of warnings a player receives before being banned/disconnected.
@@ -51,10 +64,13 @@ public class SpeedHackDetectConfiguration
     /// <summary>
     /// Gets or sets the walk speed check tolerance threshold in milliseconds.
     /// Represents the maximum deficits allowed compared to expectations before a violation is flagged.
+    /// It's also the maximum walking time which is credited while no walk packets arrive, so it defines
+    /// how many tiles may arrive in a burst (e.g. after a network stall) without being flagged.
+    /// The value is scaled by the step delay of the player, relative to the normal step delay of 300 ms.
     /// </summary>
-    [DefaultValue(900)]
+    [DefaultValue(2000)]
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
-    public int WalkSpeedToleranceMs { get; set; } = 900;
+    public int WalkSpeedToleranceMs { get; set; } = 2000;
 
     /// <summary>
     /// Gets or sets the maximum distance offset between client walk start position and server position
@@ -63,6 +79,32 @@ public class SpeedHackDetectConfiguration
     [DefaultValue(5)]
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public int MaxAllowedWalkStartOffset { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the violation score at which a walk violation escalates from
+    /// a soft resynchronization to a hard rejection. Each violation adds to the
+    /// score proportionally to its overshoot, and the score halves every
+    /// <see cref="ViolationScoreHalfLifeMinutes"/> minutes. Isolated blips therefore
+    /// never escalate on their own, while sustained cheating does.
+    /// </summary>
+    /// <remarks>
+    /// Existing databases predate this setting and deserialize it as 0; values
+    /// below or equal to 0 fall back to the default at the check.
+    /// </remarks>
+    [DefaultValue(ViolationPolicy.DefaultRejectThreshold)]
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+    public double ViolationScoreRejectThreshold { get; set; } = ViolationPolicy.DefaultRejectThreshold;
+
+    /// <summary>
+    /// Gets or sets the half-life in minutes for the decay of the violation score.
+    /// </summary>
+    /// <remarks>
+    /// Existing databases predate this setting and deserialize it as 0; values
+    /// below or equal to 0 fall back to the default at the check.
+    /// </remarks>
+    [DefaultValue(ViolationPolicy.DefaultHalfLifeMinutes)]
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+    public double ViolationScoreHalfLifeMinutes { get; set; } = ViolationPolicy.DefaultHalfLifeMinutes;
 
     /// <summary>
     /// Gets or sets the maximum tokens for the token bucket attack check.

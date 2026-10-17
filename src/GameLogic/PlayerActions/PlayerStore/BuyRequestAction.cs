@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -46,7 +47,7 @@ public class BuyRequestAction
         }
 
         var item = requestedPlayer.ShopStorage.GetItem(slot);
-        if (item?.StorePrice is null)
+        if (item?.GetStorePrice() is not { } price)
         {
             player.Logger.LogDebug("Item unavailable, Slot {0}", slot);
             await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.NameMismatchOrPriceMissing, null)).ConfigureAwait(false);
@@ -67,11 +68,27 @@ public class BuyRequestAction
             return;
         }
 
-        var itemPrice = item.StorePrice.Value;
-
-        if (player.Money < itemPrice)
+        if (price.Kind != ShopPriceKind.Zen && !player.SupportsShopCurrencies())
         {
-            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.LackOfMoney, null)).ConfigureAwait(false);
+            // The client can't show such items, so it should never request them.
+            player.Logger.LogWarning("Player {0} tried to buy {1} with a price in {2} from the store of {3}, which its client can't show.", player, item, price.Kind, requestedPlayer);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ItemBlock, null)).ConfigureAwait(false);
+            return;
+        }
+
+        if (!ShopPrices.IsAllowed(player.GameContext, price))
+        {
+            player.Logger.LogDebug("The price of item {0} isn't allowed.", item);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerShopCurrencyNotAllowed), player.GetCurrencyName(price)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ItemBlock, null)).ConfigureAwait(false);
+            return;
+        }
+
+        var exchange = ShopPrices.GetExchange(price.Kind);
+        var fundsResult = exchange.CheckFunds(player, price);
+        if (fundsResult != ShopPaymentResult.Success)
+        {
+            await this.ShowPaymentFailedAsync(player, requestedPlayer, price, fundsResult).ConfigureAwait(false);
             return;
         }
 
@@ -101,36 +118,50 @@ public class BuyRequestAction
                 return;
             }
 
-            player.Logger.LogDebug("BuyRequest, Item Price: {0}", itemPrice);
-            if (player.TryRemoveMoney(itemPrice))
+            if (item.GetStorePrice() is not { } currentPrice || currentPrice.Amount != price.Amount || !currentPrice.HasSameCurrency(price))
             {
-                if (requestedPlayer.TryAddMoney(itemPrice))
-                {
-                    using var itemContext = requestedPlayer.GameContext.PersistenceContextProvider.CreateNewTradeContext();
-                    itemContext.Attach(item);
-                    await requestedPlayer.ShopStorage.RemoveItemAsync(item).ConfigureAwait(false);
-                    await requestedPlayer.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
-                    await requestedPlayer.InvokeViewPlugInAsync<IItemSoldByPlayerShopPlugIn>(p => p.ItemSoldByPlayerShopAsync(slot, player)).ConfigureAwait(false);
-                    await requestedPlayer.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
-                    item.ItemSlot = (byte)freeslot;
-                    item.StorePrice = null;
-                    await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
-                    requestedPlayer.PersistenceContext.Detach(item);
-                    await itemContext.SaveChangesAsync().ConfigureAwait(false);
-                    player.PersistenceContext.Attach(item);
-                    await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.Success, item)).ConfigureAwait(false);
-                    await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
-                    itemSold = true;
-
-                    player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToOtherPlayerPlugIn>()?.ItemSold(requestedPlayer, item, player);
-                }
-                else
-                {
-                    await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.MoneyOverflowOrNotEnoughSpace, null)).ConfigureAwait(false);
-                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SellerInventoryFull)).ConfigureAwait(false);
-                    player.TryAddMoney(itemPrice);
-                }
+                // The seller can't change prices while the store is open, but the slot may contain another item by now.
+                player.Logger.LogDebug("The price of the item changed, Slot {0}", slot);
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.NameMismatchOrPriceMissing, null)).ConfigureAwait(false);
+                return;
             }
+
+            player.Logger.LogDebug("BuyRequest, Item Price: {0} {1}", price.Amount, price.PriceItem?.ToString() ?? price.CoinType?.ToString() ?? "zen");
+            using var itemContext = requestedPlayer.GameContext.PersistenceContextProvider.CreateNewTradeContext();
+            var purchase = new ShopPurchase(player, requestedPlayer, price, itemContext);
+            var paymentResult = await exchange.TryPayAsync(purchase).ConfigureAwait(false);
+            if (paymentResult != ShopPaymentResult.Success)
+            {
+                await this.ShowPaymentFailedAsync(player, requestedPlayer, price, paymentResult).ConfigureAwait(false);
+                return;
+            }
+
+            itemContext.Attach(item);
+            await requestedPlayer.ShopStorage.RemoveItemAsync(item).ConfigureAwait(false);
+            await exchange.NotifySellerAsync(purchase).ConfigureAwait(false);
+            await requestedPlayer.InvokeViewPlugInAsync<IItemSoldByPlayerShopPlugIn>(p => p.ItemSoldByPlayerShopAsync(slot, player)).ConfigureAwait(false);
+            await requestedPlayer.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
+            item.ItemSlot = (byte)freeslot;
+            item.SetStorePrice(null);
+            await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
+            requestedPlayer.PersistenceContext.Detach(item);
+            foreach (var (paymentItem, _) in purchase.PaymentItems)
+            {
+                player.PersistenceContext.Detach(paymentItem);
+            }
+
+            await itemContext.SaveChangesAsync().ConfigureAwait(false);
+            player.PersistenceContext.Attach(item);
+            foreach (var (paymentItem, _) in purchase.PaymentItems)
+            {
+                requestedPlayer.PersistenceContext.Attach(paymentItem);
+            }
+
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.Success, item)).ConfigureAwait(false);
+            await exchange.NotifyBuyerAsync(purchase).ConfigureAwait(false);
+            itemSold = true;
+
+            player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToOtherPlayerPlugIn>()?.ItemSold(requestedPlayer, item, player);
         }
 
         if (itemSold)
@@ -144,6 +175,34 @@ public class BuyRequestAction
             {
                 await this._closeStoreAction.CloseStoreAsync(requestedPlayer).ConfigureAwait(false);
             }
+        }
+    }
+
+    private async ValueTask ShowPaymentFailedAsync(Player player, Player seller, ShopPrice price, ShopPaymentResult paymentResult)
+    {
+        var isZen = price.Kind == ShopPriceKind.Zen;
+        switch (paymentResult)
+        {
+            case ShopPaymentResult.LackOfCurrency when isZen:
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(seller, ItemBuyResult.LackOfMoney, null)).ConfigureAwait(false);
+                break;
+            case ShopPaymentResult.LackOfCurrency:
+                // The client shows a message about zen for the result, so we tell the actual price.
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(seller, ItemBuyResult.LackOfPriceCurrency, null)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerShopNotEnoughCurrency), price.Amount, player.GetCurrencyName(price)).ConfigureAwait(false);
+                break;
+            case ShopPaymentResult.ExactAmountNotPayable:
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(seller, ItemBuyResult.LackOfPriceCurrency, null)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerShopItemPriceNotPayableExactly), price.Amount, player.GetCurrencyName(price)).ConfigureAwait(false);
+                break;
+            case ShopPaymentResult.SellerOverflow:
+            case ShopPaymentResult.SellerInventoryFull:
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(seller, ItemBuyResult.MoneyOverflowOrNotEnoughSpace, null)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SellerInventoryFull)).ConfigureAwait(false);
+                break;
+            default:
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(seller, ItemBuyResult.Undefined, null)).ConfigureAwait(false);
+                break;
         }
     }
 }

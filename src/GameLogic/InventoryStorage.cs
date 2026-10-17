@@ -134,10 +134,11 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="isEquipped">Whether <paramref name="item"/> is equipped or not.</param>
+    /// <param name="hasDurabilityFactorChanged">Whether <paramref name="item"/>'s durability factor has changed or not.</param>
     /// <returns>True, if successful.</returns>
-    public ValueTask RaiseEquippedItemsChangedAsync(Item item, bool isEquipped)
+    public ValueTask RaiseEquippedItemsChangedAsync(Item item, bool isEquipped, bool hasDurabilityFactorChanged = false)
     {
-        return this.EquippedItemsChanged?.Invoke(new ItemEventArgs(item, isEquipped)) ?? ValueTask.CompletedTask;
+        return this.EquippedItemsChanged?.Invoke(new ItemEventArgs(item, isEquipped, hasDurabilityFactorChanged)) ?? ValueTask.CompletedTask;
     }
 
     private bool IsWearingSlot(int slot)

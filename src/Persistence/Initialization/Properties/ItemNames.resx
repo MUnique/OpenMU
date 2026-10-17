@@ -2061,4 +2061,37 @@
   <data name="LittleWarriorsCloak" xml:space="preserve">
     <value>Little Warrior's Cloak</value>
   </data>
+  <data name="MagicBackpack" xml:space="preserve">
+    <value>Magic Backpack</value>
+  </data>
+  <data name="VaultExpansionCertificate" xml:space="preserve">
+    <value>Vault Expansion Certificate</value>
+  </data>
+  <data name="SummonerCharacterCard" xml:space="preserve">
+    <value>Summoner Character Card</value>
+  </data>
+  <data name="RageFighterCharacterCard" xml:space="preserve">
+    <value>Rage Fighter Character Card</value>
+  </data>
+  <data name="SignOfDimensions" xml:space="preserve">
+    <value>Sign of Dimensions</value>
+  </data>
+  <data name="DoppelgangerFreeTicket" xml:space="preserve">
+    <value>Doppelganger Free Ticket</value>
+  </data>
+  <data name="MirrorOfDimensions" xml:space="preserve">
+    <value>Mirror of Dimensions</value>
+  </data>
+  <data name="ShiningJewelleryCase" xml:space="preserve">
+    <value>Shining Jewellery Case</value>
+  </data>
+  <data name="ElegantJewelleryCase" xml:space="preserve">
+    <value>Elegant Jewellery Case</value>
+  </data>
+  <data name="SteelJewelleryCase" xml:space="preserve">
+    <value>Steel Jewellery Case</value>
+  </data>
+  <data name="OldJewelleryCase" xml:space="preserve">
+    <value>Old Jewellery Case</value>
+  </data>
 </root>

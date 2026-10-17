@@ -158,6 +158,17 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
     }
 
     /// <summary>
+    /// Determines whether the skill directly hits its targets with damage.
+    /// It can be overridden by derived classes which always hit, regardless of the configured skill type.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if the skill directly hits its targets; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsDirectHitSkill(Skill skill)
+    {
+        return skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill;
+    }
+
+    /// <summary>
     /// Determines the targets of the skill. It can be overridden by derived classes to provide custom target selection logic.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -266,7 +277,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         foreach (var target in targets)
         {
-            if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
+            if (this.IsDirectHitSkill(skill))
             {
                 if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
                 {

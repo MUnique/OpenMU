@@ -242,7 +242,28 @@ public class Wings : WingsInitializerBase
         optionDefinition.SetGuid(wing.GetItemId());
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
 
-        optionDefinition.Name = $"{name} Options";
+        optionDefinition.Name = number switch
+        {
+            0 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfElfOptions),
+            1 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfHeavenOptions),
+            2 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfSatanOptions),
+            41 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfCurseOptions),
+            3 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfSpiritsOptions),
+            4 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfSoulOptions),
+            5 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfDragonOptions),
+            6 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfDarknessOptions),
+            42 => LocalizedString.FromResource(() => ItemOptionNames.WingsOfDespairOptions),
+            49 => LocalizedString.FromResource(() => ItemOptionNames.CapeOfFighterOptions),
+            30 => LocalizedString.FromResource(() => ItemOptionNames.CapeOfLordOptions),
+            36 => LocalizedString.FromResource(() => ItemOptionNames.WingOfStormOptions),
+            37 => LocalizedString.FromResource(() => ItemOptionNames.WingOfEternalOptions),
+            38 => LocalizedString.FromResource(() => ItemOptionNames.WingOfIllusionOptions),
+            39 => LocalizedString.FromResource(() => ItemOptionNames.WingOfRuinOptions),
+            40 => LocalizedString.FromResource(() => ItemOptionNames.CapeOfEmperorOptions),
+            43 => LocalizedString.FromResource(() => ItemOptionNames.WingOfDimensionOptions),
+            50 => LocalizedString.FromResource(() => ItemOptionNames.CapeOfOverruleOptions),
+            _ => new LocalizedString($"{name.ValueInNeutralLanguage} Options"),
+        };
         optionDefinition.AddChance = 0.25f;
         optionDefinition.AddsRandomly = true;
         optionDefinition.MaximumOptionsPerItem = 1;
@@ -307,7 +328,7 @@ public class Wings : WingsInitializerBase
     {
         var definition = this.CreateSecondClassWingOptions();
         definition.SetGuid(ItemOptionDefinitionNumbers.Cape);
-        definition.Name = "Cape of Lord Options";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.CapeOfLordOptions);
         definition.PossibleOptions.Add(this.CreateWingOption(4, Stats.TotalLeadership, 10f, AggregateType.AddRaw, 5f)); // Increase Command +10~85. Increases your Command by 10 plus 5 for each level. Only Cape of Lord can have it (PvM, PvP)
         this.GameConfiguration.ItemOptions.Add(definition);
         foreach (var option in definition.PossibleOptions)
@@ -323,7 +344,7 @@ public class Wings : WingsInitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.Wing2nd);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "2nd Wing Options";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.Level2ndWingOptions);
         definition.AddChance = 0.1f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 1;
@@ -341,7 +362,7 @@ public class Wings : WingsInitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.Wing3rd);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = "3rd Wing Options";
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.Level3rdWingOptions);
         definition.AddChance = 0.1f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 1;

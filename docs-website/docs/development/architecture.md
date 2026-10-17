@@ -66,6 +66,25 @@ by implementing multiple view and packet handlers with different client version
 attributes. Each game server can have multiple TCP listeners bound to separate
 TCP ports for different client versions, too.
 
+## Game events for external systems
+
+Notable events of the game, like the start of a mini game or a rare item drop,
+can be published to the whole server as typed
+[`GameEvent`](https://github.com/MUnique/OpenMU/tree/master/src/Interfaces/GameEvent.cs)
+records through `IEventPublisher.GameEventAsync`. They are produced by the
+*Game Event Publisher* plugin, which translates the corresponding plugin points
+of the game logic into events.
+
+* In the all-in-one deployment, they are delivered to every
+  `IGameEventListener` which is registered in the dependency injection.
+* In the distributed deployment, they are published to the Dapr pub/sub
+  component with the topic `GameEventAsync`. The JSON contains the type of the
+  event in the `$type` property.
+
+The events only contain simple values, so that they can be serialized. Names of
+configuration objects are passed as the full value of a `LocalizedString`, so a
+receiver can translate them.
+
 ## Data access
 
 The access pattern is mainly this:

@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
@@ -33,6 +34,7 @@ public class Orbs : InitializerBase
     /// <remarks>
     /// Regex: (?m)^\s*(\d+)\s+(-*\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\"(.+?)\"\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$
     /// Replace by: this.CreateOrb($1, SkillNumber.TODO, $5, "$9", $10, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, 0);.
+    /// The energy, strength and agility requirements are the factors of the item file, see <see cref="OrbRequirements"/>.
     /// </remarks>
     public override void Initialize()
     {
@@ -79,9 +81,9 @@ public class Orbs : InitializerBase
         orb.Durability = 1;
 
         this.CreateItemRequirementIfNeeded(orb, Stats.Level, levelRequirement);
-        this.CreateItemRequirementIfNeeded(orb, Stats.TotalEnergy, energyRequirement);
-        this.CreateItemRequirementIfNeeded(orb, Stats.TotalStrength, strengthRequirement);
-        this.CreateItemRequirementIfNeeded(orb, Stats.TotalAgility, agilityRequirement);
+        this.CreateItemRequirementIfNeeded(orb, Stats.TotalEnergy, OrbRequirements.CalculateEnergy(energyRequirement, dropLevel));
+        this.CreateItemRequirementIfNeeded(orb, Stats.TotalStrength, OrbRequirements.CalculateStrengthOrAgility(strengthRequirement, dropLevel));
+        this.CreateItemRequirementIfNeeded(orb, Stats.TotalAgility, OrbRequirements.CalculateStrengthOrAgility(agilityRequirement, dropLevel));
         this.CreateItemRequirementIfNeeded(orb, Stats.TotalLeadership, leadershipRequirement);
 
         orb.Value = money;

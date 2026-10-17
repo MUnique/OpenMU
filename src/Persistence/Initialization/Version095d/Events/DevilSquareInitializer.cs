@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The initializer for the devil square event.
@@ -130,8 +131,8 @@ internal class DevilSquareInitializer : InitializerBase
         var devilSquare = this.Context.CreateNew<MiniGameDefinition>();
         this.GameConfiguration.MiniGameDefinitions.Add(devilSquare);
         devilSquare.SetGuid((short)MiniGameType.DevilSquare, level);
-        devilSquare.Name = $"Devil Square {level}";
-        devilSquare.Description = $"Event definition for devil square event, level {level}.";
+        devilSquare.Name = MiniGameNames.ResourceManager.GetLocalizedString($"DevilSquare{level}");
+        devilSquare.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForDevilSquareEventLevel{level}");
         devilSquare.EnterDuration = TimeSpan.FromMinutes(1);
         devilSquare.GameDuration = TimeSpan.FromMinutes(20);
         devilSquare.ExitDuration = TimeSpan.FromMinutes(3);
@@ -176,31 +177,31 @@ internal class DevilSquareInitializer : InitializerBase
     {
         var firstWave = this.Context.CreateNew<MiniGameSpawnWave>();
         firstWave.WaveNumber = FirstWaveNumber;
-        firstWave.Description = $"The first wave of devil square {devilSquare.GameLevel}";
+        firstWave.Description = MiniGameWaveTexts.ResourceManager.GetLocalizedString($"TheFirstWaveOfDevilSquare{devilSquare.GameLevel}");
         firstWave.StartTime = TimeSpan.Zero;
         firstWave.EndTime = TimeSpan.FromMinutes(7);
         devilSquare.SpawnWaves.Add(firstWave);
 
         var secondWave = this.Context.CreateNew<MiniGameSpawnWave>();
         secondWave.WaveNumber = SecondWaveNumber;
-        secondWave.Description = $"The second wave of devil square {devilSquare.GameLevel}";
-        secondWave.Message = "Lets continue with some stronger enemies ...";
+        secondWave.Description = MiniGameWaveTexts.ResourceManager.GetLocalizedString($"TheSecondWaveOfDevilSquare{devilSquare.GameLevel}");
+        secondWave.Message = LocalizedString.FromResource(() => MiniGameWaveTexts.LetsContinueWithSomeStrongerEnemies);
         secondWave.StartTime = TimeSpan.FromMinutes(5);
         secondWave.EndTime = TimeSpan.FromMinutes(14);
         devilSquare.SpawnWaves.Add(secondWave);
 
         var thirdWave = this.Context.CreateNew<MiniGameSpawnWave>();
         thirdWave.WaveNumber = ThirdWaveNumber;
-        thirdWave.Description = $"The third wave of devil square {devilSquare.GameLevel}";
-        thirdWave.Message = "Still alive? I have more for you.";
+        thirdWave.Description = MiniGameWaveTexts.ResourceManager.GetLocalizedString($"TheThirdWaveOfDevilSquare{devilSquare.GameLevel}");
+        thirdWave.Message = LocalizedString.FromResource(() => MiniGameWaveTexts.StillAliveIHaveMoreForYou);
         thirdWave.StartTime = TimeSpan.FromMinutes(12);
         thirdWave.EndTime = TimeSpan.FromMinutes(20);
         devilSquare.SpawnWaves.Add(thirdWave);
 
         var bossWave = this.Context.CreateNew<MiniGameSpawnWave>();
         bossWave.WaveNumber = BossWaveNumber;
-        bossWave.Description = $"The boss wave of devil square {devilSquare.GameLevel}";
-        bossWave.Message = "Beware of the bosses! You have 5 minutes left.";
+        bossWave.Description = MiniGameWaveTexts.ResourceManager.GetLocalizedString($"TheBossWaveOfDevilSquare{devilSquare.GameLevel}");
+        bossWave.Message = LocalizedString.FromResource(() => MiniGameWaveTexts.BewareOfTheBossesYouHave5MinutesLeft);
         bossWave.StartTime = TimeSpan.FromMinutes(15);
         bossWave.EndTime = TimeSpan.FromMinutes(20);
         devilSquare.SpawnWaves.Add(bossWave);

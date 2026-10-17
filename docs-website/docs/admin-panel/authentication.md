@@ -11,6 +11,15 @@ The admin panel authenticates its users itself. Earlier versions relied on the
 basic authentication of the reverse proxy against an `.htpasswd` file; that file
 is gone, and so are the proxy configurations which used it.
 
+:::warning[Requires OpenMU 0.9.12 or newer]
+The built-in login is part of OpenMU 0.9.12 and newer. The docker images up to
+0.9.10 still rely on the `.htpasswd` file of the reverse proxy. Don't combine
+such an image with the current deployment files, which no longer contain that
+file: the admin panel would then be reachable by anybody, without a login. Run
+`docker compose pull` to get the current image, or check out the git tag of the
+version you run (e.g. `v0.9.10`).
+:::
+
 What you get instead:
 
 * a real login page with a logout,
@@ -171,7 +180,10 @@ application's configuration yet. **Delete** removes it for good.
 
 ### What a key may do
 
-A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
+A key has the same [roles](#roles) as a user, and defaults to **Viewer**. A key
+can also get the role **Cash shop coins only**, which allows nothing but the cash
+shop endpoints — that's the right one for a payment provider. Administrators
+have this role implicitly.
 
 | Endpoint | Needs |
 |---|---|
@@ -179,6 +191,8 @@ A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
 | `GET /api/is-online/{account}` | Viewer |
 | `GET /api/send/{server}?msg=` | Operator |
 | `POST /api/accounts` | Operator |
+| `GET /api/accounts/{account}/cash-shop` | Cash shop |
+| `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
 
 So a status page gets a Viewer key and can only read, while an application which
 announces something in the game needs an Operator key. The role is chosen when
@@ -217,6 +231,35 @@ client side code — a key in a launcher which ships to players is a key your
 players have. Requests without a valid key get `401`, and requests whose key
 lacks the role get `403`.
 :::
+
+### Granting cash shop coins
+
+A shop or payment provider grants [cash shop](../server-features/cash-shop.md)
+coins to an account with `POST /api/accounts/{account}/cash-shop/grants`:
+
+```http
+POST /api/accounts/buyer/cash-shop/grants HTTP/1.1
+X-Api-Key: <the key>
+Content-Type: application/json
+
+{ "coinType": "WCoinC", "amount": 500, "reason": "Purchase of 500 WCoin", "reference": "payment-4711" }
+```
+
+The coin type is `WCoinC`, `WCoinP` or `GoblinPoints`. A negative amount takes
+coins again, but never below zero. The `reference` is optional: an account gets
+each reference only once, so a payment notification which arrives twice doesn't
+grant the coins twice. The answer is:
+
+* `201` with the created grant,
+* `200` with the existing grant, when the account already got the reference,
+* `404` when the account doesn't exist,
+* `409` when another account already got the reference,
+* `400` when the amount is zero or a field is invalid.
+
+The game server applies the grant to the balance the next time the player opens
+the cash shop, even when the player is online at that moment.
+`GET /api/accounts/{account}/cash-shop` returns the saved balances and the latest
+grants, where `appliedAt` is empty for the pending ones.
 
 Like the panel itself, the API is open as long as [no user exists at all](#the-first-user).
 

@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler;
@@ -126,7 +128,17 @@ public class CharacterMoveTest
     [Test]
     public async ValueTask TestStopPositionTooFarAwayIsIgnoredAsync()
     {
-        var player = await this.DoTheWalkAsync().ConfigureAwait(false);
+        // The walker takes its first step right away and runs in the background. If it took another step
+        // after we moved the player away from the path, the player would be back in reach of the end point.
+        // So the steps are slowed down, and we wait until the first one is done before moving the player away.
+        var player = await this.DoTheWalkAsync(movementSpeedFactor: 0.0001f).ConfigureAwait(false);
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (player.Position == StartPoint && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(10).ConfigureAwait(false);
+        }
+
+        Assert.That(player.Position, Is.Not.EqualTo(StartPoint), "The walker didn't take its first step.");
         player.Position = new Point((byte)(StartPoint.X + 10), StartPoint.Y);
 
         await HandleStopPacketAsync(player, EndPoint).ConfigureAwait(false);
@@ -192,11 +204,17 @@ public class CharacterMoveTest
     /// By example: walking from 147, 120 to 151, 122: C1 08 D4 93 78 44 33 44
     /// The packet contains the starting coordinates and the target is determined by the given path.
     /// </summary>
+    /// <param name="movementSpeedFactor">The movement speed factor of the player, if it should differ from the default.</param>
     /// <returns>The player which walked.</returns>
-    private async ValueTask<Player> DoTheWalkAsync()
+    private async ValueTask<Player> DoTheWalkAsync(float? movementSpeedFactor = null)
     {
         var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 0x93, 0x78, 0x44, 0x33, 0x44 };
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        if (movementSpeedFactor is { } factor)
+        {
+            player.Attributes!.AddElement(new SimpleElement(factor, AggregateType.AddRaw), Stats.MovementSpeedFactor);
+        }
+
         player.SelectedCharacter!.PositionX = StartPoint.X;
         player.SelectedCharacter.PositionY = StartPoint.Y;
         var moveHandler = new CharacterWalkHandlerPlugIn();

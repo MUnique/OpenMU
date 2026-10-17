@@ -288,6 +288,47 @@ public class AttributeSystemTests
     /// Creates the attribute system for testing, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.
     /// </summary>
     /// <returns>The created attribute system, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.</returns>
+    /// <summary>
+    /// Tests if a disposed system no longer follows the stat attributes it was created with. They belong to
+    /// the character and outlive the system of one game session, so they must not keep it alive.
+    /// </summary>
+    [Test]
+    public void DisposedSystemIgnoresStatAttributeChanges()
+    {
+        var statAttribute = new StatAttribute(this._attributeA, 1);
+        this._statAttributes.Add(statAttribute);
+        this._relationShips.Add(new AttributeRelationship(this._attributeAchained, 1, this._attributeA));
+        var system = this.CreateAttributeSystem();
+        var chainedAttribute = system.GetOrCreateAttribute(this._attributeAchained);
+        var eventCalled = false;
+        chainedAttribute.ValueChanged += (_, _) => eventCalled = true;
+
+        system.Dispose();
+        statAttribute.Value = 2;
+
+        Assert.That(eventCalled, Is.False);
+    }
+
+    /// <summary>
+    /// Tests if a disposed system no longer follows the elements which were added to it from outside, e.g.
+    /// the configured value of an item option.
+    /// </summary>
+    [Test]
+    public void DisposedSystemIgnoresAddedElementChanges()
+    {
+        var configuredElement = new SimpleElement { Value = 1 };
+        var system = this.CreateAttributeSystem();
+        system.AddElement(configuredElement, this._attributeA);
+        var attribute = system.GetOrCreateAttribute(this._attributeA);
+        var eventCalled = false;
+        attribute.ValueChanged += (_, _) => eventCalled = true;
+
+        system.Dispose();
+        configuredElement.Value = 2;
+
+        Assert.That(eventCalled, Is.False);
+    }
+
     private AttributeSystem CreateAttributeSystem()
     {
         return new(this._statAttributes, this._baseAttributes, this._relationShips);

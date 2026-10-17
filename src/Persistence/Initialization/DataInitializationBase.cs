@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
@@ -164,6 +165,12 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(config, referenceHandler);
             }
 
+            if (plugInType == typeof(PlayerShopCurrenciesFeaturePlugIn))
+            {
+                // The default configuration of the plug-in can't reference the items, because it's created without a game configuration.
+                plugInConfiguration.SetConfiguration(this.CreatePlayerShopCurrenciesConfiguration(), referenceHandler);
+            }
+
             if (plugInType.IsAssignableTo(typeof(NpcTalkPlugInBase)))
             {
                 // The default configuration of the plug-in can't reference the NPC, because it's created without a game configuration.
@@ -212,6 +219,29 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// </summary>
     protected abstract void CreateGameClientDefinition();
 
+    private PlayerShopCurrenciesConfiguration CreatePlayerShopCurrenciesConfiguration()
+    {
+        var configuration = new PlayerShopCurrenciesConfiguration();
+        ItemIdentifier[] jewels =
+        [
+            ItemConstants.JewelOfBless,
+            ItemConstants.JewelOfSoul,
+            ItemConstants.JewelOfChaos,
+            ItemConstants.JewelOfCreation,
+            ItemConstants.JewelOfLife,
+        ];
+
+        foreach (var jewel in jewels)
+        {
+            if (this.GameConfiguration.Items.FirstOrDefault(item => item.Group == jewel.Group && item.Number == jewel.Number) is { } definition)
+            {
+                configuration.PriceItems.Add(definition);
+            }
+        }
+
+        return configuration;
+    }
+
     private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration, ReferenceHandler referenceHandler)
     {
         try
@@ -256,22 +286,27 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     private async ValueTask CreateConnectServerDefinitionAsync()
     {
         var port = 44405;
+        byte serverId = 0;
         var clients = await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false);
         foreach (var client in clients.OrderBy(c => c.Season))
         {
             var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
             connectServer.InitializeDefaults();
             connectServer.SetGuid(client.Season, client.Episode);
+
+            // The server id is part of the id of the manageable server, so it has to be unique.
+            connectServer.ServerId = serverId;
             connectServer.Client = client;
             connectServer.ClientListenerPort = port;
             connectServer.Description = $"Connect Server ({client.Description})";
             port++;
+            serverId++;
         }
     }
 
     private async ValueTask CreateGameServerDefinitionsAsync(GameServerConfiguration gameServerConfiguration, int numberOfServers)
     {
-        var port = 55901;
+        var port = 45901;
         for (int i = 0; i < numberOfServers; i++)
         {
             var server = this.Context!.CreateNew<GameServerDefinition>();
@@ -305,7 +340,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
         server.SetGuid(0);
         endPoint.Client = client;
-        endPoint.NetworkPort = 55980;
+        endPoint.NetworkPort = 45980;
         server.Endpoints.Add(endPoint);
     }
 

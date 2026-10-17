@@ -45,6 +45,6 @@ public partial class ItemOptionDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return this.Name;
+        return this.Name.ToString() ?? string.Empty;
     }
 }

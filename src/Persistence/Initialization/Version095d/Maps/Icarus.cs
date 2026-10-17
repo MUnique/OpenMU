@@ -43,7 +43,7 @@ internal class Icarus : BaseMapInitializer
     protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
-    protected override byte SafezoneMapNumber => Version075.Maps.LostTower.Number;
+    protected override byte SafezoneMapNumber => Version075.Maps.Devias.Number;
 
     /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()

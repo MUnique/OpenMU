@@ -42,6 +42,7 @@ to its code with the details; this page is the map.
 | `DataModel` | The entities and the configuration classes — this is what the admin panel edits |
 | `Persistence` | The persistence abstractions (contexts, repositories) — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Persistence/Readme.md) |
 | `Persistence/EntityFramework` | The EF Core + PostgreSQL implementation — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Persistence/EntityFramework/Readme.md) |
+| `Persistence.Generators` | Source generators for the persistent data classes, e.g. the json converters which load the data of the EF Core implementation |
 | `Persistence/Initialization` | The data initialization per game version — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Persistence/Initialization/Readme.md) |
 
 ## Web

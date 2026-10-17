@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Captions;
 
 using System.Globalization;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -105,6 +106,8 @@ public static class ConfigurationCaptions
     /// Captions are matched by the identifier of their owner and the property. Some built-in objects don't have
     /// deterministic identifiers, so the remaining captions are matched by the type of their owner, its number
     /// and the property, if this combination is unique in both configurations.
+    /// Full armor sets are matched by their armor number and minimum item level.
+    /// Remaining option definitions are matched by exact neutral name only when unique in both configurations.
     /// In any case, the neutral texts must be equal. No texts are changed, so the differences
     /// can be reviewed with <see cref="DetermineChanges(GameConfiguration)"/> afterwards.
     /// </summary>
@@ -158,9 +161,30 @@ public static class ConfigurationCaptions
     /// <returns>The key, or <see langword="null"/>, if the owner has no number.</returns>
     internal static (string OwnerType, long Number, string PropertyName)? GetNumberKey(LocalizedCaption caption)
     {
+        if (caption.Owner is ItemSetGroup { AlwaysApplies: true } set
+            && set.Items.Count > 0
+            && set.Items.All(item => item.ItemDefinition is { Group: >= 7 and <= 11 })
+            && set.Items.Select(item => item.ItemDefinition!.Number).Distinct().ToArray() is [var armorNumber])
+        {
+            return (GetTypeName(set) + ":ArmorSet", ((long)armorNumber << 32) | (uint)set.SetLevel, caption.Property.Name);
+        }
+
         var numberProperty = caption.Owner.GetType().GetProperty("Number");
         return numberProperty?.GetValue(caption.Owner) is { } number and (byte or short or int or long or ushort)
             ? (GetTypeName(caption.Owner), Convert.ToInt64(number, CultureInfo.InvariantCulture), caption.Property.Name)
+            : null;
+    }
+
+    /// <summary>
+    /// Gets an exact-text fallback key for built-in caption types whose older instances can have random identifiers.
+    /// </summary>
+    /// <param name="caption">The caption.</param>
+    /// <returns>The owner type, neutral name and property, or <see langword="null"/> for other objects.</returns>
+    internal static (string OwnerType, string NeutralText, string PropertyName)? GetNeutralNameKey(LocalizedCaption caption)
+    {
+        return caption.Owner is ItemOptionDefinition or ItemLevelBonusTable or DropItemGroup or MiniGameChangeEvent
+            or MiniGameSpawnWave or WarpInfo or MagicEffectDefinition or MasterSkillRoot or SkillComboDefinition
+            ? (GetTypeName(caption.Owner), caption.Value.ValueInNeutralLanguage, caption.Property.Name)
             : null;
     }
 
@@ -182,6 +206,21 @@ public static class ConfigurationCaptions
             .Select(g => g.Key!.Value)
             .ToHashSet();
 
+        // Several drop or event objects may share a caption, but they must all refer to the same source.
+        var referencesByName = reference.Entries
+            .GroupBy(entry => entry.NeutralNameKey)
+            .Where(group => group.Key is not null
+                            && (group.Count() == 1
+                                || (group.Key.Value.OwnerType != nameof(ItemOptionDefinition)
+                                    && group.Select(entry => entry.Value.SourceKey).Distinct(StringComparer.Ordinal).Count() == 1)))
+            .ToDictionary(group => group.Key!.Value, group => group.First().Value);
+        var ambiguousTargetNames = targets
+            .Where(caption => caption.Owner is ItemOptionDefinition)
+            .GroupBy(GetNeutralNameKey)
+            .Where(group => group.Key is not null && group.Count() > 1)
+            .Select(group => group.Key!.Value)
+            .ToHashSet();
+
         var links = new List<(LocalizedCaption Caption, LocalizedString Reference)>();
         var skipped = 0;
         foreach (var caption in targets)
@@ -194,7 +233,10 @@ public static class ConfigurationCaptions
             if (!referencesById.TryGetValue(caption.Key, out var referenceValue)
                 && (GetNumberKey(caption) is not { } numberKey
                     || ambiguousTargetNumbers.Contains(numberKey)
-                    || !referencesByNumber.TryGetValue(numberKey, out referenceValue)))
+                    || !referencesByNumber.TryGetValue(numberKey, out referenceValue))
+                && (GetNeutralNameKey(caption) is not { } nameKey
+                    || ambiguousTargetNames.Contains(nameKey)
+                    || !referencesByName.TryGetValue(nameKey, out referenceValue)))
             {
                 continue;
             }

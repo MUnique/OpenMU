@@ -334,6 +334,15 @@ public partial class GameConfiguration
     [MemberOfAggregate]
     public virtual CastleSiegeConfiguration? CastleSiegeConfiguration { get; set; }
 
+    /// <summary>
+    /// Gets or sets the cash shop configuration.
+    /// </summary>
+    /// <remarks>
+    /// If it's not set, the cash shop is not available.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual CashShopConfiguration? CashShopConfiguration { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

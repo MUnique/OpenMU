@@ -113,8 +113,8 @@ public static class AdminPanelAuthExtensions
 
                 // An API client can't do anything with the login page, so it gets a status code
                 // instead of a redirect to it.
-                options.Events.OnRedirectToLogin = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status401Unauthorized);
-                options.Events.OnRedirectToAccessDenied = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status403Forbidden);
+                options.Events.OnRedirectToLogin = context => RespondWithStatusCodeOnApiPathAsync(context, StatusCodes.Status401Unauthorized);
+                options.Events.OnRedirectToAccessDenied = context => RespondWithStatusCodeOnApiPathAsync(context, StatusCodes.Status403Forbidden);
             })
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
                 ApiKeyAuthenticationDefaults.AuthenticationScheme,
@@ -125,7 +125,8 @@ public static class AdminPanelAuthExtensions
             .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddRequirements(new AdminAccessRequirement()).Build())
             .AddPolicy(AdminPolicies.Viewer, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Viewer)))
             .AddPolicy(AdminPolicies.Operator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Operator)))
-            .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)));
+            .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)))
+            .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)));
         services.AddCascadingAuthenticationState();
         services.AddScoped<AdminAuthenticationStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<AdminAuthenticationStateProvider>());
@@ -143,14 +144,14 @@ public static class AdminPanelAuthExtensions
     {
         if (app.ApplicationServices.GetService<DataProtectionKeyStorageStatus>() is { Error: { } error } status)
         {
+            const string keysOnlyInMemoryMessage =
+                "The data protection keys can't be stored at '{Path}', so they are only kept in memory: "
+                + "everybody is signed out when the application restarts, and stored authenticator keys "
+                + "become unreadable. Make sure the directory exists and is writable by the user which runs the application.";
+
             app.ApplicationServices.GetRequiredService<ILoggerFactory>()
                 .CreateLogger(typeof(AdminPanelAuthExtensions))
-                .LogWarning(
-                    error,
-                    "The data protection keys can't be stored at '{Path}', so they are only kept in memory: "
-                    + "everybody is signed out when the application restarts, and stored authenticator keys "
-                    + "become unreadable. Make sure the directory exists and is writable by the user which runs the application.",
-                    status.Path);
+                .LogWarning(error, keysOnlyInMemoryMessage, status.Path);
         }
 
         app.UseAuthentication();
@@ -192,7 +193,7 @@ public static class AdminPanelAuthExtensions
         });
     }
 
-    private static Task RespondWithStatusCodeOnApiPath(RedirectContext<CookieAuthenticationOptions> context, int statusCode)
+    private static Task RespondWithStatusCodeOnApiPathAsync(RedirectContext<CookieAuthenticationOptions> context, int statusCode)
     {
         if (context.Request.Path.StartsWithSegments(ApiKeyAuthenticationDefaults.ApiPathPrefix, StringComparison.OrdinalIgnoreCase))
         {

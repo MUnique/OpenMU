@@ -15,7 +15,7 @@ you need, there are multiple ways to do that.
 | Processes | One | One (admin panel separately routable) | Many containers |
 | Reverse proxy | nginx | Traefik | nginx |
 | HTTPS | certbot | Traefik / Let's Encrypt | certbot |
-| Status | Supported | Supported | **Currently broken and unsupported** |
+| Status | Supported | Supported | Experimental |
 
 ## All-in-one
 
@@ -58,10 +58,10 @@ to the correct website.
 
 ## Distributed
 
-:::danger[Currently broken and unsupported]
-The docs of the distributed deployment are out of date and it is unsupported due
-to several issues which have to be resolved first. Feel free to contribute — see
-the [open issues with the `distributed-deployment` label](https://github.com/MUnique/OpenMU/issues?q=is%3Aissue%20state%3Aopen%20label%3Adistributed-deployment).
+:::warning[Experimental]
+The distributed deployment works, but it's experimental and has some
+[known limitations](distributed.md#known-limitations). Feel free to contribute —
+see the [open issues with the `distributed-deployment` label](https://github.com/MUnique/OpenMU/issues?q=is%3Aissue%20state%3Aopen%20label%3Adistributed-deployment).
 :::
 
 It is also possible to host OpenMU in a [distributed](distributed.md) way. This

@@ -45,13 +45,28 @@ public class LoginAction
             catch (Exception ex)
             {
                 player.Logger.LogError(ex, "Failed to finish login for [{Username}].", username);
-                if (!account.IsTemplate && player.GameContext is IGameServerContext gameServerContext)
-                {
-                    await gameServerContext.LoginServer.LogOffAsync(username, gameServerContext.Id).ConfigureAwait(false);
-                }
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
 
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             }
+        }
+    }
+
+    private static async ValueTask ReleaseLoginServerRegistrationAsync(Player player)
+    {
+        if (player.ReleaseLoginServerRegistration() is not { } loginName
+            || player.GameContext is not IGameServerContext gameServerContext)
+        {
+            return;
+        }
+
+        try
+        {
+            await gameServerContext.LoginServer.LogOffAsync(loginName, gameServerContext.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Couldn't log off [{Username}] at the login server after the failed login.", loginName);
         }
     }
 
@@ -113,22 +128,24 @@ public class LoginAction
             if (player.GameContext.OfflinePlayerManager.TryGetPlayer(username, out var offlinePlayer))
             {
                 var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
-                if (!isTemplateOffline && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                if (!isTemplateOffline)
                 {
-                    context.Allowed = false;
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                    await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
-                    return (false, null);
+                    if (!await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                    {
+                        context.Allowed = false;
+                        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+                        await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                        return (false, null);
+                    }
+
+                    // Remembered while the state change is in progress, which a disconnect waits for.
+                    player.SetLoginServerRegistration(username);
                 }
 
                 var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
                 if (offlineAccount is null)
                 {
-                    if (!isTemplateOffline)
-                    {
-                        await gameServerContext.LoginServer.LogOffAsync(username, gameServerContext.Id).ConfigureAwait(false);
-                    }
-
+                    await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
                     context.Allowed = false;
                     return (false, null);
                 }
@@ -145,12 +162,18 @@ public class LoginAction
                 return (false, null);
             }
 
-            if (!loadedAccount.IsTemplate && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+            if (!loadedAccount.IsTemplate)
             {
-                context.Allowed = false;
-                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
-                return (false, null);
+                if (!await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                {
+                    context.Allowed = false;
+                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+                    await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                    return (false, null);
+                }
+
+                // Remembered while the state change is in progress, which a disconnect waits for.
+                player.SetLoginServerRegistration(username);
             }
 
             return (true, loadedAccount);
@@ -158,6 +181,7 @@ public class LoginAction
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Unexpected error during login through login server.");
+            await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return (false, null);
         }

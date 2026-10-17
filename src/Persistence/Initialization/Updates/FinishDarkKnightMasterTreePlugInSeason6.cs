@@ -138,7 +138,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         }
 
         // Update harmony option
-        if (gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Harmony Physical Attack Options") is { } harmonyPhysAttackOptions
+        if (gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name.ValueInNeutralLanguage == "Harmony Physical Attack Options") is { } harmonyPhysAttackOptions
             && harmonyPhysAttackOptions.PossibleOptions.FirstOrDefault(o => o.Number == 5) is { } physBaseDmgOpt)
         {
             foreach (var level in physBaseDmgOpt.LevelDependentOptions)

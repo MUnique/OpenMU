@@ -33,6 +33,8 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// </summary>
     private readonly IDictionary<GameConfiguration, IDictionary<Guid, T>> _cache = new ConcurrentDictionary<GameConfiguration, IDictionary<Guid, T>>();
 
+    private readonly ConfigurationIdReferenceResolver _referenceResolver;
+
     private readonly ILogger _logger;
 
     /// <summary>
@@ -40,10 +42,12 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// </summary>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="referenceResolver">The reference resolver, which gets the cached objects, so that the references to them can be resolved when accounts are loaded.</param>
     /// <param name="collectionSelector">The collection selector which returns the collection of <typeparamref name="T" /> of a <see cref="GameConfiguration" />.</param>
-    public ConfigurationTypeRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, Func<GameConfiguration, ICollection<T>> collectionSelector)
+    public ConfigurationTypeRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, ConfigurationIdReferenceResolver referenceResolver, Func<GameConfiguration, ICollection<T>> collectionSelector)
     {
         this._repositoryProvider = repositoryProvider;
+        this._referenceResolver = referenceResolver;
         this._collectionSelector = collectionSelector;
         this._logger = loggerFactory.CreateLogger(this.GetType());
     }
@@ -129,13 +133,37 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
                 return;
             }
 
-            var dictionary = this._collectionSelector(configuration)
-                .Where(item => item is IIdentifiable)
-                .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
+            var dictionary = this.CreateCache(configuration);
             this._cache.Add(configuration, dictionary);
             foreach (var item in dictionary.Values)
             {
-                ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
+                this._referenceResolver.AddReference((IIdentifiable)item);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void RefreshCaches()
+    {
+        lock (this._cache)
+        {
+            foreach (var (configuration, previousCache) in this._cache.ToList())
+            {
+                var dictionary = this.CreateCache(configuration);
+
+                // The new objects are added before the removed ones are removed, so that concurrently loaded
+                // accounts always find the objects which are still part of the configuration.
+                foreach (var item in dictionary.Values)
+                {
+                    this._referenceResolver.AddReference((IIdentifiable)item);
+                }
+
+                foreach (var removedId in previousCache.Keys.Where(id => !dictionary.ContainsKey(id)))
+                {
+                    this._referenceResolver.RemoveReference(removedId);
+                }
+
+                this._cache[configuration] = dictionary;
             }
         }
     }
@@ -161,6 +189,13 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
             assignable.AssignValuesOf((T)changedInstance, gameConfiguration);
             this._logger.LogInformation("Updated cached instance '{cachedInstance}'.", cachedInstance);
         }
+    }
+
+    private Dictionary<Guid, T> CreateCache(GameConfiguration configuration)
+    {
+        return this._collectionSelector(configuration)
+            .Where(item => item is IIdentifiable)
+            .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
     }
 
     private GameConfiguration GetCurrentGameConfiguration()

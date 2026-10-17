@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -958,7 +957,7 @@ internal class Dungeon : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 100;
-            trap.Designation = "Lance Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.LanceTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 4;
             trap.ViewRange = 4;
@@ -985,7 +984,7 @@ internal class Dungeon : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 101;
-            trap.Designation = "Iron Stick Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.IronStickTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 0;
             trap.ObjectKind = NpcObjectKind.Trap;
@@ -1012,7 +1011,7 @@ internal class Dungeon : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 102;
-            trap.Designation = "Fire Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.FireTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 2;
             trap.ObjectKind = NpcObjectKind.Trap;

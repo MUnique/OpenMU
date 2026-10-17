@@ -11,6 +11,8 @@ using System.Security.Cryptography;
 /// </summary>
 public static class ApiKeyGenerator
 {
+    private const int SecretByteCount = 32;
+
     /// <summary>
     /// Gets the prefix of every generated key, so it can be recognized as one, e.g. in a log or a
     /// secret scanner.
@@ -22,8 +24,6 @@ public static class ApiKeyGenerator
     /// told apart from another one in the admin panel without knowing it.
     /// </summary>
     public static int VisiblePrefixLength => 12;
-
-    private const int SecretByteCount = 32;
 
     /// <summary>
     /// Creates a new random key.

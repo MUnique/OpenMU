@@ -11,7 +11,7 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
-/// Tests that Dragon Slasher has its PvE multiplier (<see cref="Stats.SkillFinalMultiplierPve"/>) in the season 6 data.
+/// Tests that Dragon Slasher has its PvE multiplier (<see cref="Stats.SkillFinalMultiplierPvm"/>) in the season 6 data.
 /// </summary>
 [TestFixture]
 internal class DragonSlasherPveMultiplierTest
@@ -41,12 +41,12 @@ internal class DragonSlasherPveMultiplierTest
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
         var dragonSlasher = GetDragonSlasher(gameConfiguration);
-        foreach (var relationship in dragonSlasher.AttributeRelationships.Where(r => r.TargetAttribute == Stats.SkillFinalMultiplierPve).ToList())
+        foreach (var relationship in dragonSlasher.AttributeRelationships.Where(r => r.TargetAttribute == Stats.SkillFinalMultiplierPvm).ToList())
         {
             dragonSlasher.AttributeRelationships.Remove(relationship);
         }
 
-        gameConfiguration.Attributes.Remove(gameConfiguration.Attributes.Single(a => a.Id == Stats.SkillFinalMultiplierPve.Id));
+        gameConfiguration.Attributes.Remove(gameConfiguration.Attributes.Single(a => a.Id == Stats.SkillFinalMultiplierPvm.Id));
 
         var update = new AddDragonSlasherPveMultiplierPlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -57,8 +57,8 @@ internal class DragonSlasherPveMultiplierTest
 
     private static void AssertPveMultiplier(GameConfiguration gameConfiguration)
     {
-        Assert.That(gameConfiguration.Attributes.Count(a => a.Id == Stats.SkillFinalMultiplierPve.Id), Is.EqualTo(1));
-        var relationship = GetDragonSlasher(gameConfiguration).AttributeRelationships.Single(r => r.TargetAttribute == Stats.SkillFinalMultiplierPve);
+        Assert.That(gameConfiguration.Attributes.Count(a => a.Id == Stats.SkillFinalMultiplierPvm.Id), Is.EqualTo(1));
+        var relationship = GetDragonSlasher(gameConfiguration).AttributeRelationships.Single(r => r.TargetAttribute == Stats.SkillFinalMultiplierPvm);
         Assert.That(relationship.InputAttribute, Is.EqualTo(Stats.SkillMultiplier));
         Assert.That(relationship.InputOperand, Is.EqualTo(ExpectedPveMultiplier));
     }
