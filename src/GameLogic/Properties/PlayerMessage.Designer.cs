@@ -3090,5 +3090,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CharacterNotStrongEnoughMessage", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You need to be level {0} to open this box..
+        /// </summary>
+        public static string ItemBoxRequiresLevel {
+            get {
+                return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
+            }
+        }
     }
 }

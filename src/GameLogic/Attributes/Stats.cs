@@ -537,8 +537,29 @@ public class Stats
     /// <summary>
     /// Gets the extra projectiles attribute definition.
     /// </summary>
-    /// <remarks>Can be increased by equipping certain (cross)bows and/or unlocking triple shot mastery.</remarks>
-    public static AttributeDefinition ExtraProjectiles { get; } = new(new Guid("B9E4F3C2-A1D5-4B8E-7F2C-6D3A9E1F5C8B"), "Extra Projectiles", "The number of extra projectiles shot with triple shot skill.");
+    /// <remarks>
+    /// A generic pool which is increased by equipping certain (cross)bows. It applies to
+    /// every multi-projectile skill which opts in through its <see cref="SkillExtraProjectiles"/>.
+    /// </remarks>
+    public static AttributeDefinition ExtraProjectiles { get; } = new(new Guid("B9E4F3C2-A1D5-4B8E-7F2C-6D3A9E1F5C8B"), "Extra Projectiles", "The number of extra projectiles which is added to every multi-projectile skill which uses them.");
+
+    /// <summary>
+    /// Gets the triple shot mastery's extra projectiles attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// A skill-exclusive source which is fed by the passive power-up of the triple shot mastery.
+    /// Only the triple shot skill uses it, so it doesn't leak into other multi-projectile skills.
+    /// </remarks>
+    public static AttributeDefinition TripleShotExtraProjectiles { get; } = new(new Guid("7F3B9C21-4A6E-4D8B-9F1C-2E5A7D9B3C64"), "Triple Shot Extra Projectiles", "The number of extra projectiles granted by the triple shot mastery.");
+
+    /// <summary>
+    /// Gets the extra projectiles attribute definition of a skill.
+    /// </summary>
+    /// <remarks>
+    /// The number of extra projectiles which a multi-projectile skill actually shoots.
+    /// It is composed per skill from the pools it uses, see <see cref="Skill.AttributeRelationships"/>.
+    /// </remarks>
+    public static AttributeDefinition SkillExtraProjectiles { get; } = new(new Guid("C4D8E2A6-1B5F-4E9C-8A3D-6F2B7C4E1A95"), "Skill Extra Projectiles", "The number of extra projectiles which a multi-projectile skill actually shoots.");
 
     /// <summary>
     /// Gets elf's melee attack mode attribute definition.

@@ -379,7 +379,7 @@
     <value>额外箭矢数量</value>
   </data>
   <data name="Description_ExtraProjectiles" xml:space="preserve">
-    <value>多重射击技能额外发射的箭矢数量。</value>
+    <value>添加到每个使用它们的多重射击技能的额外箭矢数量。</value>
   </data>
   <data name="Name_FenrirBaseDamage" xml:space="preserve">
     <value>炎狼兽基础伤害</value>
@@ -963,6 +963,12 @@
   <data name="Description_Skillextramanacost" xml:space="preserve">
     <value>无影箭效果造成的额外魔法值消耗。</value>
   </data>
+  <data name="Name_SkillExtraProjectiles" xml:space="preserve">
+    <value>技能额外箭矢数量</value>
+  </data>
+  <data name="Description_SkillExtraProjectiles" xml:space="preserve">
+    <value>多重射击技能实际发射的额外箭矢数量。</value>
+  </data>
   <data name="Name_SkillFinalDamageBonusskillattribute" xml:space="preserve">
     <value>技能最终伤害加成（技能属性）</value>
   </data>
@@ -1124,6 +1130,12 @@
   </data>
   <data name="Description_TotalVitalityRequirementValue" xml:space="preserve">
     <value>用于计算装备所需角色总体力的物品需求值；实际需求取决于物品选项、掉落等级和强化等级。</value>
+  </data>
+  <data name="Name_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>三连射额外箭矢数量</value>
+  </data>
+  <data name="Description_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>三连射精通所授予的额外箭矢数量。</value>
   </data>
   <data name="Name_TwoHandedStaffBonusBaseDamageMST" xml:space="preserve">
     <value>双手法杖基础伤害加成（大师技能）</value>

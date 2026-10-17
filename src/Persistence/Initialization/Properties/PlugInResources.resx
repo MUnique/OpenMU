@@ -306,6 +306,8 @@
   <data name="FixOrbRequirementsPlugInBase_Description" xml:space="preserve"><value>Fixes the energy, strength and agility requirements of orbs, crystals and scrolls which are used to learn skills. E.g. the Orbs of Healing, Greater Defense and Greater Damage required 100 energy instead of 52, 72 and 92.</value></data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Elf Master Tree PlugIn</value></data>
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.</value></data>
+  <data name="ScopeExtraProjectilesPlugIn_Name" xml:space="preserve"><value>Scope extra projectiles per skill</value></data>
+  <data name="ScopeExtraProjectilesPlugIn_Description" xml:space="preserve"><value>Makes the extra projectile of the triple shot mastery apply to the triple shot skill only, while equipping certain (cross)bows keeps boosting every multi-projectile skill.</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>Add Item Registration Attributes</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve"><value>This update adds data for the item registration attributes.</value></data>
   <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve"><value>Fix Wings Damage Rates</value></data>

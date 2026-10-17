@@ -192,6 +192,29 @@ public class SkillListTest
         Assert.That(player.Attributes[Stats.DurabilityReductionFactor], Is.EqualTo(valueBefore - 0.01f).Within(0.0001f));
     }
 
+    /// <summary>
+    /// Tests that the Triple Shot Mastery feeds the exclusive pool of the triple shot once it reached
+    /// its complete level, without leaking into the generic pool of the other multi-projectile skills.
+    /// </summary>
+    [Test]
+    public async ValueTask TripleShotMasteryAddsExtraProjectileAtMaxLevelAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var skillEntry = CreatePassiveSkillEntry("if(level < 10; 0; 1)", AggregateType.AddRaw, Stats.TripleShotExtraProjectiles, Stats.MasterSkillValue, 1);
+        skillEntry.Level = 9;
+        player.SelectedCharacter!.LearnedSkills.Add(skillEntry);
+
+        using var skillList = new SkillList(player);
+
+        Assert.That(player.Attributes![Stats.TripleShotExtraProjectiles], Is.EqualTo(0), "The mastery adds the arrow only when complete.");
+        Assert.That(player.Attributes[Stats.ExtraProjectiles], Is.EqualTo(0), "The mastery must not feed the generic pool.");
+
+        skillEntry.Level = 10;
+
+        Assert.That(player.Attributes[Stats.TripleShotExtraProjectiles], Is.EqualTo(1));
+        Assert.That(player.Attributes[Stats.ExtraProjectiles], Is.EqualTo(0), "The mastery must not feed the generic pool.");
+    }
+
     private static SkillEntry CreatePassiveSkillEntry(string valueFormula, AggregateType aggregateType, AttributeDefinition targetAttribute, AttributeDefinition inputAttribute, float inputOperand)
     {
         var powerUp = new Persistence.BasicModel.PowerUpDefinition

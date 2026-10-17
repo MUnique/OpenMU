@@ -38,7 +38,28 @@ internal class AreaSkillSettingsUpdateTest
     }
 
     /// <summary>
-    /// Tests that the update restores missing area skill settings on an existing
+    /// Tests that a freshly initialized database already applies the base skill's area
+    /// settings to its mastery version, which is what players actually cast.
+    /// </summary>
+    [Test]
+    public async Task FreshDatabaseSyncsMasteryAreaSkillSettingsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+
+        var tripleShot = GetSettings(gameConfiguration, SkillNumber.TripleShot);
+        var mastery = GetSettings(gameConfiguration, SkillNumber.TripleShotMastery);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(mastery.UseFrustumFilter, Is.EqualTo(tripleShot.UseFrustumFilter));
+            Assert.That(mastery.ProjectileCount, Is.EqualTo(tripleShot.ProjectileCount));
+            Assert.That(mastery.DelayBetweenHits, Is.EqualTo(tripleShot.DelayBetweenHits));
+        });
+    }
+
+    /// <summary>
+    /// Tests that the update repairs missing area skill settings on an existing
     /// database.
     /// </summary>
     [Test]
@@ -68,6 +89,9 @@ internal class AreaSkillSettingsUpdateTest
         GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget = 0;
         var iceStorm = GetSettings(gameConfiguration, SkillNumber.IceStorm);
         iceStorm.DelayBetweenHits = TimeSpan.FromMilliseconds(200);
+        var tripleShotMastery = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.TripleShotMastery);
+        tripleShotMastery.AreaSkillSettings = context.CreateNew<AreaSkillSettings>();
+        tripleShotMastery.AreaSkillSettings.DelayBetweenHits = TimeSpan.FromMilliseconds(999);
 
         await new AddAreaSkillSettingsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
@@ -79,6 +103,11 @@ internal class AreaSkillSettingsUpdateTest
             Assert.That(GetSettings(gameConfiguration, SkillNumber.Flame).MinimumNumberOfHitsPerTarget, Is.EqualTo(1));
             Assert.That(GetSettings(gameConfiguration, SkillNumber.IceStorm).DelayBetweenHits, Is.EqualTo(TimeSpan.Zero));
             Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShot).ProjectileCount, Is.EqualTo(3));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShot).DelayBetweenHits, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.MultiShot).ProjectileCount, Is.EqualTo(5));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.MultiShot).DelayBetweenHits, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShotMastery).DelayBetweenHits, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
+            Assert.That(GetSettings(gameConfiguration, SkillNumber.TripleShotMastery).ProjectileCount, Is.EqualTo(3));
         });
     }
 

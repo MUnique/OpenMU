@@ -265,6 +265,8 @@
   <data name="FixOrbRequirementsPlugInBase_Description" xml:space="preserve"><value>修正用于学习技能的石头、水晶和卷轴的智力、力量和敏捷需求。例如：治疗之石、防御之石和攻击之石原本需要 100 点智力，而不是 52、72 和 92 点。</value></data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>补全弓箭手大师技能树</value></data>
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>补全弓箭手大师技能树并修正部分技能数值，为部分高级弓弩补充缺失的第 4 支箭。</value></data>
+  <data name="ScopeExtraProjectilesPlugIn_Name" xml:space="preserve"><value>按技能限定额外箭矢</value></data>
+  <data name="ScopeExtraProjectilesPlugIn_Description" xml:space="preserve"><value>使三连射精通的额外箭矢只对三连射技能生效，而装备特定弓弩仍会增强所有多重射击技能。</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>添加物品登记属性</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve"><value>添加物品登记功能所需的属性数据。</value></data>
   <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve"><value>修正翅膀伤害比例</value></data>

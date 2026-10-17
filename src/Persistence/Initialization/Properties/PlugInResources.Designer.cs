@@ -911,5 +911,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized MoveServerPortsOutOfDynamicRangePlugInBase_Description text.</summary>
         public static string MoveServerPortsOutOfDynamicRangePlugInBase_Description => ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized ScopeExtraProjectilesPlugIn_Name text.</summary>
+        public static string ScopeExtraProjectilesPlugIn_Name => ResourceManager.GetString("ScopeExtraProjectilesPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ScopeExtraProjectilesPlugIn_Description text.</summary>
+        public static string ScopeExtraProjectilesPlugIn_Description => ResourceManager.GetString("ScopeExtraProjectilesPlugIn_Description", resourceCulture)!;
+
     }
 }

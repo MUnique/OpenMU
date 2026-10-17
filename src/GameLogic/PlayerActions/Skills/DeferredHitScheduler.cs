@@ -111,14 +111,24 @@ public sealed class DeferredHitScheduler
     }
 
     /// <summary>
-    /// Determines the number of extra projectiles from the attacker's attributes.
+    /// Determines the number of extra projectiles of the given skill from its
+    /// <see cref="Stats.SkillExtraProjectiles"/> attribute, e.g. from a bow or from the
+    /// passive power-up of the Triple Shot Mastery which is applied to the player.
     /// </summary>
     /// <param name="player">The attacking player.</param>
+    /// <param name="skillEntry">The cast skill.</param>
     /// <param name="settings">The area skill settings.</param>
     /// <returns>The number of extra projectiles.</returns>
-    internal static int GetExtraProjectiles(Player player, AreaSkillSettings settings)
+    internal static int GetExtraProjectiles(Player player, SkillEntry skillEntry, AreaSkillSettings settings)
     {
-        return settings is { UseFrustumFilter: true, ProjectileCount: > 1 } ? (int)player.Attributes![Stats.ExtraProjectiles] : 0;
+        if (settings is not { UseFrustumFilter: true, ProjectileCount: > 1 })
+        {
+            return 0;
+        }
+
+        return skillEntry.EnsureSkillAttributes(player.Attributes!) is { } skillAttributes
+            ? (int)skillAttributes[Stats.SkillExtraProjectiles]
+            : 0;
     }
 
     private List<WavefrontTick> CollectWavefrontTicks(HashSet<ushort> excludedIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)

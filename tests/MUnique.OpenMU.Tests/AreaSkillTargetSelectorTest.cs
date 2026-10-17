@@ -90,4 +90,21 @@ internal class AreaSkillTargetSelectorTest
 
         Assert.That(range, Is.EqualTo(2));
     }
+
+    /// <summary>
+    /// Tests that a direction angle is rounded to the nearest rotation byte instead of
+    /// being truncated: truncation drops up to one full step (about 1.4 degrees), which
+    /// can push a diagonally adjacent target out of a side projectile lane.
+    /// </summary>
+    [Test]
+    public void ConvertAngleToRotation_RoundsInsteadOfTruncating()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(0f), Is.EqualTo(0));
+            Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(1f), Is.EqualTo(1), "truncation would give 0");
+            Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(90f), Is.EqualTo(64), "63.75 rounds up, truncation gives 63");
+            Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(359.9f), Is.EqualTo(255));
+        });
+    }
 }

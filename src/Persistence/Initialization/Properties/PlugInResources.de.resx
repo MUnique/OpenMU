@@ -560,6 +560,12 @@
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung vervollständigt den Meisterbaum der Elfe und korrigiert einige ihrer Fähigkeitswerte. Außerdem fügt sie das fehlende zusätzliche Projektil (4.) bei einigen höherstufigen Bögen und Armbrüsten hinzu.</value>
   </data>
+  <data name="ScopeExtraProjectilesPlugIn_Name" xml:space="preserve">
+    <value>Zusätzliche Projektile pro Fähigkeit begrenzen</value>
+  </data>
+  <data name="ScopeExtraProjectilesPlugIn_Description" xml:space="preserve">
+    <value>Bewirkt, dass das zusätzliche Projektil der Triple-Shot-Meisterschaft nur auf die Fähigkeit Triple Shot wirkt, während das Ausrüsten bestimmter Bögen und Armbrüste weiterhin jede Mehrfachprojektil-Fähigkeit verstärkt.</value>
+  </data>
   <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name" xml:space="preserve">
     <value>Lebensstein von Castle Siege konfigurieren</value>
   </data>
