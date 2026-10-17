@@ -362,61 +362,61 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <param name="player">The player who talked to the statue.</param>
     public async ValueTask TalkToNpcTeamStorageAsync(int npcNumber, Player player)
     {
-            if (player != this._relicCarrier)
-            {
-                return;
-            }
+        if (player != this._relicCarrier)
+        {
+            return;
+        }
 
-            var relicItem = player.Inventory?.Items
+        var relicItem = player.Inventory?.Items
             .FirstOrDefault(i => IsRelicDefinition(i.Definition));
 
-            if (relicItem is null)
-            {
-                this._relicCarrier = null;
-                return;
-            }
-
-            if (!this._teams.TryGetValue(player, out var playerTeam))
-            {
-                return;
-            }
-
-            if (npcNumber == 383 && playerTeam == IllusionTempleTeam.AlliedForces)
-            {
-                this.Score.IncreaseScore(IllusionTempleTeam.AlliedForces);
-            }
-            else if (npcNumber == 384 && playerTeam == IllusionTempleTeam.IllusionForces)
-            {
-                this.Score.IncreaseScore(IllusionTempleTeam.IllusionForces);
-            }
-            else
-            {
-                return;
-            }
-
-            await player.Inventory!.RemoveItemAsync(relicItem).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
+        if (relicItem is null)
+        {
             this._relicCarrier = null;
+            return;
+        }
 
-            // Push the new score to the clients right away, instead of waiting for the next tick of
-            // the cyclic state update (ShowRemainingTimeLoopAsync).
-            await this.UpdateStateForAllAsync().ConfigureAwait(false);
+        if (!this._teams.TryGetValue(player, out var playerTeam))
+        {
+            return;
+        }
 
-            // The next statue doesn't appear immediately - just like in the original event, there's a
-            // short delay after a scored point. This runs in the background so the delivering player's
-            // action isn't held up by it.
-            _ = Task.Run(async () =>
+        if (npcNumber == 383 && playerTeam == IllusionTempleTeam.AlliedForces)
+        {
+            this.Score.IncreaseScore(IllusionTempleTeam.AlliedForces);
+        }
+        else if (npcNumber == 384 && playerTeam == IllusionTempleTeam.IllusionForces)
+        {
+            this.Score.IncreaseScore(IllusionTempleTeam.IllusionForces);
+        }
+        else
+        {
+            return;
+        }
+
+        await player.Inventory!.RemoveItemAsync(relicItem).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
+        this._relicCarrier = null;
+
+        // Push the new score to the clients right away, instead of waiting for the next tick of
+        // the cyclic state update (ShowRemainingTimeLoopAsync).
+        await this.UpdateStateForAllAsync().ConfigureAwait(false);
+
+        // The next statue doesn't appear immediately - just like in the original event, there's a
+        // short delay after a scored point. This runs in the background so the delivering player's
+        // action isn't held up by it.
+        _ = Task.Run(async () =>
+        {
+            try
             {
-                try
-                {
-                    await Task.Delay(StatueRespawnDelay, this.GameEndedToken).ConfigureAwait(false);
-                    await this.SpawnRandomStatueAsync().ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    // The event ended before the respawn delay elapsed.
-                }
-            }, this.GameEndedToken);
+                await Task.Delay(StatueRespawnDelay, this.GameEndedToken).ConfigureAwait(false);
+                await this.SpawnRandomStatueAsync().ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // The event ended before the respawn delay elapsed.
+            }
+        }, this.GameEndedToken);
     }
 
     /// <summary>
