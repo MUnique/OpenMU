@@ -373,7 +373,8 @@ Gaps to fill in phase 0 (characterization tests, written against current behavio
 6. Durability: defensive item, weapon, pet, ammunition consumption to zero.
 
 Per phase: `dotnet build src/MUnique.OpenMU.sln` and
-`dotnet test tests/MUnique.OpenMU.Tests`. For phases 3 and 5, also run
+`dotnet test tests/MUnique.OpenMU.Tests --no-build` (the build was just done;
+build again after any further code change). For phases 3 and 5, also run
 `tests/MUnique.OpenMU.GameLogic.Benchmarks` before/after — plugin points on the
 per-hit and per-kill paths add an iteration over the plugin proxy list.
 
