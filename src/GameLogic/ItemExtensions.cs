@@ -180,7 +180,8 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsJewelry(this Item item)
     {
-        return item.ItemSlot >= InventoryConstants.PendantSlot && item.ItemSlot <= InventoryConstants.Ring2Slot;
+        return item.Definition?.ItemSlot?.ItemSlots.Any(slot =>
+            slot >= InventoryConstants.PendantSlot && item.ItemSlot <= InventoryConstants.Ring2Slot) ?? false;
     }
 
     /// <summary>
@@ -204,7 +205,8 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsArmorItem(this Item item)
     {
-        return item.ItemSlot >= InventoryConstants.HelmSlot && item.ItemSlot <= InventoryConstants.BootsSlot;
+        return item.Definition?.ItemSlot?.ItemSlots.Any(slot =>
+            slot >= InventoryConstants.HelmSlot && item.ItemSlot <= InventoryConstants.BootsSlot) ?? false;
     }
 
     /// <summary>
@@ -284,7 +286,8 @@ public static class ItemExtensions
     /// </returns>
     public static bool DegradesWithDurability(this Item item)
     {
-        return item.ItemSlot != InventoryConstants.PetSlot && !item.IsTrainablePet() && !item.IsTransformationRing();
+        return item.Definition?.ItemSlot?.ItemSlots.Any(slot => slot != InventoryConstants.PetSlot) ?? false
+            && !item.IsTrainablePet() && !item.IsTransformationRing();
     }
 
     /// <summary>

@@ -74,7 +74,7 @@ public class ItemRequirementCalculationTest
         item.Definition.DropLevel = 6;
         item.Definition.Group = 0;
         item.Definition.ItemSlot = new ItemSlotType();
-        item.ItemSlot = InventoryConstants.LeftHandSlot;
+        item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.LeftHandSlot);
         item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
@@ -89,7 +89,6 @@ public class ItemRequirementCalculationTest
         Assert.That(agilityValue.Item2, Is.EqualTo(30));
     }
 
-
     /// <summary>
     /// Tests that an armor item adds 5 strength per item-option level.
     /// </summary>
@@ -101,7 +100,7 @@ public class ItemRequirementCalculationTest
         item.Definition.DropLevel = 6;
         item.Definition.Group = 7;
         item.Definition.ItemSlot = new ItemSlotType();
-        item.ItemSlot = InventoryConstants.HelmSlot;
+        item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.HelmSlot);
         item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
 
