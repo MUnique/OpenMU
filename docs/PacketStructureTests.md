@@ -76,6 +76,11 @@ To run tests manually:
 dotnet test tests/MUnique.OpenMU.Network.Packets.Tests/
 ```
 
+If the project was already built and nothing changed since, add `--no-build` to
+skip the rebuild — useful when running the tests several times with different
+`--filter` values. Build again after any change to the packet XML or the code,
+since the packet structures and tests are generated during the build.
+
 ## Example Issues Caught
 
 The generated tests would catch issues like:
