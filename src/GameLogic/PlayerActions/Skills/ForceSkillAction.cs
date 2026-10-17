@@ -49,11 +49,9 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
             return targetedTarget.GetAsEnumerable();
         }
 
-        var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(player.Position, skill.Range + 4)
-                    .Where(a => a != player)
-                    .Where(a => !a.IsAtSafezone()).ToList()
-            ?? [];
+        var targetsInRange = player.CurrentMap is { } map
+            ? AreaSkillTargetSelector.WhereAttackableByDefault(map.GetAttackablesInRange(player.Position, skill.Range + 4), player, skill).ToList()
+            : [];
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {
