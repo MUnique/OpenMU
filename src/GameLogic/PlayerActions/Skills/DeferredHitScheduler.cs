@@ -111,11 +111,12 @@ public sealed class DeferredHitScheduler
     }
 
     /// <summary>
-    /// Determines the number of extra projectiles from the attacker's attributes
-    /// and from mastery skills on the cast skill entry (e.g. Triple Shot Mastery).
+    /// Determines the number of extra projectiles of the given skill from its
+    /// <see cref="Stats.SkillExtraProjectiles"/> attribute, e.g. from a bow or from the
+    /// passive power-up of the Triple Shot Mastery which is applied to the player.
     /// </summary>
     /// <param name="player">The attacking player.</param>
-    /// <param name="skillEntry">The used skill entry.</param>
+    /// <param name="skillEntry">The cast skill.</param>
     /// <param name="settings">The area skill settings.</param>
     /// <returns>The number of extra projectiles.</returns>
     internal static int GetExtraProjectiles(Player player, SkillEntry skillEntry, AreaSkillSettings settings)
@@ -125,24 +126,9 @@ public sealed class DeferredHitScheduler
             return 0;
         }
 
-        // Items (e.g. certain bows) grant extra projectiles through the character's attributes.
-        var extraProjectiles = (int)player.Attributes![Stats.ExtraProjectiles];
-
-        // Mastery bonuses live on the master definition of the cast skill chain and are
-        // evaluated at the learned level; the character's attributes never see them.
-        if (skillEntry.Skill is { } skill)
-        {
-            foreach (var chainSkill in new[] { skill }.Concat(skill.GetBaseSkills()))
-            {
-                if (chainSkill.MasterDefinition?.TargetAttribute == Stats.ExtraProjectiles
-                    && player.SkillList?.GetSkill((ushort)chainSkill.Number) is { } masteryEntry)
-                {
-                    extraProjectiles += (int)masteryEntry.CalculateValue();
-                }
-            }
-        }
-
-        return extraProjectiles;
+        return skillEntry.EnsureSkillAttributes(player.Attributes!) is { } skillAttributes
+            ? (int)skillAttributes[Stats.SkillExtraProjectiles]
+            : 0;
     }
 
     private List<WavefrontTick> CollectWavefrontTicks(HashSet<ushort> excludedIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)

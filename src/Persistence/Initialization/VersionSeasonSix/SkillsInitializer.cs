@@ -230,7 +230,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ExpansionofWizardry, LocalizedString.FromResource(() => SkillNames.ExpansionOfWizardry), CharacterClasses.SoulMasterAndGrandMaster, distance: 6, abilityConsumption: 50, manaConsumption: 200, levelRequirement: 220, energyRequirement: 118, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player, skillTarget: SkillTarget.ImplicitPlayer);
         this.CreateSkill(SkillNumber.Recovery, LocalizedString.FromResource(() => SkillNames.Recovery), CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 40, levelRequirement: 100, energyRequirement: 37, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.MultiShot, LocalizedString.FromResource(() => SkillNames.MultiShot), CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100, skillType: SkillType.AreaSkillAutomaticHits);
-        this.AddAreaSkillSettings(SkillNumber.MultiShot, true, 1f, 6f, 7f, true, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), maximumHitsPerTarget: 5, maximumHitsPerAttack: 5, projectileCount: 5);
+        this.AddAreaSkillSettings(SkillNumber.MultiShot, true, 1f, 6f, 7f, true, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), projectileCount: 5);
         this.CreateSkill(SkillNumber.FlameStrike, LocalizedString.FromResource(() => SkillNames.FlameStrike), CharacterClasses.AllMGs, DamageType.Physical, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.FlameStrike, true, 5f, 2f, 4f);
         this.CreateSkill(SkillNumber.GiganticStorm, LocalizedString.FromResource(() => SkillNames.GiganticStorm), CharacterClasses.AllMGs, DamageType.Wizardry, 110, 6, 10, 120, 220, 118, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
@@ -453,6 +453,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.MapSkillsToEffects();
         this.InitializeMasterSkillData();
         MasterSkillPassivePowerUps.AddMissing(this.Context, this.GameConfiguration);
+        MasterSkillAreaSkillSettings.Sync(this.Context, this.GameConfiguration);
         this.CreateSpecialSummonMonsters();
         this.CreateSkillCombos();
         this.InitializeSkillAttributes();
@@ -690,6 +691,11 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
         this.AddAttributeRelationship(SkillNumber.RagefulBlowMastery, Stats.RagefulBlowMasteryDurabilityDecChance, 1, Stats.RagefulBlowMasteryDurabilityDecChance);
         this.AddAttributeRelationship(SkillNumber.SleepStrengthener, Stats.SleepStrBonusChance, 1, Stats.SleepStrBonusChance);
+
+        // Extra projectiles: the generic pool applies to both arrow skills, the mastery bonus only to triple shot.
+        this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraProjectiles, 1, Stats.ExtraProjectiles);
+        this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraProjectiles, 1, Stats.TripleShotExtraProjectiles);
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillExtraProjectiles, 1, Stats.ExtraProjectiles);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
@@ -860,7 +866,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.SummonedMonsterStr1, Stats.SummonedMonsterHealthIncrease, AggregateType.AddRaw, Formula6020Value, 2, 2, SkillNumber.SummonGoblin);
         this.AddMasterSkillDefinition(SkillNumber.PenetrationStrengthener, SkillNumber.Penetration, SkillNumber.Undefined, 2, 3, SkillNumber.Penetration, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.DefenseIncreaseStr, SkillNumber.GreaterDefense, SkillNumber.Undefined, 2, 3, SkillNumber.GreaterDefense, 20, $"{Formula502} / 100", Formula502, Stats.GreaterDefenseBonus, AggregateType.Multiplicate);
-        this.AddMasterSkillDefinition(SkillNumber.TripleShotMastery, SkillNumber.TripleShotStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.TripleShotStrengthener, 10, Formula1WhenComplete, Formula1WhenComplete, Stats.ExtraProjectiles, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.TripleShotMastery, SkillNumber.TripleShotStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.TripleShotStrengthener, 10, Formula1WhenComplete, Formula1WhenComplete, Stats.TripleShotExtraProjectiles, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.SummonedMonsterStr2, Stats.SummonedMonsterDefenseIncrease, AggregateType.AddRaw, Formula6020Value, 3, 2, SkillNumber.SummonGoblin);
         this.AddMasterSkillDefinition(SkillNumber.AttackIncreaseStr, SkillNumber.GreaterDamage, SkillNumber.Undefined, 2, 4, SkillNumber.GreaterDamage, 20, $"{Formula502} / 100", Formula502, Stats.GreaterDamageBonus, AggregateType.Multiplicate);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WeaponMasteryHighElf, Stats.MasterSkillPhysBonusDmg, AggregateType.AddRaw, Formula502, 4, 2);

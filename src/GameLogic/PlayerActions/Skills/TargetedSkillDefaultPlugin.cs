@@ -190,7 +190,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
             {
-                var rotationToTarget = (byte)(player.Position.GetAngleDegreeTo(targetedTarget.Position) / 360.0 * 255.0);
+                var rotationToTarget = AreaSkillTargetSelector.ConvertAngleToRotation((float)player.Position.GetAngleDegreeTo(targetedTarget.Position));
                 var attackablesInRange =
                     player.CurrentMap?
                         .GetAttackablesInRange(player.Position, skill.Range)

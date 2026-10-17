@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 
 /// <summary>
 /// This update adds the area skill settings for skills like evil spirit, so that they work properly again.
@@ -65,7 +66,7 @@ public abstract class AddAreaSkillSettingsUpdatePlugInBase : UpdatePlugInBase
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.ForceWave, true, 1f, 1f, 4f, skillType: SkillType.DirectHit);
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Stun, true, 1.5f, 1.5f, 3f);
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.FireScream, true, 2f, 3f, 6f);
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.MultiShot, true, 1f, 6f, 7f, true, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), maximumHitsPerTarget: 5, maximumHitsPerAttack: 5);
+        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.MultiShot, true, 1f, 6f, 7f, true, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100));
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.FlameStrike, true, 5f, 2f, 4f);
         this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.ChaoticDiseier, true, 1.5f, 1.5f, 6f);
 
@@ -78,13 +79,13 @@ public abstract class AddAreaSkillSettingsUpdatePlugInBase : UpdatePlugInBase
                 continue;
             }
 
-            CopyAreaSkillSettings(context, gameConfiguration, areaSkillSettings, skill);
+            MasterSkillAreaSkillSettings.CopySettings(context, gameConfiguration, areaSkillSettings, skill);
         }
 
         this.FixHellfireDecayAndIceStorm(context, gameConfiguration);
         EnsureProjectileCount(gameConfiguration, SkillNumber.TripleShot, 3);
         EnsureProjectileCount(gameConfiguration, SkillNumber.MultiShot, 5);
-        SyncMasterySkillSettings(gameConfiguration, context, SkillNumber.TripleShot, SkillNumber.TripleShotMastery);
+        MasterSkillAreaSkillSettings.Sync(context, gameConfiguration);
     }
 
     /// <summary>
@@ -100,43 +101,6 @@ public abstract class AddAreaSkillSettingsUpdatePlugInBase : UpdatePlugInBase
         {
             settings.ProjectileCount = projectileCount;
         }
-    }
-
-    /// <summary>
-    /// Copies the area skill settings of a base attack skill to its mastery version,
-    /// which is what players actually cast. The generic master-skill sync above copies
-    /// from the replaced (strengthener) skill, which has no area settings of its own.
-    /// </summary>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    /// <param name="context">The persistence context.</param>
-    /// <param name="baseSkill">The base attack skill.</param>
-    /// <param name="masterySkill">The mastery version of the skill.</param>
-    private static void SyncMasterySkillSettings(GameConfiguration gameConfiguration, IContext context, SkillNumber baseSkill, SkillNumber masterySkill)
-    {
-        var source = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)baseSkill)?.AreaSkillSettings;
-        var target = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)masterySkill);
-        if (source is null || target is null)
-        {
-            return;
-        }
-
-        CopyAreaSkillSettings(context, gameConfiguration, source, target);
-    }
-
-    /// <summary>
-    /// Copies area skill settings onto the specified skill, preserving the target row identity.
-    /// </summary>
-    /// <param name="context">The persistence context.</param>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    /// <param name="source">The settings to copy.</param>
-    /// <param name="target">The skill receiving the copy.</param>
-    private static void CopyAreaSkillSettings(IContext context, GameConfiguration gameConfiguration, AreaSkillSettings source, Skill target)
-    {
-        var targetSettings = target.AreaSkillSettings ?? context.CreateNew<AreaSkillSettings>();
-        var id = targetSettings.GetId();
-        targetSettings.AssignValuesOf(source, gameConfiguration);
-        targetSettings.SetGuid(id);
-        target.AreaSkillSettings = targetSettings;
     }
 
     /// <summary>

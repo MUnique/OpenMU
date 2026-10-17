@@ -379,7 +379,7 @@
     <value>Zusätzliche Projektile</value>
   </data>
   <data name="Description_ExtraProjectiles" xml:space="preserve">
-    <value>Die Anzahl der zusätzlichen Projektile, die mit der Fertigkeit Triple Shot abgeschossen werden.</value>
+    <value>Die Anzahl der zusätzlichen Projektile, die zu jeder Mehrfachprojektil-Fertigkeit hinzugefügt werden, die sie verwendet.</value>
   </data>
   <data name="Name_FenrirBaseDamage" xml:space="preserve">
     <value>Fenrir-Basisschaden</value>
@@ -957,6 +957,12 @@
   <data name="Description_Skillextramanacost" xml:space="preserve">
     <value>Verursacht durch den Infinity-Arrow-Effekt</value>
   </data>
+  <data name="Name_SkillExtraProjectiles" xml:space="preserve">
+    <value>Zusätzliche Projektile der Fertigkeit</value>
+  </data>
+  <data name="Description_SkillExtraProjectiles" xml:space="preserve">
+    <value>Die Anzahl der zusätzlichen Projektile, die eine Mehrfachprojektil-Fertigkeit tatsächlich abschießt.</value>
+  </data>
   <data name="Name_SkillFinalDamageBonusskillattribute" xml:space="preserve">
     <value>Bonus auf Fertigkeits-Endschaden (Fertigkeitsattribut)</value>
   </data>
@@ -1118,6 +1124,12 @@
   </data>
   <data name="Description_TotalVitalityRequirementValue" xml:space="preserve">
     <value>Der Gesamtanforderungswert für Vitalität eines Gegenstands, mit dem die benötigte gesamte Vitalität eines Charakters zum Ausrüsten berechnet wird. Sie hängt von den Optionen, dem Drop-Level und dem Level des Gegenstands ab.</value>
+  </data>
+  <data name="Name_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>Zusätzliche Projektile des Triple Shots</value>
+  </data>
+  <data name="Description_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>Die Anzahl der zusätzlichen Projektile, die von der Triple-Shot-Meisterschaft gewährt wird.</value>
   </data>
   <data name="Name_TwoHandedStaffBonusBaseDamageMST" xml:space="preserve">
     <value>Bonus-Basisschaden für zweihändige Stäbe (MST)</value>

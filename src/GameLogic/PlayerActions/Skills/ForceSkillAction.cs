@@ -60,7 +60,7 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
                 CreateFrustumFilter(areaSkillSettings);
             }
 
-            var rotationToTarget = (byte)(player.Position.GetAngleDegreeTo(targetedTarget.Position) / 360.0 * 255.0);
+            var rotationToTarget = AreaSkillTargetSelector.ConvertAngleToRotation((float)player.Position.GetAngleDegreeTo(targetedTarget.Position));
             targetsInRange = targetsInRange.Where(a => frustumFilter!.IsTargetWithinBounds(player, a, rotationToTarget)).ToList();
         }
         else

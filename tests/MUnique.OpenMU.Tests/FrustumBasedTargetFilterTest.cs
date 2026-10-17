@@ -270,6 +270,40 @@ internal class FrustumBasedTargetFilterTest
         Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 4), Is.False);
     }
 
+    /// <summary>
+    /// Tests that with four projectiles (e.g. triple shot with a bow), an adjacent centered
+    /// target is covered by all four projectiles: one tile out the arrows haven't diverged yet.
+    /// </summary>
+    [Test]
+    public void TripleShotWithExtraProjectile_TargetAdjacent_CoveredByAllProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 4);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 101);
+
+        for (int i = 0; i < 4; i++)
+        {
+            Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, i), Is.True, $"Projectile {i} should hit the adjacent target");
+        }
+    }
+
+    /// <summary>
+    /// Tests that with four projectiles, a centered target two tiles out is covered
+    /// by the inner two projectiles only.
+    /// </summary>
+    [Test]
+    public void TripleShotWithExtraProjectile_TargetTwoTilesOut_CoveredByInnerTwoProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 4);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 102);
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 3), Is.False);
+    }
+
     private static ILocateable CreateLocateable(byte x, byte y)
     {
         var mock = new Mock<ILocateable>();

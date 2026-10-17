@@ -82,6 +82,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.FlameofEvil, LocalizedString.FromResource(() => SkillNames.FlameOfEvilMonster), damage: 120, manaConsumption: 160, levelRequirement: 60, energyRequirement: 100);
 
         this.InitializeEffects();
+        this.AddSkillAttributeRelationships();
         this.MapSkillsToEffects();
         this.CreateSpecialSummonMonsters();
         this.FixMagicEffectNumbers();
@@ -148,5 +149,15 @@ internal class SkillsInitializer : SkillsInitializerBase
             var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)effectOfSkill.Value);
             skill.MagicEffectDef = effect;
         }
+    }
+
+    /// <summary>
+    /// Adds the skill attribute relationships, e.g. that triple shot uses the extra projectiles pool.
+    /// </summary>
+    private void AddSkillAttributeRelationships()
+    {
+        var tripleShot = this.GameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.TripleShot);
+        tripleShot.AttributeRelationships.Add(
+            CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillExtraProjectiles, 1, Stats.ExtraProjectiles));
     }
 }
