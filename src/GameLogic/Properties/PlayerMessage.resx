@@ -1096,4 +1096,7 @@ Inventory Extensions: {18}</value>
   <data name="PlayerShopPriceListEntryWithoutPrice" xml:space="preserve">
     <value>#{0} {1} - no price</value>
   </data>
+  <data name="ItemBoxRequiresLevel" xml:space="preserve">
+    <value>You need to be level {0} to open this box.</value>
+  </data>
 </root>
