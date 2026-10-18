@@ -369,4 +369,6 @@
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
     <value>变身戒指等级 3 至 5 需要角色等级达到 50，并为死亡牛戒指增加 20% 最大生命值加成。</value>
   </data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>添加格斗家古代套装</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>此更新添加圣火装备的古代套装：维加和卡默。</value></data>
 </root>

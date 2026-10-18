@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -384,4 +384,6 @@
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly.</value></data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve"><value>Fix transformation ring rules</value></data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve"><value>Requires character level 50 for transformation ring levels 3 to 5 and adds the Death Cow ring's 20% maximum-health bonus.</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>Add Rage Fighter Ancient Sets</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
 </root>
