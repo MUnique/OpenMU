@@ -86,7 +86,7 @@ internal static class TerrainUpdateHelper
             }
         }
 
-        Debug.Fail("Couldn't find terrain resource name for map " + gameMapDefinition.Name);
+        Debug.Fail("Couldn't find terrain resource name for map " + gameMapDefinition.Name.ValueInNeutralLanguage);
         return string.Empty;
     }
 }
