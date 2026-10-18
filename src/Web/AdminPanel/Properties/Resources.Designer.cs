@@ -1294,6 +1294,339 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dashboard.
+        /// </summary>
+        public static string Dashboard {
+            get {
+                return ResourceManager.GetString("Dashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Administrators only.
+        /// </summary>
+        public static string DashboardAdministratorsOnly {
+            get {
+                return ResourceManager.GetString("DashboardAdministratorsOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} alliances.
+        /// </summary>
+        public static string DashboardAlliances {
+            get {
+                return ResourceManager.GetString("DashboardAlliances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All servers are running.
+        /// </summary>
+        public static string DashboardAllServersRunning {
+            get {
+                return ResourceManager.GetString("DashboardAllServersRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} banned.
+        /// </summary>
+        public static string DashboardBannedAccounts {
+            get {
+                return ResourceManager.GetString("DashboardBannedAccounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} characters.
+        /// </summary>
+        public static string DashboardCharacters {
+            get {
+                return ResourceManager.GetString("DashboardCharacters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collecting data. The history starts when the admin panel is started..
+        /// </summary>
+        public static string DashboardCollectingData {
+            get {
+                return ResourceManager.GetString("DashboardCollectingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configuration updates.
+        /// </summary>
+        public static string DashboardConfigurationUpdates {
+            get {
+                return ResourceManager.GetString("DashboardConfigurationUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} connections.
+        /// </summary>
+        public static string DashboardConnections {
+            get {
+                return ResourceManager.GetString("DashboardConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Now.
+        /// </summary>
+        public static string DashboardCurrent {
+            get {
+                return ResourceManager.GetString("DashboardCurrent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database.
+        /// </summary>
+        public static string DashboardDatabase {
+            get {
+                return ResourceManager.GetString("DashboardDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connected.
+        /// </summary>
+        public static string DashboardDatabaseConnected {
+            get {
+                return ResourceManager.GetString("DashboardDatabaseConnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not reachable.
+        /// </summary>
+        public static string DashboardDatabaseNotReachable {
+            get {
+                return ResourceManager.GetString("DashboardDatabaseNotReachable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} h ago.
+        /// </summary>
+        public static string DashboardHoursAgo {
+            get {
+                return ResourceManager.GetString("DashboardHoursAgo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low.
+        /// </summary>
+        public static string DashboardLow {
+            get {
+                return ResourceManager.GetString("DashboardLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage servers.
+        /// </summary>
+        public static string DashboardManageServers {
+            get {
+                return ResourceManager.GetString("DashboardManageServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Memory.
+        /// </summary>
+        public static string DashboardMemory {
+            get {
+                return ResourceManager.GetString("DashboardMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:N0} MB working set.
+        /// </summary>
+        public static string DashboardMemoryValue {
+            get {
+                return ResourceManager.GetString("DashboardMemoryValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to +{0} registered in the last 7 days.
+        /// </summary>
+        public static string DashboardNewAccounts {
+            get {
+                return ResourceManager.GetString("DashboardNewAccounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not available.
+        /// </summary>
+        public static string DashboardNotAvailable {
+            get {
+                return ResourceManager.GetString("DashboardNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your game configuration is up to date..
+        /// </summary>
+        public static string DashboardNoUpdates {
+            get {
+                return ResourceManager.GetString("DashboardNoUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to now.
+        /// </summary>
+        public static string DashboardNow {
+            get {
+                return ResourceManager.GetString("DashboardNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Players online in the last 24 hours.
+        /// </summary>
+        public static string DashboardOnlineHistory {
+            get {
+                return ResourceManager.GetString("DashboardOnlineHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chart of the players online in the last 24 hours. Currently {0}, peak {1}, low {2}..
+        /// </summary>
+        public static string DashboardOnlineHistoryDescription {
+            get {
+                return ResourceManager.GetString("DashboardOnlineHistoryDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string DashboardOpen {
+            get {
+                return ResourceManager.GetString("DashboardOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Peak.
+        /// </summary>
+        public static string DashboardPeak {
+            get {
+                return ResourceManager.GetString("DashboardPeak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to of {0} slots on the running game servers.
+        /// </summary>
+        public static string DashboardPlayerCapacity {
+            get {
+                return ResourceManager.GetString("DashboardPlayerCapacity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Players online.
+        /// </summary>
+        public static string DashboardPlayersOnline {
+            get {
+                return ResourceManager.GetString("DashboardPlayersOnline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quick actions.
+        /// </summary>
+        public static string DashboardQuickActions {
+            get {
+                return ResourceManager.GetString("DashboardQuickActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review updates.
+        /// </summary>
+        public static string DashboardReviewUpdates {
+            get {
+                return ResourceManager.GetString("DashboardReviewUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to sampled every {0} minutes.
+        /// </summary>
+        public static string DashboardSampleInterval {
+            get {
+                return ResourceManager.GetString("DashboardSampleInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} not running.
+        /// </summary>
+        public static string DashboardServersNotRunning {
+            get {
+                return ResourceManager.GetString("DashboardServersNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servers running.
+        /// </summary>
+        public static string DashboardServersRunning {
+            get {
+                return ResourceManager.GetString("DashboardServersRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to updates are available for your game configuration..
+        /// </summary>
+        public static string DashboardUpdatesAvailable {
+            get {
+                return ResourceManager.GetString("DashboardUpdatesAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uptime.
+        /// </summary>
+        public static string DashboardUptime {
+            get {
+                return ResourceManager.GetString("DashboardUptime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} d {1} h {2} min.
+        /// </summary>
+        public static string DashboardUptimeValue {
+            get {
+                return ResourceManager.GetString("DashboardUptimeValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        public static string DashboardVersion {
+            get {
+                return ResourceManager.GetString("DashboardVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database Snapshot.
         /// </summary>
         public static string DatabaseSnapshot {

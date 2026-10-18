@@ -101,4 +101,16 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
             .Distinct()
             .ToList();
     }
+
+    /// <inheritdoc/>
+    public async ValueTask<GuildStatistics> GetGuildStatisticsAsync(CancellationToken cancellationToken = default)
+    {
+        var allGuilds = (await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync(cancellationToken).ConfigureAwait(false)).ToList();
+        var allianceCount = allGuilds
+            .Where(g => g.AllianceGuild is not null)
+            .Select(g => g.AllianceGuild!.GetId())
+            .Distinct()
+            .Count();
+        return new GuildStatistics(allGuilds.Count, allianceCount);
+    }
 }
