@@ -18,6 +18,8 @@ using MUnique.OpenMU.Persistence;
 /// <remarks>
 /// They are allowed for Discord users who have the GM role of the layout, and who are linked to an account
 /// whose selected character is a game master. Every use is reported to the staff.
+/// The role is matched by its name, so it's only a convenience filter, e.g. to hide the commands from others:
+/// The game master status of the character is the actual check, because only the game can grant it.
 /// </remarks>
 public sealed class DiscordGameMasterCommands
 {
@@ -25,6 +27,11 @@ public sealed class DiscordGameMasterCommands
     /// The color of the alerts for the staff (orange).
     /// </summary>
     private const int StaffAlertColor = 0xE67E22;
+
+    /// <summary>
+    /// The maximum length of an announcement. Longer texts would be shown as several golden messages.
+    /// </summary>
+    private const int MaximumAnnouncementLength = 200;
 
     private readonly IServerProvider _serverProvider;
     private readonly AccountLinkService _linkService;
@@ -83,25 +90,37 @@ public sealed class DiscordGameMasterCommands
         }
 
         argument = argument.Trim();
+        if (commandName == "announce" && argument.Length > MaximumAnnouncementLength)
+        {
+            return new(this.Answer(nameof(Resources.Gm_AnnouncementTooLong), MaximumAnnouncementLength), null);
+        }
+
         var gameServers = this._serverProvider.Servers.OfType<IGameServer>().ToList();
         string resultKey;
+        object[] resultArgs = [DiscordMessageFormatter.Escape(argument)];
         switch (commandName)
         {
             case "announce":
+                // A failing game server doesn't stop the others, and the game master learns about it.
+                var announced = 0;
                 foreach (var gameServer in gameServers)
                 {
-                    await gameServer.SendGlobalMessageAsync(argument, MessageType.GoldenCenter).ConfigureAwait(false);
+                    if (await this.TryAsync(gameServer, server => server.SendGlobalMessageAsync(argument, MessageType.GoldenCenter)).ConfigureAwait(false))
+                    {
+                        announced++;
+                    }
                 }
 
-                resultKey = nameof(Resources.Gm_Announced);
+                resultKey = announced == gameServers.Count ? nameof(Resources.Gm_Announced) : nameof(Resources.Gm_AnnouncedPartially);
+                resultArgs = [DiscordMessageFormatter.Escape(argument), announced, gameServers.Count];
                 break;
             case "kick":
-                resultKey = await AnyAsync(gameServers, server => server.DisconnectPlayerAsync(argument)).ConfigureAwait(false)
+                resultKey = await this.AnyAsync(gameServers, server => server.DisconnectPlayerAsync(argument)).ConfigureAwait(false)
                     ? nameof(Resources.Gm_Kicked)
                     : nameof(Resources.Gm_NotOnline);
                 break;
             default:
-                resultKey = await AnyAsync(gameServers, server => server.BanPlayerAsync(argument)).ConfigureAwait(false)
+                resultKey = await this.AnyAsync(gameServers, server => server.BanPlayerAsync(argument)).ConfigureAwait(false)
                     ? nameof(Resources.Gm_Banned)
                     : nameof(Resources.Gm_NotOnline);
                 break;
@@ -114,20 +133,41 @@ public sealed class DiscordGameMasterCommands
             StaffAlertColor,
             DateTime.UtcNow,
             null);
-        return new(this.Answer(resultKey, DiscordMessageFormatter.Escape(argument)), alert);
+        return new(this.Answer(resultKey, resultArgs), alert);
     }
 
-    private static async ValueTask<bool> AnyAsync(IEnumerable<IGameServer> gameServers, Func<IGameServer, ValueTask<bool>> action)
+    private async ValueTask<bool> AnyAsync(IEnumerable<IGameServer> gameServers, Func<IGameServer, ValueTask<bool>> action)
     {
         foreach (var gameServer in gameServers)
         {
-            if (await action(gameServer).ConfigureAwait(false))
+            try
             {
-                return true;
+                if (await action(gameServer).ConfigureAwait(false))
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error when executing a game master command on game server {server}.", gameServer.Id);
             }
         }
 
         return false;
+    }
+
+    private async ValueTask<bool> TryAsync(IGameServer gameServer, Func<IGameServer, ValueTask> action)
+    {
+        try
+        {
+            await action(gameServer).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when executing a game master command on game server {server}.", gameServer.Id);
+            return false;
+        }
     }
 
     /// <summary>

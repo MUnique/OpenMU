@@ -799,6 +799,24 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The notice was sent to {1} of {2} game servers: {0}.
+        /// </summary>
+        public static string Gm_AnnouncedPartially {
+            get {
+                return ResourceManager.GetString("Gm_AnnouncedPartially", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The notice can have at most {0} characters..
+        /// </summary>
+        public static string Gm_AnnouncementTooLong {
+            get {
+                return ResourceManager.GetString("Gm_AnnouncementTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The account of {0} was banned..
         /// </summary>
         public static string Gm_Banned {

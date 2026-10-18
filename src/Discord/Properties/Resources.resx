@@ -344,6 +344,12 @@
   <data name="Gm_Announced" xml:space="preserve">
     <value>The notice was sent: {0}</value>
   </data>
+  <data name="Gm_AnnouncedPartially" xml:space="preserve">
+    <value>The notice was sent to {1} of {2} game servers: {0}</value>
+  </data>
+  <data name="Gm_AnnouncementTooLong" xml:space="preserve">
+    <value>The notice can have at most {0} characters.</value>
+  </data>
   <data name="Gm_Banned" xml:space="preserve">
     <value>The account of {0} was banned.</value>
   </data>

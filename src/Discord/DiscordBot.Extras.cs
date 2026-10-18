@@ -72,6 +72,7 @@ public sealed partial class DiscordBot
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+            await this.AnswerFailureAsync(command, true).ConfigureAwait(false);
         }
     }
 
@@ -100,6 +101,7 @@ public sealed partial class DiscordBot
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+            await this.AnswerFailureAsync(command, true).ConfigureAwait(false);
         }
     }
 

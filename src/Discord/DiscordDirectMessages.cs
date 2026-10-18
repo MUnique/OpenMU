@@ -85,41 +85,46 @@ public sealed class DiscordDirectMessages
             return [];
         }
 
-        IEnumerable<string> friendNames;
+        IReadOnlyList<string> friendNames;
         using (var friendContext = this._createFriendContext())
         {
             friendNames = (await friendContext.GetFriendNamesAsync(entered.CharacterId).ConfigureAwait(false)).ToList();
         }
 
-        var accountIds = new HashSet<Guid>();
-        using (var context = this._createContext())
+        if (friendNames.Count == 0)
         {
-            foreach (var friendName in friendNames)
-            {
-                if (await context.GetAccountIdByCharacterNameAsync(friendName).ConfigureAwait(false) is { } accountId)
-                {
-                    accountIds.Add(accountId);
-                }
-            }
+            return [];
         }
 
-        var messages = new List<(ulong UserId, DiscordEmbed Embed)>();
-        foreach (var accountId in accountIds)
-        {
-            messages.AddRange(await this.CreateAsync(accountId, AccountNotificationTypes.FriendOnline, nameof(Resources.Dm_FriendOnline), DiscordMessageFormatter.Escape(entered.CharacterName)).ConfigureAwait(false));
-        }
-
-        return messages;
+        // Two queries for all friends, because this runs whenever a character enters the game.
+        using var context = this._createContext();
+        var accountIds = (await context.GetAccountIdsByCharacterNamesAsync(friendNames).ConfigureAwait(false)).Values.Distinct().ToList();
+        var links = await context.GetAccountExternalLinksAsync(AccountLinkService.DiscordProvider, accountIds).ConfigureAwait(false);
+        return links
+            .Where(link => link.Notifications.HasFlag(AccountNotificationTypes.FriendOnline))
+            .Select(link => this.Create(link, nameof(Resources.Dm_FriendOnline), DiscordMessageFormatter.Escape(entered.CharacterName)))
+            .OfType<(ulong UserId, DiscordEmbed Embed)>()
+            .ToList();
     }
 
     private async ValueTask<IReadOnlyList<(ulong UserId, DiscordEmbed Embed)>> CreateAsync(Guid? accountId, AccountNotificationTypes type, string resourceKey, params object[] args)
     {
         if (accountId is not { } id
-            || await this._linkService.GetLinkAsync(id, AccountLinkService.DiscordProvider).ConfigureAwait(false) is not { ExternalUserId: { } externalUserId } link
+            || await this._linkService.GetLinkAsync(id, AccountLinkService.DiscordProvider).ConfigureAwait(false) is not { } link
             || !link.Notifications.HasFlag(type)
-            || !ulong.TryParse(externalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
+            || this.Create(link, resourceKey, args) is not { } message)
         {
             return [];
+        }
+
+        return [message];
+    }
+
+    private (ulong UserId, DiscordEmbed Embed)? Create(AccountExternalLink link, string resourceKey, params object[] args)
+    {
+        if (!ulong.TryParse(link.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
+        {
+            return null;
         }
 
         var embed = new DiscordEmbed(
@@ -128,6 +133,6 @@ public sealed class DiscordDirectMessages
             Color,
             DateTime.UtcNow,
             null);
-        return [(userId, embed)];
+        return (userId, embed);
     }
 }

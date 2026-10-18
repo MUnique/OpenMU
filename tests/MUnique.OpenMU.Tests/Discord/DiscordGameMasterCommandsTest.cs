@@ -76,6 +76,33 @@ public class DiscordGameMasterCommandsTest
     }
 
     /// <summary>
+    /// Tests that a failing game server doesn't stop the announcement on the others, and that the game master learns about it.
+    /// </summary>
+    [Test]
+    public async Task FailingGameServerDoesNotStopAnnouncementAsync()
+    {
+        this._server1.Setup(s => s.SendGlobalMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>())).ThrowsAsync(new InvalidOperationException("Test"));
+
+        var answer = await this._commands.ExecuteAsync("announce", "Hello", GameMasterUser, "admin", true).ConfigureAwait(false);
+
+        this._server2.Verify(s => s.SendGlobalMessageAsync("Hello", MessageType.GoldenCenter), Times.Once);
+        Assert.That(answer.Embed.Description, Is.EqualTo("The notice was sent to 1 of 2 game servers: Hello"));
+    }
+
+    /// <summary>
+    /// Tests that a too long announcement is rejected.
+    /// </summary>
+    [Test]
+    public async Task TooLongAnnouncementIsRejectedAsync()
+    {
+        var answer = await this._commands.ExecuteAsync("announce", new string('x', 201), GameMasterUser, "admin", true).ConfigureAwait(false);
+
+        Assert.That(answer.StaffAlert, Is.Null);
+        Assert.That(answer.Embed.Description, Is.EqualTo("The notice can have at most 200 characters."));
+        this._server1.Verify(s => s.SendGlobalMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
+    }
+
+    /// <summary>
     /// Tests that a character is disconnected from the game server on which it's online.
     /// </summary>
     [Test]
