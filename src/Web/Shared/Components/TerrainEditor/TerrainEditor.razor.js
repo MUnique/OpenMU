@@ -25,7 +25,7 @@ class TerrainEditor {
         this.selection = selection;
         this.status = status;
         this.dotNetRef = dotNetRef;
-        this.palette = options.palette.map(p => ({ mask: p.mask, rgb: TerrainEditor.parseColor(p.color) }));
+        this.palette = options.palette.map((p) => ({ mask: p.mask, rgb: TerrainEditor.parseColor(p.color) }));
         this.walkableRgb = TerrainEditor.parseColor(options.walkableColor);
         this.flagNames = options.flagNames;
         this.zoom = options.zoom;
@@ -56,7 +56,7 @@ class TerrainEditor {
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
         this.onWheel = this.onWheel.bind(this);
-        this.onContextMenu = e => e.preventDefault();
+        this.onContextMenu = (e) => e.preventDefault();
 
         host.addEventListener("mousedown", this.onMouseDown);
         host.addEventListener("mouseleave", this.onMouseLeave);
@@ -80,7 +80,7 @@ class TerrainEditor {
      *  false, if another terrain was loaded.
      */
     setData(base64, asEdit) {
-        const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
         if (bytes.length !== SIZE * SIZE) {
             return;
         }
@@ -269,12 +269,8 @@ class TerrainEditor {
         const stepX = x < to.x ? 1 : -1;
         const stepY = y < to.y ? 1 : -1;
         let error = dx + dy;
-        while (true) {
-            this.applyBrush({ x, y });
-            if (x === to.x && y === to.y) {
-                break;
-            }
-
+        this.applyBrush({ x, y });
+        while (x !== to.x || y !== to.y) {
             const doubledError = 2 * error;
             if (doubledError >= dy) {
                 error += dy;
@@ -285,6 +281,8 @@ class TerrainEditor {
                 error += dx;
                 y += stepY;
             }
+
+            this.applyBrush({ x, y });
         }
     }
 
@@ -315,10 +313,21 @@ class TerrainEditor {
             this.data[index] = this.applyToValue(target);
             const x = index % SIZE;
             const y = Math.floor(index / SIZE);
-            if (x > 0) stack.push(index - 1);
-            if (x < SIZE - 1) stack.push(index + 1);
-            if (y > 0) stack.push(index - SIZE);
-            if (y < SIZE - 1) stack.push(index + SIZE);
+            if (x > 0) {
+                stack.push(index - 1);
+            }
+
+            if (x < SIZE - 1) {
+                stack.push(index + 1);
+            }
+
+            if (y > 0) {
+                stack.push(index - SIZE);
+            }
+
+            if (y < SIZE - 1) {
+                stack.push(index + SIZE);
+            }
         }
     }
 
@@ -406,7 +415,7 @@ class TerrainEditor {
 
     clampTile(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const clamp = v => Math.max(0, Math.min(SIZE - 1, v));
+        const clamp = (v) => Math.max(0, Math.min(SIZE - 1, v));
         return {
             x: clamp(Math.floor((e.clientY - rect.top) / this.zoom)),
             y: clamp(Math.floor((e.clientX - rect.left) / this.zoom)),
@@ -464,7 +473,7 @@ class TerrainEditor {
         }
 
         const value = this.data[(tile.y * SIZE) + tile.x];
-        const names = this.flagNames.filter(f => (value & f.mask) !== 0).map(f => f.name);
+        const names = this.flagNames.filter((f) => (value & f.mask) !== 0).map((f) => f.name);
         let text = `X: ${tile.x}, Y: ${tile.y} | ${value}`;
         if (names.length > 0) {
             text += ` (${names.join(", ")})`;

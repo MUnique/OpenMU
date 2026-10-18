@@ -90,16 +90,17 @@ The tools:
 | **Rectangle** | All tiles of the dragged rectangle |
 | **Fill** | All connected tiles which have the same attributes as the clicked one |
 
-The **mode** decides what happens to the selected **attributes**: *add* them to the
-tiles, *remove* them, or *replace* all attributes of the tiles with them. Replace
-without any selected attribute makes the tiles plain walkable ground.
+The **mode** decides what happens to the selected **attributes**: *add* them to
+the tiles, *remove* them, or *replace* all attributes of the tiles with them.
+Replace without any selected attribute makes the tiles plain walkable ground.
 
 ![A zoomed terrain with the tile grid, while drawing a rectangle](/img/admin-panel/terrain-editor-zoomed.png)
 
 Use the mouse wheel or the zoom buttons to zoom, and drag with the right mouse
 button to pan. Below the terrain you see the coordinates and the attributes of
-the tile under the cursor. **Undo** and **Redo** work per terrain until you switch
-to another one; **Save** writes the changes of all terrains to the database.
+the tile under the cursor. **Undo** and **Redo** work per terrain until you
+switch to another one; **Save** writes the changes of all terrains to the
+database.
 
 ### Terrain files
 
@@ -109,12 +110,12 @@ to another one; **Save** writes the changes of all terrains to the database.
 * **Server terrain file** downloads the terrain in the `*.att` format of the
   original server.
 * **Client terrain file** downloads the encrypted terrain file of the game
-  client. The client loads it from `Data\World<N>\EncTerrain<N>.att`, where `<N>`
-  is the map number plus one.
+  client. The client loads it from `Data\World<N>\EncTerrain<N>.att`, where
+  `<N>` is the map number plus one.
 
 :::warning[The client needs the terrain, too]
 The game servers use a changed terrain after they reloaded their configuration.
-The game client, however, has its own copy of the terrain: if walls, safezones or
-water changed, distribute the client terrain file to your players as well.
+The game client, however, has its own copy of the terrain: if walls, safezones
+or water changed, distribute the client terrain file to your players as well.
 Otherwise characters get stuck or walk through walls on their screen.
 :::
