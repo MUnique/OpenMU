@@ -5557,5 +5557,14 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CaptionsCheckingLinkable", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Terrain Editor.
+        /// </summary>
+        public static string TerrainEditor {
+            get {
+                return ResourceManager.GetString("TerrainEditor", resourceCulture);
+            }
+        }
     }
 }
