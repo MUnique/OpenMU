@@ -157,6 +157,7 @@ public class CompiledModelTests
                      (typeof(DataModel.Entities.CastleSiegeData), Persistence.EntityFramework.CompiledModels.ForCastleSiegeDataTypedContext.CastleSiegeDataTypedContextModel.Instance),
                      (typeof(DataModel.Entities.CastleSiegeGuildRegistration), Persistence.EntityFramework.CompiledModels.ForCastleSiegeGuildRegistrationTypedContext.CastleSiegeGuildRegistrationTypedContextModel.Instance),
                      (typeof(DataModel.Entities.CastleSiegePendingReward), Persistence.EntityFramework.CompiledModels.ForCastleSiegePendingRewardTypedContext.CastleSiegePendingRewardTypedContextModel.Instance),
+                     (typeof(DataModel.Entities.CrywolfData), Persistence.EntityFramework.CompiledModels.ForCrywolfDataTypedContext.CrywolfDataTypedContextModel.Instance),
                      (typeof(DataModel.Entities.GensAbuse), Persistence.EntityFramework.CompiledModels.ForGensAbuseTypedContext.GensAbuseTypedContextModel.Instance),
                      (typeof(DataModel.Entities.GensMember), Persistence.EntityFramework.CompiledModels.ForGensMemberTypedContext.GensMemberTypedContextModel.Instance),
                      (typeof(DataModel.Statistics.MiniGameRankingEntry), Persistence.EntityFramework.CompiledModels.ForMiniGameRankingEntryTypedContext.MiniGameRankingEntryTypedContextModel.Instance),

@@ -238,7 +238,23 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
 
         player.Logger.LogDebug("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+        var dropper = this._dropper;
         await this.DisposeAsync().ConfigureAwait(false);
+
+        if (!itemWasTemporary)
+        {
+            // The row of this item has no storage since it was dropped. We save right away, so it
+            // doesn't stay like that until the next periodic save (or forever, if that one fails).
+            player.Logger.LogInformation("Item picked up: {Player} picked up '{DroppedItem}', dropped by {Dropper}.", player, this, dropper);
+            try
+            {
+                await player.SaveProgressAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Couldn't save after {Player} picked up '{DroppedItem}'.", player, this);
+            }
+        }
 
         return true;
     }
@@ -287,6 +303,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             context.Attach(this.Item);
             await context.DeleteAsync(this.Item).ConfigureAwait(false);
             await context.SaveChangesAsync().ConfigureAwait(false);
+            player.Logger.LogInformation("Item expired: '{DroppedItem}', dropped by {Player}, wasn't picked up and got deleted.", this, player);
         }
         catch (Exception e)
         {

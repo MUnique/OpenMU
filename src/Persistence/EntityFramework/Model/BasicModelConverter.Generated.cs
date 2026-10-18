@@ -81,6 +81,7 @@ internal sealed class BasicModelConverter
             ConfigurationUpdateState value => this.Convert(value),
             ConnectServerDefinition value => this.Convert(value),
             ConstValueAttribute value => this.Convert(value),
+            CrywolfData value => this.Convert(value),
             DropItemGroup value => this.Convert(value),
             DuelArea value => this.Convert(value),
             DuelConfiguration value => this.Convert(value),
@@ -88,6 +89,7 @@ internal sealed class BasicModelConverter
             GameClientDefinition value => this.Convert(value),
             GameConfiguration value => this.Convert(value),
             GameMapDefinition value => this.Convert(value),
+            GameMapTerrainVariant value => this.Convert(value),
             GameServerConfiguration value => this.Convert(value),
             GameServerDefinition value => this.Convert(value),
             Gate value => this.Convert(value),
@@ -306,6 +308,7 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
         target.MinimumValue = source.MinimumValue;
+        target.MinimumItemLevel = source.MinimumItemLevel;
         return target;
     }
 
@@ -1024,6 +1027,23 @@ internal sealed class BasicModelConverter
         return target;
     }
 
+    private BasicModel.CrywolfData Convert(CrywolfData source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.CrywolfData)converted;
+        }
+
+        var target = new BasicModel.CrywolfData();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.IsOccupied = source.IsOccupied;
+        target.IsWarRunning = source.IsWarRunning;
+        target.WarStart = source.WarStart;
+        target.LastBattleEnd = source.LastBattleEnd;
+        return target;
+    }
+
     private BasicModel.DropItemGroup Convert(DropItemGroup source)
     {
         if (this._converted.TryGetValue(source, out var converted))
@@ -1395,6 +1415,14 @@ internal sealed class BasicModelConverter
         target.Number = source.Number;
         target.Name = source.Name;
         target.TerrainData = source.TerrainData;
+        if (source.TerrainVariants is { } terrainVariantsItems)
+        {
+            foreach (var item in terrainVariantsItems)
+            {
+                target.TerrainVariants.Add((MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant)this.ConvertObject(item)!);
+            }
+        }
+
         if (source.MonsterSpawns is { } monsterSpawnsItems)
         {
             foreach (var item in monsterSpawnsItems)
@@ -1447,6 +1475,22 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.GameMapTerrainVariant Convert(GameMapTerrainVariant source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.GameMapTerrainVariant)converted;
+        }
+
+        var target = new BasicModel.GameMapTerrainVariant();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Number = source.Number;
+        target.Description = source.Description;
+        target.TerrainData = source.TerrainData;
         return target;
     }
 
@@ -1566,6 +1610,7 @@ internal sealed class BasicModelConverter
         target.RankingPosition = source.RankingPosition;
         target.JoinedAt = source.JoinedAt;
         target.LeftAt = source.LeftAt;
+        target.RewardClaimedAt = source.RewardClaimedAt;
         return target;
     }
 
@@ -1671,6 +1716,8 @@ internal sealed class BasicModelConverter
 
         target.SocketCount = source.SocketCount;
         target.StorePrice = source.StorePrice;
+        target.StorePriceItemDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.StorePriceItemDefinition)!;
+        target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
         return target;
     }

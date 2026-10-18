@@ -228,7 +228,7 @@ namespace MUnique.OpenMU.DataModel.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to The time zone id used to interpret the times of periodic event schedules (e.g. invasions, Blood Castle, Devil Square). IANA ids are recommended, for example &apos;Europe/Warsaw&apos;. When empty, UTC is used..
+        ///   Looks up a localized string similar to The time zone id used to interpret the times of periodic event schedules (e.g. invasions, Blood Castle, Devil Square) and of the Castle Siege schedule. IANA ids are recommended, for example &apos;Europe/Warsaw&apos;. When empty, UTC is used..
         /// </summary>
         public static string SystemConfiguration_TimeZoneId_Description {
             get {

@@ -502,4 +502,25 @@ Stufe: {2} - {3}</value>
   <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
     <value>Benötigt die erforderlichen Fertigkeiten und eine Fertigkeit des vorherigen Rangs mit mindestens Stufe {0}.</value>
   </data>
+  <data name="CharacterCreationHint" xml:space="preserve">
+    <value>Der Charakter erhält die Statuswerte seiner Klasse mit ihren Startwerten, startet auf der Heimatkarte seiner Klasse und bekommt ein leeres Inventar und die Standard-Tastenbelegung. Danach laufen die aktiven "Charakter erstellt"-Plugins, die ihm z.B. seine Startgegenstände und -fertigkeiten geben, wie im Spiel.</value>
+  </data>
+  <data name="CharacterNameRequired" xml:space="preserve">
+    <value>Bitte einen Namen eingeben.</value>
+  </data>
+  <data name="CharacterNameInvalid" xml:space="preserve">
+    <value>Der Name entspricht nicht dem konfigurierten Muster: {0}</value>
+  </data>
+  <data name="CharacterClassRequired" xml:space="preserve">
+    <value>Bitte eine Charakterklasse auswählen.</value>
+  </data>
+  <data name="CharacterClassWithoutHomeMap" xml:space="preserve">
+    <value>Die Charakterklasse hat keine Heimatkarte, daher hätte der Charakter keine Startposition.</value>
+  </data>
+  <data name="NoFreeCharacterSlot" xml:space="preserve">
+    <value>Das Konto hat keinen freien Charakterplatz. Ein Konto kann bis zu {0} Charaktere haben.</value>
+  </data>
+  <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
+    <value>Der Charakter wurde erstellt, aber die "Charakter erstellt"-Plugins sind fehlgeschlagen, daher fehlen ihm eventuell Startgegenstände oder -fertigkeiten: {0}</value>
+  </data>
 </root>

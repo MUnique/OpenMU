@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
+using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.Map;
 using GameServer = MUnique.OpenMU.GameServer.GameServer;
 

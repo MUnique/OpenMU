@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for the weakness effect which results from Weakness (Summoner) skill.
@@ -30,7 +31,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.WeaknessSummoner;
-        magicEffect.Name = "Weakness Effect (Summoner)";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.WeaknessEffectSummoner);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

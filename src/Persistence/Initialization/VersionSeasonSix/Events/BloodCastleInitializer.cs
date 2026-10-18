@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
@@ -205,8 +206,8 @@ internal class BloodCastleInitializer : InitializerBase
         var bloodCastle = this.Context.CreateNew<MiniGameDefinition>();
         bloodCastle.SetGuid((short)MiniGameType.BloodCastle, level);
         this.GameConfiguration.MiniGameDefinitions.Add(bloodCastle);
-        bloodCastle.Name = $"Blood Castle {level}";
-        bloodCastle.Description = $"Event definition for blood castle event, level {level}.";
+        bloodCastle.Name = MiniGameNames.ResourceManager.GetLocalizedString($"BloodCastle{level}");
+        bloodCastle.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForBloodCastleEventLevel{level}");
         bloodCastle.EnterDuration = TimeSpan.FromMinutes(1);
         bloodCastle.GameDuration = TimeSpan.FromMinutes(20);
         bloodCastle.ExitDuration = TimeSpan.FromMinutes(1);
@@ -231,7 +232,7 @@ internal class BloodCastleInitializer : InitializerBase
         var entranceToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(entranceToggleEvent);
         entranceToggleEvent.Index = 0;
-        entranceToggleEvent.Description = "Entrance Toggle Event";
+        entranceToggleEvent.Description = LocalizedString.FromResource(() => MiniGameEventTexts.EntranceToggleEvent);
         var entranceToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
         entranceToggleEvent.TerrainChanges.Add(entranceToggleArea);
         entranceToggleArea.StartX = 13;
@@ -266,8 +267,8 @@ internal class BloodCastleInitializer : InitializerBase
         var bridgeToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(bridgeToggleEvent);
         bridgeToggleEvent.Index = 1;
-        bridgeToggleEvent.Description = "Bridge Toggle Event";
-        bridgeToggleEvent.Message = "Enough monster kills, now destroy the Castle Gate!";
+        bridgeToggleEvent.Description = LocalizedString.FromResource(() => MiniGameEventTexts.BridgeToggleEvent);
+        bridgeToggleEvent.Message = LocalizedString.FromResource(() => MiniGameEventTexts.EnoughMonsterKillsNowDestroyTheCastleGate);
         bridgeToggleEvent.Target = KillTarget.AnyMonster;
         bridgeToggleEvent.NumberOfKills = RequiredKillsBeforeBridgePerPlayer;
         bridgeToggleEvent.MultiplyKillsByPlayers = true;
@@ -284,11 +285,11 @@ internal class BloodCastleInitializer : InitializerBase
         var gateToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(gateToggleEvent);
         gateToggleEvent.Index = 2;
-        gateToggleEvent.Description = "Gate Toggle Event";
+        gateToggleEvent.Description = LocalizedString.FromResource(() => MiniGameEventTexts.GateToggleEvent);
         gateToggleEvent.Target = KillTarget.Specific;
         gateToggleEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == CastleGateNumber);
         gateToggleEvent.NumberOfKills = 1;
-        gateToggleEvent.Message = "{0} has demolished the Castle Gate!";
+        gateToggleEvent.Message = LocalizedString.FromResource(() => MiniGameEventTexts.Level0HasDemolishedTheCastleGate);
         var gateToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
         gateToggleEvent.TerrainChanges.Add(gateToggleArea);
         gateToggleArea.StartX = 13;
@@ -302,8 +303,8 @@ internal class BloodCastleInitializer : InitializerBase
         var spawnStatueEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(spawnStatueEvent);
         spawnStatueEvent.Index = 3;
-        spawnStatueEvent.Description = "Statue Spawn Event";
-        spawnStatueEvent.Message = "Kundun minions have been subdued! Destroy the Crystal Statue!";
+        spawnStatueEvent.Description = LocalizedString.FromResource(() => MiniGameEventTexts.StatueSpawnEvent);
+        spawnStatueEvent.Message = LocalizedString.FromResource(() => MiniGameEventTexts.KundunMinionsHaveBeenSubduedDestroyTheCrystalStatue);
         spawnStatueEvent.Target = KillTarget.Specific;
         spawnStatueEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == SpiritSorcererPerCastleLevel[level]);
         spawnStatueEvent.NumberOfKills = RequiredKillsAfterGatePerPlayer;
@@ -324,7 +325,7 @@ internal class BloodCastleInitializer : InitializerBase
     private void CreateRewards(byte level, MiniGameDefinition bloodCastle)
     {
         var rewardDropItemGroup = this.Context.CreateNew<DropItemGroup>();
-        rewardDropItemGroup.Description = $"Rewarded items for Blood Castle {level}";
+        rewardDropItemGroup.Description = DropGroupDescriptions.ResourceManager.GetLocalizedString($"RewardedItemsForBloodCastle{level}");
         rewardDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         this.GameConfiguration.DropItemGroups.Add(rewardDropItemGroup);
 

@@ -165,6 +165,17 @@ public class RaklionEventDefinition
     public IList<byte> FullyPushedCharacterClassNumbers { get; set; } = new List<byte> { 4, 6, 7, 12, 13, 16, 17 };
 
     /// <summary>
+    /// Gets or sets the chance in percent, that an iron knight of raklion attacks its target with its stab
+    /// instead of a normal attack, see <see cref="IronKnightIntelligence"/>.
+    /// </summary>
+    /// <remarks>
+    /// The chance of the original server is unknown.
+    /// It applies independently of the state of the event. When the <see cref="RaklionPlugIn"/>
+    /// isn't active, the default value is used.
+    /// </remarks>
+    public int IronKnightStabChance { get; set; } = 30;
+
+    /// <summary>
     /// Gets the pattern (1 to 7) of Selupan by its remaining health.
     /// </summary>
     /// <param name="healthPercentage">The remaining health in percent.</param>

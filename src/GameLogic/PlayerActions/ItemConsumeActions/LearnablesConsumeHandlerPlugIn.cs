@@ -38,10 +38,16 @@ public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Besides the requirements of the item, the player has to comply with the requirements of the skill.
+    /// Otherwise, the player could learn a skill which it can't use, and the item would be lost.
+    /// E.g. the Orb of Summoning has no energy requirement itself, but the skills of its levels have.
+    /// </remarks>
     protected override bool CheckPreconditions(Player player, Item item)
     {
         return base.CheckPreconditions(player, item)
-               && player.CompliesRequirements(item);
+               && player.CompliesRequirements(item)
+               && (this.GetLearnableSkill(item, player.GameContext.Configuration) is not { } skill || player.CompliesRequirements(skill));
     }
 
     /// <summary>

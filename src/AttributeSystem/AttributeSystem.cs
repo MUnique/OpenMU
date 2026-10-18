@@ -9,7 +9,12 @@ using System.Collections;
 /// <summary>
 /// The attribute system which holds all attributes of a character.
 /// </summary>
-public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
+/// <remarks>
+/// The system subscribes to elements which usually live much longer than itself: configured base values,
+/// the stat attributes of a character or account, and the elements of power-ups. Dispose it when it's no
+/// longer used, otherwise these elements keep it - and everything which observes it - alive.
+/// </remarks>
+public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>, IDisposable
 {
     private readonly IDictionary<AttributeDefinition, IAttribute> _attributes = new Dictionary<AttributeDefinition, IAttribute>();
 
@@ -23,6 +28,15 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// nests into another attribute system's lock and cannot deadlock.
     /// </summary>
     private readonly object _attributesLock = new();
+
+    /// <summary>
+    /// The relationship elements which this system created for its own attribute relationships, see
+    /// <see cref="AddAttributeRelationship(AttributeRelationship, IAttributeSystem, AggregateType)"/>.
+    /// Guarded by <see cref="_attributesLock"/>.
+    /// </summary>
+    private readonly List<AttributeRelationshipElement> _ownedRelationshipElements = new();
+
+    private bool _isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AttributeSystem" /> class.
@@ -61,7 +75,12 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     {
         if (this.GetOrCreateAttribute(relationship.GetTargetAttribute()) is IComposableAttribute targetAttribute)
         {
-            var relatedElement = this.CreateRelatedAttribute(relationship, sourceAttributeHolder, aggregateType);
+            var relatedElement = CreateRelationshipElement(relationship, sourceAttributeHolder, aggregateType);
+            lock (this._attributesLock)
+            {
+                this._ownedRelationshipElements.Add(relatedElement);
+            }
+
             targetAttribute.AddElement(relatedElement);
         }
     }
@@ -77,11 +96,14 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// </returns>
     public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
     {
-        var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
-        return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator)
-        {
-            AggregateType = aggregateType,
-        };
+        return CreateRelationshipElement(relationship, sourceAttributeHolder, aggregateType);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -269,6 +291,40 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     }
 
     /// <summary>
+    /// Detaches the system from all elements it subscribed to: its composable attributes stop following their
+    /// elements, and the relationship elements it created stop following their inputs. The stat attributes
+    /// stay untouched, because they belong to their owner, e.g. the character.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        List<AttributeRelationshipElement> relationshipElements;
+        lock (this._attributesLock)
+        {
+            if (this._isDisposed)
+            {
+                return;
+            }
+
+            this._isDisposed = true;
+            relationshipElements = [.. this._ownedRelationshipElements];
+            this._ownedRelationshipElements.Clear();
+        }
+
+        foreach (var composableAttribute in this.GetAttributeSnapshot().OfType<ComposableAttribute>())
+        {
+            composableAttribute.Dispose();
+        }
+
+        relationshipElements.ForEach(element => element.Dispose());
+    }
+
+    /// <summary>
     /// Called when an attribute was added to the system after the initial construction.
     /// </summary>
     /// <param name="attribute">The attribute.</param>
@@ -284,6 +340,15 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     protected virtual void OnAttributeRemoved(IAttribute attribute)
     {
         // can be overwritten.
+    }
+
+    private static AttributeRelationshipElement CreateRelationshipElement(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
+    {
+        var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
+        return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator)
+        {
+            AggregateType = aggregateType,
+        };
     }
 
     /// <summary>

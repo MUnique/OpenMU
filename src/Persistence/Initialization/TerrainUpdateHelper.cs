@@ -41,6 +41,24 @@ internal static class TerrainUpdateHelper
         }
     }
 
+    /// <summary>
+    /// Reads a terrain file from the embedded resources.
+    /// </summary>
+    /// <param name="fileName">The name of the file, e.g. <c>Terrain35_WAR.att</c>.</param>
+    /// <returns>The terrain data, or <see langword="null"/> if the resource doesn't exist.</returns>
+    public static byte[]? ReadTerrainResource(string fileName)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.{fileName}");
+        if (stream is null)
+        {
+            return null;
+        }
+
+        using var reader = new BinaryReader(stream);
+        return reader.ReadBytes(3 * ushort.MaxValue);
+    }
+
     private static string GetTerrainFileName(this GameMapDefinition gameMapDefinition, string terrainVersionPrefix = "")
     {
         var assembly = Assembly.GetExecutingAssembly();

@@ -348,4 +348,23 @@
   <data name="KanturuState_End_Caption" xml:space="preserve">
     <value>Ende</value>
   </data>
+  <data name="KanturuTerrainArea_StartX_Caption" xml:space="preserve">
+    <value>Start-X</value>
+  </data>
+  <data name="KanturuTerrainArea_StartY_Caption" xml:space="preserve">
+    <value>Start-Y</value>
+  </data>
+  <data name="PlayerShopCurrenciesConfiguration_TypeCaption" xml:space="preserve"><value>Konfiguration der Währungen für persönliche Läden</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_PriceItems_Caption" xml:space="preserve"><value>Preis-Gegenstände</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_PriceItems_Description" xml:space="preserve"><value>Die Gegenstände, mit denen Preise bezahlt werden können, z. B. Juwelen.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinCAllowed_Caption" xml:space="preserve"><value>WCoin (C) erlaubt</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinCAllowed_Description" xml:space="preserve"><value>Preise in WCoin (C) sind erlaubt.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinPAllowed_Caption" xml:space="preserve"><value>WCoin (P) erlaubt</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinPAllowed_Description" xml:space="preserve"><value>Preise in WCoin (P) sind erlaubt.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsGoblinPointsAllowed_Caption" xml:space="preserve"><value>Goblin-Punkte erlaubt</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsGoblinPointsAllowed_Description" xml:space="preserve"><value>Preise in Goblin-Punkten sind erlaubt.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumItemAmount_Caption" xml:space="preserve"><value>Maximale Gegenstandsanzahl</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumItemAmount_Description" xml:space="preserve"><value>Die maximale Anzahl an Gegenständen eines Preises; höchstens 65535.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumCoinAmount_Caption" xml:space="preserve"><value>Maximale Münzanzahl</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumCoinAmount_Description" xml:space="preserve"><value>Die maximale Anzahl an Konto-Münzen eines Preises.</value></data>
 </root>

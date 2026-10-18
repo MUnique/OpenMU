@@ -19,8 +19,6 @@
 
   <ItemGroup>
     <PackageReference Include="Nito.AsyncEx" />
-    <PackageReference Include="SixLabors.ImageSharp" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(ci)'!='true'">

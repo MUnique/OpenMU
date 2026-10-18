@@ -60,9 +60,60 @@ public class ReverseProxyAuthenticationService
     public static string RoleHeaderName => "X-OpenMU-Role";
 
     /// <summary>
+    /// Gets the name of the response header which contains the Grafana role for the most privileged role of the authenticated user.
+    /// </summary>
+    /// <remarks>
+    /// It's meant for reverse proxies which can't map the <see cref="RoleHeaderName"/> to the Grafana role themselves, e.g. Traefik.
+    /// </remarks>
+    public static string GrafanaRoleHeaderName => "X-OpenMU-Grafana-Role";
+
+    /// <summary>
     /// Gets the user name which is used in the initial setup mode, when no user exists yet.
     /// </summary>
     public static string SetupUserName => "setup";
+
+    /// <summary>
+    /// Gets the Grafana role (<c>Admin</c>, <c>Editor</c> or <c>Viewer</c>) for a role of the admin panel.
+    /// </summary>
+    /// <param name="role">The role of the admin panel.</param>
+    /// <returns>The Grafana role.</returns>
+    public static string GetGrafanaRole(string role)
+    {
+        if (role == AdminRoles.Administrator)
+        {
+            return "Admin";
+        }
+
+        if (role == AdminRoles.Operator)
+        {
+            return "Editor";
+        }
+
+        return "Viewer";
+    }
+
+    /// <summary>
+    /// Gets the url of the login page, which returns to the originally requested url after the login.
+    /// </summary>
+    /// <param name="pathBase">The path base of the admin panel, e.g. empty or <c>/admin</c>.</param>
+    /// <param name="forwardedUri">The originally requested path and query, which the reverse proxy passes in the <c>X-Forwarded-Uri</c> header.</param>
+    /// <returns>The url of the login page.</returns>
+    /// <remarks>
+    /// The login page only accepts a return url which is relative to the admin panel, so it can't send the user to another site.
+    /// </remarks>
+    public static string GetLoginUrl(string pathBase, string? forwardedUri)
+    {
+        var loginUrl = pathBase.TrimEnd('/') + AdminAuthenticationDefaults.LoginPath;
+        var requestedPath = forwardedUri?.TrimStart('/');
+        if (string.IsNullOrEmpty(requestedPath))
+        {
+            return loginUrl;
+        }
+
+        var levelsUp = pathBase.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
+        var returnUrl = string.Concat(Enumerable.Repeat("../", levelsUp)) + requestedPath;
+        return $"{loginUrl}?returnUrl={Uri.EscapeDataString(returnUrl)}";
+    }
 
     /// <summary>
     /// Authenticates the principal of a request of the reverse proxy.

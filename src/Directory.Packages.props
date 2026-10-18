@@ -63,7 +63,5 @@
     <PackageVersion Include="NUnit3TestAdapter" Version="4.6.0" />
     <!-- Do not update the following: License changed to non-OSS in newer versions! -->
     <PackageVersion Include="MathParser.org-mXparser" Version="4.4.2" />
-    <PackageVersion Include="SixLabors.ImageSharp" Version="2.1.11" />
-    <PackageVersion Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
   </ItemGroup>
 </Project>
