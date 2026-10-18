@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
@@ -24,7 +25,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
     private readonly PlugInManager _plugInManager;
-    private readonly List<IDisposable> _registrations = new();
 
     private int _health;
 
@@ -178,16 +178,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         (this.Attributes as MonsterAttributeHolder)?.ApplyChanges();
     }
 
-    /// <summary>
-    /// Registers a disposable (e.g. a configuration change registration) to be disposed
-    /// together with this instance.
-    /// </summary>
-    /// <param name="disposable">The disposable.</param>
-    public void RegisterDisposable(IDisposable disposable)
-    {
-        this._registrations.Add(disposable);
-    }
-
     /// <inheritdoc/>
     protected override void Dispose(bool managed)
     {
@@ -195,12 +185,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         {
             this.Died = null;
             this.IsAlive = false;
-            foreach (var registration in this._registrations)
-            {
-                registration.Dispose();
-            }
-
-            this._registrations.Clear();
         }
 
         base.Dispose(managed);
@@ -454,6 +438,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
         var droppedMoney = new DroppedMoney(amount, this.Position, this.CurrentMap, shares);
         await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
+        await killer.GameContext.PlugInManager.NotifyPlugInsAsync<IMonsterMoneyDroppedPlugIn>(
+            p => p.MonsterMoneyDroppedAsync(this, killer, droppedMoney),
+            killer.Logger).ConfigureAwait(false);
     }
 
     private async ValueTask DropItemAsync(IReadOnlyList<ExperienceShare> experienceShares, Player killer)
@@ -471,8 +458,19 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var firstItem = !droppedMoney.HasValue;
+        var plugInPoint = killer.GameContext.PlugInManager.GetPlugInPoint<IMonsterItemDropPlugIn>();
         foreach (var item in generatedItems)
         {
+            if (plugInPoint is not null)
+            {
+                var eventArgs = new CancelEventArgs();
+                plugInPoint.ItemDropping(this, killer, item, eventArgs);
+                if (eventArgs.Cancel)
+                {
+                    continue;
+                }
+            }
+
             Point dropCoordinates;
             if (firstItem)
             {

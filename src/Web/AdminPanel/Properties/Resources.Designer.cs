@@ -214,6 +214,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Advanced (JSON).
+        /// </summary>
+        public static string AdvancedJson {
+            get {
+                return ResourceManager.GetString("AdvancedJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Here you can edit the whole Serilog section of the configuration file, for example to add sinks or filters. See the Serilog documentation for the available settings..
+        /// </summary>
+        public static string AdvancedLoggingJsonDescription {
+            get {
+                return ResourceManager.GetString("AdvancedLoggingJsonDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         public static string All {
@@ -1312,6 +1330,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default level.
+        /// </summary>
+        public static string DefaultLogLevel {
+            get {
+                return ResourceManager.GetString("DefaultLogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string Delete {
@@ -2197,6 +2224,69 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logging Configuration.
+        /// </summary>
+        public static string LoggingConfiguration {
+            get {
+                return ResourceManager.GetString("LoggingConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The logging of the server is configured in the file {0}. When you save, changed log levels are applied at once. Added or removed sources and all other settings take effect after a restart of the server..
+        /// </summary>
+        public static string LoggingConfigurationDescription {
+            get {
+                return ResourceManager.GetString("LoggingConfigurationDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The JSON is invalid: {0}.
+        /// </summary>
+        public static string LoggingConfigurationInvalidJson {
+            get {
+                return ResourceManager.GetString("LoggingConfigurationInvalidJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The logging configuration couldn't be loaded: {0}.
+        /// </summary>
+        public static string LoggingConfigurationLoadError {
+            get {
+                return ResourceManager.GetString("LoggingConfigurationLoadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The logging configuration can only be edited when the admin panel runs within the server process (all-in-one deployment)..
+        /// </summary>
+        public static string LoggingConfigurationNotAvailable {
+            get {
+                return ResourceManager.GetString("LoggingConfigurationNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The logging configuration has been saved..
+        /// </summary>
+        public static string LoggingConfigurationSaved {
+            get {
+                return ResourceManager.GetString("LoggingConfigurationSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The logging configuration couldn't be saved: {0}.
+        /// </summary>
+        public static string LoggingConfigurationSaveError {
+            get {
+                return ResourceManager.GetString("LoggingConfigurationSaveError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Login.
         /// </summary>
         public static string Login {
@@ -2215,6 +2305,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Levels per source.
+        /// </summary>
+        public static string LogLevelOverrides {
+            get {
+                return ResourceManager.GetString("LogLevelOverrides", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A source is the name of a logger, usually the full name of a class, or a namespace which covers all loggers in it. The most specific source wins..
+        /// </summary>
+        public static string LogLevelOverridesDescription {
+            get {
+                return ResourceManager.GetString("LogLevelOverridesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every source needs a name, and each name may only be used once..
+        /// </summary>
+        public static string LogLevelOverridesInvalid {
+            get {
+                return ResourceManager.GetString("LogLevelOverridesInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Levels.
+        /// </summary>
+        public static string LogLevels {
+            get {
+                return ResourceManager.GetString("LogLevels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logout.
         /// </summary>
         public static string Logout {
@@ -2229,6 +2355,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Logs {
             get {
                 return ResourceManager.GetString("Logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source.
+        /// </summary>
+        public static string LogSource {
+            get {
+                return ResourceManager.GetString("LogSource", resourceCulture);
             }
         }
         
@@ -2382,6 +2517,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string MessagePlaceholder {
             get {
                 return ResourceManager.GetString("MessagePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message Type.
+        /// </summary>
+        public static string MessageType {
+            get {
+                return ResourceManager.GetString("MessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blue (system).
+        /// </summary>
+        public static string MessageTypeBlue {
+            get {
+                return ResourceManager.GetString("MessageTypeBlue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Golden (center).
+        /// </summary>
+        public static string MessageTypeGolden {
+            get {
+                return ResourceManager.GetString("MessageTypeGolden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide (top band).
+        /// </summary>
+        public static string MessageTypeSlide {
+            get {
+                return ResourceManager.GetString("MessageTypeSlide", resourceCulture);
             }
         }
         
@@ -5108,6 +5279,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Select all.
+        /// </summary>
+        public static string SelectAll {
+            get {
+                return ResourceManager.GetString("SelectAll", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select none.
         /// </summary>

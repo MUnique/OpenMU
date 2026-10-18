@@ -23,6 +23,8 @@ public sealed class SkillList : ISkillList, IDisposable
 
     private readonly Player _player;
 
+    private readonly IInventoryStorage _inventory;
+
     private List<IDisposable>? _passivePowerUps;
 
     /// <summary>
@@ -51,7 +53,8 @@ public sealed class SkillList : ISkillList, IDisposable
             .Where(item => item.HasSkill)
             .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
             .ForEach(item => this.TryAddItemSkill(item.Definition!.Skill!));
-        this._player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
+        this._inventory = this._player.Inventory;
+        this._inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
         foreach (var skill in this._learnedSkills)
         {
             this.CreatePassivePowerUps(skill);
@@ -67,10 +70,19 @@ public sealed class SkillList : ISkillList, IDisposable
     private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new();
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Also releases the attributes and cached power-ups of the skills, because they follow the attribute
+    /// system of the character, which is replaced when the character enters the game again.
+    /// </remarks>
     public void Dispose()
     {
+        this._inventory.EquippedItemsChanged -= this.Inventory_WearingItemsChangedAsync;
         this._passivePowerUps?.ForEach(p => p.Dispose());
         this._passivePowerUps = null;
+        foreach (var skillEntry in this._learnedSkills.Concat(this._itemSkills).Concat(this._availableSkills.Values).Distinct())
+        {
+            ReleaseCharacterDependentState(skillEntry);
+        }
     }
 
     /// <inheritdoc/>
@@ -108,6 +120,12 @@ public sealed class SkillList : ISkillList, IDisposable
         }
 
         this._itemSkills.Remove(skillEntry);
+        if (!this._availableSkills.Values.Contains(skillEntry))
+        {
+            // Every equip creates a new entry, so its attributes have to be released with it. The cached
+            // power-ups stay: a skill which is being used right now may still read them.
+            ReleaseSkillAttributes(skillEntry);
+        }
 
         // We need to take into account that there might be multiple items equipped with the same skill
         if (this._itemSkills.All(s => s.Skill!.Number.ToUnsigned() != skillId)
@@ -125,6 +143,57 @@ public sealed class SkillList : ISkillList, IDisposable
     public bool ContainsSkill(ushort skillId)
     {
         return this._availableSkills.ContainsKey(skillId);
+    }
+
+    /// <summary>
+    /// Releases what the skill entry derived from the attribute system of the character: its attributes and
+    /// the cached power-ups of its magic effect (e.g. a buff value which depends on the energy). They are
+    /// created again from the current attribute system when the skill is used the next time.
+    /// </summary>
+    /// <param name="skillEntry">The skill entry.</param>
+    private static void ReleaseCharacterDependentState(SkillEntry skillEntry)
+    {
+        ReleaseSkillAttributes(skillEntry);
+        skillEntry.PowerUps?.ForEach(p => ReleaseElement(p.BuffPowerUp));
+        skillEntry.PowerUpsPvp?.ForEach(p => ReleaseElement(p.BuffPowerUp));
+        ReleaseElement(skillEntry.PowerUpDuration);
+        ReleaseElement(skillEntry.PowerUpDurationPvp);
+        ReleaseElement(skillEntry.PowerUpChance);
+        ReleaseElement(skillEntry.PowerUpChancePvp);
+        skillEntry.PowerUps = null;
+        skillEntry.PowerUpsPvp = null;
+        skillEntry.PowerUpDuration = null;
+        skillEntry.PowerUpDurationPvp = null;
+        skillEntry.PowerUpChance = null;
+        skillEntry.PowerUpChancePvp = null;
+    }
+
+    /// <summary>
+    /// Releases the attributes of the skill, which follow the attribute system of the character.
+    /// </summary>
+    /// <param name="skillEntry">The skill entry.</param>
+    private static void ReleaseSkillAttributes(SkillEntry skillEntry)
+    {
+        (skillEntry.Attributes as IDisposable)?.Dispose();
+        skillEntry.Attributes = null;
+    }
+
+    /// <summary>
+    /// Releases an element which <c>AttributeSystemExtensions.CreateElement</c>
+    /// created for a cached power-up of a skill: a composable attribute with relationship elements which follow
+    /// the attributes of the character. Other elements, like constant values of the configuration, are left alone.
+    /// </summary>
+    /// <param name="element">The element.</param>
+    private static void ReleaseElement(IElement? element)
+    {
+        if (element is not ComposableAttribute composable)
+        {
+            return;
+        }
+
+        var relationshipElements = composable.Elements.OfType<AttributeRelationshipElement>().ToList();
+        composable.Dispose();
+        relationshipElements.ForEach(e => e.Dispose());
     }
 
     /// <summary>
@@ -251,14 +320,15 @@ public sealed class SkillList : ISkillList, IDisposable
             return;
         }
 
-        var inventory = this._player.Inventory;
-        if (inventory!.EquippedItems.Contains(item))
-        {
-            await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
-        }
-        else
+        if (!eventArgs.IsEquipped || item.Durability == 0.0)
         {
             await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
+            return;
+        }
+
+        if (!eventArgs.HasDurabilityFactorChanged)
+        {
+            await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
         }
     }
 

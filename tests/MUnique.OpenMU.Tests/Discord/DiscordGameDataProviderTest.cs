@@ -27,6 +27,7 @@ public class DiscordGameDataProviderTest
     private const uint GuildRuntimeId = 7;
 
     private readonly Guid _guildId = Guid.NewGuid();
+    private InMemoryPersistenceContextProvider _persistence = null!;
     private Mock<IFriendServer> _friendServer = null!;
     private Mock<IGuildServer> _guildServer = null!;
     private PlugInManager _plugInManager = null!;
@@ -61,7 +62,7 @@ public class DiscordGameDataProviderTest
 
         this._plugInManager = new PlugInManager([], NullLoggerFactory.Instance, null, null);
 
-        var persistence = new InMemoryPersistenceContextProvider();
+        var persistence = this._persistence = new InMemoryPersistenceContextProvider();
         using (var context = persistence.CreateNewPlayerContext(new GameConfiguration()))
         {
             var characterClass = context.CreateNew<CharacterClass>();
@@ -137,5 +138,29 @@ public class DiscordGameDataProviderTest
         var ranking = await this._provider.GetRankingAsync(10).ConfigureAwait(false);
 
         Assert.That(ranking.Select(c => c.Name), Is.EqualTo(new[] { "Hero" }));
+    }
+
+    /// <summary>
+    /// Tests that the ranking is cached, because every member of the Discord server can request it.
+    /// </summary>
+    [Test]
+    public async Task RankingIsCachedAsync()
+    {
+        var first = await this._provider.GetRankingAsync(10).ConfigureAwait(false);
+        using (var context = this._persistence.CreateNewPlayerContext(new GameConfiguration()))
+        {
+            var account = context.CreateNew<Account>();
+            account.LoginName = "newcomer";
+            var character = context.CreateNew<Character>();
+            character.Name = "Newcomer";
+            character.CharacterClass = context.CreateNew<CharacterClass>();
+            character.Attributes.Add(new Persistence.BasicModel.StatAttribute(Stats.Level, 1));
+            account.Characters.Add(character);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var second = await this._provider.GetRankingAsync(10).ConfigureAwait(false);
+
+        Assert.That(second, Is.SameAs(first));
     }
 }

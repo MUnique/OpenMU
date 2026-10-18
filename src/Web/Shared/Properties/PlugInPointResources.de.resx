@@ -264,4 +264,10 @@
   <data name="This is a custom plugin point which collects all view plugins which are suitable for a specific game client version." xml:space="preserve">
     <value>Dies ist ein benutzerdefinierter Plugin-Punkt, der alle View-Plugins sammelt, die für eine bestimmte Spielclient-Version geeignet sind.</value>
   </data>
+  <data name="Skill animation counter strategies" xml:space="preserve">
+    <value>Strategien für Fertigkeits-Animationszähler</value>
+  </data>
+  <data name="Plugins which describe how the game client counts the animations of specific skills." xml:space="preserve">
+    <value>Plugins, die beschreiben, wie der Spielclient die Animationen bestimmter Fertigkeiten zählt.</value>
+  </data>
 </root>

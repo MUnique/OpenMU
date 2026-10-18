@@ -97,5 +97,194 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ImperialGuardianSunday", resourceCulture);
             }
         }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel4 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel4 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel3 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel3 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel2 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel2 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel1 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel1 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForTheDoppelgangerEventOnMap68 from the configuration name resources.</summary>
+        public static string EventDefinitionForTheDoppelgangerEventOnMap68 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForTheDoppelgangerEventOnMap68", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForTheDoppelgangerEventOnMap67 from the configuration name resources.</summary>
+        public static string EventDefinitionForTheDoppelgangerEventOnMap67 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForTheDoppelgangerEventOnMap67", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForTheDoppelgangerEventOnMap66 from the configuration name resources.</summary>
+        public static string EventDefinitionForTheDoppelgangerEventOnMap66 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForTheDoppelgangerEventOnMap66", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForTheDoppelgangerEventOnMap65 from the configuration name resources.</summary>
+        public static string EventDefinitionForTheDoppelgangerEventOnMap65 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForTheDoppelgangerEventOnMap65", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForTheKanturuRefineryTowerEvent from the configuration name resources.</summary>
+        public static string EventDefinitionForTheKanturuRefineryTowerEvent {
+            get {
+                return ResourceManager.GetString("EventDefinitionForTheKanturuRefineryTowerEvent", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel7 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel7 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel7", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel6 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel6 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel6", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel5 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel5 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel4 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel4 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel3 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel3 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel2 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel2 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForChaosCastleEventLevel1 from the configuration name resources.</summary>
+        public static string EventDefinitionForChaosCastleEventLevel1 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForChaosCastleEventLevel1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel8 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel8 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel8", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel7 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel7 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel7", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel6 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel6 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel6", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel5 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel5 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel4 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel4 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel3 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel3 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel2 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel2 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForBloodCastleEventLevel1 from the configuration name resources.</summary>
+        public static string EventDefinitionForBloodCastleEventLevel1 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForBloodCastleEventLevel1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel7 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel7 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel7", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel6 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel6 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel6", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EventDefinitionForDevilSquareEventLevel5 from the configuration name resources.</summary>
+        public static string EventDefinitionForDevilSquareEventLevel5 {
+            get {
+                return ResourceManager.GetString("EventDefinitionForDevilSquareEventLevel5", resourceCulture);
+            }
+        }
     }
 }

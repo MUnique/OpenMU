@@ -101,7 +101,11 @@ public class GensViewPlugIn : IGensViewPlugIn
     {
         return result switch
         {
+            GensRewardResult.Success => GensRewardResponse.GensRewardResult.Success,
+            GensRewardResult.OutsideRewardPeriod => GensRewardResponse.GensRewardResult.OutsideRewardPeriod,
             GensRewardResult.NotEligible => GensRewardResponse.GensRewardResult.NotEligible,
+            GensRewardResult.InventoryFull => GensRewardResponse.GensRewardResult.InventoryFull,
+            GensRewardResult.AlreadyClaimed => GensRewardResponse.GensRewardResult.AlreadyClaimed,
             GensRewardResult.DifferentGensNpc => GensRewardResponse.GensRewardResult.DifferentGensNpc,
             GensRewardResult.NotJoined => GensRewardResponse.GensRewardResult.NotJoined,
             _ => throw new ArgumentException($"Unhandled case {result}.", nameof(result)),

@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement),
                 baseEntityType,
-                propertyCount: 7,
+                propertyCount: 8,
                 navigationCount: 1,
                 foreignKeyCount: 5,
                 unnamedIndexCount: 5,
@@ -59,6 +59,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(Guid?),
                 nullable: true);
             itemDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var minimumItemLevel = runtimeEntityType.AddProperty(
+                "MinimumItemLevel",
+                typeof(byte?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement).GetProperty("MinimumItemLevel", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement).GetField("<MinimumItemLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            minimumItemLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var minimumValue = runtimeEntityType.AddProperty(
                 "MinimumValue",

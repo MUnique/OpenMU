@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="AlcoholEffect" xml:space="preserve">
+    <value>酒的效果</value>
+  </data>
+  <data name="HealEffect" xml:space="preserve">
+    <value>治疗效果</value>
+  </data>
+  <data name="GreaterDefenseBuffSkillEffect" xml:space="preserve">
+    <value>守护之光效果</value>
+  </data>
+  <data name="GreaterDamageBuffSkillEffect" xml:space="preserve">
+    <value>战神之力效果</value>
+  </data>
+  <data name="ShieldDefenseSkillEffect" xml:space="preserve">
+    <value>盾牌防御效果</value>
+  </data>
+  <data name="Iced" xml:space="preserve">
+    <value>冰冻</value>
+  </data>
+  <data name="Poisoned" xml:space="preserve">
+    <value>中毒</value>
+  </data>
+  <data name="Cold" xml:space="preserve">
+    <value>寒冷</value>
+  </data>
+  <data name="InfinityArrowSkillEffect" xml:space="preserve">
+    <value>无影箭效果</value>
+  </data>
+  <data name="ElfSoldierBuff" xml:space="preserve">
+    <value>小精灵祝福效果</value>
+  </data>
+  <data name="CastleSiegeAttack3" xml:space="preserve">
+    <value>攻城战进攻方标记3</value>
+  </data>
+  <data name="CastleSiegeAttack2" xml:space="preserve">
+    <value>攻城战进攻方标记2</value>
+  </data>
+  <data name="CastleSiegeAttack1" xml:space="preserve">
+    <value>攻城战进攻方标记1</value>
+  </data>
+  <data name="CastleSiegeDefense" xml:space="preserve">
+    <value>攻城战防守方标记</value>
+  </data>
+  <data name="IncreaseBlockMasterySkillEffect" xml:space="preserve">
+    <value>斗神-御精通效果</value>
+  </data>
+  <data name="IncreaseBlockPowerUpSkillEffect" xml:space="preserve">
+    <value>斗神-御强化效果</value>
+  </data>
+  <data name="IncreaseHealthStrengthenerSkillEffect" xml:space="preserve">
+    <value>斗神-命强化效果</value>
+  </data>
+  <data name="WizardryEnhanceMasterySkillEffect" xml:space="preserve">
+    <value>法神附体精通效果</value>
+  </data>
+  <data name="WizardryEnhanceStrengthenerSkillEffect" xml:space="preserve">
+    <value>法神附体强化效果</value>
+  </data>
+  <data name="LifeSwellProficiencySkillEffect" xml:space="preserve">
+    <value>生命之光熟练效果</value>
+  </data>
+  <data name="CriticalDamageIncreaseMasterySkillEffect" xml:space="preserve">
+    <value>致命圣印精通效果</value>
+  </data>
+  <data name="StunEffect" xml:space="preserve">
+    <value>眩晕效果</value>
+  </data>
+  <data name="RequiemEffect" xml:space="preserve">
+    <value>安魂弥撒效果</value>
+  </data>
+  <data name="ExplosionEffect" xml:space="preserve">
+    <value>爆裂击效果</value>
+  </data>
+  <data name="DecreaseBlockEffectPhoenixShot" xml:space="preserve">
+    <value>凤凰射击降低防御成功率效果</value>
+  </data>
+  <data name="DefenseReductionEffectBeastUppercut" xml:space="preserve">
+    <value>斗气爆裂拳降低防御力效果</value>
+  </data>
+  <data name="ReflectionEffect" xml:space="preserve">
+    <value>反射效果</value>
+  </data>
+  <data name="InnovationEffect" xml:space="preserve">
+    <value>破御阵效果</value>
+  </data>
+  <data name="WeaknessEffectSummoner" xml:space="preserve">
+    <value>虚弱阵效果</value>
+  </data>
+  <data name="SleepEffect" xml:space="preserve">
+    <value>昏睡术效果</value>
+  </data>
+  <data name="WeaknessEffectKillingBlow" xml:space="preserve">
+    <value>幽冥青狼拳虚弱效果</value>
+  </data>
+  <data name="BerserkerBuffSkillEffect" xml:space="preserve">
+    <value>狂暴术效果</value>
+  </data>
+  <data name="PotionOfBlessEffect" xml:space="preserve">
+    <value>祝福药水效果</value>
+  </data>
+  <data name="PotionOfSoulEffect" xml:space="preserve">
+    <value>灵魂药水效果</value>
+  </data>
+  <data name="WizEnhanceSkillEffect" xml:space="preserve">
+    <value>法神附体效果</value>
+  </data>
+  <data name="IncreaseBlockSkillEffect" xml:space="preserve">
+    <value>斗神-御效果</value>
+  </data>
+  <data name="IncreaseHealthSkillEffect" xml:space="preserve">
+    <value>斗神-命效果</value>
+  </data>
+  <data name="IgnoreDefenseSkillEffect" xml:space="preserve">
+    <value>斗神-破效果</value>
+  </data>
+  <data name="Invisible" xml:space="preserve">
+    <value>隐身</value>
+  </data>
+  <data name="DefenseReductionEffectFireSlash" xml:space="preserve">
+    <value>玄月斩降低防御力效果</value>
+  </data>
+  <data name="ShieldRecoverEffect" xml:space="preserve">
+    <value>防护值恢复效果</value>
+  </data>
+  <data name="CriticalDamageIncreaseSkillEffect" xml:space="preserve">
+    <value>致命圣印效果</value>
+  </data>
+  <data name="LifeSwellSkillEffect" xml:space="preserve">
+    <value>生命之光效果</value>
+  </data>
+  <data name="SoulBarrier" xml:space="preserve">
+    <value>守护之魂</value>
+  </data>
+  <data name="Freeze" xml:space="preserve">
+    <value>冻结</value>
+  </data>
+</root>

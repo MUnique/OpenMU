@@ -628,6 +628,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends..
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /crywolf.
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event..
+        /// </summary>
+        public static string CrywolfPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Event.
+        /// </summary>
+        public static string CrywolfPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/disconnect &lt;char&gt;&apos;. Disconnects a player from the game server..
         /// </summary>
         public static string DisconnectChatCommandPlugIn_Description {
@@ -2221,6 +2257,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active on servers.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restricts the event to the selected game servers. An empty selection means the event runs on all servers..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
         /// </summary>
         public static string PhoenixShotSkillPlugIn_Description {
@@ -2406,6 +2460,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name {
             get {
                 return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to set the prices of the items in their personal store in configured items like jewels, or in account coins, too. Only the open source client shows these prices; with other clients, they can be set by chat command..
+        /// </summary>
+        public static string PlayerShopCurrenciesFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrenciesFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player shop currencies.
+        /// </summary>
+        public static string PlayerShopCurrenciesFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrenciesFeaturePlugIn_Name", resourceCulture);
             }
         }
         
@@ -2871,6 +2943,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The time between one announcement and the next. The minimum is 10 seconds..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interval.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The announcements, in the order in which they are shown. After the last one, it starts over with the first one..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Announcements.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Text_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Text_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How the announcement is shown, e.g. as golden message in the center of the screen or as blue system message..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message Type.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows a configured list of announcements to all players of a game server, one after another in a fixed interval..
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server announcements.
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets level of a player. Usage: /setlevel (level) (optional:character).
         /// </summary>
         public static string SetLevelChatCommandPlugIn_Description {
@@ -3015,6 +3168,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets the price of an item of the own personal store in one of the enabled currencies, e.g. &apos;/shopprice 1 10 bless&apos;. Without arguments, it lists the prices..
+        /// </summary>
+        public static string ShopPriceChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShopPriceChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shop price chat command.
+        /// </summary>
+        public static string ShopPriceChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShopPriceChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/fireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowFireworksEffectChatCommandPlugIn_Description {
@@ -3065,6 +3236,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name {
             get {
                 return ResourceManager.GetString("ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells the client which currencies can be used for the prices of personal stores, when the player enters the game..
+        /// </summary>
+        public static string ShowShopCurrenciesAfterEnterWorldPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesAfterEnterWorldPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show player shop currencies after entering the game.
+        /// </summary>
+        public static string ShowShopCurrenciesAfterEnterWorldPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesAfterEnterWorldPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3155,6 +3344,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SkipMiniGameWaitChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/slidenotice message&apos;. Sends a global notice to all players of the game which scrolls across the top of their screen..
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide notice chat command.
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4362,6 +4569,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_DisconnectOnViolation_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_DisconnectOnViolation_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_DisconnectOnViolation_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ObserveOnly_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ObserveOnly_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ObserveOnly_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption", resourceCulture)!;
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;

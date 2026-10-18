@@ -157,6 +157,34 @@ public class ReverseProxyAuthenticationTests
         Assert.That(result.UserName, Is.EqualTo(user.Id.ToString()));
     }
 
+    /// <summary>
+    /// Tests that the roles of the admin panel are mapped to the roles of Grafana.
+    /// </summary>
+    /// <param name="role">The role of the admin panel.</param>
+    /// <returns>The Grafana role.</returns>
+    [TestCase("Administrator", ExpectedResult = "Admin")]
+    [TestCase("Operator", ExpectedResult = "Editor")]
+    [TestCase("Viewer", ExpectedResult = "Viewer")]
+    public string RoleIsMappedToGrafanaRole(string role)
+    {
+        return ReverseProxyAuthenticationService.GetGrafanaRole(role);
+    }
+
+    /// <summary>
+    /// Tests that the login url returns to the originally requested url, relative to the admin panel.
+    /// </summary>
+    /// <param name="pathBase">The path base of the admin panel.</param>
+    /// <param name="forwardedUri">The originally requested path and query.</param>
+    /// <returns>The login url.</returns>
+    [TestCase("", "/grafana/explore?orgId=1", ExpectedResult = "/login?returnUrl=grafana%2Fexplore%3ForgId%3D1")]
+    [TestCase("/admin", "/grafana/dashboards", ExpectedResult = "/admin/login?returnUrl=..%2Fgrafana%2Fdashboards")]
+    [TestCase("", "//evil.example/", ExpectedResult = "/login?returnUrl=evil.example%2F")]
+    [TestCase("", null, ExpectedResult = "/login")]
+    public string LoginUrlReturnsToTheRequestedUrl(string pathBase, string? forwardedUri)
+    {
+        return ReverseProxyAuthenticationService.GetLoginUrl(pathBase, forwardedUri);
+    }
+
     private static ClaimsPrincipal CreatePrincipal(AdminUser user)
     {
         var identity = new ClaimsIdentity(

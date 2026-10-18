@@ -28,6 +28,11 @@ internal sealed class MiniGameChangeEventProcessor
     private readonly List<ChangeEventContext> _remainingEvents = new();
 
     /// <summary>
+    /// The terrain changes which were sent to the clients so far, in the order they were applied.
+    /// </summary>
+    private readonly List<(bool SetTerrainAttribute, TerrainAttributeType TerrainAttribute, List<(byte StartX, byte StartY, byte EndX, byte EndY)> Areas)> _appliedClientTerrainChanges = new();
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MiniGameChangeEventProcessor"/> class.
     /// </summary>
     /// <param name="definition">The definition of the mini game.</param>
@@ -108,6 +113,25 @@ internal sealed class MiniGameChangeEventProcessor
         }
     }
 
+    /// <summary>
+    /// Sends the terrain changes which were applied so far to the player, e.g. because
+    /// it entered the map after they were applied, when it rejoined the game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public async ValueTask SendAppliedTerrainChangesAsync(Player player)
+    {
+        List<(bool SetTerrainAttribute, TerrainAttributeType TerrainAttribute, List<(byte StartX, byte StartY, byte EndX, byte EndY)> Areas)> appliedChanges;
+        lock (this._appliedClientTerrainChanges)
+        {
+            appliedChanges = this._appliedClientTerrainChanges.ToList();
+        }
+
+        foreach (var change in appliedChanges)
+        {
+            await player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p => p.ChangeAttributesAsync(change.TerrainAttribute, change.SetTerrainAttribute, change.Areas)).ConfigureAwait(false);
+        }
+    }
+
     private async Task ApplyChangeEventAsync(MiniGameChangeEvent changeEvent, string? triggeredBy = null)
     {
         try
@@ -171,6 +195,11 @@ internal sealed class MiniGameChangeEventProcessor
                 c => (c.StartX, c.StartY, c.EndX, c.EndY))
             .Select(g => (g.Key, Areas: g.ToList()))
             .ToList();
+
+        lock (this._appliedClientTerrainChanges)
+        {
+            this._appliedClientTerrainChanges.AddRange(groupedChanges.Select(g => (g.Key.SetTerrainAttribute, g.Key.TerrainAttribute, g.Areas)));
+        }
 
         await this._forEachPlayerAsync(async player =>
         {

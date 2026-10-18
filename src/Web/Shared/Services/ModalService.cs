@@ -12,7 +12,7 @@ using MUnique.OpenMU.Web.Shared.Components.Modal;
 /// </summary>
 public sealed class ModalService : IModalService, IDisposable
 {
-    private ModalState? _state;
+    private readonly List<ModalState> _states = new();
 
     /// <summary>
     /// Occurs when the modal state changes (shown, closed).
@@ -20,9 +20,17 @@ public sealed class ModalService : IModalService, IDisposable
     public event Action? StateChanged;
 
     /// <summary>
-    /// Gets the current modal state, or <see langword="null"/> if none is active.
+    /// Gets the current (topmost) modal state, or <see langword="null"/> if none is active.
     /// </summary>
-    internal ModalState? Current => this._state;
+    internal ModalState? Current => this._states.Count > 0 ? this._states[^1] : null;
+
+    /// <summary>
+    /// Gets a snapshot of the active modal states, from bottom to top.
+    /// </summary>
+    /// <remarks>
+    /// Returns a copy so renderers never observe the live list while it is being modified.
+    /// </remarks>
+    internal IReadOnlyList<ModalState> States => this._states.ToArray();
 
     /// <inheritdoc />
     public IModalReference Show<TComponent>(string title, ModalParameters? parameters = null, ModalOptions? options = null)
@@ -34,14 +42,10 @@ public sealed class ModalService : IModalService, IDisposable
     /// <inheritdoc />
     public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
     {
-        if (this._state is { } state)
-        {
-            state.Reference.TrySetResult(ModalResult.Cancel());
-        }
-
         var reference = new ModalReference();
-        var instance = new ModalInstance(reference, this.Dismiss);
-        this._state = new ModalState(componentType, title, parameters, options, instance, reference);
+        var instance = new ModalInstance(reference, this.Remove);
+        var state = new ModalState(componentType, title, parameters, options, instance, reference);
+        this._states.Add(state);
         this.StateChanged?.Invoke();
         return reference;
     }
@@ -49,26 +53,56 @@ public sealed class ModalService : IModalService, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        if (this._state is { } state)
+        foreach (var state in this._states)
         {
             state.Reference.TrySetResult(ModalResult.Cancel());
         }
 
-        this._state = null;
+        this._states.Clear();
     }
 
     /// <summary>
-    /// Dismisses the currently active modal.
+    /// Dismisses the currently active (topmost) modal.
     /// </summary>
     internal void Dismiss()
     {
-        if (this._state is { } state)
+        if (this.Current is { } state)
+        {
+            this.Dismiss(state.Instance);
+        }
+    }
+
+    /// <summary>
+    /// Dismisses the modal with the specified instance.
+    /// </summary>
+    /// <param name="instance">The modal instance to dismiss.</param>
+    internal void Dismiss(ModalInstance instance)
+    {
+        var state = this._states.FirstOrDefault(s => ReferenceEquals(s.Instance, instance));
+        if (state is not null)
         {
             state.Reference.TrySetResult(ModalResult.Cancel());
+            this.Remove(instance);
         }
+    }
 
-        this._state = null;
-        this.StateChanged?.Invoke();
+    /// <summary>
+    /// Removes the modal with the specified instance from the stack.
+    /// </summary>
+    /// <remarks>
+    /// The caller sets the <see cref="ModalReference"/> result before calling this,
+    /// either via <see cref="ModalInstance.CloseAsync"/> (which passes its own result)
+    /// or via <see cref="Dismiss(ModalInstance)"/> (which records a cancellation).
+    /// </remarks>
+    /// <param name="instance">The modal instance to remove.</param>
+    internal void Remove(ModalInstance instance)
+    {
+        var index = this._states.FindIndex(s => ReferenceEquals(s.Instance, instance));
+        if (index >= 0)
+        {
+            this._states.RemoveAt(index);
+            this.StateChanged?.Invoke();
+        }
     }
 
     /// <summary>

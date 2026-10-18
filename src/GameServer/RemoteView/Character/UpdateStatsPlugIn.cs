@@ -44,28 +44,28 @@ public class UpdateStatsPlugIn : UpdateStatsBasePlugIn
     private static async ValueTask OnMaximumHealthOrShieldChangedAsync(RemotePlayer player)
     {
         await player.Connection.SendMaximumHealthAndShieldAsync(
-            (ushort)Math.Max(player.Attributes![Stats.MaximumHealth], 0f),
-            (ushort)Math.Max(player.Attributes[Stats.MaximumShield], 0f)).ConfigureAwait(false);
+            player.Attributes![Stats.MaximumHealth].ToUInt16Clamped(),
+            player.Attributes[Stats.MaximumShield].ToUInt16Clamped()).ConfigureAwait(false);
     }
 
     private static async ValueTask OnMaximumManaOrAbilityChangedAsync(RemotePlayer player)
     {
         await player.Connection.SendMaximumManaAndAbilityAsync(
-            (ushort)Math.Max(player.Attributes![Stats.MaximumMana], 0f),
-            (ushort)Math.Max(player.Attributes[Stats.MaximumAbility], 0f)).ConfigureAwait(false);
+            player.Attributes![Stats.MaximumMana].ToUInt16Clamped(),
+            player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
     }
 
     private static async ValueTask OnCurrentHealthOrShieldChangedAsync(RemotePlayer player)
     {
         await player.Connection.SendCurrentHealthAndShieldAsync(
-            (ushort)Math.Max(player.Attributes![Stats.CurrentHealth], 0f),
-            (ushort)Math.Max(player.Attributes[Stats.CurrentShield], 0f)).ConfigureAwait(false);
+            player.Attributes![Stats.CurrentHealth].ToUInt16Clamped(),
+            player.Attributes[Stats.CurrentShield].ToUInt16Clamped()).ConfigureAwait(false);
     }
 
     private static async ValueTask OnCurrentManaOrAbilityChangedAsync(RemotePlayer player)
     {
         await player.Connection.SendCurrentManaAndAbilityAsync(
-            (ushort)Math.Max(player.Attributes![Stats.CurrentMana], 0f),
-            (ushort)Math.Max(player.Attributes[Stats.CurrentAbility], 0f)).ConfigureAwait(false);
+            player.Attributes![Stats.CurrentMana].ToUInt16Clamped(),
+            player.Attributes[Stats.CurrentAbility].ToUInt16Clamped()).ConfigureAwait(false);
     }
 }

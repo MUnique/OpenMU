@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 /// <summary>
@@ -35,7 +36,7 @@ public class ChaosMixes : InitializerBase
     private ItemCrafting ChaosWeaponCrafting()
     {
         var chaosWeapon = this.Context.CreateNew<ItemCrafting>();
-        chaosWeapon.Name = "Chaos Weapon";
+        chaosWeapon.Name = LocalizedString.FromResource(() => CraftingNames.ChaosWeapon);
         chaosWeapon.Number = 1;
         chaosWeapon.ItemCraftingHandlerClassName = typeof(ChaosWeaponAndFirstWingsCrafting).FullName!;
         var chaosWeaponSettings = this.Context.CreateNew<SimpleCraftingSettings>();

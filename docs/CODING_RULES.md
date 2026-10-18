@@ -402,7 +402,11 @@ pull request what you ran.
 
 * `dotnet test` for the affected projects under [`tests`](../tests). There is a
   project per area; find the existing tests that cover what you touched and run
-  them — they catch more than a fresh test written to pass.
+  them — they catch more than a fresh test written to pass. Build once, then
+  run the test projects with `--no-build` as long as the code didn't change in
+  between; every plain `dotnet test` repeats the build. Use the same
+  configuration for both, and build again after any code change (see
+  [`AGENTS.md`](../AGENTS.md#building-and-running-tests)).
 * Configuration data changes: `MUnique.OpenMU.Persistence.Initialization.Tests`,
   which runs the data initialization in memory — no database needed — and
   holds the per-feature data tests (see rule 4). The variant against a real

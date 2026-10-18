@@ -10,9 +10,29 @@ namespace MUnique.OpenMU.GameLogic.Views.Gens;
 public enum GensRewardResult
 {
     /// <summary>
+    /// The player got its reward.
+    /// </summary>
+    Success,
+
+    /// <summary>
+    /// The rewards are only given in the reward period of a month.
+    /// </summary>
+    OutsideRewardPeriod,
+
+    /// <summary>
     /// The player is not eligible for a reward.
     /// </summary>
     NotEligible,
+
+    /// <summary>
+    /// The inventory of the player has not enough space for the reward.
+    /// </summary>
+    InventoryFull,
+
+    /// <summary>
+    /// The player already got its reward in this month.
+    /// </summary>
+    AlreadyClaimed,
 
     /// <summary>
     /// The player is member of a different gens than the one of the npc.

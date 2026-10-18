@@ -55,6 +55,7 @@ public class AutoFields : ComponentBase
         Builders.Add(new SkillListFieldBuilder());
         Builders.Add(new ObjectCollectionFieldBuilder());
         Builders.Add(new IntCollectionFieldBuilder());
+        Builders.Add(new GameServerSelectionFieldBuilder());
         Builders.Add(new ByteArrayFieldBuilder());
         Builders.Add(new ValueListFieldBuilder());
         Builders.Add(new InvasionSpawnTableFieldBuilder());

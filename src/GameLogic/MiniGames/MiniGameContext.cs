@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -32,6 +33,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private readonly MiniGameSpawnWaveRunner _spawnWaves;
 
     private readonly CancellationTokenSource _gameEndedCts = new();
+
+    /// <summary>
+    /// The positions of the characters which lost their connection during the game, by their id.
+    /// </summary>
+    private readonly ConcurrentDictionary<Guid, Point> _disconnectedCharacters = new();
 
     private readonly SkippableDelay _skipDelay;
 
@@ -290,6 +296,57 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Remembers that the player lost its connection during the game, so that it can
+    /// rejoin through <see cref="TryRejoinAsync"/> when it logs in again while the game is still running.
+    /// </summary>
+    /// <param name="player">The player which is leaving the game.</param>
+    internal void RememberDisconnectedPlayer(Player player)
+    {
+        if (player is { IsAlive: true, SelectedCharacter: { } character }
+            && this.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing)
+        {
+            this._disconnectedCharacters[character.Id] = player.Position;
+        }
+    }
+
+    /// <summary>
+    /// Tries to bring the player back into this game, if its character lost the connection
+    /// during the game and the game is still running. On success, the character is placed
+    /// at its previous position on the map of this game, which the player enters when the
+    /// client is ready (see <see cref="GetEntrySpawnPosition"/> for game specific positions).
+    /// </summary>
+    /// <param name="player">The player which entered the world.</param>
+    /// <returns>A value indicating whether the player rejoined the game.</returns>
+    internal async ValueTask<bool> TryRejoinAsync(Player player)
+    {
+        if (player.SelectedCharacter is not { } character
+            || !this._disconnectedCharacters.TryRemove(character.Id, out var position))
+        {
+            return false;
+        }
+
+        // The player is prepared before it's registered: as soon as it's registered, the end of
+        // the game may warp it to the safezone, which must not be overwritten afterwards.
+        var (previousMap, previousX, previousY) = (character.CurrentMap, character.PositionX, character.PositionY);
+        character.CurrentMap = this.Map.Definition;
+        character.PositionX = position.X;
+        character.PositionY = position.Y;
+        player.CurrentMiniGame = this;
+        player.PlayerPickedUpItem += this.OnPlayerPickedUpItemAsync;
+
+        if (!await this._players.TryRejoinAsync(player).ConfigureAwait(false))
+        {
+            player.CurrentMiniGame = null;
+            player.PlayerPickedUpItem -= this.OnPlayerPickedUpItemAsync;
+            (character.CurrentMap, character.PositionX, character.PositionY) = (previousMap, previousX, previousY);
+            return false;
+        }
+
+        this.Logger.LogInformation("{context}: Player {player} rejoined the game after losing its connection.", this, player);
+        return true;
+    }
+
+    /// <summary>
     /// Gets where an entering player appears on the map, instead of the warp target.
     /// It's consulted when the client acknowledged the map change, before the player
     /// is added to the map, so no relocation afterwards is necessary.
@@ -345,6 +402,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "{context}: Unexpected error during dispose: {ex}", this, ex);
+        }
+
+        try
+        {
+            // Separately, so that the map is released even if a previous step failed.
+            await this.TearDownMapAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "{context}: Unexpected error during the teardown of the map: {ex}", this, ex);
         }
     }
 
@@ -475,6 +542,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         if (args.Object is Player player)
         {
             player.Died += this.OnPlayerDied;
+
+            // A player which enters the map after terrain changes, e.g. when it rejoins the game,
+            // would otherwise see the original terrain, e.g. a closed bridge.
+            await this._changeEvents.SendAppliedTerrainChangesAsync(player).ConfigureAwait(false);
         }
 
         if (args.Object is DroppedItem item)
@@ -511,8 +582,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             {
                 await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
             }
-            else if (player.IsAlive)
+            else if (player.IsAlive
+                && player.SelectedCharacter is { } character
+                && !this._disconnectedCharacters.ContainsKey(character.Id))
             {
+                // A player which may rejoin the game doesn't count, otherwise it would be counted again when it dies later.
                 this._changeEvents.NotifyKill(player);
             }
             else
@@ -778,6 +852,21 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.DisposeAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Frees the map of this game. Every run of a game creates its own map instance, and the NPCs on it
+    /// are registered for configuration changes, which would keep the map alive for as long as the server runs.
+    /// </summary>
+    private async ValueTask TearDownMapAsync()
+    {
+        // Players which weren't part of the game (e.g. a game master) may still be on the map.
+        foreach (var player in this.Map.GetPlayers())
+        {
+            await player.WarpToSafezoneAsync().ConfigureAwait(false);
+        }
+
+        await this.Map.TearDownAsync().ConfigureAwait(false);
+    }
+
     private async ValueTask MovePlayersToSafezoneAsync()
     {
         var players = await this._players.ClearAsync().ConfigureAwait(false);
@@ -785,6 +874,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         foreach (var player in players)
         {
             await player.WarpToSafezoneAsync().ConfigureAwait(false);
+
+            if (player.CurrentMiniGame == this)
+            {
+                // The player wasn't on the map yet, e.g. it just entered or rejoined and its client
+                // didn't acknowledge the map change yet. So it didn't leave the map, which detaches it otherwise.
+                player.CurrentMiniGame = null;
+                player.PlayerPickedUpItem -= this.OnPlayerPickedUpItemAsync;
+            }
         }
     }
 

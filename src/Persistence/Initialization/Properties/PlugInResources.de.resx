@@ -548,11 +548,23 @@
   <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert den Multiplikator von Beweglichkeit zu Verteidigung beim DW.</value>
   </data>
+  <data name="FixOrbRequirementsPlugInBase_Name" xml:space="preserve">
+    <value>Anforderungen der Kugeln korrigieren</value>
+  </data>
+  <data name="FixOrbRequirementsPlugInBase_Description" xml:space="preserve">
+    <value>Korrigiert die Anforderungen an Energie, Stärke und Beweglichkeit der Kugeln, Kristalle und Schriftrollen, mit denen Fähigkeiten erlernt werden. Z.B. erforderten die Kugeln Heal, Greater Defense und Greater Damage 100 Energie statt 52, 72 und 92.</value>
+  </data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve">
     <value>Meisterbaum der Elfe fertigstellen</value>
   </data>
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung vervollständigt den Meisterbaum der Elfe und korrigiert einige ihrer Fähigkeitswerte. Außerdem fügt sie das fehlende zusätzliche Projektil (4.) bei einigen höherstufigen Bögen und Armbrüsten hinzu.</value>
+  </data>
+  <data name="ScopeExtraProjectilesPlugIn_Name" xml:space="preserve">
+    <value>Zusätzliche Projektile pro Fähigkeit begrenzen</value>
+  </data>
+  <data name="ScopeExtraProjectilesPlugIn_Description" xml:space="preserve">
+    <value>Bewirkt, dass das zusätzliche Projektil der Triple-Shot-Meisterschaft nur auf die Fähigkeit Triple Shot wirkt, während das Ausrüsten bestimmter Bögen und Armbrüste weiterhin jede Mehrfachprojektil-Fähigkeit verstärkt.</value>
   </data>
   <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name" xml:space="preserve">
     <value>Lebensstein von Castle Siege konfigurieren</value>
@@ -746,6 +758,12 @@
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert den Index des Warp-Eintrags von Vulkanus auf 42, den der Spielclient von Season 6 anfordert.</value>
   </data>
+  <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve">
+    <value>Crywolf-Event hinzufügen</value>
+  </data>
+  <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Monster des Crywolf-Events und ihre Spawns hinzu, lässt die Statue und die Altäre der Festung immer auf der Karte, und fügt den Warp-Eintrag der Festung und die Geländevarianten der Besetzungszustände hinzu.</value>
+  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>Kleine Flügel und Umhänge hinzufügen</value>
   </data>
@@ -763,5 +781,35 @@
   </data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung konfiguriert die NPCs der Plugins, die das Gespräch mit einem NPC behandeln, z. B. den Reset-NPC oder den Erzengel der Blutburg.</value>
+  </data>
+  <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve">
+    <value>Iron Knight nutzt seinen Stich</value>
+  </data>
+  <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung lässt den Iron Knight von Raklion mit seinem Stich angreifen, den der Client mit einem Kombo-Effekt anzeigt.</value>
+  </data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve">
+    <value>Juwelenbündel bei Juwelier Raul auf dem Loren-Markt hinzufügen</value>
+  </data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung lässt Juwelier Raul (546) auf dem Loren-Markt das Fenster für Juwelenbündel öffnen, in dem man wie bei Lahap Juwelen zu Bündeln zusammenfassen und wieder auflösen kann.</value>
+  </data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve">
+    <value>Server-Ports aus dem dynamischen Portbereich verschieben</value>
+  </data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung verschiebt die Ports der Spielserver und des Chatservers von 55900 – 55999 nach 45900 – 45999 (z. B. 55901 nach 45901 und 55980 nach 45980), da die bisherigen Ports im dynamischen Portbereich des Betriebssystems liegen und bereits belegt sein können. Firewall, Portweiterleitungen und Docker-Compose-Dateien müssen entsprechend angepasst werden.</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop hinzufügen</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Cash-Shop-Konfiguration mit den Paketen des Cash-Shop-Skripts 512.2012.084 des Spielclients hinzu, sowie die Gegenstände, die angewendet werden, wenn sie aus dem Cash-Shop-Lager verwendet werden (Charakterkarten, Tresor- und Inventarerweiterung).</value>
+  </data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Transformationsring-Regeln korrigieren</value>
+  </data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Erfordert Charakterlevel 50 für Transformationsring-Level 3 bis 5 und ergänzt den 20%igen Lebensbonus des Todeskuh-Rings.</value>
   </data>
 </root>
