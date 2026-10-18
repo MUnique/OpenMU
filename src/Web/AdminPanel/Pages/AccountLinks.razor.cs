@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.AccountLinking;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
@@ -38,6 +40,9 @@ public partial class AccountLinks : ComponentBase
 
     [Inject]
     private IToastService ToastService { get; set; } = null!;
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = null!;
 
     [Inject]
     private ILogger<AccountLinks> Logger { get; set; } = null!;
@@ -84,7 +89,9 @@ public partial class AccountLinks : ComponentBase
         this._isRemoving = true;
         try
         {
-            await new AccountLinkService(this.CreateContext).UnlinkAccountAsync(this._accountId, provider).ConfigureAwait(true);
+            // With the event, the Discord bot removes the roles of the user.
+            var eventPublisher = this.ServiceProvider.GetService<IEventPublisher>();
+            await new AccountLinkService(this.CreateContext).UnlinkAccountAsync(this._accountId, provider, eventPublisher).ConfigureAwait(true);
             this.Logger.LogInformation("The {Provider} link of account {LoginName} was removed.", provider, this.LoginName);
             this.ToastService.ShowSuccess(Resources.ExternalLinkRemoved);
             await this.LoadAsync().ConfigureAwait(true);

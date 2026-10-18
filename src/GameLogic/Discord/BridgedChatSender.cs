@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Discord;
 /// <summary>
 /// The sender of a chat message which was written outside of the game, e.g. in Discord, and bridged into it.
 /// Its name is the name of a character with a prefix, which character names can't contain
-/// (see <see cref="IsAllowedInCharacterName"/>, enforced when a character is created),
+/// (see <see cref="IsAllowedInCharacterName"/>, enforced by <see cref="CharacterInitialization.IsValidCharacterName(string, string?)"/>),
 /// so it can't be mistaken for a character.
 /// </summary>
 public static class BridgedChatSender

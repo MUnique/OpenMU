@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the increase health effect.
@@ -30,7 +31,7 @@ public class IncreaseHealthEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseHealth;
-        magicEffect.Name = "Increase Health Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.IncreaseHealthSkillEffect);
         magicEffect.InformObservers = true;
         magicEffect.SubType = 73;
         magicEffect.SendDuration = false;

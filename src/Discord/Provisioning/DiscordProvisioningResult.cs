@@ -25,6 +25,12 @@ public sealed class DiscordProvisioningResult
     public List<(string Name, string Reason)> Failed { get; } = new();
 
     /// <summary>
+    /// Gets the names of the categories which should only be visible to some roles, but stay visible to everyone,
+    /// because none of their roles exist.
+    /// </summary>
+    public List<string> PublicCategories { get; } = new();
+
+    /// <summary>
     /// Gets the identifiers of the channels by their key.
     /// </summary>
     public Dictionary<string, ulong> ChannelIds { get; } = new(StringComparer.OrdinalIgnoreCase);

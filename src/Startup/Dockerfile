@@ -1,18 +1,19 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 WORKDIR /app
 
-RUN apk add --no-cache icu-libs
+# tzdata provides the IANA time zones (e.g. America/Argentina/Buenos_Aires) for the server time zone setting.
+RUN apk add --no-cache icu-libs tzdata
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 EXPOSE 8080
-EXPOSE 55901
-EXPOSE 55902
-EXPOSE 55903
-EXPOSE 55904
-EXPOSE 55905
-EXPOSE 55906
+EXPOSE 45901
+EXPOSE 45902
+EXPOSE 45903
+EXPOSE 45904
+EXPOSE 45905
+EXPOSE 45906
 EXPOSE 44405
-EXPOSE 55980
+EXPOSE 45980
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src

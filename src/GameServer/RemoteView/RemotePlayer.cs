@@ -148,7 +148,16 @@ public class RemotePlayer : Player, IClientVersionProvider, IHasIpAddress
             }
         }
 
-        await base.DisposeAsyncCore().ConfigureAwait(false);
+        try
+        {
+            await base.DisposeAsyncCore().ConfigureAwait(false);
+        }
+        finally
+        {
+            // The packet handlers are subscribed to the server-wide plugin manager; without this, every
+            // connection ever accepted stays reachable from it, even one which never logged in.
+            this.MainPacketHandler.Dispose();
+        }
     }
 
     /// <summary>

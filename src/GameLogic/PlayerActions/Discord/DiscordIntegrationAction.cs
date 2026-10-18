@@ -94,20 +94,14 @@ public class DiscordIntegrationAction
     /// <returns><c>true</c>, if a link was removed.</returns>
     public static async ValueTask<bool> UnlinkAsync(Player player)
     {
-        if (player.Account is not { } account
-            || await CreateLinkService(player).UnlinkAccountAsync(account.GetId(), AccountLinkService.DiscordProvider).ConfigureAwait(false) is not { } userId)
+        if (player.Account is not { } account)
         {
             return false;
         }
 
-        if (player.GameContext is IGameServerContext gameServerContext)
-        {
-            // The Discord bot removes the roles of the user.
-            await gameServerContext.EventPublisher.GameEventAsync(
-                new AccountUnlinkedEvent(gameServerContext.Id, DateTime.UtcNow, AccountLinkService.DiscordProvider, userId)).ConfigureAwait(false);
-        }
-
-        return true;
+        // With the published event, the Discord bot removes the roles of the user.
+        var gameServerContext = player.GameContext as IGameServerContext;
+        return await CreateLinkService(player).UnlinkAccountAsync(account.GetId(), AccountLinkService.DiscordProvider, gameServerContext?.EventPublisher, gameServerContext?.Id ?? 0).ConfigureAwait(false) is not null;
     }
 
     /// <summary>

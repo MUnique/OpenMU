@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Tests.Discord;
 
 using MUnique.OpenMU.GameLogic.Discord;
-using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.GameLogic;
 
 /// <summary>
 /// Tests for the <see cref="BridgedChatSender"/> and the guarantee it relies on.
@@ -22,8 +22,8 @@ public class BridgedChatSenderTest
     [TestCase("Bo@b")]
     public void CharacterNameWithPrefixIsRefused(string name)
     {
-        Assert.That(CreateCharacterAction.IsValidCharacterName(name, null), Is.False);
-        Assert.That(CreateCharacterAction.IsValidCharacterName(name, ".*"), Is.False);
+        Assert.That(CharacterInitialization.IsValidCharacterName(name, null), Is.False);
+        Assert.That(CharacterInitialization.IsValidCharacterName(name, ".*"), Is.False);
     }
 
     /// <summary>
@@ -32,8 +32,8 @@ public class BridgedChatSenderTest
     [Test]
     public void OtherNamesFollowTheExpression()
     {
-        Assert.That(CreateCharacterAction.IsValidCharacterName("Bob", null), Is.True);
-        Assert.That(CreateCharacterAction.IsValidCharacterName("Bob", "^[a-z]+$"), Is.False);
+        Assert.That(CharacterInitialization.IsValidCharacterName("Bob", null), Is.True);
+        Assert.That(CharacterInitialization.IsValidCharacterName("Bob", "^[a-z]+$"), Is.False);
     }
 
     /// <summary>

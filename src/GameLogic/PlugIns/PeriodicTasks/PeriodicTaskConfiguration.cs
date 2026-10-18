@@ -9,6 +9,11 @@ using MUnique.OpenMU.Interfaces;
 /// <summary>
 /// Configuration for the <see cref="PeriodicTaskBasePlugIn{TConfiguration,TState}"/>.
 /// </summary>
+/// <remarks>
+/// Display order values are spaced by inheritance level, so adding a property never
+/// requires renumbering another level: this class uses 1–99, direct subclasses
+/// 100–199, their subclasses 200–299, and so on.
+/// </remarks>
 public class PeriodicTaskConfiguration
 {
     /// <summary>
@@ -42,6 +47,13 @@ public class PeriodicTaskConfiguration
     public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
 
     /// <summary>
+    /// Gets or sets the identifiers of the game servers on which the event runs.
+    /// An empty list means the event runs on all game servers.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_AllowedServerIds_Name), Description = nameof(PlugInResources.PeriodicTaskConfiguration_AllowedServerIds_Description), Order = 6)]
+    public IList<byte> AllowedServerIds { get; set; } = new List<byte>();
+
+    /// <summary>
     /// Generate a sequence of time points like [00:00, 00:01, ...].
     /// </summary>
     /// <param name="duration">The duration.</param>
@@ -57,6 +69,17 @@ public class PeriodicTaskConfiguration
             yield return TimeOnly.FromTimeSpan(current);
             current = current.Add(duration);
         }
+    }
+
+    /// <summary>
+    /// Determines whether the event runs on the game server with the specified identifier.
+    /// A missing (<c>null</c>) or empty list means the event runs on all servers.
+    /// </summary>
+    /// <param name="serverId">The identifier of the game server.</param>
+    /// <returns><c>true</c> if the event runs on the server; otherwise, <c>false</c>.</returns>
+    public bool IsEnabledOnServer(byte serverId)
+    {
+        return this.AllowedServerIds is null or { Count: 0 } || this.AllowedServerIds.Contains(serverId);
     }
 
     /// <summary>

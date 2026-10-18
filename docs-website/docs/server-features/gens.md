@@ -15,8 +15,7 @@ other in the battle zone for contribution points, which give them their rank.
 :::note
 The gens system is implemented step by step. Joining and leaving a gens, the
 battle zone, the contribution for kills, the ranking, the party, guild and
-alliance rules and the gens chat work. The monthly rewards are not implemented
-yet.
+alliance rules, the gens chat and the monthly rewards work.
 :::
 
 ## Joining and leaving
@@ -39,9 +38,6 @@ the lowest rank, *Private*.
 
 A player leaves its gens at the npc of its own gens. A guild master can't leave.
 Leaving resets the contribution and the rank.
-
-The option of the gens ranking reward at the npc is answered, but a member
-isn't eligible for a reward yet, because the rewards aren't implemented.
 
 The npc shows the contribution points of a member, when it talks to the npc of
 its own gens. The gens info window (key `B`) shows the gens, the rank, the
@@ -115,6 +111,31 @@ The ranks by points change right after a kill. The ranking of each gens is
 calculated when the server starts and then every two hours by default; with the
 same points, the member which joined first is ranked higher.
 
+## Monthly rewards
+
+In the first week of a month (days 1 to 7 by default, in UTC), the members of
+the ranks 1 to 8 can claim a reward once at the npc of their gens. They get the
+reward of their current rank:
+
+| Rank | Reward |
+|---|---|
+| 1 Grand Duke | 30 Shining Jewellery Cases |
+| 2 Duke | 20 Shining Jewellery Cases |
+| 3 Marquis | 20 Elegant Jewellery Cases |
+| 4 Count | 10 Elegant Jewellery Cases |
+| 5 Viscount | 10 Steel Jewellery Cases |
+| 6 Baron | 5 Steel Jewellery Cases |
+| 7 Knight Commander | 5 Old Jewellery Cases |
+| 8 Superior Knight | 3 Old Jewellery Cases |
+
+The days are counted in UTC, so on a server in another time zone, the period
+starts and ends at a different local time. The inventory needs enough free
+space for all of them. Like other boxes, a
+jewellery case is opened by dropping it, and gives a Jewel of Chaos, Bless,
+Soul, Life, Creation or a Gemstone, or money: 90,000 for the Shining and
+Elegant cases, 60,000 for the Steel and Old ones. The chances are part of the
+drop groups of the items.
+
 ## Gens chat
 
 A message which starts with `$` (or which is written in the gens chat mode of
@@ -158,6 +179,8 @@ When the plugin is deactivated, players can't join or leave a gens.
 | Abuse reset time | 60 minutes | The time after which the count of kills starts again. |
 | Ranks | see above | The ranks and their requirements. |
 | Ranking interval | 2 hours | The interval of the ranking. |
+| Reward start day, end day | 1, 7 | The days of a month on which the rewards can be claimed (UTC). |
+| Rewards | see above | The reward items of the ranks. |
 | Allow party with other gens | no | Whether members of different gens can form a party. |
 | Allow party in battle zone | no | Whether parties can be formed in the battle zone. |
 | Guild requires gens | no | Whether creating and joining a guild requires the gens, like in the original game. |

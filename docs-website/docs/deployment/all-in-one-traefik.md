@@ -66,6 +66,23 @@ other:
 docker network create proxy
 ```
 
+:::warning[Use OpenMU 0.9.12 or newer]
+The deployment files on `master` rely on the [built-in login](../admin-panel/authentication.md)
+of the admin panel, which the docker images up to version 0.9.10 don't have yet.
+These older images expected the basic authentication of Traefik with an `.htpasswd`
+file, which isn't part of these files anymore — combined with them, the admin
+panel is reachable by **anybody, without a login**.
+
+If you pulled `munique/openmu` before, get the current image first:
+
+```bash
+docker compose pull
+```
+
+To keep running an older image, check out the matching git tag instead (e.g.
+`git checkout v0.9.10`), so that the deployment files and the image fit together.
+:::
+
 ### Option A — for local testing
 
 ```bash
@@ -102,6 +119,34 @@ Then run it:
 ```bash
 docker compose -f docker-compose.prod.yml up -d
 ```
+
+## Optional: monitoring with Grafana
+
+Like the [all-in-one deployment with nginx](all-in-one.md#optional-monitoring-with-grafana),
+this variant comes with an optional observability backend in
+`docker-compose.monitoring.yml`. OpenMU then exports its logs, metrics and traces
+with OpenTelemetry, and Grafana is available under `/grafana/` of the admin panel
+host, with the login of the admin panel — see
+[Logs and monitoring](../admin-panel/logs-and-monitoring.md).
+
+Add it as another file to the commands above:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+```
+
+or, with HTTPS:
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
+```
+
+With HTTPS, also set the environment variable `GRAFANA_ROOT_URL` to the public
+address of Grafana, e.g. `https://admin.domain.com/grafana/`.
+
+Traefik asks the admin panel for every request to Grafana with a `forwardAuth`
+middleware (`/auth/proxy?loginRedirect=true`). The admin panel answers with the
+user and its Grafana role, or sends a browser without a login to its login page.
 
 ## Admin panel users
 

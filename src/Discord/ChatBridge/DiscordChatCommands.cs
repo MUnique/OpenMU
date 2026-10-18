@@ -75,6 +75,11 @@ public sealed class DiscordChatCommands
     public static DiscordCommandDefinition SayDefinition { get; } = new(SayCommandName, nameof(Resources.Command_Say_Description), MessageOptionName, nameof(Resources.Command_Say_MessageOption));
 
     /// <summary>
+    /// Gets the culture of the answers.
+    /// </summary>
+    public CultureInfo Culture => this._culture;
+
+    /// <summary>
     /// Parses the value of the scope option.
     /// </summary>
     /// <param name="value">The value.</param>
@@ -105,6 +110,7 @@ public sealed class DiscordChatCommands
             DiscordChatPostResult.ChatBanned => nameof(Resources.Chat_ChatBanned),
             DiscordChatPostResult.TooFast => nameof(Resources.Chat_TooFast),
             DiscordChatPostResult.Empty => nameof(Resources.Chat_Empty),
+            DiscordChatPostResult.Filtered => nameof(Resources.Chat_Filtered),
             _ => nameof(Resources.Chat_Sent),
         };
 

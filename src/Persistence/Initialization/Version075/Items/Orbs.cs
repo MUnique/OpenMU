@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
@@ -48,9 +49,9 @@ internal class Orbs : InitializerBase
     /// <param name="name">The name.</param>
     /// <param name="dropLevel">The drop level.</param>
     /// <param name="levelRequirement">The level requirement.</param>
-    /// <param name="energyRequirement">The energy requirement.</param>
-    /// <param name="strengthRequirement">The strength requirement.</param>
-    /// <param name="agilityRequirement">The agility requirement.</param>
+    /// <param name="energyRequirement">The energy requirement factor of the item file, see <see cref="OrbRequirements"/>.</param>
+    /// <param name="strengthRequirement">The strength requirement factor of the item file, see <see cref="OrbRequirements"/>.</param>
+    /// <param name="agilityRequirement">The agility requirement factor of the item file, see <see cref="OrbRequirements"/>.</param>
     /// <param name="money">The money.</param>
     /// <param name="characterClasses">The character classes.</param>
     /// <returns>The created definition.</returns>
@@ -69,9 +70,9 @@ internal class Orbs : InitializerBase
         orb.Durability = 1;
 
         this.CreateItemRequirementIfNeeded(orb, Stats.Level, levelRequirement);
-        this.CreateItemRequirementIfNeeded(orb, Stats.TotalEnergy, energyRequirement);
-        this.CreateItemRequirementIfNeeded(orb, Stats.TotalStrength, strengthRequirement);
-        this.CreateItemRequirementIfNeeded(orb, Stats.TotalAgility, agilityRequirement);
+        this.CreateItemRequirementIfNeeded(orb, Stats.TotalEnergy, OrbRequirements.CalculateEnergy(energyRequirement, dropLevel));
+        this.CreateItemRequirementIfNeeded(orb, Stats.TotalStrength, OrbRequirements.CalculateStrengthOrAgility(strengthRequirement, dropLevel));
+        this.CreateItemRequirementIfNeeded(orb, Stats.TotalAgility, OrbRequirements.CalculateStrengthOrAgility(agilityRequirement, dropLevel));
 
         orb.Value = money;
         var classes = this.GameConfiguration.DetermineCharacterClasses(characterClasses);

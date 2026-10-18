@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// The link of an account to a user of an external service, e.g. Discord, was removed in the game.
+/// The link of an account to a user of an external service, e.g. Discord, was removed in the game or in the admin panel.
 /// </summary>
-/// <param name="ServerId">The identifier of the game server.</param>
+/// <param name="ServerId">The identifier of the game server; or 0, if the link was removed in the admin panel.</param>
 /// <param name="TimestampUtc">The timestamp, in UTC.</param>
 /// <param name="Provider">The name of the external service, e.g. <c>discord</c>.</param>
 /// <param name="ExternalUserId">The identifier of the user in the external service.</param>

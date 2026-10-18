@@ -23,12 +23,19 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
     /// </summary>
     private static readonly TimeSpan UpcomingEventsTimeSpan = TimeSpan.FromHours(24);
 
+    /// <summary>
+    /// The time for which the ranking is cached.
+    /// </summary>
+    private static readonly TimeSpan RankingCacheDuration = TimeSpan.FromMinutes(2);
+
     private readonly IServerProvider _serverProvider;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
     private readonly IFriendServer _friendServer;
     private readonly IGuildServer _guildServer;
     private readonly PlugInManager _plugInManager;
     private readonly Func<TimeZoneInfo> _getServerTimeZone;
+
+    private (DateTime CreatedAtUtc, int Count, IReadOnlyList<CharacterInfo> Ranking)? _rankingCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordGameDataProvider"/> class.
@@ -121,11 +128,24 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// The query is expensive and every member of the Discord server can trigger it with <c>/rank</c>,
+    /// so the ranking is cached for a while; it changes slowly anyway.
+    /// </remarks>
     public async ValueTask<IReadOnlyList<CharacterInfo>> GetRankingAsync(int count)
     {
+        var now = DateTime.UtcNow;
+        if (this._rankingCache is { } cache && cache.Count == count && now - cache.CreatedAtUtc < RankingCacheDuration)
+        {
+            return cache.Ranking;
+        }
+
         using var context = this.CreatePlayerContext();
-        var ranking = await context.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, count).ConfigureAwait(false);
-        return ranking.Select(summary => ToInfo(summary, null)).ToList();
+        var ranking = (await context.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, count).ConfigureAwait(false))
+            .Select(summary => ToInfo(summary, null))
+            .ToList();
+        this._rankingCache = (now, count, ranking);
+        return ranking;
     }
 
     private static CharacterInfo ToInfo(CharacterSummary summary, string? onlineServerName)

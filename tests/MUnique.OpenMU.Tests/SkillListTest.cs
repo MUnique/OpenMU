@@ -192,6 +192,29 @@ public class SkillListTest
         Assert.That(player.Attributes[Stats.DurabilityReductionFactor], Is.EqualTo(valueBefore - 0.01f).Within(0.0001f));
     }
 
+    /// <summary>
+    /// Tests that the Triple Shot Mastery feeds the exclusive pool of the triple shot once it reached
+    /// its complete level, without leaking into the generic pool of the other multi-projectile skills.
+    /// </summary>
+    [Test]
+    public async ValueTask TripleShotMasteryAddsExtraProjectileAtMaxLevelAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var skillEntry = CreatePassiveSkillEntry("if(level < 10; 0; 1)", AggregateType.AddRaw, Stats.TripleShotExtraProjectiles, Stats.MasterSkillValue, 1);
+        skillEntry.Level = 9;
+        player.SelectedCharacter!.LearnedSkills.Add(skillEntry);
+
+        using var skillList = new SkillList(player);
+
+        Assert.That(player.Attributes![Stats.TripleShotExtraProjectiles], Is.EqualTo(0), "The mastery adds the arrow only when complete.");
+        Assert.That(player.Attributes[Stats.ExtraProjectiles], Is.EqualTo(0), "The mastery must not feed the generic pool.");
+
+        skillEntry.Level = 10;
+
+        Assert.That(player.Attributes[Stats.TripleShotExtraProjectiles], Is.EqualTo(1));
+        Assert.That(player.Attributes[Stats.ExtraProjectiles], Is.EqualTo(0), "The mastery must not feed the generic pool.");
+    }
+
     private static SkillEntry CreatePassiveSkillEntry(string valueFormula, AggregateType aggregateType, AttributeDefinition targetAttribute, AttributeDefinition inputAttribute, float inputOperand)
     {
         var powerUp = new Persistence.BasicModel.PowerUpDefinition
@@ -218,6 +241,82 @@ public class SkillListTest
         return new Persistence.BasicModel.SkillEntry { Skill = skill };
     }
 
+    /// <summary>
+    /// Tests if disposing the skill list releases the attributes and the cached magic effect power-ups of its
+    /// skills. They follow the attribute system of the character, which is replaced when the character enters
+    /// the game again - a skill must then not calculate with the attributes of the previous one.
+    /// </summary>
+    [Test]
+    public async ValueTask DisposeReleasesSkillAttributesAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var skillEntry = this.CreateSkillEntry(LearnedSkillId);
+        player.SelectedCharacter!.LearnedSkills.Add(skillEntry);
+        var skillList = new SkillList(player);
+        var skillAttributes = new SkillAttributeSystem(skillEntry, [], player.Attributes!);
+        skillEntry.Attributes = skillAttributes;
+        skillEntry.PowerUps = [(Stats.DefenseBase, new SimpleElement(1, AggregateType.AddRaw))];
+        skillEntry.PowerUpsPvp = skillEntry.PowerUps;
+        var levelChanged = false;
+        skillAttributes.GetOrCreateAttribute(Stats.SkillLevel).ValueChanged += (_, _) => levelChanged = true;
+
+        skillList.Dispose();
+        skillEntry.Level++;
+
+        Assert.That(skillEntry.Attributes, Is.Null);
+        Assert.That(skillEntry.PowerUps, Is.Null);
+        Assert.That(skillEntry.PowerUpsPvp, Is.Null);
+        Assert.That(levelChanged, Is.False, "The released skill attributes should no longer follow the skill level.");
+    }
+
+    /// <summary>
+    /// Tests if taking off one of two items which grant the same skill keeps the attributes of the entry
+    /// which is still available, and that disposing the skill list releases them.
+    /// </summary>
+    [Test]
+    public async ValueTask StillAvailableItemSkillKeepsAttributesUntilDisposeAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var characterClass = player.SelectedCharacter!.CharacterClass;
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        var skillList = new SkillList(player);
+        var availableEntry = skillList.GetSkill(QualifiedItemSkillId)!;
+        availableEntry.Attributes = new SkillAttributeSystem(availableEntry, [], player.Attributes!);
+
+        await skillList.RemoveItemSkillAsync(QualifiedItemSkillId).ConfigureAwait(false);
+        Assert.That(skillList.GetSkill(QualifiedItemSkillId), Is.SameAs(availableEntry));
+        Assert.That(availableEntry.Attributes, Is.Not.Null, "The entry is still available, so its attributes are still in use.");
+
+        skillList.Dispose();
+        Assert.That(availableEntry.Attributes, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests if disposing the skill list detaches the cached magic effect power-ups of its skills from the
+    /// attributes of the character, which outlive them when the character enters the game again.
+    /// </summary>
+    [Test]
+    public async ValueTask DisposeDetachesCachedPowerUpsFromCharacterAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var skillEntry = this.CreateSkillEntry(LearnedSkillId);
+        player.SelectedCharacter!.LearnedSkills.Add(skillEntry);
+        var skillList = new SkillList(player);
+        var input = player.Attributes!.GetOrCreateAttribute(Stats.BaseEnergy);
+        var powerUp = new ComposableAttribute(Stats.DefenseBase);
+        powerUp.AddElement(new AttributeRelationshipElement([input], new ConstantElement(1), InputOperator.Multiply));
+        skillEntry.PowerUps = [(Stats.DefenseBase, powerUp)];
+        var powerUpChanged = false;
+        powerUp.ValueChanged += (_, _) => powerUpChanged = true;
+
+        skillList.Dispose();
+        player.Attributes[Stats.BaseEnergy]++;
+
+        Assert.That(skillEntry.PowerUps, Is.Null);
+        Assert.That(powerUpChanged, Is.False, "The released power-up should no longer follow the attributes of the character.");
+    }
+
     private Item CreateItemWithSkill(ushort skillId, CharacterClass? qualifiedClass = null)
     {
         var itemDefinition = new Mock<ItemDefinition>();
@@ -240,6 +339,9 @@ public class SkillListTest
         {
             HasSkill = true,
             Definition = itemDefinition.Object,
+
+            // A broken item (durability 0) doesn't grant its skill.
+            Durability = 1,
         };
         return item;
     }

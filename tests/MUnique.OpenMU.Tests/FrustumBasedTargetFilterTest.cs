@@ -156,6 +156,154 @@ internal class FrustumBasedTargetFilterTest
         Assert.That(result, Is.False);
     }
 
+    /// <summary>
+    /// Tests that with triple shot, a target two tiles ahead in the center is only covered by the center projectile.
+    /// </summary>
+    [Test]
+    public void TripleShot_TargetTwoTilesAhead_CenterLaneOnly()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 3);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 102); // Directly in front, distance 2
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that with triple shot, a target three tiles ahead and slightly off-center is covered by two projectiles.
+    /// </summary>
+    [Test]
+    public void TripleShot_TargetSlightlyOffCenter_CoveredByTwoProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 3);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(101, 103); // Slightly right of center, distance 3
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that with triple shot, a diagonally adjacent locked target is covered by all three projectiles.
+    /// </summary>
+    [Test]
+    public void TripleShot_DiagonalAdjacentLockedTarget_CoveredByAllProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 3);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(101, 101);
+
+        // Same rotation correction as CorrectRotationForLockedTarget (rounded, RotationByteScale 255).
+        var angle = GetAngleDegreeTo(attacker.Position, target.Position);
+        var rotation = (byte)Math.Round(angle / 360.0 * 255.0, MidpointRounding.AwayFromZero);
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, rotation, 0), Is.True, "left projectile");
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, rotation, 1), Is.True, "center projectile");
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, rotation, 2), Is.True, "right projectile");
+    }
+
+    private static double GetAngleDegreeTo(Point start, Point target)
+    {
+        var diffX = start.X - target.X;
+        var diffY = start.Y - target.Y;
+        var radian = Math.Atan2(diffY, diffX);
+        var result = (radian * 180 / Math.PI) - 90;
+        if (result < 0)
+        {
+            result += 360;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Tests that with multi shot, an adjacent centered target is covered by all five projectiles:
+    /// one tile out the arrows haven't diverged yet.
+    /// </summary>
+    [Test]
+    public void MultiShot_TargetAdjacent_CoveredByAllProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 6f, 7f, 5);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 101);
+
+        for (int i = 0; i < 5; i++)
+        {
+            Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, i), Is.True, $"Projectile {i} should hit the adjacent target");
+        }
+    }
+
+    /// <summary>
+    /// Tests that with multi shot, a centered target two tiles out is covered by the inner three projectiles.
+    /// </summary>
+    [Test]
+    public void MultiShot_TargetTwoTilesOut_CoveredByInnerThreeProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 6f, 7f, 5);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 102);
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 3), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 4), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that with multi shot, a centered target four tiles out is only covered by the center projectile.
+    /// </summary>
+    [Test]
+    public void MultiShot_TargetFourTilesOut_CoveredByCenterProjectileOnly()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 6f, 7f, 5);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 104);
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 3), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 4), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that with four projectiles (e.g. triple shot with a bow), an adjacent centered
+    /// target is covered by all four projectiles: one tile out the arrows haven't diverged yet.
+    /// </summary>
+    [Test]
+    public void TripleShotWithExtraProjectile_TargetAdjacent_CoveredByAllProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 4);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 101);
+
+        for (int i = 0; i < 4; i++)
+        {
+            Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, i), Is.True, $"Projectile {i} should hit the adjacent target");
+        }
+    }
+
+    /// <summary>
+    /// Tests that with four projectiles, a centered target two tiles out is covered
+    /// by the inner two projectiles only.
+    /// </summary>
+    [Test]
+    public void TripleShotWithExtraProjectile_TargetTwoTilesOut_CoveredByInnerTwoProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 4);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 102);
+
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.False);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 3), Is.False);
+    }
+
     private static ILocateable CreateLocateable(byte x, byte y)
     {
         var mock = new Mock<ILocateable>();

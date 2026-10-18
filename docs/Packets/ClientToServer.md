@@ -43,6 +43,7 @@
   * [C3 3F 05 - PlayerShopItemListRequest (by client)](C3-3F-05-PlayerShopItemListRequest_by-client.md)
   * [C3 3F 06 - PlayerShopItemBuyRequest (by client)](C3-3F-06-PlayerShopItemBuyRequest_by-client.md)
   * [C3 3F 07 - PlayerShopCloseOther (by client)](C3-3F-07-PlayerShopCloseOther_by-client.md)
+  * [C3 3F 09 - PlayerShopSetItemPriceExtended (by client)](C3-3F-09-PlayerShopSetItemPriceExtended_by-client.md)
   * [C1 40 - PartyInviteRequest (by client)](C1-40-PartyInviteRequest_by-client.md)
   * [C1 41 - PartyInviteResponse (by client)](C1-41-PartyInviteResponse_by-client.md)
   * [C1 42 - PartyListRequest (by client)](C1-42-PartyListRequest_by-client.md)

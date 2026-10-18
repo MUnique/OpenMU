@@ -32,6 +32,11 @@ public sealed partial class DiscordBot
     /// </summary>
     private const int MaximumQueuedChatMessages = 100;
 
+    /// <summary>
+    /// The maximum number of permission overwrites of a Discord channel.
+    /// </summary>
+    private const int MaximumPermissionOverwrites = 500;
+
     private readonly ConcurrentDictionary<ulong, DiscordChatQueue> _chatQueues = new();
     private int _maintenanceCount;
 
@@ -128,6 +133,7 @@ public sealed partial class DiscordBot
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+            await this.AnswerFailureAsync(command, true).ConfigureAwait(false);
         }
     }
 
@@ -135,11 +141,11 @@ public sealed partial class DiscordBot
     {
         var text = command.Data.Options.FirstOrDefault()?.Value as string ?? string.Empty;
         var channelId = command.ChannelId ?? 0;
-        var (result, characterName) = await this._chatBridge.PostToGameAsync(channelId, this._routing.WorldChatChannelId, command.User.Id, text).ConfigureAwait(false);
+        var (result, characterName, sentMessage) = await this._chatBridge.PostToGameAsync(channelId, this._routing.WorldChatChannelId, command.User.Id, text).ConfigureAwait(false);
         if (result == DiscordChatPostResult.Sent)
         {
-            // The command itself isn't visible to the others in the channel, so the bot shows the message.
-            this.EnqueueChatMessage(channelId, DiscordChatText.ToDiscord(characterName!, DiscordChatText.ToGame(text, this._settings.ChatBridge.MaximumMessageLength)));
+            // The command itself isn't visible to the others in the channel, so the bot shows the message, exactly as the game got it.
+            this.EnqueueChatMessage(channelId, DiscordChatText.ToDiscord(characterName!, sentMessage!));
         }
 
         return this._chatCommands.CreatePostAnswer(result, characterName);
@@ -225,12 +231,16 @@ public sealed partial class DiscordBot
         }
 
         var (bindResult, boundTarget) = await this._chatBridge.BindAsync(userId, scope, guild.Id, channel.Id, true).ConfigureAwait(false);
+        var allMembersFit = true;
         if (bindResult == DiscordChatBindResult.Success && this._chatBridge.Store.GetByChannel(channel.Id) is { } binding)
         {
-            await this.SyncHostedChannelAsync(client, channel, binding).ConfigureAwait(false);
+            allMembersFit = await this.SyncHostedChannelAsync(client, channel, binding).ConfigureAwait(false);
         }
 
-        return this._chatCommands.CreateBindAnswer(bindResult, nameof(Resources.Bind_Created), boundTarget, MentionUtils.MentionChannel(channel.Id));
+        var answer = this._chatCommands.CreateBindAnswer(bindResult, nameof(Resources.Bind_Created), boundTarget, MentionUtils.MentionChannel(channel.Id));
+        return allMembersFit
+            ? answer
+            : answer with { Description = answer.Description + "\n" + DiscordCommands.GetText(this._chatCommands.Culture, nameof(Resources.Bind_TooManyMembers), MaximumPermissionOverwrites) };
     }
 
     private async ValueTask OnChatMessageAsync(ChatMessageEvent chatMessage)
@@ -281,7 +291,7 @@ public sealed partial class DiscordBot
         {
             try
             {
-                var (result, _) = await this._chatBridge.PostToGameAsync(channel.Id, this._routing.WorldChatChannelId, message.Author.Id, message.Content).ConfigureAwait(false);
+                var (result, _, _) = await this._chatBridge.PostToGameAsync(channel.Id, this._routing.WorldChatChannelId, message.Author.Id, message.Content).ConfigureAwait(false);
                 if (result != DiscordChatPostResult.Sent)
                 {
                     // The user should notice that the message didn't reach the game. /say tells why.
@@ -325,14 +335,15 @@ public sealed partial class DiscordBot
     }
 
     /// <summary>
-    /// Loads the bindings again, because the bindings of deleted guilds are deleted with them,
-    /// and synchronizes the channels of the guilds with their members from time to time.
+    /// Loads the bindings again from time to time, because the bindings of deleted guilds are deleted with them,
+    /// and synchronizes the channels of the guilds with their members.
     /// </summary>
     private async ValueTask MaintainChatBridgeAsync()
     {
-        await this.ReloadChatBindingsAsync().ConfigureAwait(false);
+        // The store knows the changes of the bot. A binding of a deleted guild fails harmlessly until the next reload.
         if (++this._maintenanceCount % HostedChannelSyncInterval == 0)
         {
+            await this.ReloadChatBindingsAsync().ConfigureAwait(false);
             await this.SyncHostedChannelsAsync().ConfigureAwait(false);
         }
     }
@@ -358,8 +369,10 @@ public sealed partial class DiscordBot
     /// <summary>
     /// Allows the linked members of the guild or alliance to see the channel, and removes the others.
     /// The bot doesn't use roles for it, because it can't see the members of roles without the privileged intent for the members.
+    /// Discord allows <see cref="MaximumPermissionOverwrites"/> overwrites per channel, so a very large alliance doesn't fit completely.
     /// </summary>
-    private async Task SyncHostedChannelAsync(DiscordSocketClient client, IGuildChannel channel, GuildChatBinding binding)
+    /// <returns><c>true</c>, if all linked members can see the channel; <c>false</c>, if some don't fit.</returns>
+    private async Task<bool> SyncHostedChannelAsync(DiscordSocketClient client, IGuildChannel channel, GuildChatBinding binding)
     {
         try
         {
@@ -369,7 +382,21 @@ public sealed partial class DiscordBot
                 .Select(overwrite => overwrite.TargetId)
                 .ToHashSet();
 
-            foreach (var userId in linkedMembers.Except(currentMembers))
+            // The removals first, so that they free overwrites for the additions.
+            foreach (var userId in currentMembers.Except(linkedMembers))
+            {
+                if (await client.Rest.GetUserAsync(userId).ConfigureAwait(false) is { } user)
+                {
+                    await channel.RemovePermissionOverwriteAsync(user).ConfigureAwait(false);
+                    currentMembers.Remove(userId);
+                }
+            }
+
+            // E.g. the overwrites of @everyone and of the bot.
+            var otherOverwrites = channel.PermissionOverwrites.Count(overwrite => overwrite.TargetType != PermissionTarget.User || overwrite.TargetId == client.CurrentUser.Id);
+            var freeOverwrites = MaximumPermissionOverwrites - otherOverwrites - currentMembers.Count;
+            var missingMembers = linkedMembers.Except(currentMembers).Order().ToList();
+            foreach (var userId in missingMembers.Take(Math.Max(freeOverwrites, 0)))
             {
                 if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
                 {
@@ -377,17 +404,17 @@ public sealed partial class DiscordBot
                 }
             }
 
-            foreach (var userId in currentMembers.Except(linkedMembers))
+            if (missingMembers.Count > freeOverwrites)
             {
-                if (await client.Rest.GetUserAsync(userId).ConfigureAwait(false) is { } user)
-                {
-                    await channel.RemovePermissionOverwriteAsync(user).ConfigureAwait(false);
-                }
+                this._logger.LogWarning("The Discord channel {channel} can't be opened for {count} linked members, because Discord allows only {maximum} permission overwrites per channel.", channel.Name, missingMembers.Count - freeOverwrites, MaximumPermissionOverwrites);
+                return false;
             }
         }
         catch (Exception ex)
         {
             this._logger.LogWarning(ex, "The members of the Discord channel {channel} couldn't be synchronized. Has the bot the permission to manage it?", channel.Name);
         }
+
+        return true;
     }
 }

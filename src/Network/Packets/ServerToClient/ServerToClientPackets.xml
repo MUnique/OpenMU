@@ -49,17 +49,19 @@
           <Index>0</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>MoneyPrice</Name>
+          <Description>The price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items.</Description>
         </Field>
         <Field>
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PriceItemType</Name>
-          <Description>Contains the item group in the highest 4 bits, and the item number in the remaining ones.</Description>
+          <Description>When RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>RequiredItemAmount</Name>
+          <Description>The number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items.</Description>
         </Field>
         <Field>
           <Index>8</Index>
@@ -4481,6 +4483,11 @@
               <Description>The requested player has item block active.</Description>
               <Value>9</Value>
             </EnumValue>
+            <EnumValue>
+              <Name>LackOfPriceCurrency</Name>
+              <Description>The player has not enough of the currency (jewels or account coins) in which the price of the item is defined.</Description>
+              <Value>10</Value>
+            </EnumValue>
           </Values>
         </Enum>
       </Enums>
@@ -4554,6 +4561,44 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>0A</SubCode>
+      <Name>PlayerShopPriceTypesExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.</SentWhen>
+      <CausedReaction>The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopPriceType</TypeName>
+          <Name>PriceTypes</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PlayerShopPriceType</Name>
+          <Description>A price type which is allowed for prices in player shops, in addition to zen.</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>PriceItemType</Name>
+              <Description>The value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
@@ -7390,6 +7435,53 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>0D</Code>
+      <Name>SlideNotice</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A game master or the server sends a notice which should scroll across the top of the screen.</SentWhen>
+      <CausedReaction>The client scrolls the message through the band at the top of the screen, as often as the loop count says.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+          <Description>The band and queueing of the message. 10 to 12 use the help band, 13 to 15 the notice band. Within a band, the first value drops the message when it could not be shown within a minute, the second one queues it, and the third one puts it in front of the queue, ignoring the loop delay.</Description>
+          <DefaultValue>14</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>LoopCount</Name>
+          <Description>How often the message is shown. The client ignores messages with more than 30 loops.</Description>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LoopDelay</Name>
+          <Description>The delay between the loops, in seconds.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Color</Name>
+          <Description>The color of the text, as 0xAABBGGRR.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>Speed</Name>
+          <Description>The scroll speed, multiplied by 10. 0 means the default speed.</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>50</Code>
       <Name>GuildJoinRequest</Name>
       <Length>5</Length>
@@ -9422,6 +9514,399 @@
 		</Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>00</SubCode>
+      <Name>CrywolfInfo</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of the crywolf event changed, or the player entered the crywolf map. It should only be sent to players on the crywolf map, because the client loads the terrain of the occupation state for its current map.</SentWhen>
+      <CausedReaction>The client shows the event window in the states Ready, Start and End, plays the intro in the state Notify2, shows the result in the state End, and loads the terrain and light of the occupation state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>OccupationState</TypeName>
+          <Name>Occupation</Name>
+          <Description>The occupation state. It must be Peace or Occupied in the state End, otherwise the client shows no result.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>CrywolfState</TypeName>
+          <Name>State</Name>
+          <Description>The state of the event.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>OccupationState</Name>
+          <Description>The occupation state of the crywolf fortress.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Peace</Name>
+              <Description>The fortress has been defended. The benefits apply.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Occupied</Name>
+              <Description>The fortress has been occupied by Balgass. The penalties apply.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>War</Name>
+              <Description>The fortress is under attack.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>CrywolfState</Name>
+          <Description>The state of the crywolf event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>None</Name>
+              <Description>The event is not running.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify1</Name>
+              <Description>The first notification of the upcoming event.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify2</Name>
+              <Description>The second notification. The client plays the intro of the event.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ready</Name>
+              <Description>The altars can be contracted and the monsters appeared.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Start</Name>
+              <Description>The monsters attack.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>End</Name>
+              <Description>The event ended. The client shows the result.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EndCycle</Name>
+              <Description>The event is finished.</Description>
+              <Value>6</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>02</SubCode>
+      <Name>CrywolfStatueAndAltarInfo</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every two seconds while the altars can be contracted and during the battle.</SentWhen>
+      <CausedReaction>The client shows the shield of the statue and the states of the altars.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StatueHealthPercent</Name>
+          <Description>The shield of the statue in percent, from 0 to 100.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Altar1State</Name>
+          <Description>The state of the first altar (205). The high nibble is the altar state (1 = contracted), the low nibble the number of remaining contracts.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Altar2State</Name>
+          <Description>The state of the second altar (206), like Altar1State.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Altar3State</Name>
+          <Description>The state of the third altar (207), like Altar1State.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>Altar4State</Name>
+          <Description>The state of the fourth altar (208), like Altar1State.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>Altar5State</Name>
+          <Description>The state of the fifth altar (209), like Altar1State.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>03</SubCode>
+      <Name>CrywolfContractResult</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to contract an altar.</SentWhen>
+      <CausedReaction>On success, the client shows that the player is a guardian of the altar, and lets the character pray. Otherwise, it shows why the contract failed.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>The result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>AltarState</Name>
+          <Description>The new state of the altar, like in the CrywolfStatueAndAltarInfo.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>AltarKey</Name>
+          <Description>The key of the altar. The client uses the key minus 317 as index into its five altar states without checking the range, so it must be 317 plus the index of the altar (0 to 4).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>04</SubCode>
+      <Name>CrywolfLeftTime</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every 20 seconds during the battle.</SentWhen>
+      <CausedReaction>The client shows the remaining minutes and counts down the seconds by itself. It expects this packet every 20 seconds: when the minute is the same as before, it assumes that 40 or 20 seconds of the minute are left.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Hours</Name>
+          <Description>The remaining hours. The client doesn't show them.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Minutes</Name>
+          <Description>The remaining minutes.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>05</SubCode>
+      <Name>CrywolfBossMonsterInfo</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every five seconds during the battle.</SentWhen>
+      <CausedReaction>The client shows the health of Balgass and the number of Dark Elves.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>BalgassHealthPercent</Name>
+          <Description>The health of Balgass in percent, or -1, when Balgass is not alive.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>DarkElfCount</Name>
+          <Description>The number of alive Dark Elves. The client shows it as count of 12.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>07</SubCode>
+      <Name>CrywolfPersonalRank</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The crywolf event ended, after the CrywolfInfo with the state End.</SentWhen>
+      <CausedReaction>The client shows the rank and the experience of the player in the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CrywolfRank</TypeName>
+          <Name>Rank</Name>
+          <Description>The rank of the player.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The rewarded experience. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CrywolfRank</Name>
+          <Description>The rank of a player in the crywolf event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>D</Name>
+              <Description>The rank D.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>C</Name>
+              <Description>The rank C.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>B</Name>
+              <Description>The rank B.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>A</Name>
+              <Description>The rank A.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>S</Name>
+              <Description>The rank S.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>08</SubCode>
+      <Name>CrywolfHeroList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The crywolf event ended, after the CrywolfInfo with the state End.</SentWhen>
+      <CausedReaction>The client shows the heroes with the highest scores in the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>HeroCount</Name>
+          <Description>The number of heroes, at most 5.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>Hero</TypeName>
+          <Name>Heroes</Name>
+          <Description>The heroes.</Description>
+          <ItemCountField>HeroCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>Hero</Name>
+          <Description>Contains a hero of the crywolf event.</Description>
+          <Length>20</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>Rank</Name>
+              <Description>The place of the hero, from 0 (first) to 4. The client uses it as array index, so it must not be greater than 4.</Description>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Description>The name of the hero.</Description>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>Score</Name>
+              <Description>The score of the hero. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>Byte</Type>
+              <Name>CharacterClass</Name>
+              <Description>The number of the character class.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>09</SubCode>
+      <Name>CrywolfBenefitPlusChaosRate</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player opened a crafting dialog and requested the chaos rate benefit of the crywolf event.</SentWhen>
+      <CausedReaction>The client shows the additional success rate of the crafting.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PlusChaosRate</Name>
+          <Description>The additional success rate in percent.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>0C</SubCode>
+      <Name>CrywolfRegionMonsterAttack</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A ballista of the crywolf event attacks an area.</SentWhen>
+      <CausedReaction>The client shows an arrow which hits the target point. The direction of the arrow depends on the x coordinate of the ballista.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MonsterNumber</Name>
+          <Description>The number of the monster. The client ignores it.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>SourceX</Name>
+          <Description>The x coordinate of the ballista.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>SourceY</Name>
+          <Description>The y coordinate of the ballista. The client ignores it.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+          <Description>The x coordinate of the target point.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+          <Description>The y coordinate of the target point.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>BF</Code>
       <SubCode>00</SubCode>
       <Name>IllusionTempleEnterResult</Name>
@@ -11399,6 +11884,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>ResultCount</Name>
+          <Description>The number of results. The client shares the code 0x93 with the BloodCastleScore (0xFF) and ChaosCastleScore (0xFE) at this index, so a score table must contain less than 200 results; the client holds up to 11.</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -11457,6 +11943,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Type</Name>
+          <Description>Identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.</Description>
           <DefaultValue>0xFF</DefaultValue>
         </Field>
         <Field>
@@ -11479,6 +11966,51 @@
           <Index>25</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>BonusMoney</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>93</Code>
+      <Name>ChaosCastleScore</Name>
+      <Length>29</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The chaos castle mini game ended and the score of the player is sent to the player.</SentWhen>
+      <CausedReaction>The client shows the experience and the killed monsters and players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <Description>If the player won the chaos castle.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+          <Description>Identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.</Description>
+          <DefaultValue>0xFE</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MonsterKillCount</Name>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>BonusExperience</Name>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PlayerKillCount</Name>
         </Field>
       </Fields>
     </Packet>

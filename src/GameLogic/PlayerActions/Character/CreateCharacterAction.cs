@@ -4,9 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 
-using System.Text.RegularExpressions;
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Character;
 
@@ -44,52 +41,6 @@ public class CreateCharacterAction
         await player.InvokeViewPlugInAsync<IShowCharacterCreationFailedPlugIn>(p => p.ShowCharacterCreationFailedAsync()).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Creates the default key configuration for a newly created character.
-    /// </summary>
-    /// <returns>The default key configuration.</returns>
-    /// <remarks>
-    /// The key configuration is an opaque blob which is interpreted by the game client. Within it,
-    /// the potion quick-slots Q, W, E and R are stored as offsets into the potion item group, at
-    /// byte indices 21 (Q), 22 (W), 23 (E) and 25 (R). We bind Q to the healing potion and W to the
-    /// mana potion; E and R stay unbound. An all-zero configuration would otherwise make the client
-    /// bind offset 0 (the apple, which it treats as a healing item) to all four slots, so each one
-    /// would act as a health potion.
-    /// </remarks>
-    private static byte[] CreateDefaultKeyConfiguration()
-    {
-        const byte healingPotion = 1;
-        const byte manaPotion = 4;
-        const byte unbound = 0xFF;
-
-        var keyConfiguration = new byte[30];
-        keyConfiguration[21] = healingPotion; // Q
-        keyConfiguration[22] = manaPotion; // W
-        keyConfiguration[23] = unbound; // E
-        keyConfiguration[25] = unbound; // R
-        return keyConfiguration;
-    }
-
-    /// <summary>
-    /// Determines whether a character can be created with the name.
-    /// </summary>
-    /// <remarks>
-    /// The prefix of senders bridged from Discord is never allowed, independently of the configured expression:
-    /// the game and the clients tell a Discord user from a character by it (<see cref="BridgedChatSender"/>).
-    /// </remarks>
-    /// <param name="name">The name.</param>
-    /// <param name="nameRegex">The configured regular expression of character names; <c>null</c> or empty for any name.</param>
-    /// <returns><c>true</c>, if the name is valid.</returns>
-    public static bool IsValidCharacterName(string name, string? nameRegex)
-    {
-        if (!BridgedChatSender.IsAllowedInCharacterName(name))
-        {
-            return false;
-        }
-
-        return string.IsNullOrWhiteSpace(nameRegex) || Regex.IsMatch(name, nameRegex);
-    }
-
     private async ValueTask<DataModel.Entities.Character?> CreateCharacterAsync(Player player, string name, CharacterClass characterClass)
     {
         var account = player.Account;
@@ -100,14 +51,14 @@ public class CreateCharacterAction
         }
 
         player.Logger.LogDebug("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, characterClass);
-        var isValidName = IsValidCharacterName(name, player.GameContext.Configuration.CharacterNameRegex);
+        var isValidName = player.GameContext.Configuration.IsValidCharacterName(name);
         player.Logger.LogDebug("CreateCharacter: Character Name matches = {0}", isValidName);
         if (!isValidName)
         {
             return null;
         }
 
-        var freeSlot = this.GetFreeSlot(player);
+        var freeSlot = account.GetFreeCharacterSlot(player.GameContext.Configuration);
         if (freeSlot is null)
         {
             return null;
@@ -119,30 +70,11 @@ public class CreateCharacterAction
         }
 
         var character = player.PersistenceContext.CreateNew<DataModel.Entities.Character>();
-        character.CharacterClass = characterClass;
         character.Name = name;
         character.CharacterSlot = freeSlot.Value;
-        character.CreateDate = DateTime.UtcNow;
-        character.KeyConfiguration = CreateDefaultKeyConfiguration();
-
-        // Distinct, because a character class may define the same stat attribute more than once (data
-        // which got duplicated by an update); a character must never hold an attribute twice.
-        var attributes = character.CharacterClass.StatAttributes
-            .DistinctBy(a => a.Attribute)
-            .Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue))
-            .ToList();
-        attributes.ForEach(character.Attributes.Add);
-        character.CurrentMap = characterClass.HomeMap;
-        var randomSpawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-        if (randomSpawnGate is not null)
-        {
-            character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
-            character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
-        }
-
-        character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();
+        player.PersistenceContext.InitializeNewCharacter(character, characterClass);
         account.Characters.Add(character);
-        player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
+        player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(account, character, player.PersistenceContext, player.GameContext.Configuration, player.Logger);
         try
         {
             await player.SaveProgressAsync().ConfigureAwait(false);
@@ -163,17 +95,5 @@ public class CreateCharacterAction
 
         player.Logger.LogDebug("Creating Character Complete.");
         return character;
-    }
-
-    private byte? GetFreeSlot(Player player)
-    {
-        var usedSlots = player.Account!.Characters.Select(c => (int)c.CharacterSlot);
-        var freeSlots = Enumerable.Range(0, player.GameContext.Configuration.MaximumCharactersPerAccount).Except(usedSlots).ToList();
-        if (freeSlots.Any())
-        {
-            return (byte)freeSlots.First();
-        }
-
-        return null;
     }
 }

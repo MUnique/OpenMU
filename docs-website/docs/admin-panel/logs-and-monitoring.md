@@ -42,11 +42,45 @@ file, so a very large log stays fast.
 
 ### Configuring what is logged
 
+**Navigation:** *Logging Configuration* — route `/logging-configuration`
+(administrators only)
+
 Logging is configured in `appsettings.json` with
-[Serilog](https://github.com/serilog/serilog-settings-configuration). The server
-makes good use of log scopes, so you can configure it to log only the actions of
-certain players, of a certain server, or of a certain logger. See
+[Serilog](https://github.com/serilog/serilog-settings-configuration). In the
+all-in-one deployment, you can edit it in the admin panel instead of editing the
+file. The page shows the path of the file it edits, and offers two tabs:
+
+| Tab | Effect |
+|---|---|
+| **Log Levels** | The default minimum level, and a table of levels per source. A source is the name of a logger — usually the full name of a class, like `MUnique.OpenMU.ConnectServer.ClientListener` — or a namespace like `MUnique.OpenMU.GameLogic`, which covers all loggers in it. The most specific source wins. |
+| **Advanced (JSON)** | The whole `Serilog` section of the file, for everything the table doesn't cover, like sinks, output templates or filters. Invalid JSON is rejected. |
+
+![Log levels of the logging configuration](/img/admin-panel/logging-configuration-levels.png)
+
+![Advanced JSON editor of the logging configuration](/img/admin-panel/logging-configuration-json.png)
+
+**Save** writes the file; the rest of `appsettings.json` stays as it is (comments
+in it are lost, though). The server watches the file, so a changed level of the
+default or of an existing source applies at once — no restart needed. A newly
+added or removed source and everything else in the `Serilog` section take effect
+after the next restart. Settings from environment variables or an
+`appsettings.<Environment>.json` file override the file, so changing them here
+has no effect.
+
+In a docker container, the file lives inside the container: mount it as a
+volume, if a change should survive recreating the container.
+
+The server makes good use of log scopes, so you can configure it to log only the
+actions of certain players, of a certain server, or of a certain logger. See
 [Startup parameters](../deployment/startup-parameters.md#logging).
+
+### Grafana (all-in-one, optional)
+
+When the all-in-one deployment runs with its optional monitoring stack (with
+[nginx](../deployment/all-in-one.md#optional-monitoring-with-grafana) or
+[Traefik](../deployment/all-in-one-traefik.md#optional-monitoring-with-grafana)),
+the server additionally exports its logs, metrics and traces, and the navigation
+menu shows the Grafana entries described below next to the log files.
 
 ## Distributed deployment
 
@@ -76,6 +110,7 @@ Grafana:
 | Operator | Editor |
 | Viewer | Viewer — can still search logs and traces |
 
+This applies to the optional Grafana of the all-in-one deployment as well.
 Like the admin panel itself, Grafana is reachable without a login until the
 [first user](authentication.md#the-first-user) exists.
 

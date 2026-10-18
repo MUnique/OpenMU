@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition),
                 baseEntityType,
                 propertyCount: 9,
-                navigationCount: 8,
+                navigationCount: 9,
                 foreignKeyCount: 3,
                 unnamedIndexCount: 3,
                 keyCount: 1);

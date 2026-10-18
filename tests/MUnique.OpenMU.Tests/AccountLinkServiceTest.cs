@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.AccountLinking;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 
@@ -121,6 +123,21 @@ public class AccountLinkServiceTest
         Assert.That(await this._service.GetLinkAsync(this._accountId, Provider).ConfigureAwait(false), Is.Null);
         Assert.That(await this._service.GetLinkAsync(this._otherAccountId, Provider).ConfigureAwait(false), Is.Null);
         Assert.That(await this._service.UnlinkUserAsync(Provider, "43").ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that unlinking an account publishes the event, so that the Discord bot removes the roles of the user.
+    /// </summary>
+    [Test]
+    public async Task UnlinkingAccountPublishesEventAsync()
+    {
+        await this.LinkAsync(this._accountId, "42").ConfigureAwait(false);
+        var publisher = new Mock<IEventPublisher>();
+
+        await this._service.UnlinkAccountAsync(this._accountId, Provider, publisher.Object, 3).ConfigureAwait(false);
+        await this._service.UnlinkAccountAsync(this._accountId, Provider, publisher.Object, 3).ConfigureAwait(false);
+
+        publisher.Verify(p => p.GameEventAsync(It.Is<AccountUnlinkedEvent>(e => e.ServerId == 3 && e.Provider == Provider && e.ExternalUserId == "42")), Times.Once);
     }
 
     /// <summary>

@@ -47,8 +47,8 @@ public class DiscordChatCommandPlugIn : ChatCommandPlugInBase<DiscordChatCommand
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordLinkCode), code, (int)AccountLinkService.CodeValidity.TotalMinutes).ConfigureAwait(false);
                 break;
             case DiscordChatCommandArgs.UnlinkAction:
-                await DiscordIntegrationAction.UnlinkAsync(player).ConfigureAwait(false);
-                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordUnlinked)).ConfigureAwait(false);
+                var unlinked = await DiscordIntegrationAction.UnlinkAsync(player).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(unlinked ? nameof(PlayerMessage.DiscordUnlinked) : nameof(PlayerMessage.DiscordNotLinked)).ConfigureAwait(false);
                 break;
             default:
                 var link = await service.GetLinkAsync(accountId, AccountLinkService.DiscordProvider).ConfigureAwait(false);

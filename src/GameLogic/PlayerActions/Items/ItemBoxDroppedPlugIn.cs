@@ -32,6 +32,8 @@ public sealed class ItemBoxDroppedPlugIn : IItemDropPlugIn
         if (itemDropGroups.Any(g => g.RequiredCharacterLevel > player.Level))
         {
             cancelArgs.Success = false;
+            var requiredLevel = itemDropGroups.Max(g => g.RequiredCharacterLevel);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemBoxRequiresLevel), requiredLevel).ConfigureAwait(false);
             return;
         }
 

@@ -220,6 +220,38 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyDictionary<string, Guid>> GetAccountIdsByCharacterNamesAsync(
+        IReadOnlyCollection<string> characterNames,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var result = new Dictionary<string, Guid>();
+        foreach (var account in accounts)
+        {
+            foreach (var character in account.Characters.Where(c => characterNames.Contains(c.Name)))
+            {
+                result[character.Name] = account.Id;
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        string provider,
+        IReadOnlyCollection<Guid> accountIds,
+        CancellationToken cancellationToken = default)
+    {
+        var links = await this.Provider.GetRepository<AccountExternalLink>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return links.Where(link => link.Provider == provider && accountIds.Contains(link.AccountId)).ToList();
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
         Guid accountId,
         CancellationToken cancellationToken = default)

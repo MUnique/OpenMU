@@ -75,6 +75,12 @@ public sealed class DiscordServerProvisioner
                 continue;
             }
 
+            if (category.VisibleTo.Count > 0 && !category.VisibleTo.Any(roleIds.ContainsKey))
+            {
+                // Without its roles, a private category would be visible to nobody but the bot.
+                result.PublicCategories.Add(category.Name);
+            }
+
             await this.ApplyPermissionsAsync(server, result, category.Name, categoryId.Value, CreateOverwrites(server, roleIds, category, null)).ConfigureAwait(false);
 
             foreach (var channel in category.Channels)
@@ -107,7 +113,9 @@ public sealed class DiscordServerProvisioner
     /// <returns>The overwrites.</returns>
     internal static IReadOnlyList<DiscordPermissionOverwrite> CreateOverwrites(IDiscordServer server, IReadOnlyDictionary<string, ulong> roleIds, DiscordCategoryLayout category, DiscordChannelLayout? channel)
     {
-        var isPrivate = category.VisibleTo.Count > 0;
+        // When none of the roles of a private category exist, e.g. because the bot can't create roles,
+        // the category stays public: a channel which nobody can see would look like the setup did nothing.
+        var isPrivate = category.VisibleTo.Any(roleIds.ContainsKey);
         var isReadOnly = channel?.IsReadOnly ?? false;
         if (!isPrivate && !isReadOnly)
         {

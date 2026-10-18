@@ -1,0 +1,109 @@
+@page "/logging-configuration"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+<PageTitle>OpenMU: @Resources.LoggingConfiguration</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.LoggingConfiguration"/>
+<h1>@Resources.LoggingConfiguration</h1>
+
+@if (!AdminPanelEnvironment.IsHostingEmbedded)
+{
+    <div class="alert alert-info" role="alert">@Resources.LoggingConfigurationNotAvailable</div>
+    return;
+}
+
+<p class="text-muted">@string.Format(Resources.LoggingConfigurationDescription, this.LoggingConfigurationService.FilePath)</p>
+
+@if (this._loadError is { } loadError)
+{
+    <div class="alert alert-danger" role="alert">@string.Format(Resources.LoggingConfigurationLoadError, loadError)</div>
+    <button type="button" class="btn btn-secondary" @onclick="this.LoadAsync">
+        <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload
+    </button>
+    return;
+}
+
+@if (this._settings is not { } settings)
+{
+    <p>@Resources.Loading</p>
+    return;
+}
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <button type="button" class="nav-link @(this._showJson ? null : "active")" @onclick="() => this._showJson = false">@Resources.LogLevels</button>
+    </li>
+    <li class="nav-item">
+        <button type="button" class="nav-link @(this._showJson ? "active" : null)" @onclick="() => this._showJson = true">@Resources.AdvancedJson</button>
+    </li>
+</ul>
+
+@if (this._showJson)
+{
+    <p class="text-muted">
+        @Resources.AdvancedLoggingJsonDescription
+        <a href="https://github.com/serilog/serilog-settings-configuration" target="_blank" rel="noopener noreferrer">Serilog.Settings.Configuration</a>
+    </p>
+    <textarea class="form-control font-monospace mb-3" rows="25" spellcheck="false" aria-label="@Resources.AdvancedJson" @bind="this._sectionJson"></textarea>
+}
+else
+{
+    <div class="mb-3 col-md-4">
+        <label class="form-label" for="defaultLogLevel">@Resources.DefaultLogLevel</label>
+        <select id="defaultLogLevel" class="form-select" @bind="settings.DefaultLevel">
+            @foreach (var level in LoggingConfigurationService.Levels)
+            {
+                <option value="@level">@level</option>
+            }
+        </select>
+    </div>
+
+    <h5>@Resources.LogLevelOverrides</h5>
+    <p class="text-muted">@Resources.LogLevelOverridesDescription</p>
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th class="col-7">@Resources.LogSource</th>
+            <th class="col-3">@Resources.Level</th>
+            <th class="col-2">@Resources.Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var levelOverride in settings.Overrides)
+        {
+            <tr>
+                <td>
+                    <input type="text" class="form-control font-monospace" aria-label="@Resources.LogSource" @bind="levelOverride.Source"/>
+                </td>
+                <td>
+                    <select class="form-select" aria-label="@Resources.Level" @bind="levelOverride.Level">
+                        @foreach (var level in LoggingConfigurationService.Levels)
+                        {
+                            <option value="@level">@level</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => settings.Overrides.Remove(levelOverride)">
+                        <span class="oi oi-trash" aria-hidden="true"></span> @Resources.Remove
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary mb-3" @onclick="() => settings.Overrides.Add(new LogLevelOverride())">
+        <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddNew
+    </button>
+}
+
+<div>
+    <button type="button" class="btn btn-primary" disabled="@this._isSaving" @onclick="this.SaveAsync">
+        <span class="oi oi-check" aria-hidden="true"></span> @Resources.Save
+    </button>
+    <button type="button" class="btn btn-secondary" disabled="@this._isSaving" @onclick="this.LoadAsync">
+        <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload
+    </button>
+</div>

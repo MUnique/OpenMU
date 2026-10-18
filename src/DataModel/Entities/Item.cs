@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Entities;
 
 using System.Globalization;
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Properties;
 
@@ -61,6 +62,18 @@ public partial class Item
     /// Gets or sets the price which was set by the player for his personal store.
     /// </summary>
     public int? StorePrice { get; set; }
+
+    /// <summary>
+    /// Gets or sets the definition of the items with which the <see cref="StorePrice"/> is paid, e.g. a jewel.
+    /// It's <c>null</c>, if the price is paid in zen or account coins.
+    /// </summary>
+    public virtual ItemDefinition? StorePriceItemDefinition { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account coin type with which the <see cref="StorePrice"/> is paid.
+    /// It's <c>null</c>, if the price is paid in zen or items.
+    /// </summary>
+    public CashShopCoinType? StorePriceCoinType { get; set; }
 
     /// <summary>
     /// Gets or sets the pet experience.

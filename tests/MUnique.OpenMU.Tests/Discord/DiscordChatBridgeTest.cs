@@ -4,15 +4,18 @@
 
 namespace MUnique.OpenMU.Tests.Discord;
 
+using System.ComponentModel;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Discord.ChatBridge;
 using MUnique.OpenMU.GameLogic.AccountLinking;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests for the <see cref="DiscordChatBridge"/>.
@@ -162,7 +165,7 @@ public class DiscordChatBridgeTest
 
         var result = await bridge.PostToGameAsync(ChannelId, WorldChannelId, MemberUser, "Hello <@123> **guild**").ConfigureAwait(false);
 
-        Assert.That(result, Is.EqualTo((DiscordChatPostResult.Sent, "Elf")));
+        Assert.That(result, Is.EqualTo((DiscordChatPostResult.Sent, "Elf", "Hello guild")));
         this._publisher.Verify(p => p.GuildMessageAsync(LegendsRuntimeId, "@Elf", "Hello guild"), Times.Once);
     }
 
@@ -172,7 +175,6 @@ public class DiscordChatBridgeTest
     [Test]
     public async Task MessagesAreRejectedAsync()
     {
-        this._settings.MaximumMessagesPerMinute = 1;
         var bridge = this.CreateBridge();
         await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
 
@@ -181,7 +183,6 @@ public class DiscordChatBridgeTest
         Assert.That((await bridge.PostToGameAsync(ChannelId, WorldChannelId, OutsiderUser, "Hi").ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatPostResult.NotMember));
         Assert.That((await bridge.PostToGameAsync(ChannelId, WorldChannelId, MemberUser, "<@123>").ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatPostResult.Empty));
         Assert.That((await bridge.PostToGameAsync(ChannelId, WorldChannelId, MemberUser, "Hi").ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatPostResult.Sent));
-        Assert.That((await bridge.PostToGameAsync(ChannelId, WorldChannelId, MemberUser, "Hi").ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatPostResult.TooFast));
 
         using (var context = this._persistence.CreateNewPlayerContext(new GameConfiguration()))
         {
@@ -191,6 +192,40 @@ public class DiscordChatBridgeTest
         }
 
         Assert.That((await bridge.PostToGameAsync(ChannelId, WorldChannelId, MemberUser, "Hi").ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatPostResult.ChatBanned));
+    }
+
+    /// <summary>
+    /// Tests that the flood limit is checked before anything else, so that spamming doesn't cause queries to the database.
+    /// </summary>
+    [Test]
+    public async Task FloodLimitIsCheckedFirstAsync()
+    {
+        this._settings.MaximumMessagesPerMinute = 1;
+        var bridge = this.CreateBridge();
+
+        var first = await bridge.PostToGameAsync(WorldChannelId, WorldChannelId, 99, "Hi").ConfigureAwait(false);
+        var second = await bridge.PostToGameAsync(WorldChannelId, WorldChannelId, 99, "Hi").ConfigureAwait(false);
+
+        Assert.That(first.Result, Is.EqualTo(DiscordChatPostResult.NotLinked));
+        Assert.That(second.Result, Is.EqualTo(DiscordChatPostResult.TooFast));
+    }
+
+    /// <summary>
+    /// Tests that a plugin of the server, e.g. a filter, can stop a message from Discord.
+    /// </summary>
+    [Test]
+    public async Task FilterPlugInStopsMessageAsync()
+    {
+        var plugInManager = new PlugInManager([], NullLoggerFactory.Instance, null, null);
+        var filter = new Mock<IExternalChatMessageReceivedPlugIn>();
+        filter.Setup(f => f.ExternalChatMessageReceived("Outsider", "bad word", GameChatChannel.World, It.IsAny<CancelEventArgs>()))
+            .Callback<string, string, GameChatChannel, CancelEventArgs>((_, _, _, e) => e.Cancel = true);
+        plugInManager.RegisterPlugInAtPlugInPoint(filter.Object);
+
+        var result = await this.CreateBridge(plugInManager).PostToGameAsync(WorldChannelId, WorldChannelId, OutsiderUser, "bad word").ConfigureAwait(false);
+
+        Assert.That(result.Result, Is.EqualTo(DiscordChatPostResult.Filtered));
+        this._publisher.Verify(p => p.WorldChatMessageAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     /// <summary>
@@ -253,7 +288,7 @@ public class DiscordChatBridgeTest
 
     private AccountLinkService CreateLinkService() => new(() => this._persistence.CreateNewPlayerContext(new GameConfiguration()));
 
-    private DiscordChatBridge CreateBridge()
+    private DiscordChatBridge CreateBridge(PlugInManager? plugInManager = null)
     {
         var guildServer = new Mock<IGuildServer>();
         guildServer.Setup(s => s.GetPersistentGuildIdAsync(LegendsRuntimeId)).ReturnsAsync(this._legendsId);
@@ -269,7 +304,8 @@ public class DiscordChatBridgeTest
             CreateContext,
             this._persistence.CreateNewGuildContext,
             () => this._publisher.Object,
-            NullLogger<DiscordChatBridge>.Instance);
+            NullLogger<DiscordChatBridge>.Instance,
+            plugInManager);
     }
 
     private async Task<(Guid AccountId, Guid CharacterId)> CreateAccountAsync(string loginName, string characterName)

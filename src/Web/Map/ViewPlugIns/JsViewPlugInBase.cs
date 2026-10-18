@@ -51,33 +51,23 @@ public abstract class JsViewPlugInBase
     /// </summary>
     /// <param name="args">The parameters for the function call.</param>
     /// <returns>The <see cref="ValueTask"/> of this async operation.</returns>
+    /// <remarks>
+    /// The map controller passes a <see cref="MUnique.OpenMU.Web.Map.Map.JsInteropQueue"/> as <see cref="JsRuntime"/>,
+    /// so this returns without waiting for the browser, which delivers or drops the call on its own.
+    /// </remarks>
     protected async ValueTask InvokeAsync(params object[] args)
     {
-        const int maximumRetries = 10;
-        var tryAgain = true;
-        for (int i = 0; i < maximumRetries && tryAgain && !this.CancellationToken.IsCancellationRequested; i++)
+        try
         {
-            try
-            {
-                await this.JsRuntime.InvokeVoidAsync(this.JsMethodName, this.CancellationToken, args).ConfigureAwait(false);
-                tryAgain = false;
-            }
-            catch (TaskCanceledException)
-            {
-                // don't need to handle that.
-                tryAgain = false;
-            }
-            catch (JSException e)
-                when (e.Message.StartsWith("Could not find '") && (e.Message.Contains("' in 'window'.") || e.Message.Contains("' was undefined).")))
-            {
-                // In this case, try again in a moment.
-                await Task.Delay(500, this.CancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                tryAgain = false;
-                this.Logger.LogError(e, $"Error in {this.GetType().Name}; params: {string.Join(';', args)}");
-            }
+            await this.JsRuntime.InvokeVoidAsync(this.JsMethodName, this.CancellationToken, args).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // don't need to handle that.
+        }
+        catch (Exception e)
+        {
+            this.Logger.LogError(e, $"Error in {this.GetType().Name}; params: {string.Join(';', args)}");
         }
     }
 }

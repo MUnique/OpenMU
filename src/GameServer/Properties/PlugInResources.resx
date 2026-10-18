@@ -1329,6 +1329,12 @@
   <data name="ChangeTerrainAttributesViewPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IChangeTerrainAttributesViewPlugin which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="ChaosCastleScoreTableViewPlugin_Name" xml:space="preserve">
+    <value>Chaos Castle Score Table View</value>
+  </data>
+  <data name="ChaosCastleScoreTableViewPlugin_Description" xml:space="preserve">
+    <value>The default implementation of the IChaosCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
   <data name="ChaosCastleStateViewPlugIn_Name" xml:space="preserve">
     <value>Chaos Castle State View</value>
   </data>
@@ -2501,6 +2507,36 @@
   <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the client for the state of the raklion event.</value>
   </data>
+  <data name="CrywolfEventViewPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Event View</value>
+  </data>
+  <data name="CrywolfEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the state of the crywolf event, its altars and its result to the client.</value>
+  </data>
+  <data name="CrywolfGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Group Handler</value>
+  </data>
+  <data name="CrywolfGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the packets of the crywolf event.</value>
+  </data>
+  <data name="CrywolfInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Info Request Handler</value>
+  </data>
+  <data name="CrywolfInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the state of the crywolf event.</value>
+  </data>
+  <data name="CrywolfContractRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Contract Request Handler</value>
+  </data>
+  <data name="CrywolfContractRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of an elf to contract an altar of the crywolf event.</value>
+  </data>
+  <data name="CrywolfChaosRateBenefitRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Chaos Rate Benefit Request Handler</value>
+  </data>
+  <data name="CrywolfChaosRateBenefitRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the additional success rate of the chaos machine.</value>
+  </data>
   <data name="ImperialGuardianGroupHandlerPlugIn_Name" xml:space="preserve">
     <value>Imperial Guardian Group Handler</value>
   </data>
@@ -2614,6 +2650,18 @@
   </data>
   <data name="CashShopItemGiftRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for cash shop gift requests (0xD2, 0x04 identifier).</value>
+  </data>
+  <data name="PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Set Price (with currency)</value>
+  </data>
+  <data name="PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which sets prices in a currency for an item in the player shop (3F 09).</value>
+  </data>
+  <data name="ShowShopCurrenciesExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Shop Currencies Extended</value>
+  </data>
+  <data name="ShowShopCurrenciesExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
   <data name="DiscordIntegrationInfoRequestHandlerPlugIn_Name" xml:space="preserve">
     <value>Discord integration info request handler</value>
