@@ -88,41 +88,59 @@ public sealed class DiscordServerLayout
     /// <returns>The errors; empty, if the layout is valid.</returns>
     public IReadOnlyList<string> Validate()
     {
+        // The keys identify the items in the layout, and the names in the Discord server, where existing items are adopted by their name.
         var errors = new List<string>();
-        var roleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var roles = new ItemNames();
         foreach (var role in this.Roles)
         {
-            ValidateItem(errors, "role", role.Key, role.Name, roleKeys);
+            ValidateItem(errors, "role", role.Key, role.Name, roles);
         }
 
-        var categoryKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var channelKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var categories = new ItemNames();
+        var channels = new ItemNames();
         foreach (var category in this.Categories)
         {
-            ValidateItem(errors, "category", category.Key, category.Name, categoryKeys);
-            foreach (var roleKey in category.VisibleTo.Where(roleKey => !roleKeys.Contains(roleKey)))
+            ValidateItem(errors, "category", category.Key, category.Name, categories);
+            foreach (var roleKey in category.VisibleTo.Where(roleKey => !roles.Keys.Contains(roleKey)))
             {
                 errors.Add($"The category '{category.Key}' refers to the unknown role '{roleKey}'.");
             }
 
             foreach (var channel in category.Channels)
             {
-                ValidateItem(errors, "channel", channel.Key, channel.Name, channelKeys);
+                ValidateItem(errors, "channel", channel.Key, channel.Name, channels);
             }
         }
 
         return errors;
     }
 
-    private static void ValidateItem(List<string> errors, string kind, string key, string name, HashSet<string> keys)
+    private static void ValidateItem(List<string> errors, string kind, string key, string name, ItemNames names)
     {
         if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(name))
         {
             errors.Add($"Every {kind} needs a key and a name.");
+            return;
         }
-        else if (!keys.Add(key))
+
+        if (!names.Keys.Add(key))
         {
             errors.Add($"The {kind} key '{key}' isn't unique.");
         }
+
+        if (!names.Names.Add(name))
+        {
+            errors.Add($"The {kind} name '{name}' of '{key}' isn't unique.");
+        }
+    }
+
+    /// <summary>
+    /// The keys and names of the items of one kind, which have to be unique.
+    /// </summary>
+    private sealed class ItemNames
+    {
+        public HashSet<string> Keys { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+        public HashSet<string> Names { get; } = new(StringComparer.OrdinalIgnoreCase);
     }
 }

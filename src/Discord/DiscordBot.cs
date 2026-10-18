@@ -330,6 +330,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+            await this.AnswerFailureAsync(command, false).ConfigureAwait(false);
         }
     }
 
@@ -362,6 +363,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when setting up the Discord server.");
+            await this.AnswerFailureAsync(command, true).ConfigureAwait(false);
         }
     }
 
@@ -460,6 +462,23 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IAsyncDis
         return message;
 
         bool IsStatusMessage(IUserMessage m) => m.Author.Id == client.CurrentUser.Id && m.Embeds.FirstOrDefault()?.Title == this._statusFormatter.StatusTitle;
+    }
+
+    /// <summary>
+    /// Answers a deferred command with a failure, so that the user doesn't wait for an answer which never comes.
+    /// </summary>
+    private async Task AnswerFailureAsync(SocketSlashCommand command, bool ephemeral)
+    {
+        try
+        {
+            var answer = new DiscordEmbed(command.Data.Name, this._commands.Text(nameof(Resources.Command_Failed)), DiscordCommands.AnswerColor, DateTime.UtcNow, null);
+            await command.FollowupAsync(embed: ToDiscordEmbed(answer), ephemeral: ephemeral, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // E.g. the interaction expired or wasn't deferred.
+            this._logger.LogDebug(ex, "The failure of the Discord command {command} couldn't be answered.", command.Data.Name);
+        }
     }
 
     private async Task<IMessageChannel?> GetMessageChannelAsync(ulong channelId)

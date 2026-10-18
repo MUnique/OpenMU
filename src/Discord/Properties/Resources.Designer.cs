@@ -565,6 +565,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to **Visible to everyone:** {0}, because their roles couldn't be created..
+        /// </summary>
+        public static string Setup_PublicCategories {
+            get {
+                return ResourceManager.GetString("Setup_PublicCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setup of the Discord server.
         /// </summary>
         public static string Setup_Title {
