@@ -353,6 +353,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<IConnectServerInstanceManager>(provider => provider.GetService<ConnectServerContainer>()!)
             .AddSingleton<GameServerContainer>()
             .AddSingleton<IGameServerInstanceManager>(provider => provider.GetService<GameServerContainer>()!)
+            .AddSingleton<IEventPublisher>(provider => provider.GetRequiredService<GameServerContainer>().EventPublisher)
             .AddScoped<IMapFactory, JavascriptMapFactory>()
             .AddCircuitConnectionState()
             .AddSingleton<SetupService>()

@@ -2021,7 +2021,7 @@
     <value>Links of {0}</value>
   </data>
   <data name="ExternalLinksDescription" xml:space="preserve">
-    <value>The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link. When you remove a Discord link here, remove the role of linked players in Discord yourself.</value>
+    <value>The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link.</value>
   </data>
   <data name="ExternalLinksAccountNotFound" xml:space="preserve">
     <value>The account wasn't found.</value>

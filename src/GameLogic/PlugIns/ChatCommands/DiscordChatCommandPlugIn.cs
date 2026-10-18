@@ -47,15 +47,9 @@ public class DiscordChatCommandPlugIn : ChatCommandPlugInBase<DiscordChatCommand
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordLinkCode), code, (int)AccountLinkService.CodeValidity.TotalMinutes).ConfigureAwait(false);
                 break;
             case DiscordChatCommandArgs.UnlinkAction:
-                if (await service.UnlinkAccountAsync(accountId, AccountLinkService.DiscordProvider).ConfigureAwait(false) is { } userId
-                    && player.GameContext is IGameServerContext gameServerContext)
-                {
-                    // The Discord bot removes the roles of the user.
-                    await gameServerContext.EventPublisher.GameEventAsync(
-                        new AccountUnlinkedEvent(gameServerContext.Id, DateTime.UtcNow, AccountLinkService.DiscordProvider, userId)).ConfigureAwait(false);
-                }
-
-                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordUnlinked)).ConfigureAwait(false);
+                var gameServerContext = player.GameContext as IGameServerContext;
+                var unlinkedUserId = await service.UnlinkAccountAsync(accountId, AccountLinkService.DiscordProvider, gameServerContext?.EventPublisher, gameServerContext?.Id ?? 0).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(unlinkedUserId is null ? nameof(PlayerMessage.DiscordNotLinked) : nameof(PlayerMessage.DiscordUnlinked)).ConfigureAwait(false);
                 break;
             default:
                 var link = await service.GetLinkAsync(accountId, AccountLinkService.DiscordProvider).ConfigureAwait(false);

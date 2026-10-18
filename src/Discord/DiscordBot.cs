@@ -376,6 +376,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+            await this.AnswerFailureAsync(command, true).ConfigureAwait(false);
         }
     }
 

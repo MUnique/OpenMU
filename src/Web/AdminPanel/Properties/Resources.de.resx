@@ -1930,7 +1930,7 @@
     <value>Verknüpfungen von {0}</value>
   </data>
   <data name="ExternalLinksDescription" xml:space="preserve">
-    <value>Die Benutzer externer Dienste, wie Discord, die mit dem Konto verknüpft sind. Spieler verknüpfen ihr Konto im Spiel mit /discord link. Wenn du hier eine Discord-Verknüpfung entfernst, entferne die Rolle für verknüpfte Spieler in Discord selbst.</value>
+    <value>Die Benutzer externer Dienste, wie Discord, die mit dem Konto verknüpft sind. Spieler verknüpfen ihr Konto im Spiel mit /discord link.</value>
   </data>
   <data name="ExternalLinksAccountNotFound" xml:space="preserve">
     <value>Das Konto wurde nicht gefunden.</value>

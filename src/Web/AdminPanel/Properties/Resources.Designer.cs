@@ -1738,7 +1738,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link. When you remove a Discord link here, remove the role of linked players in Discord yourself..
+        ///   Looks up a localized string similar to The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link..
         /// </summary>
         public static string ExternalLinksDescription {
             get {
