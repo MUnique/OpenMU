@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views.Vault;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -48,7 +49,14 @@ public class PlayerLosesMoneyAfterDeathPlugIn : IAttackableGotKilledPlugIn, ISup
         inventoryLoss = Math.Min(inventoryLoss, player.Money);
         vaultLoss = Math.Min(vaultLoss, player.Account?.Vault?.Money ?? 0);
         player.TryRemoveMoney(inventoryLoss);
-        player.TryTakeVaultMoney(vaultLoss);
+        if (player.Account?.Vault is { } vault)
+        {
+            vault.Money -= vaultLoss;
+            if (player.Vault?.ItemStorage == vault)
+            {
+                await player.InvokeViewPlugInAsync<IUpdateVaultMoneyPlugIn>(p => p.UpdateVaultMoneyAsync(true)).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc/>

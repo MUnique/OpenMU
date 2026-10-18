@@ -125,8 +125,14 @@ public record FrustumBasedTargetFilter
             return 1;
         }
 
-        // The overlap decreases over higher distance
-        var overlap = (1.0 / Math.Floor(distance)) / (this.ProjectileCount + extraProjectiles);
+        // The fan converges at the caster: the outermost lane of N projectiles spans up to
+        // -1 + 2/N of the normalized frustum width, so covering the center target requires
+        // a point-blank overlap of 1 - 2/N = (N-2)/N, fading with distance as the fan
+        // spreads. It's never less than the previous 1/N, so two-projectile skills keep
+        // their old overlap.
+        var totalProjectiles = this.ProjectileCount + extraProjectiles;
+        var pointBlankOverlap = Math.Max((totalProjectiles - 2.0) / totalProjectiles, 1.0 / totalProjectiles);
+        var overlap = pointBlankOverlap / Math.Floor(distance);
         overlap += 0.001; // Adding a small epsilon to make it slightly more tolerant in the comparisons
         return overlap;
     }

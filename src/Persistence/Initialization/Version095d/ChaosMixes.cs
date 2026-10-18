@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 /// <summary>
@@ -48,7 +49,7 @@ public class ChaosMixes : InitializerBase
     private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel)
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = $"+{targetLevel} Item Combination";
+        crafting.Name = CraftingNames.ResourceManager.GetLocalizedString($"Plus{targetLevel}ItemCombination");
         crafting.Number = craftingNumber;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
@@ -103,7 +104,7 @@ public class ChaosMixes : InitializerBase
     private ItemCrafting ChaosWeaponCrafting()
     {
         var chaosWeapon = this.Context.CreateNew<ItemCrafting>();
-        chaosWeapon.Name = "Chaos Weapon";
+        chaosWeapon.Name = LocalizedString.FromResource(() => CraftingNames.ChaosWeapon);
         chaosWeapon.Number = 1;
         chaosWeapon.ItemCraftingHandlerClassName = typeof(ChaosWeaponAndFirstWingsCrafting).FullName!;
         var chaosWeaponSettings = this.Context.CreateNew<SimpleCraftingSettings>();
@@ -169,7 +170,7 @@ public class ChaosMixes : InitializerBase
     private ItemCrafting FirstWingsCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "1st Level Wings";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.FirstWings);
         crafting.Number = 11;
         crafting.ItemCraftingHandlerClassName = typeof(ChaosWeaponAndFirstWingsCrafting).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
@@ -242,7 +243,7 @@ public class ChaosMixes : InitializerBase
     private ItemCrafting DinorantCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "Dinorant";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.Dinorant);
         crafting.Number = 5;
         crafting.ItemCraftingHandlerClassName = typeof(DinorantCrafting).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
@@ -280,7 +281,7 @@ public class ChaosMixes : InitializerBase
     private ItemCrafting DevilSquareTicketCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "Devil's Square Ticket";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.DevilsSquareTicket);
         crafting.Number = 2;
         crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.DevilSquareTicketCrafting).FullName!;
         return crafting;

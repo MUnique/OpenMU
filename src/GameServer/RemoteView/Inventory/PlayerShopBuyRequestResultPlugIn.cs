@@ -59,7 +59,7 @@ public class PlayerShopBuyRequestResultPlugIn : IPlayerShopBuyRequestResultPlugI
             ItemBuyResult.InTransaction => PlayerShopBuyResult.ResultKind.InTransaction,
             ItemBuyResult.InvalidShopSlot => PlayerShopBuyResult.ResultKind.InvalidShopSlot,
             ItemBuyResult.NameMismatchOrPriceMissing => PlayerShopBuyResult.ResultKind.NameMismatchOrPriceMissing,
-            ItemBuyResult.LackOfMoney => PlayerShopBuyResult.ResultKind.LackOfMoney,
+            ItemBuyResult.LackOfMoney or ItemBuyResult.LackOfPriceCurrency => PlayerShopBuyResult.ResultKind.LackOfMoney,
             ItemBuyResult.MoneyOverflowOrNotEnoughSpace => PlayerShopBuyResult.ResultKind.MoneyOverflowOrNotEnoughSpace,
             ItemBuyResult.ItemBlock => PlayerShopBuyResult.ResultKind.ItemBlock,
             _ => PlayerShopBuyResult.ResultKind.Undefined,

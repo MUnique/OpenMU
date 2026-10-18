@@ -132,8 +132,8 @@ Linked users get the role *Linked Player* of the
 [layout](#setting-up-your-discord-server) on your Discord server, so you can,
 for example, open channels only for players. The bot needs the *Manage Roles*
 permission for it, and its own role has to be above *Linked Player* in the role
-list. When an administrator removes a link in the admin panel, the role isn't
-removed automatically.
+list. When a link is removed, also in the admin panel of the all-in-one
+deployment, the role is removed again.
 
 The answers to these commands are only visible to the player who used them.
 The codes are stored as hash in the database, and every code can only be used

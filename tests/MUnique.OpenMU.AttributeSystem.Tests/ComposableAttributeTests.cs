@@ -359,4 +359,42 @@ public class ComposableAttributeTests
             }
         }
     }
+
+    /// <summary>
+    /// Tests if a disposed attribute no longer follows its elements, but still provides its last value.
+    /// </summary>
+    [Test]
+    public void DisposedAttributeIgnoresElementChanges()
+    {
+        var element = new SimpleElement { Value = 1 };
+        var attribute = new ComposableAttribute(new AttributeDefinition(Guid.NewGuid(), "A", "The A attribute"));
+        attribute.AddElement(element);
+        var eventCalled = false;
+        attribute.ValueChanged += (_, _) => eventCalled = true;
+
+        attribute.Dispose();
+        element.Value = 2;
+
+        Assert.That(eventCalled, Is.False);
+        Assert.That(attribute.Elements, Does.Contain(element));
+    }
+
+    /// <summary>
+    /// Tests if an element which is added after the attribute was disposed isn't followed either, e.g. by a
+    /// magic effect which got applied by a timer while its target was released.
+    /// </summary>
+    [Test]
+    public void ElementAddedAfterDisposeIsNotFollowed()
+    {
+        var attribute = new ComposableAttribute(new AttributeDefinition(Guid.NewGuid(), "A", "The A attribute"));
+        attribute.Dispose();
+        var element = new SimpleElement { Value = 1 };
+        attribute.AddElement(element);
+        var eventCalled = false;
+        attribute.ValueChanged += (_, _) => eventCalled = true;
+
+        element.Value = 2;
+
+        Assert.That(eventCalled, Is.False);
+    }
 }

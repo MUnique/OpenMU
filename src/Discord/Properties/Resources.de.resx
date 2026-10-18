@@ -398,6 +398,9 @@
   <data name="Setup_FailedHint" xml:space="preserve">
     <value>Bitte prüfe, ob der Bot die Berechtigungen "Kanäle verwalten" und "Rollen verwalten" hat, und ob seine Rolle über den Rollen steht, die er verwalten soll.</value>
   </data>
+  <data name="Setup_PublicCategories" xml:space="preserve">
+    <value>**Für alle sichtbar:** {0}, weil ihre Rollen nicht erstellt werden konnten.</value>
+  </data>
   <data name="Setup_Title" xml:space="preserve">
     <value>Einrichtung des Discord-Servers</value>
   </data>

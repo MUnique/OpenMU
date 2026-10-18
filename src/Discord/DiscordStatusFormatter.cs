@@ -34,6 +34,11 @@ public sealed class DiscordStatusFormatter
     }
 
     /// <summary>
+    /// Gets the title of the status, by which the bot finds its status message again.
+    /// </summary>
+    public string StatusTitle => this.Text(nameof(Resources.Status_Title));
+
+    /// <summary>
     /// Creates the status message.
     /// </summary>
     /// <param name="servers">The status of the game servers.</param>
@@ -47,7 +52,7 @@ public sealed class DiscordStatusFormatter
                 ? this.Text(nameof(Resources.Status_Online), DiscordMessageFormatter.Escape(server.Name), server.CurrentPlayers, server.MaximumPlayers)
                 : this.Text(nameof(Resources.Status_Offline), DiscordMessageFormatter.Escape(server.Name))));
         var color = servers.Any(server => server.IsOnline) ? OnlineColor : OfflineColor;
-        return new DiscordEmbed(this.Text(nameof(Resources.Status_Title)), description, color, utcNow, null);
+        return new DiscordEmbed(this.StatusTitle, description, color, utcNow, null);
     }
 
     /// <summary>

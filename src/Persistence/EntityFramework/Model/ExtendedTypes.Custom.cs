@@ -316,6 +316,14 @@ internal partial class CastleSiegeData : IConvertibleTo<BasicModel.CastleSiegeDa
     }
 }
 
+internal partial class CrywolfData : IConvertibleTo<BasicModel.CrywolfData>
+{
+    public BasicModel.CrywolfData Convert()
+    {
+        return BasicModelConverter.Convert<BasicModel.CrywolfData>(this);
+    }
+}
+
 internal partial class GensMember : IConvertibleTo<BasicModel.GensMember>
 {
     public BasicModel.GensMember Convert()

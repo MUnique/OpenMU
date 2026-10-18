@@ -7,9 +7,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Vault;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views.Vault;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handler for warehouse money packets.
@@ -32,10 +34,16 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
         switch (request.Direction)
         {
             case VaultMoveMoneyRequest.VaultMoneyMoveDirection.InventoryToVault:
-                player.TryDepositVaultMoney((int)request.Amount);
+                player.TryDepositVaultMoney(request.Amount);
                 break;
             case VaultMoveMoneyRequest.VaultMoneyMoveDirection.VaultToInventory:
-                player.TryTakeVaultMoney((int)request.Amount);
+                if (player.IsVaultLocked)
+                {
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
+                    break;
+                }
+
+                player.TryTakeVaultMoney(request.Amount);
                 break;
             default:
                 throw new InvalidEnumArgumentException($"The direction {request.Direction} is not a valid value.");

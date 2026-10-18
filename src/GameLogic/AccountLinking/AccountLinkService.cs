@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.AccountLinking;
 using System.Security.Cryptography;
 using System.Text;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -151,21 +152,34 @@ public sealed class AccountLinkService
 
     /// <summary>
     /// Removes the link of an account, including a pending code.
+    /// The <see cref="AccountUnlinkedEvent"/> is published, so that e.g. the Discord bot removes the roles of the user.
     /// </summary>
     /// <param name="accountId">The identifier of the account.</param>
     /// <param name="provider">The name of the external service.</param>
+    /// <param name="eventPublisher">The publisher of the <see cref="AccountUnlinkedEvent"/>, if one is available.</param>
+    /// <param name="serverId">The identifier of the game server which removes the link, or 0.</param>
     /// <returns>The identifier of the user which was linked; or <c>null</c>, if the account wasn't linked.</returns>
-    public async ValueTask<string?> UnlinkAccountAsync(Guid accountId, string provider)
+    public async ValueTask<string?> UnlinkAccountAsync(Guid accountId, string provider, IEventPublisher? eventPublisher = null, byte serverId = 0)
     {
-        using var context = this._createContext();
-        if (await context.GetAccountExternalLinkAsync(accountId, provider).ConfigureAwait(false) is not { } link)
+        string? userId;
+        using (var context = this._createContext())
         {
-            return null;
+            if (await context.GetAccountExternalLinkAsync(accountId, provider).ConfigureAwait(false) is not { } link)
+            {
+                return null;
+            }
+
+            await context.DeleteAsync(link).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            userId = link.ExternalUserId;
         }
 
-        await context.DeleteAsync(link).ConfigureAwait(false);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-        return link.ExternalUserId;
+        if (userId is not null && eventPublisher is not null)
+        {
+            await eventPublisher.GameEventAsync(new AccountUnlinkedEvent(serverId, this._timeProvider.GetUtcNow().UtcDateTime, provider, userId)).ConfigureAwait(false);
+        }
+
+        return userId;
     }
 
     /// <summary>

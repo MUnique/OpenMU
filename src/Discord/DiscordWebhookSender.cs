@@ -93,6 +93,13 @@ public sealed class DiscordWebhookSender : DiscordMessageQueue
                     delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
                     this.Logger.LogWarning("Discord returned {statusCode}, retrying after {delay}.", response.StatusCode, delay);
                 }
+                else if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // The URL is fine, but Discord didn't accept the content. Retrying wouldn't help.
+                    var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    this.Logger.LogError("Discord rejected the content of {count} message(s): {response}", embeds.Count, body);
+                    return;
+                }
                 else
                 {
                     // E.g. the webhook was deleted. Retrying wouldn't help.
@@ -104,6 +111,12 @@ public sealed class DiscordWebhookSender : DiscordMessageQueue
             {
                 delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
                 this.Logger.LogWarning(ex, "Discord isn't reachable, retrying after {delay}.", delay);
+            }
+            catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+            {
+                // The request timed out, see DiscordHttpClient.Timeout.
+                delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
+                this.Logger.LogWarning(ex, "Discord didn't answer in time, retrying after {delay}.", delay);
             }
 
             await Task.Delay(delay, this._timeProvider, cancellationToken).ConfigureAwait(false);

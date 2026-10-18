@@ -128,4 +128,17 @@
   <data name="KanturuState_NightmareBattle_Caption" xml:space="preserve"><value>NightmareBattle</value></data>
   <data name="KanturuState_Tower_Caption" xml:space="preserve"><value>Tower</value></data>
   <data name="KanturuState_End_Caption" xml:space="preserve"><value>End</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_TypeCaption" xml:space="preserve"><value>Player Shop Currencies Configuration</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_PriceItems_Caption" xml:space="preserve"><value>Price Items</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_PriceItems_Description" xml:space="preserve"><value>The items with which prices can be paid, e.g. jewels.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinCAllowed_Caption" xml:space="preserve"><value>Is WCoin (C) Allowed</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinCAllowed_Description" xml:space="preserve"><value>Prices in WCoin (C) are allowed.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinPAllowed_Caption" xml:space="preserve"><value>Is WCoin (P) Allowed</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsWCoinPAllowed_Description" xml:space="preserve"><value>Prices in WCoin (P) are allowed.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsGoblinPointsAllowed_Caption" xml:space="preserve"><value>Is Goblin Points Allowed</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_IsGoblinPointsAllowed_Description" xml:space="preserve"><value>Prices in Goblin Points are allowed.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumItemAmount_Caption" xml:space="preserve"><value>Maximum Item Amount</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumItemAmount_Description" xml:space="preserve"><value>The maximum number of item pieces of a price; at most 65535.</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumCoinAmount_Caption" xml:space="preserve"><value>Maximum Coin Amount</value></data>
+  <data name="PlayerShopCurrenciesConfiguration_MaximumCoinAmount_Description" xml:space="preserve"><value>The maximum amount of account coins of a price.</value></data>
 </root>

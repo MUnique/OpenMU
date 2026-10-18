@@ -40,7 +40,7 @@ public class CastleSiegeContext : IEventStateProvider
         this._gameContext = gameContext;
         this._timeProvider = timeProvider ?? TimeProvider.System;
         this.Configuration = configuration;
-        this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule);
+        this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule, gameContext.ServerTimeZone);
         this.NpcController = new CastleSiegeNpcController(this);
     }
 

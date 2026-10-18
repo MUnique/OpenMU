@@ -13,7 +13,6 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of seeds, spheres and seed spheres, their possible options, the adaption of the socket items
@@ -577,7 +576,7 @@ public class SocketSystem : InitializerBase
     private ItemCrafting SeedCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "Seed Creation";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.SeedCreation);
         crafting.Number = 42;
         crafting.SetGuid(crafting.Number);
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
@@ -638,7 +637,7 @@ public class SocketSystem : InitializerBase
     private ItemCrafting SeedSphereCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "Seed Sphere Creation";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.SeedSphereCreation);
         crafting.Number = 43;
         crafting.ItemCraftingHandlerClassName = typeof(SeedSphereCrafting).FullName!;
         crafting.SetGuid(crafting.Number);
@@ -713,7 +712,7 @@ public class SocketSystem : InitializerBase
     private ItemCrafting MountSeedSphereCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "Mount Seed Sphere";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.MountSeedSphere);
         crafting.Number = 44;
         crafting.ItemCraftingHandlerClassName = typeof(MountSeedSphereCrafting).FullName!;
         crafting.SetGuid(crafting.Number);
@@ -765,7 +764,7 @@ public class SocketSystem : InitializerBase
     private ItemCrafting RemoveSeedSphereCrafting()
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
-        crafting.Name = "Remove Seed Sphere";
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.RemoveSeedSphere);
         crafting.Number = 45;
         crafting.ItemCraftingHandlerClassName = typeof(RemoveSeedSphereCrafting).FullName!;
         crafting.SetGuid(crafting.Number);

@@ -134,6 +134,11 @@ public sealed class DiscordCommands
             description.AppendLine(this.Text(nameof(Resources.Setup_Adopted), string.Join(", ", result.Adopted.Select(DiscordMessageFormatter.Escape))));
         }
 
+        if (result.PublicCategories.Count > 0)
+        {
+            description.AppendLine(this.Text(nameof(Resources.Setup_PublicCategories), string.Join(", ", result.PublicCategories.Select(DiscordMessageFormatter.Escape))));
+        }
+
         if (result.Failed.Count > 0)
         {
             description

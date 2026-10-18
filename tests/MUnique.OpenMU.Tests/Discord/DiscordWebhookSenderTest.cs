@@ -122,6 +122,32 @@ public class DiscordWebhookSenderTest
         Assert.That(titles, Is.EqualTo(new[] { "3", "4" }));
     }
 
+    /// <summary>
+    /// Tests that long texts are cut, and that the embeds of one message don't exceed the total length which Discord accepts.
+    /// </summary>
+    [Test]
+    public async Task LongEmbedsAreCutAndSplitAsync()
+    {
+        var release = new TaskCompletionSource();
+        var handler = new RecordingHttpMessageHandler { BlockFirstRequest = release.Task };
+        await using var sender = CreateSender(handler);
+        var longText = new string('x', 5000);
+
+        sender.Enqueue(CreateEmbed("1"));
+        await WaitUntilAsync(() => handler.Requests.Count == 1).ConfigureAwait(false);
+        sender.Enqueue(new DiscordEmbed(new string('t', 300), longText, 0, DateTime.UtcNow, null));
+        sender.Enqueue(new DiscordEmbed("3", longText, 0, DateTime.UtcNow, null));
+        release.SetResult();
+        await handler.WaitForRequestsAsync(3).ConfigureAwait(false);
+
+        Assert.That(handler.Requests, Has.Count.EqualTo(3));
+        var second = handler.Requests[1].RootElement.GetProperty("embeds");
+        Assert.That(second.GetArrayLength(), Is.EqualTo(1));
+        Assert.That(second[0].GetProperty("title").GetString(), Has.Length.EqualTo(DiscordEmbed.MaximumTitleLength));
+        Assert.That(second[0].GetProperty("description").GetString(), Has.Length.EqualTo(DiscordEmbed.MaximumDescriptionLength));
+        Assert.That(handler.Requests[2].RootElement.GetProperty("embeds")[0].GetProperty("title").GetString(), Is.EqualTo("3"));
+    }
+
     private static DiscordWebhookSender CreateSender(RecordingHttpMessageHandler handler, int capacity = 100)
     {
         return new DiscordWebhookSender(WebhookUrl, new HttpClient(handler), NullLogger.Instance, capacity);

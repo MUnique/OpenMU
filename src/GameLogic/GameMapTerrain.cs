@@ -38,11 +38,11 @@ public class GameMapTerrain
 
     /// <summary>
     /// Pre-computed array of walkable, non-safezone points.
-    /// Built once during construction for O(1) random spawn lookups.
+    /// Built when the terrain data is loaded, for O(1) random spawn lookups.
     /// </summary>
-    private readonly Point[] _spawnPoints;
+    private Point[] _spawnPoints;
 
-    private readonly Point? _anyWalkableCoordinate;
+    private Point? _anyWalkableCoordinate;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
@@ -59,16 +59,8 @@ public class GameMapTerrain
     /// <param name="terrainData">The terrain data.</param>
     public GameMapTerrain(byte[]? terrainData)
     {
-        if (terrainData is { })
-        {
-            this.ReadTerrainData(terrainData.AsSpan(3));
-        }
-        else
-        {
-            this.ReadTerrainData(DefaultTerrain);
-        }
-
-        this._spawnPoints = this.BuildSpawnPoints(out this._anyWalkableCoordinate);
+        this._spawnPoints = [];
+        this.LoadTerrainData(terrainData);
     }
 
     /// <summary>
@@ -342,6 +334,26 @@ public class GameMapTerrain
         // never alter the safezone status, exactly as before.
         this.WalkMap[x, y] = IsWalkableValue(this.AttributeMap[x, y]);
         this.UpdateAiGridValue(x, y);
+    }
+
+    /// <summary>
+    /// Loads the terrain data, e.g. another terrain of the map which applies in a certain state.
+    /// The grids are filled in place, so that references to them stay valid.
+    /// </summary>
+    /// <param name="terrainData">The terrain data, which is the content of the *.att file of the original server.</param>
+    /// <remarks>
+    /// All changes which were made on the previous terrain at runtime (e.g. by <see cref="ApplyTerrainAttribute"/>, like the gates of the castle siege) are discarded.
+    /// For maps with such changes, they have to be applied again after loading.
+    /// </remarks>
+    public void LoadTerrainData(byte[]? terrainData)
+    {
+        // The tiles which aren't part of the data get the same state as in a new terrain.
+        Array.Clear(this.AttributeMap);
+        Array.Clear(this.WalkMap);
+        Array.Clear(this.SafezoneMap);
+        Array.Clear(this.AIgrid);
+        this.ReadTerrainData(terrainData is { } ? terrainData.AsSpan(3) : DefaultTerrain);
+        this._spawnPoints = this.BuildSpawnPoints(out this._anyWalkableCoordinate);
     }
 
     /// <summary>

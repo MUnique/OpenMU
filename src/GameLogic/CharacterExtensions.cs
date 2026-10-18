@@ -93,7 +93,7 @@ public static class CharacterExtensions
     /// <summary>
     /// Determines whether the character is a "special" character with reduced level requirements for maps and events.
     /// Special characters have a <see cref="CharacterClass.LevelWarpRequirementReductionPercent"/> of 33.
-    /// Usually, this includes the classes Magic Gladiator, Dark Lord, Rage Fighter and Summoner.
+    /// Usually, this includes the classes Magic Gladiator, Dark Lord and Rage Fighter.
     /// </summary>
     /// <param name="character">The character.</param>
     /// <returns>

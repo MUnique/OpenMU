@@ -152,8 +152,8 @@ quick test, but player progress is **not saved**.
 dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj --configuration Release
 ```
 
-The tests are run with:
-
-```bash
-dotnet test
-```
+The tests are run with `dotnet test`. This builds before testing, so if you run
+them several times without changing code, build once with
+`dotnet build src/MUnique.OpenMU.sln` and add `--no-build` to the later runs,
+keeping the same `-c` configuration. Build again after any code change; see
+[Building and running tests](https://github.com/MUnique/OpenMU/blob/master/AGENTS.md#building-and-running-tests).

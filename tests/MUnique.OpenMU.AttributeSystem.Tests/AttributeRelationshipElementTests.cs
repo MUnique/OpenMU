@@ -1,4 +1,4 @@
-// <copyright file="AttributeRelationshipElementTests.cs" company="MUnique">
+﻿// <copyright file="AttributeRelationshipElementTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -114,5 +114,25 @@ public class AttributeRelationshipElementTests
         relationshipElement.ValueChanged += (sender, e) => eventCalled = true;
         element1.Value = 2;
         Assert.That(eventCalled, Is.True);
+    }
+
+    /// <summary>
+    /// Tests if a disposed relationship element no longer follows its inputs, so that inputs which live longer
+    /// (e.g. the stat attributes of a character) don't keep it alive.
+    /// </summary>
+    [Test]
+    public void DisposedElementIgnoresInputChanges()
+    {
+        var input = new SimpleElement { Value = 1 };
+        var operand = new SimpleElement { Value = 2 };
+        var relationshipElement = new AttributeRelationshipElement(new[] { input }, operand, InputOperator.Multiply);
+        var eventCalled = false;
+        relationshipElement.ValueChanged += (_, _) => eventCalled = true;
+
+        relationshipElement.Dispose();
+        input.Value = 3;
+        operand.Value = 4;
+
+        Assert.That(eventCalled, Is.False);
     }
 }

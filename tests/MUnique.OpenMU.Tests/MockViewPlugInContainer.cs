@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
 using Moq;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
@@ -13,18 +14,13 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class MockViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>
 {
-    private readonly Dictionary<Type, IViewPlugIn> _mocks = new();
+    // Concurrent, because the game logic may request view plugins of the same player from multiple threads.
+    private readonly ConcurrentDictionary<Type, IViewPlugIn> _mocks = new();
 
     /// <inheritdoc />
     public T GetPlugIn<T>()
         where T : class, IViewPlugIn
     {
-        if (!this._mocks.TryGetValue(typeof(T), out var mock))
-        {
-            mock = new Mock<T>().Object;
-            this._mocks.Add(typeof(T), mock);
-        }
-
-        return (T)mock;
+        return (T)this._mocks.GetOrAdd(typeof(T), _ => new Mock<T>().Object);
     }
 }

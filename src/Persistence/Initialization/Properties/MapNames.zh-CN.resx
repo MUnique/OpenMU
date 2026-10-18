@@ -71,4 +71,16 @@
   <data name="LorenMarket" xml:space="preserve"><value>罗兰市集</value></data>
   <data name="Karutan1" xml:space="preserve"><value>卡伦特 1</value></data>
   <data name="Karutan2" xml:space="preserve"><value>卡伦特 2</value></data>
+  <data name="Arena" xml:space="preserve">
+    <value>竞技场</value>
+  </data>
+  <data name="Exile" xml:space="preserve">
+    <value>流放地</value>
+  </data>
+  <data name="SilentMap" xml:space="preserve">
+    <value>未知地图</value>
+  </data>
+  <data name="SantaVillage" xml:space="preserve">
+    <value>圣诞村</value>
+  </data>
 </root>
