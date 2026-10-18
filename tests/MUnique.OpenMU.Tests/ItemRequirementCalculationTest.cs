@@ -64,7 +64,7 @@ public class ItemRequirementCalculationTest
     }
 
     /// <summary>
-    /// Tests if item options add 4 strength each.
+    /// Tests that a non-armor item adds 4 strength per item-option level.
     /// </summary>
     [Test]
     public void OptionAdds4Strength()
@@ -72,8 +72,9 @@ public class ItemRequirementCalculationTest
         var item = new Item();
         item.Definition = new ItemDefinition();
         item.Definition.DropLevel = 6;
-        item.Definition.Group = 7;
+        item.Definition.Group = 0;
         item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.LeftHandSlot);
         item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
@@ -86,6 +87,30 @@ public class ItemRequirementCalculationTest
 
         Assert.That(agilityValue.Item1, Is.EqualTo(Stats.TotalAgility));
         Assert.That(agilityValue.Item2, Is.EqualTo(30));
+    }
+
+    /// <summary>
+    /// Tests that an armor item adds 5 strength per item-option level, whether it's equipped or not.
+    /// </summary>
+    /// <param name="currentSlot">The current item slot.</param> 
+    [TestCase(2)]
+    [TestCase(12)]
+    public void ArmorOptionAdds5Strength(byte currentSlot)
+    {
+        var item = new Item();
+        item.Definition = new ItemDefinition();
+        item.Definition.DropLevel = 6;
+        item.Definition.Group = 7;
+        item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.HelmSlot);
+        item.ItemSlot = currentSlot;
+        item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
+        var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
+
+        var strengthValue = item.GetRequirement(strengthRequirement);
+
+        Assert.That(strengthValue.Item1, Is.EqualTo(Stats.TotalStrength));
+        Assert.That(strengthValue.Item2, Is.EqualTo(35));
     }
 
     /// <summary>

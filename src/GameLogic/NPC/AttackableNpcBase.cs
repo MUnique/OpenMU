@@ -438,6 +438,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
         var droppedMoney = new DroppedMoney(amount, this.Position, this.CurrentMap, shares);
         await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
+        await killer.GameContext.PlugInManager.NotifyPlugInsAsync<IMonsterMoneyDroppedPlugIn>(
+            p => p.MonsterMoneyDroppedAsync(this, killer, droppedMoney),
+            killer.Logger).ConfigureAwait(false);
     }
 
     private async ValueTask DropItemAsync(IReadOnlyList<ExperienceShare> experienceShares, Player killer)

@@ -1833,4 +1833,31 @@
   <data name="ShopPriceChatCommandPlugIn_Description" xml:space="preserve">
     <value>Legt den Preis eines Gegenstands des eigenen persönlichen Ladens in einer der aktivierten Währungen fest, z. B. '/shopprice 1 10 bless'. Ohne Argumente werden die Preise aufgelistet.</value>
   </data>
+  <data name="ServerAnnouncementsPlugIn_Name" xml:space="preserve">
+    <value>Server-Ankündigungen</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Description" xml:space="preserve">
+    <value>Zeigt allen Spielern eines Spielservers eine konfigurierte Liste von Ankündigungen, eine nach der anderen in einem festen Intervall.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Name" xml:space="preserve">
+    <value>Intervall</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Description" xml:space="preserve">
+    <value>Die Zeit zwischen einer Ankündigung und der nächsten. Das Minimum sind 10 Sekunden.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Name" xml:space="preserve">
+    <value>Ankündigungen</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Description" xml:space="preserve">
+    <value>Die Ankündigungen in der Reihenfolge, in der sie gezeigt werden. Nach der letzten beginnt es wieder mit der ersten.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Text_Name" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Name" xml:space="preserve">
+    <value>Nachrichtentyp</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Description" xml:space="preserve">
+    <value>Wie die Ankündigung gezeigt wird, z. B. als goldene Nachricht in der Bildschirmmitte oder als blaue Systemnachricht.</value>
+  </data>
 </root>

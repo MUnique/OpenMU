@@ -1180,6 +1180,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Determines whether the player complies with the <see cref="Skill.Requirements"/> of a skill, so that it can use it.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if the player complies with the requirements; Otherwise, <c>false</c>.</returns>
+    public bool CompliesRequirements(Skill skill)
+    {
+        return !skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]);
+    }
+
+    /// <summary>
     /// Tries to consume the <see cref="Skill.ConsumeRequirements"/> of a skill.
     /// </summary>
     /// <param name="skillEntry">The skill entry of the skill which should get performed.</param>
@@ -1194,7 +1204,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
+        if (!this.CompliesRequirements(skill))
         {
             return false;
         }

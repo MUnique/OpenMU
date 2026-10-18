@@ -645,6 +645,18 @@
   <data name="MessagePlaceholder" xml:space="preserve">
     <value>Enter message...</value>
   </data>
+  <data name="MessageType" xml:space="preserve">
+    <value>Message Type</value>
+  </data>
+  <data name="MessageTypeGolden" xml:space="preserve">
+    <value>Golden (center)</value>
+  </data>
+  <data name="MessageTypeBlue" xml:space="preserve">
+    <value>Blue (system)</value>
+  </data>
+  <data name="MessageTypeSlide" xml:space="preserve">
+    <value>Slide (top band)</value>
+  </data>
   <data name="OnlineCount" xml:space="preserve">
     <value>{0} online</value>
   </data>
@@ -1959,5 +1971,50 @@
   </data>
   <data name="TerrainEditor" xml:space="preserve">
     <value>Terrain Editor</value>
+  </data>
+  <data name="LoggingConfiguration" xml:space="preserve">
+    <value>Logging Configuration</value>
+  </data>
+  <data name="LoggingConfigurationDescription" xml:space="preserve">
+    <value>The logging of the server is configured in the file {0}. When you save, changed log levels are applied at once. Added or removed sources and all other settings take effect after a restart of the server.</value>
+  </data>
+  <data name="LoggingConfigurationNotAvailable" xml:space="preserve">
+    <value>The logging configuration can only be edited when the admin panel runs within the server process (all-in-one deployment).</value>
+  </data>
+  <data name="LogLevels" xml:space="preserve">
+    <value>Log Levels</value>
+  </data>
+  <data name="DefaultLogLevel" xml:space="preserve">
+    <value>Default level</value>
+  </data>
+  <data name="LogLevelOverrides" xml:space="preserve">
+    <value>Levels per source</value>
+  </data>
+  <data name="LogLevelOverridesDescription" xml:space="preserve">
+    <value>A source is the name of a logger, usually the full name of a class, or a namespace which covers all loggers in it. The most specific source wins.</value>
+  </data>
+  <data name="LogSource" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="AdvancedJson" xml:space="preserve">
+    <value>Advanced (JSON)</value>
+  </data>
+  <data name="AdvancedLoggingJsonDescription" xml:space="preserve">
+    <value>Here you can edit the whole Serilog section of the configuration file, for example to add sinks or filters. See the Serilog documentation for the available settings.</value>
+  </data>
+  <data name="LoggingConfigurationSaved" xml:space="preserve">
+    <value>The logging configuration has been saved.</value>
+  </data>
+  <data name="LoggingConfigurationLoadError" xml:space="preserve">
+    <value>The logging configuration couldn't be loaded: {0}</value>
+  </data>
+  <data name="LoggingConfigurationSaveError" xml:space="preserve">
+    <value>The logging configuration couldn't be saved: {0}</value>
+  </data>
+  <data name="LoggingConfigurationInvalidJson" xml:space="preserve">
+    <value>The JSON is invalid: {0}</value>
+  </data>
+  <data name="LogLevelOverridesInvalid" xml:space="preserve">
+    <value>Every source needs a name, and each name may only be used once.</value>
   </data>
 </root>

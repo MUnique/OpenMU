@@ -1881,4 +1881,49 @@
   <data name="TerrainEditor" xml:space="preserve">
     <value>Terrain-Editor</value>
   </data>
+  <data name="LoggingConfiguration" xml:space="preserve">
+    <value>Logging-Konfiguration</value>
+  </data>
+  <data name="LoggingConfigurationDescription" xml:space="preserve">
+    <value>Das Logging des Servers wird in der Datei {0} konfiguriert. Beim Speichern werden geänderte Log-Level sofort angewendet. Hinzugefügte oder entfernte Quellen und alle anderen Einstellungen werden nach einem Neustart des Servers wirksam.</value>
+  </data>
+  <data name="LoggingConfigurationNotAvailable" xml:space="preserve">
+    <value>Die Logging-Konfiguration kann nur bearbeitet werden, wenn das Admin-Panel im Serverprozess läuft (All-in-One-Bereitstellung).</value>
+  </data>
+  <data name="LogLevels" xml:space="preserve">
+    <value>Log-Level</value>
+  </data>
+  <data name="DefaultLogLevel" xml:space="preserve">
+    <value>Standard-Level</value>
+  </data>
+  <data name="LogLevelOverrides" xml:space="preserve">
+    <value>Level pro Quelle</value>
+  </data>
+  <data name="LogLevelOverridesDescription" xml:space="preserve">
+    <value>Eine Quelle ist der Name eines Loggers, meist der vollständige Name einer Klasse, oder ein Namespace, der alle darin enthaltenen Logger umfasst. Die spezifischste Quelle gewinnt.</value>
+  </data>
+  <data name="LogSource" xml:space="preserve">
+    <value>Quelle</value>
+  </data>
+  <data name="AdvancedJson" xml:space="preserve">
+    <value>Erweitert (JSON)</value>
+  </data>
+  <data name="AdvancedLoggingJsonDescription" xml:space="preserve">
+    <value>Hier kann der gesamte Serilog-Abschnitt der Konfigurationsdatei bearbeitet werden, zum Beispiel um Sinks oder Filter hinzuzufügen. Die verfügbaren Einstellungen sind in der Serilog-Dokumentation beschrieben.</value>
+  </data>
+  <data name="LoggingConfigurationSaved" xml:space="preserve">
+    <value>Die Logging-Konfiguration wurde gespeichert.</value>
+  </data>
+  <data name="LoggingConfigurationLoadError" xml:space="preserve">
+    <value>Die Logging-Konfiguration konnte nicht geladen werden: {0}</value>
+  </data>
+  <data name="LoggingConfigurationSaveError" xml:space="preserve">
+    <value>Die Logging-Konfiguration konnte nicht gespeichert werden: {0}</value>
+  </data>
+  <data name="LoggingConfigurationInvalidJson" xml:space="preserve">
+    <value>Das JSON ist ungültig: {0}</value>
+  </data>
+  <data name="LogLevelOverridesInvalid" xml:space="preserve">
+    <value>Jede Quelle benötigt einen Namen, und jeder Name darf nur einmal verwendet werden.</value>
+  </data>
 </root>

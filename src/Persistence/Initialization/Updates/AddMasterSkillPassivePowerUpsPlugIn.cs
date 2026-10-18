@@ -44,6 +44,23 @@ public class AddMasterSkillPassivePowerUpsPlugIn : UpdatePlugInBase
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 10, 02, 19, 0, 0, DateTimeKind.Utc);
 
+    /// <summary>
+    /// Gets the version of this update.
+    /// </summary>
+    /// <remarks>
+    /// Version 2: castable master skills were missing their passive power-ups.
+    /// </remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Needs the target attribute which <see cref="FinishElfMasterTreePlugIn"/> sets.
+    /// </remarks>
+    public override DateTime UpdatedAt => new(2026, 10, 17, 12, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override IEnumerable<UpdateDependency> DependsOn => [typeof(FinishElfMasterTreePlugIn).GUID];
+
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {

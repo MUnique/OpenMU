@@ -134,7 +134,7 @@ Each user has one role. They build up on each other:
 |---|---|
 | **Viewer** | See the servers, accounts and the configuration |
 | **Operator** | Everything above, plus operating the servers and editing accounts |
-| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files and the user management |
+| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files, the logging configuration and the user management |
 
 Give each administrator their own user, so you can remove one without changing
 everybody else's password.
