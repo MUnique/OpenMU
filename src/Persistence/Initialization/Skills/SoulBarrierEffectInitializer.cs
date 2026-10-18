@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for the soul barrier buff effect.
@@ -30,7 +31,7 @@ public class SoulBarrierEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.SoulBarrier;
-        magicEffect.Name = "Soul Barrier";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.SoulBarrier);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

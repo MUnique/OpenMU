@@ -54,6 +54,11 @@ public enum MessageType
     /// The message is a guild notice (green center).
     /// </summary>
     GuildNotice = 2,
+
+    /// <summary>
+    /// The message scrolls in bold across the top of the screen (slide notice).
+    /// </summary>
+    SlideNotice = 3,
 }
 
 /// <summary>

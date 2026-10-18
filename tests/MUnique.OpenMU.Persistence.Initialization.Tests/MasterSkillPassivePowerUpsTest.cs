@@ -17,6 +17,7 @@ using MUnique.OpenMU.Persistence.InMemory;
 internal class MasterSkillPassivePowerUpsTest
 {
     private const short TwistingSlashMasteryNumber = 332;
+    private const short TripleShotMasteryNumber = 418;
     private const short DurabilityReduction1Number = 300;
     private const short DurabilityReduction1FistMasterNumber = 578;
 
@@ -54,6 +55,19 @@ internal class MasterSkillPassivePowerUpsTest
         AssertPassivePowerUps(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the update depends on the update which sets the target attributes it needs.
+    /// </summary>
+    [Test]
+    public void UpdateDependsOnFinishElfMasterTreeUpdate()
+    {
+        var update = new AddMasterSkillPassivePowerUpsPlugIn();
+
+        Assert.That(update.DependsOn.Select(d => d.Key), Does.Contain(typeof(FinishElfMasterTreePlugIn).GUID));
+        Assert.That(update.Version, Is.GreaterThan(1));
+        Assert.That(update.UpdatedAt, Is.GreaterThan(update.CreatedAt));
+    }
+
     private static void AssertPassivePowerUps(GameConfiguration gameConfiguration)
     {
         Assert.That(gameConfiguration.Attributes.Count(a => a.Id == Stats.MasterSkillValue.Id), Is.EqualTo(1));
@@ -71,6 +85,11 @@ internal class MasterSkillPassivePowerUpsTest
         var twistingSlashMastery = GetMasterDefinition(gameConfiguration, TwistingSlashMasteryNumber);
         Assert.That(twistingSlashMastery.PassivePowerUps, Has.Count.EqualTo(1));
         Assert.That(twistingSlashMastery.PassivePowerUps.Single().TargetAttribute, Is.EqualTo(twistingSlashMastery.TargetAttribute));
+
+        var tripleShotMastery = GetMasterDefinition(gameConfiguration, TripleShotMasteryNumber);
+        Assert.That(tripleShotMastery.PassivePowerUps, Has.Count.EqualTo(1));
+        Assert.That(tripleShotMastery.TargetAttribute!.Id, Is.EqualTo(Stats.TripleShotExtraProjectiles.Id));
+        Assert.That(tripleShotMastery.PassivePowerUps.Single().TargetAttribute!.Id, Is.EqualTo(Stats.TripleShotExtraProjectiles.Id));
 
         foreach (var number in new[] { DurabilityReduction1Number, DurabilityReduction1FistMasterNumber })
         {

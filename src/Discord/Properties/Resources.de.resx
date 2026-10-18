@@ -137,6 +137,9 @@
   <data name="Bind_Title" xml:space="preserve">
     <value>Gildenchat</value>
   </data>
+  <data name="Bind_TooManyMembers" xml:space="preserve">
+    <value>Discord erlaubt nur {0} Mitglieder pro Kanal, daher können nicht alle verknüpften Mitglieder den Kanal sehen.</value>
+  </data>
   <data name="Bind_Unbound" xml:space="preserve">
     <value>Die Verbindung dieses Kanals wurde entfernt.</value>
   </data>
@@ -196,6 +199,9 @@
   </data>
   <data name="Chat_Empty" xml:space="preserve">
     <value>Die Nachricht ist leer.</value>
+  </data>
+  <data name="Chat_Filtered" xml:space="preserve">
+    <value>Die Nachricht ist im Spiel nicht erlaubt.</value>
   </data>
   <data name="Chat_NoCharacter" xml:space="preserve">
     <value>Wähle zuerst mit /character einen Charakter deines Kontos.</value>
@@ -469,6 +475,9 @@
   </data>
   <data name="Setup_FailedHint" xml:space="preserve">
     <value>Bitte prüfe, ob der Bot die Berechtigungen "Kanäle verwalten" und "Rollen verwalten" hat, und ob seine Rolle über den Rollen steht, die er verwalten soll.</value>
+  </data>
+  <data name="Setup_PublicCategories" xml:space="preserve">
+    <value>**Für alle sichtbar:** {0}, weil ihre Rollen nicht erstellt werden konnten.</value>
   </data>
   <data name="Setup_Title" xml:space="preserve">
     <value>Einrichtung des Discord-Servers</value>

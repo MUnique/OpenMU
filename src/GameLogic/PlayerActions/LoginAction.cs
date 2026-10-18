@@ -154,27 +154,44 @@ public class LoginAction
                 return (true, offlineAccount);
             }
 
+            // The account is reserved at the login server BEFORE it's loaded. The old session of an
+            // account saves its progress and only then logs off (see Player.DisconnectAsync), so a
+            // reservation which succeeds guarantees that the load below sees that save. Loading first
+            // let a quick reconnect (the client resumes about 2 seconds after a lost connection) load
+            // the account while the old session was still saving, and reserve it right after the old
+            // session logged off: two diverging copies of the character, and the database ended up
+            // with both of them - duplicated items, and items on top of each other.
+            var reserved = await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false);
+            if (reserved)
+            {
+                // Remembered while the state change is in progress, which a disconnect waits for.
+                // Set before the load, so that every failure below releases it exactly once.
+                player.SetLoginServerRegistration(username);
+            }
+
             var loadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username).ConfigureAwait(false);
             if (loadedAccount is null)
             {
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
                 player.Logger.LogError("Failed to load account {Username} after authentication.", username);
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
                 context.Allowed = false;
                 return (false, null);
             }
 
-            if (!loadedAccount.IsTemplate)
+            if (loadedAccount.IsTemplate)
             {
-                if (!await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
-                {
-                    context.Allowed = false;
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                    await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
-                    return (false, null);
-                }
+                // Template accounts may be logged in several times at once, so they never hold the reservation.
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+                return (true, loadedAccount);
+            }
 
-                // Remembered while the state change is in progress, which a disconnect waits for.
-                player.SetLoginServerRegistration(username);
+            if (!reserved)
+            {
+                context.Allowed = false;
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+                await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
+                return (false, null);
             }
 
             return (true, loadedAccount);

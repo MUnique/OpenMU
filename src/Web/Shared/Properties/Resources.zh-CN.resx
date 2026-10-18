@@ -524,4 +524,25 @@
   <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
     <value>需要所需技能以及上一阶的一个技能至少达到 {0} 级。</value>
   </data>
+  <data name="CharacterCreationHint" xml:space="preserve">
+    <value>角色将获得其职业的属性及初始值，在其职业的主城地图出生，并获得空的背包和默认的按键设置。随后会像在游戏中一样运行已启用的“角色已创建”插件，例如为其添加初始物品和技能。</value>
+  </data>
+  <data name="CharacterNameRequired" xml:space="preserve">
+    <value>请输入名称。</value>
+  </data>
+  <data name="CharacterNameInvalid" xml:space="preserve">
+    <value>名称不符合配置的格式：{0}</value>
+  </data>
+  <data name="CharacterClassRequired" xml:space="preserve">
+    <value>请选择角色职业。</value>
+  </data>
+  <data name="CharacterClassWithoutHomeMap" xml:space="preserve">
+    <value>该角色职业没有主城地图，因此角色将没有出生位置。</value>
+  </data>
+  <data name="NoFreeCharacterSlot" xml:space="preserve">
+    <value>该账号没有空闲的角色栏位。每个账号最多可以拥有 {0} 个角色。</value>
+  </data>
+  <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
+    <value>角色已创建，但“角色已创建”插件执行失败，因此可能缺少初始物品或技能：{0}</value>
+  </data>
 </root>

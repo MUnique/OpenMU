@@ -41,6 +41,7 @@ internal class TypedContext : EntityDataContext, ITypedContext
         { typeof(DataModel.Entities.CastleSiegeData), () => new CastleSiegeDataTypedContext() },
         { typeof(DataModel.Entities.CastleSiegeGuildRegistration), () => new CastleSiegeGuildRegistrationTypedContext() },
         { typeof(DataModel.Entities.CastleSiegePendingReward), () => new CastleSiegePendingRewardTypedContext() },
+        { typeof(DataModel.Entities.CrywolfData), () => new CrywolfDataTypedContext() },
         { typeof(DataModel.Entities.GensAbuse), () => new GensAbuseTypedContext() },
         { typeof(DataModel.Entities.GensMember), () => new GensMemberTypedContext() },
         { typeof(DataModel.Statistics.MiniGameRankingEntry), () => new MiniGameRankingEntryTypedContext() },

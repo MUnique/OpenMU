@@ -77,7 +77,8 @@ webhook.
 1. Open the [Discord developer portal](https://discord.com/developers/applications),
    create a *New Application* and give it the name of your server.
 2. Under *Bot*, click *Reset Token* and copy the token. Treat it like a password.
-   The bot doesn't need any of the *Privileged Gateway Intents*.
+   The bot doesn't need any of the *Privileged Gateway Intents*, unless the
+   [chat bridge](#writing-from-discord) should read the normal messages.
 3. Under *OAuth2 → URL Generator*, select the scopes `bot` and
    `applications.commands`, and the permissions *View Channels*, *Send Messages*,
    *Embed Links* and *Read Message History*. For [`/openmu setup`](#setting-up-your-discord-server),
@@ -135,8 +136,8 @@ Linked users get the role *Linked Player* of the
 [layout](#setting-up-your-discord-server) on your Discord server, so you can,
 for example, open channels only for players. The bot needs the *Manage Roles*
 permission for it, and its own role has to be above *Linked Player* in the role
-list. When an administrator removes a link in the admin panel, the role isn't
-removed automatically.
+list. When a link is removed, also in the admin panel, the role is removed
+again.
 
 The answers to these commands are only visible to the player who used them.
 The codes are stored as hash in the database, and every code can only be used
@@ -255,6 +256,11 @@ Only Discord users who are linked to an account can write into the game, as
 their selected character, which has to be a member of the guild or alliance. The
 chat ban of the account applies, and a user can send 10 messages per minute
 (`Bot__ChatBridge__MaximumMessagesPerMinute`).
+chat ban of the account applies, and a user can send 10 messages per minute
+(`Bot__ChatBridge__MaximumMessagesPerMinute`). The messages go through the
+plugins of the plugin point *External chat message received*, e.g. a filter,
+which can stop them; the plugins of *Chat message received* only get the
+messages of players in the game.
 
 In the game, the messages appear with the character name and the prefix `@`,
 e.g. `@Hero`, so a Discord user can't pretend to be a character in the game.

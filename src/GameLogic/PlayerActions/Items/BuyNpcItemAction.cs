@@ -57,12 +57,18 @@ public class BuyNpcItemAction
         {
             if (!await this.CheckMoneyAsync(player, storeItem).ConfigureAwait(false))
             {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoney)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
                 return;
             }
 
             targetItem.Durability += storeItem.Durability;
+
+            // A stacked purchase is still a successful purchase: report it with ItemBought (C1 32),
+            // which releases the client from its waiting state. NpcItemBuyFailed (C1 32 FF) must only
+            // be sent on actual failures; the durability update tells the client the new stack size.
+            await player.InvokeViewPlugInAsync<INpcItemBoughtPlugIn>(p => p.NpcItemBoughtAsync(targetItem)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
         }
         else
         {

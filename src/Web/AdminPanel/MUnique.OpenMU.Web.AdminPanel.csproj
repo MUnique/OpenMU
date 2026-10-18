@@ -29,8 +29,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Nito.AsyncEx" />
     <PackageReference Include="QRCoder" />
-    <PackageReference Include="SixLabors.ImageSharp" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +37,7 @@
     <ProjectReference Include="..\..\Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj" />
     <ProjectReference Include="..\..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\..\Telemetry\MUnique.OpenMU.Telemetry.csproj" />
     <ProjectReference Include="..\Map\MUnique.OpenMU.Web.Map.csproj" />
     <ProjectReference Include="..\Shared\MUnique.OpenMU.Web.Shared.csproj" />
   </ItemGroup>

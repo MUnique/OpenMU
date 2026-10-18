@@ -1405,6 +1405,9 @@
   <data name="CaptionChangeKind_Customized" xml:space="preserve">
     <value>已自定义</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>全部选择</value>
+  </data>
   <data name="SelectRecommended" xml:space="preserve">
     <value>选择推荐项</value>
   </data>
@@ -1779,5 +1782,8 @@
   </data>
   <data name="UsedBy" xml:space="preserve">
     <value>使用位置</value>
+  </data>
+  <data name="GameMap" xml:space="preserve">
+    <value>地图</value>
   </data>
 </root>

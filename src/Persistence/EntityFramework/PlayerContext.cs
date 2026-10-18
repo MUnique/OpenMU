@@ -337,6 +337,51 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyDictionary<string, Guid>> GetAccountIdsByCharacterNamesAsync(
+        IReadOnlyCollection<string> characterNames,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var rows = await CreateAccountIdsByCharacterNamesQuery(this.Context.Set<Account>(), characterNames)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+            return rows.ToDictionary(row => row.Name, row => row.AccountId);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        string provider,
+        IReadOnlyCollection<Guid> accountIds,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .Where(link => link.Provider == provider && accountIds.Contains(link.AccountId))
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Creates the query of the identifiers of the accounts of characters.
+    /// </summary>
+    /// <param name="accounts">The accounts.</param>
+    /// <param name="characterNames">The names of the characters.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<CharacterAccountRow> CreateAccountIdsByCharacterNamesQuery(IQueryable<Account> accounts, IReadOnlyCollection<string> characterNames)
+    {
+        return from account in accounts
+               from character in account.RawCharacters
+               where characterNames.Contains(character.Name)
+               select new CharacterAccountRow(character.Name, account.Id);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
         Guid accountId,
         CancellationToken cancellationToken = default)

@@ -1609,6 +1609,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IChaosCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ChaosCastleScoreTableViewPlugin_Description {
+            get {
+                return ResourceManager.GetString("ChaosCastleScoreTableViewPlugin_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle Score Table View.
+        /// </summary>
+        public static string ChaosCastleScoreTableViewPlugin_Name {
+            get {
+                return ResourceManager.GetString("ChaosCastleScoreTableViewPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ChaosCastleStateViewPlugIn_Description {
@@ -2163,6 +2181,96 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CraftingDialogCloseRequestHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CraftingDialogCloseRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the client for the additional success rate of the chaos machine..
+        /// </summary>
+        public static string CrywolfChaosRateBenefitRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfChaosRateBenefitRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Chaos Rate Benefit Request Handler.
+        /// </summary>
+        public static string CrywolfChaosRateBenefitRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfChaosRateBenefitRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of an elf to contract an altar of the crywolf event..
+        /// </summary>
+        public static string CrywolfContractRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfContractRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Contract Request Handler.
+        /// </summary>
+        public static string CrywolfContractRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfContractRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the state of the crywolf event, its altars and its result to the client..
+        /// </summary>
+        public static string CrywolfEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Event View.
+        /// </summary>
+        public static string CrywolfEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the crywolf event..
+        /// </summary>
+        public static string CrywolfGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Group Handler.
+        /// </summary>
+        public static string CrywolfGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the client for the state of the crywolf event..
+        /// </summary>
+        public static string CrywolfInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Info Request Handler.
+        /// </summary>
+        public static string CrywolfInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfInfoRequestHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4759,6 +4867,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Packet handler which sets prices in a currency for an item in the player shop (3F 09)..
+        /// </summary>
+        public static string PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player Shop - Set Price (with currency).
+        /// </summary>
+        public static string PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Packet handler which sets prices for an item in the player shop (3F 01)..
         /// </summary>
         public static string PlayerShopSetItemPricePacketHandlerPlugIn_Description {
@@ -6357,6 +6483,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ShowRageAttackRangePlugIn_Name {
             get {
                 return ResourceManager.GetString("ShowRageAttackRangePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowShopCurrenciesExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Shop Currencies Extended.
+        /// </summary>
+        public static string ShowShopCurrenciesExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesExtendedPlugIn_Name", resourceCulture);
             }
         }
         

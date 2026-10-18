@@ -137,6 +137,9 @@
   <data name="Bind_Title" xml:space="preserve">
     <value>Guild chat</value>
   </data>
+  <data name="Bind_TooManyMembers" xml:space="preserve">
+    <value>Discord allows only {0} members per channel, so not all linked members can see the channel.</value>
+  </data>
   <data name="Bind_Unbound" xml:space="preserve">
     <value>The binding of this channel was removed.</value>
   </data>
@@ -196,6 +199,9 @@
   </data>
   <data name="Chat_Empty" xml:space="preserve">
     <value>The message is empty.</value>
+  </data>
+  <data name="Chat_Filtered" xml:space="preserve">
+    <value>The message isn't allowed in the game.</value>
   </data>
   <data name="Chat_NoCharacter" xml:space="preserve">
     <value>Select a character of your account with /character first.</value>
@@ -469,6 +475,9 @@
   </data>
   <data name="Setup_FailedHint" xml:space="preserve">
     <value>Please check that the bot has the permissions "Manage Channels" and "Manage Roles", and that its role is above the roles which it should manage.</value>
+  </data>
+  <data name="Setup_PublicCategories" xml:space="preserve">
+    <value>**Visible to everyone:** {0}, because their roles couldn't be created.</value>
   </data>
   <data name="Setup_Title" xml:space="preserve">
     <value>Setup of the Discord server</value>

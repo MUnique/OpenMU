@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the increase block effect.
@@ -30,7 +31,7 @@ public class IncreaseBlockEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlock;
-        magicEffect.Name = "Increase Block Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.IncreaseBlockSkillEffect);
         magicEffect.InformObservers = true;
         magicEffect.SubType = 74;
         magicEffect.SendDuration = false;

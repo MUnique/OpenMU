@@ -84,7 +84,7 @@ The **+ Game server** button opens a small form:
 | PvP enabled | Whether players can attack each other on this server |
 | Server configuration | Which `GameServerConfiguration` to use — this defines the maps the server hosts |
 | Client | The `GameClientDefinition` which is expected to connect |
-| Network port | The TCP port of the listener, e.g. 55907 |
+| Network port | The TCP port of the listener, e.g. 45907 |
 
 After saving, the new server appears in the list, stopped, and can be started
 right away.
@@ -128,12 +128,18 @@ forward it in your router or docker compose file. See [Ports](../reference/ports
 
 ## Global messages
 
-The card at the top of the page sends a message to the players — the golden
-message in the centre of the screen.
+The card at the top of the page sends a message to the players.
 
 1. Type the text.
-2. Choose the target: *All game servers*, or one specific started game server.
-3. Click **Send**.
+2. Choose the message type:
+   * *Golden (center)*: the golden message in the centre of the screen, like
+     `/goldnotice`.
+   * *Blue (system)*: a blue system message in the chat.
+   * *Slide (top band)*: a notice which scrolls once through the band at the
+     top of the screen, like `/slidenotice`. Clients older than season 1 don't
+     have this band and get the golden message instead.
+3. Choose the target: *All game servers*, or one specific started game server.
+4. Click **Send**.
 
 Only started game servers can be targeted. If the target stopped in the meantime,
 the panel keeps your text so you can pick another target and retry.

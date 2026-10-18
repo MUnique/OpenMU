@@ -348,6 +348,17 @@ export class World extends THREE.Object3D {
     }
 
     /**
+     * Removes all objects from the map. The server calls it before it sends the whole
+     * population again, e.g. after the browser reconnected.
+     */
+    public clear(): void {
+        this.hideLastLabel();
+        for (const objectId of Object.keys(this.objects)) {
+            this.removeObject(Number(objectId));
+        }
+    }
+
+    /**
      * Gets an object by its id.
      * @param objectId - The id of the object.
      * @returns The game object, or undefined if not found.

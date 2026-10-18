@@ -49,4 +49,25 @@ public class DiscordServerLayoutTest
 
         Assert.That(exception!.Message, Does.Contain("unknown role 'gm'").And.Contain("'X' isn't unique"));
     }
+
+    /// <summary>
+    /// Tests that a layout with two channels of the same name isn't loaded, because the channels are adopted by their name.
+    /// </summary>
+    [Test]
+    public void DuplicateNameIsRejected()
+    {
+        const string json = """
+            {
+              "categories": [
+                { "key": "a", "name": "A", "channels": [ { "key": "x", "name": "chat" } ] },
+                { "key": "b", "name": "B", "channels": [ { "key": "y", "name": "Chat" } ] }
+              ]
+            }
+            """;
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+
+        var exception = Assert.Throws<InvalidDataException>(() => DiscordServerLayout.Load(stream));
+
+        Assert.That(exception!.Message, Does.Contain("The channel name 'Chat' of 'y' isn't unique."));
+    }
 }

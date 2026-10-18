@@ -248,6 +248,330 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The altar ({0}) of the holy wolf can not be contracted yet..
+        /// </summary>
+        public static string CrywolfAltarCooldown {
+            get {
+                return ResourceManager.GetString("CrywolfAltarCooldown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The altar ({0}) of the holy wolf can not be contracted now..
+        /// </summary>
+        public static string CrywolfAltarNotAvailable {
+            get {
+                return ResourceManager.GetString("CrywolfAltarNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass attacks in {0} minute(s)..
+        /// </summary>
+        public static string CrywolfAttackStartsInMinutes {
+            get {
+                return ResourceManager.GetString("CrywolfAttackStartsInMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass attacks in {0} second(s)..
+        /// </summary>
+        public static string CrywolfAttackStartsInSeconds {
+            get {
+                return ResourceManager.GetString("CrywolfAttackStartsInSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass stayed alive until the end of the battle..
+        /// </summary>
+        public static string CrywolfBalgassAlive {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassAlive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass is coming! Protect the statue of the holy wolf!.
+        /// </summary>
+        public static string CrywolfBalgassAppeared {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass has been defeated with the help of the heroes!.
+        /// </summary>
+        public static string CrywolfBalgassDefeated {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass has been killed by {0}!.
+        /// </summary>
+        public static string CrywolfBalgassKilled {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The barrier of the statue of the holy wolf has been created..
+        /// </summary>
+        public static string CrywolfBarrierCreated {
+            get {
+                return ResourceManager.GetString("CrywolfBarrierCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The barrier of the statue of the holy wolf has disappeared..
+        /// </summary>
+        public static string CrywolfBarrierDisappeared {
+            get {
+                return ResourceManager.GetString("CrywolfBarrierDisappeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muses protecting the statue of the holy wolf: {0}, barrier: {1}%..
+        /// </summary>
+        public static string CrywolfBarrierStatus {
+            get {
+                return ResourceManager.GetString("CrywolfBarrierStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle of the Crywolf Fortress takes place on another server..
+        /// </summary>
+        public static string CrywolfBattleOnOtherServer {
+            get {
+                return ResourceManager.GetString("CrywolfBattleOnOtherServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is trying to contract the altar ({1})!.
+        /// </summary>
+        public static string CrywolfContractAttempt {
+            get {
+                return ResourceManager.GetString("CrywolfContractAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract is valid in {0} seconds. Do not move until it is completed..
+        /// </summary>
+        public static string CrywolfContractAttemptInfo {
+            get {
+                return ResourceManager.GetString("CrywolfContractAttemptInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection to the altar ({0}) has been cancelled..
+        /// </summary>
+        public static string CrywolfContractCancelled {
+            get {
+                return ResourceManager.GetString("CrywolfContractCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An altar can not be contracted on a mount..
+        /// </summary>
+        public static string CrywolfContractMounted {
+            get {
+                return ResourceManager.GetString("CrywolfContractMounted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracting an altar requires a Muse of level {0} or higher..
+        /// </summary>
+        public static string CrywolfContractRequirement {
+            get {
+                return ResourceManager.GetString("CrywolfContractRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contracts of the wolf altars begin in {0} minute(s)..
+        /// </summary>
+        public static string CrywolfContractsStartInMinutes {
+            get {
+                return ResourceManager.GetString("CrywolfContractsStartInMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contracts of the wolf altars begin in {0} second(s)..
+        /// </summary>
+        public static string CrywolfContractsStartInSeconds {
+            get {
+                return ResourceManager.GetString("CrywolfContractsStartInSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are connected to the altar ({0}) of the holy wolf..
+        /// </summary>
+        public static string CrywolfContractValid {
+            get {
+                return ResourceManager.GetString("CrywolfContractValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} connected the Muse to the altar ({1}) of the holy wolf..
+        /// </summary>
+        public static string CrywolfContractValidToOthers {
+            get {
+                return ResourceManager.GetString("CrywolfContractValidToOthers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to stand on the altar ({0}) of the holy wolf to contract it..
+        /// </summary>
+        public static string CrywolfContractWrongPosition {
+            get {
+                return ResourceManager.GetString("CrywolfContractWrongPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your current MvP score is {0}..
+        /// </summary>
+        public static string CrywolfCurrentScore {
+            get {
+                return ResourceManager.GetString("CrywolfCurrentScore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Dark Elf leader ({0}) of the army of Balgass has been killed by {1}!.
+        /// </summary>
+        public static string CrywolfDarkElfKilled {
+            get {
+                return ResourceManager.GetString("CrywolfDarkElfKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defending has failed! The statue of the holy wolf has been taken over by Balgass..
+        /// </summary>
+        public static string CrywolfDefenseFailed {
+            get {
+                return ResourceManager.GetString("CrywolfDefenseFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defending has been successful! The statue of the holy wolf has been protected..
+        /// </summary>
+        public static string CrywolfDefenseSucceeded {
+            get {
+                return ResourceManager.GetString("CrywolfDefenseSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without the protection of the Muses, the statue of the holy wolf will be stolen..
+        /// </summary>
+        public static string CrywolfNoAltarContracted {
+            get {
+                return ResourceManager.GetString("CrywolfNoAltarContracted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The crywolf event is not active..
+        /// </summary>
+        public static string CrywolfNotActive {
+            get {
+                return ResourceManager.GetString("CrywolfNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass has joined forces with Kundun&apos;s army and is preparing to attack the Crywolf Fortress..
+        /// </summary>
+        public static string CrywolfNotify1 {
+            get {
+                return ResourceManager.GetString("CrywolfNotify1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass is ready to attack the Crywolf Fortress..
+        /// </summary>
+        public static string CrywolfNotify2 {
+            get {
+                return ResourceManager.GetString("CrywolfNotify2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The crywolf event proceeds from the state {0}..
+        /// </summary>
+        public static string CrywolfProceeds {
+            get {
+                return ResourceManager.GetString("CrywolfProceeds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your MvP rank is {0}. You received {1} experience points..
+        /// </summary>
+        public static string CrywolfRankResult {
+            get {
+                return ResourceManager.GetString("CrywolfRankResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass is marching towards the Crywolf Fortress..
+        /// </summary>
+        public static string CrywolfReady {
+            get {
+                return ResourceManager.GetString("CrywolfReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The crywolf event runs on the game server {0}..
+        /// </summary>
+        public static string CrywolfRunsOnOtherServer {
+            get {
+                return ResourceManager.GetString("CrywolfRunsOnOtherServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass attacks the Crywolf Fortress!.
+        /// </summary>
+        public static string CrywolfStart {
+            get {
+                return ResourceManager.GetString("CrywolfStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass starts attacking the statue of the holy wolf!.
+        /// </summary>
+        public static string CrywolfStatueAttack {
+            get {
+                return ResourceManager.GetString("CrywolfStatueAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your code to link Discord is {0}. Enter /link {0} in Discord within {1} minutes..
         /// </summary>
         public static string DiscordLinkCode {
@@ -1310,6 +1634,150 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close your store to change its prices..
+        /// </summary>
+        public static string PlayerShopCloseToChangePrices {
+            get {
+                return ResourceManager.GetString("PlayerShopCloseToChangePrices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You paid {0} {1}..
+        /// </summary>
+        public static string PlayerShopCoinsPaid {
+            get {
+                return ResourceManager.GetString("PlayerShopCoinsPaid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You received {0} {1} for an item of your store..
+        /// </summary>
+        public static string PlayerShopCoinsReceived {
+            get {
+                return ResourceManager.GetString("PlayerShopCoinsReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prices in {0} are not allowed in personal stores..
+        /// </summary>
+        public static string PlayerShopCurrencyNotAllowed {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrencyNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your store is empty..
+        /// </summary>
+        public static string PlayerShopIsEmpty {
+            get {
+                return ResourceManager.GetString("PlayerShopIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your items can&apos;t pay exactly {0} {1}. Bundles are not split, and there is no change..
+        /// </summary>
+        public static string PlayerShopItemPriceNotPayableExactly {
+            get {
+                return ResourceManager.GetString("PlayerShopItemPriceNotPayableExactly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need {0} {1} to buy this item..
+        /// </summary>
+        public static string PlayerShopNotEnoughCurrency {
+            get {
+                return ResourceManager.GetString("PlayerShopNotEnoughCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage: {0} [position 1-32] [amount] [currency]. Without arguments, the prices of your store are listed..
+        /// </summary>
+        public static string PlayerShopPriceCommandUsage {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceCommandUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no item at position {0} of your store..
+        /// </summary>
+        public static string PlayerShopPriceItemNotFound {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceItemNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your character level is too low to sell items in a personal store..
+        /// </summary>
+        public static string PlayerShopPriceLevelTooLow {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceLevelTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #{0} {1} - {2} {3}.
+        /// </summary>
+        public static string PlayerShopPriceListEntry {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceListEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #{0} {1} - no price.
+        /// </summary>
+        public static string PlayerShopPriceListEntryWithoutPrice {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceListEntryWithoutPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of the item at position {0} has been removed..
+        /// </summary>
+        public static string PlayerShopPriceRemoved {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of the item at position {0} is now {1} {2}..
+        /// </summary>
+        public static string PlayerShopPriceSet {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price can be at most {0} {1}..
+        /// </summary>
+        public static string PlayerShopPriceTooHigh {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceTooHigh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown currency &apos;{0}&apos;. Available: {1}..
+        /// </summary>
+        public static string PlayerShopUnknownCurrency {
+            get {
+                return ResourceManager.GetString("PlayerShopUnknownCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
         /// </summary>
         public static string RaklionBattleFailed {
@@ -1391,6 +1859,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Goblin Points.
+        /// </summary>
+        public static string ShopCurrencyGoblinPoints {
+            get {
+                return ResourceManager.GetString("ShopCurrencyGoblinPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WCoin (C).
+        /// </summary>
+        public static string ShopCurrencyWCoinC {
+            get {
+                return ResourceManager.GetString("ShopCurrencyWCoinC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WCoin (P).
+        /// </summary>
+        public static string ShopCurrencyWCoinP {
+            get {
+                return ResourceManager.GetString("ShopCurrencyWCoinP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen.
+        /// </summary>
+        public static string ShopCurrencyZen {
+            get {
+                return ResourceManager.GetString("ShopCurrencyZen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need to be inside a mini game event to skip the waiting time..
         /// </summary>
         public static string SkipWaitNotInMiniGame {
@@ -1441,6 +1945,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MiniGameForceStartInitiatedFormat {
             get {
                 return ResourceManager.GetString("MiniGameForceStartInitiatedFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} event is not available on this game server..
+        /// </summary>
+        public static string MiniGameForceStartUnavailableFormat {
+            get {
+                return ResourceManager.GetString("MiniGameForceStartUnavailableFormat", resourceCulture);
             }
         }
         
@@ -2399,6 +2912,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to You can not start offline leveling during an event..
+        /// </summary>
+        public static string OfflineLevelingInMiniGame {
+            get {
+                return ResourceManager.GetString("OfflineLevelingInMiniGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to You must be on a map to start offline leveling..
         /// </summary>
         public static string OfflineLevelingNotOnMap {
@@ -2512,6 +3034,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CharacterNotStrongEnoughMessage {
             get {
                 return ResourceManager.GetString("CharacterNotStrongEnoughMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You need to be level {0} to open this box..
+        /// </summary>
+        public static string ItemBoxRequiresLevel {
+            get {
+                return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
             }
         }
     }

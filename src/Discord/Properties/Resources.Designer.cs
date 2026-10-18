@@ -178,6 +178,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discord allows only {0} members per channel, so not all linked members can see the channel..
+        /// </summary>
+        public static string Bind_TooManyMembers {
+            get {
+                return ResourceManager.GetString("Bind_TooManyMembers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The binding of this channel was removed..
         /// </summary>
         public static string Bind_Unbound {
@@ -354,6 +363,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Chat_Empty {
             get {
                 return ResourceManager.GetString("Chat_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message isn't allowed in the game..
+        /// </summary>
+        public static string Chat_Filtered {
+            get {
+                return ResourceManager.GetString("Chat_Filtered", resourceCulture);
             }
         }
         
@@ -1173,6 +1191,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         public static string Setup_FailedHint {
             get {
                 return ResourceManager.GetString("Setup_FailedHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **Visible to everyone:** {0}, because their roles couldn't be created..
+        /// </summary>
+        public static string Setup_PublicCategories {
+            get {
+                return ResourceManager.GetString("Setup_PublicCategories", resourceCulture);
             }
         }
         

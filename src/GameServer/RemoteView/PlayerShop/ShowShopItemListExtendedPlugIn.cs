@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 using MUnique.OpenMU.Network;
@@ -44,7 +46,9 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
 
         var itemSerializer = this._player.ItemSerializer;
         var playerId = requestedPlayer.GetId(this._player);
-        var items = requestedPlayer.ShopStorage.Items.ToList();
+
+        // Items with prices in currencies which aren't enabled (anymore) can't be bought, so they're hidden.
+        var items = requestedPlayer.ShopStorage.Items.Where(item => item.GetStorePrice() is not { } price || ShopPrices.IsAllowed(this._player.GameContext, price)).ToList();
         int Write()
         {
             var size = PlayerShopItemListExtendedRef.GetRequiredSize(items.Count, PlayerShopItemExtendedRef.GetRequiredSize(itemSerializer.NeededSpace));
@@ -67,9 +71,7 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
             {
                 var itemBlock = new PlayerShopItemExtendedRef(span[actualSize..]);
                 itemBlock.ItemSlot = item.ItemSlot;
-                itemBlock.MoneyPrice = (uint)(item.StorePrice ?? 0);
-
-                // todo: when we can define a price in items, set PriceItemType and RequiredItemAmount
+                SetPrice(ref itemBlock, item);
                 var itemSize = itemSerializer.SerializeItem(itemBlock.ItemData, item);
                 actualSize += PlayerShopItemExtendedRef.GetRequiredSize(itemSize);
                 i++;
@@ -80,5 +82,13 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private static void SetPrice(ref PlayerShopItemExtendedRef itemBlock, Item item)
+    {
+        var (moneyPrice, priceItemType, requiredItemAmount) = PlayerShopPriceEncoding.Encode(item.GetStorePrice() ?? new ShopPrice(0));
+        itemBlock.MoneyPrice = moneyPrice;
+        itemBlock.PriceItemType = priceItemType;
+        itemBlock.RequiredItemAmount = requiredItemAmount;
     }
 }

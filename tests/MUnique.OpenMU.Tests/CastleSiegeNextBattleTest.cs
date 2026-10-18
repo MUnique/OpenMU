@@ -18,7 +18,7 @@ public class CastleSiegeNextBattleTest
         new CastleSiegeStateScheduleEntry { State = CastleSiegeState.RegisterGuild, DayOfWeek = DayOfWeek.Monday, Hour = 0 },
         new CastleSiegeStateScheduleEntry { State = CastleSiegeState.Start, DayOfWeek = DayOfWeek.Saturday, Hour = 20 },
         new CastleSiegeStateScheduleEntry { State = CastleSiegeState.End, DayOfWeek = DayOfWeek.Saturday, Hour = 22 },
-    });
+    }, TimeZoneInfo.Utc);
 
     /// <summary>
     /// Tests that the battle of this week is the next one before it starts.
@@ -42,6 +42,27 @@ public class CastleSiegeNextBattleTest
         var period = Schedule.GetNextPeriod(CastleSiegeState.Start, new DateTime(2026, 10, 10, 21, 0, 0, DateTimeKind.Utc));
 
         Assert.That(period?.StartUtc, Is.EqualTo(new DateTime(2026, 10, 17, 20, 0, 0, DateTimeKind.Utc)));
+    }
+
+    /// <summary>
+    /// Tests that the schedule is in the server time zone.
+    /// </summary>
+    [Test]
+    public void BattleIsInServerTimeZone()
+    {
+        var berlin = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
+        var schedule = new CastleSiegeSchedule(
+            new[]
+            {
+                new CastleSiegeStateScheduleEntry { State = CastleSiegeState.RegisterGuild, DayOfWeek = DayOfWeek.Monday, Hour = 0 },
+                new CastleSiegeStateScheduleEntry { State = CastleSiegeState.Start, DayOfWeek = DayOfWeek.Saturday, Hour = 20 },
+                new CastleSiegeStateScheduleEntry { State = CastleSiegeState.End, DayOfWeek = DayOfWeek.Saturday, Hour = 22 },
+            },
+            berlin);
+
+        // Summer time (UTC+2) on 2026-10-10, winter time (UTC+1) on 2026-10-31.
+        Assert.That(schedule.GetNextPeriod(CastleSiegeState.Start, new DateTime(2026, 10, 7, 12, 0, 0, DateTimeKind.Utc))?.StartUtc, Is.EqualTo(new DateTime(2026, 10, 10, 18, 0, 0, DateTimeKind.Utc)));
+        Assert.That(schedule.GetNextPeriod(CastleSiegeState.Start, new DateTime(2026, 10, 28, 12, 0, 0, DateTimeKind.Utc))?.StartUtc, Is.EqualTo(new DateTime(2026, 10, 31, 19, 0, 0, DateTimeKind.Utc)));
     }
 
     /// <summary>

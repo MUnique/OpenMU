@@ -56,11 +56,32 @@ skills, the vault, and the account's settings.
 This is the [generic edit page](game-configuration.md#the-generic-edit-pages),
 i.e. a direct view of the data model. It is powerful and it is easy to create
 inconsistent data with it.
-
-In particular, **creating characters here is not supported** — character creation
-involves initialization logic which the web interface does not run yet. Create
-characters in the game client.
 :::
+
+### Creating a character
+
+**Create** below the characters of an account asks only for the **name** and the
+**character class**. The character is then set up with the same data as one which
+a player creates in the game:
+
+* it gets the stat attributes of its class (level, strength, agility, …) with
+  their start values,
+* it starts on the home map of its class, at a random spawn position,
+* it gets an inventory and the default key configuration,
+* it takes the first free character slot of the account,
+* the active *Character created* [plugins](plugins.md) run, which give it e.g.
+  the initial items and skills of its class, like a weapon or the arrows of an
+  elf. These are the same plugins with the same configuration as in the game,
+  so deactivating one on the plugins page affects both.
+
+The name has to match the **character name regex** of the
+[game configuration](game-configuration.md). The admin panel can create
+characters of every class, including the ones which can't be created in the game
+(e.g. a second class or a locked class). An account which already has the
+maximum number of characters can't get another one.
+
+Everything else, e.g. the level, the stats or more items, can be edited on the
+edit page of the character afterwards.
 
 ### Editing skills and the master skill tree
 

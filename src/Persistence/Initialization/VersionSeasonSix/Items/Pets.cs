@@ -13,7 +13,6 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -210,7 +209,7 @@ public class Pets : InitializerBase
         horseDrop.SetGuid((short)NumberConversionExtensions.MakeWord(13, 31), 0, 1);
         horseDrop.ItemLevel = 0;
         horseDrop.Chance = 0.001;
-        horseDrop.Description = "Dark Horse Spirit";
+        horseDrop.Description = LocalizedString.FromResource(() => DropGroupDescriptions.DarkHorseSpirit);
         horseDrop.PossibleItems.Add(spirit);
         horseDrop.MinimumMonsterLevel = 102;
         this.GameConfiguration.DropItemGroups.Add(horseDrop);
@@ -220,7 +219,7 @@ public class Pets : InitializerBase
         ravenDrop.SetGuid((short)NumberConversionExtensions.MakeWord(13, 31), 1, 1);
         ravenDrop.ItemLevel = 1;
         ravenDrop.Chance = 0.001;
-        ravenDrop.Description = "Dark Raven Spirit";
+        ravenDrop.Description = LocalizedString.FromResource(() => DropGroupDescriptions.DarkRavenSpirit);
         ravenDrop.PossibleItems.Add(spirit);
         ravenDrop.MinimumMonsterLevel = 96;
         this.GameConfiguration.DropItemGroups.Add(ravenDrop);

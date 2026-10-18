@@ -68,6 +68,32 @@ internal partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifia
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="StorePriceItemDefinition"/>.
+    /// </summary>
+    public Guid? StorePriceItemDefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="StorePriceItemDefinition" />.
+    /// </summary>
+    [ForeignKey(nameof(StorePriceItemDefinitionId))]
+    public ItemDefinition RawStorePriceItemDefinition
+    {
+        get => base.StorePriceItemDefinition as ItemDefinition;
+        set => base.StorePriceItemDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition StorePriceItemDefinition
+    {
+        get => base.StorePriceItemDefinition;set
+        {
+            base.StorePriceItemDefinition = value;
+            this.StorePriceItemDefinitionId = this.RawStorePriceItemDefinition?.Id;
+        }
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Entities.Item Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

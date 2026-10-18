@@ -111,6 +111,12 @@ public sealed class GuildChatBindingStore
     /// <returns>The number of removed bindings.</returns>
     public async ValueTask<int> RemoveAsync(ulong? channelId, ulong? serverId)
     {
+        if (channelId is null && serverId is null)
+        {
+            // That would remove all bindings.
+            throw new ArgumentException("A channel or a Discord server is required.", nameof(channelId));
+        }
+
         var channelText = channelId is { } c ? ToText(c) : null;
         var serverText = serverId is { } s ? ToText(s) : null;
         if (!this._bindings.Any(Matches))
