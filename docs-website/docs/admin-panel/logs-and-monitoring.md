@@ -55,6 +55,10 @@ file. The page shows the path of the file it edits, and offers two tabs:
 | **Log Levels** | The default minimum level, and a table of levels per source. A source is the name of a logger — usually the full name of a class, like `MUnique.OpenMU.ConnectServer.ClientListener` — or a namespace like `MUnique.OpenMU.GameLogic`, which covers all loggers in it. The most specific source wins. |
 | **Advanced (JSON)** | The whole `Serilog` section of the file, for everything the table doesn't cover, like sinks, output templates or filters. Invalid JSON is rejected. |
 
+![Log levels of the logging configuration](/img/admin-panel/logging-configuration-levels.png)
+
+![Advanced JSON editor of the logging configuration](/img/admin-panel/logging-configuration-json.png)
+
 **Save** writes the file; the rest of `appsettings.json` stays as it is (comments
 in it are lost, though). The server watches the file, so a changed level of the
 default or of an existing source applies at once — no restart needed. A newly
