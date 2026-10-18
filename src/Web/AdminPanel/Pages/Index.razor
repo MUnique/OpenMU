@@ -58,7 +58,7 @@
         <OnlinePlayersChart />
 
         <section class="card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h2 class="h6 mb-0">@Resources.Servers</h2>
                 <a href="servers" class="small">@Resources.DashboardManageServers</a>
             </div>
@@ -66,7 +66,7 @@
                 @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
                 {
                     <li class="list-group-item">
-                        <div class="d-flex justify-content-between align-items-center gap-2">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                             <div class="text-truncate">
                                 <div class="fw-semibold text-truncate">@server.Description</div>
                                 <div class="small text-body-secondary">@server.Type.GetEnumCaption()</div>
