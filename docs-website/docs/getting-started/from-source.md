@@ -83,23 +83,10 @@ are shown.
       -p 5432:5432 postgres
     ```
 
-4. Build the solution, in your IDE or from the repository root. On the first
-   build of a fresh clone, build the persistence source generator first:
+4. Build the solution, in your IDE or from the repository root with:
 
    ```bash
-   dotnet build src/Persistence/SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj
    dotnet build src/MUnique.OpenMU.sln
-   ```
-
-   The persistence projects run this generator before they build
-   (`dotnet run ... --no-build`), so it has to be built already. Otherwise
-   the build fails with `error MSB3073: The command "dotnet run --project
-   ...MUnique.OpenMU.Persistence.SourceGenerator.csproj ..." exited with
-   code 1`. If you don't change the data model, you can instead skip the
-   generator, because the generated code is part of the repository:
-
-   ```bash
-   dotnet build src/MUnique.OpenMU.sln -p:ci=true
    ```
 
 5. Start `MUnique.OpenMU.Startup`. The environment variables from step 3 must
@@ -162,12 +149,8 @@ quick test, but player progress is **not saved**.
 ## Building from the command line
 
 ```bash
-dotnet build src/Persistence/SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj --configuration Release
 dotnet publish src/Startup/MUnique.OpenMU.Startup.csproj --configuration Release
 ```
-
-As in step 4, the first command builds the persistence source generator. You
-can skip it by adding `-p:ci=true` to the publish command.
 
 The tests are run with:
 
