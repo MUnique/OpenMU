@@ -80,6 +80,8 @@ Select the map, and in the second drop-down the terrain to edit: the **default
 terrain**, or one of the **terrain variants** which replace it in certain states
 of the map, e.g. the peace, occupied and war terrains of the Crywolf fortress.
 
+![The terrain editor showing the war terrain of the Crywolf fortress](/img/admin-panel/terrain-editor.png)
+
 The tools:
 
 | Tool | Edits |
@@ -91,6 +93,8 @@ The tools:
 The **mode** decides what happens to the selected **attributes**: *add* them to the
 tiles, *remove* them, or *replace* all attributes of the tiles with them. Replace
 without any selected attribute makes the tiles plain walkable ground.
+
+![A zoomed terrain with the tile grid, while drawing a rectangle](/img/admin-panel/terrain-editor-zoomed.png)
 
 Use the mouse wheel or the zoom buttons to zoom, and drag with the right mouse
 button to pan. Below the terrain you see the coordinates and the attributes of
