@@ -75,6 +75,11 @@ The tests are in the `tests/` folder, one project per area
 dotnet test
 ```
 
+`dotnet test` builds before it runs the tests. If you run several test projects
+or filters without changing code, build once with
+`dotnet build src/MUnique.OpenMU.sln` and add `--no-build` to the later runs,
+keeping the same `-c` configuration.
+
 See also
 [Packet structure tests](https://github.com/MUnique/OpenMU/blob/master/docs/PacketStructureTests.md).
 

@@ -62,6 +62,17 @@ dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
   -c Release -p:ci=true
 ```
 
+To run them again without code changes (for example with a `--filter`), build
+once and use `--no-build` with the same options, so the project isn't rebuilt
+each time:
+
+```sh
+dotnet build tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
+  -c Release -p:ci=true
+dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
+  -c Release -p:ci=true --no-build
+```
+
 Localization tests cover culture selection, enum round trips, model captions and
 summaries, plugin resource metadata, English fallback and translated
 placeholders,
