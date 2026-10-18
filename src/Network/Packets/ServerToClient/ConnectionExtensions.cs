@@ -4136,6 +4136,44 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="SlideNotice" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="loopDelay">The delay between the loops, in seconds.</param>
+    /// <param name="color">The color of the text, as 0xAABBGGRR.</param>
+    /// <param name="speed">The scroll speed, multiplied by 10. 0 means the default speed.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="loopCount">How often the message is shown. The client ignores messages with more than 30 loops.</param>
+    /// <param name="type">The band and queueing of the message. 10 to 12 use the help band, 13 to 15 the notice band. Within a band, the first value drops the message when it could not be shown within a minute, the second one queues it, and the third one puts it in front of the queue, ignoring the loop delay.</param>
+    /// <remarks>
+    /// Is sent by the server when: A game master or the server sends a notice which should scroll across the top of the screen.
+    /// Causes reaction on client side: The client scrolls the message through the band at the top of the screen, as often as the loop count says.
+    /// </remarks>
+    public static async ValueTask SendSlideNoticeAsync(this IConnection? connection, ushort @loopDelay, uint @color, byte @speed, string @message, byte @loopCount = 1, byte @type = 14)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SlideNoticeRef.GetRequiredSize(message);
+            var packet = new SlideNoticeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.LoopCount = @loopCount;
+            packet.LoopDelay = @loopDelay;
+            packet.Color = @color;
+            packet.Speed = @speed;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GuildJoinRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
