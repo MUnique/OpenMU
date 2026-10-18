@@ -86,6 +86,7 @@ public static class WebApplicationExtensions
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();
         services.AddSingleton<ConfigurationSearchIndexCache>();
         services.AddSingleton<SetupService>();
+        services.AddSingleton(new LoggingConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")));
         services.AddScoped<DataUpdateService>();
         services.AddScoped<ConfigurationCaptionService>();
         services.AddScoped<AccountService>();
