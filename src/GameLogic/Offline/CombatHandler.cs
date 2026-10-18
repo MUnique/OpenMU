@@ -658,7 +658,7 @@ public sealed class CombatHandler
                 includeThis: true).ConfigureAwait(false);
         }
 
-        var rotationByte = (byte)(this._player.Position.GetAngleDegreeTo(target.Position) / 360.0 * 255.0);
+        var rotationByte = AreaSkillTargetSelector.ConvertAngleToRotation((float)this._player.Position.GetAngleDegreeTo(target.Position));
         await this._player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(
             p => p.ShowAreaSkillAnimationAsync(this._player, skill, target.Position, rotationByte),
             includeThis: true).ConfigureAwait(false);

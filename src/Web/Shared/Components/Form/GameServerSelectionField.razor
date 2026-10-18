@@ -1,0 +1,105 @@
+@* <copyright file="GameServerSelectionField.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.Shared.Properties
+@inherits NotifyableInputBase<IList<byte>>
+
+<div class="mb-3">
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <div class="form-text mb-2">@Resources.GameServerSelection_AllServersHint</div>
+    @if (this._isLoading)
+    {
+        <div><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>@Resources.Loading</div>
+    }
+    else if (this._loadFailed)
+    {
+        <div class="alert alert-danger">@Resources.GameServerSelection_LoadFailed</div>
+    }
+    else if (this._servers is { Count: 0 })
+    {
+        <div class="alert alert-warning">@Resources.GameServerSelection_NoServers</div>
+    }
+    else
+    {
+        <div class="d-flex gap-2 mb-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="this.SelectAll">@Resources.GameServerSelection_SelectAll</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="this.ClearSelection">@Resources.GameServerSelection_Clear</button>
+        </div>
+        @foreach (var server in this._servers)
+        {
+            var checkboxId = this.GetCheckboxId(server.ServerID);
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="@checkboxId"
+                       checked="@this.IsSelected(server.ServerID)"
+                       @onchange="(ChangeEventArgs e) => this.OnToggled(server.ServerID, e.Value is true)" />
+                <label class="form-check-label" for="@checkboxId">
+                    @server.ToString()
+                    <small class="text-muted">(@(server.PvpEnabled ? Resources.GameServerSelection_PvpBadge : Resources.GameServerSelection_PveBadge))</small>
+                </label>
+            </div>
+        }
+        @foreach (var serverId in this.GetStaleServerIds())
+        {
+            var checkboxId = this.GetCheckboxId(serverId);
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="@checkboxId"
+                       checked="@this.IsSelected(serverId)"
+                       @onchange="(ChangeEventArgs e) => this.OnToggled(serverId, e.Value is true)" />
+                <label class="form-check-label" for="@checkboxId">
+                    @string.Format(Resources.GameServerSelection_UnknownServer, serverId)
+                </label>
+            </div>
+        }
+    }
+    <ValidationMessage For="@this.ValueExpression" />
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out IList<byte> result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = null;
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            foreach (var byteValue in value.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (byte.TryParse(byteValue, out var parsedByte))
+                {
+                    (result ??= new List<byte>()).Add(parsedByte);
+                }
+                else
+                {
+                    result = null;
+                    validationErrorMessage = Resources.IntegerListFormatError;
+                    return false;
+                }
+            }
+        }
+
+        result ??= new List<byte>();
+        validationErrorMessage = null;
+        return true;
+    }
+
+    /// <inheritdoc />
+    protected override string FormatValueAsString(IList<byte>? value)
+    {
+        return value is null ? string.Empty : string.Join(';', value);
+    }
+}

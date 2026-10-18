@@ -64,6 +64,7 @@ const sidebars = {
         'server-features/gens',
         'server-features/cash-shop',
         'server-features/discord',
+        'server-features/player-shop-currencies',
       ],
     },
     {

@@ -143,6 +143,7 @@ public class CastleSiegeGuildSelectionTests
         var gameContext = new Mock<IGameContext>();
         gameContext.SetupGet(context => context.Configuration).Returns(fixture.GameConfiguration);
         gameContext.SetupGet(context => context.PersistenceContextProvider).Returns(fixture.PersistenceContextProvider);
+        gameContext.SetupGet(context => context.ServerTimeZone).Returns(TimeZoneInfo.Utc);
         gameContext.Setup(context => context.GetPlayersAsync()).ReturnsAsync(Array.Empty<Player>());
         var context = new CastleSiegeContext(gameContext.Object, fixture.CastleSiegeConfiguration);
         await context.InitializeAsync(fixture.InitializationTimeUtc).ConfigureAwait(false);

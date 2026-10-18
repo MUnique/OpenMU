@@ -56,7 +56,7 @@ public static class DiscordServiceCollectionExtensions
         {
             services.AddSingleton<IGameEventListener>(provider => new DiscordNotifier(
                 settings,
-                new HttpClient(),
+                DiscordHttpClient.Create(),
                 settings.Bot.IsEnabled ? provider.GetRequiredService<DiscordBot>() : null,
                 serverId => provider.GetRequiredService<IServerProvider>().Servers.OfType<IGameServer>().FirstOrDefault(server => server.Id == serverId)?.Description,
                 guildId => provider.GetRequiredService<IGuildServer>().GetPersistentGuildNameAsync(guildId),

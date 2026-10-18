@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the critical damage increase mastery effect.
@@ -29,7 +30,7 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncreaseMastery;
-        magicEffect.Name = "Critical Damage Increase Mastery Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.CriticalDamageIncreaseMasterySkillEffect);
 
         this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.CriticalDamageIncrease);
 

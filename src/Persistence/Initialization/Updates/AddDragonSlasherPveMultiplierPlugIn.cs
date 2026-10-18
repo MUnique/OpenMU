@@ -12,7 +12,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update adds the <see cref="Stats.SkillFinalMultiplierPve"/> attribute and lets Dragon Slasher
+/// This update adds the <see cref="Stats.SkillFinalMultiplierPvm"/> attribute and lets Dragon Slasher
 /// deal three times its damage to monsters through it. Before, this was hard-coded in the game logic.
 /// </summary>
 [PlugIn]
@@ -53,20 +53,20 @@ public class AddDragonSlasherPveMultiplierPlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        if (gameConfiguration.Attributes.All(a => a.Id != Stats.SkillFinalMultiplierPve.Id))
+        if (gameConfiguration.Attributes.All(a => a.Id != Stats.SkillFinalMultiplierPvm.Id))
         {
-            var attribute = context.CreateNew<AttributeDefinition>(Stats.SkillFinalMultiplierPve.Id, Stats.SkillFinalMultiplierPve.Designation, Stats.SkillFinalMultiplierPve.Description);
+            var attribute = context.CreateNew<AttributeDefinition>(Stats.SkillFinalMultiplierPvm.Id, Stats.SkillFinalMultiplierPvm.Designation, Stats.SkillFinalMultiplierPvm.Description);
             gameConfiguration.Attributes.Add(attribute);
         }
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.DragonSlasher) is not { } dragonSlasher
-            || dragonSlasher.AttributeRelationships.Any(r => r.TargetAttribute == Stats.SkillFinalMultiplierPve))
+            || dragonSlasher.AttributeRelationships.Any(r => r.TargetAttribute == Stats.SkillFinalMultiplierPvm))
         {
             return ValueTask.CompletedTask;
         }
 
         dragonSlasher.AttributeRelationships.Add(
-            CharacterClassHelper.CreateAttributeRelationship(context, gameConfiguration, Stats.SkillFinalMultiplierPve, PveMultiplier, Stats.SkillMultiplier));
+            CharacterClassHelper.CreateAttributeRelationship(context, gameConfiguration, Stats.SkillFinalMultiplierPvm, PveMultiplier, Stats.SkillMultiplier));
         return ValueTask.CompletedTask;
     }
 }

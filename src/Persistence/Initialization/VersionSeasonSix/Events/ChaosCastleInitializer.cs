@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -83,8 +84,8 @@ internal class ChaosCastleInitializer : InitializerBase
         var chaosCastle = this.Context.CreateNew<MiniGameDefinition>();
         chaosCastle.SetGuid((short)MiniGameType.ChaosCastle, level);
         this.GameConfiguration.MiniGameDefinitions.Add(chaosCastle);
-        chaosCastle.Name = $"Chaos Castle {level}";
-        chaosCastle.Description = $"Event definition for chaos castle event, level {level}.";
+        chaosCastle.Name = MiniGameNames.ResourceManager.GetLocalizedString($"ChaosCastle{level}");
+        chaosCastle.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForChaosCastleEventLevel{level}");
         chaosCastle.EnterDuration = TimeSpan.FromMinutes(5);
         chaosCastle.GameDuration = TimeSpan.FromMinutes(10);
         chaosCastle.ExitDuration = TimeSpan.FromMinutes(1);
@@ -131,7 +132,7 @@ internal class ChaosCastleInitializer : InitializerBase
             var stageChangeEvent = this.Context.CreateNew<MiniGameChangeEvent>();
             chaosCastle.ChangeEvents.Add(stageChangeEvent);
             stageChangeEvent.Index = index;
-            stageChangeEvent.Description = "Stage Terrain Change Event";
+            stageChangeEvent.Description = LocalizedString.FromResource(() => MiniGameEventTexts.StageTerrainChangeEvent);
             stageChangeEvent.NumberOfKills = kills;
             stageChangeEvent.Target = KillTarget.AnyObject;
         }
@@ -165,7 +166,7 @@ internal class ChaosCastleInitializer : InitializerBase
     {
         var jewelDropItemGroup = this.Context.CreateNew<DropItemGroup>();
         jewelDropItemGroup.SetGuid(chaosCastle.Entrance!.Map!.Number, 1, level);
-        jewelDropItemGroup.Description = $"Rewarded jewels for Chaos Castle {level}";
+        jewelDropItemGroup.Description = DropGroupDescriptions.ResourceManager.GetLocalizedString($"RewardedJewelsForChaosCastle{level}");
         jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
         jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
         jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
@@ -186,7 +187,7 @@ internal class ChaosCastleInitializer : InitializerBase
         {
             var ancientDropItemGroup = this.Context.CreateNew<DropItemGroup>();
             ancientDropItemGroup.SetGuid(chaosCastle.Entrance!.Map!.Number, 2, level);
-            ancientDropItemGroup.Description = $"Rewarded ancient items for Chaos Castle {level}";
+            ancientDropItemGroup.Description = DropGroupDescriptions.ResourceManager.GetLocalizedString($"RewardedAncientItemsForChaosCastle{level}");
             ancientDropItemGroup.ItemType = SpecialItemType.Ancient;
             ancientDropItemGroup.Chance = 0.1 * level;
 

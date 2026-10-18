@@ -2037,4 +2037,16 @@
   <data name="LittleWarriorsCloak" xml:space="preserve">
     <value>Kleiner Kriegerumhang</value>
   </data>
+  <data name="ShiningJewelleryCase" xml:space="preserve">
+    <value>Glänzende Schmuckschatulle</value>
+  </data>
+  <data name="ElegantJewelleryCase" xml:space="preserve">
+    <value>Elegante Schmuckschatulle</value>
+  </data>
+  <data name="SteelJewelleryCase" xml:space="preserve">
+    <value>Stählerne Schmuckschatulle</value>
+  </data>
+  <data name="OldJewelleryCase" xml:space="preserve">
+    <value>Alte Schmuckschatulle</value>
+  </data>
 </root>

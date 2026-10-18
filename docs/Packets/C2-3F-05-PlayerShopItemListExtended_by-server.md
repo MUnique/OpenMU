@@ -30,9 +30,9 @@ Data of an item in a player shop, which allows for dynamic item sizes and trades
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 4 | IntegerLittleEndian |  | MoneyPrice |
-| 4 | 2 | ShortLittleEndian |  | PriceItemType; Contains the item group in the highest 4 bits, and the item number in the remaining ones. |
-| 6 | 2 | ShortLittleEndian |  | RequiredItemAmount |
+| 0 | 4 | IntegerLittleEndian |  | MoneyPrice; The price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items. |
+| 4 | 2 | ShortLittleEndian |  | PriceItemType; When RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen. |
+| 6 | 2 | ShortLittleEndian |  | RequiredItemAmount; The number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items. |
 | 8 | 1 | Byte |  | ItemSlot |
 | 9 |  | Binary |  | ItemData |
 

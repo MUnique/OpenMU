@@ -67,7 +67,7 @@ public abstract class DiscordMessageQueue : IAsyncDisposable
             }
         }
 
-        return this._queue.Writer.TryWrite(embed);
+        return this._queue.Writer.TryWrite(embed.Limit());
     }
 
     /// <inheritdoc />
@@ -105,14 +105,25 @@ public abstract class DiscordMessageQueue : IAsyncDisposable
     {
         var reader = this._queue.Reader;
         var cancellationToken = this._cancellation.Token;
+        DiscordEmbed? pending = null;
         try
         {
-            while (await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+            while (pending is not null || await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
             {
+                // Discord limits the number of embeds and the length of their texts per message.
                 var batch = new List<DiscordEmbed>(MaximumEmbedsPerMessage);
-                while (batch.Count < MaximumEmbedsPerMessage && reader.TryRead(out var embed))
+                var totalLength = 0;
+                while (batch.Count < MaximumEmbedsPerMessage && (pending ?? (reader.TryRead(out var next) ? next : null)) is { } embed)
                 {
+                    if (batch.Count > 0 && totalLength + embed.TextLength > DiscordEmbed.MaximumTotalLength)
+                    {
+                        pending = embed;
+                        break;
+                    }
+
+                    pending = null;
                     batch.Add(embed);
+                    totalLength += embed.TextLength;
                 }
 
                 try

@@ -34,6 +34,15 @@ internal partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuratio
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="TerrainVariants" />.
+    /// </summary>
+    public ICollection<GameMapTerrainVariant> RawTerrainVariants { get; } = new EntityFramework.List<GameMapTerrainVariant>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant> TerrainVariants => base.TerrainVariants ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant, GameMapTerrainVariant>(this.RawTerrainVariants);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="MonsterSpawns" />.
     /// </summary>
     public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new EntityFramework.List<MonsterSpawnArea>();

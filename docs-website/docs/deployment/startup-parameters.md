@@ -92,7 +92,9 @@ Logging can be configured in the `appsettings.json` file. By default, not a lot 
 configured. To extend the configuration, have a look at the
 [Serilog documentation](https://github.com/serilog/serilog-settings-configuration).
 The server makes good use of scopes, so you can configure it to log only the
-actions of certain players, for example.
+actions of certain players, for example. In the all-in-one deployment, the admin
+panel can edit the logging configuration, too — see
+[Logs and monitoring](../admin-panel/logs-and-monitoring.md#configuring-what-is-logged).
 
 ## Settings priority
 

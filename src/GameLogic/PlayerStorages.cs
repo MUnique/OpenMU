@@ -43,7 +43,7 @@ internal sealed class PlayerStorages
     public IStorage? Vault { get; set; }
 
     /// <summary>
-    /// Gets or sets the backup of the inventory, which is created before a trade.
+    /// Gets or sets the backup of the inventory, which is created before a trade and while the dialog of a crafting NPC is open.
     /// </summary>
     public BackupItemStorage? BackupInventory { get; set; }
 

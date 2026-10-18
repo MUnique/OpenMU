@@ -102,12 +102,12 @@ internal sealed class PlayerMovement : IDisposable
             return;
         }
 
-        await this._walker.StopAsync().ConfigureAwait(false);
-
         if (!await this.IsWalkRequestValidAsync(steps).ConfigureAwait(false))
         {
             return;
         }
+
+        await this._walker.StopAsync().ConfigureAwait(false);
 
         var requestedTarget = target;
         var walkableStepCount = GetWalkableStepCount(currentMap.Terrain, steps.Span);
@@ -257,6 +257,16 @@ internal sealed class PlayerMovement : IDisposable
             await speedCheck.WalkCheatCheckAsync(this._player, steps, eventArgs).ConfigureAwait(false);
             if (eventArgs.IsCheatDetected)
             {
+                if (eventArgs.Severity is SpeedHackViolationSeverity.Resync)
+                {
+                    // A soft violation from a single packet, often a false positive (burst, fast clicks).
+                    // Don't perform the walk, but pull the client back to the server position and clear
+                    // the walk baseline, so it can't drift ahead and cascade into follow-up violations.
+                    // The running walk (if any) is left alone: the server stays authoritative.
+                    await speedCheck.ResetMovementStateAsync(this._player).ConfigureAwait(false);
+                    await this.ResynchronizeClientAsync().ConfigureAwait(false);
+                }
+
                 return false;
             }
         }

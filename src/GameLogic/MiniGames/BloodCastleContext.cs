@@ -212,7 +212,7 @@ public sealed class BloodCastleContext : MiniGameContext
         await this.UpdateStateForAllAsync(BloodCastleStatus.Ended).ConfigureAwait(false);
 
         var sortedFinishers = finishers
-            .Select(f => this._gameStates[f.Name])
+            .Select(this.GetGameStateOfFinisher)
             .WhereNotNull()
             .OrderByDescending(state => state.Score)
             .ToList();
@@ -247,7 +247,7 @@ public sealed class BloodCastleContext : MiniGameContext
         if (this._highScoreTable is { } table)
         {
             var isSuccessful = this._winner is not null;
-            var (name, score, bonusMoney, bonusExp) = table.First(t => t.Name == player.Name);
+            var (name, score, bonusExp, bonusMoney) = table.First(t => t.Name == player.Name);
             await player.InvokeViewPlugInAsync<IBloodCastleScoreTableViewPlugin>(p => p.ShowScoreTableAsync(isSuccessful, name, score, bonusExp, bonusMoney)).ConfigureAwait(false);
         }
     }
@@ -347,6 +347,19 @@ public sealed class BloodCastleContext : MiniGameContext
         this._questItemOwner = null;
     }
 
+    private PlayerGameState? GetGameStateOfFinisher(Player finisher)
+    {
+        if (!this._gameStates.TryGetValue(finisher.Name, out var state))
+        {
+            return null;
+        }
+
+        // The score is kept by the character name, so it's kept when the player rejoined the game
+        // after it lost its connection. The rewards must be given to its current player object, though.
+        state.Player = finisher;
+        return state;
+    }
+
     private sealed class PlayerGameState
     {
         private int _score;
@@ -361,7 +374,11 @@ public sealed class BloodCastleContext : MiniGameContext
             this.Player = player;
         }
 
-        public Player Player { get; }
+        /// <summary>
+        /// Gets or sets the player of the character. It's replaced by the new player
+        /// object of the same character, when it rejoined the game after it lost its connection.
+        /// </summary>
+        public Player Player { get; set; }
 
         public int Score => this._score;
 
