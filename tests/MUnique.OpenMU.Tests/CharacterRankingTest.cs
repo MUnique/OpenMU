@@ -32,6 +32,19 @@ public class CharacterRankingTest
     }
 
     /// <summary>
+    /// Tests that the query of the accounts of characters can be translated to SQL.
+    /// </summary>
+    [Test]
+    public void AccountIdsByCharacterNamesQueryIsTranslatable()
+    {
+        using var context = new AccountContext();
+
+        var sql = PlayerContext.CreateAccountIdsByCharacterNamesQuery(context.Set<Persistence.EntityFramework.Model.Account>(), new[] { "Hero", "Elf" }).ToQueryString();
+
+        Assert.That(sql, Does.Contain("JOIN"));
+    }
+
+    /// <summary>
     /// Tests that the characters are ranked by resets, master level and level,
     /// and that bots and game masters are not ranked.
     /// </summary>

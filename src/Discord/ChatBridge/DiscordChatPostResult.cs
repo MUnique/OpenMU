@@ -45,6 +45,11 @@ public enum DiscordChatPostResult
     TooFast,
 
     /// <summary>
+    /// A plugin of the server, e.g. a filter, didn't let the message through.
+    /// </summary>
+    Filtered,
+
+    /// <summary>
     /// The message is empty, e.g. after removing what the game can't show.
     /// </summary>
     Empty,

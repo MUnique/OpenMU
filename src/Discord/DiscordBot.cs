@@ -23,7 +23,9 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 /// <remarks>
 /// It only needs the <see cref="GatewayIntents.Guilds"/> intent, and no privileged one,
-/// because it reacts on slash commands instead of reading messages.
+/// because it reacts on slash commands instead of reading messages. Only when the chat bridge reads
+/// the messages (<see cref="DiscordChatBridgeSettings.ReadMessages"/>), it needs the privileged
+/// <see cref="GatewayIntents.MessageContent"/> intent.
 /// </remarks>
 public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, IDiscordChatMessenger, IGameEventListener, IAsyncDisposable
 {

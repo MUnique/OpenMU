@@ -4,12 +4,15 @@
 
 namespace MUnique.OpenMU.Discord.ChatBridge;
 
+using System.ComponentModel;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.AccountLinking;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The chat bridge between the game and Discord: It mirrors the guild, alliance and world chat
@@ -18,6 +21,8 @@ using MUnique.OpenMU.Persistence;
 /// <remarks>
 /// Only Discord users who are linked to a game account can write into the game, as the selected character
 /// of their account. They have to be a member of the guild or alliance, and the chat ban of the account applies.
+/// The messages go through the <see cref="IExternalChatMessageReceivedPlugIn"/>s, e.g. filters, instead of the
+/// <see cref="IChatMessageReceivedPlugIn"/>s, because there is no player who sends them.
 /// Only the guild master can bind the chat of a guild, and the master of an alliance the chat of the alliance.
 /// </remarks>
 public sealed class DiscordChatBridge
@@ -34,6 +39,7 @@ public sealed class DiscordChatBridge
     private readonly ILogger<DiscordChatBridge> _logger;
     private readonly TimeProvider _timeProvider;
     private readonly DiscordFloodGuard _floodGuard;
+    private readonly PlugInManager? _plugInManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordChatBridge"/> class.
@@ -46,6 +52,7 @@ public sealed class DiscordChatBridge
     /// <param name="createGuildContext">The function which creates a guild persistence context.</param>
     /// <param name="getEventPublisher">The function which gets the event publisher, through which the messages are sent to the game servers.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="plugInManager">The plugin manager, for the <see cref="IExternalChatMessageReceivedPlugIn"/>s.</param>
     /// <param name="timeProvider">The time provider.</param>
     public DiscordChatBridge(
         DiscordChatBridgeSettings settings,
@@ -56,6 +63,7 @@ public sealed class DiscordChatBridge
         Func<IGuildServerContext> createGuildContext,
         Func<IEventPublisher?> getEventPublisher,
         ILogger<DiscordChatBridge> logger,
+        PlugInManager? plugInManager = null,
         TimeProvider? timeProvider = null)
     {
         this._settings = settings;
@@ -66,6 +74,7 @@ public sealed class DiscordChatBridge
         this._createGuildContext = createGuildContext;
         this._getEventPublisher = getEventPublisher;
         this._logger = logger;
+        this._plugInManager = plugInManager;
         this._timeProvider = timeProvider ?? TimeProvider.System;
         this._floodGuard = new DiscordFloodGuard(settings.MaximumMessagesPerMinute, this._timeProvider);
     }
@@ -109,23 +118,29 @@ public sealed class DiscordChatBridge
     /// <param name="worldChatChannelId">The identifier of the channel of the world chat, if there is one.</param>
     /// <param name="userId">The identifier of the Discord user.</param>
     /// <param name="text">The text of the message.</param>
-    /// <returns>The result, and the name of the character as which the user wrote.</returns>
-    public async ValueTask<(DiscordChatPostResult Result, string? CharacterName)> PostToGameAsync(ulong channelId, ulong? worldChatChannelId, ulong userId, string text)
+    /// <returns>The result, the name of the character as which the user wrote, and the message as it was sent to the game.</returns>
+    public async ValueTask<(DiscordChatPostResult Result, string? CharacterName, string? Message)> PostToGameAsync(ulong channelId, ulong? worldChatChannelId, ulong userId, string text)
     {
         var binding = this._store.GetByChannel(channelId);
         if (binding is null && channelId != worldChatChannelId)
         {
-            return (DiscordChatPostResult.NotBridged, null);
+            return (DiscordChatPostResult.NotBridged, null, null);
+        }
+
+        // Checked first, so that spamming doesn't cause queries to the database.
+        if (!this._floodGuard.TryRegister(userId))
+        {
+            return (DiscordChatPostResult.TooFast, null, null);
         }
 
         if (await this._linkService.GetLinkByUserAsync(Provider, GuildChatBindingStore.ToText(userId)).ConfigureAwait(false) is not { ExternalUserId: not null } link)
         {
-            return (DiscordChatPostResult.NotLinked, null);
+            return (DiscordChatPostResult.NotLinked, null, null);
         }
 
         if (link.CharacterName is not { } characterName)
         {
-            return (DiscordChatPostResult.NoCharacter, null);
+            return (DiscordChatPostResult.NoCharacter, null, null);
         }
 
         using (var context = this._createPlayerContext())
@@ -133,36 +148,39 @@ public sealed class DiscordChatBridge
             // The character might have been deleted or moved to another account in the meantime.
             if (await context.GetAccountIdByCharacterNameAsync(characterName).ConfigureAwait(false) != link.AccountId)
             {
-                return (DiscordChatPostResult.NoCharacter, null);
+                return (DiscordChatPostResult.NoCharacter, null, null);
             }
 
             if (await context.GetAccountChatBanUntilAsync(link.AccountId).ConfigureAwait(false) is { } chatBanUntil
                 && chatBanUntil > this._timeProvider.GetUtcNow().UtcDateTime)
             {
-                return (DiscordChatPostResult.ChatBanned, characterName);
+                return (DiscordChatPostResult.ChatBanned, characterName, null);
             }
         }
 
         if (binding is not null && !await this.IsMemberAsync(characterName, binding).ConfigureAwait(false))
         {
-            return (DiscordChatPostResult.NotMember, characterName);
+            return (DiscordChatPostResult.NotMember, characterName, null);
         }
 
         var message = DiscordChatText.ToGame(text, this._settings.MaximumMessageLength);
         if (message.Length == 0)
         {
-            return (DiscordChatPostResult.Empty, characterName);
+            return (DiscordChatPostResult.Empty, characterName, null);
         }
 
-        if (!this._floodGuard.TryRegister(userId))
+        var channel = binding is null ? GameChatChannel.World : binding.Scope == GuildChatScope.Alliance ? GameChatChannel.Alliance : GameChatChannel.Guild;
+        var eventArgs = new CancelEventArgs();
+        this._plugInManager?.GetPlugInPoint<IExternalChatMessageReceivedPlugIn>()?.ExternalChatMessageReceived(characterName, message, channel, eventArgs);
+        if (eventArgs.Cancel)
         {
-            return (DiscordChatPostResult.TooFast, characterName);
+            return (DiscordChatPostResult.Filtered, characterName, null);
         }
 
         if (this._getEventPublisher() is not { } publisher)
         {
             this._logger.LogWarning("A chat message from Discord couldn't be sent to the game, because the event publisher isn't available.");
-            return (DiscordChatPostResult.NotBridged, characterName);
+            return (DiscordChatPostResult.NotBridged, characterName, null);
         }
 
         var sender = DiscordChatText.ToGameSender(characterName);
@@ -183,7 +201,7 @@ public sealed class DiscordChatBridge
             }
         }
 
-        return (DiscordChatPostResult.Sent, characterName);
+        return (DiscordChatPostResult.Sent, characterName, message);
     }
 
     /// <summary>
@@ -323,29 +341,14 @@ public sealed class DiscordChatBridge
             }
         }
 
-        var accountIds = new HashSet<Guid>();
-        using (var context = this._createPlayerContext())
-        {
-            foreach (var name in memberNames)
-            {
-                if (await context.GetAccountIdByCharacterNameAsync(name).ConfigureAwait(false) is { } accountId)
-                {
-                    accountIds.Add(accountId);
-                }
-            }
-        }
-
-        var userIds = new HashSet<ulong>();
-        foreach (var accountId in accountIds)
-        {
-            if (await this._linkService.GetLinkAsync(accountId, Provider).ConfigureAwait(false) is { ExternalUserId: { } externalUserId }
-                && ulong.TryParse(externalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
-            {
-                userIds.Add(userId);
-            }
-        }
-
-        return userIds;
+        // Two queries for all members, instead of two per member.
+        using var context = this._createPlayerContext();
+        var accountIds = (await context.GetAccountIdsByCharacterNamesAsync(memberNames.Distinct().ToList()).ConfigureAwait(false)).Values.Distinct().ToList();
+        var links = await context.GetAccountExternalLinksAsync(Provider, accountIds).ConfigureAwait(false);
+        return links
+            .Select(link => ulong.TryParse(link.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId) ? userId : (ulong?)null)
+            .OfType<ulong>()
+            .ToHashSet();
     }
 
     private async ValueTask<bool> IsMemberAsync(string characterName, GuildChatBinding binding)

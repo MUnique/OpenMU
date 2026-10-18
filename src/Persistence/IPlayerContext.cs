@@ -208,6 +208,28 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the identifiers of the accounts of characters, without loading the accounts.
+    /// </summary>
+    /// <param name="characterNames">The names of the characters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The identifiers of the accounts by the names of the existing characters.</returns>
+    ValueTask<IReadOnlyDictionary<string, Guid>> GetAccountIdsByCharacterNamesAsync(
+        IReadOnlyCollection<string> characterNames,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the links of accounts to users of an external service.
+    /// </summary>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="accountIds">The persistent account identifiers.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The links.</returns>
+    ValueTask<IReadOnlyList<AccountExternalLink>> GetAccountExternalLinksAsync(
+        string provider,
+        IReadOnlyCollection<Guid> accountIds,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the links of an account to users of external services.
     /// </summary>
     /// <param name="accountId">The persistent account identifier.</param>

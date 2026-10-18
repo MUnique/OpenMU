@@ -60,7 +60,8 @@ public static class DiscordServiceCollectionExtensions
                     () => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(new GameConfiguration()),
                     () => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewGuildContext(),
                     () => provider.GetService<IEventPublisher>(),
-                    provider.GetRequiredService<ILogger<DiscordChatBridge>>()))
+                    provider.GetRequiredService<ILogger<DiscordChatBridge>>(),
+                    provider.GetService<PlugInManager>()))
                 .AddSingleton(new DiscordChatCommands(culture))
                 .AddSingleton(new DiscordStatusFormatter(culture))
                 .AddSingleton(settings.Bot.LayoutFile is { Length: > 0 } layoutFile ? DiscordServerLayout.Load(layoutFile) : DiscordServerLayout.LoadDefault())
