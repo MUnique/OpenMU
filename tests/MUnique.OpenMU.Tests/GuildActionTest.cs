@@ -622,6 +622,68 @@ public class GuildActionTest : GuildTestBase
         Assert.That(this._player.GuildStatus!.Position, Is.EqualTo(GuildPosition.AssistantMaster));
     }
 
+    /// <summary>
+    /// Tests that the guild master can kick a member by entering the account password,
+    /// when the account has no security code.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildKickWithPasswordWhenNoSecurityCodeIsSetAsync()
+    {
+        await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
+        this.SetupGuildMasterAccount(securityCode: string.Empty, password: "password");
+        var guildId = this._player.GuildStatus!.GuildId;
+
+        var action = new GuildKickPlayerAction();
+        await action.KickPlayerAsync(this._guildMasterPlayer, this._player.SelectedCharacter!.Name, "password").ConfigureAwait(false);
+
+        var members = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
+        Assert.That(members.Select(m => m.PlayerName), Does.Not.Contain(this._player.SelectedCharacter!.Name));
+    }
+
+    /// <summary>
+    /// Tests that a kick with a wrong password is rejected, when the account has no security code.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildKickWithWrongPasswordWhenNoSecurityCodeIsSetAsync()
+    {
+        await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
+        this.SetupGuildMasterAccount(securityCode: string.Empty, password: "password");
+        var guildId = this._player.GuildStatus!.GuildId;
+
+        var action = new GuildKickPlayerAction();
+        await action.KickPlayerAsync(this._guildMasterPlayer, this._player.SelectedCharacter!.Name, "wrong").ConfigureAwait(false);
+
+        var members = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
+        Assert.That(members.Select(m => m.PlayerName), Does.Contain(this._player.SelectedCharacter!.Name));
+    }
+
+    /// <summary>
+    /// Tests that the security code is required instead of the password, when the account has one.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildKickRequiresSecurityCodeWhenSetAsync()
+    {
+        await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
+        this.SetupGuildMasterAccount(securityCode: "1234567", password: "password");
+        var guildId = this._player.GuildStatus!.GuildId;
+        var action = new GuildKickPlayerAction();
+
+        await action.KickPlayerAsync(this._guildMasterPlayer, this._player.SelectedCharacter!.Name, "password").ConfigureAwait(false);
+        var membersAfterPassword = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
+        Assert.That(membersAfterPassword.Select(m => m.PlayerName), Does.Contain(this._player.SelectedCharacter!.Name));
+
+        await action.KickPlayerAsync(this._guildMasterPlayer, this._player.SelectedCharacter!.Name, "1234567").ConfigureAwait(false);
+        var membersAfterSecurityCode = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
+        Assert.That(membersAfterSecurityCode.Select(m => m.PlayerName), Does.Not.Contain(this._player.SelectedCharacter!.Name));
+    }
+
+    private void SetupGuildMasterAccount(string securityCode, string password)
+    {
+        var account = this._guildMasterPlayer.Account!;
+        account.SecurityCode = securityCode;
+        account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+    }
+
     private IGameServerContext CreateGameServer()
     {
         var gameConfiguration = new GameConfiguration();

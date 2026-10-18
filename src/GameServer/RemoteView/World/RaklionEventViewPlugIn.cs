@@ -23,6 +23,11 @@ public sealed class RaklionEventViewPlugIn : IRaklionEventViewPlugIn
 {
     private const byte DetailState = 11;
 
+    /// <summary>
+    /// The monster skill number of the stab of the iron knight. The client shows its stab animation only for this number.
+    /// </summary>
+    private const ushort IronKnightStabSkillNumber = 33;
+
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -72,5 +77,12 @@ public sealed class RaklionEventViewPlugIn : IRaklionEventViewPlugIn
         // The client searches the target by the id as it is, so the flag for a successful skill can't be set.
         var targetId = target is null ? selupanId : target.GetId(this._player);
         await this._player.Connection.SendMonsterSkillAnimationAsync((ushort)skill, selupanId, targetId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowIronKnightStabAsync(IAttacker ironKnight, IAttackable target)
+    {
+        // The client searches the target by the id as it is, so the flag for a successful skill can't be set.
+        await this._player.Connection.SendMonsterSkillAnimationAsync(IronKnightStabSkillNumber, ironKnight.GetId(this._player), target.GetId(this._player)).ConfigureAwait(false);
     }
 }

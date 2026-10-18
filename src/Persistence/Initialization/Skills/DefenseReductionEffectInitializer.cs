@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the defense reduction effect.
@@ -30,12 +31,14 @@ public class DefenseReductionEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.DefenseReduction;
-        magicEffect.Name = "Defense Reduction Effect (Fire Slash)";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.DefenseReductionEffectFireSlash);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = true;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromSeconds(10).TotalSeconds;
+        magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Chance.ConstantValue.Value = 0.45f; // 45%
 
         var reduceDefenseEffect = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(reduceDefenseEffect);

@@ -119,6 +119,21 @@ public class DiscordServerProvisionerTest
     }
 
     /// <summary>
+    /// Tests that a private category stays public, when its roles can't be created, instead of being visible to nobody.
+    /// </summary>
+    [Test]
+    public async Task PrivateCategoryWithoutRolesStaysPublicAsync()
+    {
+        var server = new FakeDiscordServer { FailingName = "GM" };
+
+        var result = await this._provisioner.ProvisionAsync(server, DiscordServerLayout.LoadDefault()).ConfigureAwait(false);
+
+        Assert.That(result.PublicCategories, Is.EqualTo(new[] { "Staff" }));
+        Assert.That(server.Overwrites.ContainsKey(server.GetId("Staff")), Is.False);
+        Assert.That(server.Overwrites[result.ChannelIds["staff-alerts"]].Single(o => o.TargetId == server.EveryoneRoleId).Deny, Is.EqualTo(DiscordChannelAccess.Send));
+    }
+
+    /// <summary>
     /// Tests that the channels of the layout are found by their name.
     /// </summary>
     [Test]

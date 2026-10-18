@@ -266,7 +266,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
 
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(effect);
-        effect.Name = Enum.GetName(effectNumber) ?? string.Empty;
+        effect.Name = MagicEffectNames.ResourceManager.GetLocalizedString(effectNumber.ToString());
         effect.InformObservers = true;
         effect.Number = (short)effectNumber;
         effect.StopByDeath = true;

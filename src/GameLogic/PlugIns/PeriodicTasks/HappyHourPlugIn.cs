@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -19,10 +20,10 @@ using MUnique.OpenMU.PlugIns;
 public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, PeriodicTaskGameServerState>, ISupportDefaultCustomConfiguration, IPlayerStateChangedPlugIn
 {
     /// <summary>
-    /// The happy hour extra multiplier which gets added to the players <see cref="Stats.ExperienceRate"/>
-    /// and <see cref="Stats.MasterExperienceRate"/>.
+    /// The happy hour extra multipliers by game context: one element per context, so
+    /// concurrent runs in different contexts never share a value.
     /// </summary>
-    private readonly SimpleElement _happyHourExtraMultiplier = new(1.0f, AggregateType.Multiplicate);
+    private readonly ConcurrentDictionary<IGameContext, SimpleElement> _happyHourExtraMultipliers = new();
 
     /// <inheritdoc />
     public object CreateDefaultConfig() => HappyHourConfiguration.Default;
@@ -32,10 +33,14 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
     {
         try
         {
+            // The element is added on every server, so players joining mid-event get the
+            // currently active multiplier right away. On servers without the event it stays
+            // neutral (1.0); only the event run mutates its own server's element.
+            var multiplier = this.GetMultiplierElement(player.GameContext);
             if (currentState.IsDisconnectedOrFinished())
             {
-                player.Attributes?.RemoveElement(this._happyHourExtraMultiplier, Stats.ExperienceRate);
-                player.Attributes?.RemoveElement(this._happyHourExtraMultiplier, Stats.MasterExperienceRate);
+                player.Attributes?.RemoveElement(multiplier, Stats.ExperienceRate);
+                player.Attributes?.RemoveElement(multiplier, Stats.MasterExperienceRate);
             }
 
             if (previousState != PlayerState.CharacterSelection || currentState != PlayerState.EnteredWorld)
@@ -43,8 +48,8 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
                 return;
             }
 
-            player.Attributes?.AddElement(this._happyHourExtraMultiplier, Stats.ExperienceRate);
-            player.Attributes?.AddElement(this._happyHourExtraMultiplier, Stats.MasterExperienceRate);
+            player.Attributes?.AddElement(multiplier, Stats.ExperienceRate);
+            player.Attributes?.AddElement(multiplier, Stats.MasterExperienceRate);
             var state = this.GetStateByGameContext(player.GameContext);
             var isEnabled = state.State != PeriodicTaskState.NotStarted;
             if (!isEnabled)
@@ -58,6 +63,15 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
         {
             player.Logger.LogDebug(ex, "Unexpected error handling player state change.");
         }
+    }
+
+    /// <summary>
+    /// Gets the multiplier element of the specified game context, creating a neutral one on demand.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    internal SimpleElement GetMultiplierElement(IGameContext gameContext)
+    {
+        return this._happyHourExtraMultipliers.GetOrAdd(gameContext, _ => new SimpleElement(1.0f, AggregateType.Multiplicate));
     }
 
     /// <inheritdoc/>
@@ -81,7 +95,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
     /// <inheritdoc/>
     protected override ValueTask OnStartedAsync(PeriodicTaskGameServerState state)
     {
-        this._happyHourExtraMultiplier.Value = this.Configuration?.ExperienceMultiplier ?? 1;
+        this.GetMultiplierElement(state.Context).Value = this.Configuration?.ExperienceMultiplier ?? 1;
 
         return ValueTask.CompletedTask;
     }
@@ -89,7 +103,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
     /// <inheritdoc/>
     protected override ValueTask OnFinishedAsync(PeriodicTaskGameServerState state)
     {
-        this._happyHourExtraMultiplier.Value = 1;
+        this.GetMultiplierElement(state.Context).Value = 1;
 
         return ValueTask.CompletedTask;
     }

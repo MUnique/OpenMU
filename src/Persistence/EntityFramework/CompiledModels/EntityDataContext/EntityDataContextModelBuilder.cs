@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("241b86a9-af29-4213-80a7-d679277bb936"), entityTypeCount: 120)
+            : base(skipDetectChanges: false, modelId: new Guid("b9d48a9a-c807-40a2-9b41-a5bfa0fe2167"), entityTypeCount: 122)
         {
         }
 
@@ -54,6 +54,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var configurationUpdateState = ConfigurationUpdateStateEntityType.Create(this);
             var connectServerDefinition = ConnectServerDefinitionEntityType.Create(this);
             var constValueAttribute = ConstValueAttributeEntityType.Create(this);
+            var crywolfData = CrywolfDataEntityType.Create(this);
             var dropItemGroup = DropItemGroupEntityType.Create(this);
             var dropItemGroupItemDefinition = DropItemGroupItemDefinitionEntityType.Create(this);
             var duelArea = DuelAreaEntityType.Create(this);
@@ -65,6 +66,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var gameConfiguration = GameConfigurationEntityType.Create(this);
             var gameMapDefinition = GameMapDefinitionEntityType.Create(this);
             var gameMapDefinitionDropItemGroup = GameMapDefinitionDropItemGroupEntityType.Create(this);
+            var gameMapTerrainVariant = GameMapTerrainVariantEntityType.Create(this);
             var gameServerConfiguration = GameServerConfigurationEntityType.Create(this);
             var gameServerConfigurationGameMapDefinition = GameServerConfigurationGameMapDefinitionEntityType.Create(this);
             var gameServerDefinition = GameServerDefinitionEntityType.Create(this);
@@ -231,6 +233,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GameMapDefinitionEntityType.CreateForeignKey3(gameMapDefinition, gameMapDefinition);
             GameMapDefinitionDropItemGroupEntityType.CreateForeignKey1(gameMapDefinitionDropItemGroup, dropItemGroup);
             GameMapDefinitionDropItemGroupEntityType.CreateForeignKey2(gameMapDefinitionDropItemGroup, gameMapDefinition);
+            GameMapTerrainVariantEntityType.CreateForeignKey1(gameMapTerrainVariant, gameMapDefinition);
             GameServerConfigurationGameMapDefinitionEntityType.CreateForeignKey1(gameServerConfigurationGameMapDefinition, gameMapDefinition);
             GameServerConfigurationGameMapDefinitionEntityType.CreateForeignKey2(gameServerConfigurationGameMapDefinition, gameServerConfiguration);
             GameServerDefinitionEntityType.CreateForeignKey1(gameServerDefinition, gameConfiguration);
@@ -249,6 +252,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             IncreasableItemOptionEntityType.CreateForeignKey3(increasableItemOption, powerUpDefinition);
             ItemEntityType.CreateForeignKey1(item, itemDefinition);
             ItemEntityType.CreateForeignKey2(item, itemStorage);
+            ItemEntityType.CreateForeignKey3(item, itemDefinition);
             ItemAppearanceEntityType.CreateForeignKey1(itemAppearance, appearanceData);
             ItemAppearanceEntityType.CreateForeignKey2(itemAppearance, itemDefinition);
             ItemAppearanceItemOptionTypeEntityType.CreateForeignKey1(itemAppearanceItemOptionType, itemAppearance);
@@ -414,6 +418,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ConfigurationUpdateStateEntityType.CreateAnnotations(configurationUpdateState);
             ConnectServerDefinitionEntityType.CreateAnnotations(connectServerDefinition);
             ConstValueAttributeEntityType.CreateAnnotations(constValueAttribute);
+            CrywolfDataEntityType.CreateAnnotations(crywolfData);
             DropItemGroupEntityType.CreateAnnotations(dropItemGroup);
             DropItemGroupItemDefinitionEntityType.CreateAnnotations(dropItemGroupItemDefinition);
             DuelAreaEntityType.CreateAnnotations(duelArea);
@@ -425,6 +430,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GameConfigurationEntityType.CreateAnnotations(gameConfiguration);
             GameMapDefinitionEntityType.CreateAnnotations(gameMapDefinition);
             GameMapDefinitionDropItemGroupEntityType.CreateAnnotations(gameMapDefinitionDropItemGroup);
+            GameMapTerrainVariantEntityType.CreateAnnotations(gameMapTerrainVariant);
             GameServerConfigurationEntityType.CreateAnnotations(gameServerConfiguration);
             GameServerConfigurationGameMapDefinitionEntityType.CreateAnnotations(gameServerConfigurationGameMapDefinition);
             GameServerDefinitionEntityType.CreateAnnotations(gameServerDefinition);

@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
     public partial class TradeContextModel
     {
         private TradeContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("785b9a5a-7254-4952-be76-b1673c6069b4"), entityTypeCount: 45)
+            : base(skipDetectChanges: false, modelId: new Guid("474248ae-e21e-4a0b-88b4-317ac8d5ca08"), entityTypeCount: 46)
         {
         }
 
@@ -34,6 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             var characterDropItemGroup = CharacterDropItemGroupEntityType.Create(this);
             var characterQuestState = CharacterQuestStateEntityType.Create(this);
             var constValueAttribute = ConstValueAttributeEntityType.Create(this);
+            var crywolfData = CrywolfDataEntityType.Create(this);
             var dropItemGroupItemDefinition = DropItemGroupItemDefinitionEntityType.Create(this);
             var friend = FriendEntityType.Create(this);
             var gameMapDefinitionDropItemGroup = GameMapDefinitionDropItemGroupEntityType.Create(this);
@@ -108,6 +109,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             CharacterDropItemGroupEntityType.CreateAnnotations(characterDropItemGroup);
             CharacterQuestStateEntityType.CreateAnnotations(characterQuestState);
             ConstValueAttributeEntityType.CreateAnnotations(constValueAttribute);
+            CrywolfDataEntityType.CreateAnnotations(crywolfData);
             DropItemGroupItemDefinitionEntityType.CreateAnnotations(dropItemGroupItemDefinition);
             FriendEntityType.CreateAnnotations(friend);
             GameMapDefinitionDropItemGroupEntityType.CreateAnnotations(gameMapDefinitionDropItemGroup);

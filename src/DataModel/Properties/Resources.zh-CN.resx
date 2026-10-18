@@ -126,7 +126,7 @@
 		<value>服务器时区</value>
 	</data>
 	<data name="SystemConfiguration_TimeZoneId_Description" xml:space="preserve">
-		<value>用于解释定时活动（例如入侵、血色城堡、恶魔广场）时间的时区 ID。建议使用 IANA 时区 ID，例如“Asia/Shanghai”。留空时使用 UTC。</value>
+		<value>用于解释定时活动（例如入侵、血色城堡、恶魔广场）和攻城战日程的时间的时区 ID。建议使用 IANA 时区 ID，例如“Asia/Shanghai”。留空时使用 UTC。</value>
 	</data>
 	<data name="SystemConfiguration_Name" xml:space="preserve">
 		<value>系统配置</value>

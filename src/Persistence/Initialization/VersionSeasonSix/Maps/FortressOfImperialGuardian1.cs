@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
@@ -54,7 +53,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 523;
-            monster.Designation = "Trap";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Trap);
             monster.MoveRange = 0;
             monster.AttackRange = 1;
             monster.ViewRange = 2;
@@ -87,7 +86,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 524;
-            monster.Designation = "Evil Gate";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.EvilGate);
             monster.MoveRange = 0;
             monster.AttackRange = 0;
             monster.ViewRange = 5;
@@ -114,7 +113,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 525;
-            monster.Designation = "Lion Gate";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.LionGate);
             monster.MoveRange = 0;
             monster.AttackRange = 0;
             monster.ViewRange = 5;
@@ -141,7 +140,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 526;
-            monster.Designation = "Statue";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Statue);
             monster.MoveRange = 0;
             monster.AttackRange = 0;
             monster.ViewRange = 5;
@@ -168,7 +167,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 527;
-            monster.Designation = "Star Gate";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.StarGate);
             monster.MoveRange = 0;
             monster.AttackRange = 0;
             monster.ViewRange = 5;
@@ -195,7 +194,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 528;
-            monster.Designation = "Rush Gate";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.RushGate);
             monster.MoveRange = 0;
             monster.AttackRange = 0;
             monster.ViewRange = 5;
@@ -222,7 +221,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 512;
-            monster.Designation = "Quarter Master";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.QuarterMaster);
             monster.MoveRange = 6;
             monster.AttackRange = 7;
             monster.ViewRange = 7;
@@ -253,7 +252,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 513;
-            monster.Designation = "Combat Instructor";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CombatInstructor);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -284,7 +283,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 514;
-            monster.Designation = "Aticle's Head";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.AticlesHead);
             monster.MoveRange = 6;
             monster.AttackRange = 6;
             monster.ViewRange = 10;
@@ -316,7 +315,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 515;
-            monster.Designation = "Dark Ghost";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkGhost);
             monster.MoveRange = 6;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -347,7 +346,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 516;
-            monster.Designation = "Banshee";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Banshee);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -378,7 +377,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 517;
-            monster.Designation = "Head Mounter";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.HeadMounter);
             monster.MoveRange = 3;
             monster.AttackRange = 10;
             monster.ViewRange = 7;
@@ -409,7 +408,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 518;
-            monster.Designation = "Defender";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Defender);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -440,7 +439,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 519;
-            monster.Designation = "Forsaker";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Forsaker);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -471,7 +470,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 520;
-            monster.Designation = "Ocelot the Lord";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.OcelotTheLord);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -502,7 +501,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 521;
-            monster.Designation = "Eric the Guard";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.EricTheGuard);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -533,7 +532,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 504;
-            monster.Designation = "Gayion The Gladiator";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GayionTheGladiator);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -565,7 +564,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 505;
-            monster.Designation = "Jerry";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Jerry);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -596,7 +595,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 506;
-            monster.Designation = "Raymond";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Raymond);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -627,7 +626,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 507;
-            monster.Designation = "Lucas";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Lucas);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -658,7 +657,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 508;
-            monster.Designation = "Fred";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Fred);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -689,7 +688,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 509;
-            monster.Designation = "Hammerize";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Hammerize);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -720,7 +719,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 510;
-            monster.Designation = "Dual Berserker";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DualBerserker);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -751,7 +750,7 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 511;
-            monster.Designation = "Devil Lord";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DevilLord);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;

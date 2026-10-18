@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ChaosWeapon" xml:space="preserve">
+    <value>Chaos Weapon</value>
+  </data>
+  <data name="DevilsSquareTicket" xml:space="preserve">
+    <value>Devil's Square Ticket</value>
+  </data>
+  <data name="FirstWings" xml:space="preserve">
+    <value>1st Level Wings</value>
+  </data>
+  <data name="Plus11ItemCombination" xml:space="preserve">
+    <value>+11 Item Combination</value>
+  </data>
+  <data name="Plus10ItemCombination" xml:space="preserve">
+    <value>+10 Item Combination</value>
+  </data>
+  <data name="Dinorant" xml:space="preserve">
+    <value>Dinorant</value>
+  </data>
+  <data name="RestoreItemRemoveJOHOption" xml:space="preserve">
+    <value>Restore Item (Remove JOH Option)</value>
+  </data>
+  <data name="RefineStone" xml:space="preserve">
+    <value>Refine Stone</value>
+  </data>
+  <data name="CherryBlossomEventMix" xml:space="preserve">
+    <value>Cherry Blossom Event Mix</value>
+  </data>
+  <data name="CompleteSecromicon" xml:space="preserve">
+    <value>Complete Secromicon</value>
+  </data>
+  <data name="GuardianOptionLevel380" xml:space="preserve">
+    <value>Guardian Option (Level 380)</value>
+  </data>
+  <data name="ThirdWingsStage2" xml:space="preserve">
+    <value>3rd Level Wings, Stage 2</value>
+  </data>
+  <data name="ThirdWingsStage1" xml:space="preserve">
+    <value>3rd Level Wings, Stage 1</value>
+  </data>
+  <data name="SecondWings" xml:space="preserve">
+    <value>2nd Level Wings</value>
+  </data>
+  <data name="CapeOfLordFighter" xml:space="preserve">
+    <value>Cape of Lord/Fighter</value>
+  </data>
+  <data name="FenrirUpgradeStage4" xml:space="preserve">
+    <value>Fenrir Upgrade (Stage 4)</value>
+  </data>
+  <data name="FenrirStage3" xml:space="preserve">
+    <value>Fenrir Stage 3</value>
+  </data>
+  <data name="FenrirStage2" xml:space="preserve">
+    <value>Fenrir Stage 2</value>
+  </data>
+  <data name="FenrirStage1" xml:space="preserve">
+    <value>Fenrir Stage 1</value>
+  </data>
+  <data name="LargeShieldPotion" xml:space="preserve">
+    <value>Large Shield Potion</value>
+  </data>
+  <data name="MediumShieldPotion" xml:space="preserve">
+    <value>Medium Shield Potion</value>
+  </data>
+  <data name="SmallShieldPotion" xml:space="preserve">
+    <value>Small Shield Potion</value>
+  </data>
+  <data name="LifeStone" xml:space="preserve">
+    <value>Life Stone</value>
+  </data>
+  <data name="IllusionTempleTicket" xml:space="preserve">
+    <value>Illusion Temple Ticket</value>
+  </data>
+  <data name="BloodCastleTicket" xml:space="preserve">
+    <value>Blood Castle Ticket</value>
+  </data>
+  <data name="Plus15ItemCombination" xml:space="preserve">
+    <value>+15 Item Combination</value>
+  </data>
+  <data name="Plus14ItemCombination" xml:space="preserve">
+    <value>+14 Item Combination</value>
+  </data>
+  <data name="Plus13ItemCombination" xml:space="preserve">
+    <value>+13 Item Combination</value>
+  </data>
+  <data name="Plus12ItemCombination" xml:space="preserve">
+    <value>+12 Item Combination</value>
+  </data>
+  <data name="PotionOfSoul" xml:space="preserve">
+    <value>Potion of Soul</value>
+  </data>
+  <data name="PotionOfBless" xml:space="preserve">
+    <value>Potion of Bless</value>
+  </data>
+  <data name="Fruits" xml:space="preserve">
+    <value>Fruits</value>
+  </data>
+  <data name="RemoveSeedSphere" xml:space="preserve">
+    <value>Remove Seed Sphere</value>
+  </data>
+  <data name="MountSeedSphere" xml:space="preserve">
+    <value>Mount Seed Sphere</value>
+  </data>
+  <data name="SeedSphereCreation" xml:space="preserve">
+    <value>Seed Sphere Creation</value>
+  </data>
+  <data name="SeedCreation" xml:space="preserve">
+    <value>Seed Creation</value>
+  </data>
+  <data name="DarkRaven" xml:space="preserve">
+    <value>Dark Raven</value>
+  </data>
+  <data name="DarkHorse" xml:space="preserve">
+    <value>Dark Horse</value>
+  </data>
+  <data name="GemstoneRefinery" xml:space="preserve">
+    <value>Gemstone Refinery</value>
+  </data>
+</root>

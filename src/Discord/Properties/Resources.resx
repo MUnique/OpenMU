@@ -302,6 +302,9 @@
   <data name="Setup_FailedHint" xml:space="preserve">
     <value>Please check that the bot has the permissions "Manage Channels" and "Manage Roles", and that its role is above the roles which it should manage.</value>
   </data>
+  <data name="Setup_PublicCategories" xml:space="preserve">
+    <value>**Visible to everyone:** {0}, because their roles couldn't be created.</value>
+  </data>
   <data name="Setup_Title" xml:space="preserve">
     <value>Setup of the Discord server</value>
   </data>

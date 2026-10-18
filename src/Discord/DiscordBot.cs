@@ -127,6 +127,11 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             }
 
             this.ServerState = ServerState.Starting;
+            if (this._settings.StatusChannelId is { } statusChannelId && this._settings.Channels.ContainsValue(statusChannelId))
+            {
+                this._logger.LogWarning("The status channel {channelId} is also configured for game events. Use a channel in which only the status is shown, otherwise the status message is posted again when the events push it out of the channel.", statusChannelId);
+            }
+
             this._ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
             var client = new DiscordSocketClient(new DiscordSocketConfig { GatewayIntents = GatewayIntents.Guilds });
             client.Log += this.OnLogAsync;
@@ -301,6 +306,11 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
         }
         else
         {
+            if (this._settings.GuildId is { } missingGuildId)
+            {
+                this._logger.LogWarning("The bot isn't on the configured Discord server {guildId}, so the slash commands are registered globally, which can take up to an hour. Is the identifier correct, and was the bot invited?", missingGuildId);
+            }
+
             await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         }
     }
@@ -344,6 +354,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when answering the Discord command {command}.", command.Data.Name);
+            await this.AnswerFailureAsync(command, false).ConfigureAwait(false);
         }
     }
 
@@ -433,6 +444,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when setting up the Discord server.");
+            await this.AnswerFailureAsync(command, true).ConfigureAwait(false);
         }
     }
 
@@ -512,21 +524,42 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
     }
 
     /// <summary>
-    /// Finds the status message: the last message of the bot in the status channel. So the bot keeps
+    /// Finds the status message: the last status message of the bot in the status channel. So the bot keeps
     /// using the same message after a restart, without storing anything.
     /// </summary>
     private async Task<IUserMessage?> FindStatusMessageAsync(DiscordSocketClient client, IMessageChannel channel)
     {
         if (this._statusMessageId is { } messageId
-            && await channel.GetMessageAsync(messageId).ConfigureAwait(false) is IUserMessage knownMessage)
+            && await channel.GetMessageAsync(messageId).ConfigureAwait(false) is IUserMessage knownMessage
+            && IsStatusMessage(knownMessage))
         {
             return knownMessage;
         }
 
+        // Other messages of the bot, e.g. game events when the status channel is also used for them, are left alone.
         var messages = await channel.GetMessagesAsync(50).FlattenAsync().ConfigureAwait(false);
-        var message = messages.OfType<IUserMessage>().FirstOrDefault(m => m.Author.Id == client.CurrentUser.Id);
+        var message = messages.OfType<IUserMessage>().FirstOrDefault(IsStatusMessage);
         this._statusMessageId = message?.Id;
         return message;
+
+        bool IsStatusMessage(IUserMessage m) => m.Author.Id == client.CurrentUser.Id && m.Embeds.FirstOrDefault()?.Title == this._statusFormatter.StatusTitle;
+    }
+
+    /// <summary>
+    /// Answers a deferred command with a failure, so that the user doesn't wait for an answer which never comes.
+    /// </summary>
+    private async Task AnswerFailureAsync(SocketSlashCommand command, bool ephemeral)
+    {
+        try
+        {
+            var answer = new DiscordEmbed(command.Data.Name, this._commands.Text(nameof(Resources.Command_Failed)), DiscordCommands.AnswerColor, DateTime.UtcNow, null);
+            await command.FollowupAsync(embed: ToDiscordEmbed(answer), ephemeral: ephemeral, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // E.g. the interaction expired or wasn't deferred.
+            this._logger.LogDebug(ex, "The failure of the Discord command {command} couldn't be answered.", command.Data.Name);
+        }
     }
 
     private async Task<IMessageChannel?> GetMessageChannelAsync(ulong channelId)

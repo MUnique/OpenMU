@@ -20,7 +20,9 @@ function CreateMap(serverId, mapId, containerId, appId) {
     const registration = { isCancelled: false, stats: stats };
     window.mapAppRegistrations[appId] = registration;
 
-    System.import("MapApp")
+    // The returned promise resolves when the world exists, so the server doesn't send any
+    // objects to it before.
+    return System.import("MapApp")
         .then((module) => {
             console.debug('MapApp module resolved');
             if (registration.isCancelled) {
@@ -52,6 +54,10 @@ function CreateMap(serverId, mapId, containerId, appId) {
                 }
             });
             window[appId] = window.mapApps[serverId][mapId];
+        })
+        .catch((error) => {
+            // The server can't do anything about it, so the error isn't passed on to it.
+            console.error("Creating the map failed", error);
         });
 }
 
