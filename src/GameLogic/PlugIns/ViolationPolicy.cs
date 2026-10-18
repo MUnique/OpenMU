@@ -102,16 +102,16 @@ internal static class ViolationPolicy
     /// </summary>
     /// <param name="config">The configuration.</param>
     /// <param name="warningsInWindow">The warnings in the history window, including the current one.</param>
-    /// <param name="hasAccount">Whether the player has an account to ban.</param>
+    /// <param name="canBanAccount">Whether the player has an account which may be banned, e.g. not a game master's.</param>
     /// <returns>The sanction to execute.</returns>
-    internal static Sanction DecideSanction(SpeedHackDetectConfiguration config, int warningsInWindow, bool hasAccount)
+    internal static Sanction DecideSanction(SpeedHackDetectConfiguration config, int warningsInWindow, bool canBanAccount)
     {
         if (warningsInWindow <= config.MaxWarnings)
         {
             return new Sanction(WarnPlayer: true, DisconnectPlayer: false, BanAccount: false);
         }
 
-        bool banAccount = config.AutoBan && hasAccount;
+        bool banAccount = config.AutoBan && canBanAccount;
         bool disconnectPlayer = config.DisconnectOnViolation;
         return new Sanction(!banAccount && !disconnectPlayer, disconnectPlayer, banAccount);
     }

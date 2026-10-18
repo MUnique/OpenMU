@@ -196,6 +196,39 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     private static bool IsServerControlled(Player player) => player is Offline.OfflinePlayer;
 
     /// <summary>
+    /// Determines whether the player is a game master. Game masters are trusted, so their
+    /// violations are still logged and answered, but never with a ban of their account.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c> if the player is a game master; otherwise, <c>false</c>.</returns>
+    private static bool IsGameMaster(Player player) =>
+        player.Account?.State is AccountState.GameMaster or AccountState.GameMasterInvisible
+        || player.SelectedCharacter?.CharacterStatus is CharacterStatus.GameMaster;
+
+    /// <summary>
+    /// Gets the maximum walk credit, which defines how far the walk start points
+    /// may run ahead of the time which actually passed.
+    /// </summary>
+    /// <remarks>
+    /// The game client reports the tile it's about to enter as its position, as soon as it starts
+    /// a step. When the player clicks new targets in quick succession, every click starts a new
+    /// step, so every walk request claims one more tile than the character actually walked yet.
+    /// This lead is legitimate and bounded: when it exceeds <see cref="SpeedHackDetectConfiguration.MaxAllowedWalkStartOffset"/>,
+    /// the walk is resynchronized anyway. So, the credit covers at least that many steps, even when the
+    /// configured tolerance is lower - especially with fast mounts (e.g. a horse), which scale the
+    /// tolerance down by their shorter step delay.
+    /// </remarks>
+    /// <param name="config">The configuration.</param>
+    /// <param name="stepDelayMs">The current step delay of the player.</param>
+    /// <returns>The maximum walk credit in milliseconds.</returns>
+    private static double GetMaxWalkCreditMs(SpeedHackDetectConfiguration config, double stepDelayMs)
+    {
+        double configuredCreditMs = config.WalkSpeedToleranceMs * (stepDelayMs / WalkSpeedValidator.NormalStepDelayMs);
+        double walkStartLeadCreditMs = Math.Max(0, config.MaxAllowedWalkStartOffset) * stepDelayMs;
+        return Math.Max(configuredCreditMs, walkStartLeadCreditMs);
+    }
+
+    /// <summary>
     /// Evaluates one walk against the earned time budget and updates the player's walk state.
     /// The caller must hold <see cref="SpeedHackState.Lock"/>.
     /// </summary>
@@ -208,7 +241,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     private SpeedHackViolationSeverity EvaluateWalkLocked(Player player, SpeedHackDetectConfiguration config, SpeedHackState state, Point startPoint, DateTime now)
     {
         double stepDelayMs = player.StepDelay.TotalMilliseconds;
-        double maxCreditMs = config.WalkSpeedToleranceMs * (stepDelayMs / WalkSpeedValidator.NormalStepDelayMs);
+        double maxCreditMs = GetMaxWalkCreditMs(config, stepDelayMs);
 
         // The walk check works like a token bucket of walking time: passed time adds credit,
         // walked tiles consume it. This way, only the average speed matters. When walk packets
@@ -311,7 +344,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             }
 
             player.Logger.LogWarning("Speedhack warning issued for player {0}. Total warnings in last hour: {1}", player.Name, state.AlertTimes.Count);
-            sanction = ViolationPolicy.DecideSanction(config, state.AlertTimes.Count, player.Account is not null);
+            sanction = ViolationPolicy.DecideSanction(config, state.AlertTimes.Count, player.Account is not null && !IsGameMaster(player));
             if (sanction.BanAccount && player.Account is { } account)
             {
                 player.Logger.LogError("Player {0} exceeded speedhack warning limit. Banning account {1} and disconnecting.", player.Name, account.LoginName);
