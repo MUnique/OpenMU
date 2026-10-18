@@ -34,7 +34,7 @@ internal static class DiscordServiceCollectionExtensions
 
         return services.AddSingleton<IGameEventListener>(provider => new DiscordWebhookNotifier(
             settings,
-            new HttpClient(),
+            DiscordHttpClient.Create(),
             serverId => gameServers.Values.FirstOrDefault(server => server.Id == serverId)?.Description,
             guildId => provider.GetRequiredService<IGuildServer>().GetPersistentGuildNameAsync(guildId),
             provider.GetRequiredService<ILoggerFactory>()));

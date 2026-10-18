@@ -85,7 +85,7 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
     /// </summary>
     /// <param name="embed">The embed.</param>
     /// <returns><see langword="true"/>, if the embed was queued; <see langword="false"/>, if the sender is shutting down.</returns>
-    public bool Enqueue(DiscordEmbed embed) => this._queue.Writer.TryWrite(embed);
+    public bool Enqueue(DiscordEmbed embed) => this._queue.Writer.TryWrite(embed.Limit());
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
@@ -144,14 +144,25 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
     {
         var reader = this._queue.Reader;
         var cancellationToken = this._cancellation.Token;
+        DiscordEmbed? pending = null;
         try
         {
-            while (await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+            while (pending is not null || await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
             {
+                // Discord limits the number of embeds and the length of their texts per message.
                 var batch = new List<DiscordEmbed>(MaximumEmbedsPerMessage);
-                while (batch.Count < MaximumEmbedsPerMessage && reader.TryRead(out var embed))
+                var totalLength = 0;
+                while (batch.Count < MaximumEmbedsPerMessage && (pending ?? (reader.TryRead(out var next) ? next : null)) is { } embed)
                 {
+                    if (batch.Count > 0 && totalLength + embed.TextLength > DiscordEmbed.MaximumTotalLength)
+                    {
+                        pending = embed;
+                        break;
+                    }
+
+                    pending = null;
                     batch.Add(embed);
+                    totalLength += embed.TextLength;
                 }
 
                 try
@@ -210,6 +221,13 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
                     delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
                     this._logger.LogWarning("Discord returned {statusCode}, retrying after {delay}.", response.StatusCode, delay);
                 }
+                else if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // The URL is fine, but Discord didn't accept the content. Retrying wouldn't help.
+                    var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    this._logger.LogError("Discord rejected the content of {count} message(s): {response}", batch.Count, body);
+                    return;
+                }
                 else
                 {
                     // E.g. the webhook was deleted. Retrying wouldn't help.
@@ -221,6 +239,12 @@ public sealed class DiscordWebhookSender : IAsyncDisposable
             {
                 delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
                 this._logger.LogWarning(ex, "Discord isn't reachable, retrying after {delay}.", delay);
+            }
+            catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+            {
+                // The request timed out, see DiscordHttpClient.Timeout.
+                delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
+                this._logger.LogWarning(ex, "Discord didn't answer in time, retrying after {delay}.", delay);
             }
 
             await Task.Delay(delay, this._timeProvider, cancellationToken).ConfigureAwait(false);
