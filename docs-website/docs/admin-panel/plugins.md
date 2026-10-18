@@ -107,6 +107,22 @@ It publishes:
 
 Each kind of event can be switched off in the plugin configuration.
 
+## Server announcements
+
+The *Server announcements* plugin shows a list of announcements to all players,
+one after another, so that a game master doesn't have to type recurring ones
+like rule reminders or a link to the community. It's disabled by default.
+
+Its configuration has:
+
+* the *Interval* between one announcement and the next (at least 10 seconds),
+* the *Announcements*, each with its text and its message type, e.g. the golden
+  message in the centre of the screen or a blue system message.
+
+The announcements are shown in their order; after the last one, it starts over
+with the first one. Each game server has its own rotation. The text can be translated:
+players see the translation for their language, if there is one.
+
 ## Writing your own plugin
 
 Implementing a plugin is documented next to the code, in the

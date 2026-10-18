@@ -2898,6 +2898,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The time between one announcement and the next. The minimum is 10 seconds..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interval.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The announcements, in the order in which they are shown. After the last one, it starts over with the first one..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Announcements.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Text_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Text_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How the announcement is shown, e.g. as golden message in the center of the screen or as blue system message..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message Type.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows a configured list of announcements to all players of a game server, one after another in a fixed interval..
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server announcements.
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets level of a player. Usage: /setlevel (level) (optional:character).
         /// </summary>
         public static string SetLevelChatCommandPlugIn_Description {
