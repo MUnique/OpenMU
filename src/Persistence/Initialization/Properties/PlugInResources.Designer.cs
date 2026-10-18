@@ -581,6 +581,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixSocketSeedCraftingUpdatePlugIn_Description text.</summary>
         public static string FixSocketSeedCraftingUpdatePlugIn_Description => ResourceManager.GetString("FixSocketSeedCraftingUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddRageFighterAncientSetsUpdatePlugIn_Name text.</summary>
+        public static string AddRageFighterAncientSetsUpdatePlugIn_Name => ResourceManager.GetString("AddRageFighterAncientSetsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddRageFighterAncientSetsUpdatePlugIn_Description text.</summary>
+        public static string AddRageFighterAncientSetsUpdatePlugIn_Description => ResourceManager.GetString("AddRageFighterAncientSetsUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FixWarriorMorningStarPlugIn_Name text.</summary>
         public static string FixWarriorMorningStarPlugIn_Name => ResourceManager.GetString("FixWarriorMorningStarPlugIn_Name", resourceCulture)!;
 
