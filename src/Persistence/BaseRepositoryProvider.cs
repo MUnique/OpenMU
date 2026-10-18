@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Collections.Concurrent;
 using System.Threading;
 
 /// <summary>
@@ -18,7 +19,10 @@ public class BaseRepositoryProvider : IRepositoryProvider
     /// <summary>
     /// Gets the repositories for each entity type.
     /// </summary>
-    protected IDictionary<Type, object> Repositories { get; } = new Dictionary<Type, object>();
+    /// <remarks>
+    /// Derived providers may register repositories on demand, while other contexts look them up concurrently.
+    /// </remarks>
+    protected IDictionary<Type, object> Repositories { get; } = new ConcurrentDictionary<Type, object>();
 
     /// <summary>
     /// Gets the repository of the specified generic type.

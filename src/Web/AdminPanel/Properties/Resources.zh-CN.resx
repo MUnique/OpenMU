@@ -1789,4 +1789,115 @@
   <data name="TerrainEditor" xml:space="preserve">
     <value>地形编辑器</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>仪表板</value>
+  </data>
+  <data name="DashboardPlayersOnline" xml:space="preserve">
+    <value>在线玩家</value>
+  </data>
+  <data name="DashboardPlayerCapacity" xml:space="preserve">
+    <value>运行中的游戏服务器共 {0} 个名额</value>
+  </data>
+  <data name="DashboardServersRunning" xml:space="preserve">
+    <value>运行中的服务器</value>
+  </data>
+  <data name="DashboardServersNotRunning" xml:space="preserve">
+    <value>{0} 个未运行</value>
+  </data>
+  <data name="DashboardAllServersRunning" xml:space="preserve">
+    <value>所有服务器均在运行</value>
+  </data>
+  <data name="DashboardNewAccounts" xml:space="preserve">
+    <value>最近 7 天新注册 +{0}</value>
+  </data>
+  <data name="DashboardBannedAccounts" xml:space="preserve">
+    <value>{0} 个已封禁</value>
+  </data>
+  <data name="DashboardAlliances" xml:space="preserve">
+    <value>{0} 个联盟</value>
+  </data>
+  <data name="DashboardCharacters" xml:space="preserve">
+    <value>{0} 个角色</value>
+  </data>
+  <data name="DashboardNotAvailable" xml:space="preserve">
+    <value>不可用</value>
+  </data>
+  <data name="DashboardOnlineHistory" xml:space="preserve">
+    <value>最近 24 小时在线玩家</value>
+  </data>
+  <data name="DashboardOnlineHistoryDescription" xml:space="preserve">
+    <value>最近 24 小时在线玩家图表。当前 {0}，峰值 {1}，最低值 {2}。</value>
+  </data>
+  <data name="DashboardSampleInterval" xml:space="preserve">
+    <value>每 {0} 分钟采样一次</value>
+  </data>
+  <data name="DashboardCollectingData" xml:space="preserve">
+    <value>正在收集数据。历史记录从管理面板启动时开始。</value>
+  </data>
+  <data name="DashboardHoursAgo" xml:space="preserve">
+    <value>{0} 小时前</value>
+  </data>
+  <data name="DashboardNow" xml:space="preserve">
+    <value>现在</value>
+  </data>
+  <data name="DashboardCurrent" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="DashboardPeak" xml:space="preserve">
+    <value>峰值</value>
+  </data>
+  <data name="DashboardLow" xml:space="preserve">
+    <value>最低值</value>
+  </data>
+  <data name="DashboardManageServers" xml:space="preserve">
+    <value>管理服务器</value>
+  </data>
+  <data name="DashboardConnections" xml:space="preserve">
+    <value>{0} 个连接</value>
+  </data>
+  <data name="DashboardAdministratorsOnly" xml:space="preserve">
+    <value>仅限管理员</value>
+  </data>
+  <data name="DashboardUptime" xml:space="preserve">
+    <value>运行时间</value>
+  </data>
+  <data name="DashboardUptimeValue" xml:space="preserve">
+    <value>{0} 天 {1} 小时 {2} 分钟</value>
+  </data>
+  <data name="DashboardMemory" xml:space="preserve">
+    <value>内存</value>
+  </data>
+  <data name="DashboardMemoryValue" xml:space="preserve">
+    <value>工作集 {0:N0} MB</value>
+  </data>
+  <data name="DashboardVersion" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="DashboardDatabase" xml:space="preserve">
+    <value>数据库</value>
+  </data>
+  <data name="DashboardDatabaseConnected" xml:space="preserve">
+    <value>已连接</value>
+  </data>
+  <data name="DashboardDatabaseNotReachable" xml:space="preserve">
+    <value>无法连接</value>
+  </data>
+  <data name="DashboardConfigurationUpdates" xml:space="preserve">
+    <value>配置更新</value>
+  </data>
+  <data name="DashboardUpdatesAvailable" xml:space="preserve">
+    <value>个更新可用于您的游戏配置。</value>
+  </data>
+  <data name="DashboardNoUpdates" xml:space="preserve">
+    <value>您的游戏配置已是最新。</value>
+  </data>
+  <data name="DashboardReviewUpdates" xml:space="preserve">
+    <value>查看更新</value>
+  </data>
+  <data name="DashboardQuickActions" xml:space="preserve">
+    <value>快捷操作</value>
+  </data>
+  <data name="DashboardOpen" xml:space="preserve">
+    <value>打开</value>
+  </data>
 </root>

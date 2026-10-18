@@ -2017,4 +2017,115 @@
   <data name="LogLevelOverridesInvalid" xml:space="preserve">
     <value>Every source needs a name, and each name may only be used once.</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DashboardPlayersOnline" xml:space="preserve">
+    <value>Players online</value>
+  </data>
+  <data name="DashboardPlayerCapacity" xml:space="preserve">
+    <value>of {0} slots on the running game servers</value>
+  </data>
+  <data name="DashboardServersRunning" xml:space="preserve">
+    <value>Servers running</value>
+  </data>
+  <data name="DashboardServersNotRunning" xml:space="preserve">
+    <value>{0} not running</value>
+  </data>
+  <data name="DashboardAllServersRunning" xml:space="preserve">
+    <value>All servers are running</value>
+  </data>
+  <data name="DashboardNewAccounts" xml:space="preserve">
+    <value>+{0} registered in the last 7 days</value>
+  </data>
+  <data name="DashboardBannedAccounts" xml:space="preserve">
+    <value>{0} banned</value>
+  </data>
+  <data name="DashboardAlliances" xml:space="preserve">
+    <value>{0} alliances</value>
+  </data>
+  <data name="DashboardCharacters" xml:space="preserve">
+    <value>{0} characters</value>
+  </data>
+  <data name="DashboardNotAvailable" xml:space="preserve">
+    <value>Not available</value>
+  </data>
+  <data name="DashboardOnlineHistory" xml:space="preserve">
+    <value>Players online in the last 24 hours</value>
+  </data>
+  <data name="DashboardOnlineHistoryDescription" xml:space="preserve">
+    <value>Chart of the players online in the last 24 hours. Currently {0}, peak {1}, low {2}.</value>
+  </data>
+  <data name="DashboardSampleInterval" xml:space="preserve">
+    <value>sampled every {0} minutes</value>
+  </data>
+  <data name="DashboardCollectingData" xml:space="preserve">
+    <value>Collecting data. The history starts when the admin panel is started.</value>
+  </data>
+  <data name="DashboardHoursAgo" xml:space="preserve">
+    <value>{0} h ago</value>
+  </data>
+  <data name="DashboardNow" xml:space="preserve">
+    <value>now</value>
+  </data>
+  <data name="DashboardCurrent" xml:space="preserve">
+    <value>Now</value>
+  </data>
+  <data name="DashboardPeak" xml:space="preserve">
+    <value>Peak</value>
+  </data>
+  <data name="DashboardLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="DashboardManageServers" xml:space="preserve">
+    <value>Manage servers</value>
+  </data>
+  <data name="DashboardConnections" xml:space="preserve">
+    <value>{0} connections</value>
+  </data>
+  <data name="DashboardAdministratorsOnly" xml:space="preserve">
+    <value>Administrators only</value>
+  </data>
+  <data name="DashboardUptime" xml:space="preserve">
+    <value>Uptime</value>
+  </data>
+  <data name="DashboardUptimeValue" xml:space="preserve">
+    <value>{0} d {1} h {2} min</value>
+  </data>
+  <data name="DashboardMemory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="DashboardMemoryValue" xml:space="preserve">
+    <value>{0:N0} MB working set</value>
+  </data>
+  <data name="DashboardVersion" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="DashboardDatabase" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="DashboardDatabaseConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="DashboardDatabaseNotReachable" xml:space="preserve">
+    <value>Not reachable</value>
+  </data>
+  <data name="DashboardConfigurationUpdates" xml:space="preserve">
+    <value>Configuration updates</value>
+  </data>
+  <data name="DashboardUpdatesAvailable" xml:space="preserve">
+    <value>updates are available for your game configuration.</value>
+  </data>
+  <data name="DashboardNoUpdates" xml:space="preserve">
+    <value>Your game configuration is up to date.</value>
+  </data>
+  <data name="DashboardReviewUpdates" xml:space="preserve">
+    <value>Review updates</value>
+  </data>
+  <data name="DashboardQuickActions" xml:space="preserve">
+    <value>Quick actions</value>
+  </data>
+  <data name="DashboardOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
 </root>

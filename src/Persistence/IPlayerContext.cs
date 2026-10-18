@@ -92,6 +92,14 @@ public interface IPlayerContext : IContext
     ValueTask<IEnumerable<Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets statistics about the player accounts.
+    /// </summary>
+    /// <param name="registeredSince">The point in time (UTC) since which registered accounts are counted as new.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The statistics about the player accounts.</returns>
+    ValueTask<AccountStatistics> GetAccountStatisticsAsync(DateTime registeredSince, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the account by character name.
     /// </summary>
     /// <param name="characterName">The character name.</param>
