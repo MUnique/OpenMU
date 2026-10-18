@@ -60,7 +60,7 @@ public partial class ItemCraftingResultItem
         }
         else
         {
-            itemName = this.ItemDefinition.Name;
+            itemName = this.ItemDefinition.Name.ToString() ?? string.Empty;
         }
 
         string level;

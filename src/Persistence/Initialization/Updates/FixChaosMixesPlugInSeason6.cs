@@ -46,12 +46,12 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Dark horse spirit and raven spirit drop item groups id fix (do this first because it persists changes to DB)
-        if (gameConfiguration.Items.Single(id => id.Name == "Spirit") is { } spirit)
+        if (gameConfiguration.Items.Single(id => id.Name.ValueInNeutralLanguage == "Spirit") is { } spirit)
         {
             spirit.MaximumItemLevel = 1;
             var maps = gameConfiguration.Maps;
-            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } oldHorseGroup
-                && gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } oldRavenGroup)
+            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description.ValueInNeutralLanguage == "Dark Horse Spirit") is { } oldHorseGroup
+                && gameConfiguration.DropItemGroups.Single(dig => dig.Description.ValueInNeutralLanguage == "Dark Raven Spirit") is { } oldRavenGroup)
             {
                 await DeleteDropItemGroupAsync(oldHorseGroup).ConfigureAwait(false);
                 await DeleteDropItemGroupAsync(oldRavenGroup).ConfigureAwait(false);

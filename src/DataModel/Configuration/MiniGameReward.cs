@@ -117,7 +117,7 @@ public partial class MiniGameReward
 
         if (this.ItemReward != null)
         {
-            result.Append(" ").Append(this.ItemReward.Description);
+            result.Append(" ").Append(this.ItemReward.Description.ToString());
         }
 
         return result.ToString();

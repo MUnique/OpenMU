@@ -13,6 +13,7 @@ using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
@@ -139,7 +140,7 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
         {
             foreach (var map in this._maps)
             {
-                var mapMatches = !this.HasFilter || this.Matches(map.Name);
+                var mapMatches = !this.HasFilter || this.MatchesLocalized(map.Name);
                 var overviews = map.MonsterSpawns
                     .Select(spawn => spawn.MonsterDefinition)
                     .OfType<MonsterDefinition>()
@@ -147,7 +148,7 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
                     .Distinct()
                     .Select(monster => new MonsterDropOverview(monster, map))
                     .Where(overview => mapMatches
-                                       || this.Matches(overview.Monster.Designation)
+                                       || this.MatchesLocalized(overview.Monster.Designation)
                                        || overview.Groups.Any(this.IsMatchingFilter))
                     .OrderBy(overview => overview.Level)
                     .ThenBy(overview => overview.Monster.Number)
@@ -164,23 +165,23 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
         this._monsters
             .Where(m => m.DropItemGroups.Count > 0)
             .Where(m => !this.HasFilter
-                        || this.Matches(m.Designation)
+                        || this.MatchesLocalized(m.Designation)
                         || m.DropItemGroups.Any(this.IsMatchingFilter));
 
     private IEnumerable<ItemDefinition> FilteredBoxItems =>
         this._items
             .Where(i => i.DropItems.Count > 0)
             .Where(i => !this.HasFilter
-                        || this.Matches(i.Name)
+                        || this.MatchesLocalized(i.Name)
                         || i.DropItems.Any(this.IsMatchingFilter));
 
     private IEnumerable<ItemDefinition> FilteredItems =>
         this._items
             .Where(i => !this._showOnlyDroppableItems || i.DropsFromMonsters)
-            .Where(i => !this.HasFilter || this.Matches(i.Name));
+            .Where(i => !this.HasFilter || this.MatchesLocalized(i.Name));
 
     private IEnumerable<ItemOptionDefinition> FilteredOptions =>
-        this._options.Where(o => !this.HasFilter || this.Matches(o.Name));
+        this._options.Where(o => !this.HasFilter || this.MatchesLocalized(o.Name));
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
@@ -239,14 +240,24 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
         return text?.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase) is true;
     }
 
+    /// <summary>
+    /// Determines whether the filter matches the text in the current culture or in the neutral language,
+    /// so that the configuration can also be searched by the (usually english) neutral name.
+    /// </summary>
+    private bool MatchesLocalized(LocalizedString? text)
+    {
+        return text is { } value
+               && (this.Matches(value.ToString()) || this.Matches(value.ValueInNeutralLanguage));
+    }
+
     private bool IsMatchingFilter(DropItemGroup group)
     {
         return !this.HasFilter
-               || this.Matches(group.Description.ToString())
+               || this.MatchesLocalized(group.Description)
                || this.Matches(group.ItemType.ToString())
-               || this.Matches(group.Monster?.Designation)
+               || this.MatchesLocalized(group.Monster?.Designation)
                || (this._usages.TryGetValue(group, out var usage) && this.Matches(usage))
-               || group.PossibleItems.Any(i => this.Matches(i.Name));
+               || group.PossibleItems.Any(i => this.MatchesLocalized(i.Name));
     }
 
     private IReadOnlyList<DropItemGroup> GetMonsterGroups(MonsterDefinition monster)

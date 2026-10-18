@@ -102,7 +102,7 @@ public partial class CashShopCatalog : ComponentBase, IAsyncDisposable
 
     private static string GetItemCaption(ItemDefinition? item)
     {
-        return item is null ? string.Empty : $"{(string)item.Name} ({item.Group}, {item.Number})";
+        return item is null ? string.Empty : $"{item.Name} ({item.Group}, {item.Number})";
     }
 
     private static string GetFlagText(bool value) => value ? "✓" : NoValue;

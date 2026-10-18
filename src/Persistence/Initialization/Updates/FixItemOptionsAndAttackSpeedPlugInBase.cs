@@ -139,7 +139,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         }
 
         // Fix 3rd wings defense bonus per level table
-        var thirdWingsDefenseTable = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name == "Defense Bonus (3rd Wings)");
+        var thirdWingsDefenseTable = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name.ValueInNeutralLanguage == "Defense Bonus (3rd Wings)");
         if (thirdWingsDefenseTable is not null)
         {
             var thirdWings = gameConfiguration.Items.Where(i =>
