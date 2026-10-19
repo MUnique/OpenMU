@@ -500,6 +500,7 @@ Each phase is useful on its own and can be released separately.
    * `players_teleport`/`give_item`/`set_level`/…, `events_*`
    * OAuth authorization for MCP
    * plugin point for operations contributed by plugins
+
 ## 10. Testing
 
 * Unit tests for the operations layer (it's UI-free, so this becomes possible for
