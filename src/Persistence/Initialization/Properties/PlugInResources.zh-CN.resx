@@ -371,4 +371,10 @@
   </data>
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>添加格斗家古代套装</value></data>
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>此更新添加圣火装备的古代套装：维加和卡默。</value></data>
+  <data name="AddCashShopUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加商城</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加商城配置，包含游戏客户端商城脚本 512.2012.084 中的商品包，以及从商城保管箱使用时生效的物品（角色卡、仓库和背包扩展道具）。</value>
+  </data>
 </root>
