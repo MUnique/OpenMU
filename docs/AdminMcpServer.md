@@ -122,8 +122,14 @@ public sealed class PlayerTools
 
 *Stateless* HTTP is enough for all tools of this concept: they are request /
 response, and it keeps the endpoint behind load balancers and restarts simple.
-Notifications (e.g. "a server went down") can be added later with a stateful
-session, see [§12](#12-open-questions).
+There are deliberately no push notifications (e.g. "a server went down"), see
+[§12](#12-decisions).
+
+The tools live in their own project, `MUnique.OpenMU.Web.AdminPanel.Mcp`, which
+is referenced by the hosts ([`src/Startup`](../src/Startup) and
+[`src/Dapr/AdminPanel.Host`](../src/Dapr/AdminPanel.Host)). The MCP SDK still
+changes quickly; this keeps its dependency and its breaking changes out of the
+admin panel project.
 
 The endpoint is **off by default** and switched on with
 `AdminPanel:Mcp:Enabled` (or `OPENMU_MCP_ENABLED=true` in docker), the same way
@@ -155,8 +161,11 @@ configuration in a modal, and the generic edit pages work directly on persistenc
 contexts which live as long as the page. The MCP tools can't reuse that.
 
 So the first step is to pull the actual operations into UI independent services
-— in a new folder (or project) next to the admin panel, e.g.
-`Web/AdminPanel/Operations`:
+— in a new project, `MUnique.OpenMU.Web.AdminPanel.Operations`. It's referenced by
+the admin panel (Blazor pages and REST controllers) and by the MCP project, and
+doesn't depend on any UI framework. The roles and authorization policies, which
+are `internal` to the admin panel today, move there too, since both front ends
+need them:
 
 * inputs are plain values (names, ids, JSON), outputs are small records with a
   status, never entities with lazy navigation properties;
@@ -554,20 +563,34 @@ as the operations' signatures and docs, and task oriented tools
 be written by hand. A reasonable middle way is to start hand-written with the
 parity test, and introduce the generator once the patterns are clear.
 
-## 12. Open questions
+## 12. Decisions
 
-* **Notifications:** Should agents be able to subscribe to events (server
-  stopped, player banned, invasion started)? MCP supports that with stateful
-  sessions; it overlaps with the existing [game event publisher](../docs-website/docs/admin-panel/plugins.md#game-event-publisher).
-* **Separate project?** Should the MCP tools live in the admin panel project or in
-  a new `MUnique.OpenMU.Web.AdminPanel.Mcp` project, so the dependency on the MCP
-  SDK is optional? A separate project is cleaner; the cost is one more project.
-* **Undo:** The audit log contains the diff of configuration changes. An
-  `audit_revert` tool would be possible for configuration changes, but not for
-  operational actions (a disconnect can't be undone).
-* **Extensibility:** Should plugins be able to contribute MCP tools (a plugin
-  point `IMcpToolProvider`)? Custom features of a server could then be managed
-  by agents too.
-* **Rates for a limited time:** Tasks like "double XP for the weekend" need a
-  scheduled change back. That could be an MCP tool which creates a scheduled
-  configuration change, or a feature of the periodic task plugins.
+Questions which came up while writing the concept, and how they were decided:
+
+* **No push notifications.** An agent session is short-lived; nobody listens when
+  a server goes down at night. The endpoint stays stateless, agents ask on demand
+  (`server_overview`, `audit_list`). Alerting stays with Grafana and the
+  [game event publisher](../docs-website/docs/admin-panel/plugins.md#game-event-publisher),
+  which already reach Discord and the like.
+* **Separate projects.** The MCP tools go into `MUnique.OpenMU.Web.AdminPanel.Mcp`,
+  the operations layer into `MUnique.OpenMU.Web.AdminPanel.Operations`
+  ([§3.2](#32-technology), [§4.1](#41-a-ui-independent-admin-operations-layer)).
+* **Revert for configuration changes only.** `audit_revert` re-applies the stored
+  before-values of a configuration change from the audit log, with the usual
+  preview ([§6.3](#63-preview-and-apply)). It refuses when the object was changed
+  again in the meantime. Operational actions (disconnect, ban, messages) can't
+  be reverted; for large mistakes there are the backups.
+* **Plugins can contribute operations.** A plugin point (e.g.
+  `IAdminOperationPlugIn`) lets plugins add operations, which pass the same role
+  checks, audit log and parity test ([§11](#11-keeping-the-mcp-server-complete))
+  as the built-in ones. Only *active* plugins contribute. Their **read-only**
+  operations are exposed to agents automatically; their **write** operations only
+  after the server owner allowed that in the plugin's settings — activating a
+  plugin from somewhere doesn't silently hand write access to agents.
+* **Timed changes are out of scope.** "Double XP for the weekend" needs somebody
+  to switch it back. That's the job of the admin's agent or scheduler, which calls
+  `rates_set` again; OpenMU doesn't get a scheduler for configuration changes.
+  The *Plan an event weekend* prompt reminds the admin of that.
+* **The coding rule comes with phase 1** ([§11.1](#111-the-rule)), together with
+  the parity test which enforces it — not earlier, since it can't be followed
+  before the operations layer exists.
