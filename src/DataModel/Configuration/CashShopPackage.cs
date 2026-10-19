@@ -26,7 +26,7 @@ public partial class CashShopPackage
     /// Gets or sets the name, which is only shown in the admin panel.
     /// The client shows the name of its script.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; } = new(string.Empty);
 
     /// <summary>
     /// Gets or sets the price of a bundle package.
@@ -69,6 +69,6 @@ public partial class CashShopPackage
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.PackageSequence}: {this.Name}";
+        return $"{this.PackageSequence}: {this.Name.GetTranslation(System.Globalization.CultureInfo.CurrentUICulture)}";
     }
 }
