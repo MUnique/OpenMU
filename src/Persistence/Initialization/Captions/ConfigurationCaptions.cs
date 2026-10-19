@@ -169,6 +169,11 @@ public static class ConfigurationCaptions
             return (GetTypeName(set) + ":ArmorSet", ((long)armorNumber << 32) | (uint)set.SetLevel, caption.Property.Name);
         }
 
+        if (caption.Owner is CashShopPackage package)
+        {
+            return (GetTypeName(package), package.PackageSequence, caption.Property.Name);
+        }
+
         var numberProperty = caption.Owner.GetType().GetProperty("Number");
         return numberProperty?.GetValue(caption.Owner) is { } number and (byte or short or int or long or ushort)
             ? (GetTypeName(caption.Owner), Convert.ToInt64(number, CultureInfo.InvariantCulture), caption.Property.Name)

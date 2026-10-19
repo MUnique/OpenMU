@@ -7,11 +7,13 @@ namespace MUnique.OpenMU.Web.Tests.Pages;
 using System.Globalization;
 using System.Threading;
 using Bunit;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Pages;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
@@ -57,6 +59,8 @@ public class CashShopCatalogPageTests
 
         this._context = new BunitContext();
         this._context.JSInterop.Mode = JSRuntimeMode.Loose;
+        this._context.Services.Configure<RequestLocalizationOptions>(options => options.AddSupportedUICultures("en", "zh-CN"));
+        this._context.Services.AddSingleton<IChangeNotificationService, ChangeNotificationService>();
         this._context.Services.AddSingleton(dataSource.Object);
         this._context.Services.AddSingleton(Mock.Of<ILookupController>());
         this._context.Services.AddSingleton(Mock.Of<IToastService>());
@@ -183,6 +187,44 @@ public class CashShopCatalogPageTests
             string.Format(Resources.CashShopIssueInvalidQuantity, option.PriceSequence),
         }));
         Assert.That(CashShopCatalogCheck.GetIssues(configuration, bundle), Is.EqualTo(new[] { Resources.CashShopIssueNegativeBundlePrice }));
+    }
+
+    /// <summary>
+    /// The list and search use the UI language, and editing a translation preserves the source and neutral name.
+    /// </summary>
+    [Test]
+    public void LocalizedNamesAreDisplayedSearchedAndEdited()
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            var chinese = CultureInfo.GetCultureInfo("zh-CN");
+            CultureInfo.CurrentUICulture = chinese;
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
+            var package = this._gameConfiguration.CashShopConfiguration!.Packages.First(p => p.PackageSequence == 10);
+            package.Name = new LocalizedString("Jewel bundle").WithTranslation(chinese, "宝石礼包").WithSourceKey("Test/JewelBundle");
+            package.Products.First().ItemDefinition!.Name = new LocalizedString("Jewel").WithTranslation(chinese, "宝石").WithSourceKey("Test/Jewel");
+            var cut = this._context.Render<CashShopCatalog>();
+            cut.WaitForAssertion(() => Assert.That(cut.Find("table.quickgrid").TextContent, Does.Contain("宝石礼包")));
+            Assert.That(cut.Markup, Does.Not.Contain("@src="));
+            cut.Find("#packageSearch").Input("宝石礼包");
+            cut.WaitForAssertion(() => Assert.That(cut.Find("table.quickgrid").TextContent, Does.Not.Contain("Pet for a day")));
+            cut.Find("#packageSearch").Input("Jewel bundle");
+            cut.WaitForAssertion(() => Assert.That(cut.Find("table.quickgrid").TextContent, Does.Contain("宝石礼包")));
+            cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Edit)).Click();
+            Assert.That(cut.Find("#Name").GetAttribute("value"), Is.EqualTo("Jewel bundle"));
+            Assert.That(cut.Find("#Name_zh-CN").GetAttribute("value"), Is.EqualTo("宝石礼包"));
+            Assert.That(cut.Markup, Does.Not.Contain("@src="));
+            cut.Find("#Name_zh-CN").Change("自定义宝石礼包");
+            cut.Find("form").Submit();
+            Assert.That(package.Name.ValueInNeutralLanguage, Is.EqualTo("Jewel bundle"));
+            Assert.That(package.Name.GetOwnTranslation(chinese), Is.EqualTo("自定义宝石礼包"));
+            Assert.That(package.Name.SourceKey, Is.EqualTo("Test/JewelBundle"));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
     }
 
     private static CashShopPackage CreatePackage(int sequence, string name, bool isForSale, ItemDefinition? item, TimeSpan duration)
