@@ -19,6 +19,6 @@ public class ChaosCastleStartConfiguration : MiniGameStartConfiguration
             EntranceOpenedMessage = "Chaos Castle entrance is open and closes in {0} minute(s).",
             EntranceClosedMessage = "Chaos Castle entrance closed.",
             TaskDuration = TimeSpan.FromMinutes(15),
-            Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromMinutes(60)).ToList(),
+            Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromMinutes(240), startLimit: new TimeOnly(2, 0)).ToList(),
         };
 }

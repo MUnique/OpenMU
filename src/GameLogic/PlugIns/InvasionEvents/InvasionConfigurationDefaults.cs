@@ -20,7 +20,7 @@ internal static class InvasionConfigurationDefaults
         PreStartMessageDelay = TimeSpan.FromSeconds(3),
         StartMessage = "[{mapName}] Golden invasion!",
         EndMessage = "[{mapName}] Golden invasion has ended.",
-        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4)).ToList(),
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4), new TimeOnly(0, 30)).ToList(),
         Mobs =
         [
             new(InvasionMonsters.GoldenBudgeDragon, 20, [InvasionMaps.Lorencia], SpawnMapStrategy.RandomMap),
@@ -44,7 +44,7 @@ internal static class InvasionConfigurationDefaults
         PreStartMessageDelay = TimeSpan.FromSeconds(3),
         StartMessage = "[{mapName}] Red Dragon invasion!",
         EndMessage = "[{mapName}] Red Dragon invasion has ended.",
-        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(6), new TimeOnly(2, 0)).ToList(),
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4), new TimeOnly(1, 30)).ToList(),
         Mobs =
         [
             new(InvasionMonsters.RedDragon, 5, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias], SpawnMapStrategy.RandomMap),
@@ -61,7 +61,7 @@ internal static class InvasionConfigurationDefaults
         StartMessage = "[{mapName}] White Wizard corps invasion!",
         EndMessage = "[{mapName}] White Wizard corps invasion has ended.",
         ForceSingleMap = true,
-        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(2), new TimeOnly(12, 0), new TimeOnly(23, 0)).ToList(),
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4), new TimeOnly(2, 30)).ToList(),
         Mobs =
         [
             new(InvasionMonsters.WhiteWizard, 1, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias], SpawnMapStrategy.RandomMap, announceDeath: true),

@@ -638,6 +638,12 @@
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Konfiguration des Events im Raffinerieturm von Kanturu hinzu.</value>
   </data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve">
+    <value>Eingangsdauer der Events vereinheitlichen</value>
+  </data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung erhöht die Eingangsdauer der Events mit gemeinsamem Eingang, wie Blood Castle, Devil Square und Kanturu, auf die fünf Minuten, die jeder Event-Eingang ankündigt.</value>
+  </data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve">
     <value>Korrektur der Fähigkeit Drain Life</value>
   </data>
