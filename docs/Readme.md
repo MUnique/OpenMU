@@ -49,6 +49,9 @@ can be searched and navigated.
 * [Cash shop](CashShop.md): the design and implementation of the in-game cash
   shop, the facts about the game client it's based on, and what's left to do
 
+* [Admin MCP server](AdminMcpServer.md): a concept for an MCP server which
+  lets server admins manage OpenMU through their AI agents
+
 * [architecture overview.png](architecture%20overview.png): the big picture,
   explained on the
   [architecture page](../docs-website/docs/development/architecture.md) of the
