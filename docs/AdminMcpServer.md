@@ -493,12 +493,14 @@ Each phase is useful on its own and can be released separately.
    * `config_update`/`create`/`delete`, `plugins_set_active`/`update_configuration`,
      task tools for rates, drops, spawns, `characters_update`/`add_item` (offline)
    * allowed tool groups per API key
+   * `audit_revert` for configuration changes
 4. **Live game master functions and OAuth**
    * `IGameServerAdministration` incl. Dapr client, chat commands refactored onto
      the shared actions
    * `players_teleport`/`give_item`/`set_level`/…, `events_*`
    * OAuth authorization for MCP
-
+   * OAuth authorization for MCP
+   * plugin point for operations contributed by plugins
 ## 10. Testing
 
 * Unit tests for the operations layer (it's UI-free, so this becomes possible for
