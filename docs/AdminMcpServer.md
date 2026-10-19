@@ -123,7 +123,7 @@ public sealed class PlayerTools
 *Stateless* HTTP is enough for all tools of this concept: they are request /
 response, and it keeps the endpoint behind load balancers and restarts simple.
 Notifications (e.g. "a server went down") can be added later with a stateful
-session, see [§11](#11-open-questions).
+session, see [§12](#12-open-questions).
 
 The endpoint is **off by default** and switched on with
 `AdminPanel:Mcp:Enabled` (or `OPENMU_MCP_ENABLED=true` in docker), the same way
@@ -473,6 +473,7 @@ Each phase is useful on its own and can be released separately.
      `config_types`/`config_describe`/`config_search`/`config_query`/`config_get`,
      `diagnostics_check`
    * documentation page on the website: setup with the common agents
+   * the parity test and the coding rule of [§11](#11-keeping-the-mcp-server-complete)
 2. **Operations**
    * audit log (+ panel page)
    * `server_start`/`stop`/`send_message`, `players_disconnect`/`ban`,
@@ -503,7 +504,57 @@ Each phase is useful on its own and can be released separately.
 * Manual end-to-end tests with at least two different agents before each phase is
   released, following the coding rules (rule 13).
 
-## 11. Open questions
+## 11. Keeping the MCP server complete
+
+The MCP server is only useful as long as agents can do what the panel can do.
+If new admin functionality keeps landing in Razor pages only, the MCP server
+falls behind, admins notice it in the middle of a task, and fall back to the
+panel. A note in a pull request template won't prevent that; it needs a rule,
+and a test which enforces it.
+
+### 11.1 The rule
+
+Added to [`CODING_RULES.md`](CODING_RULES.md) together with phase 1, so it
+doesn't describe code which doesn't exist yet:
+
+> **Admin functionality goes into the operations layer, and every operation is
+> reachable by agents.** Implement new admin functions in the UI independent
+> operations layer ([§4.1](#41-a-ui-independent-admin-operations-layer)); the
+> Razor page only calls it. Expose each operation as an MCP tool with a
+> description, a minimum role and the annotations (read-only, destructive,
+> idempotent), or mark it with `[NotExposedToAgents("reason")]` when it makes
+> no sense for an agent (e.g. the graphical map editor). Changing an operation's
+> parameters or meaning means changing its tool in the same pull request.
+
+It belongs next to rule 7 (*Respect the layers*), because it is mostly a layering
+rule: the operations layer is the seam, the front ends are thin.
+
+### 11.2 Enforcement
+
+* **Parity test.** A unit test enumerates the public methods of the operations
+  services by reflection and fails for every operation which neither a tool
+  references (`[McpServerTool]` method with `[ExposesOperation(typeof(…), nameof(…))]`)
+  nor is marked `[NotExposedToAgents]`. A forgotten tool then fails the build,
+  not a user's agent session.
+* **Tool snapshot test** ([§10](#10-testing)): renaming or removing a tool shows
+  up as a diff in review, so breaking changes for existing agent configurations
+  are deliberate.
+* **Role consistency.** The same test checks that a tool's minimum role isn't
+  lower than the role the operation itself demands.
+
+### 11.3 Alternative: generate the tools
+
+The repository already uses source generators (plugin proxies, chat command
+arguments). The operations could carry the metadata instead —
+`[AdminOperation(Role = Operator, Destructive = true)]` plus XML documentation —
+and a generator emits the MCP tools, and possibly the REST endpoints, from it.
+Then there is nothing to forget. The price: the generated tools are only as good
+as the operations' signatures and docs, and task oriented tools
+([§5.6](#56-game-configuration)) which combine several operations still have to
+be written by hand. A reasonable middle way is to start hand-written with the
+parity test, and introduce the generator once the patterns are clear.
+
+## 12. Open questions
 
 * **Notifications:** Should agents be able to subscribe to events (server
   stopped, player banned, invasion started)? MCP supports that with stateful
