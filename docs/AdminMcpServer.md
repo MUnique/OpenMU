@@ -499,7 +499,6 @@ Each phase is useful on its own and can be released separately.
      the shared actions
    * `players_teleport`/`give_item`/`set_level`/…, `events_*`
    * OAuth authorization for MCP
-   * OAuth authorization for MCP
    * plugin point for operations contributed by plugins
 ## 10. Testing
 
