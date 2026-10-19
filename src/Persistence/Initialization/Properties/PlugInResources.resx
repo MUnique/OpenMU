@@ -328,6 +328,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Kanturu Refinery Tower event configuration.</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>Standardize event entrance duration</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>This update raises the entrance duration of the events with a shared entrance, like Blood Castle, Devil Square and Kanturu, to the five minutes which every event entrance announces.</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>Fix Drain Life Skill</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>Updates the attributes of the summoner's Drain Life skill to make it work properly.</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Rage Fighter Master Tree PlugIn</value></data>

@@ -287,6 +287,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>添加新的系统配置。</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>添加坎特鲁副本数据</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>添加坎特鲁提炼之塔副本配置。</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>统一活动入口持续时间</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>此更新将共用入口的活动（如血色城堡、恶魔广场和坎特鲁）的入口持续时间统一为所有活动入口公告的五分钟。</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>修正摄魂咒</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>更新召唤术师摄魂咒的属性，使其正常工作。</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>补全格斗家大师技能树</value></data>

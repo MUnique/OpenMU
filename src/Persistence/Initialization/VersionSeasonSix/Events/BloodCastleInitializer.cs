@@ -208,7 +208,7 @@ internal class BloodCastleInitializer : InitializerBase
         this.GameConfiguration.MiniGameDefinitions.Add(bloodCastle);
         bloodCastle.Name = MiniGameNames.ResourceManager.GetLocalizedString($"BloodCastle{level}");
         bloodCastle.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForBloodCastleEventLevel{level}");
-        bloodCastle.EnterDuration = TimeSpan.FromMinutes(1);
+        bloodCastle.EnterDuration = MiniGameConstants.EnterDuration;
         bloodCastle.GameDuration = TimeSpan.FromMinutes(20);
         bloodCastle.ExitDuration = TimeSpan.FromMinutes(1);
         bloodCastle.MaximumPlayerCount = 10;
