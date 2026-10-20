@@ -7,15 +7,49 @@ description: A Discord bot and notifications, which bring the game to your Disco
 
 # Discord
 
-OpenMU can bring your game into your Discord server, in two ways which can be
-combined:
+OpenMU can bring your game into your Discord server:
 
 * **Notifications:** what happens in the game, like mini games, the castle siege
-  or rare drops, is posted into your channels. This works with simple *webhooks*,
-  or through the bot.
+  or rare drops, is posted into your channels.
 * **The bot:** it shows how many players are online, keeps a status message of
-  the game servers up to date, answers slash commands like `/who`, and sets up
-  the channels and roles of your Discord server with `/openmu setup`.
+  the game servers up to date, answers slash commands like `/who`, links Discord
+  users to game accounts, mirrors the chats of the game and lets game masters
+  act from Discord.
+
+## Setting up
+
+Open **Discord** in the admin panel (route `/discord`, administrators only). The
+page guides you through the setup, step by step:
+
+1. **Create the bot** in the Discord developer portal, and paste its token.
+2. **Invite the bot** to your Discord server, with the link the page creates. It
+   asks for the permissions the bot needs.
+3. **Set up your Discord server:** choose it, and let the page create the
+   [channels and roles](#the-layout-of-your-discord-server) which the bot uses.
+4. **Notifications:** which channel receives which [category](#notifications),
+   and the language of the messages.
+5. **Chat bridge** (optional): the [chat bridge](#chat-bridge) settings.
+
+![The Discord page of the admin panel](/img/admin-panel/discord-setup.png)
+
+The status at the top tells what's missing, e.g. a rejected token, or that the
+*Game Event Publisher* plugin is inactive. Without it, nothing is posted
+([Plugins](../admin-panel/plugins.md#game-event-publisher)); in its
+configuration, you choose which events are published, which monsters are bosses
+and which levels are milestones.
+
+**Save** writes the `Discord` section of the `appsettings.json` of the server,
+and the bot restarts with the new settings right away. The token and the
+webhook URLs are passwords; they are stored in this file, not in the database.
+Settings which are also set by an environment variable take its value, and the
+page shows them as such. In a docker container, the file lives inside the
+container: mount it as a volume to keep the settings when the container is
+recreated.
+
+The page is available when the admin panel runs in the server process. In the
+distributed deployment, the bot runs in its own container, which you configure
+with the [settings](#settings) as environment variables, see
+[Distributed deployment](../deployment/distributed.md#discord).
 
 ## Notifications
 
@@ -27,69 +61,13 @@ combined:
 | `Notices` | Global notices which game masters send with the `!` chat prefix |
 | `StaffAlerts` | The commands which game masters used in Discord, see [Commands for game masters](#commands-for-game-masters) |
 
-Each category is posted into its own channel. A category without channel isn't
-posted.
-
-For the notifications, the *Game Event Publisher* plugin has to be active
-([Plugins](../admin-panel/plugins.md#game-event-publisher)). It's disabled by
-default. In its configuration, you choose which events are published, which
-monsters are bosses and which levels are milestones.
-
-### With webhooks
-
-Webhooks are the simplest way, because you don't need a bot:
-
-1. In Discord, open the settings of a channel, go to *Integrations → Webhooks*,
-   create a webhook and copy its URL. Do this for each channel which should
-   receive messages.
-2. Configure the URLs, e.g. as environment variables:
-
-   ```yaml
-   environment:
-     - Discord__Webhooks__Events=https://discord.com/api/webhooks/...
-     - Discord__Webhooks__CastleSiege=https://discord.com/api/webhooks/...
-     - Discord__Webhooks__WorldNews=https://discord.com/api/webhooks/...
-     - Discord__Webhooks__Notices=https://discord.com/api/webhooks/...
-   ```
-
-Treat the URLs like passwords: everybody who knows one can post into the channel.
-That's why they are not part of the game configuration in the database, but of
-the configuration of the server process.
-
-### With the bot
-
-When the bot runs, it posts the notifications into the channels of the
-[layout](#setting-up-your-discord-server), e.g. the `Events` into `#events`. It
-finds them by their name, so you don't need to configure anything.
-
-You can also choose other channels by their identifiers, e.g.
-`Discord__Bot__Channels__Events=123456789012345678`. To copy the identifier of a
-channel, enable the *Developer Mode* in the advanced settings of Discord, then
-right-click the channel and select *Copy Channel ID*.
-
-A category with a channel of the bot is posted by the bot, otherwise by its
-webhook.
+Each category is posted into its own channel. The bot posts into the channel of
+its [layout](#the-layout-of-your-discord-server), e.g. the `Events` into
+`#events`, unless you choose another channel. Without the bot, a category is
+posted by a *webhook* of the channel (channel settings → *Integrations →
+Webhooks*). A category without either isn't posted.
 
 ## The bot
-
-### Creating the bot
-
-1. Open the [Discord developer portal](https://discord.com/developers/applications),
-   create a *New Application* and give it the name of your server.
-2. Under *Bot*, click *Reset Token* and copy the token. Treat it like a password.
-   The bot doesn't need any of the *Privileged Gateway Intents*, unless the
-   [chat bridge](#writing-from-discord) should read the normal messages.
-3. Under *OAuth2 → URL Generator*, select the scopes `bot` and
-   `applications.commands`, and the permissions *View Channels*, *Send Messages*,
-   *Embed Links* and *Read Message History*. For [`/openmu setup`](#setting-up-your-discord-server),
-   also select *Manage Channels* and *Manage Roles*. Open the generated URL to
-   invite the bot to your Discord server.
-4. Configure the token, e.g. as environment variable `Discord__Bot__Token`.
-5. Restart the server. In the all-in-one deployment, the bot appears in the
-   server list of the admin panel.
-
-In the distributed deployment, the bot runs in its own container, see
-[Distributed deployment](../deployment/distributed.md#discord).
 
 ### Slash commands
 
@@ -111,7 +89,7 @@ In the distributed deployment, the bot runs in its own container, see
 The commands only show information; they don't change anything in the game.
 Additionally, players can [link their account](#linking-accounts) with
 `/link`, `/unlink` and `/character`, and administrators of the Discord server
-can use [`/openmu setup`](#setting-up-your-discord-server).
+can use [`/openmu setup`](#the-layout-of-your-discord-server).
 
 ### Linking accounts
 
@@ -133,7 +111,7 @@ every Discord server the bot is in.
 account list shows the links of an account and can remove them.
 
 Linked users get the role *Linked Player* of the
-[layout](#setting-up-your-discord-server) on your Discord server, so you can,
+[layout](#the-layout-of-your-discord-server) on your Discord server, so you can,
 for example, open channels only for players. The bot needs the *Manage Roles*
 permission for it, and its own role has to be above *Linked Player* in the role
 list. When a link is removed, also in the admin panel, the role is removed
@@ -143,22 +121,21 @@ The answers to these commands are only visible to the player who used them.
 The codes are stored as hash in the database, and every code can only be used
 once.
 
-When you configure the identifier of your Discord server (`Discord__Bot__GuildId`),
-the commands are available immediately. Otherwise, Discord may take up to an hour
-to show them.
+On the Discord server which you choose in the setup, the commands are available
+immediately. On others, Discord may take up to an hour to show them.
 
 ### Status
 
 The presence of the bot shows how many players are online. In the status channel
-of the layout (`#server-status`), or in the one which you configure
-(`Discord__Bot__StatusChannelId`), the bot keeps a message with the status of the
-game servers up to date. Use a channel in which only the bot writes; it finds its
+of the layout (`#server-status`), or in the one which you choose, the bot keeps a
+message with the status of the game servers up to date. Use a channel in which only the bot writes; it finds its
 message again after a restart.
 
-### Setting up your Discord server
+### The layout of your Discord server
 
-The bot can set up your Discord server: run `/openmu setup` as administrator of
-the Discord server. It creates the following roles, categories and channels:
+*Create channels and roles* on the Discord page, or `/openmu setup` in Discord as
+administrator of the Discord server, creates the following roles, categories and
+channels:
 
 | Category | Channels |
 |---|---|
@@ -171,23 +148,23 @@ channels for notifications and the status. `#announcements` becomes an
 *Announcement channel* on community servers, so that other Discord servers,
 e.g. the ones of guilds, can follow it.
 
-You can run the command again at any time: what already exists is adopted by
+You can do it again at any time: what already exists is adopted by
 its name and nothing is created twice. Nothing is deleted or renamed, and only
 the permissions which the layout defines are changed. So you can also start
 with an existing Discord server, or with a server template (see below), and
-let the command add what's missing. The answer of the command shows what was
-created, what already existed and what failed.
+let it add what's missing. Its result shows what was created, what already
+existed and what failed. Afterwards, move the role of the bot above
+*Linked Player* in the role list of the Discord server.
 
-The bot finds the channels by their name: when you rename one, configure its
-identifier instead, as described above. When the bot is in more than one
-Discord server, it posts into the channels of the one which you configure as
-`Discord__Bot__GuildId`.
+The bot finds the channels by their name: when you rename one, choose it on the
+Discord page instead. When the bot is in more than one Discord server, it posts
+into the channels of the one which you choose in the setup.
 
 #### Your own layout
 
 The layout is defined in a JSON file. To use your own, copy the
 [default layout](https://github.com/MUnique/OpenMU/blob/master/src/Discord/Provisioning/DefaultLayout.json),
-adapt it and configure its path as `Discord__Bot__LayoutFile`. Each role,
+adapt it and enter its path as *Layout file* in the advanced settings of the Discord page. Each role,
 category and channel has a key, which has to be unique, and a name. Channels can
 have these properties:
 
@@ -217,7 +194,7 @@ The bot can mirror the chats of the game to Discord channels, in both directions
 
 * the **world chat**: players write into it in the game with `/world <message>`,
   and all players of all game servers read it. It's mirrored to `#world-chat` of
-  the [layout](#setting-up-your-discord-server).
+  the [layout](#the-layout-of-your-discord-server).
 * the chat of a **guild** (`@` in the game) or an **alliance** (`@@`), when its
   guild master binds it to a channel.
 
@@ -230,8 +207,8 @@ guild or alliance is mirrored.
 
 The guild master links the Discord user to the account (see
 [Linking accounts](#linking-accounts)) and selects the guild master character
-with `/character`. Then there are two ways, which you can restrict with
-`Discord__Bot__ChatBridge__BindingMode`:
+with `/character`. Then there are two ways, which you can restrict in the chat
+bridge settings of the Discord page:
 
 * **On your Discord server:** `/guildchat create` creates a channel like
   `#guild-legends` in the category *Guilds* of the layout. Only the bot and the
@@ -240,9 +217,8 @@ with `/character`. Then there are two ways, which you can restrict with
   needs the *Manage Channels* permission for it.
 * **On the Discord server of the guild:** the guild master invites the bot to
   the Discord server of the guild, and uses `/guildchat bind` in the channel
-  which should be bound. This requires the permission to manage the channel. With
-  `Discord__Bot__ChatBridge__AllowedDiscordServerIds`, you can allow only some Discord
-  servers.
+  which should be bound. This requires the permission to manage the channel. You
+  can allow only some Discord servers.
 
 The option `scope` of these commands chooses the chat of the alliance instead,
 which only the master of an alliance can bind. `/guildchat unbind` in the channel
@@ -254,8 +230,8 @@ or the bot is removed from the Discord server.
 
 Only Discord users who are linked to an account can write into the game, as
 their selected character, which has to be a member of the guild or alliance. The
-chat ban of the account applies, and a user can send 10 messages per minute
-(`Discord__Bot__ChatBridge__MaximumMessagesPerMinute`). The messages go through the
+chat ban of the account applies, and a user can send 10 messages per minute,
+by default. The messages go through the
 plugins of the plugin point *External chat message received*, e.g. a filter,
 which can stop them; the plugins of *Chat message received* only get the
 messages of players in the game.
@@ -263,12 +239,12 @@ messages of players in the game.
 In the game, the messages appear with the character name and the prefix `@`,
 e.g. `@Hero`, so a Discord user can't pretend to be a character in the game.
 Mentions, markdown and line breaks are removed, custom emojis become `:name:`,
-and long messages are cut (`Discord__Bot__ChatBridge__MaximumMessageLength`).
+and long messages are cut, by default after 100 characters.
 
 To read the normal messages in the channels, the bot needs the privileged
 *Message Content* intent: enable it for the bot in the Discord developer portal
-under *Bot → Privileged Gateway Intents*, and set
-`Discord__Bot__ChatBridge__ReadMessages` to `true`. When a message can't be sent to the
+under *Bot → Privileged Gateway Intents*, and turn on *Read messages* on the
+Discord page. When a message can't be sent to the
 game, the bot reacts with ❌ (permission *Add Reactions*), and `/say` tells why.
 Without the intent, players use `/say <message>`. Discord only approves the
 intent for verified bots, which are in more than 100 Discord servers, with a
@@ -284,7 +260,7 @@ Game masters can use these commands in Discord:
 | `/kick <character>` | Disconnects the character from the game. |
 | `/ban <character>` | Bans the account of the character, which has to be online, and disconnects it. |
 
-They need the role *GM* of the [layout](#setting-up-your-discord-server) on your
+They need the role *GM* of the [layout](#the-layout-of-your-discord-server) on your
 Discord server, **and** a [linked account](#linking-accounts) whose selected
 character (`/character`) is a game master. So a Discord role alone isn't
 enough. Every use is logged and posted into `#staff-alerts`, or the channel of
@@ -307,7 +283,8 @@ it, and who allow direct messages from its members.
 
 ## Scheduled events
 
-With `Bot__CreateScheduledEvents` set to `true`, the bot creates a *scheduled
+With *Create a Discord event for the next castle siege* (in the advanced settings),
+the bot creates a *scheduled
 event* on your Discord server for the next castle siege, so that players can
 mark it as interesting and get reminded by Discord. It's updated when the castle
 siege changes its state, which requires the *Game Event Publisher* plugin with
@@ -315,9 +292,10 @@ castle siege events. The bot needs the permission to create events.
 
 ## Settings
 
-All settings are part of the `Discord` section of the configuration, so they can
-also be set in the `appsettings.json` of the server. As environment variables,
-the parts are separated by two underscores.
+The Discord page edits these settings. They are the `Discord` section of the
+configuration, so you can also set them without the admin panel, e.g. in the
+distributed deployment: as environment variables, prefixed with `Discord__` and
+with the parts separated by two underscores, like `Discord__Bot__Token`.
 
 | Setting | Default | Description |
 |---|---|---|

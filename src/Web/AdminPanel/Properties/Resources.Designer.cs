@@ -1486,6 +1486,699 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        public static string Discord {
+            get {
+                return ResourceManager.GetString("Discord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allowed Discord servers of guilds.
+        /// </summary>
+        public static string DiscordAllowedServers {
+            get {
+                return ResourceManager.GetString("DiscordAllowedServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identifiers separated by commas. Empty: all..
+        /// </summary>
+        public static string DiscordAllowedServersHint {
+            get {
+                return ResourceManager.GetString("DiscordAllowedServersHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Where guilds can bind their chat.
+        /// </summary>
+        public static string DiscordBindingMode {
+            get {
+                return ResourceManager.GetString("DiscordBindingMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On your Discord server and on the ones of the guilds.
+        /// </summary>
+        public static string DiscordBindingMode_Both {
+            get {
+                return ResourceManager.GetString("DiscordBindingMode_Both", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only on the Discord servers of the guilds.
+        /// </summary>
+        public static string DiscordBindingMode_GuildOwnedOnly {
+            get {
+                return ResourceManager.GetString("DiscordBindingMode_GuildOwnedOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only on your Discord server.
+        /// </summary>
+        public static string DiscordBindingMode_HostedOnly {
+            get {
+                return ResourceManager.GetString("DiscordBindingMode_HostedOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string DiscordCategory {
+            get {
+                return ResourceManager.GetString("DiscordCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The castle siege.
+        /// </summary>
+        public static string DiscordCategory_CastleSiege {
+            get {
+                return ResourceManager.GetString("DiscordCategory_CastleSiege", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mini games, invasions and their winners.
+        /// </summary>
+        public static string DiscordCategory_Events {
+            get {
+                return ResourceManager.GetString("DiscordCategory_Events", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notices of game masters.
+        /// </summary>
+        public static string DiscordCategory_Notices {
+            get {
+                return ResourceManager.GetString("DiscordCategory_Notices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commands which game masters used in Discord.
+        /// </summary>
+        public static string DiscordCategory_StaffAlerts {
+            get {
+                return ResourceManager.GetString("DiscordCategory_StaffAlerts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boss kills, rare drops and level milestones.
+        /// </summary>
+        public static string DiscordCategory_WorldNews {
+            get {
+                return ResourceManager.GetString("DiscordCategory_WorldNews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Channel of the bot.
+        /// </summary>
+        public static string DiscordChannelId {
+            get {
+                return ResourceManager.GetString("DiscordChannelId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the one of the layout.
+        /// </summary>
+        public static string DiscordChannelIdPlaceholder {
+            get {
+                return ResourceManager.GetString("DiscordChannelIdPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a Discord event for the next castle siege.
+        /// </summary>
+        public static string DiscordCreateScheduledEvents {
+            get {
+                return ResourceManager.GetString("DiscordCreateScheduledEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set by an environment variable or another configuration source, which takes precedence over this page..
+        /// </summary>
+        public static string DiscordDefinedElsewhere {
+            get {
+                return ResourceManager.GetString("DiscordDefinedElsewhere", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brings the game into your Discord server: notifications of events, a bot with slash commands, linked accounts and the chat bridge. Go through the steps from top to bottom. The settings are saved in {0}, and the Discord integration restarts with them right away..
+        /// </summary>
+        public static string DiscordDescription {
+            get {
+                return ResourceManager.GetString("DiscordDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game servers which announce events.
+        /// </summary>
+        public static string DiscordEventAnnouncingServers {
+            get {
+                return ResourceManager.GetString("DiscordEventAnnouncingServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identifiers separated by commas. Empty: all. When several game servers run the same events, choose one of them to avoid duplicate messages..
+        /// </summary>
+        public static string DiscordEventAnnouncingServersHint {
+            get {
+                return ResourceManager.GetString("DiscordEventAnnouncingServersHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; isn&apos;t a valid identifier of Discord..
+        /// </summary>
+        public static string DiscordInvalidId {
+            get {
+                return ResourceManager.GetString("DiscordInvalidId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invite the bot.
+        /// </summary>
+        public static string DiscordInviteBot {
+            get {
+                return ResourceManager.GetString("DiscordInviteBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the token first..
+        /// </summary>
+        public static string DiscordInviteNeedsToken {
+            get {
+                return ResourceManager.GetString("DiscordInviteNeedsToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string DiscordLanguage {
+            get {
+                return ResourceManager.GetString("DiscordLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Layout file.
+        /// </summary>
+        public static string DiscordLayoutFile {
+            get {
+                return ResourceManager.GetString("DiscordLayoutFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the default layout.
+        /// </summary>
+        public static string DiscordLayoutFilePlaceholder {
+            get {
+                return ResourceManager.GetString("DiscordLayoutFilePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings couldn&apos;t be loaded from {0}: {1}.
+        /// </summary>
+        public static string DiscordLoadError {
+            get {
+                return ResourceManager.GetString("DiscordLoadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum length of a message from Discord.
+        /// </summary>
+        public static string DiscordMaximumMessageLength {
+            get {
+                return ResourceManager.GetString("DiscordMaximumMessageLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum messages per minute of a Discord user.
+        /// </summary>
+        public static string DiscordMaximumMessagesPerMinute {
+            get {
+                return ResourceManager.GetString("DiscordMaximumMessagesPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum waiting messages per channel.
+        /// </summary>
+        public static string DiscordMaximumQueuedMessages {
+            get {
+                return ResourceManager.GetString("DiscordMaximumQueuedMessages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page is only available when the admin panel runs in the process of the server. In the distributed deployment, the Discord integration runs in its own container, which is configured with environment variables, see the documentation..
+        /// </summary>
+        public static string DiscordNotAvailable {
+            get {
+                return ResourceManager.GetString("DiscordNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open the Discord developer portal.
+        /// </summary>
+        public static string DiscordOpenDeveloperPortal {
+            get {
+                return ResourceManager.GetString("DiscordOpenDeveloperPortal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord doesn&apos;t allow the bot to read messages. Enable Message Content under Bot → Privileged Gateway Intents in the developer portal, or turn off Read messages in step 5..
+        /// </summary>
+        public static string DiscordProblemIntentNotEnabled {
+            get {
+                return ResourceManager.GetString("DiscordProblemIntentNotEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot couldn&apos;t be started. The log file says why..
+        /// </summary>
+        public static string DiscordProblemStartFailed {
+            get {
+                return ResourceManager.GetString("DiscordProblemStartFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord rejected the token. Copy it again from the developer portal (Bot → Reset Token)..
+        /// </summary>
+        public static string DiscordProblemTokenRejected {
+            get {
+                return ResourceManager.GetString("DiscordProblemTokenRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The plugin Game Event Publisher is active. On the plugins page, you choose what it publishes..
+        /// </summary>
+        public static string DiscordPublisherActive {
+            get {
+                return ResourceManager.GetString("DiscordPublisherActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game. Activate it on the plugins page, and choose there what is published..
+        /// </summary>
+        public static string DiscordPublisherInactive {
+            get {
+                return ResourceManager.GetString("DiscordPublisherInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read messages.
+        /// </summary>
+        public static string DiscordReadMessages {
+            get {
+                return ResourceManager.GetString("DiscordReadMessages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The normal messages in the bound channels are sent into the game. This requires the privileged intent Message Content (developer portal → Bot → Privileged Gateway Intents). Without it, players write with /say..
+        /// </summary>
+        public static string DiscordReadMessagesHint {
+            get {
+                return ResourceManager.GetString("DiscordReadMessagesHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings were saved. The Discord integration restarts with them..
+        /// </summary>
+        public static string DiscordSaved {
+            get {
+                return ResourceManager.GetString("DiscordSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings couldn&apos;t be saved: {0}.
+        /// </summary>
+        public static string DiscordSaveError {
+            get {
+                return ResourceManager.GetString("DiscordSaveError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set - leave it empty to keep it.
+        /// </summary>
+        public static string DiscordSecretSet {
+            get {
+                return ResourceManager.GetString("DiscordSecretSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord server.
+        /// </summary>
+        public static string DiscordServer {
+            get {
+                return ResourceManager.GetString("DiscordServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identifier of the Discord server.
+        /// </summary>
+        public static string DiscordServerId {
+            get {
+                return ResourceManager.GetString("DiscordServerId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When the bot is connected, you can choose the Discord server here. Otherwise, enable the developer mode in the advanced settings of Discord, right-click the server and select Copy Server ID..
+        /// </summary>
+        public static string DiscordServerIdHint {
+            get {
+                return ResourceManager.GetString("DiscordServerIdHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (the only one which the bot is in).
+        /// </summary>
+        public static string DiscordServerNone {
+            get {
+                return ResourceManager.GetString("DiscordServerNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings couldn&apos;t be applied: {0}.
+        /// </summary>
+        public static string DiscordSettingsError {
+            get {
+                return ResourceManager.GetString("DiscordSettingsError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Already there: {0}.
+        /// </summary>
+        public static string DiscordSetUpAdopted {
+            get {
+                return ResourceManager.GetString("DiscordSetUpAdopted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created: {0}.
+        /// </summary>
+        public static string DiscordSetUpCreated {
+            get {
+                return ResourceManager.GetString("DiscordSetUpCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed: {0}.
+        /// </summary>
+        public static string DiscordSetUpFailed {
+            get {
+                return ResourceManager.GetString("DiscordSetUpFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visible to everyone, because their roles are missing: {0}.
+        /// </summary>
+        public static string DiscordSetUpPublic {
+            get {
+                return ResourceManager.GetString("DiscordSetUpPublic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the role list of the Discord server, move the role of the bot above Linked Player, so that the bot can give this role to linked players..
+        /// </summary>
+        public static string DiscordSetUpRoleHint {
+            get {
+                return ResourceManager.GetString("DiscordSetUpRoleHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create channels and roles.
+        /// </summary>
+        public static string DiscordSetUpServer {
+            get {
+                return ResourceManager.GetString("DiscordSetUpServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot has to be connected and in the Discord server..
+        /// </summary>
+        public static string DiscordSetUpServerNeedsBot {
+            get {
+                return ResourceManager.GetString("DiscordSetUpServerNeedsBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates the roles, categories and channels which the bot uses, like /openmu setup in Discord. What already exists is kept, so you can do it again at any time. The bot needs the permissions Manage Channels and Manage Roles for it..
+        /// </summary>
+        public static string DiscordSetUpServerText {
+            get {
+                return ResourceManager.GetString("DiscordSetUpServerText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can skip the bot and only post notifications with webhooks, see step 4..
+        /// </summary>
+        public static string DiscordSkipBot {
+            get {
+                return ResourceManager.GetString("DiscordSkipBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string DiscordStatus {
+            get {
+                return ResourceManager.GetString("DiscordStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Channel of the status message.
+        /// </summary>
+        public static string DiscordStatusChannelId {
+            get {
+                return ResourceManager.GetString("DiscordStatusChannelId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot is connected as {0}, and is in {1} Discord servers..
+        /// </summary>
+        public static string DiscordStatusConnected {
+            get {
+                return ResourceManager.GetString("DiscordStatusConnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot is connecting to Discord....
+        /// </summary>
+        public static string DiscordStatusConnecting {
+            get {
+                return ResourceManager.GetString("DiscordStatusConnecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot isn&apos;t configured yet. Start with step 1..
+        /// </summary>
+        public static string DiscordStatusNotConfigured {
+            get {
+                return ResourceManager.GetString("DiscordStatusNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot isn&apos;t running. You can start it on the servers page..
+        /// </summary>
+        public static string DiscordStatusStopped {
+            get {
+                return ResourceManager.GetString("DiscordStatusStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status update interval (seconds).
+        /// </summary>
+        public static string DiscordStatusUpdateInterval {
+            get {
+                return ResourceManager.GetString("DiscordStatusUpdateInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In the Discord developer portal, create a New Application with the name of your server. Under Bot, click Reset Token and paste the token here. Treat it like a password: it&apos;s stored in the configuration file of the server, not in the database..
+        /// </summary>
+        public static string DiscordStep1Text {
+            get {
+                return ResourceManager.GetString("DiscordStep1Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1. Create the bot.
+        /// </summary>
+        public static string DiscordStep1Title {
+            get {
+                return ResourceManager.GetString("DiscordStep1Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invite the bot to your Discord server. The link asks for the permissions which the bot needs..
+        /// </summary>
+        public static string DiscordStep2Text {
+            get {
+                return ResourceManager.GetString("DiscordStep2Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2. Invite the bot.
+        /// </summary>
+        public static string DiscordStep2Title {
+            get {
+                return ResourceManager.GetString("DiscordStep2Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose the Discord server whose channels receive the notifications and the status. On it, the commands of the bot are available immediately..
+        /// </summary>
+        public static string DiscordStep3Text {
+            get {
+                return ResourceManager.GetString("DiscordStep3Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3. Set up your Discord server.
+        /// </summary>
+        public static string DiscordStep3Title {
+            get {
+                return ResourceManager.GetString("DiscordStep3Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Each category is posted into its own channel. The bot uses the channel of its layout, e.g. #events, unless you enter another channel here. Without the bot, enter the URL of a webhook of the channel (channel settings → Integrations → Webhooks). Treat it like a password..
+        /// </summary>
+        public static string DiscordStep4Text {
+            get {
+                return ResourceManager.GetString("DiscordStep4Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4. Notifications.
+        /// </summary>
+        public static string DiscordStep4Title {
+            get {
+                return ResourceManager.GetString("DiscordStep4Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mirrors the world chat into #world-chat, and the chats of guilds and alliances into the channels which their masters bind with /guildchat in Discord. Turn on Publish guild, alliance and world chat in the configuration of the plugin Game Event Publisher, too..
+        /// </summary>
+        public static string DiscordStep5Text {
+            get {
+                return ResourceManager.GetString("DiscordStep5Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5. Chat bridge (optional).
+        /// </summary>
+        public static string DiscordStep5Title {
+            get {
+                return ResourceManager.GetString("DiscordStep5Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advanced.
+        /// </summary>
+        public static string DiscordStep6Title {
+            get {
+                return ResourceManager.GetString("DiscordStep6Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Token of the bot.
+        /// </summary>
+        public static string DiscordToken {
+            get {
+                return ResourceManager.GetString("DiscordToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without the bot, the notifications are posted by the webhooks of step 4..
+        /// </summary>
+        public static string DiscordWebhooksOnly {
+            get {
+                return ResourceManager.GetString("DiscordWebhooksOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Webhook URL.
+        /// </summary>
+        public static string DiscordWebhookUrl {
+            get {
+                return ResourceManager.GetString("DiscordWebhookUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download the archived session.
         /// </summary>
         public static string DownloadArchivedSession {

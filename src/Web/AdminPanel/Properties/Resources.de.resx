@@ -1956,4 +1956,235 @@
   <data name="ExternalLinkRemoved" xml:space="preserve">
     <value>Die Verknüpfung wurde entfernt.</value>
   </data>
+  <data name="Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="DiscordDescription" xml:space="preserve">
+    <value>Bringt das Spiel auf deinen Discord-Server: Benachrichtigungen über Ereignisse, einen Bot mit Slash-Befehlen, verknüpfte Konten und die Chat-Brücke. Gehe die Schritte von oben nach unten durch. Die Einstellungen werden in {0} gespeichert, und die Discord-Integration startet sofort mit ihnen neu.</value>
+  </data>
+  <data name="DiscordNotAvailable" xml:space="preserve">
+    <value>Diese Seite ist nur verfügbar, wenn das Admin-Panel im Prozess des Servers läuft. In der verteilten Bereitstellung läuft die Discord-Integration in einem eigenen Container, der mit Umgebungsvariablen konfiguriert wird, siehe Dokumentation.</value>
+  </data>
+  <data name="DiscordLoadError" xml:space="preserve">
+    <value>Die Einstellungen konnten nicht aus {0} geladen werden: {1}</value>
+  </data>
+  <data name="DiscordSaveError" xml:space="preserve">
+    <value>Die Einstellungen konnten nicht gespeichert werden: {0}</value>
+  </data>
+  <data name="DiscordSaved" xml:space="preserve">
+    <value>Die Einstellungen wurden gespeichert. Die Discord-Integration startet mit ihnen neu.</value>
+  </data>
+  <data name="DiscordInvalidId" xml:space="preserve">
+    <value>'{0}' ist keine gültige Kennung von Discord.</value>
+  </data>
+  <data name="DiscordDefinedElsewhere" xml:space="preserve">
+    <value>Durch eine Umgebungsvariable oder eine andere Konfigurationsquelle festgelegt, die Vorrang vor dieser Seite hat.</value>
+  </data>
+  <data name="DiscordSecretSet" xml:space="preserve">
+    <value>Festgelegt - leer lassen, um es zu behalten</value>
+  </data>
+  <data name="DiscordStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="DiscordStatusNotConfigured" xml:space="preserve">
+    <value>Der Bot ist noch nicht eingerichtet. Beginne mit Schritt 1.</value>
+  </data>
+  <data name="DiscordStatusConnected" xml:space="preserve">
+    <value>Der Bot ist als {0} verbunden und ist in {1} Discord-Servern.</value>
+  </data>
+  <data name="DiscordStatusConnecting" xml:space="preserve">
+    <value>Der Bot verbindet sich mit Discord...</value>
+  </data>
+  <data name="DiscordStatusStopped" xml:space="preserve">
+    <value>Der Bot läuft nicht. Du kannst ihn auf der Seite der Server starten.</value>
+  </data>
+  <data name="DiscordProblemTokenRejected" xml:space="preserve">
+    <value>Discord hat das Token abgelehnt. Kopiere es erneut aus dem Developer Portal (Bot → Reset Token).</value>
+  </data>
+  <data name="DiscordProblemIntentNotEnabled" xml:space="preserve">
+    <value>Discord erlaubt dem Bot nicht, Nachrichten zu lesen. Aktiviere Message Content unter Bot → Privileged Gateway Intents im Developer Portal, oder schalte Nachrichten lesen in Schritt 5 aus.</value>
+  </data>
+  <data name="DiscordProblemStartFailed" xml:space="preserve">
+    <value>Der Bot konnte nicht gestartet werden. Die Log-Datei sagt warum.</value>
+  </data>
+  <data name="DiscordSettingsError" xml:space="preserve">
+    <value>Die Einstellungen konnten nicht angewendet werden: {0}</value>
+  </data>
+  <data name="DiscordWebhooksOnly" xml:space="preserve">
+    <value>Ohne Bot werden die Benachrichtigungen über die Webhooks aus Schritt 4 gepostet.</value>
+  </data>
+  <data name="DiscordPublisherInactive" xml:space="preserve">
+    <value>Das Plugin Game Event Publisher ist inaktiv, deshalb passiert in Discord nichts, wenn im Spiel etwas passiert. Aktiviere es auf der Seite der Plugins und wähle dort, was veröffentlicht wird.</value>
+  </data>
+  <data name="DiscordPublisherActive" xml:space="preserve">
+    <value>Das Plugin Game Event Publisher ist aktiv. Auf der Seite der Plugins wählst du, was es veröffentlicht.</value>
+  </data>
+  <data name="DiscordStep1Title" xml:space="preserve">
+    <value>1. Den Bot erstellen</value>
+  </data>
+  <data name="DiscordStep1Text" xml:space="preserve">
+    <value>Erstelle im Discord Developer Portal eine New Application mit dem Namen deines Servers. Klicke unter Bot auf Reset Token und füge das Token hier ein. Behandle es wie ein Passwort: es wird in der Konfigurationsdatei des Servers gespeichert, nicht in der Datenbank.</value>
+  </data>
+  <data name="DiscordOpenDeveloperPortal" xml:space="preserve">
+    <value>Discord Developer Portal öffnen</value>
+  </data>
+  <data name="DiscordToken" xml:space="preserve">
+    <value>Token des Bots</value>
+  </data>
+  <data name="DiscordSkipBot" xml:space="preserve">
+    <value>Du kannst den Bot überspringen und nur Benachrichtigungen mit Webhooks posten, siehe Schritt 4.</value>
+  </data>
+  <data name="DiscordStep2Title" xml:space="preserve">
+    <value>2. Den Bot einladen</value>
+  </data>
+  <data name="DiscordStep2Text" xml:space="preserve">
+    <value>Lade den Bot auf deinen Discord-Server ein. Der Link fragt nach den Berechtigungen, die der Bot braucht.</value>
+  </data>
+  <data name="DiscordInviteBot" xml:space="preserve">
+    <value>Bot einladen</value>
+  </data>
+  <data name="DiscordInviteNeedsToken" xml:space="preserve">
+    <value>Gib zuerst das Token ein.</value>
+  </data>
+  <data name="DiscordStep3Title" xml:space="preserve">
+    <value>3. Deinen Discord-Server einrichten</value>
+  </data>
+  <data name="DiscordStep3Text" xml:space="preserve">
+    <value>Wähle den Discord-Server, dessen Kanäle die Benachrichtigungen und den Status bekommen. Auf ihm sind die Befehle des Bots sofort verfügbar.</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord-Server</value>
+  </data>
+  <data name="DiscordServerNone" xml:space="preserve">
+    <value>(der einzige, in dem der Bot ist)</value>
+  </data>
+  <data name="DiscordServerId" xml:space="preserve">
+    <value>Kennung des Discord-Servers</value>
+  </data>
+  <data name="DiscordServerIdHint" xml:space="preserve">
+    <value>Wenn der Bot verbunden ist, kannst du den Discord-Server hier auswählen. Andernfalls aktiviere den Entwicklermodus in den erweiterten Einstellungen von Discord, klicke mit der rechten Maustaste auf den Server und wähle Server-ID kopieren.</value>
+  </data>
+  <data name="DiscordSetUpServer" xml:space="preserve">
+    <value>Kanäle und Rollen erstellen</value>
+  </data>
+  <data name="DiscordSetUpServerText" xml:space="preserve">
+    <value>Erstellt die Rollen, Kategorien und Kanäle, die der Bot verwendet, wie /openmu setup in Discord. Was schon existiert, bleibt erhalten, du kannst es also jederzeit wiederholen. Der Bot braucht dafür die Berechtigungen Kanäle verwalten und Rollen verwalten.</value>
+  </data>
+  <data name="DiscordSetUpServerNeedsBot" xml:space="preserve">
+    <value>Der Bot muss verbunden und im Discord-Server sein.</value>
+  </data>
+  <data name="DiscordSetUpCreated" xml:space="preserve">
+    <value>Erstellt: {0}</value>
+  </data>
+  <data name="DiscordSetUpAdopted" xml:space="preserve">
+    <value>Schon vorhanden: {0}</value>
+  </data>
+  <data name="DiscordSetUpFailed" xml:space="preserve">
+    <value>Fehlgeschlagen: {0}</value>
+  </data>
+  <data name="DiscordSetUpPublic" xml:space="preserve">
+    <value>Für alle sichtbar, weil ihre Rollen fehlen: {0}</value>
+  </data>
+  <data name="DiscordSetUpRoleHint" xml:space="preserve">
+    <value>Verschiebe in der Rollenliste des Discord-Servers die Rolle des Bots über Linked Player, damit der Bot diese Rolle an verknüpfte Spieler vergeben kann.</value>
+  </data>
+  <data name="DiscordStep4Title" xml:space="preserve">
+    <value>4. Benachrichtigungen</value>
+  </data>
+  <data name="DiscordStep4Text" xml:space="preserve">
+    <value>Jede Kategorie wird in einen eigenen Kanal gepostet. Der Bot verwendet den Kanal seines Layouts, z.B. #events, außer du gibst hier einen anderen Kanal an. Ohne Bot gibst du die URL eines Webhooks des Kanals an (Kanaleinstellungen → Integrationen → Webhooks). Behandle sie wie ein Passwort.</value>
+  </data>
+  <data name="DiscordCategory" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
+  <data name="DiscordChannelId" xml:space="preserve">
+    <value>Kanal des Bots</value>
+  </data>
+  <data name="DiscordChannelIdPlaceholder" xml:space="preserve">
+    <value>der des Layouts</value>
+  </data>
+  <data name="DiscordWebhookUrl" xml:space="preserve">
+    <value>Webhook-URL</value>
+  </data>
+  <data name="DiscordCategory_Events" xml:space="preserve">
+    <value>Minispiele, Invasionen und ihre Gewinner</value>
+  </data>
+  <data name="DiscordCategory_CastleSiege" xml:space="preserve">
+    <value>Die Burgbelagerung</value>
+  </data>
+  <data name="DiscordCategory_WorldNews" xml:space="preserve">
+    <value>Getötete Bosse, seltene Drops und Level-Meilensteine</value>
+  </data>
+  <data name="DiscordCategory_Notices" xml:space="preserve">
+    <value>Mitteilungen von Spielleitern</value>
+  </data>
+  <data name="DiscordCategory_StaffAlerts" xml:space="preserve">
+    <value>Befehle, die Spielleiter in Discord verwendet haben</value>
+  </data>
+  <data name="DiscordLanguage" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="DiscordEventAnnouncingServers" xml:space="preserve">
+    <value>Spielserver, die Ereignisse ankündigen</value>
+  </data>
+  <data name="DiscordEventAnnouncingServersHint" xml:space="preserve">
+    <value>Kennungen durch Kommas getrennt. Leer: alle. Wenn mehrere Spielserver dieselben Ereignisse haben, wähle einen von ihnen, um doppelte Nachrichten zu vermeiden.</value>
+  </data>
+  <data name="DiscordStep5Title" xml:space="preserve">
+    <value>5. Chat-Brücke (optional)</value>
+  </data>
+  <data name="DiscordStep5Text" xml:space="preserve">
+    <value>Spiegelt den Welt-Chat nach #world-chat und die Chats von Gilden und Allianzen in die Kanäle, die ihre Meister mit /guildchat in Discord binden. Schalte dazu auch Gilden-, Allianz- und Welt-Chat veröffentlichen in der Konfiguration des Plugins Game Event Publisher ein.</value>
+  </data>
+  <data name="DiscordBindingMode" xml:space="preserve">
+    <value>Wo Gilden ihren Chat binden können</value>
+  </data>
+  <data name="DiscordBindingMode_Both" xml:space="preserve">
+    <value>Auf deinem Discord-Server und auf denen der Gilden</value>
+  </data>
+  <data name="DiscordBindingMode_HostedOnly" xml:space="preserve">
+    <value>Nur auf deinem Discord-Server</value>
+  </data>
+  <data name="DiscordBindingMode_GuildOwnedOnly" xml:space="preserve">
+    <value>Nur auf den Discord-Servern der Gilden</value>
+  </data>
+  <data name="DiscordAllowedServers" xml:space="preserve">
+    <value>Erlaubte Discord-Server von Gilden</value>
+  </data>
+  <data name="DiscordAllowedServersHint" xml:space="preserve">
+    <value>Kennungen durch Kommas getrennt. Leer: alle.</value>
+  </data>
+  <data name="DiscordReadMessages" xml:space="preserve">
+    <value>Nachrichten lesen</value>
+  </data>
+  <data name="DiscordReadMessagesHint" xml:space="preserve">
+    <value>Die normalen Nachrichten in den gebundenen Kanälen werden ins Spiel gesendet. Das erfordert den privilegierten Intent Message Content (Developer Portal → Bot → Privileged Gateway Intents). Ohne ihn schreiben Spieler mit /say.</value>
+  </data>
+  <data name="DiscordMaximumMessageLength" xml:space="preserve">
+    <value>Maximale Länge einer Nachricht aus Discord</value>
+  </data>
+  <data name="DiscordMaximumMessagesPerMinute" xml:space="preserve">
+    <value>Maximale Nachrichten pro Minute eines Discord-Benutzers</value>
+  </data>
+  <data name="DiscordStep6Title" xml:space="preserve">
+    <value>Erweitert</value>
+  </data>
+  <data name="DiscordStatusChannelId" xml:space="preserve">
+    <value>Kanal der Statusnachricht</value>
+  </data>
+  <data name="DiscordStatusUpdateInterval" xml:space="preserve">
+    <value>Aktualisierungsintervall des Status (Sekunden)</value>
+  </data>
+  <data name="DiscordLayoutFile" xml:space="preserve">
+    <value>Layout-Datei</value>
+  </data>
+  <data name="DiscordLayoutFilePlaceholder" xml:space="preserve">
+    <value>das Standard-Layout</value>
+  </data>
+  <data name="DiscordCreateScheduledEvents" xml:space="preserve">
+    <value>Ein Discord-Event für die nächste Burgbelagerung erstellen</value>
+  </data>
+  <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
+    <value>Maximal wartende Nachrichten pro Kanal</value>
+  </data>
 </root>

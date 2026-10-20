@@ -345,7 +345,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
-            .AddDiscord(builder.Configuration.GetSection(DiscordSettings.SectionName).Get<DiscordSettings>() ?? new DiscordSettings(), () => ServerTimeZone)
+            .AddDiscordIntegration(builder.Configuration.GetSection(DiscordSettings.SectionName), () => ServerTimeZone)
             .AddSingleton<ChatServer>()
             .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
             .AddSingleton<ConnectServerFactory>()
@@ -400,10 +400,7 @@ internal sealed class Program : IDisposable
         var host = builder.Build();
 
         // The bot is listed with the other servers, e.g. in the admin panel.
-        if (host.Services.GetService<DiscordBot>() is { } discordBot)
-        {
-            this._servers.Add(discordBot);
-        }
+        this._servers.Add(host.Services.GetRequiredService<DiscordIntegration>());
 
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
         this._logger.Information("Host created");
