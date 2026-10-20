@@ -2187,4 +2187,70 @@
   <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
     <value>Maximal wartende Nachrichten pro Kanal</value>
   </data>
+  <data name="DiscordTest" xml:space="preserve">
+    <value>Testen</value>
+  </data>
+  <data name="DiscordTestHint" xml:space="preserve">
+    <value>Testen postet eine Testnachricht mit den gespeicherten Einstellungen, genauso wie die Benachrichtigungen der Kategorie: durch den Bot in seinen Kanal, sonst durch den Webhook. Speichere deine Änderungen vorher.</value>
+  </data>
+  <data name="DiscordTest_SentByBot" xml:space="preserve">
+    <value>Durch den Bot in {0} gepostet.</value>
+  </data>
+  <data name="DiscordTest_SentByWebhook" xml:space="preserve">
+    <value>Durch den Webhook gepostet.</value>
+  </data>
+  <data name="DiscordTest_NoChannel" xml:space="preserve">
+    <value>Nicht gepostet: es gibt weder einen Kanal des Bots noch einen Webhook.</value>
+  </data>
+  <data name="DiscordTest_ChannelUnavailable" xml:space="preserve">
+    <value>Der Bot sieht den Kanal {0} nicht. Wurde er gelöscht?</value>
+  </data>
+  <data name="DiscordTest_MissingPermissions" xml:space="preserve">
+    <value>Der Bot darf nicht in {0} posten. Prüfe die Berechtigungen des Kanals.</value>
+  </data>
+  <data name="DiscordTest_WebhookInvalid" xml:space="preserve">
+    <value>Discord kennt den Webhook nicht. Kopiere seine URL erneut.</value>
+  </data>
+  <data name="DiscordTest_Failed" xml:space="preserve">
+    <value>Fehlgeschlagen: {0}</value>
+  </data>
+  <data name="DiscordCheckServer" xml:space="preserve">
+    <value>Discord-Server prüfen</value>
+  </data>
+  <data name="DiscordCheckServerText" xml:space="preserve">
+    <value>Prüft die Berechtigungen des Bots, die Rolle für verknüpfte Spieler und die Kanäle auf dem gewählten Discord-Server, mit den gespeicherten Einstellungen.</value>
+  </data>
+  <data name="DiscordCheckServerNeedsServer" xml:space="preserve">
+    <value>Der Bot muss verbunden sein, und der Discord-Server muss gewählt und gespeichert sein.</value>
+  </data>
+  <data name="DiscordCheckServerName" xml:space="preserve">
+    <value>Discord-Server {0}:</value>
+  </data>
+  <data name="DiscordCheckPermissionsOk" xml:space="preserve">
+    <value>Der Bot hat alle Berechtigungen, die er braucht.</value>
+  </data>
+  <data name="DiscordCheckPermissionsMissing" xml:space="preserve">
+    <value>Dem Bot fehlen diese Berechtigungen: {0}. Lade ihn mit dem Link aus Schritt 2 erneut ein, oder gib sie seiner Rolle.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Assignable" xml:space="preserve">
+    <value>Der Bot kann die Rolle für verknüpfte Spieler vergeben.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Missing" xml:space="preserve">
+    <value>Die Rolle für verknüpfte Spieler existiert nicht. Erstelle die Kanäle und Rollen.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_AboveBot" xml:space="preserve">
+    <value>Die Rolle für verknüpfte Spieler ist über der Rolle des Bots, deshalb kann der Bot sie nicht vergeben. Verschiebe die Rolle des Bots in der Rollenliste darüber.</value>
+  </data>
+  <data name="DiscordCheckChannelsOk" xml:space="preserve">
+    <value>Jede Kategorie von Benachrichtigungen hat einen Kanal des Bots.</value>
+  </data>
+  <data name="DiscordCheckChannelsMissing" xml:space="preserve">
+    <value>Diese Kategorien haben keinen Kanal des Bots: {0}. Sie werden nur durch einen Webhook gepostet.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelOk" xml:space="preserve">
+    <value>Der Bot zeigt den Status in seinem Statuskanal.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
+    <value>Es gibt keinen Statuskanal, deshalb zeigt der Bot den Status nicht.</value>
+  </data>
 </root>

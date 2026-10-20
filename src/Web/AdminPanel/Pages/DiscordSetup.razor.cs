@@ -33,10 +33,13 @@ public partial class DiscordSetup : IDisposable
     private readonly Dictionary<DiscordChannelCategory, string> _newWebhooks = new();
     private readonly Dictionary<DiscordChannelCategory, string> _channelIdTexts = new();
     private readonly Dictionary<string, bool> _definedElsewhere = new();
+    private readonly Dictionary<DiscordChannelCategory, DiscordTestResult> _testResults = new();
+    private readonly HashSet<DiscordChannelCategory> _runningTests = new();
 
     private DiscordSettings? _settings;
     private DiscordIntegration? _integration;
     private DiscordProvisioningResult? _setupResult;
+    private DiscordServerCheck? _serverCheck;
     private string? _loadError;
     private bool _isSaving;
     private bool _isSettingUp;
@@ -121,6 +124,17 @@ public partial class DiscordSetup : IDisposable
     }
 
     private static string Join<T>(IEnumerable<T> values) => string.Join(", ", values);
+
+    private static string TestResultText(DiscordTestResult result)
+    {
+        var text = Resources.ResourceManager.GetString($"DiscordTest_{result.Outcome}", Resources.Culture) ?? result.Outcome.ToString();
+        return string.Format(text, result.Detail);
+    }
+
+    private static string LinkedRoleText(DiscordRoleState state)
+    {
+        return Resources.ResourceManager.GetString($"DiscordCheckLinkedRole_{state}", Resources.Culture) ?? state.ToString();
+    }
 
     private bool IsDefinedElsewhere(string key)
     {
@@ -302,6 +316,37 @@ public partial class DiscordSetup : IDisposable
         }
 
         return true;
+    }
+
+    private async Task TestAsync(DiscordChannelCategory category)
+    {
+        if (this._integration is not { } integration || !this._runningTests.Add(category))
+        {
+            return;
+        }
+
+        try
+        {
+            this._testResults[category] = await integration.SendTestMessageAsync(category).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error when testing the Discord category {category}.", category);
+            this._testResults[category] = new DiscordTestResult(DiscordTestOutcome.Failed, ex.Message);
+        }
+        finally
+        {
+            this._runningTests.Remove(category);
+        }
+    }
+
+    private void CheckServer()
+    {
+        this._serverCheck = this.Bot?.CheckDiscordServer();
+        if (this._serverCheck is null)
+        {
+            this.ToastService.ShowError(Resources.DiscordCheckServerNeedsServer);
+        }
     }
 
     private async Task SetUpServerAsync()

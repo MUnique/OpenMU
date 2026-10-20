@@ -4,6 +4,10 @@
 
 namespace MUnique.OpenMU.Discord;
 
+using System.Globalization;
+using System.Net;
+using global::Discord;
+using global::Discord.Net;
 using global::Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Discord.Provisioning;
@@ -22,6 +26,20 @@ public sealed partial class DiscordBot
     /// The close code of the gateway when Discord rejects the token.
     /// </summary>
     private const int AuthenticationFailedCloseCode = 4004;
+
+    /// <summary>
+    /// The permissions which the bot needs on the Discord server whose channels receive the notifications and the status.
+    /// </summary>
+    private static readonly GuildPermission[] RequiredPermissions =
+    [
+        GuildPermission.ViewChannel,
+        GuildPermission.SendMessages,
+        GuildPermission.EmbedLinks,
+        GuildPermission.ReadMessageHistory,
+        GuildPermission.AddReactions,
+        GuildPermission.ManageChannels,
+        GuildPermission.ManageRoles,
+    ];
 
     private DiscordBotProblem _problem;
 
@@ -78,6 +96,70 @@ public sealed partial class DiscordBot
 
         this._logger.LogInformation("The Discord server {guild} ({guildId}) is set up from the admin panel.", guild.Name, guild.Id);
         return await this.ProvisionAsync(client, guild).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Posts a test message into a channel, and tells why it failed.
+    /// </summary>
+    /// <param name="channelId">The identifier of the channel.</param>
+    /// <param name="embed">The test message.</param>
+    /// <returns>The result.</returns>
+    public async ValueTask<DiscordTestResult> SendTestMessageAsync(ulong channelId, DiscordEmbed embed)
+    {
+        if (await this.GetMessageChannelAsync(channelId).ConfigureAwait(false) is not { } channel)
+        {
+            return new DiscordTestResult(DiscordTestOutcome.ChannelUnavailable, channelId.ToString(CultureInfo.InvariantCulture));
+        }
+
+        var channelName = $"#{channel.Name}";
+        try
+        {
+            await channel.SendMessageAsync(embed: ToDiscordEmbed(embed), allowedMentions: AllowedMentions.None).ConfigureAwait(false);
+            return new DiscordTestResult(DiscordTestOutcome.SentByBot, channelName);
+        }
+        catch (HttpException ex) when (ex.HttpCode == HttpStatusCode.Forbidden)
+        {
+            return new DiscordTestResult(DiscordTestOutcome.MissingPermissions, channelName);
+        }
+        catch (HttpException ex)
+        {
+            this._logger.LogWarning(ex, "The test message couldn't be posted into {channel}.", channelName);
+            return new DiscordTestResult(DiscordTestOutcome.Failed, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Checks the Discord server whose channels receive the notifications and the status: the permissions of the bot,
+    /// the role of linked players and the channels of the categories.
+    /// </summary>
+    /// <returns>The result, or <c>null</c>, if the bot isn't connected or doesn't know which Discord server to use.</returns>
+    public DiscordServerCheck? CheckDiscordServer()
+    {
+        if (this._client is not { } client || this.GetRoutingGuild(client) is not { } guild)
+        {
+            return null;
+        }
+
+        var permissions = guild.CurrentUser.GuildPermissions;
+        var missingPermissions = RequiredPermissions
+            .Where(permission => !permissions.Has(permission))
+            .Select(permission => permission.ToString())
+            .ToList();
+        if (this._settings.CreateScheduledEvents && !permissions.Has(GuildPermission.ManageEvents))
+        {
+            missingPermissions.Add(nameof(GuildPermission.ManageEvents));
+        }
+
+        var linkedRoleName = this._layout.Roles.FirstOrDefault(role => role.Key == DiscordServerLayout.LinkedRoleKey)?.Name;
+        var linkedRoleState = guild.Roles.FirstOrDefault(role => string.Equals(role.Name, linkedRoleName, StringComparison.OrdinalIgnoreCase)) switch
+        {
+            null => DiscordRoleState.Missing,
+            { } role when role.Position >= guild.CurrentUser.Hierarchy => DiscordRoleState.AboveBot,
+            _ => DiscordRoleState.Assignable,
+        };
+
+        var categoriesWithoutChannel = Enum.GetValues<DiscordChannelCategory>().Where(category => this.GetChannelId(category) is null).ToList();
+        return new DiscordServerCheck(guild.Name, missingPermissions, linkedRoleState, categoriesWithoutChannel, this._routing.StatusChannelId is not null);
     }
 
     /// <summary>

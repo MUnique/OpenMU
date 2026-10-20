@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Discord;
 
 using System.ComponentModel;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using MUnique.OpenMU.Discord.Properties;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -49,6 +52,7 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
     private IDisposable? _changeRegistration;
     private Instance? _instance;
     private string? _appliedSettings;
+    private HttpClient? _httpClient;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordIntegration"/> class.
@@ -109,6 +113,11 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
     public int CurrentConnections => this.Bot?.CurrentConnections ?? 0;
 
     /// <summary>
+    /// Gets or sets the function which creates the HTTP client of the test messages; the tests replace it.
+    /// </summary>
+    internal Func<HttpClient> CreateHttpClient { get; set; } = DiscordHttpClient.Create;
+
+    /// <summary>
     /// Gets the listeners of the current settings, for the tests.
     /// </summary>
     internal IReadOnlyList<IGameEventListener> Listeners => this._instance?.Listeners ?? [];
@@ -162,11 +171,64 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
         }
     }
 
+    /// <summary>
+    /// Posts a test message for a category of notifications in the same way as the notifications are posted:
+    /// by the bot into its channel of the category, otherwise by the webhook of the category.
+    /// </summary>
+    /// <param name="category">The category.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result.</returns>
+    public async ValueTask<DiscordTestResult> SendTestMessageAsync(DiscordChannelCategory category, CancellationToken cancellationToken = default)
+    {
+        var settings = this.Settings;
+        var culture = settings.GetCulture();
+        var embed = new DiscordEmbed(
+            Resources.ResourceManager.GetString(nameof(Resources.Test_Title), culture) ?? nameof(Resources.Test_Title),
+            string.Format(culture, Resources.ResourceManager.GetString(nameof(Resources.Test_Description), culture) ?? nameof(Resources.Test_Description), category),
+            DiscordCommands.AnswerColor,
+            DateTime.UtcNow,
+            null);
+
+        if (this.Bot is { ServerState: ServerState.Started } bot && bot.GetChannelId(category) is { } channelId)
+        {
+            return await bot.SendTestMessageAsync(channelId, embed).ConfigureAwait(false);
+        }
+
+        if (!settings.Webhooks.TryGetValue(category, out var url) || string.IsNullOrWhiteSpace(url))
+        {
+            return new DiscordTestResult(DiscordTestOutcome.NoChannel);
+        }
+
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var webhookUrl))
+        {
+            return new DiscordTestResult(DiscordTestOutcome.WebhookInvalid);
+        }
+
+        try
+        {
+            this._httpClient ??= this.CreateHttpClient();
+            var statusCode = await DiscordWebhookSender.PostOnceAsync(webhookUrl, this._httpClient, [embed], cancellationToken).ConfigureAwait(false);
+            return statusCode switch
+            {
+                >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous => new DiscordTestResult(DiscordTestOutcome.SentByWebhook),
+                HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound => new DiscordTestResult(DiscordTestOutcome.WebhookInvalid),
+                _ => new DiscordTestResult(DiscordTestOutcome.Failed, $"{(int)statusCode} {statusCode}"),
+            };
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            this._logger.LogWarning(ex, "The test message of the category {category} couldn't be posted by its webhook.", category);
+            return new DiscordTestResult(DiscordTestOutcome.Failed, ex.Message);
+        }
+    }
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         this._changeRegistration?.Dispose();
         this._changeRegistration = null;
+        this._httpClient?.Dispose();
+        this._httpClient = null;
         await this._lock.WaitAsync().ConfigureAwait(false);
         try
         {

@@ -1621,6 +1621,123 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to These categories have no channel of the bot: {0}. They are only posted by a webhook..
+        /// </summary>
+        public static string DiscordCheckChannelsMissing {
+            get {
+                return ResourceManager.GetString("DiscordCheckChannelsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every category of notifications has a channel of the bot..
+        /// </summary>
+        public static string DiscordCheckChannelsOk {
+            get {
+                return ResourceManager.GetString("DiscordCheckChannelsOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The role of linked players is above the role of the bot, so the bot can&apos;t give it. Move the role of the bot above it in the role list..
+        /// </summary>
+        public static string DiscordCheckLinkedRole_AboveBot {
+            get {
+                return ResourceManager.GetString("DiscordCheckLinkedRole_AboveBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot can give the role of linked players..
+        /// </summary>
+        public static string DiscordCheckLinkedRole_Assignable {
+            get {
+                return ResourceManager.GetString("DiscordCheckLinkedRole_Assignable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The role of linked players doesn&apos;t exist. Create the channels and roles..
+        /// </summary>
+        public static string DiscordCheckLinkedRole_Missing {
+            get {
+                return ResourceManager.GetString("DiscordCheckLinkedRole_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot misses these permissions: {0}. Invite it again with the link of step 2, or give them to its role..
+        /// </summary>
+        public static string DiscordCheckPermissionsMissing {
+            get {
+                return ResourceManager.GetString("DiscordCheckPermissionsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot has all permissions which it needs..
+        /// </summary>
+        public static string DiscordCheckPermissionsOk {
+            get {
+                return ResourceManager.GetString("DiscordCheckPermissionsOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check the Discord server.
+        /// </summary>
+        public static string DiscordCheckServer {
+            get {
+                return ResourceManager.GetString("DiscordCheckServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord server {0}:.
+        /// </summary>
+        public static string DiscordCheckServerName {
+            get {
+                return ResourceManager.GetString("DiscordCheckServerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot has to be connected, and the Discord server has to be chosen and saved..
+        /// </summary>
+        public static string DiscordCheckServerNeedsServer {
+            get {
+                return ResourceManager.GetString("DiscordCheckServerNeedsServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checks the permissions of the bot, the role of linked players and the channels on the chosen Discord server, with the saved settings..
+        /// </summary>
+        public static string DiscordCheckServerText {
+            get {
+                return ResourceManager.GetString("DiscordCheckServerText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no status channel, so the bot doesn&apos;t show the status..
+        /// </summary>
+        public static string DiscordCheckStatusChannelMissing {
+            get {
+                return ResourceManager.GetString("DiscordCheckStatusChannelMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot shows the status in its status channel..
+        /// </summary>
+        public static string DiscordCheckStatusChannelOk {
+            get {
+                return ResourceManager.GetString("DiscordCheckStatusChannelOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create a Discord event for the next castle siege.
         /// </summary>
         public static string DiscordCreateScheduledEvents {
@@ -2148,6 +2265,87 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string DiscordStep6Title {
             get {
                 return ResourceManager.GetString("DiscordStep6Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test.
+        /// </summary>
+        public static string DiscordTest {
+            get {
+                return ResourceManager.GetString("DiscordTest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot doesn&apos;t see the channel {0}. Was it deleted?.
+        /// </summary>
+        public static string DiscordTest_ChannelUnavailable {
+            get {
+                return ResourceManager.GetString("DiscordTest_ChannelUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed: {0}.
+        /// </summary>
+        public static string DiscordTest_Failed {
+            get {
+                return ResourceManager.GetString("DiscordTest_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bot isn&apos;t allowed to post into {0}. Check the permissions of the channel..
+        /// </summary>
+        public static string DiscordTest_MissingPermissions {
+            get {
+                return ResourceManager.GetString("DiscordTest_MissingPermissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not posted: there is neither a channel of the bot nor a webhook..
+        /// </summary>
+        public static string DiscordTest_NoChannel {
+            get {
+                return ResourceManager.GetString("DiscordTest_NoChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted into {0} by the bot..
+        /// </summary>
+        public static string DiscordTest_SentByBot {
+            get {
+                return ResourceManager.GetString("DiscordTest_SentByBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted by the webhook..
+        /// </summary>
+        public static string DiscordTest_SentByWebhook {
+            get {
+                return ResourceManager.GetString("DiscordTest_SentByWebhook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord doesn&apos;t know the webhook. Copy its URL again..
+        /// </summary>
+        public static string DiscordTest_WebhookInvalid {
+            get {
+                return ResourceManager.GetString("DiscordTest_WebhookInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test posts a test message with the saved settings, in the same way as the notifications of the category: by the bot into its channel, otherwise by the webhook. Save your changes first..
+        /// </summary>
+        public static string DiscordTestHint {
+            get {
+                return ResourceManager.GetString("DiscordTestHint", resourceCulture);
             }
         }
         

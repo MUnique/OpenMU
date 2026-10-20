@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Tests.Discord;
 
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,6 +108,61 @@ public class DiscordIntegrationTest
         }
     }
 
+    /// <summary>
+    /// Tests that a category without channel and webhook isn't posted.
+    /// </summary>
+    [Test]
+    public async Task TestMessageWithoutChannelIsNotPostedAsync()
+    {
+        var (integration, _) = await StartAsync(new Dictionary<string, string?>()).ConfigureAwait(false);
+        await using (integration.ConfigureAwait(false))
+        {
+            var result = await integration.SendTestMessageAsync(DiscordChannelCategory.Events).ConfigureAwait(false);
+
+            Assert.That(result.Outcome, Is.EqualTo(DiscordTestOutcome.NoChannel));
+        }
+    }
+
+    /// <summary>
+    /// Tests that the test message is posted by the webhook of the category, and that the answers of Discord are told apart.
+    /// </summary>
+    /// <param name="statusCode">The status code which Discord answers.</param>
+    /// <param name="expected">The expected outcome.</param>
+    [TestCase(HttpStatusCode.NoContent, DiscordTestOutcome.SentByWebhook)]
+    [TestCase(HttpStatusCode.NotFound, DiscordTestOutcome.WebhookInvalid)]
+    [TestCase(HttpStatusCode.Unauthorized, DiscordTestOutcome.WebhookInvalid)]
+    [TestCase(HttpStatusCode.InternalServerError, DiscordTestOutcome.Failed)]
+    public async Task TestMessageIsPostedByWebhookAsync(HttpStatusCode statusCode, DiscordTestOutcome expected)
+    {
+        var (integration, _) = await StartAsync(new Dictionary<string, string?> { ["Discord:Webhooks:WorldNews"] = "https://discord.example/api/webhooks/1/token" }).ConfigureAwait(false);
+        await using (integration.ConfigureAwait(false))
+        {
+            var handler = new RecordingHandler(statusCode);
+            integration.CreateHttpClient = () => new HttpClient(handler);
+
+            var result = await integration.SendTestMessageAsync(DiscordChannelCategory.WorldNews).ConfigureAwait(false);
+
+            Assert.That(result.Outcome, Is.EqualTo(expected));
+            Assert.That(handler.RequestUri, Is.EqualTo(new Uri("https://discord.example/api/webhooks/1/token")));
+            Assert.That(handler.Content, Does.Contain("WorldNews"));
+        }
+    }
+
+    /// <summary>
+    /// Tests that a webhook URL which isn't a URL is reported as invalid.
+    /// </summary>
+    [Test]
+    public async Task TestMessageWithInvalidWebhookUrlAsync()
+    {
+        var (integration, _) = await StartAsync(new Dictionary<string, string?> { ["Discord:Webhooks:Notices"] = "not a url" }).ConfigureAwait(false);
+        await using (integration.ConfigureAwait(false))
+        {
+            var result = await integration.SendTestMessageAsync(DiscordChannelCategory.Notices).ConfigureAwait(false);
+
+            Assert.That(result.Outcome, Is.EqualTo(DiscordTestOutcome.WebhookInvalid));
+        }
+    }
+
     private static async Task<(DiscordIntegration Integration, IConfigurationRoot Configuration)> StartAsync(Dictionary<string, string?> values)
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
@@ -125,5 +182,26 @@ public class DiscordIntegrationTest
         Assert.That(services.GetServices<IGameEventListener>(), Does.Contain(integration));
         await ((IHostedService)integration).StartAsync(CancellationToken.None).ConfigureAwait(false);
         return (integration, configuration);
+    }
+
+    private sealed class RecordingHandler : HttpMessageHandler
+    {
+        private readonly HttpStatusCode _statusCode;
+
+        public RecordingHandler(HttpStatusCode statusCode)
+        {
+            this._statusCode = statusCode;
+        }
+
+        public Uri? RequestUri { get; private set; }
+
+        public string Content { get; private set; } = string.Empty;
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            this.RequestUri = request.RequestUri;
+            this.Content = request.Content is { } content ? await content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false) : string.Empty;
+            return new HttpResponseMessage(this._statusCode);
+        }
     }
 }

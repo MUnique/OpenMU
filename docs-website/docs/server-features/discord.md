@@ -38,6 +38,17 @@ The status at the top tells what's missing, e.g. a rejected token, or that the
 configuration, you choose which events are published, which monsters are bosses
 and which levels are milestones.
 
+To find out if everything works, the page has two tests, which use the saved
+settings:
+
+* **Check the Discord server** (step 3) tells which permissions the bot misses,
+  whether it can give the role of linked players (its own role has to be above
+  it), which categories have no channel and whether there is a status channel.
+* **Test** (step 4) posts a test message for a category, in the same way as its
+  notifications: by the bot into its channel, otherwise by the webhook. It tells
+  where the message went, or why it failed, e.g. a webhook which Discord doesn't
+  know or a channel into which the bot isn't allowed to post.
+
 **Save** writes the `Discord` section of the `appsettings.json` of the server,
 and the bot restarts with the new settings right away. The token and the
 webhook URLs are passwords; they are stored in this file, not in the database.

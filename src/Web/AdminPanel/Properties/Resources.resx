@@ -2278,4 +2278,70 @@
   <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
     <value>Maximum waiting messages per channel</value>
   </data>
+  <data name="DiscordTest" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="DiscordTestHint" xml:space="preserve">
+    <value>Test posts a test message with the saved settings, in the same way as the notifications of the category: by the bot into its channel, otherwise by the webhook. Save your changes first.</value>
+  </data>
+  <data name="DiscordTest_SentByBot" xml:space="preserve">
+    <value>Posted into {0} by the bot.</value>
+  </data>
+  <data name="DiscordTest_SentByWebhook" xml:space="preserve">
+    <value>Posted by the webhook.</value>
+  </data>
+  <data name="DiscordTest_NoChannel" xml:space="preserve">
+    <value>Not posted: there is neither a channel of the bot nor a webhook.</value>
+  </data>
+  <data name="DiscordTest_ChannelUnavailable" xml:space="preserve">
+    <value>The bot doesn't see the channel {0}. Was it deleted?</value>
+  </data>
+  <data name="DiscordTest_MissingPermissions" xml:space="preserve">
+    <value>The bot isn't allowed to post into {0}. Check the permissions of the channel.</value>
+  </data>
+  <data name="DiscordTest_WebhookInvalid" xml:space="preserve">
+    <value>Discord doesn't know the webhook. Copy its URL again.</value>
+  </data>
+  <data name="DiscordTest_Failed" xml:space="preserve">
+    <value>Failed: {0}</value>
+  </data>
+  <data name="DiscordCheckServer" xml:space="preserve">
+    <value>Check the Discord server</value>
+  </data>
+  <data name="DiscordCheckServerText" xml:space="preserve">
+    <value>Checks the permissions of the bot, the role of linked players and the channels on the chosen Discord server, with the saved settings.</value>
+  </data>
+  <data name="DiscordCheckServerNeedsServer" xml:space="preserve">
+    <value>The bot has to be connected, and the Discord server has to be chosen and saved.</value>
+  </data>
+  <data name="DiscordCheckServerName" xml:space="preserve">
+    <value>Discord server {0}:</value>
+  </data>
+  <data name="DiscordCheckPermissionsOk" xml:space="preserve">
+    <value>The bot has all permissions which it needs.</value>
+  </data>
+  <data name="DiscordCheckPermissionsMissing" xml:space="preserve">
+    <value>The bot misses these permissions: {0}. Invite it again with the link of step 2, or give them to its role.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Assignable" xml:space="preserve">
+    <value>The bot can give the role of linked players.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Missing" xml:space="preserve">
+    <value>The role of linked players doesn't exist. Create the channels and roles.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_AboveBot" xml:space="preserve">
+    <value>The role of linked players is above the role of the bot, so the bot can't give it. Move the role of the bot above it in the role list.</value>
+  </data>
+  <data name="DiscordCheckChannelsOk" xml:space="preserve">
+    <value>Every category of notifications has a channel of the bot.</value>
+  </data>
+  <data name="DiscordCheckChannelsMissing" xml:space="preserve">
+    <value>These categories have no channel of the bot: {0}. They are only posted by a webhook.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelOk" xml:space="preserve">
+    <value>The bot shows the status in its status channel.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
+    <value>There is no status channel, so the bot doesn't show the status.</value>
+  </data>
 </root>

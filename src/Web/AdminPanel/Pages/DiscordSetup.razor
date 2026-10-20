@@ -188,7 +188,35 @@
                     <li class="text-warning">@string.Format(Resources.DiscordSetUpPublic, Join(result.PublicCategories))</li>
                 }
             </ul>
-            <p class="mb-0">@Resources.DiscordSetUpRoleHint</p>
+            <p>@Resources.DiscordSetUpRoleHint</p>
+        }
+        <p>@Resources.DiscordCheckServerText</p>
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(this.Bot?.ServerState != ServerState.Started)" @onclick="this.CheckServer">
+            <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordCheckServer
+        </button>
+        @if (this._serverCheck is { } check)
+        {
+            <p class="mb-1">@string.Format(Resources.DiscordCheckServerName, check.ServerName)</p>
+            <ul class="mb-0">
+                @if (check.MissingPermissions.Count == 0)
+                {
+                    <li class="text-success">@Resources.DiscordCheckPermissionsOk</li>
+                }
+                else
+                {
+                    <li class="text-danger">@string.Format(Resources.DiscordCheckPermissionsMissing, Join(check.MissingPermissions))</li>
+                }
+                <li class="@(check.LinkedRole == DiscordRoleState.Assignable ? "text-success" : "text-danger")">@LinkedRoleText(check.LinkedRole)</li>
+                @if (check.CategoriesWithoutChannel.Count == 0)
+                {
+                    <li class="text-success">@Resources.DiscordCheckChannelsOk</li>
+                }
+                else
+                {
+                    <li class="text-warning">@string.Format(Resources.DiscordCheckChannelsMissing, Join(check.CategoriesWithoutChannel))</li>
+                }
+                <li class="@(check.HasStatusChannel ? "text-success" : "text-warning")">@(check.HasStatusChannel ? Resources.DiscordCheckStatusChannelOk : Resources.DiscordCheckStatusChannelMissing)</li>
+            </ul>
         }
     </div>
 </div>
@@ -204,6 +232,7 @@
                 <th>@Resources.DiscordCategory</th>
                 <th>@Resources.DiscordChannelId</th>
                 <th>@Resources.DiscordWebhookUrl</th>
+                <th>@Resources.DiscordTest</th>
             </tr>
             </thead>
             <tbody>
@@ -221,7 +250,7 @@
                         }
                         else
                         {
-                            <input type="text" inputmode="numeric" class="form-control form-control-sm font-monospace" aria-label="@Resources.DiscordChannelId"
+                            <input type="text" inputmode="numeric" class="form-control form-control-sm" aria-label="@Resources.DiscordChannelId"
                                    placeholder="@Resources.DiscordChannelIdPlaceholder"
                                    value="@this._channelIdTexts.GetValueOrDefault(category)" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty"/>
                         }
@@ -234,7 +263,7 @@
                         else
                         {
                             <div class="input-group input-group-sm">
-                                <input type="password" class="form-control font-monospace" autocomplete="off" aria-label="@Resources.DiscordWebhookUrl"
+                                <input type="password" class="form-control" autocomplete="off" aria-label="@Resources.DiscordWebhookUrl"
                                        placeholder="@(settings.Webhooks.ContainsKey(category) ? Resources.DiscordSecretSet : null)"
                                        value="@this._newWebhooks.GetValueOrDefault(category)" @onchange="e => this._newWebhooks[category] = e.Value?.ToString() ?? string.Empty"/>
                                 @if (settings.Webhooks.ContainsKey(category))
@@ -244,11 +273,19 @@
                             </div>
                         }
                     </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@this._runningTests.Contains(category)" @onclick="() => this.TestAsync(category)">@Resources.DiscordTest</button>
+                        @if (this._testResults.GetValueOrDefault(category) is { } testResult)
+                        {
+                            <div class="small @(testResult.Outcome is DiscordTestOutcome.SentByBot or DiscordTestOutcome.SentByWebhook ? "text-success" : "text-danger")">@TestResultText(testResult)</div>
+                        }
+                    </td>
                 </tr>
             }
             </tbody>
         </table>
         </div>
+        <p class="form-text">@Resources.DiscordTestHint</p>
         <div class="row">
             <div class="mb-3 col-md-3">
                 <label class="form-label" for="discordLanguage">@Resources.DiscordLanguage</label>

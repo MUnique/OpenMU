@@ -53,17 +53,24 @@ public sealed class DiscordWebhookSender : DiscordMessageQueue
         this._timeProvider = timeProvider ?? TimeProvider.System;
     }
 
+    /// <summary>
+    /// Posts the embeds once by a webhook, without retries, e.g. to test it.
+    /// </summary>
+    /// <param name="webhookUrl">The URL of the webhook.</param>
+    /// <param name="httpClient">The HTTP client.</param>
+    /// <param name="embeds">The embeds.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The status code of the answer of Discord.</returns>
+    public static async Task<HttpStatusCode> PostOnceAsync(Uri webhookUrl, HttpClient httpClient, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
+    {
+        using var response = await httpClient.PostAsJsonAsync(webhookUrl, CreateMessage(embeds), SerializerOptions, cancellationToken).ConfigureAwait(false);
+        return response.StatusCode;
+    }
+
     /// <inheritdoc />
     protected override async Task SendAsync(IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
     {
-        var message = new WebhookMessage(
-            embeds.Select(embed => new WebhookEmbed(
-                embed.Title,
-                embed.Description,
-                embed.Color,
-                embed.TimestampUtc.ToString("O", CultureInfo.InvariantCulture),
-                embed.Footer is { } footer ? new WebhookFooter(footer) : null)).ToList(),
-            new WebhookAllowedMentions([]));
+        var message = CreateMessage(embeds);
 
         for (var attempt = 1; attempt <= MaximumAttempts; attempt++)
         {
@@ -123,6 +130,18 @@ public sealed class DiscordWebhookSender : DiscordMessageQueue
         }
 
         this.Logger.LogError("Couldn't send {count} message(s) to Discord after {attempts} attempts; they are dropped.", embeds.Count, MaximumAttempts);
+    }
+
+    private static WebhookMessage CreateMessage(IReadOnlyList<DiscordEmbed> embeds)
+    {
+        return new WebhookMessage(
+            embeds.Select(embed => new WebhookEmbed(
+                embed.Title,
+                embed.Description,
+                embed.Color,
+                embed.TimestampUtc.ToString("O", CultureInfo.InvariantCulture),
+                embed.Footer is { } footer ? new WebhookFooter(footer) : null)).ToList(),
+            new WebhookAllowedMentions([]));
     }
 
     private static TimeSpan? GetDelay(HttpResponseMessage response, string headerName)
