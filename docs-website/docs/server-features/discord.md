@@ -228,7 +228,7 @@ guild or alliance is mirrored.
 The guild master links the Discord user to the account (see
 [Linking accounts](#linking-accounts)) and selects the guild master character
 with `/character`. Then there are two ways, which you can restrict with
-`Bot__ChatBridge__BindingMode`:
+`Discord__Bot__ChatBridge__BindingMode`:
 
 * **On your Discord server:** `/guildchat create` creates a channel like
   `#guild-legends` in the category *Guilds* of the layout. Only the bot and the
@@ -238,7 +238,7 @@ with `/character`. Then there are two ways, which you can restrict with
 * **On the Discord server of the guild:** the guild master invites the bot to
   the Discord server of the guild, and uses `/guildchat bind` in the channel
   which should be bound. This requires the permission to manage the channel. With
-  `Bot__ChatBridge__AllowedDiscordServerIds`, you can allow only some Discord
+  `Discord__Bot__ChatBridge__AllowedDiscordServerIds`, you can allow only some Discord
   servers.
 
 The option `scope` of these commands chooses the chat of the alliance instead,
@@ -252,9 +252,7 @@ or the bot is removed from the Discord server.
 Only Discord users who are linked to an account can write into the game, as
 their selected character, which has to be a member of the guild or alliance. The
 chat ban of the account applies, and a user can send 10 messages per minute
-(`Bot__ChatBridge__MaximumMessagesPerMinute`).
-chat ban of the account applies, and a user can send 10 messages per minute
-(`Bot__ChatBridge__MaximumMessagesPerMinute`). The messages go through the
+(`Discord__Bot__ChatBridge__MaximumMessagesPerMinute`). The messages go through the
 plugins of the plugin point *External chat message received*, e.g. a filter,
 which can stop them; the plugins of *Chat message received* only get the
 messages of players in the game.
@@ -262,12 +260,12 @@ messages of players in the game.
 In the game, the messages appear with the character name and the prefix `@`,
 e.g. `@Hero`, so a Discord user can't pretend to be a character in the game.
 Mentions, markdown and line breaks are removed, custom emojis become `:name:`,
-and long messages are cut (`Bot__ChatBridge__MaximumMessageLength`).
+and long messages are cut (`Discord__Bot__ChatBridge__MaximumMessageLength`).
 
 To read the normal messages in the channels, the bot needs the privileged
 *Message Content* intent: enable it for the bot in the Discord developer portal
 under *Bot → Privileged Gateway Intents*, and set
-`Bot__ChatBridge__ReadMessages` to `true`. When a message can't be sent to the
+`Discord__Bot__ChatBridge__ReadMessages` to `true`. When a message can't be sent to the
 game, the bot reacts with ❌ (permission *Add Reactions*), and `/say` tells why.
 Without the intent, players use `/say <message>`. Discord only approves the
 intent for verified bots, which are in more than 100 Discord servers, with a
