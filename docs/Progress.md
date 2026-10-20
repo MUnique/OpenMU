@@ -78,7 +78,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | RequestEnterChaosCastle     | 0xAF              | 100%     | 4          |                                               |
 | *TargetTeleport*            | 0xB0              | 100%     | 3          |                                               |
 | ChangeServerAuth            | 0xB1              | 0%       | 0          |                                               |
-| CastleSiegeGroup            | 0xB2              | 90%      | 10         | The status request (0xB200) and the guild command (0xB21D) are missing |
+| CastleSiegeGroup            | 0xB2              | 95%      | 10         | The status request (0xB200) is missing; guild commands (0xB21D) are implemented |
 | *CSRequest_NPC_DB_List*     | 0xB3              | 100%     | 3          | Gate and statue list                          |
 | *RequestCSRegGuildList*     | 0xB4              | 100%     | 2          |                                               |
 | *RequestCSAttGuildList*     | 0xB5              | 100%     | 2          |                                               |

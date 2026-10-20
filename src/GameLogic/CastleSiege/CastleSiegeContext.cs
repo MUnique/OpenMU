@@ -168,6 +168,11 @@ public class CastleSiegeContext : IEventStateProvider
     internal IGameContext GameContext => this._gameContext;
 
     /// <summary>
+    /// Gets the clock used by Castle Siege runtime operations.
+    /// </summary>
+    internal TimeProvider TimeProvider => this._timeProvider;
+
+    /// <summary>
     /// Gets the configured weekly schedule.
     /// </summary>
     internal CastleSiegeSchedule Schedule { get; }
@@ -201,6 +206,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets or sets the next participant tracking time.
     /// </summary>
     internal DateTime NextParticipantUpdateUtc { get; set; } = DateTime.MaxValue;
+
+    /// <summary>
+    /// Gets or sets the next mini-map broadcast time.
+    /// </summary>
+    internal DateTime NextMiniMapUpdateUtc { get; set; } = DateTime.MaxValue;
 
     /// <summary>
     /// Gets the Ready-state countdown values which have already been sent.
