@@ -1936,11 +1936,29 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Game Event Publisher is inactive now, so nothing of the game is posted to Discord anymore..
+        /// </summary>
+        public static string DiscordPublisherDeactivated {
+            get {
+                return ResourceManager.GetString("DiscordPublisherDeactivated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game..
         /// </summary>
         public static string DiscordPublisherInactive {
             get {
                 return ResourceManager.GetString("DiscordPublisherInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish the events of the game (plugin Game Event Publisher).
+        /// </summary>
+        public static string DiscordPublisherSwitch {
+            get {
+                return ResourceManager.GetString("DiscordPublisherSwitch", resourceCulture);
             }
         }
         

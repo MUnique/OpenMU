@@ -44,6 +44,7 @@ public partial class DiscordSetup : IDisposable
     private bool _isSaving;
     private bool _isSettingUp;
     private bool? _isPublisherActive;
+    private bool _isChangingPublisher;
 
     private string _newToken = string.Empty;
     private string _serverIdText = string.Empty;
@@ -197,8 +198,9 @@ public partial class DiscordSetup : IDisposable
         }
     }
 
-    private async Task ActivatePublisherAsync()
+    private async Task SetPublisherActiveAsync(bool isActive)
     {
+        this._isChangingPublisher = true;
         try
         {
             var gameConfiguration = await this.GameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
@@ -208,15 +210,19 @@ public partial class DiscordSetup : IDisposable
             }
 
             // Like on the plugins page: the game servers apply the saved change at once.
-            publisher.IsActive = true;
+            publisher.IsActive = isActive;
             await (await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true)).SaveChangesAsync().ConfigureAwait(true);
-            this._isPublisherActive = true;
-            this.ToastService.ShowSuccess(Resources.DiscordPublisherActivated);
+            this._isPublisherActive = isActive;
+            this.ToastService.ShowSuccess(isActive ? Resources.DiscordPublisherActivated : Resources.DiscordPublisherDeactivated);
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Couldn't activate the game event publisher.");
+            this.Logger.LogError(ex, "Couldn't change the game event publisher.");
             this.ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this._isChangingPublisher = false;
         }
     }
 

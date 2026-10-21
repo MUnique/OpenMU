@@ -33,8 +33,9 @@ page guides you through the setup, step by step:
 ![The Discord page of the admin panel](/img/admin-panel/discord-setup.png)
 
 The status at the top tells what's missing, e.g. a rejected token, or that the
-*Game Event Publisher* plugin is inactive. Without it, nothing is posted
-([Plugins](../admin-panel/plugins.md#game-event-publisher)); in its
+*Game Event Publisher* plugin is inactive. Without it, nothing is posted; the
+status has a switch for it. On the
+[Plugins](../admin-panel/plugins.md#game-event-publisher) page, in its
 configuration, you choose which events are published, which monsters are bosses
 and which levels are milestones.
 

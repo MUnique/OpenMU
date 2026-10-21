@@ -2256,4 +2256,10 @@
   <data name="DiscordPublisherActivated" xml:space="preserve">
     <value>Der Game Event Publisher ist jetzt aktiv. Auf der Seite der Plugins wählst du, was er veröffentlicht.</value>
   </data>
+  <data name="DiscordPublisherSwitch" xml:space="preserve">
+    <value>Ereignisse des Spiels veröffentlichen (Plugin Game Event Publisher)</value>
+  </data>
+  <data name="DiscordPublisherDeactivated" xml:space="preserve">
+    <value>Der Game Event Publisher ist jetzt inaktiv, deshalb wird nichts mehr aus dem Spiel in Discord gepostet.</value>
+  </data>
 </root>

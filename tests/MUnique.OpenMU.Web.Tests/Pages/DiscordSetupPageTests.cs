@@ -107,19 +107,27 @@ public class DiscordSetupPageTests
     }
 
     /// <summary>
-    /// The inactive game event publisher is activated with the button of the status.
+    /// The game event publisher is activated and deactivated with the switch of the status.
     /// </summary>
     [Test]
-    public void ActivatesGameEventPublisher()
+    public void SwitchesGameEventPublisher()
     {
         var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive)));
+        cut.WaitForState(() => cut.FindAll("#discordPublisher").Count > 0);
+        Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive));
+        Assert.That(cut.Find("#discordPublisher").HasAttribute("checked"), Is.False);
 
-        cut.FindAll(".alert-warning button").Single().Click();
+        cut.Find("#discordPublisher").Change(true);
 
         cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordPublisherActivated, null)));
         Assert.That(this._publisherConfiguration.IsActive, Is.True);
         Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherActive));
+
+        cut.Find("#discordPublisher").Change(false);
+
+        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordPublisherDeactivated, null)));
+        Assert.That(this._publisherConfiguration.IsActive, Is.False);
+        Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive));
     }
 
     /// <summary>
