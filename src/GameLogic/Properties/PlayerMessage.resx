@@ -1100,7 +1100,7 @@ Inventory Extensions: {18}</value>
     <value>You need to be level {0} to open this box.</value>
   </data>
   <data name="DiscordLinkCode" xml:space="preserve">
-    <value>Your code to link Discord is {0}. Enter /link {0} in Discord within {1} minutes.</value>
+    <value>Your code to link Discord is {0}. In Discord, choose the command /link of the bot from the list and enter the code within {1} minutes.</value>
   </data>
   <data name="DiscordLinked" xml:space="preserve">
     <value>Your account is linked to the Discord user {0}, who appears as {1}. Use /discord unlink to remove the link.</value>
