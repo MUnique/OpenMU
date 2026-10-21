@@ -989,7 +989,7 @@ Inventarerweiterungen: {18}</value>
     <value>Du musst Level {0} sein, um diese Box zu öffnen.</value>
   </data>
   <data name="DiscordLinkCode" xml:space="preserve">
-    <value>Dein Code zum Verknüpfen mit Discord lautet {0}. Gib innerhalb von {1} Minuten /link {0} in Discord ein.</value>
+    <value>Dein Code zum Verknüpfen mit Discord ist {0}. Wähle in Discord den Befehl /link des Bots aus der Liste und gib den Code innerhalb von {1} Minuten ein.</value>
   </data>
   <data name="DiscordLinked" xml:space="preserve">
     <value>Dein Konto ist mit dem Discord-Benutzer {0} verknüpft, der als {1} erscheint. Mit /discord unlink entfernst du die Verknüpfung.</value>
