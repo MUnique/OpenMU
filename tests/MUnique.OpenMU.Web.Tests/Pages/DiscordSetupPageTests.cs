@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
@@ -34,6 +35,7 @@ public class DiscordSetupPageTests
     private CultureInfo _previousUiCulture = null!;
     private bool _previousIsHostingEmbedded;
     private string _filePath = string.Empty;
+    private PlugInConfiguration _publisherConfiguration = null!;
 
     /// <summary>
     /// Sets up the test context with a configuration file.
@@ -51,8 +53,10 @@ public class DiscordSetupPageTests
 
         var gameConfigurationSource = new Mock<IDataSource<GameConfiguration>>();
         var gameConfiguration = new Mock<GameConfiguration>();
-        gameConfiguration.SetupGet(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
+        this._publisherConfiguration = new PlugInConfiguration { TypeId = typeof(GameEventPublisherPlugIn).GUID };
+        gameConfiguration.SetupGet(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration> { this._publisherConfiguration });
         gameConfigurationSource.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(gameConfiguration.Object);
+        gameConfigurationSource.Setup(s => s.GetContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(Mock.Of<IContext>());
 
         this._toastService = new Mock<IToastService>();
         this._context = new BunitContext();
@@ -100,6 +104,22 @@ public class DiscordSetupPageTests
         Assert.That(discord["Bot"]!["Channels"]!["CastleSiege"]?.ToString(), Is.EqualTo("42"));
         Assert.That(discord["Bot"]!["ChatBridge"]!["ReadMessages"]?.GetValue<bool>(), Is.True);
         Assert.That(discord["Webhooks"]!["Events"]?.ToString(), Is.EqualTo("https://discord.example/api/webhooks/1/secret"));
+    }
+
+    /// <summary>
+    /// The inactive game event publisher is activated with the button of the status.
+    /// </summary>
+    [Test]
+    public void ActivatesGameEventPublisher()
+    {
+        var cut = this._context.Render<DiscordSetup>();
+        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive)));
+
+        cut.FindAll(".alert-warning button").Single().Click();
+
+        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordPublisherActivated, null)));
+        Assert.That(this._publisherConfiguration.IsActive, Is.True);
+        Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherActive));
     }
 
     /// <summary>

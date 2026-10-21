@@ -2105,7 +2105,7 @@
     <value>Without the bot, the notifications are posted by the webhooks of step 4.</value>
   </data>
   <data name="DiscordPublisherInactive" xml:space="preserve">
-    <value>The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game. Activate it on the plugins page, and choose there what is published.</value>
+    <value>The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game.</value>
   </data>
   <data name="DiscordPublisherActive" xml:space="preserve">
     <value>The plugin Game Event Publisher is active. On the plugins page, you choose what it publishes.</value>
@@ -2343,5 +2343,8 @@
   </data>
   <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
     <value>There is no status channel, so the bot doesn't show the status.</value>
+  </data>
+  <data name="DiscordPublisherActivated" xml:space="preserve">
+    <value>The Game Event Publisher is active now. On the plugins page, you choose what it publishes.</value>
   </data>
 </root>

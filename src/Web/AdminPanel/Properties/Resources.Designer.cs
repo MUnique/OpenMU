@@ -1918,6 +1918,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Game Event Publisher is active now. On the plugins page, you choose what it publishes..
+        /// </summary>
+        public static string DiscordPublisherActivated {
+            get {
+                return ResourceManager.GetString("DiscordPublisherActivated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The plugin Game Event Publisher is active. On the plugins page, you choose what it publishes..
         /// </summary>
         public static string DiscordPublisherActive {
@@ -1927,7 +1936,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game. Activate it on the plugins page, and choose there what is published..
+        ///   Looks up a localized string similar to The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game..
         /// </summary>
         public static string DiscordPublisherInactive {
             get {

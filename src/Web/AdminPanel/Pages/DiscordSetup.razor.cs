@@ -197,6 +197,29 @@ public partial class DiscordSetup : IDisposable
         }
     }
 
+    private async Task ActivatePublisherAsync()
+    {
+        try
+        {
+            var gameConfiguration = await this.GameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
+            if (gameConfiguration.PlugInConfigurations.FirstOrDefault(configuration => configuration.TypeId == typeof(GameEventPublisherPlugIn).GUID) is not { } publisher)
+            {
+                return;
+            }
+
+            // Like on the plugins page: the game servers apply the saved change at once.
+            publisher.IsActive = true;
+            await (await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true)).SaveChangesAsync().ConfigureAwait(true);
+            this._isPublisherActive = true;
+            this.ToastService.ShowSuccess(Resources.DiscordPublisherActivated);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Couldn't activate the game event publisher.");
+            this.ToastService.ShowError(ex.Message);
+        }
+    }
+
     private void RemoveToken()
     {
         if (this._settings is { } settings)

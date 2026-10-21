@@ -77,7 +77,10 @@
 
         @if (this._isPublisherActive == false)
         {
-            <div class="alert alert-warning mb-0" role="alert">@Resources.DiscordPublisherInactive <a href="plugins">@Resources.Plugins</a></div>
+            <div class="alert alert-warning mb-0" role="alert">
+                @Resources.DiscordPublisherInactive
+                <button type="button" class="btn btn-sm btn-success ms-2" @onclick="this.ActivatePublisherAsync">@Resources.Activate</button>
+            </div>
         }
         else if (this._isPublisherActive == true)
         {
