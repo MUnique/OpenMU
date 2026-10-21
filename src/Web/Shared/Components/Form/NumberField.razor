@@ -6,7 +6,7 @@
 
 <div class="mb-3">
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputNumber class="form-control" id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" min=@(Min ?? MinOfType) max=@(Max ?? MaxOfType) />
+    <InputNumber DisplayName="@(this.Label ?? FieldCaption.Get(this.FieldIdentifier))" ParsingErrorMessage="@MUnique.OpenMU.Web.Shared.Properties.Resources.InvalidNumber" class="form-control" id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" min=@(Min ?? MinOfType) max=@(Max ?? MaxOfType) />
     <ValidationMessage For=@this.ValueExpression />
 </div>
 

@@ -48,6 +48,18 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
             return;
         }
 
+        if (messageType == Interfaces.MessageType.SlideNotice)
+        {
+            if (this._player.ClientVersion.Season > 0)
+            {
+                await this.SendSlideNoticeAsync(message).ConfigureAwait(false);
+                return;
+            }
+
+            // Clients before season 1 don't know the slide notice.
+            messageType = Interfaces.MessageType.GoldenCenter;
+        }
+
         const string messagePrefix = "000000000";
         var content = this._player.ClientVersion.Season > 0 ? messagePrefix + message : message;
         await this._player.Connection.SendServerMessageAsync(ConvertMessageType(messageType), content).ConfigureAwait(false);
@@ -62,5 +74,18 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
             Interfaces.MessageType.GuildNotice => ServerMessage.MessageType.GuildNotice,
             _ => throw new NotImplementedException($"Case for {messageType} is not implemented."),
         };
+    }
+
+    /// <summary>
+    /// Sends a notice which the client scrolls through the notice band at the top of the screen.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    private ValueTask SendSlideNoticeAsync(string message)
+    {
+        // White text at the default speed of the client. The type and the loop count keep
+        // the defaults of the packet: queued in the notice band, shown once.
+        const uint white = 0xFFFFFFFF;
+        const byte defaultSpeed = 0;
+        return this._player.Connection.SendSlideNoticeAsync(loopDelay: 0, white, defaultSpeed, message);
     }
 }

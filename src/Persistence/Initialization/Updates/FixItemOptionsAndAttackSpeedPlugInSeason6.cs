@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemOptionsAndAttackSpeedPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemOptionsAndAttackSpeedPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("EEEAA884-4704-48DE-825A-8E588A47E2CC")]
 public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttackSpeedPlugInBase
 {
@@ -33,9 +33,6 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixItemOptionsAndAttackSpeedSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -113,8 +110,8 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
         var physAndWizItemOption = gameConfiguration.PhysicalAndWizardryDamageOption();
         var excWizAttackOption = gameConfiguration.ExcellentWizardryAttackOptions();
         var excPhysAttackOption = gameConfiguration.ExcellentPhysicalAttackOptions();
-        var harmonyWizAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.WizardryAttackOptionsName);
-        var harmonyPhysAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName);
+        var harmonyWizAttackOption = gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName);
+        var harmonyPhysAttackOption = gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.PhysicalAttackOptionsName);
         foreach (var magicSword in magicSwords)
         {
             magicSword.PossibleItemOptions.Remove(wizItemOption);

@@ -1,4 +1,4 @@
-@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.DataModel
 
 @typeparam TValue where TValue : struct, Enum
 @inherits NotifyableInputBase<TValue>
@@ -14,8 +14,8 @@
                ShowDropDownOnFocus="true"
                Placeholder="@this.Placeholder"
                Id="@this.FieldIdentifier.FieldName">
-        <SelectedTemplate Context="item">@item.GetName()</SelectedTemplate>
-        <ResultTemplate Context="item">@item.GetName()</ResultTemplate>
+        <SelectedTemplate Context="item">@item.GetEnumCaption()</SelectedTemplate>
+        <ResultTemplate Context="item">@item.GetEnumCaption()</ResultTemplate>
     </Typeahead>
     <ValidationMessage For=@this.ValueExpression />
 </div>

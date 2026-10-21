@@ -1,6 +1,8 @@
+// The urls are relative, so that they also work when the admin panel runs under a sub path (see the base element).
+
 // Exchanges a single use sign in ticket for the authentication cookie, without navigating away.
 export async function signIn(ticket) {
-    const response = await fetch('/auth/complete', {
+    const response = await fetch('auth/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticket: ticket }),
@@ -12,7 +14,7 @@ export async function signIn(ticket) {
 
 // Removes the authentication cookie, without navigating away.
 export async function signOut() {
-    const response = await fetch('/auth/logout', {
+    const response = await fetch('auth/logout', {
         method: 'POST',
         credentials: 'same-origin',
         cache: 'no-store'

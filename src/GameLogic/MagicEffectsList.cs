@@ -320,10 +320,14 @@ public class MagicEffectsList : AsyncDisposable
             return;
         }
 
-        (this._owner as IWorldObserver)?.InvokeViewPlugInAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner));
-        if (effect.Definition.InformObservers && this._owner.IsAlive)
+        if (this._owner is IWorldObserver observer)
         {
-            (this._owner as IObservable)?.ForEachWorldObserverAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner), false);
+            await observer.InvokeViewPlugInAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner)).ConfigureAwait(false);
+        }
+
+        if (effect.Definition.InformObservers && this._owner.IsAlive && this._owner is IObservable observable)
+        {
+            await observable.ForEachWorldObserverAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner), false).ConfigureAwait(false);
         }
     }
 

@@ -261,11 +261,12 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         /// Gets the name of the merchant.
         /// </summary>
         [Browsable(false)]
-        public string Name => this.Merchant.Designation;
+        public string Name => this.Merchant.Designation.ToString() ?? string.Empty;
 
         /// <summary>
         /// Gets the items of the merchant.
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Display(Name = nameof(Resources.Items), ResourceType = typeof(Resources))]
         public ICollection<Item> Items => this.Merchant.MerchantStore!.Items;
     }
 }

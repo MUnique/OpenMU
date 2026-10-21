@@ -42,6 +42,7 @@
     <ProjectReference Include="..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
     <ProjectReference Include="..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\Telemetry\MUnique.OpenMU.Telemetry.csproj" />
   </ItemGroup>
 
 

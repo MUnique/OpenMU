@@ -51,13 +51,10 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     /// The <see cref="FixSetBonusesPlugIn"/> for season 6.
     /// </summary>
     [PlugIn]
-    [Display(Name = PlugInName, Description = PlugInDescription)]
+    [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSetBonusesPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSetBonusesPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
     [Guid("F858E471-B76D-4AAF-8886-8DEB45BC1AB8")]
     public class Season6 : FixSetBonusesPlugIn
     {
-        /// <inheritdoc />
-        public override UpdateVersion Version => UpdateVersion.FixSetBonusesSeason6;
-
         /// <inheritdoc />
         public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
     }
@@ -66,13 +63,10 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     /// The <see cref="FixSetBonusesPlugIn"/> for version 0.95d.
     /// </summary>
     [PlugIn]
-    [Display(Name = PlugInName, Description = PlugInDescription)]
+    [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSetBonusesPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSetBonusesPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
     [Guid("3D0201C3-D956-4BDD-9D57-3F6FD921EDF7")]
     public class V095d : FixSetBonusesPlugIn
     {
-        /// <inheritdoc />
-        public override UpdateVersion Version => UpdateVersion.FixSetBonuses095d;
-
         /// <inheritdoc />
         public override string DataInitializationKey => Version095d.DataInitialization.Id;
     }
@@ -81,13 +75,10 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     /// The <see cref="FixSetBonusesPlugIn"/> for version 0.75.
     /// </summary>
     [PlugIn]
-    [Display(Name = PlugInName, Description = PlugInDescription)]
+    [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSetBonusesPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSetBonusesPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
     [Guid("2E009ADF-1580-4E03-BA59-C9C51DC109BA")]
     public class V075 : FixSetBonusesPlugIn
     {
-        /// <inheritdoc />
-        public override UpdateVersion Version => UpdateVersion.FixSetBonuses075;
-
         /// <inheritdoc />
         public override string DataInitializationKey => Version075.DataInitialization.Id;
     }

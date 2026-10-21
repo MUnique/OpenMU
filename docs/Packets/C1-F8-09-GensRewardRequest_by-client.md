@@ -16,7 +16,7 @@ The server checks if the player has enough points to get the reward, and sends a
 | 1 | 1 |    Byte   |   5   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF8  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x09  | Packet header - sub packet type identifier |
-| 3 | 1 | GensType |  | GensType |
+| 4 | 1 | GensType |  | GensType |
 
 ### GensType Enum
 

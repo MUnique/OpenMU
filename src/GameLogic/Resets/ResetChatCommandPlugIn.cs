@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("90B35404-AADE-4F22-B5D2-4CD59B8BB4C8")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ResetChatCommandPlugIn_Name), Description = nameof(PlugInResources.ResetChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Does a character reset, if available.", null)]
+[ChatCommandHelp(Command)]
 public class ResetChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/reset";

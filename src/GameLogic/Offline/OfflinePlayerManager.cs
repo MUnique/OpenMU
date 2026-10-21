@@ -54,7 +54,7 @@ public sealed class OfflinePlayerManager
 
         try
         {
-            await this.TransitionToOfflineAsync(realPlayer, loginName).ConfigureAwait(false);
+            await this.TransitionToOfflineAsync(realPlayer).ConfigureAwait(false);
 
             if (!await sentinel.InitializeAsync(loginName, characterName).ConfigureAwait(false))
             {
@@ -113,9 +113,9 @@ public sealed class OfflinePlayerManager
     public bool TryGetPlayer(string loginName, out OfflinePlayer? player)
         => this._activePlayers.TryGetValue(loginName, out player);
 
-    private async ValueTask TransitionToOfflineAsync(Player realPlayer, string loginName)
+    private async ValueTask TransitionToOfflineAsync(Player realPlayer)
     {
-        await this.LogOffFromLoginServerAsync(realPlayer, loginName).ConfigureAwait(false);
+        await this.LogOffFromLoginServerAsync(realPlayer).ConfigureAwait(false);
 
         // Send a close-game packet so the client exits cleanly without auto-reconnecting.
         // DisconnectAsync will then fire PlayerDisconnected, which triggers
@@ -166,10 +166,11 @@ public sealed class OfflinePlayerManager
     /// because the offline session can still proceed without this step.
     /// </summary>
     /// <param name="player">The player being transitioned to offline.</param>
-    /// <param name="loginName">The account login name.</param>
-    private async ValueTask LogOffFromLoginServerAsync(Player player, string loginName)
+    private async ValueTask LogOffFromLoginServerAsync(Player player)
     {
-        if (player.GameContext is not IGameServerContext gsCtx)
+        // The registration is released here, so that the following disconnect of the player doesn't log off again.
+        if (player.GameContext is not IGameServerContext gsCtx
+            || player.ReleaseLoginServerRegistration() is not { } loginName)
         {
             return;
         }

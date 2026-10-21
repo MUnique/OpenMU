@@ -136,7 +136,7 @@ internal partial class {className} : {fullName}, IIdentifiable
         }
 
         yield return ("ExtendedTypeContext", this.GenerateDbContext());
-        yield return ("MapsterConfigurator", this.GenerateMapsterConfigurator());
+        yield return ("BasicModelConverter", GenerateBasicModelConverter());
         foreach (var (name, source) in this.GenerateJoinEntities())
         {
             yield return (name, source);
@@ -144,7 +144,7 @@ internal partial class {className} : {fullName}, IIdentifiable
     }
 
     /// <summary>
-    /// Gets the constructor which Mapster should use to create the target object, if there is one.
+    /// Gets the constructor which should be used to create the converted object, if there is one.
     /// It's only usable when all of its parameters can be taken from a property of the same name.
     /// </summary>
     /// <param name="type">The type of the data model.</param>
@@ -216,75 +216,183 @@ internal partial class {propertyInfo.ReflectedType.Name}
         }
     }
 
-    private string GenerateMapsterConfigurator()
+    /// <summary>
+    /// Generates the converter, which converts the objects of this model to the objects of the basic model.
+    /// </summary>
+    /// <remarks>
+    /// It copies the whole object graph:
+    /// The references are preserved, and the properties whose names start with "Raw" or which are marked
+    /// with the <see cref="TransientAttribute"/> are ignored.
+    /// </remarks>
+    /// <returns>The generated source.</returns>
+    private static string GenerateBasicModelConverter()
     {
-        var configs = new StringBuilder();
-        foreach (var type in ModelGeneratorHelper.CustomTypes)
+        var customTypes = ModelGeneratorHelper.CustomTypes.ToList();
+        var dispatch = new StringBuilder();
+        foreach (var type in customTypes.OrderByDescending(GetInheritanceDepth).ThenBy(t => t.Name, StringComparer.Ordinal))
         {
-            configs
-                .AppendLine($"        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<{type.FullName}, {type.FullName}>()")
-                .AppendLine($"            .Include<{type.Name}, BasicModel.{type.Name}>();")
-                .AppendLine();
-
-            // Properties which can only be set through a constructor (e.g. ConstValueAttribute.Value)
-            // would be lost, because Mapster creates the target with its parameterless constructor.
-            // We can only do that when each parameter has a property of the same name to take the value from.
-            if (GetConstructorToMapWith(type) is { } constructor)
-            {
-                var arguments = string.Join(", ", constructor.GetParameters().Select(p => $"source.{p.Name.ToPascalCase()}"));
-                configs
-                    .AppendLine($"        Mapster.TypeAdapterConfig.GlobalSettings.ForType<{type.FullName}, BasicModel.{type.Name}>()")
-                    .AppendLine($"            .ConstructUsing(source => new BasicModel.{type.Name}({arguments}));")
-                    .AppendLine();
-            }
+            dispatch.AppendLine($"            {type.Name} value => this.Convert(value),");
         }
 
-        var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, "MapsterConfigurator")}
+        var methods = new StringBuilder();
+        foreach (var type in customTypes.OrderBy(t => t.Name, StringComparer.Ordinal))
+        {
+            methods.AppendLine();
+            methods.AppendLine($"    private BasicModel.{type.Name} Convert({type.Name} source)");
+            methods.AppendLine("    {");
+            methods.AppendLine("        if (this._converted.TryGetValue(source, out var converted))");
+            methods.AppendLine("        {");
+            methods.AppendLine($"            return (BasicModel.{type.Name})converted;");
+            methods.AppendLine("        }");
+            methods.AppendLine();
+            if (GetConstructorToMapWith(type) is { } constructor)
+            {
+                // Properties which can only be set through a constructor (e.g. ConstValueAttribute.Value)
+                var arguments = string.Join(", ", constructor.GetParameters().Select(p => $"source.{p.Name.ToPascalCase()}"));
+                methods.AppendLine($"        var target = new BasicModel.{type.Name}({arguments});");
+            }
+            else
+            {
+                methods.AppendLine($"        var target = new BasicModel.{type.Name}();");
+            }
+
+            methods.AppendLine("        this._converted.Add(source, target);");
+            if (type.GetProperty("Id") is null)
+            {
+                methods.AppendLine("        target.Id = source.Id;");
+            }
+
+            foreach (var property in GetConvertedProperties(type))
+            {
+                methods.AppendLine(GetPropertyConversion(property, customTypes));
+            }
+
+            methods.AppendLine("        return target;");
+            methods.AppendLine("    }");
+        }
+
+        return $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, "BasicModelConverter")}
+
+#nullable enable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
-using MUnique.OpenMU.DataModel.Composition;
-using MUnique.OpenMU.Persistence;
-using Mapster;
+using System.Runtime.CompilerServices;
 
 /// <summary>
-/// Configures Mapster to properly map these classes to the Persistence.BasicModel.
+/// Converts the objects of this persistence model to the objects of the <see cref=""MUnique.OpenMU.Persistence.BasicModel""/>.
+/// The references between the objects are preserved.
 /// </summary>
-public static class MapsterConfigurator
+internal sealed class BasicModelConverter
 {{
-    private static bool isConfigured;
+    private readonly Dictionary<object, object> _converted = new(ReferenceEqualityComparer.Instance);
 
     /// <summary>
-    /// Ensures that Mapster is configured to properly map these EF-Core persistence classes to the Persistence.BasicModel.
+    /// Converts the object and the objects which it references to the basic model.
     /// </summary>
-    public static void EnsureConfigured()
+    /// <typeparam name=""TBasic"">The type of the basic model.</typeparam>
+    /// <param name=""source"">The source object.</param>
+    /// <returns>The converted object.</returns>
+    public static TBasic Convert<TBasic>(object source)
+        where TBasic : class
     {{
-        if (isConfigured)
-        {{
-            return;
-        }}
-
-        Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
-        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith(""Raw""));
-
-        // Transient properties just hold run-time information and are not persisted.
-        // Some of them (e.g. of the SkillEntry) can't be mapped by Mapster at all, because their types are interfaces with events.
-        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember(
-            (member, side) => member.GetCustomAttributes(true).OfType<TransientAttribute>().Any());
-
-        // Collections of value types (e.g. ItemSlotType.ItemSlots) are only filled when the collection of the
-        // destination is used. Otherwise, Mapster creates a new, empty one and the values would be lost.
-        Mapster.TypeAdapterConfig.GlobalSettings.Default.UseDestinationValue(
-            member => member.Type.IsGenericType
-                      && member.Type.GetGenericTypeDefinition() == typeof(ICollection<>)
-                      && member.Type.GetGenericArguments()[0].IsValueType);
-
-{configs}
-        isConfigured = true;
+        return (TBasic)new BasicModelConverter().ConvertObject(source)!;
     }}
-}}
+
+    private object? ConvertObject(object? source)
+    {{
+        return source switch
+        {{
+            null => null,
+{dispatch}            _ => source,
+        }};
+    }}
+{methods}{GetSetterAccessors(customTypes)}}}
 ";
-        return source;
+    }
+
+    private static int GetInheritanceDepth(Type type)
+    {
+        var depth = 0;
+        for (var current = type.BaseType; current is not null; current = current.BaseType)
+        {
+            depth++;
+        }
+
+        return depth;
+    }
+
+    private static IEnumerable<PropertyInfo> GetConvertedProperties(Type type)
+    {
+        return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.GetIndexParameters().Length == 0)
+            .Where(p => !p.Name.StartsWith("Raw", StringComparison.Ordinal))
+            .Where(p => !p.GetCustomAttributes(true).OfType<TransientAttribute>().Any())
+            .Where(p => p.CanRead);
+    }
+
+    private static string GetPropertyConversion(PropertyInfo property, List<Type> customTypes)
+    {
+        var propertyType = property.PropertyType;
+        var isCollection = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
+        if (isCollection)
+        {
+            var elementType = propertyType.GetGenericArguments()[0];
+            var item = elementType.IsValueType || elementType == typeof(string)
+                ? "item"
+                : $"({elementType.FullName!.Replace('+', '.')})this.ConvertObject(item)!";
+            return $@"        if (source.{property.Name} is {{ }} {property.Name.ToCamelCase()}Items)
+        {{
+            foreach (var item in {property.Name.ToCamelCase()}Items)
+            {{
+                target.{property.Name}.Add({item});
+            }}
+        }}
+";
+        }
+
+        if (property.SetMethod is not { } setMethod)
+        {
+            return $"        // {property.Name} has no setter.";
+        }
+
+        var value = propertyType.IsValueType || propertyType == typeof(string) || propertyType.IsArray
+            ? $"source.{property.Name}"
+            : $"({GetTypeName(propertyType)})this.ConvertObject(source.{property.Name})!";
+        if (setMethod.IsPublic)
+        {
+            return $"        target.{property.Name} = {value};";
+        }
+
+        // Properties with non-public setters are set, too.
+        return $"        {GetSetterAccessorName(property)}(target, {value});";
+    }
+
+    private static string GetSetterAccessorName(PropertyInfo property) => $"Set{property.SetMethod!.DeclaringType!.Name}{property.Name}";
+
+    private static string GetSetterAccessors(IEnumerable<Type> types)
+    {
+        var accessors = new StringBuilder();
+        var properties = types.SelectMany(GetConvertedProperties)
+            .Where(p => p.SetMethod is { IsPublic: false } && !(p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+            .GroupBy(GetSetterAccessorName)
+            .Select(g => g.First())
+            .OrderBy(GetSetterAccessorName, StringComparer.Ordinal);
+        foreach (var property in properties)
+        {
+            accessors.AppendLine();
+            accessors.AppendLine($"    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = \"{property.SetMethod!.Name}\")]");
+            accessors.AppendLine($"    private static extern void {GetSetterAccessorName(property)}({GetTypeName(property.SetMethod.DeclaringType!)} target, {GetTypeName(property.PropertyType)} value);");
+        }
+
+        return accessors.ToString();
+    }
+
+    private static string GetTypeName(Type type)
+    {
+        return type.IsGenericType
+            ? $"{type.Namespace}.{type.Name.Substring(0, type.Name.IndexOf('`'))}<{string.Join(", ", type.GetGenericArguments().Select(GetTypeName))}>"
+            : type.FullName!.Replace('+', '.');
     }
 
     private string GenerateDbContext()

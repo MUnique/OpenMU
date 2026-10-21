@@ -32,6 +32,6 @@ public partial class ItemOptionOfLevel
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Level {this.Level}: {this.PowerUpDefinition}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.LevelValueSummary, this.Level, this.PowerUpDefinition);
     }
 }

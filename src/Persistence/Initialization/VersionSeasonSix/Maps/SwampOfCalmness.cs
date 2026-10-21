@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +21,6 @@ internal class SwampOfCalmness : BaseMapInitializer
     internal const byte Number = 56;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Swamp Of Calmness";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="SwampOfCalmness"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +30,16 @@ internal class SwampOfCalmness : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.SwampOfCalmness);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -341,7 +342,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 441;
-            monster.Designation = "Sapi-Unus";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SapiUnus);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -370,7 +371,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 442;
-            monster.Designation = "Sapi-Duo";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SapiDuo);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -399,7 +400,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 443;
-            monster.Designation = "Sapi-Tres";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SapiTres);
             monster.MoveRange = 4;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -429,7 +430,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 444;
-            monster.Designation = "Shadow Pawn";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ShadowPawn);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -459,7 +460,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 445;
-            monster.Designation = "Shadow Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ShadowKnight);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -490,7 +491,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 446;
-            monster.Designation = "Shadow Look";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ShadowLook);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -520,7 +521,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 447;
-            monster.Designation = "Thunder Napin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ThunderNapin);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -549,7 +550,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 448;
-            monster.Designation = "Ghost Napin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GhostNapin);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -579,7 +580,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 449;
-            monster.Designation = "Blaze Napin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BlazeNapin);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -608,7 +609,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 557;
-            monster.Designation = "Sapi Queen";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SapiQueen);
             monster.MoveRange = 4;
             monster.AttackRange = 3;
             monster.ViewRange = 9;
@@ -640,7 +641,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 558;
-            monster.Designation = "Ice Napin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IceNapin);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -672,7 +673,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 559;
-            monster.Designation = "Shadow Master";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ShadowMaster);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;

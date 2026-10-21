@@ -24,6 +24,11 @@ public partial class AttributeRequirement
     /// </summary>
     public int MinimumValue { get; set; }
 
+    /// <summary>
+    /// Gets or sets the minimum item level at which this requirement applies.
+    /// </summary>
+    public byte? MinimumItemLevel { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

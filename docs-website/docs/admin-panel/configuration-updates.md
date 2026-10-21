@@ -22,7 +22,9 @@ notice them after an upgrade.
 ## Applying updates
 
 The page lists every update which has not been applied to your database yet, with
-its description.
+its description. An update can also reappear with a new version (shown as
+`v1 → v2`) when a previously installed update was extended — applying it brings
+your database to the current state without duplicating anything.
 
 * **Mandatory updates** are always applied and cannot be deselected — the server
   requires them.

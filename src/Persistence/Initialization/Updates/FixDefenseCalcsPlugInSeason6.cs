@@ -17,15 +17,12 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes character stats, magic effects, and options related to defense.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDefenseCalcsPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDefenseCalcsPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("447FA95B-091B-4950-B1F3-F4EB6D20DE19")]
 public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDefenseCalcsSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -112,7 +109,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
             excellentDamageChanceOpt.PowerUpDefinition!.TargetAttribute = excellentDamageBonus;
         }
 
-        var pantsGuardianOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Guardian Option (Pants)");
+        var pantsGuardianOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name.ValueInNeutralLanguage == "Guardian Option (Pants)");
         if (pantsGuardianOptions is not null
             && pantsGuardianOptions.PossibleOptions.FirstOrDefault(o => o.PowerUpDefinition?.TargetAttribute == defenseBase) is { } defenseOpt)
         {
@@ -120,7 +117,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
             defenseOpt.PowerUpDefinition.Boost!.ConstantValue.Value = 200 / 2;
         }
 
-        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Harmony Defense Options");
+        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name.ValueInNeutralLanguage == "Harmony Defense Options");
         if (harmonyDefOptions is not null
             && harmonyDefOptions.PossibleOptions.FirstOrDefault(o => o.Number == 1) is { } defenseBaseOpt)
         {

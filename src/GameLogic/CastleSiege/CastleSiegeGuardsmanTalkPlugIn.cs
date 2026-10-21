@@ -16,17 +16,23 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegeGuardsmanTalkPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeGuardsmanTalkPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3E2AD5FD-E5D0-4464-91EE-70DF686BBB6A")]
-public sealed class CastleSiegeGuardsmanTalkPlugIn : IPlayerTalkToNpcPlugIn
+public sealed class CastleSiegeGuardsmanTalkPlugIn : NpcTalkPlugInBase
 {
-    private const short GuardsmanNumber = 224;
+    /// <summary>
+    /// The number of the guardsman NPC.
+    /// </summary>
+    internal const short GuardsmanNumber = 224;
+
     private readonly CastleSiegeTaxProvider _taxProvider = new();
 
     /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    public override short DefaultNpcNumber => GuardsmanNumber;
+
+    /// <inheritdoc />
+    protected override async ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
         var context = CastleSiegeContextResolver.GetContext(player);
-        if (npc.Definition.Number != GuardsmanNumber
-            || context is not { Configuration.Enabled: true }
+        if (context is not { Configuration.Enabled: true }
             || player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number)
         {
             return;

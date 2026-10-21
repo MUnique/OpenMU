@@ -56,6 +56,6 @@ public partial class ChatServerDefinition
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"[ChatServerDefinition ServerID={this.ServerId}, Description={this.Description}]";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.ChatServerSummary, this.ServerId, this.Description);
     }
 }

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// so the difficulty progression is correct: BC6 → BC7 → BC8.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixBloodCastleMonsterAttributesUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixBloodCastleMonsterAttributesUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D4E5F6A0-1B2C-3D4E-5F6A-7B8C9D0E1F2A")]
 public class FixBloodCastleMonsterAttributesUpdatePlugIn : UpdatePlugInBase
 {
@@ -38,9 +38,6 @@ public class FixBloodCastleMonsterAttributesUpdatePlugIn : UpdatePlugInBase
     private static readonly Guid IceResistanceId = new("47235C36-41BB-44B4-8823-6FC415709F59");
     private static readonly Guid FireResistanceId = new("9AE4D80D-5706-48B9-AD11-EAC4FE088A81");
     private static readonly Guid LightningResistanceId = new("3E339393-2D17-452E-81D9-3987947A407F");
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixBloodCastleMonsterAttributes;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

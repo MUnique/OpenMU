@@ -36,6 +36,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private readonly IConfigurationChangeMediator _changeMediator;
     private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly IEventPublisher _eventPublisher;
+    private readonly IMapHostLocator _mapHostLocator;
 
     private readonly IPacketArchive? _packetArchive;
 
@@ -54,6 +55,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="setupService">The setup service.</param>
     /// <param name="changeMediator">The change mediator.</param>
+    /// <param name="gameEventListeners">The listeners for the game events.</param>
     /// <param name="packetArchive">The archive for the traffic of observed accounts.</param>
     public GameServerContainer(
         ILoggerFactory loggerFactory,
@@ -68,6 +70,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         PlugInManager plugInManager,
         SetupService setupService,
         IConfigurationChangeMediator changeMediator,
+        IEnumerable<IGameEventListener> gameEventListeners,
         IPacketArchive? packetArchive = null)
         : base(setupService, loggerFactory.CreateLogger<GameServerContainer>())
     {
@@ -84,7 +87,8 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         this._changeMediator = changeMediator;
 
         this._logger = this._loggerFactory.CreateLogger<GameServerContainer>();
-        this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer);
+        this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer, gameEventListeners, this._loggerFactory.CreateLogger<InMemoryEventPublisher>());
+        this._mapHostLocator = new InProcessMapHostLocator(this._gameServers);
         this._packetArchive = packetArchive;
     }
 
@@ -180,7 +184,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private void InitializeGameServer(GameServerDefinition gameServerDefinition)
     {
         using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator, this._packetArchive);
+        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator, this._packetArchive, this._mapHostLocator);
         gameServer.Context.ServerTimeZone = Program.ServerTimeZone;
         foreach (var endpoint in gameServerDefinition.Endpoints)
         {

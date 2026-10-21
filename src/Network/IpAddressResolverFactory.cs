@@ -16,6 +16,14 @@ public static class IpAddressResolverFactory
     private const string LocalIpResolve = "-resolveIP:local";
     private const string LoopbackIpResolve = "-resolveIP:loopback";
 
+    private enum ResolverSource
+    {
+        StartParameter,
+        EnvironmentVariable,
+        Configuration,
+        Environment,
+    }
+
     /// <summary>
     /// Determines the ip resolver based on command line arguments.
     /// </summary>
@@ -112,13 +120,5 @@ public static class IpAddressResolverFactory
         }
 
         return (DetermineResolverByEnvironment(), ResolverSource.Environment);
-    }
-
-    private enum ResolverSource
-    {
-        StartParameter,
-        EnvironmentVariable,
-        Configuration,
-        Environment,
     }
 }

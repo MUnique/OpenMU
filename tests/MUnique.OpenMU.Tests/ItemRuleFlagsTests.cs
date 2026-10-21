@@ -170,7 +170,13 @@ public class ItemRuleFlagsTests
 
     private static Item CreateItem(Action<ItemDefinition> setRule)
     {
-        var definition = new ItemDefinition { Width = 1, Height = 1, Durability = 10 };
+        var definitionMock = new Mock<ItemDefinition>();
+        definitionMock.SetupAllProperties();
+        definitionMock.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+        var definition = definitionMock.Object;
+        definition.Width = 1;
+        definition.Height = 1;
+        definition.Durability = 10;
         setRule(definition);
 
         var item = new Mock<Item>();

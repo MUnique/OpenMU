@@ -32,7 +32,10 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
+    public bool IsEnabledOn(IGameContext gameContext) => this.IsEnabledOnContext(gameContext);
+
+    /// <inheritdoc />
+    public virtual async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
     {
         Announcements.TryRemove((this.GetType(), gameContext), out _);
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
@@ -52,7 +55,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
-    public ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
+    public virtual ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
     {
         var state = this.GetStateByGameContext(gameContext);
         if (state.State == PeriodicTaskState.Prepared)
@@ -67,6 +70,13 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         if (gameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null) is { State: MiniGameState.Open })
         {
             return ValueTask.FromResult<TimeSpan?>(TimeSpan.Zero);
+        }
+
+        // The scope comes last on purpose: an open or prepared run is reported even on
+        // excluded servers, so in-flight runs finish gracefully instead of going silent.
+        if (!this.IsEnabledOnContext(gameContext))
+        {
+            return ValueTask.FromResult<TimeSpan?>(null);
         }
 
         var timeNow = new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks);
@@ -114,7 +124,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
                 announcement.LastAnnouncedMinutes = minutesLeft;
                 if (this.Configuration?.EntranceOpenedMessage is { } openMessage)
                 {
-                    await gameContext.SendGlobalNotificationAsync(string.Format(openMessage, minutesLeft)).ConfigureAwait(false);
+                    await gameContext.SendGlobalNotificationAsync(openMessage, minutesLeft).ConfigureAwait(false);
                 }
             }
 
@@ -201,7 +211,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         Announcements[(this.GetType(), state.Context)] = new EntranceAnnouncement { LastAnnouncedMinutes = initialMinutes };
         if (initialMinutes >= 1 && this.Configuration?.EntranceOpenedMessage is { } openMessage)
         {
-            await state.Context.SendGlobalNotificationAsync(string.Format(openMessage, initialMinutes)).ConfigureAwait(false);
+            await state.Context.SendGlobalNotificationAsync(openMessage, initialMinutes).ConfigureAwait(false);
         }
     }
 
@@ -210,6 +220,12 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     {
         // nothing to do; The mini game will clean up itself.
         return ValueTask.CompletedTask;
+    }
+
+    private static bool IsActive(MiniGameContext game)
+    {
+        return !game.IsDisposed && !game.IsDisposing
+            && game.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing;
     }
 
     /// <summary>
@@ -226,12 +242,6 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
                 await game.DisposeAsync().ConfigureAwait(false);
             }
         }
-    }
-
-    private static bool IsActive(MiniGameContext game)
-    {
-        return !game.IsDisposed && !game.IsDisposing
-            && game.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing;
     }
 
     /// <summary>

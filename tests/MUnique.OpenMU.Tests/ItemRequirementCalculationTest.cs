@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.Tests;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.BasicModel;
 using IncreasableItemOption = MUnique.OpenMU.Persistence.BasicModel.IncreasableItemOption;
+using ItemBasePowerUpDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemBasePowerUpDefinition;
 using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 using ItemSlotType = MUnique.OpenMU.Persistence.BasicModel.ItemSlotType;
 
@@ -62,7 +64,7 @@ public class ItemRequirementCalculationTest
     }
 
     /// <summary>
-    /// Tests if item options add 4 strength each.
+    /// Tests that a non-armor item adds 4 strength per item-option level.
     /// </summary>
     [Test]
     public void OptionAdds4Strength()
@@ -70,8 +72,9 @@ public class ItemRequirementCalculationTest
         var item = new Item();
         item.Definition = new ItemDefinition();
         item.Definition.DropLevel = 6;
-        item.Definition.Group = 7;
+        item.Definition.Group = 0;
         item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.LeftHandSlot);
         item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
@@ -84,6 +87,53 @@ public class ItemRequirementCalculationTest
 
         Assert.That(agilityValue.Item1, Is.EqualTo(Stats.TotalAgility));
         Assert.That(agilityValue.Item2, Is.EqualTo(30));
+    }
+
+    /// <summary>
+    /// Tests that an armor item adds 5 strength per item-option level, whether it's equipped or not.
+    /// </summary>
+    /// <param name="currentSlot">The current item slot.</param> 
+    [TestCase(2)]
+    [TestCase(12)]
+    public void ArmorOptionAdds5Strength(byte currentSlot)
+    {
+        var item = new Item();
+        item.Definition = new ItemDefinition();
+        item.Definition.DropLevel = 6;
+        item.Definition.Group = 7;
+        item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.ItemSlot.ItemSlots.Add(InventoryConstants.HelmSlot);
+        item.ItemSlot = currentSlot;
+        item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
+        var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
+
+        var strengthValue = item.GetRequirement(strengthRequirement);
+
+        Assert.That(strengthValue.Item1, Is.EqualTo(Stats.TotalStrength));
+        Assert.That(strengthValue.Item2, Is.EqualTo(35));
+    }
+
+    /// <summary>
+    /// Tests that a requirement can be made conditional on the item's level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <param name="expectedRequirement">The expected requirement.</param>
+    [TestCase(2, 0)]
+    [TestCase(3, 50)]
+    public void RequirementStartsAtConfiguredItemLevel(byte itemLevel, int expectedRequirement)
+    {
+        var item = new Item { Level = itemLevel };
+        var requirement = new Persistence.BasicModel.AttributeRequirement
+        {
+            Attribute = Stats.Level,
+            MinimumValue = 50,
+            MinimumItemLevel = 3,
+        };
+
+        var result = item.GetRequirement(requirement);
+
+        Assert.That(result.Attr, Is.EqualTo(Stats.Level));
+        Assert.That(result.Value, Is.EqualTo(expectedRequirement));
     }
 
     /// <summary>
@@ -157,10 +207,9 @@ public class ItemRequirementCalculationTest
         var item = new Item();
         item.Level = itemLevel;
         item.Definition = new ItemDefinition();
-        item.Definition.Skill = new Skill();
         item.Definition.DropLevel = 59;
-        item.Definition.Group = 5;
         item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.BookRise, BaseValue = 23 });
         var energyRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 168 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 25 };
 

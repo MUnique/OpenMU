@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Barracks of Balgass map.
@@ -19,11 +21,6 @@ internal class BalgassRefuge : BaseMapInitializer
     internal const byte Number = 42;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Balgass Refuge";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="BalgassRefuge"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class BalgassRefuge : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.BalgassRefuge);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -62,7 +64,7 @@ internal class BalgassRefuge : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 412;
-            monster.Designation = "Dark Elf (Trainee Soldier)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkElfTraineeSoldier);
             monster.MoveRange = 6;
             monster.AttackRange = 6;
             monster.ViewRange = 10;

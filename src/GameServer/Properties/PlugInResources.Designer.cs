@@ -439,6 +439,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shows the gens mark and rank of the players in the view..
+        /// </summary>
+        public static string AssignPlayersToGensPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AssignPlayersToGensPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assign players to gens.
+        /// </summary>
+        public static string AssignPlayersToGensPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AssignPlayersToGensPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IAssignPlayersToGuildPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string AssignPlayersToGuildPlugIn_Description {
@@ -615,6 +633,150 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CancelGuildCreationHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CancelGuildCreationHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop packets (0xD2 identifier)..
+        /// </summary>
+        public static string CashShopGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop group handler.
+        /// </summary>
+        public static string CashShopGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop buy requests (0xD2, 0x03 identifier)..
+        /// </summary>
+        public static string CashShopItemBuyRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopItemBuyRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop buy request handler.
+        /// </summary>
+        public static string CashShopItemBuyRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopItemBuyRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop gift requests (0xD2, 0x04 identifier)..
+        /// </summary>
+        public static string CashShopItemGiftRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopItemGiftRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop gift request handler.
+        /// </summary>
+        public static string CashShopItemGiftRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopItemGiftRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for opening and closing the cash shop (0xD2, 0x02 identifier)..
+        /// </summary>
+        public static string CashShopOpenStateHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopOpenStateHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop open state handler.
+        /// </summary>
+        public static string CashShopOpenStateHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopOpenStateHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop point information requests (0xD2, 0x01 identifier)..
+        /// </summary>
+        public static string CashShopPointInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopPointInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop point info request handler.
+        /// </summary>
+        public static string CashShopPointInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopPointInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for requests to use an item of the cash shop storage (0xD2, 0x0B identifier)..
+        /// </summary>
+        public static string CashShopStorageItemConsumeRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopStorageItemConsumeRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop storage item use request handler.
+        /// </summary>
+        public static string CashShopStorageItemConsumeRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopStorageItemConsumeRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for cash shop storage list requests (0xD2, 0x05 identifier)..
+        /// </summary>
+        public static string CashShopStorageListRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopStorageListRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop storage list request handler.
+        /// </summary>
+        public static string CashShopStorageListRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopStorageListRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the ICashShopViewPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string CashShopViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop view.
+        /// </summary>
+        public static string CashShopViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopViewPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1447,6 +1609,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IChaosCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ChaosCastleScoreTableViewPlugin_Description {
+            get {
+                return ResourceManager.GetString("ChaosCastleScoreTableViewPlugin_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle Score Table View.
+        /// </summary>
+        public static string ChaosCastleScoreTableViewPlugin_Name {
+            get {
+                return ResourceManager.GetString("ChaosCastleScoreTableViewPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ChaosCastleStateViewPlugIn_Description {
@@ -2005,6 +2185,96 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the client for the additional success rate of the chaos machine..
+        /// </summary>
+        public static string CrywolfChaosRateBenefitRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfChaosRateBenefitRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Chaos Rate Benefit Request Handler.
+        /// </summary>
+        public static string CrywolfChaosRateBenefitRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfChaosRateBenefitRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of an elf to contract an altar of the crywolf event..
+        /// </summary>
+        public static string CrywolfContractRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfContractRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Contract Request Handler.
+        /// </summary>
+        public static string CrywolfContractRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfContractRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the state of the crywolf event, its altars and its result to the client..
+        /// </summary>
+        public static string CrywolfEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Event View.
+        /// </summary>
+        public static string CrywolfEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the crywolf event..
+        /// </summary>
+        public static string CrywolfGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Group Handler.
+        /// </summary>
+        public static string CrywolfGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the client for the state of the crywolf event..
+        /// </summary>
+        public static string CrywolfInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Info Request Handler.
+        /// </summary>
+        public static string CrywolfInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the ICurrentlyActiveQuestsPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string CurrentlyActiveQuestsPlugIn_Description {
@@ -2509,6 +2779,114 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the gens system (0xF8)..
+        /// </summary>
+        public static string GensGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens group handler.
+        /// </summary>
+        public static string GensGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player to join a gens..
+        /// </summary>
+        public static string GensJoinRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensJoinRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens join request handler.
+        /// </summary>
+        public static string GensJoinRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensJoinRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player to leave the gens..
+        /// </summary>
+        public static string GensLeaveRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensLeaveRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens leave request handler.
+        /// </summary>
+        public static string GensLeaveRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensLeaveRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the gens ranking, which the client sends when it opens the gens info window..
+        /// </summary>
+        public static string GensRankingRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRankingRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens ranking request handler.
+        /// </summary>
+        public static string GensRankingRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRankingRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player for the gens ranking reward..
+        /// </summary>
+        public static string GensRewardRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRewardRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens reward request handler.
+        /// </summary>
+        public static string GensRewardRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRewardRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the results of the gens requests and the gens info of the own player..
+        /// </summary>
+        public static string GensViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens view.
+        /// </summary>
+        public static string GensViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for guild create packets..
         /// </summary>
         public static string GuildCreateHandlerPlugIn_Description {
@@ -2811,6 +3189,60 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string HitHandlerPlugIn075_Name {
             get {
                 return ResourceManager.GetString("HitHandlerPlugIn075_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request to enter the imperial guardian event, which is sent by the window of Jerint..
+        /// </summary>
+        public static string ImperialGuardianEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian Enter Request Handler.
+        /// </summary>
+        public static string ImperialGuardianEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the imperial guardian event (0xF7)..
+        /// </summary>
+        public static string ImperialGuardianGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian Group Handler.
+        /// </summary>
+        public static string ImperialGuardianGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the enter result, the timer and the result of the imperial guardian event to the client..
+        /// </summary>
+        public static string ImperialGuardianViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian View.
+        /// </summary>
+        public static string ImperialGuardianViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianViewPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4435,6 +4867,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Packet handler which sets prices in a currency for an item in the player shop (3F 09)..
+        /// </summary>
+        public static string PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player Shop - Set Price (with currency).
+        /// </summary>
+        public static string PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PlayerShopSetItemPriceExtendedPacketHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Packet handler which sets prices for an item in the player shop (3F 01)..
         /// </summary>
         public static string PlayerShopSetItemPricePacketHandlerPlugIn_Description {
@@ -6037,6 +6487,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowShopCurrenciesExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Shop Currencies Extended.
+        /// </summary>
+        public static string ShowShopCurrenciesExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extended implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ShowShopItemListExtendedPlugIn_Description {
@@ -7205,5 +7673,16 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
             }
         }
+        /// <summary>Gets the localized EnterMarketPlace_Name text.</summary>
+        public static string EnterMarketPlace_Name => ResourceManager.GetString("EnterMarketPlace_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized EnterMarketPlace_Description text.</summary>
+        public static string EnterMarketPlace_Description => ResourceManager.GetString("EnterMarketPlace_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized PingHandlerPlugIn_Name text.</summary>
+        public static string PingHandlerPlugIn_Name => ResourceManager.GetString("PingHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
+        public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
     }
 }

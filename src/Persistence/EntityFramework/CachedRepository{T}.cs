@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Threading;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A repository which caches all of its data in memory.
@@ -14,10 +16,11 @@ using System.Threading;
 public class CachedRepository<T> : IRepository<T>
     where T : class, IIdentifiable
 {
-    private readonly IDictionary<Guid, T> _cache;
+    private readonly ConcurrentDictionary<Guid, T> _cache = new();
 
-    private bool _allLoaded;
-    private bool _loading;
+    private readonly AsyncLock _loadLock = new();
+
+    private volatile bool _allLoaded;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachedRepository{T}"/> class.
@@ -26,8 +29,6 @@ public class CachedRepository<T> : IRepository<T>
     public CachedRepository(IRepository<T> baseRepository)
     {
         this.BaseRepository = baseRepository;
-
-        this._cache = new Dictionary<Guid, T>();
     }
 
     /// <summary>
@@ -44,47 +45,14 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     public async ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        if (this._allLoaded)
-        {
-            return this._cache.Values;
-        }
-
-        if (this._loading)
-        {
-            while (this._loading)
-            {
-                await Task.Delay(10, cancellationToken).ConfigureAwait(false);
-            }
-
-            return this._cache.Values;
-        }
-
-        this._loading = true;
-        try
-        {
-            IEnumerable<T> values = await this.BaseRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
-            foreach (var obj in values)
-            {
-                if (!this._cache.ContainsKey(obj.Id))
-                {
-                    this.AddToCache(obj.Id, obj);
-                }
-            }
-        }
-        finally
-        {
-            this._loading = false;
-        }
-
-        this._allLoaded = true;
-
+        await this.EnsureLoadedAsync(cancellationToken).ConfigureAwait(false);
         return this._cache.Values;
     }
 
     /// <inheritdoc/>
     public async ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        await this.EnsureLoadedAsync(cancellationToken).ConfigureAwait(false);
         this._cache.TryGetValue(id, out var result);
         return result;
     }
@@ -125,16 +93,9 @@ public class CachedRepository<T> : IRepository<T>
     /// <param name="obj">The object.</param>
     protected virtual void AddToCache(Guid id, T obj)
     {
-        if (this._cache.TryGetValue(id, out var value))
+        if (!this._cache.TryAdd(id, obj) && !ReferenceEquals(this._cache[id], obj))
         {
-            if (Equals(value, obj))
-            {
-                throw new ArgumentException("Other object with same id is already in cache.");
-            }
-        }
-        else
-        {
-            this._cache.Add(id, obj);
+            throw new ArgumentException("Other object with same id is already in cache.");
         }
     }
 
@@ -144,6 +105,34 @@ public class CachedRepository<T> : IRepository<T>
     /// <param name="id">The identifier.</param>
     protected virtual void RemoveFromCache(Guid id)
     {
-        this._cache.Remove(id);
+        this._cache.TryRemove(id, out _);
+    }
+
+    private async ValueTask EnsureLoadedAsync(CancellationToken cancellationToken)
+    {
+        if (this._allLoaded)
+        {
+            return;
+        }
+
+        using (await this._loadLock.LockAsync(cancellationToken).ConfigureAwait(false))
+        {
+            // Concurrent callers wait for the first one. If its loading failed, the next one tries again.
+            if (this._allLoaded)
+            {
+                return;
+            }
+
+            var values = await this.BaseRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+            foreach (var obj in values)
+            {
+                if (!this._cache.ContainsKey(obj.Id))
+                {
+                    this.AddToCache(obj.Id, obj);
+                }
+            }
+
+            this._allLoaded = true;
+        }
     }
 }

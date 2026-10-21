@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The chaos castle update plugin.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixLevelDiv20ExcOptionUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixLevelDiv20ExcOptionUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("B0F275DC-B3C2-4826-8263-FFDC8A8AFAEA")]
 public class FixLevelDiv20ExcOptionUpdatePlugIn : UpdatePlugInBase
 {
@@ -28,9 +28,6 @@ public class FixLevelDiv20ExcOptionUpdatePlugIn : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "This update fixes the excellent option which adds level / 20 as wizardry damage";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixLevelDiv20ExcOptionUpdate;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

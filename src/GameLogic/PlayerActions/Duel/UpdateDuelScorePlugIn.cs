@@ -28,7 +28,7 @@ public class UpdateDuelScorePlugIn : IAttackableGotKilledPlugIn
             && killerPlayer.DuelRoom == killedPlayer.DuelRoom)
         {
             var duelRoom = killerPlayer.DuelRoom;
-            using var l = await duelRoom.Lock.LockAsync();
+            using var l = await duelRoom.Lock.LockAsync().ConfigureAwait(false);
             if (duelRoom.State is not DuelState.DuelStarted)
             {
                 return;

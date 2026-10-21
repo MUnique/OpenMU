@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 /// <param name="ServerId">The server identifier.</param>
 /// <param name="CharacterName">The character which the bot is driving.</param>
 /// <param name="StartedAt">The start timestamp of the bot session.</param>
+/// <param name="GuildName">The guild of the character, if any.</param>
 /// <param name="PartyMaster">The character name of the party master, if the bot is in a party.</param>
 /// <param name="PartySize">The number of party members, if the bot is in a party.</param>
-public record BotAccount(string LoginName, byte ServerId, string? CharacterName, DateTime StartedAt, string? PartyMaster = null, int PartySize = 0) : IPartyGroupedAccount;
+public record BotAccount(string LoginName, byte ServerId, string? CharacterName, DateTime StartedAt, string? GuildName = null, string? PartyMaster = null, int PartySize = 0) : IPartyGroupedAccount;

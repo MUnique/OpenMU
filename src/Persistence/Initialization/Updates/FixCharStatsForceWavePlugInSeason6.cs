@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes several character stats values and DL Force Wave Strengthener master skill.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixCharStatsForceWavePlugInSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixCharStatsForceWavePlugInSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("0C1995AB-A1CC-42A8-9EFC-E5FE8F360C53")]
 public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBase
 {
@@ -37,9 +37,6 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWaveSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

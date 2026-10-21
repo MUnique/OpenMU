@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version097d.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Jewels for MU Version 0.97d.
@@ -36,7 +38,7 @@ public class Jewels : Version095d.Items.Jewels
     private ItemDefinition CreateJewelOfCreation()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Jewel of Creation";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.JewelOfCreation);
         itemDefinition.Number = 22;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;

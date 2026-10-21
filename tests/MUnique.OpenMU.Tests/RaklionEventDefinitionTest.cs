@@ -61,4 +61,26 @@ public class RaklionEventDefinitionTest
         Assert.That(definition.GetSkills(7), Does.Contain(SelupanSkill.Invincibility));
         Assert.That(definition.GetSkills(7), Does.Not.Contain(SelupanSkill.Fall), "The fall is only used when Selupan appears.");
     }
+
+    /// <summary>
+    /// Tests that only the dark knights, magic gladiators and dark lords are pushed by the full distance,
+    /// and the other classes by two fields at most.
+    /// </summary>
+    /// <param name="characterClassNumber">The number of the character class.</param>
+    /// <param name="expectedDistance">The expected push distance for a skill which pushes by ten fields.</param>
+    [TestCase((byte)0, 2)]
+    [TestCase((byte)4, 10)]
+    [TestCase((byte)7, 10)]
+    [TestCase((byte)8, 2)]
+    [TestCase((byte)12, 10)]
+    [TestCase((byte)17, 10)]
+    [TestCase((byte)20, 2)]
+    [TestCase((byte)24, 2)]
+    public void PushDistanceByCharacterClass(byte characterClassNumber, int expectedDistance)
+    {
+        var definition = new RaklionEventDefinition();
+
+        Assert.That(definition.GetPushDistance(characterClassNumber, 10), Is.EqualTo(expectedDistance));
+        Assert.That(definition.GetPushDistance(characterClassNumber, 1), Is.EqualTo(1), "A shorter distance is never increased.");
+    }
 }

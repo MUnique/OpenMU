@@ -231,6 +231,24 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     }
 
     /// <summary>
+    /// Checks whether the player may enter the map through a gate.
+    /// Like in the original game, the hatchery can't be entered while it's closed, and the player stays where it is.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="map">The map of the target gate.</param>
+    /// <returns><c>true</c>, if the player may enter the map; otherwise, <c>false</c>.</returns>
+    internal async ValueTask<bool> CanEnterThroughGateAsync(Player player, GameMapDefinition map)
+    {
+        if (map.Number != this._definition.HatcheryMapNumber || this.CanEnterHatchery)
+        {
+            return true;
+        }
+
+        await this.ShowHatcheryIsClosedAsync(player).ConfigureAwait(false);
+        return false;
+    }
+
+    /// <summary>
     /// Changes the state of Selupan and shows it to the players.
     /// </summary>
     /// <param name="selupanState">The state of Selupan.</param>
@@ -507,12 +525,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         else if (!this._battlePlayers.ContainsKey(player))
         {
             // The player is moved out of the hatchery by the next tick.
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryIsClosed)).ConfigureAwait(false);
-            if (this.State == RaklionState.Notify4)
-            {
-                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), this.GetOpeningTime(player)).ConfigureAwait(false);
-            }
-
+            await this.ShowHatcheryIsClosedAsync(player).ConfigureAwait(false);
             return;
         }
         else
@@ -531,6 +544,15 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    private async ValueTask ShowHatcheryIsClosedAsync(Player player)
+    {
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryIsClosed)).ConfigureAwait(false);
+        if (this.State == RaklionState.Notify4)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), this.GetOpeningTime(player)).ConfigureAwait(false);
+        }
     }
 
     private async ValueTask ShowCurrentStateAsync(Player player)

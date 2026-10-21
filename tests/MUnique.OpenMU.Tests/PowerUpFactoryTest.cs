@@ -40,6 +40,26 @@ public class PowerUpFactoryTest
     }
 
     /// <summary>
+    /// Tests if a fixed option (a normal option without level dependent values, like the dinorant options)
+    /// results in its power up, regardless of the level of the option link.
+    /// </summary>
+    /// <param name="level">The level of the option link.</param>
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(4)]
+    public async ValueTask FixedItemOptionIgnoresLevelAsync(int level)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var factory = this.GetPowerUpFactory();
+        var item = this.GetItemWithOption();
+        item.ItemOptions.Single().Level = level;
+
+        var result = factory.GetPowerUps(item, player.Attributes!);
+
+        Assert.That(result.Sum(p => p.Value), Is.EqualTo(PowerUpStrength));
+    }
+
+    /// <summary>
     /// Tests if the item option of level 0 results in the corresponding power up.
     /// </summary>
     [Test]
@@ -64,6 +84,31 @@ public class PowerUpFactoryTest
         item.Level = 3;
         var result = factory.GetPowerUps(item, player.Attributes!);
         Assert.That(result.Sum(p => p.Value), Is.EqualTo(PowerUpStrength + this._levelBonus[3]));
+    }
+
+    /// <summary>
+    /// Tests that a configured maximum-health power-up applies its bonus only at the specified item level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <param name="expectedMultiplier">The expected maximum-health multiplier.</param>
+    [TestCase(4, 1)]
+    [TestCase(5, 1.2f)]
+    public void ItemBasePowerUpLevelBonusAppliesAtConfiguredLevel(byte itemLevel, float expectedMultiplier)
+    {
+        var item = this.GetItemWithBasePowerUp();
+        item.Level = itemLevel;
+        var powerUp = item.Definition!.BasePowerUpAttributes.Single();
+        powerUp.TargetAttribute = Stats.MaximumHealth;
+        powerUp.BaseValue = 1;
+        powerUp.AggregateType = AggregateType.Multiplicate;
+        var bonusTable = new Mock<ItemLevelBonusTable>();
+        bonusTable.Setup(table => table.BonusPerLevel).Returns([new LevelBonus(5, 0.2f)]);
+        powerUp.BonusPerLevelTable = bonusTable.Object;
+
+        var result = this.GetPowerUpFactory().GetPowerUps(item, this.GetAttributeSystem()).Single();
+
+        Assert.That(result.Value, Is.EqualTo(expectedMultiplier));
+        Assert.That(result.AggregateType, Is.EqualTo(AggregateType.Multiplicate));
     }
 
     /// <summary>

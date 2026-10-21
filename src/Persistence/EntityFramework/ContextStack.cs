@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Collections.Immutable;
 using System.Threading;
 
 /// <summary>
@@ -11,7 +12,12 @@ using System.Threading;
 /// </summary>
 internal sealed class ContextStack : IContextStack
 {
-    private readonly AsyncLocal<Stack<IContext>> _localStack = new();
+    /// <summary>
+    /// The stack of the current asynchronous flow.
+    /// It's immutable, because a flow which is forked from the current one (e.g. by starting a task)
+    /// would otherwise share and modify the same stack instance.
+    /// </summary>
+    private readonly AsyncLocal<ImmutableStack<IContext>?> _localStack = new();
 
     /// <summary>
     /// Puts this context on the context stack of the current thread to be used for the upcoming repository actions.
@@ -21,9 +27,9 @@ internal sealed class ContextStack : IContextStack
     /// <returns>The disposable to end the usage.</returns>
     public IDisposable UseContext(IContext context)
     {
-        var contextsOfCurrentThread = this._localStack.Value ??= new Stack<IContext>();
-        contextsOfCurrentThread.Push(context);
-        return new ContextPop(contextsOfCurrentThread);
+        var previousStack = this._localStack.Value;
+        this._localStack.Value = (previousStack ?? ImmutableStack<IContext>.Empty).Push(context);
+        return new ContextPop(this, previousStack);
     }
 
     /// <summary>
@@ -32,10 +38,9 @@ internal sealed class ContextStack : IContextStack
     /// <returns>The current context.</returns>
     public IContext? GetCurrentContext()
     {
-        var contextsOfCurrentThread = this._localStack.Value ??= new Stack<IContext>();
-        if (contextsOfCurrentThread is { Count: > 0 })
+        if (this._localStack.Value is { IsEmpty: false } contextsOfCurrentFlow)
         {
-            return contextsOfCurrentThread.Peek();
+            return contextsOfCurrentFlow.Peek();
         }
 
         return null;
@@ -43,19 +48,22 @@ internal sealed class ContextStack : IContextStack
 
     private sealed class ContextPop : IDisposable
     {
-        private Stack<IContext>? _stack;
+        private readonly ImmutableStack<IContext>? _previousStack;
 
-        public ContextPop(Stack<IContext> stack)
+        private ContextStack? _contextStack;
+
+        public ContextPop(ContextStack contextStack, ImmutableStack<IContext>? previousStack)
         {
-            this._stack = stack;
+            this._contextStack = contextStack;
+            this._previousStack = previousStack;
         }
 
         public void Dispose()
         {
-            if (this._stack != null)
+            if (this._contextStack != null)
             {
-                this._stack.Pop();
-                this._stack = null;
+                this._contextStack._localStack.Value = this._previousStack;
+                this._contextStack = null;
             }
         }
     }

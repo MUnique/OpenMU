@@ -13,13 +13,10 @@ using MUnique.OpenMU.PlugIns;
 /// for version 0.95d.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SystemConfigurationAddedPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SystemConfigurationAddedPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("EC9FE71E-5C6C-456A-AC75-428EBA3FF626")]
 public class SystemConfigurationAddedPlugIn095d : SystemConfigurationAddedPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.SystemConfigurationAdded095d;
 }

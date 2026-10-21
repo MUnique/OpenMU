@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes and reworks some regeneration attributes (health, shield, mana, ability). It also adds default running (and fast swimming) speed for tier 2 chars (MG, DL, RF).
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RegenerationsRefactorPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RegenerationsRefactorPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("E6A3B9F1-7C4D-48E2-A5B8-1F9D3C6E2A7B")]
 public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBase
 {
@@ -25,9 +25,6 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
     /// The plug in description.
     /// </summary>
     internal new const string PlugInDescription = "This update fixes and reworks some regeneration attributes (health, shield, mana, ability). It also adds default running (and fast swimming) speed for tier 2 chars (MG, DL, RF).";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RegenerationsRefactorSeason6;
 
     /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
@@ -59,7 +56,7 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            // Remove obsolete shiled recovery combo
+            // Remove obsolete shield recovery combo
             var attrCombos = charClass.AttributeCombinations;
             if (attrCombos.FirstOrDefault(ac => ac.InputAttribute == isInSafezone && ac.TargetAttribute == shieldRecoveryMultiplier) is { } isInSafeZoneToShieldRecoveryMultiplier)
             {
@@ -116,9 +113,10 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1f / 75000, shieldRecoveryMultiplier, AggregateType.Multiplicate));
 
             // Add default movement speeds for tier 2 chars
-            if (charClass.Number == 16 || charClass.Number == 17 // DL classes
-                || charClass.Number == 12 || charClass.Number == 13 // MG classes
-                || charClass.Number == 24 || charClass.Number == 25) // RF classes
+            // DL, MG, RF classes
+            if (charClass.Number == 16 || charClass.Number == 17
+                || charClass.Number == 12 || charClass.Number == 13
+                || charClass.Number == 24 || charClass.Number == 25)
             {
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeed, AggregateType.Maximum));
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeedUnderwater, AggregateType.Maximum));

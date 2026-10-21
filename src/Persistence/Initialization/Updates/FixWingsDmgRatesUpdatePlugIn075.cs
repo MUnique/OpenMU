@@ -13,13 +13,10 @@ using MUnique.OpenMU.PlugIns;
 /// for version 075.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWingsDmgRatesUpdatePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWingsDmgRatesUpdatePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("3821267A-9C37-40E5-B023-BAB1A8E4DAB7")]
 public class FixWingsDmgRatesUpdatePlugIn075 : FixWingsDmgRatesUpdatePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixWingsDmgRatesPlugIn075;
 }

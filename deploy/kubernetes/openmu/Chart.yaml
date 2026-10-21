@@ -1,0 +1,9 @@
+apiVersion: v2
+name: openmu
+description: The distributed deployment of OpenMU, a MU Online server, on Kubernetes with Dapr.
+type: application
+version: 0.1.0
+appVersion: "latest"
+home: https://munique.net
+sources:
+  - https://github.com/MUnique/OpenMU

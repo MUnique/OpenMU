@@ -118,6 +118,7 @@ internal enum SkillNumber
     SelupanPoison = 250,
     SelupanIceStorm = 251,
     SelupanIceStrike = 252,
+    SelupanFall = 253,
     KillingBlow = 260,
     BeastUppercut = 261,
     ChainDrive = 262,

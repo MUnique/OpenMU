@@ -147,6 +147,6 @@ public partial class SystemConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return "System Configuration";
+        return Resources.SystemConfiguration_Name;
     }
 }

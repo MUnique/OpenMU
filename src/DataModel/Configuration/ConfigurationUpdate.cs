@@ -10,15 +10,21 @@ using MUnique.OpenMU.Interfaces;
 /// Describes an applied configuration update.
 /// Based on this information, the program can decide which updates are need to
 /// be installed next.
-/// After a fresh database initialization, an entry exists, so that the maximum
-/// version can be determined in this case, too.
+/// After a fresh database initialization, entries exist for all known updates,
+/// so that nothing is applied twice.
 /// </summary>
 public class ConfigurationUpdate
 {
     /// <summary>
-    /// Gets or sets the version of the update.
+    /// Gets or sets the key of the update. This is the <see cref="Type.GUID"/> of the update plug-in implementation.
     /// </summary>
-    public int Version { get; set; }
+    public Guid Key { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version of the update plug-in which was installed.
+    /// If the plug-in code has a higher version, the update is offered again.
+    /// </summary>
+    public int Version { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the name of the update.
@@ -36,6 +42,12 @@ public class ConfigurationUpdate
     public DateTime? CreatedAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the date of the last change of the update plug-in.
+    /// If it's <c>null</c>, the update was never changed since its creation.
+    /// </summary>
+    public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
     /// Gets or sets the installation timestamp. If it's <c>null</c>, the update wasn't installed yet.
     /// </summary>
     public DateTime? InstalledAt { get; set; }
@@ -43,6 +55,6 @@ public class ConfigurationUpdate
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"v{this.Version}: {this.Name}";
+        return $"{this.Name} ({this.Key})";
     }
 }

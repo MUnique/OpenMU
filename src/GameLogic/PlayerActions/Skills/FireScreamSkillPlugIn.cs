@@ -33,8 +33,7 @@ public class FireScreamSkillPlugIn : IAreaSkillPlugIn
             return;
         }
 
-        var attackDamage = hit.HealthDamage + hit.ShieldDamage;
-        var explosionDamage = attackDamage / 10;
+        var explosionDamage = hit.TotalDamage / 10;
         if (explosionDamage < 1)
         {
             return;

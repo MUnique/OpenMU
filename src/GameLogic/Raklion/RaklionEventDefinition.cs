@@ -137,6 +137,45 @@ public class RaklionEventDefinition
     public int AreaSkillRadius { get; set; } = 6;
 
     /// <summary>
+    /// Gets or sets the radius around Selupan, in which its fall hits players when it appears.
+    /// Only players which are closer than this radius are hit.
+    /// </summary>
+    public int FallRadius { get; set; } = 4;
+
+    /// <summary>
+    /// Gets or sets the number of fields, by which the fall of Selupan pushes the hit players away.
+    /// </summary>
+    public int FallPushDistance { get; set; } = 4;
+
+    /// <summary>
+    /// Gets or sets the number of fields, by which the ice strike (frost shock) of Selupan pushes the hit players away.
+    /// </summary>
+    public int IceStrikePushDistance { get; set; } = 10;
+
+    /// <summary>
+    /// Gets or sets the maximum number of fields, by which the skills of Selupan push the players
+    /// of the character classes which aren't contained in <see cref="FullyPushedCharacterClassNumbers"/>.
+    /// </summary>
+    public int LimitedPushDistance { get; set; } = 2;
+
+    /// <summary>
+    /// Gets or sets the numbers of the character classes, which are pushed by the full distance of the skills of Selupan.
+    /// Like in the original game, these are the dark knights, magic gladiators and dark lords.
+    /// </summary>
+    public IList<byte> FullyPushedCharacterClassNumbers { get; set; } = new List<byte> { 4, 6, 7, 12, 13, 16, 17 };
+
+    /// <summary>
+    /// Gets or sets the chance in percent, that an iron knight of raklion attacks its target with its stab
+    /// instead of a normal attack, see <see cref="IronKnightIntelligence"/>.
+    /// </summary>
+    /// <remarks>
+    /// The chance of the original server is unknown.
+    /// It applies independently of the state of the event. When the <see cref="RaklionPlugIn"/>
+    /// isn't active, the default value is used.
+    /// </remarks>
+    public int IronKnightStabChance { get; set; } = 30;
+
+    /// <summary>
     /// Gets the pattern (1 to 7) of Selupan by its remaining health.
     /// </summary>
     /// <param name="healthPercentage">The remaining health in percent.</param>
@@ -170,6 +209,19 @@ public class RaklionEventDefinition
         }
 
         return this.PatternBerserkLevels[Math.Clamp(pattern, 1, this.PatternBerserkLevels.Count) - 1];
+    }
+
+    /// <summary>
+    /// Gets the number of fields, by which a player of the character class is pushed by a skill of Selupan.
+    /// </summary>
+    /// <param name="characterClassNumber">The number of the character class of the player.</param>
+    /// <param name="distance">The push distance of the skill.</param>
+    /// <returns>The distance, limited by <see cref="LimitedPushDistance"/> for the classes which aren't pushed by the full distance.</returns>
+    public int GetPushDistance(byte? characterClassNumber, int distance)
+    {
+        return characterClassNumber is { } number && this.FullyPushedCharacterClassNumbers.Contains(number)
+            ? distance
+            : Math.Min(distance, this.LimitedPushDistance);
     }
 
     /// <summary>

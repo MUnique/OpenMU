@@ -35,6 +35,6 @@ public partial class CastleSiegeUpgradeDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Level {this.Level}: Value={this.Value}, Jewels={this.RequiredJewelOfGuardianCount}, Zen={this.RequiredZen}";
+        return string.Format(Properties.Resources.CastleSiegeUpgradeSummary, this.Level, this.Value, this.RequiredJewelOfGuardianCount, this.RequiredZen);
     }
 }

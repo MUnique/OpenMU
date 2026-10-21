@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// fit either of them.
 /// </remarks>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMissingMerchantStoresPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMissingMerchantStoresPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("f78d6e1d-1cb5-45f7-912d-54b2cb1220eb")]
 public class AddMissingMerchantStoresPlugIn : UpdatePlugInBase
 {
@@ -43,9 +43,6 @@ public class AddMissingMerchantStoresPlugIn : UpdatePlugInBase
     /// The numbers of the NPCs which have a merchant window but no store.
     /// </summary>
     private static readonly short[] EmptyMerchantNpcNumbers = [545];
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMissingMerchantStores;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

@@ -238,6 +238,7 @@ public sealed class DoppelgangerContext : MiniGameContext
     }
 
     /// <inheritdoc />
+    // This handles the Died event, which requires a void handler. It catches and logs all exceptions, so none get lost.
 #pragma warning disable VSTHRD100 // Avoid async void methods
     protected override async void OnMonsterDied(object? sender, DeathInformation e)
 #pragma warning restore VSTHRD100
@@ -271,6 +272,7 @@ public sealed class DoppelgangerContext : MiniGameContext
     }
 
     /// <inheritdoc />
+    // This handles the Died event, which requires a void handler. It catches and logs all exceptions, so none get lost.
 #pragma warning disable VSTHRD100 // Avoid async void methods
     protected override async void OnPlayerDied(object? sender, DeathInformation e)
 #pragma warning restore VSTHRD100
@@ -287,6 +289,24 @@ public sealed class DoppelgangerContext : MiniGameContext
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "{context}: Unexpected error in OnPlayerDied.", this);
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask OnObjectAddedToMapAsync((GameMap Map, ILocateable Object) args)
+    {
+        await base.OnObjectAddedToMapAsync(args).ConfigureAwait(false);
+
+        // Players which are added while playing rejoined the game after they lost their connection.
+        // The play info is sent periodically, but the state and the goal count only when they change.
+        if (args.Object is Player player && this.State == MiniGameState.Playing)
+        {
+            var shownGoalCount = Math.Min(Volatile.Read(ref this._goalCount), this._definition.MaximumGoalCount);
+            await player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(async p =>
+            {
+                await p.ShowStateAsync(DoppelgangerState.Playing).ConfigureAwait(false);
+                await p.ShowMonsterGoalAsync(shownGoalCount, this._definition.MaximumGoalCount).ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
     }
 

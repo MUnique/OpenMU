@@ -465,12 +465,6 @@
   <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
   </data>
-  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
-    <value>Plasma Storm Skill</value>
-  </data>
-  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
-    <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
-  </data>
   <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
     <value>Pollution Skill</value>
   </data>
@@ -657,6 +651,12 @@
   <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.</value>
   </data>
+  <data name="SlideNoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Slide notice chat command</value>
+  </data>
+  <data name="SlideNoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/slidenotice message'. Sends a global notice to all players of the game which scrolls across the top of their screen.</value>
+  </data>
   <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
     <value>NPC open merchant chat command</value>
   </data>
@@ -800,6 +800,12 @@
   </data>
   <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
     <value>Handle red dragon invasion event</value>
+  </data>
+    <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>Durability Decay</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>Updates the durabilty of time-decaying items.</value>
   </data>
   <data name="HappyHourPlugIn_Name" xml:space="preserve">
     <value>Happy Hour</value>
@@ -1161,6 +1167,12 @@
   <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
     <value>Timetable</value>
   </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Name" xml:space="preserve">
+    <value>Active on servers</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Description" xml:space="preserve">
+    <value>Restricts the event to the selected game servers. An empty selection means the event runs on all servers.</value>
+  </data>
   <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
     <value>Pre-start message delay</value>
   </data>
@@ -1217,6 +1229,18 @@
   </data>
   <data name="MiniGameStartConfiguration_EntranceClosedMessage_Name" xml:space="preserve">
     <value>Entrance closed message</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Name" xml:space="preserve">
+    <value>Tower open duration</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Description" xml:space="preserve">
+    <value>How long the Tower of Refinement stays open after the Nightmare boss has been defeated. While the window is open, scheduled event starts are skipped; a game master start still proceeds and ends the window.</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Name" xml:space="preserve">
+    <value>Tower open until (UTC)</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Description" xml:space="preserve">
+    <value>End of the current open window in UTC. Set automatically when Nightmare is defeated.</value>
   </data>
   <data name="HappyHourConfiguration_ExperienceMultiplier_Name" xml:space="preserve">
     <value>Experience multiplier</value>
@@ -1302,10 +1326,345 @@
   <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
     <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
   </data>
+  <data name="BotConfiguration_Enabled_Name" xml:space="preserve"><value>Enabled</value></data>
+  <data name="BotConfiguration_Enabled_Description" xml:space="preserve"><value>If enabled, bots are spawned after the server has started.</value></data>
+  <data name="BotConfiguration_ResetBots_Name" xml:space="preserve"><value>Reset bots</value></data>
+  <data name="BotConfiguration_ResetBots_Description" xml:space="preserve"><value>Deletes all bot accounts and characters on the next start, then regenerates them. Clears itself afterwards.</value></data>
+  <data name="BotConfiguration_PurgeBots_Name" xml:space="preserve"><value>Purge bots</value></data>
+  <data name="BotConfiguration_PurgeBots_Description" xml:space="preserve"><value>Deletes all bot accounts and characters and turns the bot feature off, without generating new ones. Clears itself afterwards.</value></data>
+  <data name="BotConfiguration_StartAsFreshCharacters_Name" xml:space="preserve"><value>Start as fresh characters</value></data>
+  <data name="BotConfiguration_StartAsFreshCharacters_Description" xml:space="preserve"><value>Newly generated bots start at level 1 with level-0 starter equipment, like a freshly created player character, instead of with a random level, reset history and upgraded gear.</value></data>
+  <data name="BotConfiguration_PresenceRotation_Name" xml:space="preserve"><value>Presence rotation</value></data>
+  <data name="BotConfiguration_PresenceRotation_Description" xml:space="preserve"><value>Bots log in and out over the day (fewest at night, most in the evening) instead of all being online 24/7.</value></data>
+  <data name="BotConfiguration_MinOnlineSharePercent_Name" xml:space="preserve"><value>Min. online share %</value></data>
+  <data name="BotConfiguration_MinOnlineSharePercent_Description" xml:space="preserve"><value>Percentage of the bot population which stays online at the quietest hour (100 = no rotation effect).</value></data>
+  <data name="BotConfiguration_NumberOfAccounts_Name" xml:space="preserve"><value>Number of accounts</value></data>
+  <data name="BotConfiguration_NumberOfAccounts_Description" xml:space="preserve"><value>How many bot accounts to maintain.</value></data>
+  <data name="BotConfiguration_MaxCharactersPerAccount_Name" xml:space="preserve"><value>Characters per account</value></data>
+  <data name="BotConfiguration_MaxCharactersPerAccount_Description" xml:space="preserve"><value>How many characters each bot account holds (max 5).</value></data>
+  <data name="BotConfiguration_BotCapacityPercent_Name" xml:space="preserve"><value>Bot capacity %</value></data>
+  <data name="BotConfiguration_BotCapacityPercent_Description" xml:space="preserve"><value>Share of a game server's maximum player count which its bots may occupy; the rest stays reserved for real players.</value></data>
+  <data name="BotConfiguration_BotsPayResetCosts_Name" xml:space="preserve"><value>Bots pay reset costs</value></data>
+  <data name="BotConfiguration_BotsPayResetCosts_Description" xml:space="preserve"><value>If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).</value></data>
+  <data name="BotConfiguration_JewelStockPerKind_Name" xml:space="preserve"><value>Jewel stock per kind</value></data>
+  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
+  <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve"><value>Potion stock (charges)</value></data>
+  <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve"><value>How many healing and mana potion charges a bot buys up to at a merchant.</value></data>
+  <data name="BotConfiguration_ProofOfConceptAccounts_Name" xml:space="preserve"><value>Extra accounts to animate</value></data>
+  <data name="BotConfiguration_ProofOfConceptAccounts_Description" xml:space="preserve"><value>Comma separated login names of existing accounts to animate as bots, in addition to the generated population.</value></data>
+  <data name="BotSelfDefensePlugIn_Name" xml:space="preserve"><value>Bot self defense</value></data>
+  <data name="BotSelfDefensePlugIn_Description" xml:space="preserve"><value>Makes server-side bots fight back when a player attacks them.</value></data>
+  <data name="BotRevengePlugIn_Name" xml:space="preserve"><value>Bot revenge</value></data>
+  <data name="BotRevengePlugIn_Description" xml:space="preserve"><value>Makes server-side bots return to their death site and take revenge on the player who killed them.</value></data>
+  <data name="BotSkillProgressionPlugIn_Name" xml:space="preserve"><value>Bot skill progression</value></data>
+  <data name="BotSkillProgressionPlugIn_Description" xml:space="preserve"><value>Invests level-up stat points and teaches server-side bots new class- and level-appropriate skills as they level up.</value></data>
+  <data name="BotFeaturePlugIn_Name" xml:space="preserve"><value>Bots</value></data>
+  <data name="BotFeaturePlugIn_Description" xml:space="preserve"><value>Spawns server-side bots which hunt monsters on the maps. Configure the accounts to animate and enable the feature.</value></data>
+  <data name="MaximumConnectionsPerIpPlugIn_Name" xml:space="preserve"><value>Maximum Connections Per IP</value></data>
+  <data name="MaximumConnectionsPerIpPlugIn_Description" xml:space="preserve"><value>Limits the maximum number of parallel connections from the same IP address.</value></data>
+  <data name="SpeedHackDetectPlugIn_Name" xml:space="preserve"><value>Speedhack Anti-Cheat</value></data>
+  <data name="SpeedHackDetectPlugIn_Description" xml:space="preserve"><value>Detects and prevents player walk and attack speedhacking.</value></data>
+  <data name="KanturuGatewayPlugIn_Name" xml:space="preserve"><value>KanturuGatewayPlugIn</value></data>
+  <data name="KanturuGatewayPlugIn_Description" xml:space="preserve"><value>Handles the Kanturu Gateway Machine NPC for event entry.</value></data>
+  <data name="SymbolOfKundunStackedPlugIn_Name" xml:space="preserve"><value>SymbolOfKundunStackedPlugIn</value></data>
+  <data name="SymbolOfKundunStackedPlugIn_Description" xml:space="preserve"><value>This plugin transforms a stack of symbol of kundun into a lost map.</value></data>
+  <data name="DuelSpawnGatePlugIn_Name" xml:space="preserve"><value>DuelSpawnGatePlugIn</value></data>
+  <data name="DuelSpawnGatePlugIn_Description" xml:space="preserve"><value>Spawns a player which is in a duel at its side of the duel area.</value></data>
+  <data name="SoccerSpawnGatePlugIn_Name" xml:space="preserve"><value>SoccerSpawnGatePlugIn</value></data>
+  <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve"><value>Spawns a player of a running soccer match on the soccer ground.</value></data>
+  <data name="PetExperiencePlugIn_Name" xml:space="preserve"><value>PetExperiencePlugIn</value></data>
+  <data name="PetExperiencePlugIn_Description" xml:space="preserve"><value>Gives the trainable pets of a player a share of the experience which the player gained for a kill.</value></data>
+  <data name="PeriodicInvasionConfiguration_ForceSingleMap_Name" xml:space="preserve"><value>Force Single Map</value></data>
+  <data name="PeriodicInvasionConfiguration_Mobs_Name" xml:space="preserve"><value>Monster Spawns</value></data>
+  <data name="WhiteWizardInvasionPlugIn_Name" xml:space="preserve"><value>White Wizard Invasion</value></data>
+  <data name="WhiteWizardInvasionPlugIn_Description" xml:space="preserve"><value>Enables the White Wizard Invasion feature.</value></data>
+  <data name="ItemRegistrationConfiguration_Rules_Name" xml:space="preserve"><value>NPC Registration Rules</value></data>
+  <data name="ItemRegistrationConfiguration_Rules_Description" xml:space="preserve"><value>Configure item registration rules for different NPCs.</value></data>
+  <data name="NpcItemRegistrationRule_NpcNumber_Name" xml:space="preserve"><value>NPC Number</value></data>
+  <data name="NpcItemRegistrationRule_NpcNumber_Description" xml:space="preserve"><value>The NPC definition number (e.g. 236 for Golden Archer).</value></data>
+  <data name="NpcItemRegistrationRule_AcceptedItemGroup_Name" xml:space="preserve"><value>Accepted Item Group</value></data>
+  <data name="NpcItemRegistrationRule_AcceptedItemGroup_Description" xml:space="preserve"><value>Group of the accepted item (e.g. 14 for event items).</value></data>
+  <data name="NpcItemRegistrationRule_AcceptedItemNumber_Name" xml:space="preserve"><value>Accepted Item Number</value></data>
+  <data name="NpcItemRegistrationRule_AcceptedItemNumber_Description" xml:space="preserve"><value>Number of the accepted item (e.g. 21 for Rena).</value></data>
+  <data name="NpcItemRegistrationRule_RequiredItemsCount_Name" xml:space="preserve"><value>Required Items Count</value></data>
+  <data name="NpcItemRegistrationRule_RequiredItemsCount_Description" xml:space="preserve"><value>Number of items required to receive a reward.</value></data>
+  <data name="NpcItemRegistrationRule_RewardZen_Name" xml:space="preserve"><value>Reward Zen</value></data>
+  <data name="NpcItemRegistrationRule_RewardZen_Description" xml:space="preserve"><value>Zen awarded upon reaching the required item count.</value></data>
+  <data name="NpcItemRegistrationRule_RewardDropItemGroup_Name" xml:space="preserve"><value>Reward Drop Item Group</value></data>
+  <data name="NpcItemRegistrationRule_RewardDropItemGroup_Description" xml:space="preserve"><value>The DropItemGroup used to generate the item reward drop. If empty, no item drops (Zen reward only).</value></data>
+  <data name="ChaosCastleStartPlugIn_Name" xml:space="preserve"><value>ChaosCastleStartPlugIn</value></data>
+  <data name="ChaosCastleStartPlugIn_Description" xml:space="preserve"><value>Chaos Castle event</value></data>
+  <data name="KanturuStartPlugIn_Name" xml:space="preserve"><value>KanturuStartPlugIn</value></data>
+  <data name="KanturuStartPlugIn_Description" xml:space="preserve"><value>Kanturu Refinery Tower event</value></data>
+  <data name="BloodCastleStartPlugIn_Name" xml:space="preserve"><value>BloodCastleStartPlugIn</value></data>
+  <data name="BloodCastleStartPlugIn_Description" xml:space="preserve"><value>Blood Castle event</value></data>
+  <data name="DevilSquareStartPlugIn_Name" xml:space="preserve"><value>DevilSquareStartPlugIn</value></data>
+  <data name="DevilSquareStartPlugIn_Description" xml:space="preserve"><value>Devil Square event</value></data>
+  <data name="PKClearConfiguration_ZenCostPerKill_Name" xml:space="preserve"><value>Zen Cost Per Kill</value></data>
+  <data name="PKClearConfiguration_ZenCostPerKill_Description" xml:space="preserve"><value>The amount of Zen required to clear one PK count.</value></data>
+  <data name="PKClearConfiguration_AllowRegularPlayers_Name" xml:space="preserve"><value>Allow Regular Players</value></data>
+  <data name="PKClearConfiguration_AllowRegularPlayers_Description" xml:space="preserve"><value>Allows regular players to use this command to clear their own PK status for Zen.</value></data>
+  <data name="LostMapDroppedPlugIn_Name" xml:space="preserve"><value>LostMapDroppedPlugIn</value></data>
+  <data name="LostMapDroppedPlugIn_Description" xml:space="preserve"><value>This plugin handles the drop of the lost map item. It creates the gate to the kalima map.</value></data>
+  <data name="ItemBoxDroppedPlugIn_Name" xml:space="preserve"><value>ItemBoxDroppedPlugIn</value></data>
+  <data name="ItemBoxDroppedPlugIn_Description" xml:space="preserve"><value>This plugin handles the drop of an item box, e.g. box of kundun.</value></data>
+  <data name="ResetConfiguration_RequiredResetItem_Name" xml:space="preserve"><value>Required reset item</value></data>
+  <data name="ResetConfiguration_ItemCostTiers_Name" xml:space="preserve"><value>Item cost tiers</value></data>
+  <data name="ResetConfiguration_PointsTiers_Name" xml:space="preserve"><value>Point tiers</value></data>
+  <data name="ResetPointTier_MinimumResetCount_Name" xml:space="preserve"><value>Minimum reset count</value></data>
+  <data name="ResetPointTier_PointsGranted_Name" xml:space="preserve"><value>Points granted</value></data>
+  <data name="ResetItemCostTier_MinimumResetCount_Name" xml:space="preserve"><value>Minimum reset count</value></data>
+  <data name="ResetItemCostTier_RequiredItemAmount_Name" xml:space="preserve"><value>Required item amount</value></data>
+  <data name="ActorHitRecorderPlugIn_Name" xml:space="preserve"><value>Test actor hit recorder</value></data>
+  <data name="ActorHitRecorderPlugIn_Description" xml:space="preserve"><value>Records hits dealt and received by scripted test actors in their event stream.</value></data>
+  <data name="MonsterAttributeScalerConfiguration_HealthPercentage_Caption" xml:space="preserve"><value>Health Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DefensePercentage_Caption" xml:space="preserve"><value>Defense Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption" xml:space="preserve"><value>Defense Rate Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption" xml:space="preserve"><value>Attack Rate Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DamagePercentage_Caption" xml:space="preserve"><value>Damage Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption" xml:space="preserve"><value>Scale All Percentage</value></data>
+  <data name="MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption" xml:space="preserve"><value>Maximum Connections Per Ip</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption" xml:space="preserve"><value>Attack Speed Min Interval Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption" xml:space="preserve"><value>Attack Speed Scaling Factor</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption" xml:space="preserve"><value>Attack Speed Base Delay Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxAttackTokens_Caption" xml:space="preserve"><value>Max Attack Tokens</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption" xml:space="preserve"><value>Max Allowed Walk Start Offset</value></data>
+  <data name="SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption" xml:space="preserve"><value>Walk Speed Tolerance Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_WarningHistoryHours_Caption" xml:space="preserve"><value>Warning History Hours</value></data>
+  <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>Alert Debounce Seconds</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve"><value>Max Warnings</value></data>
+  <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve"><value>Disconnect On Violation</value></data>
+  <data name="SpeedHackDetectConfiguration_ObserveOnly_Caption" xml:space="preserve"><value>Observe Only</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption" xml:space="preserve"><value>Violation Score Reject Threshold</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption" xml:space="preserve"><value>Violation Score Half Life Minutes</value></data>
+  <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>Auto Ban</value></data>
+  <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y</value></data>
+  <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X</value></data>
+  <data name="InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption" xml:space="preserve"><value>Is Spawn On All Maps</value></data>
+  <data name="InvasionSpawnConfiguration_AnnounceDeath_Caption" xml:space="preserve"><value>Announce Death</value></data>
+  <data name="InvasionSpawnConfiguration_MapStrategy_Caption" xml:space="preserve"><value>Map Strategy</value></data>
+  <data name="InvasionSpawnConfiguration_MapIds_Caption" xml:space="preserve"><value>Map Ids</value></data>
+  <data name="InvasionSpawnConfiguration_Count_Caption" xml:space="preserve"><value>Count</value></data>
+  <data name="InvasionSpawnConfiguration_MonsterId_Caption" xml:space="preserve"><value>Monster Id</value></data>
+  <data name="KanturuStartConfiguration_EventDefinition_Caption" xml:space="preserve"><value>Event Definition</value></data>
+  <data name="BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption" xml:space="preserve"><value>Repair Target Items</value></data>
   <data name="RaklionPlugIn_Name" xml:space="preserve">
     <value>Raklion Event</value>
   </data>
   <data name="RaklionPlugIn_Description" xml:space="preserve">
     <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
+  </data>
+  <data name="CrywolfPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Event</value>
+  </data>
+  <data name="CrywolfPlugIn_Description" xml:space="preserve">
+    <value>The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event.</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /crywolf</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends.</value>
+  </data>
+  <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian event</value>
+  </data>
+  <data name="ImperialGuardianFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the run of the imperial guardian event, e.g. its times, the experience reward and the scaling of the monsters.</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Name" xml:space="preserve">
+    <value>Suspicious scrap of paper stack transformation</value>
+  </data>
+  <data name="SuspiciousScrapOfPaperStackedPlugIn_Description" xml:space="preserve">
+    <value>Transforms a full stack of suspicious scraps of paper into a Gaion's Order.</value>
+  </data>
+  <data name="GensFeaturePlugIn_Name" xml:space="preserve">
+    <value>Gens system</value>
+  </data>
+  <data name="GensFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs.</value>
+  </data>
+  <data name="GensMembershipPlugIn_Name" xml:space="preserve">
+    <value>Gens membership</value>
+  </data>
+  <data name="GensMembershipPlugIn_Description" xml:space="preserve">
+    <value>Loads the gens membership of a character when it enters the game, and shows it to the player.</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Name" xml:space="preserve">
+    <value>Gens battle zone</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Description" xml:space="preserve">
+    <value>Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw.</value>
+  </data>
+  <data name="GensRankingPlugIn_Name" xml:space="preserve">
+    <value>Gens ranking</value>
+  </data>
+  <data name="GensRankingPlugIn_Description" xml:space="preserve">
+    <value>Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members.</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Name" xml:space="preserve">
+    <value>Gens relationship rules</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
+    <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Bless effect number</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Soul effect number</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Name" xml:space="preserve">
+    <value>Blood Castle Archangel</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event.</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Name" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
+    <value>The NPC which is handled by this plugin. If no NPC is set, the plugin doesn't handle any NPC.</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Twister animation counter</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Twister: every animation is counted, and the hits don't contain the animation counter.</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Evil Spirit animation counter</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Evil Spirit: every animation is counted.</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Multi-Shot animation counter</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Multi-Shot: the hits don't contain the animation counter.</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Name" xml:space="preserve">
+    <value>Lost connection detection</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Description" xml:space="preserve">
+    <value>Disconnects players whose client stopped to report that it's alive, because their connection got lost without being closed. Otherwise, they would stay connected, and further logins of their account would be rejected.</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Name" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
+    <value>The time after which a connection is considered lost, when its client didn't report that it's alive. The game client reports it every 20 seconds. Zero disables the detection.</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Name" xml:space="preserve">
+    <value>Cash shop version</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Description" xml:space="preserve">
+    <value>Sends the versions of the cash shop script and banner to the player when it enters the game.</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Name" xml:space="preserve">
+    <value>Cash shop</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Description" xml:space="preserve">
+    <value>The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size.</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Name" xml:space="preserve">
+    <value>Goblin Points for play time</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Description" xml:space="preserve">
+    <value>Gives players Goblin Points of the cash shop for their play time.</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Vault Expansion Certificate</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Extends the vault of the account when a player uses the Vault Expansion Certificate from the cash shop storage.</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Magic Backpack</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Adds an inventory extension to the character when a player uses the Magic Backpack from the cash shop storage.</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Summoner Character Card</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage.</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Rage Fighter Character Card</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage.</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>Game Event Publisher</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>Publish mini game events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>Publish invasion events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>Publish castle siege events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>Publish global notices of game masters</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>Publish excellent item drops</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>Publish ancient item drops</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Player shop currencies</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Description" xml:space="preserve">
+    <value>Allows players to set the prices of the items in their personal store in configured items like jewels, or in account coins, too. Only the open source client shows these prices; with other clients, they can be set by chat command.</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Show player shop currencies after entering the game</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Tells the client which currencies can be used for the prices of personal stores, when the player enters the game.</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Shop price chat command</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets the price of an item of the own personal store in one of the enabled currencies, e.g. '/shopprice 1 10 bless'. Without arguments, it lists the prices.</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Name" xml:space="preserve">
+    <value>Server announcements</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Description" xml:space="preserve">
+    <value>Shows a configured list of announcements to all players of a game server, one after another in a fixed interval.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Name" xml:space="preserve">
+    <value>Interval</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Description" xml:space="preserve">
+    <value>The time between one announcement and the next. The minimum is 10 seconds.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Name" xml:space="preserve">
+    <value>Announcements</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Description" xml:space="preserve">
+    <value>The announcements, in the order in which they are shown. After the last one, it starts over with the first one.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Text_Name" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Name" xml:space="preserve">
+    <value>Message Type</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Description" xml:space="preserve">
+    <value>How the announcement is shown, e.g. as golden message in the center of the screen or as blue system message.</value>
   </data>
 </root>

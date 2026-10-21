@@ -49,17 +49,19 @@
           <Index>0</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>MoneyPrice</Name>
+          <Description>The price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items.</Description>
         </Field>
         <Field>
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PriceItemType</Name>
-          <Description>Contains the item group in the highest 4 bits, and the item number in the remaining ones.</Description>
+          <Description>When RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>RequiredItemAmount</Name>
+          <Description>The number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items.</Description>
         </Field>
         <Field>
           <Index>8</Index>
@@ -4481,6 +4483,11 @@
               <Description>The requested player has item block active.</Description>
               <Value>9</Value>
             </EnumValue>
+            <EnumValue>
+              <Name>LackOfPriceCurrency</Name>
+              <Description>The player has not enough of the currency (jewels or account coins) in which the price of the item is defined.</Description>
+              <Value>10</Value>
+            </EnumValue>
           </Values>
         </Enum>
       </Enums>
@@ -4554,6 +4561,44 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>0A</SubCode>
+      <Name>PlayerShopPriceTypesExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.</SentWhen>
+      <CausedReaction>The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopPriceType</TypeName>
+          <Name>PriceTypes</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PlayerShopPriceType</Name>
+          <Description>A price type which is allowed for prices in player shops, in addition to zen.</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>PriceItemType</Name>
+              <Description>The value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
@@ -7390,6 +7435,53 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>0D</Code>
+      <Name>SlideNotice</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A game master or the server sends a notice which should scroll across the top of the screen.</SentWhen>
+      <CausedReaction>The client scrolls the message through the band at the top of the screen, as often as the loop count says.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+          <Description>The band and queueing of the message. 10 to 12 use the help band, 13 to 15 the notice band. Within a band, the first value drops the message when it could not be shown within a minute, the second one queues it, and the third one puts it in front of the queue, ignoring the loop delay.</Description>
+          <DefaultValue>14</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>LoopCount</Name>
+          <Description>How often the message is shown. The client ignores messages with more than 30 loops.</Description>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LoopDelay</Name>
+          <Description>The delay between the loops, in seconds.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Color</Name>
+          <Description>The color of the text, as 0xAABBGGRR.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>Speed</Name>
+          <Description>The scroll speed, multiplied by 10. 0 means the default speed.</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>50</Code>
       <Name>GuildJoinRequest</Name>
       <Length>5</Length>
@@ -7464,6 +7556,21 @@
               <Name>MinimumLevel6</Name>
               <Description>The requesting player needs a minimum level of 6.</Description>
               <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterNotInGens</Name>
+              <Description>The guild master is not a member of a gens.</Description>
+              <Value>161</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterInDifferentGens</Name>
+              <Description>The guild master is a member of a different gens.</Description>
+              <Value>162</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotInGensOfGuildMaster</Name>
+              <Description>The requesting player has to be a member of the gens of the guild master.</Description>
+              <Value>163</Value>
             </EnumValue>
           </Values>
         </Enum>
@@ -9407,6 +9514,399 @@
 		</Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>00</SubCode>
+      <Name>CrywolfInfo</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of the crywolf event changed, or the player entered the crywolf map. It should only be sent to players on the crywolf map, because the client loads the terrain of the occupation state for its current map.</SentWhen>
+      <CausedReaction>The client shows the event window in the states Ready, Start and End, plays the intro in the state Notify2, shows the result in the state End, and loads the terrain and light of the occupation state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>OccupationState</TypeName>
+          <Name>Occupation</Name>
+          <Description>The occupation state. It must be Peace or Occupied in the state End, otherwise the client shows no result.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>CrywolfState</TypeName>
+          <Name>State</Name>
+          <Description>The state of the event.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>OccupationState</Name>
+          <Description>The occupation state of the crywolf fortress.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Peace</Name>
+              <Description>The fortress has been defended. The benefits apply.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Occupied</Name>
+              <Description>The fortress has been occupied by Balgass. The penalties apply.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>War</Name>
+              <Description>The fortress is under attack.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>CrywolfState</Name>
+          <Description>The state of the crywolf event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>None</Name>
+              <Description>The event is not running.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify1</Name>
+              <Description>The first notification of the upcoming event.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify2</Name>
+              <Description>The second notification. The client plays the intro of the event.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ready</Name>
+              <Description>The altars can be contracted and the monsters appeared.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Start</Name>
+              <Description>The monsters attack.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>End</Name>
+              <Description>The event ended. The client shows the result.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EndCycle</Name>
+              <Description>The event is finished.</Description>
+              <Value>6</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>02</SubCode>
+      <Name>CrywolfStatueAndAltarInfo</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every two seconds while the altars can be contracted and during the battle.</SentWhen>
+      <CausedReaction>The client shows the shield of the statue and the states of the altars.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StatueHealthPercent</Name>
+          <Description>The shield of the statue in percent, from 0 to 100.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Altar1State</Name>
+          <Description>The state of the first altar (205). The high nibble is the altar state (1 = contracted), the low nibble the number of remaining contracts.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Altar2State</Name>
+          <Description>The state of the second altar (206), like Altar1State.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Altar3State</Name>
+          <Description>The state of the third altar (207), like Altar1State.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>Altar4State</Name>
+          <Description>The state of the fourth altar (208), like Altar1State.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>Altar5State</Name>
+          <Description>The state of the fifth altar (209), like Altar1State.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>03</SubCode>
+      <Name>CrywolfContractResult</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to contract an altar.</SentWhen>
+      <CausedReaction>On success, the client shows that the player is a guardian of the altar, and lets the character pray. Otherwise, it shows why the contract failed.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>The result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>AltarState</Name>
+          <Description>The new state of the altar, like in the CrywolfStatueAndAltarInfo.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>AltarKey</Name>
+          <Description>The key of the altar. The client uses the key minus 317 as index into its five altar states without checking the range, so it must be 317 plus the index of the altar (0 to 4).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>04</SubCode>
+      <Name>CrywolfLeftTime</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every 20 seconds during the battle.</SentWhen>
+      <CausedReaction>The client shows the remaining minutes and counts down the seconds by itself. It expects this packet every 20 seconds: when the minute is the same as before, it assumes that 40 or 20 seconds of the minute are left.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Hours</Name>
+          <Description>The remaining hours. The client doesn't show them.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Minutes</Name>
+          <Description>The remaining minutes.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>05</SubCode>
+      <Name>CrywolfBossMonsterInfo</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every five seconds during the battle.</SentWhen>
+      <CausedReaction>The client shows the health of Balgass and the number of Dark Elves.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>BalgassHealthPercent</Name>
+          <Description>The health of Balgass in percent, or -1, when Balgass is not alive.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>DarkElfCount</Name>
+          <Description>The number of alive Dark Elves. The client shows it as count of 12.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>07</SubCode>
+      <Name>CrywolfPersonalRank</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The crywolf event ended, after the CrywolfInfo with the state End.</SentWhen>
+      <CausedReaction>The client shows the rank and the experience of the player in the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CrywolfRank</TypeName>
+          <Name>Rank</Name>
+          <Description>The rank of the player.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The rewarded experience. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CrywolfRank</Name>
+          <Description>The rank of a player in the crywolf event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>D</Name>
+              <Description>The rank D.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>C</Name>
+              <Description>The rank C.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>B</Name>
+              <Description>The rank B.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>A</Name>
+              <Description>The rank A.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>S</Name>
+              <Description>The rank S.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>08</SubCode>
+      <Name>CrywolfHeroList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The crywolf event ended, after the CrywolfInfo with the state End.</SentWhen>
+      <CausedReaction>The client shows the heroes with the highest scores in the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>HeroCount</Name>
+          <Description>The number of heroes, at most 5.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>Hero</TypeName>
+          <Name>Heroes</Name>
+          <Description>The heroes.</Description>
+          <ItemCountField>HeroCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>Hero</Name>
+          <Description>Contains a hero of the crywolf event.</Description>
+          <Length>20</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>Rank</Name>
+              <Description>The place of the hero, from 0 (first) to 4. The client uses it as array index, so it must not be greater than 4.</Description>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Description>The name of the hero.</Description>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>Score</Name>
+              <Description>The score of the hero. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>Byte</Type>
+              <Name>CharacterClass</Name>
+              <Description>The number of the character class.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>09</SubCode>
+      <Name>CrywolfBenefitPlusChaosRate</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player opened a crafting dialog and requested the chaos rate benefit of the crywolf event.</SentWhen>
+      <CausedReaction>The client shows the additional success rate of the crafting.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PlusChaosRate</Name>
+          <Description>The additional success rate in percent.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>0C</SubCode>
+      <Name>CrywolfRegionMonsterAttack</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A ballista of the crywolf event attacks an area.</SentWhen>
+      <CausedReaction>The client shows an arrow which hits the target point. The direction of the arrow depends on the x coordinate of the ballista.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MonsterNumber</Name>
+          <Description>The number of the monster. The client ignores it.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>SourceX</Name>
+          <Description>The x coordinate of the ballista.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>SourceY</Name>
+          <Description>The y coordinate of the ballista. The client ignores it.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+          <Description>The x coordinate of the target point.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+          <Description>The y coordinate of the target point.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>BF</Code>
       <SubCode>00</SubCode>
       <Name>IllusionTempleEnterResult</Name>
@@ -10900,6 +11400,281 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F8</Code>
+      <SubCode>02</SubCode>
+      <Name>GensJoinResponse</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to join a gens at one of the gens NPCs.</SentWhen>
+      <CausedReaction>The npc dialog shows the result. When the player joined, the client assigns the gens to the own character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>GensJoinResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>GensType</TypeName>
+          <Name>GensType</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>GensJoinResult</Name>
+          <Description>Defines the result of the gens join request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player joined the gens.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyJoined</Name>
+              <Description>The player is already member of a gens.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LeftRecently</Name>
+              <Description>The player left a gens recently and has to wait before joining again.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LevelTooLow</Name>
+              <Description>The level of the character is too low.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildInDifferentGens</Name>
+              <Description>The guild of the player is part of a different gens. The client shows this for members of a guild.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterNotInGens</Name>
+              <Description>The guild master is not member of the gens.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InParty</Name>
+              <Description>The player is in a party.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildAllianceMember</Name>
+              <Description>The guild of the player is part of a guild alliance.</Description>
+              <Value>7</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F8</Code>
+      <SubCode>04</SubCode>
+      <Name>GensLeaveResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to leave the gens at one of the gens NPCs.</SentWhen>
+      <CausedReaction>The npc dialog shows the result. When the player left, the client removes the gens of the own character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>GensLeaveResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>GensLeaveResult</Name>
+          <Description>Defines the result of the gens leave request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player left the gens.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotJoined</Name>
+              <Description>The player is not member of a gens.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterCannotLeave</Name>
+              <Description>The player is a guild master, which can't leave the gens.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DifferentGensNpc</Name>
+              <Description>The player is member of a different gens than the one of the npc.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F8</Code>
+      <SubCode>05</SubCode>
+      <Name>AssignCharactersToGens</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server wants to visibly assign players to their gens, e.g. when two players met each other, or when a player joined or left a gens.</SentWhen>
+      <CausedReaction>The client shows the gens mark and rank next to the names of the players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>PlayerCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>GensMemberRelation</TypeName>
+          <Name>Members</Name>
+          <ItemCountField>PlayerCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>GensMemberRelation</Name>
+          <Description>Relation between a gens and a player.</Description>
+          <Length>16</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Enum</Type>
+              <TypeName>GensType</TypeName>
+              <Name>GensType</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>PlayerId</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>RankingPosition</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>Rank</Name>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>ContributionPoints</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F8</Code>
+      <SubCode>07</SubCode>
+      <Name>GensInfo</Name>
+      <Length>24</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player entered the game world, joined or left a gens, or requested the gens ranking.</SentWhen>
+      <CausedReaction>The client shows the gens mark and rank of the own character, and the gens info window shows the ranking and contribution.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>GensType</TypeName>
+          <Name>GensType</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RankingPosition</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Rank</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ContributionPoints</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>NextRankContributionPoints</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F8</Code>
+      <SubCode>0A</SubCode>
+      <Name>GensRewardResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested the gens ranking reward at one of the gens NPCs.</SentWhen>
+      <CausedReaction>The npc dialog shows the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>GensRewardResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>GensRewardResult</Name>
+          <Description>Defines the result of the gens reward request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player got the reward.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>OutsideRewardPeriod</Name>
+              <Description>The rewards are only given out in the reward period, e.g. the first week of a month.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEligible</Name>
+              <Description>The player is not eligible for a reward.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The inventory of the player has not enough space for the reward.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyClaimed</Name>
+              <Description>The player already got the reward.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DifferentGensNpc</Name>
+              <Description>The player is member of a different gens than the one of the npc.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotJoined</Name>
+              <Description>The player is not member of a gens.</Description>
+              <Value>6</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>90</Code>
       <Name>DevilSquareEnterResult</Name>
@@ -11109,6 +11884,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>ResultCount</Name>
+          <Description>The number of results. The client shares the code 0x93 with the BloodCastleScore (0xFF) and ChaosCastleScore (0xFE) at this index, so a score table must contain less than 200 results; the client holds up to 11.</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -11167,6 +11943,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Type</Name>
+          <Description>Identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.</Description>
           <DefaultValue>0xFF</DefaultValue>
         </Field>
         <Field>
@@ -11189,6 +11966,51 @@
           <Index>25</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>BonusMoney</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>93</Code>
+      <Name>ChaosCastleScore</Name>
+      <Length>29</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The chaos castle mini game ended and the score of the player is sent to the player.</SentWhen>
+      <CausedReaction>The client shows the experience and the killed monsters and players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <Description>If the player won the chaos castle.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+          <Description>Identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.</Description>
+          <DefaultValue>0xFE</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MonsterKillCount</Name>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>BonusExperience</Name>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PlayerKillCount</Name>
         </Field>
       </Fields>
     </Packet>
@@ -13482,8 +14304,829 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F7</Code>
+      <SubCode>02</SubCode>
+      <Name>ImperialGuardianEnterResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to enter the imperial guardian event, or entered the next zone of it.</SentWhen>
+      <CausedReaction>The client shows a message when entering failed. On success, it remembers the day and zone for the timer and the result, and sets the weather of the map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>EnterResult</TypeName>
+          <Name>Result</Name>
+          <Description>The result of the request.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Day</Name>
+          <Description>The day of the week, from 1 (monday) to 7 (sunday). The client shows it as the round.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Zone</Name>
+          <Description>The zone, starting at 1.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Enum</Type>
+          <TypeName>WeatherType</TypeName>
+          <Name>Weather</Name>
+          <Description>The weather of the map.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingMilliseconds</Name>
+          <Description>The remaining time in milliseconds. When the result is NotOpen, the client shows the minutes until the event can be entered. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EnterResult</Name>
+          <Description>The result of an enter request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player entered the event.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotOpen</Name>
+              <Description>The event can not be entered yet.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MissingTicket</Name>
+              <Description>The player has no Gaion's Order or Complete Secromicon.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Full</Name>
+              <Description>The zone is full.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ZoneTimeRemaining</Name>
+              <Description>There is still time remaining in this zone.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PartyRequired</Name>
+              <Description>The player can only enter as a member of a party.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>The character level is too low. The client doesn't show a message.</Description>
+              <Value>6</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>WeatherType</Name>
+          <Description>The weather of the map.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Sun</Name>
+              <Description>The sun shines.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Rain</Name>
+              <Description>It rains.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Fog</Name>
+              <Description>There is fog.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Storm</Name>
+              <Description>There is a storm.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F7</Code>
+      <SubCode>04</SubCode>
+      <Name>ImperialGuardianTimer</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every second during the imperial guardian event.</SentWhen>
+      <CausedReaction>The client shows the timer with the remaining time and the number of remaining monsters. The client doesn't count down the time by itself.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>TimerType</TypeName>
+          <Name>Type</Name>
+          <Description>The type of the timer.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingMilliseconds</Name>
+          <Description>The remaining time in milliseconds. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>MonsterCount</Name>
+          <Description>The number of remaining monsters.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>TimerType</Name>
+          <Description>The type of the timer.</Description>
+          <Values>
+            <EnumValue>
+              <Name>LootTime</Name>
+              <Description>The time to collect the loot.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Standby</Name>
+              <Description>The time until the monsters appear.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TimeAttack</Name>
+              <Description>The time to kill the monsters.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F7</Code>
+      <SubCode>06</SubCode>
+      <Name>ImperialGuardianResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A zone of the imperial guardian event has been cleared, or the event ended.</SentWhen>
+      <CausedReaction>The client shows the result and hides the timer.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ResultType</TypeName>
+          <Name>Result</Name>
+          <Description>The result.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The rewarded experience, when the event has been completed. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ResultType</Name>
+          <Description>The result of the imperial guardian event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The event failed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ZoneCleared</Name>
+              <Description>The zone has been cleared.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The event has been completed.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>01</SubCode>
+      <Name>CashShopPointInfo</Name>
+      <Length>45</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested the cash shop point information (CashShopPointInfoRequest).</SentWhen>
+      <CausedReaction>The client shows the available WCoin (C), WCoin (P) and Goblin Points in the cash shop dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ViewType</Name>
+          <Description>It is stored, but not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Double</Type>
+          <Name>TotalCash</Name>
+          <Description>The sum of WCoin (C) and WCoin (P). It is stored, but not shown by the client.</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Double</Type>
+          <Name>WCoinC</Name>
+          <Description>The available WCoin (C), originally named "cash credit".</Description>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>Double</Type>
+          <Name>WCoinP</Name>
+          <Description>The available WCoin (P), originally named "cash prepaid".</Description>
+        </Field>
+        <Field>
+          <Index>29</Index>
+          <Type>Double</Type>
+          <Name>TotalPoints</Name>
+          <Description>It is stored, but not shown by the client.</Description>
+        </Field>
+        <Field>
+          <Index>37</Index>
+          <Type>Double</Type>
+          <Name>GoblinPoints</Name>
+          <Description>The available Goblin Points, originally named "mileage".</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>02</SubCode>
+      <Name>CashShopOpenStateResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to open the cash shop dialog (CashShopOpenState).</SentWhen>
+      <CausedReaction>If the opening is allowed, the client requests the point information and the first storage page, and shows the cash shop dialog. Otherwise, nothing happens.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsAllowed</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>03</SubCode>
+      <Name>CashShopItemBuyResult</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to buy an item in the cash shop (CashShopItemBuyRequest).</SentWhen>
+      <CausedReaction>The client shows a message with the result. If the item was bought, it requests the point information and the first storage page again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopBuyResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>LeftCount</Name>
+          <Description>The number of items which are left for sale, if the number is limited. It's not used by the client.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopBuyResult</Name>
+          <Description>The result of a request to buy an item in the cash shop.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The item was bought and added to the storage.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughCoins</Name>
+              <Description>The player doesn't have enough WCoin or Goblin Points.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>StorageFull</Name>
+              <Description>The storage of the player is full.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SoldOut</Name>
+              <Description>The item is sold out.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotAvailableCurrently</Name>
+              <Description>The item is currently not available.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoLongerAvailable</Name>
+              <Description>The item is no longer available.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CannotBeBought</Name>
+              <Description>The item can't be bought.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemCannotBeBought</Name>
+              <Description>Event items can't be bought.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemLimitExceeded</Name>
+              <Description>The maximum number of purchases of the event item is exceeded.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WrongCoinType</Name>
+              <Description>The selected coin type is not the one of the item.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseAccessFailed</Name>
+              <Description>The access to the database failed.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseError</Name>
+              <Description>A database error occurred.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>04</SubCode>
+      <Name>CashShopItemGiftResult</Name>
+      <Length>17</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to send an item of the cash shop as gift (CashShopItemGiftRequest).</SentWhen>
+      <CausedReaction>The client shows a message with the result. If the gift was sent, it requests the point information again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopGiftResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>LeftCount</Name>
+          <Description>The number of items which are left for sale, if the number is limited. It's not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Double</Type>
+          <Name>LimitedCash</Name>
+          <Description>It's not used by the client.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopGiftResult</Name>
+          <Description>The result of a request to send an item of the cash shop as gift.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The gift was added to the gift storage of the recipient.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEnoughCoins</Name>
+              <Description>The player doesn't have enough WCoin or Goblin Points.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RecipientStorageFull</Name>
+              <Description>The storage of the recipient is full.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RecipientNotFound</Name>
+              <Description>The recipient wasn't found.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>SoldOut</Name>
+              <Description>The item is sold out.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoLongerAvailable</Name>
+              <Description>The item is no longer available.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoLongerAvailable2</Name>
+              <Description>The item is no longer available. The client shows it as error.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CannotBeGifted</Name>
+              <Description>The item can't be sent as gift.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemCannotBeGifted</Name>
+              <Description>The event item can't be sent as gift.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EventItemGiftLimitExceeded</Name>
+              <Description>The maximum number of gifts of the event item is exceeded.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WrongCoinType</Name>
+              <Description>The selected coin type is not the one of the item.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IdDoesNotExist</Name>
+              <Description>The ID doesn't exist.</Description>
+              <Value>20</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseAccessFailed</Name>
+              <Description>The access to the database failed.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseError</Name>
+              <Description>A database error occurred.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0B</SubCode>
+      <Name>CashShopStorageItemConsumeResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to use an item of the cash shop storage (CashShopStorageItemConsumeRequest).</SentWhen>
+      <CausedReaction>The client shows a message with the result. If the item was used, it requests the shown storage page again.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopConsumeResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopConsumeResult</Name>
+          <Description>The result of a request to use an item of the cash shop storage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The item was used.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemNotFound</Name>
+              <Description>The item doesn't exist in the storage.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PcCafeOnly</Name>
+              <Description>The item can only be received in a PC cafe.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ColorPlanActive</Name>
+              <Description>A color plan is already active in the selected period.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PersonalFixedPlanActive</Name>
+              <Description>A personal fixed plan is already active in the selected period.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The inventory doesn't have enough space.</Description>
+              <Value>21</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CannotUse</Name>
+              <Description>The item can't be used.</Description>
+              <Value>22</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ConflictingItemActive</Name>
+              <Description>The item can't be used together with an item which is already in use.</Description>
+              <Value>24</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DatabaseAccessFailed</Name>
+              <Description>The access to the database failed.</Description>
+              <Value>254</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Error</Name>
+              <Description>An error occurred.</Description>
+              <Value>255</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>06</SubCode>
+      <Name>CashShopStorageListResponse</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested a page of the cash shop storage or gift storage (CashShopStorageListRequest).</SentWhen>
+      <CausedReaction>The client clears the storage list and expects the items of the page with the following CashShopStorageItem or CashShopGiftStorageItem messages.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TotalItemCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PageItemCount</Name>
+          <Description>The number of items on the requested page. The client shows up to 9 items per page.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PageIndex</Name>
+          <Description>The one-based index of the page.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TotalPages</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0C</SubCode>
+      <Name>CashShopScriptVersion</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player entered the game.</SentWhen>
+      <CausedReaction>The client remembers the version of the cash shop script (product catalog) and unlocks the cash shop. When the dialog is opened, the client loads the script of this version from 'Data\InGameShopScript\[SaleZone].[Year].[YearId]'.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SaleZone</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Year</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>YearId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0D</SubCode>
+      <Name>CashShopStorageItem</Name>
+      <Length>33</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After CashShopStorageListResponse of the normal storage, for each item of the requested page.</SentWhen>
+      <CausedReaction>The client adds the item to the shown storage list. Name, quantity and period are looked up in the cash shop script by the product and price sequence numbers.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageIndex</Name>
+          <Description>The index of the item in the storage. The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ItemSequence</Name>
+          <Description>The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageGroupCode</Name>
+          <Description>It is stored, but not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ProductSequence</Name>
+          <Description>The product sequence number of the cash shop script.</Description>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PriceSequence</Name>
+          <Description>The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</Description>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Double</Type>
+          <Name>CashPoints</Name>
+          <Description>The amount of WCoin, if the item type is Cash.</Description>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopStorageItemType</TypeName>
+          <Name>ItemType</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopStorageItemType</Name>
+          <Description>The type of an item in the cash shop storage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Cash</Name>
+              <Description>The item is an amount of WCoin, which is defined by the cash points field. The ASCII character 'C'.</Description>
+              <Value>67</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Product</Name>
+              <Description>The item is a product of the cash shop script. The ASCII character 'P'.</Description>
+              <Value>80</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>0E</SubCode>
+      <Name>CashShopGiftStorageItem</Name>
+      <Length>244</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After CashShopStorageListResponse of the gift storage, for each item of the requested page.</SentWhen>
+      <CausedReaction>The client adds the item to the shown gift storage list, together with the sender and the message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageIndex</Name>
+          <Description>The index of the item in the storage. The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ItemSequence</Name>
+          <Description>The client sends it back when the item should be used.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>StorageGroupCode</Name>
+          <Description>It is stored, but not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ProductSequence</Name>
+          <Description>The product sequence number of the cash shop script.</Description>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PriceSequence</Name>
+          <Description>The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</Description>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Double</Type>
+          <Name>CashPoints</Name>
+          <Description>The amount of WCoin, if the item type is Cash.</Description>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>Enum</Type>
+          <TypeName>CashShopStorageItemType</TypeName>
+          <Name>ItemType</Name>
+        </Field>
+        <Field>
+          <Index>33</Index>
+          <Type>String</Type>
+          <Name>SenderName</Name>
+          <Length>11</Length>
+        </Field>
+        <Field>
+          <Index>44</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+          <Length>200</Length>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>CashShopStorageItemType</Name>
+          <Description>The type of an item in the cash shop storage.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Cash</Name>
+              <Description>The item is an amount of WCoin, which is defined by the cash points field. The ASCII character 'C'.</Description>
+              <Value>67</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Product</Name>
+              <Description>The item is a product of the cash shop script. The ASCII character 'P'.</Description>
+              <Value>80</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>15</SubCode>
+      <Name>CashShopBannerVersion</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player entered the game.</SentWhen>
+      <CausedReaction>The client remembers the version of the cash shop banner. When the dialog is opened, the client loads the banner of this version from 'Data\InGameShopBanner\[SaleZone].[Year].[YearId]'.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SaleZone</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Year</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>YearId</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
+    <Enum>
+      <Name>GensType</Name>
+      <Description>Describes the gens type.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>The undefined gens type, e.g. when the player is not a member of a gens.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Duprian</Name>
+          <Description>The Duprian gens.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Vanert</Name>
+          <Description>The Vanert gens.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
     <Enum>
       <Name>GuildMemberRole</Name>
       <Description>Defines the role of a guild member.</Description>

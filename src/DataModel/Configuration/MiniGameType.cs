@@ -43,4 +43,9 @@ public enum MiniGameType
     /// The Kanturu Refinery Tower event.
     /// </summary>
     Kanturu,
+
+    /// <summary>
+    /// The imperial guardian event (fortress of the imperial guardian).
+    /// </summary>
+    ImperialGuardian,
 }

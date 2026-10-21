@@ -72,18 +72,49 @@
     [Inject]
     private ILogger<Map> Logger { get; set; } = null!;
 
+    private readonly object _syncRoot = new();
+
     private IMapController? _controller;
 
     private AsyncLazy<IMapController>? _lazyController;
+
+    private bool _isDisposed;
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
         _lazyController = new AsyncLazy<IMapController>(async () =>
         {
-            this._controller = await this.MapFactory.CreateMapAsync(this.Server, this.MapId);
+            var controller = await this.MapFactory.CreateMapAsync(this.Server, this.MapId);
+            bool isDisposed;
+            lock (this._syncRoot)
+            {
+                isDisposed = this._isDisposed;
+                if (!isDisposed)
+                {
+                    this._controller = controller;
+                }
+            }
+
+            if (isDisposed)
+            {
+                // The component was disposed while the map was created. The controller would
+                // otherwise stay registered as an observer of the game map forever.
+                try
+                {
+                    await controller.DisposeAsync();
+                }
+                catch (Exception ex)
+                {
+                    // The component is gone, so an exception would only end up in the render loop.
+                    this.Logger.LogError(ex, "Error when disposing the map controller of a disposed map component.");
+                }
+
+                return controller;
+            }
+
             await this.InvokeAsync(this.StateHasChanged);
-            return this._controller;
+            return controller;
         });
         base.OnInitialized();
     }
@@ -105,13 +136,17 @@
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        if (this._controller is IAsyncDisposable disposable)
+        IMapController? controller;
+        lock (this._syncRoot)
         {
-            await disposable.DisposeAsync();
+            this._isDisposed = true;
+            controller = this._controller;
+            this._controller = null;
         }
 
-        this._controller = null;
+        // A controller which is still being created is disposed by the creating task, see OnInitialized.
+        return controller?.DisposeAsync() ?? ValueTask.CompletedTask;
     }
 }

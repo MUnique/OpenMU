@@ -33,7 +33,7 @@ the server process itself.
 | Auto start | Start the listeners of all servers when the process starts. Only applies to the all-in-one startup — distributed processes always start their listeners. |
 | Auto update schema | Update the database schema automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the update is started manually on the [Setup page](setup.md). |
 | Read console input | Whether the all-in-one process reacts to commands typed in its console |
-| Time zone id | The time zone used to interpret the time-of-day entries of periodic event schedules (invasions, Blood Castle, Devil Square, …). IANA ids such as `Europe/Warsaw` are recommended; when empty or unresolvable, UTC is used. |
+| Time zone id | The time zone used to interpret the time-of-day entries of periodic event schedules (invasions, Blood Castle, Devil Square, …) and of the Castle Siege schedule. IANA ids such as `Europe/Warsaw` are recommended; when empty or unresolvable, UTC is used. |
 
 These settings can also be given as
 [start parameters or environment variables](../deployment/startup-parameters.md),
@@ -103,6 +103,20 @@ Route `edit-config-grid/…ItemDefinition/`
 Item definitions with their requirements, level tables, possible options, sockets
 and the classes which may equip them. Items use a dedicated editor with a
 graphical representation instead of the plain generic form.
+
+## Item options, option types and item sets
+
+The game configuration menu provides separate entries for these lists:
+
+* **Item options** (`edit-config-grid/…ItemOptionDefinition/`): available item
+  bonuses, their effects and level-dependent values.
+* **Item option types** (`edit-config-grid/…ItemOptionType/`): categories such as
+  excellent or ancient options.
+* **Item set groups** (`edit-config-grid/…ItemSetGroup/`): item set names, member
+  items and set bonuses.
+
+Each entry opens the existing configuration grid, where entries can be inspected
+and edited without navigating through the full configuration.
 
 ## Item drops
 

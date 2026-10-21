@@ -13,14 +13,14 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes the discriminators of some ancient items.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixAncientDiscriminatorsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixAncientDiscriminatorsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("AB664421-1CA6-4FCE-A150-0007971017E1")]
 public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Warrior Morning Star";
+    internal const string PlugInName = "Fix Ancient Discriminators";
 
     /// <summary>
     /// The plug in description.
@@ -32,9 +32,6 @@ public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixAncientDiscriminators;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
@@ -73,7 +70,7 @@ public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
 
     private static void ChangeDiscriminator(GameConfiguration gameConfiguration, string setName, ItemGroups itemGroup, byte itemNumber, byte discriminator)
     {
-        var itemSetGroup = gameConfiguration.ItemSetGroups.First(set => set.Name == setName);
+        var itemSetGroup = gameConfiguration.ItemSetGroups.First(set => set.Name.ValueInNeutralLanguage == setName);
         var itemOfItemSet = itemSetGroup.Items.FirstOrDefault(item => item.ItemDefinition?.Group == (byte)itemGroup && item.ItemDefinition?.Number == itemNumber);
         if (itemOfItemSet != null)
         {

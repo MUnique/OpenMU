@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Gens;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -45,7 +46,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             return;
         }
 
-        var (shopPlayers, guildPlayers) = await this.SendCharactersAsync(newPlayers, isSpawned).ConfigureAwait(false);
+        var (shopPlayers, guildPlayers, gensPlayers) = await this.SendCharactersAsync(newPlayers, isSpawned).ConfigureAwait(false);
 
         if (shopPlayers != null)
         {
@@ -55,6 +56,11 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         if (guildPlayers != null)
         {
             await this.Player.InvokeViewPlugInAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayersToGuildAsync(guildPlayers, true)).ConfigureAwait(false);
+        }
+
+        if (gensPlayers != null)
+        {
+            await this.Player.InvokeViewPlugInAsync<IAssignPlayersToGensPlugIn>(p => p.AssignPlayersToGensAsync(gensPlayers)).ConfigureAwait(false);
         }
     }
 
@@ -212,15 +218,16 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
+    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers, IList<Player>? GensPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
     {
         IList<Player>? shopPlayers = null;
         IList<Player>? guildPlayers = null;
+        IList<Player>? gensPlayers = null;
 
         var connection = this.Player.Connection;
         if (connection is null)
         {
-            return (shopPlayers, guildPlayers);
+            return (shopPlayers, guildPlayers, gensPlayers);
         }
 
         var newPlayerList = newPlayers.ToList();
@@ -246,8 +253,14 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
                 guildPlayers ??= new List<Player>();
                 guildPlayers.Add(newPlayer);
             }
+
+            if (newPlayer.GensMember is { Gens: not DataModel.Entities.GensType.None })
+            {
+                gensPlayers ??= new List<Player>();
+                gensPlayers.Add(newPlayer);
+            }
         }
 
-        return (shopPlayers, guildPlayers);
+        return (shopPlayers, guildPlayers, gensPlayers);
     }
 }

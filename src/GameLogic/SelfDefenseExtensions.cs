@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.PlugIns;
+
 /// <summary>
 /// Extensions to query the self defense state which is maintained by the
 /// <see cref="PlugIns.SelfDefensePlugIn"/>.
@@ -26,6 +28,25 @@ public static class SelfDefenseExtensions
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Determines whether the attacks and kills of the player on the defender are exempted from the
+    /// player killer penalty and the self-defense by a <see cref="IPlayerKillPenaltyExemptionPlugIn"/>.
+    /// </summary>
+    /// <param name="attacker">The attacking player.</param>
+    /// <param name="defender">The attacked player.</param>
+    /// <returns><c>true</c>, if the attacks and kills are exempted; otherwise, <c>false</c>.</returns>
+    public static bool IsExemptedFromPlayerKillPenalty(this Player attacker, Player defender)
+    {
+        if (attacker.GameContext.PlugInManager.GetPlugInPoint<IPlayerKillPenaltyExemptionPlugIn>() is not { } plugInPoint)
+        {
+            return false;
+        }
+
+        var eventArgs = new PlayerKillPenaltyExemptionArgs();
+        plugInPoint.CheckExemption(attacker, defender, eventArgs);
+        return eventArgs.IsExempted;
     }
 
     /// <summary>

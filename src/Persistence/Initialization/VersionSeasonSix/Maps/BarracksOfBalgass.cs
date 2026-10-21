@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The initialization for the Barracks of Balgass map.
@@ -19,11 +20,6 @@ internal class BarracksOfBalgass : BaseMapInitializer
     internal const byte Number = 41;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Barracks of Balgass";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="BarracksOfBalgass"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +29,16 @@ internal class BarracksOfBalgass : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.BarracksOfBalgass);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc />
     protected override void InitializeDropItemGroups()
@@ -47,7 +48,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
         var flameOfCondor = this.Context.CreateNew<DropItemGroup>();
         flameOfCondor.SetGuid(this.MapNumber, 1);
         flameOfCondor.Chance = 0.001;
-        flameOfCondor.Description = "Flame of Condor";
+        flameOfCondor.Description = LocalizedString.FromResource(() => DropGroupDescriptions.FlameOfCondor);
         flameOfCondor.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 52));
         this.MapDefinition!.DropItemGroups.Add(flameOfCondor);
         this.GameConfiguration.DropItemGroups.Add(flameOfCondor);
@@ -102,7 +103,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 409;
-            monster.Designation = "Balram (Trainee Soldier)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BalramTraineeSoldier);
             monster.MoveRange = 6;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -134,7 +135,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 410;
-            monster.Designation = "Death Spirit (Trainee Soldier)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathSpiritTraineeSoldier);
             monster.MoveRange = 6;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -166,7 +167,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 411;
-            monster.Designation = "Soram (Trainee Soldier)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SoramTraineeSoldier);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;

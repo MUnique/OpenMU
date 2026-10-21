@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The initialization of all NPCs, which are no monsters.
@@ -36,7 +37,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 235;
-            def.Designation = "Sevina the Priestess";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.SevinaThePriestess);
             def.NpcWindow = NpcWindow.LegacyQuest;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
@@ -46,7 +47,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 236;
-            def.Designation = "Golden Archer";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.GoldenArcher);
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
@@ -55,7 +56,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 237;
-            def.Designation = "Charon";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.Charon);
             def.NpcWindow = NpcWindow.DevilSquare;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);

@@ -12,15 +12,12 @@ using MUnique.OpenMU.PlugIns;
 /// This update removes the existing drop level gap condition for jewels and similar items that should always drop.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RemoveJewelDropLevelGapPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RemoveJewelDropLevelGapPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("6614E91E-5749-478A-96A4-3240E7C1280E")]
 public class RemoveJewelDropLevelGapPlugIn095D : RemoveJewelDropLevelGapPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RemoveJewelDropLevelGap095d;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

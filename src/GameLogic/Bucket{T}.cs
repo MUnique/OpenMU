@@ -48,7 +48,7 @@ public sealed class Bucket<T> : IEnumerable<T>
     /// <param name="item">The item.</param>
     public async ValueTask AddAsync(T item)
     {
-        using (await this._locker.WriterLockAsync())
+        using (await this._locker.WriterLockAsync().ConfigureAwait(false))
         {
             this._innerList.Add(item);
         }
@@ -67,7 +67,7 @@ public sealed class Bucket<T> : IEnumerable<T>
     public async ValueTask<bool> RemoveAsync(T item)
     {
         bool result;
-        using (await this._locker.WriterLockAsync())
+        using (await this._locker.WriterLockAsync().ConfigureAwait(false))
         {
             result = this._innerList.Remove(item);
         }

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Map initialization for the raklion boss map.
@@ -18,11 +19,6 @@ internal class RaklionBoss : BaseMapInitializer
     /// The Number of the Map.
     /// </summary>
     internal const byte Number = 58;
-
-    /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "LaCleon Boss";
 
     /// <summary>
     /// The wave number of the spider eggs, which appear when the raklion event starts.
@@ -49,11 +45,16 @@ internal class RaklionBoss : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.LaCleonBoss);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Raklion.Number;
@@ -105,7 +106,7 @@ internal class RaklionBoss : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 459;
-            monster.Designation = "Selupan";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Selupan);
             monster.MoveRange = 3;
             monster.AttackRange = 10;
             monster.ViewRange = 8;
@@ -131,6 +132,7 @@ internal class RaklionBoss : BaseMapInitializer
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
+
             // The attack skills of Selupan are used by its intelligence of the raklion event,
             // which passes them to the damage calculation so that their multipliers apply.
         }
@@ -139,7 +141,7 @@ internal class RaklionBoss : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 460;
-            monster.Designation = "Spider Eggs 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SpiderEggs1);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -170,7 +172,7 @@ internal class RaklionBoss : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 461;
-            monster.Designation = "Spider Eggs 2";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SpiderEggs2);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -201,7 +203,7 @@ internal class RaklionBoss : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 462;
-            monster.Designation = "Spider Eggs 3";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SpiderEggs3);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;

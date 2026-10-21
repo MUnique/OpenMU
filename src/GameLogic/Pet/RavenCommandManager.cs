@@ -132,7 +132,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
     {
         try
         {
-            using var l = await this._rangeAttackLock.LockAsync(cancellationToken);
+            using var l = await this._rangeAttackLock.LockAsync(cancellationToken).ConfigureAwait(false);
             var delay = this.AttackDelay / 4;
             this._targetBuffer.Clear();
             this._targetBuffer.Add(mainTarget);

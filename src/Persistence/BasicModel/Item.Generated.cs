@@ -85,6 +85,24 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
         set => base.Definition = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="StorePriceItemDefinition" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("storePriceItemDefinition")]
+    public ItemDefinition RawStorePriceItemDefinition
+    {
+        get => base.StorePriceItemDefinition as ItemDefinition;
+        set => base.StorePriceItemDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition StorePriceItemDefinition
+    {
+        get => base.StorePriceItemDefinition;
+        set => base.StorePriceItemDefinition = value;
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Entities.Item Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

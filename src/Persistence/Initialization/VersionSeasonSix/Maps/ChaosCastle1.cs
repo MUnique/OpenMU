@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +21,6 @@ internal class ChaosCastle1 : BaseMapInitializer
     internal const byte Number = 18;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Chaos Castle 1";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="ChaosCastle1"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,6 +30,11 @@ internal class ChaosCastle1 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.ChaosCastle1);
+
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Devias.Number;
 
@@ -41,7 +42,7 @@ internal class ChaosCastle1 : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -156,7 +157,7 @@ internal class ChaosCastle1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 162;
-            monster.Designation = "Chaos Castle 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChaosCastle1);
             monster.MoveRange = 50;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -188,7 +189,7 @@ internal class ChaosCastle1 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 163;
-            monster.Designation = "Chaos Castle 2";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ChaosCastle2);
             monster.MoveRange = 50;
             monster.AttackRange = 6;
             monster.ViewRange = 7;

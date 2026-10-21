@@ -37,8 +37,9 @@ public class ChangeLanguageChatCommandPlugIn : ChatCommandPlugInBase<ChangeLangu
             return;
         }
 
-        var requestedCulture = languages.FirstOrDefault(cu => cu.TwoLetterISOLanguageName == arguments.IsoLanguageCode
-                                                              || cu.ThreeLetterISOLanguageName == arguments.IsoLanguageCode);
+        var requestedCulture = languages.FirstOrDefault(cu => string.Equals(cu.Name, arguments.IsoLanguageCode, StringComparison.OrdinalIgnoreCase))
+                               ?? languages.FirstOrDefault(cu => cu.TwoLetterISOLanguageName == arguments.IsoLanguageCode
+                                                                 || cu.ThreeLetterISOLanguageName == arguments.IsoLanguageCode);
         if (requestedCulture is null)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RequestedLanguageNotFound), arguments.IsoLanguageCode).ConfigureAwait(false);
@@ -47,16 +48,16 @@ public class ChangeLanguageChatCommandPlugIn : ChatCommandPlugInBase<ChangeLangu
         else
         {
             player.Culture = requestedCulture;
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LanguageChanged), requestedCulture.NativeName, requestedCulture.TwoLetterISOLanguageName).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LanguageChanged), requestedCulture.NativeName, requestedCulture.Name).ConfigureAwait(false);
         }
     }
 
     private static async ValueTask ShowAvailableLanguagesAsync(Player player, IEnumerable<CultureInfo> languages)
     {
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AvailableLanguagesCaption)).ConfigureAwait(false);
-        foreach (var lang in languages.OrderBy(l => l.TwoLetterISOLanguageName))
+        foreach (var lang in languages.OrderBy(l => l.Name))
         {
-            await player.ShowBlueMessageAsync($"  {lang.TwoLetterISOLanguageName} - {lang.NativeName} / {lang.EnglishName}").ConfigureAwait(false);
+            await player.ShowBlueMessageAsync($"  {lang.Name} - {lang.NativeName} / {lang.EnglishName}").ConfigureAwait(false);
         }
     }
 }

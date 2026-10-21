@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.Persistence.EntityFramework.Extensions;
 using MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
@@ -15,6 +17,23 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 public class EntityDataContext : ExtendedTypeContext
 {
+    private static readonly Lazy<IModel> CompleteModelValue = new(
+        () =>
+        {
+            using var context = new EntityDataContext();
+            return context.Model;
+        },
+        LazyThreadSafetyMode.PublicationOnly);
+
+    /// <summary>
+    /// Gets the model of the <see cref="EntityDataContext"/>, which includes all entity types.
+    /// </summary>
+    /// <remarks>
+    /// The model is the same for every instance, so it's created once instead of instantiating
+    /// a throwaway context every time a complete meta model is needed.
+    /// </remarks>
+    internal static IModel CompleteModel => CompleteModelValue.Value;
+
     /// <summary>
     /// Gets or sets the current game configuration.
     /// This is used by the <see cref="ConfigurationTypeRepository{T}"/> which gets its data from the current game configuration.
@@ -25,6 +44,11 @@ public class EntityDataContext : ExtendedTypeContext
     /// Gets the persistent Castle Siege state.
     /// </summary>
     internal DbSet<CastleSiegeData> CastleSiegeData => this.Set<CastleSiegeData>();
+
+    /// <summary>
+    /// Gets the persistent state of the crywolf event.
+    /// </summary>
+    internal DbSet<CrywolfData> CrywolfData => this.Set<CrywolfData>();
 
     /// <summary>
     /// Gets the Castle Siege guild registrations.
@@ -40,6 +64,26 @@ public class EntityDataContext : ExtendedTypeContext
     /// Gets pending Castle Siege participant rewards.
     /// </summary>
     internal DbSet<CastleSiegePendingReward> CastleSiegePendingRewards => this.Set<CastleSiegePendingReward>();
+
+    /// <summary>
+    /// Gets the items of the cash shop storages of the accounts.
+    /// </summary>
+    internal DbSet<CashShopStorageItem> CashShopStorageItems => this.Set<CashShopStorageItem>();
+
+    /// <summary>
+    /// Gets the grants of cash shop coins to the accounts.
+    /// </summary>
+    internal DbSet<CashShopCoinGrant> CashShopCoinGrants => this.Set<CashShopCoinGrant>();
+
+    /// <summary>
+    /// Gets the gens memberships of the characters.
+    /// </summary>
+    internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
+
+    /// <summary>
+    /// Gets the counts of the recent kills between gens members.
+    /// </summary>
+    internal DbSet<GensAbuse> GensAbuses => this.Set<GensAbuse>();
 
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -85,10 +129,15 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CastleSiegePendingReward>().Apply();
         modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
         modelBuilder.Entity<CastleSiegeNpcState>().Apply();
+        modelBuilder.Entity<CashShopPackage>().Apply();
+        modelBuilder.Entity<CashShopStorageItem>().Apply();
+        modelBuilder.Entity<CashShopCoinGrant>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
         modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<GensMember>().Apply();
+        modelBuilder.Entity<GensAbuse>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();
@@ -99,7 +148,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ItemSetGroup>().Apply();
         modelBuilder.Entity<ItemSlotType>().Apply();
         modelBuilder.Entity<ItemStorage>().Apply();
-        modelBuilder.Entity<ItemBasePowerUpDefinition>().Apply();
+        modelBuilder.Entity<ItemBasePowerUpDefinition>();
         modelBuilder.Entity<LevelBonus>().Apply();
         modelBuilder.Entity<MagicEffectDefinition>().Apply();
         modelBuilder.Entity<MasterSkillRoot>().Apply();

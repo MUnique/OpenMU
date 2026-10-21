@@ -11,6 +11,15 @@ The admin panel authenticates its users itself. Earlier versions relied on the
 basic authentication of the reverse proxy against an `.htpasswd` file; that file
 is gone, and so are the proxy configurations which used it.
 
+:::warning[Requires OpenMU 0.9.12 or newer]
+The built-in login is part of OpenMU 0.9.12 and newer. The docker images up to
+0.9.10 still rely on the `.htpasswd` file of the reverse proxy. Don't combine
+such an image with the current deployment files, which no longer contain that
+file: the admin panel would then be reachable by anybody, without a login. Run
+`docker compose pull` to get the current image, or check out the git tag of the
+version you run (e.g. `v0.9.10`).
+:::
+
 What you get instead:
 
 * a real login page with a logout,
@@ -125,7 +134,7 @@ Each user has one role. They build up on each other:
 |---|---|
 | **Viewer** | See the servers, accounts and the configuration |
 | **Operator** | Everything above, plus operating the servers and editing accounts |
-| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files and the user management |
+| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files, the logging configuration and the user management |
 
 Give each administrator their own user, so you can remove one without changing
 everybody else's password.
@@ -133,9 +142,9 @@ everybody else's password.
 ## API keys for external applications
 
 The server has a small public API under `/api` — the server status, the number
-of online players, whether an account is online, and a global message. A game
-launcher, a status page or a website needs it, and none of them can go through
-a login form with a second factor.
+of online players, whether an account is online, a global message, and the
+registration of new accounts. A game launcher, a status page or a website needs
+it, and none of them can go through a login form with a second factor.
 
 They authenticate with an API key instead. Send it in the `X-Api-Key` header:
 
@@ -171,13 +180,19 @@ application's configuration yet. **Delete** removes it for good.
 
 ### What a key may do
 
-A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
+A key has the same [roles](#roles) as a user, and defaults to **Viewer**. A key
+can also get the role **Cash shop coins only**, which allows nothing but the cash
+shop endpoints — that's the right one for a payment provider. Administrators
+have this role implicitly.
 
 | Endpoint | Needs |
 |---|---|
 | `GET /api/status` | Viewer |
 | `GET /api/is-online/{account}` | Viewer |
 | `GET /api/send/{server}?msg=` | Operator |
+| `POST /api/accounts` | Operator |
+| `GET /api/accounts/{account}/cash-shop` | Cash shop |
+| `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
 
 So a status page gets a Viewer key and can only read, while an application which
 announces something in the game needs an Operator key. The role is chosen when
@@ -187,12 +202,64 @@ role you need and delete the old one.
 A signed in admin panel user can use the API as well, with the same roles — this
 is handy while trying things out in the browser.
 
+### Registering accounts from a website
+
+A website's registration form creates the account with `POST /api/accounts`:
+
+```http
+POST /api/accounts HTTP/1.1
+X-Api-Key: <the key>
+Content-Type: application/json
+
+{ "loginName": "newbie", "password": "secret1", "eMail": "newbie@example.com" }
+```
+
+The account can log in right away. The answer is `201` when it was created,
+`409` when the login name is taken, and `400` with the invalid fields when the
+registration doesn't fit what the game client can send: the login name has 3 to
+10 characters, the password 3 to 20, both only printable ASCII (the login name
+without spaces). The e-mail address is optional.
+
+Call it from the website's server, not from the visitor's browser, so the key
+stays secret. The game server only sees the website, not the visitors behind
+it — protecting the form against abuse (a captcha, a limit per visitor) is the
+website's job.
+
 :::warning[The key is a password]
 It is sent in plain text with every request, so use HTTPS, and keep it out of
 client side code — a key in a launcher which ships to players is a key your
 players have. Requests without a valid key get `401`, and requests whose key
 lacks the role get `403`.
 :::
+
+### Granting cash shop coins
+
+A shop or payment provider grants [cash shop](../server-features/cash-shop.md)
+coins to an account with `POST /api/accounts/{account}/cash-shop/grants`:
+
+```http
+POST /api/accounts/buyer/cash-shop/grants HTTP/1.1
+X-Api-Key: <the key>
+Content-Type: application/json
+
+{ "coinType": "WCoinC", "amount": 500, "reason": "Purchase of 500 WCoin", "reference": "payment-4711" }
+```
+
+The coin type is `WCoinC`, `WCoinP` or `GoblinPoints`. A negative amount takes
+coins again, but never below zero. The `reference` is optional: an account gets
+each reference only once, so a payment notification which arrives twice doesn't
+grant the coins twice. The answer is:
+
+* `201` with the created grant,
+* `200` with the existing grant, when the account already got the reference,
+* `404` when the account doesn't exist,
+* `409` when another account already got the reference,
+* `400` when the amount is zero or a field is invalid.
+
+The game server applies the grant to the balance the next time the player opens
+the cash shop, even when the player is online at that moment.
+`GET /api/accounts/{account}/cash-shop` returns the saved balances and the latest
+grants, where `appliedAt` is empty for the pending ones.
 
 Like the panel itself, the API is open as long as [no user exists at all](#the-first-user).
 

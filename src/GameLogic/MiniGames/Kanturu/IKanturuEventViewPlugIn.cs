@@ -24,7 +24,7 @@ public interface IKanturuEventViewPlugIn : IViewPlugIn
     /// <param name="remainTime">
     /// Remaining time. Semantics depend on state:
     /// Standby → time until the event opens (client shows minutes).
-    /// Tower   → time the tower has been open (client shows hours).
+    /// Tower   → time until the tower closes (client shows hours).
     /// Otherwise zero.
     /// </param>
     ValueTask ShowStateInfoAsync(KanturuState state, byte detailState, bool canEnter, int userCount, TimeSpan remainTime);

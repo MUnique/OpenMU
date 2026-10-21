@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Aida map.
@@ -19,11 +21,6 @@ internal class Aida : BaseMapInitializer
     internal const byte Number = 33;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Aida";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Aida"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class Aida : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Aida);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -313,7 +315,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 304;
-            monster.Designation = "Witch Queen";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WitchQueen);
             monster.MoveRange = 4;
             monster.AttackRange = 3;
             monster.ViewRange = 7;
@@ -344,7 +346,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 305;
-            monster.Designation = "Blue Golem";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BlueGolem);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -375,7 +377,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 306;
-            monster.Designation = "Death Rider";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathRider);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -406,7 +408,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 307;
-            monster.Designation = "Forest Orc";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ForestOrc);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -437,7 +439,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 308;
-            monster.Designation = "Death Tree";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathTree);
             monster.MoveRange = 4;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -468,7 +470,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 309;
-            monster.Designation = "Hell Maine";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.HellMaine);
             monster.MoveRange = 6;
             monster.AttackRange = 5;
             monster.ViewRange = 10;
@@ -499,7 +501,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 549;
-            monster.Designation = "Bloody Orc";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodyOrc);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -530,7 +532,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 550;
-            monster.Designation = "Bloody Death Rider";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodyDeathRider);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -561,7 +563,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 551;
-            monster.Designation = "Bloody Golem";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodyGolem);
             monster.MoveRange = 4;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -592,7 +594,7 @@ internal class Aida : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 552;
-            monster.Designation = "Bloody Witch Queen";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodyWitchQueen);
             monster.MoveRange = 4;
             monster.AttackRange = 3;
             monster.ViewRange = 9;

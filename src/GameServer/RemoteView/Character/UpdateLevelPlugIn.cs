@@ -43,10 +43,10 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
         await connection.SendCharacterLevelUpdateAsync(
             (ushort)charStats[Stats.Level],
             (ushort)Math.Max(selectedCharacter.LevelUpPoints, 0),
-            (ushort)charStats[Stats.MaximumHealth],
-            (ushort)charStats[Stats.MaximumMana],
-            (ushort)charStats[Stats.MaximumShield],
-            (ushort)charStats[Stats.MaximumAbility],
+            charStats[Stats.MaximumHealth].ToUInt16Clamped(),
+            charStats[Stats.MaximumMana].ToUInt16Clamped(),
+            charStats[Stats.MaximumShield].ToUInt16Clamped(),
+            charStats[Stats.MaximumAbility].ToUInt16Clamped(),
             (ushort)selectedCharacter.UsedFruitPoints,
             selectedCharacter.GetMaximumFruitPoints(),
             (ushort)selectedCharacter.UsedNegFruitPoints,
@@ -71,10 +71,10 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
             (ushort)charStats[Stats.MasterPointsPerLevelUp],
             (ushort)selectedCharacter.MasterLevelUpPoints,
             (ushort)this._player.GameContext.Configuration.MaximumMasterLevel,
-            (ushort)charStats[Stats.MaximumHealth],
-            (ushort)charStats[Stats.MaximumMana],
-            (ushort)charStats[Stats.MaximumShield],
-            (ushort)charStats[Stats.MaximumAbility]).ConfigureAwait(false);
+            charStats[Stats.MaximumHealth].ToUInt16Clamped(),
+            charStats[Stats.MaximumMana].ToUInt16Clamped(),
+            charStats[Stats.MaximumShield].ToUInt16Clamped(),
+            charStats[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
 
         await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MasterLevelUpCongrats), charStats[Stats.MasterLevel]).ConfigureAwait(false);
     }

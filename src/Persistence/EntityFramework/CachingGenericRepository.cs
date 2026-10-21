@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     where T : class
 {
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<CachingEntityFrameworkContext> _contextLogger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGenericRepository{T}" /> class.
@@ -27,7 +27,7 @@ internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     public CachingGenericRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
         : base(repositoryProvider, loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType ?? typeof(CachingGenericRepository<T>)))
     {
-        this._loggerFactory = loggerFactory;
+        this._contextLogger = loggerFactory.CreateLogger<CachingEntityFrameworkContext>();
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     protected override EntityFrameworkContextBase GetContext()
     {
         var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryProvider, context is null, null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryProvider, context is null, null, this._contextLogger);
     }
 
     /// <inheritdoc/>

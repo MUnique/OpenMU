@@ -24,10 +24,14 @@ using MUnique.OpenMU.PlugIns;
 /// Now, if we remove the plugin for season 6, so that 1, 2 and 7 are available?
 ///   In this case, we assume that the last available season before the target season is the correct one, season 2.
 /// </remarks>
-internal sealed class ViewPlugInContainer : CustomPlugInContainerBase<IViewPlugIn>, IDisposable
+internal sealed class ViewPlugInContainer : CustomPlugInContainerBase<IViewPlugIn>
 {
     private readonly RemotePlayer _player;
 
+    /// <summary>
+    /// The services for the creation of the view plugins. It's never disposed: it only holds the player, which
+    /// this container doesn't own, and disposing a <see cref="ServiceContainer"/> disposes its services.
+    /// </summary>
     private readonly ServiceContainer _serviceContainer;
 
     /// <summary>
@@ -56,10 +60,19 @@ internal sealed class ViewPlugInContainer : CustomPlugInContainerBase<IViewPlugI
     public ClientVersion Client { get; private set; }
 
     /// <inheritdoc />
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        this._serviceContainer.Dispose();
-        this.KnownPlugIns.OfType<IDisposable>().ForEach(d => d.Dispose());
+        if (this.IsDisposed)
+        {
+            return;
+        }
+
+        base.Dispose(disposing);
+        if (disposing)
+        {
+            this._player.ClientVersionChanged -= this.OnClientVersionChanged;
+            this.KnownPlugIns.OfType<IDisposable>().ForEach(d => d.Dispose());
+        }
     }
 
     /// <inheritdoc/>

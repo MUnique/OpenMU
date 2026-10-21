@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -220,6 +221,54 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
+    /// Tests that a Jewel of Life doesn't add an option without level-dependent values, like the options of the Horn of Dinorant.
+    /// </summary>
+    /// <param name="successChance">The success chance of the jewel.</param>
+    [TestCase(1.0)]
+    [TestCase(0.0)]
+    public async ValueTask JewelOfLifeDoesNotAddFixedOptionAsync(double successChance)
+    {
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = successChance;
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var upgradeableItem = this.GetItemWithPossibleOption(false);
+        await player.Inventory!.AddItemAsync((byte)(ItemSlot + 1), upgradeableItem).ConfigureAwait(false);
+        var jewel = this.GetItem();
+        await player.Inventory.AddItemAsync(ItemSlot, jewel).ConfigureAwait(false);
+
+        var jewelConsumed = await consumeHandler.ConsumeItemAsync(player, jewel, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(jewelConsumed, Is.False);
+        Assert.That(upgradeableItem.ItemOptions, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a Jewel of Life neither increases nor removes an option without level-dependent values,
+    /// like the options of the Horn of Dinorant.
+    /// </summary>
+    /// <param name="successChance">The success chance of the jewel.</param>
+    [TestCase(1.0)]
+    [TestCase(0.0)]
+    public async ValueTask JewelOfLifeDoesNotChangeFixedOptionAsync(double successChance)
+    {
+        const int optionLevel = 2;
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = successChance;
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var upgradeableItem = this.GetItemWithPossibleOption(false);
+        var fixedOption = upgradeableItem.Definition!.PossibleItemOptions.Single().PossibleOptions.Single();
+        upgradeableItem.ItemOptions.Add(new ItemOptionLink { ItemOption = fixedOption, Level = optionLevel });
+        await player.Inventory!.AddItemAsync((byte)(ItemSlot + 1), upgradeableItem).ConfigureAwait(false);
+        var jewel = this.GetItem();
+        await player.Inventory.AddItemAsync(ItemSlot, jewel).ConfigureAwait(false);
+
+        var jewelConsumed = await consumeHandler.ConsumeItemAsync(player, jewel, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(jewelConsumed, Is.False);
+        Assert.That(upgradeableItem.ItemOptions.Single().Level, Is.EqualTo(optionLevel));
+    }
+
+    /// <summary>
     /// Tests the jewel of harmony consume.
     /// </summary>
     public void JewelOfHarmony()
@@ -392,6 +441,74 @@ public class ItemConsumptionTest
         Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentMana), Is.GreaterThan(0.0f));
     }
 
+    /// <summary>
+    /// Tests that the Potion of Bless applies the magic effect with the default number when the plugin isn't configured.
+    /// </summary>
+    [Test]
+    public async ValueTask SiegePotionUsesDefaultBlessEffectAsync()
+    {
+        var consumeHandler = new SiegePotionConsumeHandlerPlugIn();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        SetupMagicEffects(player, CreateConsumableEffect(SiegePotionConsumeHandlerConfiguration.DefaultBlessEffectNumber));
+        var item = this.GetItem();
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(success, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the Potion of Bless applies the magic effect with the configured number instead of the default one.
+    /// </summary>
+    [Test]
+    public async ValueTask SiegePotionUsesConfiguredBlessEffectAsync()
+    {
+        const short configuredEffectNumber = 42;
+        var consumeHandler = new SiegePotionConsumeHandlerPlugIn
+        {
+            Configuration = new SiegePotionConsumeHandlerConfiguration { BlessEffectNumber = configuredEffectNumber },
+        };
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var defaultEffect = new Persistence.BasicModel.MagicEffectDefinition { Number = SiegePotionConsumeHandlerConfiguration.DefaultBlessEffectNumber };
+        SetupMagicEffects(player, defaultEffect, CreateConsumableEffect(configuredEffectNumber));
+        var item = this.GetItem();
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        // The default effect has no power-ups, so the consumption only succeeds with the configured effect.
+        Assert.That(success, Is.True);
+    }
+
+    private static void SetupMagicEffects(Player player, params MagicEffectDefinition[] effects)
+    {
+        Mock.Get(player.GameContext.Configuration).Setup(c => c.MagicEffects).Returns(effects.ToList());
+    }
+
+    private static MagicEffectDefinition CreateConsumableEffect(short number)
+    {
+        return new Persistence.BasicModel.MagicEffectDefinition
+        {
+            Number = number,
+            Duration = new Persistence.BasicModel.PowerUpDefinitionValue
+            {
+                ConstantValue = { Value = 60 },
+            },
+            PowerUpDefinitions =
+            {
+                new Persistence.BasicModel.PowerUpDefinition
+                {
+                    TargetAttribute = Stats.DefenseBase,
+                    Boost = new Persistence.BasicModel.PowerUpDefinitionValue
+                    {
+                        ConstantValue = { Value = 20 },
+                    },
+                },
+            },
+        };
+    }
+
     private Item GetItem()
     {
         return new()
@@ -413,7 +530,7 @@ public class ItemConsumptionTest
         return player;
     }
 
-    private Item GetItemWithPossibleOption()
+    private Item GetItemWithPossibleOption(bool hasLevelDependentOptions = true)
     {
         var item = new Mock<Item>();
         item.SetupAllProperties();
@@ -443,7 +560,7 @@ public class ItemConsumptionTest
         possibleOption.Setup(o => o.LevelDependentOptions).Returns(new List<ItemOptionOfLevel>());
         possibleOption.Object.OptionType = ItemOptionTypes.Option;
         option.Object.PossibleOptions.Add(possibleOption.Object);
-        for (int level = 1; level <= 4; level++)
+        for (int level = 1; hasLevelDependentOptions && level <= 4; level++)
         {
             var levelDependentOption = new ItemOptionOfLevel();
             levelDependentOption.Level = level;

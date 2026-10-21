@@ -9,8 +9,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>
-/// Factory for <see cref="ReferenceResolvingConverter{T}"/>.
+/// Factory for converters which are able to resolve (circular) references.
 /// </summary>
+/// <remarks>
+/// It prefers the converters which were generated at compile time (see <see cref="ReferenceResolvingConverterRegistry"/>),
+/// and falls back to the <see cref="ReferenceResolvingConverter{T}"/>, which uses reflection.
+/// </remarks>
 public class ReferenceResolvingConverterFactory : JsonConverterFactory
 {
     /// <summary>
@@ -35,7 +39,12 @@ public class ReferenceResolvingConverterFactory : JsonConverterFactory
     {
         return ConvertersCache.GetOrAdd(typeToConvert, type =>
         {
-            var converterType = typeof(ReferenceResolvingConverter<>).MakeGenericType(typeToConvert);
+            if (ReferenceResolvingConverterRegistry.TryCreate(type, this.IgnoredTypes) is { } generatedConverter)
+            {
+                return generatedConverter;
+            }
+
+            var converterType = typeof(ReferenceResolvingConverter<>).MakeGenericType(type);
             return (JsonConverter)Activator.CreateInstance(converterType, new object[] { this.IgnoredTypes })!;
         });
     }

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of character classes data.
@@ -22,7 +24,7 @@ internal partial class CharacterClassInitialization
     /// <param name="nextGenerationClass">The next generation class.</param>
     /// <param name="canGetCreated">If set to <c>true</c>, it can get created by the player.</param>
     /// <returns>The created character class.</returns>
-    protected CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
+    protected CharacterClass CreateMagicGladiator(CharacterClassNumber number, LocalizedString name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var result = this.Context.CreateNew<CharacterClass>();
         result.SetGuid((byte)number);
@@ -137,7 +139,7 @@ internal partial class CharacterClassInitialization
 
     private CharacterClass CreateDuelMaster()
     {
-        var result = this.CreateMagicGladiator(CharacterClassNumber.DuelMaster, "Duel Master", true, null, false);
+        var result = this.CreateMagicGladiator(CharacterClassNumber.DuelMaster, LocalizedString.FromResource(() => CharacterClassNames.DuelMaster), true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
         return result;
     }

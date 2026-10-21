@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the critical damage increase effect.
@@ -30,7 +31,7 @@ public class CriticalDamageIncreaseEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncrease;
-        magicEffect.Name = "Critical Damage Increase Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.CriticalDamageIncreaseSkillEffect);
         magicEffect.InformObservers = true;
         magicEffect.SubType = 17;
         magicEffect.SendDuration = false;

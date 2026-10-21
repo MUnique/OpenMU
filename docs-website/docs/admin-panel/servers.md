@@ -84,10 +84,36 @@ The **+ Game server** button opens a small form:
 | PvP enabled | Whether players can attack each other on this server |
 | Server configuration | Which `GameServerConfiguration` to use — this defines the maps the server hosts |
 | Client | The `GameClientDefinition` which is expected to connect |
-| Network port | The TCP port of the listener, e.g. 55907 |
+| Network port | The TCP port of the listener, e.g. 45907 |
 
 After saving, the new server appears in the list, stopped, and can be started
 right away.
+
+### Share a map between game servers
+
+A map can be shared by several game servers, so that their players meet on the
+same map — for example for an event which takes place for all of them at once.
+A map is shared when only some game servers host it:
+
+1. Give the game servers which should **not** host the map a server configuration
+   whose maps don't include it.
+2. Keep the map in the server configuration of the game server which should host
+   it.
+
+A player whose game server doesn't host the map then enters it on a game server
+which does. When several game servers host it, the one with the lowest server id
+is used. The player stays connected to its own game server: the game client
+doesn't reconnect, and the player still counts towards its own game server.
+
+When the hosting game server is stopped, its guests are warped to their safezone.
+When no started game server hosts the map, players are warped to the home map of
+their character class instead.
+
+:::note[Only in the all-in-one deployment]
+Sharing maps currently only works when all game servers run in the same process.
+In a distributed deployment, the game client would have to switch to the hosting
+game server, which is not supported yet.
+:::
 
 ### Add a connect server
 
@@ -102,12 +128,18 @@ forward it in your router or docker compose file. See [Ports](../reference/ports
 
 ## Global messages
 
-The card at the top of the page sends a message to the players — the golden
-message in the centre of the screen.
+The card at the top of the page sends a message to the players.
 
 1. Type the text.
-2. Choose the target: *All game servers*, or one specific started game server.
-3. Click **Send**.
+2. Choose the message type:
+   * *Golden (center)*: the golden message in the centre of the screen, like
+     `/goldnotice`.
+   * *Blue (system)*: a blue system message in the chat.
+   * *Slide (top band)*: a notice which scrolls once through the band at the
+     top of the screen, like `/slidenotice`. Clients older than season 1 don't
+     have this band and get the golden message instead.
+3. Choose the target: *All game servers*, or one specific started game server.
+4. Click **Send**.
 
 Only started game servers can be targeted. If the target stopped in the meantime,
 the panel keeps your text so you can pick another target and retry.

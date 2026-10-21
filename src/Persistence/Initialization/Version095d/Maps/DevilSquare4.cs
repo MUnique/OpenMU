@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
@@ -21,11 +22,6 @@ internal class DevilSquare4 : BaseMapInitializer
     internal const byte Number = 9;
 
     /// <summary>
-    /// The default name of the map.
-    /// </summary>
-    internal const string Name = "Devil Square 4";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare4"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -35,11 +31,16 @@ internal class DevilSquare4 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.DevilSquare4);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte Discriminator => 4;
@@ -83,7 +84,7 @@ internal class DevilSquare4 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 66;
-            monster.Designation = "Cursed King";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CursedKing);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;

@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party;
 
+using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Party;
 
 /// <summary>
@@ -23,6 +25,11 @@ public class PartyRequestAction
         if (player.CurrentMiniGame?.Definition.AllowParty is false)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PartyNotPossibleDuringEvent)).ConfigureAwait(false);
+            return;
+        }
+
+        if (await IsPartyDeniedAsync(player, toRequest).ConfigureAwait(false))
+        {
             return;
         }
 
@@ -67,6 +74,24 @@ public class PartyRequestAction
             await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RequestedPlayerForParty), toRequest.Name).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Determines whether a <see cref="IPartyRequestingPlugIn"/> denies the party between the players.
+    /// </summary>
+    /// <param name="requester">The player which requested the party.</param>
+    /// <param name="target">The requested player.</param>
+    /// <returns><c>true</c>, if the party is denied; otherwise, <c>false</c>.</returns>
+    internal static async ValueTask<bool> IsPartyDeniedAsync(Player requester, Player target)
+    {
+        if (requester.GameContext.PlugInManager.GetPlugInPoint<IPartyRequestingPlugIn>() is not { } plugInPoint)
+        {
+            return false;
+        }
+
+        var eventArgs = new CancelEventArgs();
+        await plugInPoint.PartyRequestingAsync(requester, target, eventArgs).ConfigureAwait(false);
+        return eventArgs.Cancel;
     }
 
     private async ValueTask SendPartyRequestAsync(IPartyMember toRequest, IPartyMember requester)

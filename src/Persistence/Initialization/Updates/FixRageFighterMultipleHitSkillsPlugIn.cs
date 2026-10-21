@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the missing multiple hits to the Killing Blow, Beast Uppercut, Chain Drive, Dragon Roar and Phoenix Shot Rage Fighter skills, as well as their magic effects.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixRageFighterMultipleHitSkillsPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixRageFighterMultipleHitSkillsPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("EDDD17F9-BEA5-40F0-A653-8567566C40E7")]
 public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
 {
@@ -39,9 +39,6 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixRageFighterMultipleHitSkills;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;

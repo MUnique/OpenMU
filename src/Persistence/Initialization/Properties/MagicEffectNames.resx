@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="AlcoholEffect" xml:space="preserve">
+    <value>Alcohol Effect</value>
+  </data>
+  <data name="HealEffect" xml:space="preserve">
+    <value>Heal Effect</value>
+  </data>
+  <data name="GreaterDefenseBuffSkillEffect" xml:space="preserve">
+    <value>Greater Defense Buff Skill Effect</value>
+  </data>
+  <data name="GreaterDamageBuffSkillEffect" xml:space="preserve">
+    <value>Greater Damage Buff Skill Effect</value>
+  </data>
+  <data name="ShieldDefenseSkillEffect" xml:space="preserve">
+    <value>Shield Defense Skill Effect</value>
+  </data>
+  <data name="Iced" xml:space="preserve">
+    <value>Iced</value>
+  </data>
+  <data name="Poisoned" xml:space="preserve">
+    <value>Poisoned</value>
+  </data>
+  <data name="Cold" xml:space="preserve">
+    <value>Cold</value>
+  </data>
+  <data name="InfinityArrowSkillEffect" xml:space="preserve">
+    <value>Infinity Arrow Skill Effect</value>
+  </data>
+  <data name="ElfSoldierBuff" xml:space="preserve">
+    <value>Elf Soldier Buff</value>
+  </data>
+  <data name="CastleSiegeAttack3" xml:space="preserve">
+    <value>Castle Siege Attack3</value>
+  </data>
+  <data name="CastleSiegeAttack2" xml:space="preserve">
+    <value>Castle Siege Attack2</value>
+  </data>
+  <data name="CastleSiegeAttack1" xml:space="preserve">
+    <value>Castle Siege Attack1</value>
+  </data>
+  <data name="CastleSiegeDefense" xml:space="preserve">
+    <value>Castle Siege Defense</value>
+  </data>
+  <data name="IncreaseBlockMasterySkillEffect" xml:space="preserve">
+    <value>Increase Block Mastery Skill Effect</value>
+  </data>
+  <data name="IncreaseBlockPowerUpSkillEffect" xml:space="preserve">
+    <value>Increase Block Power Up Skill Effect</value>
+  </data>
+  <data name="IncreaseHealthStrengthenerSkillEffect" xml:space="preserve">
+    <value>Increase Health Strengthener Skill Effect</value>
+  </data>
+  <data name="WizardryEnhanceMasterySkillEffect" xml:space="preserve">
+    <value>Wizardry Enhance Mastery Skill Effect</value>
+  </data>
+  <data name="WizardryEnhanceStrengthenerSkillEffect" xml:space="preserve">
+    <value>Wizardry Enhance Strengthener Skill Effect</value>
+  </data>
+  <data name="LifeSwellProficiencySkillEffect" xml:space="preserve">
+    <value>Life Swell Proficiency Skill Effect</value>
+  </data>
+  <data name="CriticalDamageIncreaseMasterySkillEffect" xml:space="preserve">
+    <value>Critical Damage Increase Mastery Skill Effect</value>
+  </data>
+  <data name="StunEffect" xml:space="preserve">
+    <value>Stun Effect</value>
+  </data>
+  <data name="RequiemEffect" xml:space="preserve">
+    <value>Requiem Effect</value>
+  </data>
+  <data name="ExplosionEffect" xml:space="preserve">
+    <value>Explosion Effect</value>
+  </data>
+  <data name="DecreaseBlockEffectPhoenixShot" xml:space="preserve">
+    <value>Decrease Block Effect (Phoenix Shot)</value>
+  </data>
+  <data name="DefenseReductionEffectBeastUppercut" xml:space="preserve">
+    <value>Defense Reduction Effect (Beast Uppercut)</value>
+  </data>
+  <data name="ReflectionEffect" xml:space="preserve">
+    <value>Reflection Effect</value>
+  </data>
+  <data name="InnovationEffect" xml:space="preserve">
+    <value>Innovation Effect</value>
+  </data>
+  <data name="WeaknessEffectSummoner" xml:space="preserve">
+    <value>Weakness Effect (Summoner)</value>
+  </data>
+  <data name="SleepEffect" xml:space="preserve">
+    <value>Sleep Effect</value>
+  </data>
+  <data name="WeaknessEffectKillingBlow" xml:space="preserve">
+    <value>Weakness Effect (Killing Blow)</value>
+  </data>
+  <data name="BerserkerBuffSkillEffect" xml:space="preserve">
+    <value>Berserker Buff Skill Effect</value>
+  </data>
+  <data name="PotionOfBlessEffect" xml:space="preserve">
+    <value>Potion of Bless Effect</value>
+  </data>
+  <data name="PotionOfSoulEffect" xml:space="preserve">
+    <value>Potion of Soul Effect</value>
+  </data>
+  <data name="WizEnhanceSkillEffect" xml:space="preserve">
+    <value>Wiz Enhance Skill Effect</value>
+  </data>
+  <data name="IncreaseBlockSkillEffect" xml:space="preserve">
+    <value>Increase Block Skill Effect</value>
+  </data>
+  <data name="IncreaseHealthSkillEffect" xml:space="preserve">
+    <value>Increase Health Skill Effect</value>
+  </data>
+  <data name="IgnoreDefenseSkillEffect" xml:space="preserve">
+    <value>Ignore Defense Skill Effect</value>
+  </data>
+  <data name="Invisible" xml:space="preserve">
+    <value>Invisible</value>
+  </data>
+  <data name="DefenseReductionEffectFireSlash" xml:space="preserve">
+    <value>Defense Reduction Effect (Fire Slash)</value>
+  </data>
+  <data name="ShieldRecoverEffect" xml:space="preserve">
+    <value>Shield Recover Effect</value>
+  </data>
+  <data name="CriticalDamageIncreaseSkillEffect" xml:space="preserve">
+    <value>Critical Damage Increase Skill Effect</value>
+  </data>
+  <data name="LifeSwellSkillEffect" xml:space="preserve">
+    <value>Life Swell Skill Effect</value>
+  </data>
+  <data name="SoulBarrier" xml:space="preserve">
+    <value>Soul Barrier</value>
+  </data>
+  <data name="Freeze" xml:space="preserve">
+    <value>Freeze</value>
+  </data>
+</root>

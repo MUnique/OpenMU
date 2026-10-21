@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -29,6 +31,6 @@ internal class Orbs : Version075.Items.Orbs
     public override void Initialize()
     {
         base.Initialize();
-        this.CreateOrb(7, SkillNumber.TwistingSlash, 1, "Orb of Twisting Slash", 47, 80, 0, 0, 0, 29000, CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator);
+        this.CreateOrb(7, SkillNumber.TwistingSlash, 1, LocalizedString.FromResource(() => ItemNames.OrbOfTwistingSlash), 47, 80, 0, 0, 0, 29000, CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator);
     }
 }

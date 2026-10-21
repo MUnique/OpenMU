@@ -56,6 +56,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     private static readonly TimeSpan HeroStateDuration = TimeSpan.FromHours(1);
 
+    private readonly MoveItemAction _moveAction = new();
+
     private readonly PlayerExperience _experience;
 
     /// <summary>
@@ -79,6 +81,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
+    private readonly MapPowerUps _mapPowerUps = new();
+
     private CancellationTokenSource? _respawnAfterDeathCts;
 
     private Character? _selectedCharacter;
@@ -98,6 +102,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private IDisposable? _accountLoggingScope;
 
     private Account? _account;
+
+    /// <summary>
+    /// The login name with which this player is registered at the login server, until it's released.
+    /// </summary>
+    private string? _loginServerRegistration;
+
+    /// <summary>
+    /// The UTC ticks of the last time the client reported that it's alive, or 0, if it didn't yet.
+    /// </summary>
+    private long _lastAliveReportTicks;
 
     private SkillHitValidator? _skillHitValidator;
 
@@ -204,7 +218,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
-    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger);
+    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger, this.GameContext.PlugInManager);
 
     /// <inheritdoc/>
     public int Money
@@ -240,6 +254,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets a custom login result to override the default when login fails.
     /// </summary>
     public Views.Login.LoginResult? LoginResultOverride { get; set; }
+
+    /// <summary>
+    /// Gets the point in time (UTC) when the client of this player reported the last time that it's alive,
+    /// e.g. by its periodic ping, while the player is in the world. It's <c>null</c>, if the client didn't report
+    /// it since the player entered the world, e.g. because it doesn't support it, or because this player has no
+    /// client at all.
+    /// </summary>
+    public DateTime? LastAliveReport => Interlocked.Read(ref this._lastAliveReportTicks) is var ticks and > 0
+        ? new DateTime(ticks, DateTimeKind.Utc)
+        : null;
 
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
@@ -398,6 +422,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public GuildMemberStatus? GuildStatus { get; set; }
 
+    /// <summary>
+    /// Gets or sets the gens membership of the selected character.
+    /// It's <c>null</c>, if the character never joined a gens.
+    /// </summary>
+    public GensMember? GensMember { get; set; }
+
     /// <inheritdoc/>
     public Direction Rotation { get; set; }
 
@@ -476,6 +506,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets a value indicating whether the vault of the player is currently locked by a pin.
     /// </summary>
     public bool IsVaultLocked { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the cash shop is opened by the player.
+    /// </summary>
+    public bool IsCashShopOpen { get; set; }
 
     /// <summary>
     /// Gets the shop storage.
@@ -617,6 +652,48 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Remembers that the client of this player reported that it's alive, if the player is in the world.
+    /// </summary>
+    /// <remarks>
+    /// Outside of the world, it's not remembered, because not every client reports it there. E.g. the web client
+    /// only sends its ping while a character is in the world - a player which waits at the character selection
+    /// would otherwise be considered as lost.
+    /// </remarks>
+    public void ReportAlive()
+    {
+        if (this.SelectedCharacter is null)
+        {
+            return;
+        }
+
+        Interlocked.Exchange(ref this._lastAliveReportTicks, DateTime.UtcNow.Ticks);
+    }
+
+    /// <summary>
+    /// Remembers that the login server accepted the login of this player with the specified login name.
+    /// </summary>
+    /// <remarks>
+    /// It's remembered right when the login server accepted it, before the account is assigned, so that
+    /// the registration is released at the login server even when the player disconnects in between.
+    /// Otherwise, the account would stay registered as connected, and every further login would be rejected.
+    /// </remarks>
+    /// <param name="loginName">The login name.</param>
+    public void SetLoginServerRegistration(string loginName)
+    {
+        Volatile.Write(ref this._loginServerRegistration, loginName);
+    }
+
+    /// <summary>
+    /// Releases the registration of this player at the login server. The returned login name has to be logged off there.
+    /// </summary>
+    /// <returns>The login name with which this player was registered at the login server, or <c>null</c>, if it isn't registered (anymore).
+    /// Each registration is returned only once, so it's logged off only once.</returns>
+    public string? ReleaseLoginServerRegistration()
+    {
+        return Interlocked.Exchange(ref this._loginServerRegistration, null);
+    }
+
+    /// <summary>
     /// Sets the selected character.
     /// </summary>
     /// <param name="character">The character.</param>
@@ -642,8 +719,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
 
-            (this.SkillList as IDisposable)?.Dispose();
-            this.SkillList = null;
+            this.ReleaseSkillList();
 
             if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom)
             {
@@ -749,16 +825,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
-        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo, skill).ConfigureAwait(false);
+
+        bool isPvpDamage = attacker is Player or IPlayerSurrogate;
+        float damage = isPvpDamage ? hitInfo.TotalDamage : attacker.Attributes[Stats.MinimumPhysBaseDmg];
+        await this.DecreaseItemDurabilityAfterHitAsync(damage, isPvpDamage, skill).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
-            await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+            await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
         }
 
         if (attacker is Player attackerPlayer)
         {
-            await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
+            await attackerPlayer.AfterHitTargetAsync(this.Attributes[Stats.DefenseFinal], skill?.Skill?.DamageType).ConfigureAwait(false);
 
             if (this.IsAlive && Rand.NextRandomBool(attackerPlayer.Attributes![Stats.MaceMasteryStunChance]))
             {
@@ -772,11 +851,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Is called after the player successfully hit a target.
     /// </summary>
-    public async ValueTask AfterHitTargetAsync()
+    /// <param name="targetDefense">The target's defense.</param>
+    /// <param name="damageType">The damage type.</param>
+    public async ValueTask AfterHitTargetAsync(float targetDefense, DamageType? damageType)
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
 
-        await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
+        await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, damageType ?? DamageType.Physical).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -905,6 +986,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc />
     public ValueTask StopWalkingAsync() => this._movement.StopWalkingAsync();
+
+    /// <summary>
+    /// Ends a running walk early, at the position the game client reports it stopped at.
+    /// </summary>
+    /// <param name="stopPoint">The position the client reports it stopped the walk at.</param>
+    public ValueTask StopWalkAtAsync(Point stopPoint) => this._movement.StopWalkAtAsync(stopPoint);
 
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
@@ -1043,7 +1130,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        using var l = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Add(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1057,7 +1144,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        using var l = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Remove(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1093,6 +1180,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Determines whether the player complies with the <see cref="Skill.Requirements"/> of a skill, so that it can use it.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if the player complies with the requirements; Otherwise, <c>false</c>.</returns>
+    public bool CompliesRequirements(Skill skill)
+    {
+        return !skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]);
+    }
+
+    /// <summary>
     /// Tries to consume the <see cref="Skill.ConsumeRequirements"/> of a skill.
     /// </summary>
     /// <param name="skillEntry">The skill entry of the skill which should get performed.</param>
@@ -1107,7 +1204,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
+        if (!this.CompliesRequirements(skill))
         {
             return false;
         }
@@ -1180,6 +1277,54 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Decreases the dark raven durability after it has attacked.
+    /// </summary>
+    /// <remarks>
+    /// A raven's durability only decreases after it attacks, or if it's the target of a fenrir skill effect.
+    /// In other words, it's more like a weapon than a pet.
+    /// </remarks>
+    /// <param name="damage">The damage dealt.</param>
+    public async ValueTask DecreaseRavenDurabilityAfterHitAsync(float damage)
+    {
+        var item = this.Inventory?.GetItem(InventoryConstants.RightHandSlot);
+        if (item is null || !item.IsTrainablePet() || item.Durability == 0 || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        double hitsPerOneItemDurability = this.GameContext.Configuration.HitsPerOneItemDurability;
+        hitsPerOneItemDurability *= 800f / 564; // The original values. We keep the same relative factor.
+        var decrement = damage * 0.02 / (hitsPerOneItemDurability + attributes[Stats.TrainablePetDurationIncrease]);
+        await this.DecreaseItemDurabilityAsync(item, decrement).ConfigureAwait(false);
+
+        if (item.Durability == 0.0)
+        {
+            var minimumExp = item.Definition!.GetExperienceOfPetLevel(item.Level, item.Definition!.MaximumItemLevel);
+            item.PetExperience = (int)Math.Max((int)(item.PetExperience * 0.9), minimumExp);
+            await this.ResetPetBehaviorAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Decreases an item's durability and raises the <see cref="InventoryStorage.EquippedItemsChanged"/> event, if justified.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="decrement">The decrement.</param>
+    public async ValueTask DecreaseItemDurabilityAsync(Item item, double decrement)
+    {
+        var previousFactor = item.GetCurrentDurabilityFactor();
+        if (item.DecreaseDurability(decrement))
+        {
+            await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
+        }
+
+        if (previousFactor != item.GetCurrentDurabilityFactor())
+        {
+            await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true, true).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Removes the player from the game and saves its state.
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
@@ -1193,11 +1338,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         await this._mapTransitions.RemoveFromCurrentMapAsync().ConfigureAwait(false);
 
+        // The player always observes itself, so leaving the map doesn't remove it from its own
+        // observed objects. Without clearing them, entering the world again (e.g. after going back
+        // to the character selection) wouldn't show the player to itself as a new player in scope.
+        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
+
         await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
 
         this.OpenedNpc = null;
 
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
+        Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
+
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
         try
@@ -1268,6 +1422,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && this.IsSelfDefenseActive(killedPlayer))
         {
             // Self-defense is allowed.
+            return;
+        }
+
+        if (this.IsExemptedFromPlayerKillPenalty(killedPlayer))
+        {
+            // e.g. a kill between the members of different gens in a battle zone.
             return;
         }
 
@@ -1379,6 +1539,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._observerToWorldViewAdapter.Dispose();
         this._movement.Dispose();
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
+        this.ReleaseSkillList();
+        this.ReleaseAttributeSystem();
         this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
 
@@ -1420,8 +1582,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             moveToNextSafezone = true;
         }
 
-        if (this.CurrentMiniGame is { })
+        if (this.CurrentMiniGame is { } miniGame)
         {
+            if (this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                // The connection got lost, so the player may come back while the game is still running.
+                miniGame.RememberDisconnectedPlayer(this);
+            }
+
             moveToNextSafezone = true;
         }
 
@@ -1572,7 +1740,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             var reflectPercentage = this.Attributes[Stats.DamageReflection];
             if (reflectPercentage > 0)
             {
-                var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
+                var reflectedDamage = hitInfo.TotalDamage * reflectPercentage;
                 ReflectDamage((int)reflectedDamage, attackableAttacker);
             }
 
@@ -1583,7 +1751,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
                 {
                     var reflectedDamage = attackableAttacker is Player
-                        ? hitInfo.HealthDamage + hitInfo.ShieldDamage
+                        ? hitInfo.TotalDamage
                         : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
                     ReflectDamage((int)reflectedDamage, attackableAttacker);
                 }
@@ -1708,34 +1876,44 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void RaisePlayerEnteredMap(GameMap map)
     {
         this.PlayerEnteredMap?.Invoke(this, (this, map));
-        if (map.Definition.CharacterPowerUpDefinitions is { Count: > 0 } powerUpDefinitions
-            && this.Attributes is { } attributes)
+        if (this.Attributes is { } attributes)
         {
-            foreach (var powerUpDefinition in powerUpDefinitions)
-            {
-                if (powerUpDefinition.TargetAttribute is null)
-                {
-                    continue;
-                }
-
-                var powerUps = PowerUpWrapper.CreateByPowerUpDefinition(powerUpDefinition, attributes);
-                powerUps.ForEach(p =>
-                {
-                    this.PlayerLeftMap += OnPlayerLeftMap;
-
-                    void OnPlayerLeftMap(object? o, (Player, GameMap) args)
-                    {
-                        this.PlayerLeftMap -= OnPlayerLeftMap;
-                        p.Dispose();
-                    }
-                });
-            }
+            this._mapPowerUps.Apply(map.Definition, attributes);
         }
     }
 
     private void RaisePlayerLeftMap(GameMap map)
     {
+        this._mapPowerUps.Remove();
         this.PlayerLeftMap?.Invoke(this, (this, map));
+    }
+
+    /// <summary>
+    /// Releases the attribute system of the character which was in the game.
+    /// </summary>
+    /// <remarks>
+    /// Its power-ups wrap elements of the game configuration (item options, item base values, map
+    /// power-ups), which live as long as the server. Until they are disposed, the configuration keeps
+    /// the attribute system and, through its event handlers, this whole player alive.
+    /// </remarks>
+    private void ReleaseAttributeSystem()
+    {
+        this._mapPowerUps.Remove();
+        if (this.Attributes is { } attributes)
+        {
+            // The ammunition amount of some classes is a stat attribute, which belongs to the character.
+            attributes.GetOrCreateAttribute(Stats.AmmunitionAmount).ValueChanged -= this.OnAmmunitionAmountChanged;
+            attributes.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Releases the skill list of the character which was in the game, including the power-ups of its passive skills.
+    /// </summary>
+    private void ReleaseSkillList()
+    {
+        (this.SkillList as IDisposable)?.Dispose();
+        this.SkillList = null;
     }
 
     /// <summary>
@@ -1748,17 +1926,49 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character {this.SelectedCharacter} has no assigned character class.");
         }
 
+        this.RemoveStatAttributesWithoutDefinition(character);
         this.RemoveDuplicateStatAttributes(character);
+
+        // A class stat without an attribute would be saved as a stat without a definition. This happens
+        // when a running server applies a data update whose attribute isn't in its cached configuration yet.
+        if (characterClass.StatAttributes.Any(a => a.Attribute is null))
+        {
+            this.Logger.LogWarning(
+                "The character class '{CharacterClass}' has stat attributes without an attribute definition; they're not added to character '{Character}'. Restart the server after installing data updates.",
+                characterClass,
+                character.Name);
+        }
 
         // The character class itself may define a stat attribute more than once (a data update which
         // added an attribute the class already had), so the missing ones are taken distinctly - otherwise
         // we would create the duplicates we just removed all over again.
         var missingStats = characterClass.StatAttributes
+            .Where(a => a.Attribute is not null)
             .DistinctBy(a => a.Attribute)
             .Where(a => character.Attributes.All(c => c.Definition != a.Attribute));
 
-        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute!, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
+    }
+
+    /// <summary>
+    /// Removes stat attributes without a definition. They have no meaning, and an attribute system
+    /// can't hold them, so the character would be unable to enter the game at all.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void RemoveStatAttributesWithoutDefinition(Character character)
+    {
+        var invalid = character.Attributes.Where(a => a.Definition is null).ToList();
+        if (invalid.Count == 0)
+        {
+            return;
+        }
+
+        invalid.ForEach(attribute => character.Attributes.Remove(attribute));
+        this.Logger.LogWarning(
+            "Removed {Count} stat attribute(s) without a definition of character '{Character}'.",
+            invalid.Count,
+            character.Name);
     }
 
     /// <summary>
@@ -1800,24 +2010,28 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character '{selectedCharacter}' has no assigned character class.");
         }
 
-        // For characters which got created on the database or with the admin panel,
-        // it's possible that they're missing the inventory. In this case, we create it here
-        // and initialize with default items.
+        // For characters which got created on the database, it's possible that they're
+        // missing the inventory. In this case, we create it here and initialize it with
+        // default items, like for a newly created character.
         if (selectedCharacter!.Inventory is null)
         {
             selectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, selectedCharacter);
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this.Account!, selectedCharacter, this.PersistenceContext, this.GameContext.Configuration, this.Logger);
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
+        await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
         this.AddMissingStatAttributes();
 
+        // The previous character of this connection may still hold its attribute system.
+        this.ReleaseAttributeSystem();
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
 
         this._storages.CreateForCharacter(selectedCharacter);
+        this.ReleaseSkillList();
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
         if (this.DetermineComboDefinition() is { } comboDefinition)
@@ -1953,85 +2167,271 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask DecreaseItemDurabilityAfterHitAsync(HitInfo hitInfo, SkillEntry? skill)
+    private async ValueTask DecreaseItemDurabilityAfterHitAsync(float damage, bool isPvpDamage, SkillEntry? skill)
     {
-        var randomDefensiveItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
-        if (randomDefensiveItem is { })
+        if (!isPvpDamage)
         {
-            await this.DecreaseDefenseItemDurabilityAsync(randomDefensiveItem, hitInfo).ConfigureAwait(false);
+            var randomDefensiveItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
+            if (randomDefensiveItem is { Durability: > 0.0 })
+            {
+                await this.DecreaseDefenseItemDurabilityAsync(randomDefensiveItem, damage).ConfigureAwait(false);
+            }
+        }
+
+        if (skill?.Skill?.DamageType == DamageType.Fenrir)
+        {
+            var randomItem = this.Inventory?.EquippedItems.Where(i => i.ItemSlot <= InventoryConstants.BootsSlot).SelectRandom();
+            if (randomItem is { Durability: > 0.0 })
+            {
+                await this.DecreaseItemDurabilityAsync(randomItem, randomItem.Durability * 0.5).ConfigureAwait(false);
+            }
         }
 
         if (Rand.NextRandomBool(skill?.Attributes?[Stats.RagefulBlowMasteryDurabilityDecChance] ?? 0))
         {
             var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsArmorItem).SelectRandom();
-            if (randomArmorItem is { })
+            if (randomArmorItem is { Durability: > 0.0 })
             {
-                if (randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * this.Attributes![Stats.DurabilityReductionFactor]))
-                {
-                    await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(randomArmorItem, false)).ConfigureAwait(false);
-                }
+                await this.DecreaseItemDurabilityAsync(
+                    randomArmorItem,
+                    randomArmorItem.GetMaximumDurabilityOfOnePiece() * this.Attributes![Stats.DurabilityReductionFactor])
+                .ConfigureAwait(false);
             }
         }
 
         if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: > 0.0 } pet)
         {
-            await this.DecreaseDefenseItemDurabilityAsync(pet, hitInfo).ConfigureAwait(false);
-            if (pet.Durability == 0.0)
-            {
-                if (pet.IsTrainablePet())
-                {
-                    var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
-                    pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
-                }
-                else
-                {
-                    await this.DestroyInventoryItemAsync(pet).ConfigureAwait(false);
-                }
-            }
+            await this.DecreasePetDurabilityAsync(pet, damage).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask DecreaseDefenseItemDurabilityAsync(Item targetItem, HitInfo hitInfo)
+    private async ValueTask DecreaseDefenseItemDurabilityAsync(Item targetItem, float damage)
     {
-        var itemDurationIncrease = targetItem.IsTrainablePet() ? this.Attributes?[Stats.PetDurationIncrease] : this.Attributes?[Stats.ItemDurationIncrease];
+        if (targetItem.Durability == 0 || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        float itemDurationIncrease = attributes[Stats.WeaponAndArmorDurationIncrease];
         if (itemDurationIncrease == 0)
         {
             itemDurationIncrease = 1;
         }
 
-        var damageDivisor = targetItem.IsTrainablePet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
-        if (itemDurationIncrease.HasValue)
+        float itemDefense;
+        int itemDefenseFactor;
+        if (targetItem.IsShield())
         {
-            damageDivisor *= (double)itemDurationIncrease;
+            itemDefense = attributes[Stats.DefenseShield];
+            itemDefenseFactor = 5;
+        }
+        else
+        {
+            if (!attributes.ItemPowerUps.TryGetValue(targetItem, out var itemPowerUps))
+            {
+                return;
+            }
+
+            itemDefense = attributes.GetComposableAttribute(Stats.DefenseBase)?.Elements
+                .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
+                .Sum(e => e.Value) ?? 0;
+
+            if (attributes[Stats.ArcheryMinDmg] > 0)
+            {
+                itemDefenseFactor = 2;
+            }
+            else if (attributes[Stats.TotalLeadership] > 0)
+            {
+                itemDefenseFactor = 6;
+            }
+            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0)
+            {
+                itemDefenseFactor = 7; // MG classes
+            }
+            else
+            {
+                itemDefenseFactor = 3;
+            }
         }
 
-        var decrement = hitInfo.HealthDamage / damageDivisor;
-        if (targetItem.DecreaseDurability(decrement))
-        {
-            await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
-        }
-    }
-
-    private async ValueTask DecreaseWeaponDurabilityAfterHitAsync()
-    {
-        var targetItem = this.Inventory?.GetRandomOffensiveItem();
-        if (targetItem is null || targetItem.Durability == 0)
+        if (itemDefense == 0)
         {
             return;
         }
 
-        var decrement = 1.0 / this.GameContext.Configuration.HitsPerOneItemDurability;
-        if (targetItem.DecreaseDurability(decrement))
-        {
-            await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
+        var damageToDefenseRatio = damage / (itemDefense * itemDefenseFactor);
+        var decrement = damageToDefenseRatio / (this.GameContext.Configuration.DamagePerOneItemDurability * itemDurationIncrease);
+        await this.DecreaseItemDurabilityAsync(targetItem, decrement).ConfigureAwait(false);
+    }
 
-            if (targetItem is { Durability: 0.0 } pet && pet.IsTrainablePet())
+    private async ValueTask DecreasePetDurabilityAsync(Item pet, float damage)
+    {
+        if (pet.Durability == 0 || pet.Definition is null || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        float itemDurationIncrease;
+        var identifier = new ItemIdentifier(pet.Definition.Number, pet.Definition.Group);
+        if (identifier == ItemConstants.DarkHorse)
+        {
+            itemDurationIncrease = attributes[Stats.TrainablePetDurationIncrease];
+        }
+        else
+        {
+            itemDurationIncrease = attributes[Stats.PetDurationIncrease];
+            if (itemDurationIncrease == 0 || identifier.Number >= ItemConstants.Demon.Number)
             {
-                var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
-                pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
-                await this.ResetPetBehaviorAsync().ConfigureAwait(false);
+                // Excludes cash shop pets: demon, spirit of guardian, rudolf, panda, unicorn, skeleton
+                itemDurationIncrease = 1;
             }
         }
+
+        double damageFactor = identifier switch
+        {
+            var item when item == ItemConstants.Angel
+                       || item == ItemConstants.Rudolf => 3,
+            var item when item == ItemConstants.Imp
+                       || item == ItemConstants.DarkHorse
+                       || item == ItemConstants.Fenrir => 2,
+            var item when item == ItemConstants.Dinorant => 10,
+            var item when item == ItemConstants.Demon => 1.5,
+            _ => 1,
+        };
+
+        double decrement;
+        double damagePerOnePetDurability = this.GameContext.Configuration.DamagePerOnePetDurability;
+        if (identifier == ItemConstants.DarkHorse)
+        {
+            decrement = 1 + (damage * damageFactor / damagePerOnePetDurability);
+            decrement /= 1500 + itemDurationIncrease;
+        }
+        else if (identifier == ItemConstants.Fenrir)
+        {
+            decrement = 1 + (damage * damageFactor / (damagePerOnePetDurability * itemDurationIncrease));
+            decrement /= attributes[Stats.ArcheryMaxDmg] > 0 ? 160 : 200;
+        }
+        else
+        {
+            decrement = damage * damageFactor / (damagePerOnePetDurability * itemDurationIncrease);
+        }
+
+        await this.DecreaseItemDurabilityAsync(pet, decrement).ConfigureAwait(false);
+
+        if (pet.Durability == 0.0)
+        {
+            if (identifier == ItemConstants.DarkHorse)
+            {
+                var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition.MaximumItemLevel);
+                pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
+            }
+            else
+            {
+                await this.DestroyInventoryItemAsync(pet).ConfigureAwait(false);
+            }
+
+            if ((identifier == ItemConstants.Dinorant || identifier == ItemConstants.DarkHorse || identifier == ItemConstants.Fenrir)
+                && (this.CurrentMap?.Definition.MapRequirements.Any(req => req.Attribute == Stats.CanFly) ?? false)
+                && attributes[Stats.CanFly] < 1)
+            {
+                if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is null
+                    && this.GameContext.Configuration.Items.FirstOrDefault(i =>
+                        i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
+                    && this.Inventory?.FindItemsByDefinition(dinorantDef).FirstOrDefault() is { } dinorantItem)
+                {
+                    await this._moveAction.MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
+                    if (this.Inventory.GetItem(InventoryConstants.PetSlot) == dinorantItem)
+                    {
+                        await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+                        await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
+                        return;
+                    }
+                }
+
+                await this._movement.StopWalkingAsync().ConfigureAwait(false);
+                await this.WarpToSafezoneAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async ValueTask DecreaseWeaponDurabilityAfterHitAsync(float targetDefense, DamageType damageType)
+    {
+        var weapon = this.Inventory?.GetRandomWeapon(damageType);
+        if (weapon is null || weapon.Durability == 0 || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        float itemDurationIncrease = attributes[Stats.WeaponAndArmorDurationIncrease];
+        if (itemDurationIncrease == 0)
+        {
+            itemDurationIncrease = 1;
+        }
+
+        bool isMagicWeapon = false;
+        AttributeDefinition weaponAttribute;
+        if (weapon.IsWizardryWeapon(out _) && !weapon.CanHaveSkill())
+        {
+            isMagicWeapon = true;
+            weaponAttribute = Stats.StaffRise;
+        }
+        else if (weapon.IsBook(out _))
+        {
+            isMagicWeapon = true;
+            weaponAttribute = Stats.BookRise;
+        }
+        else if (attributes[Stats.HasDoubleWield] > 0 && weapon.ItemSlot == InventoryConstants.RightHandSlot)
+        {
+            weaponAttribute = Stats.MinPhysBaseDmgByRightWeapon;
+        }
+        else
+        {
+            weaponAttribute = Stats.MinimumPhysBaseDmgByWeapon;
+        }
+
+        if (!attributes.ItemPowerUps.TryGetValue(weapon, out var itemPowerUps))
+        {
+            return;
+        }
+
+        var weaponAttributeValue = attributes.GetComposableAttribute(weaponAttribute)?.Elements
+            .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
+            .Sum(e => e.Value) ?? 0;
+
+        int defenseFactor = 1;
+        double weaponDamageFactor;
+        double hitsPerOneItemDurability = this.GameContext.Configuration.HitsPerOneItemDurability;
+        if (isMagicWeapon)
+        {
+            weaponDamageFactor = 1.33 * weaponAttributeValue;
+            hitsPerOneItemDurability *= 1056f / 564;
+        }
+        else
+        {
+            defenseFactor = 2;
+            weaponDamageFactor = 1.5 * weaponAttributeValue;
+
+            if (attributes[Stats.ArcheryAttackMode] > 0)
+            {
+                hitsPerOneItemDurability *= 780f / 564;
+            }
+        }
+
+        if (weaponDamageFactor == 0)
+        {
+            return;
+        }
+
+        var defenseToDamageRatio = targetDefense * defenseFactor / weaponDamageFactor;
+        if (weapon.ItemOptions.FirstOrDefault(o => o.ItemOption?.PowerUpDefinition?.TargetAttribute == Stats.WeaponDurationIncrease) is { } opt
+            && opt.ItemOption?.LevelDependentOptions.FirstOrDefault(o => o.Level == opt.Level)?.PowerUpDefinition is { } pu
+            && pu.Boost?.ConstantValue is { } socketInc)
+        {
+            defenseToDamageRatio -= defenseToDamageRatio * socketInc.Value;
+        }
+
+        var decrement = defenseToDamageRatio / (hitsPerOneItemDurability * itemDurationIncrease);
+        await this.DecreaseItemDurabilityAsync(weapon, decrement).ConfigureAwait(false);
     }
 
     private async ValueTask CloseTradeIfNeededAsync()

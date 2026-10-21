@@ -129,6 +129,11 @@ public interface IGameContext
     IPartyManager PartyManager { get; }
 
     /// <summary>
+    /// Gets the manager which hosts and tracks the mini game instances of the game.
+    /// </summary>
+    IMiniGameManager MiniGames { get; }
+
+    /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
     ValueTask<IEnumerable<GameMap>> GetMapsAsync();
@@ -159,11 +164,6 @@ public interface IGameContext
     /// The hosted GameMap instance.
     /// </returns>
     ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true);
-
-    /// <summary>
-    /// Gets the manager which hosts and tracks the mini game instances of the game.
-    /// </summary>
-    IMiniGameManager MiniGames { get; }
 
     /// <summary>
     /// Gets the player object by character name.
@@ -200,6 +200,13 @@ public interface IGameContext
     /// </summary>
     /// <param name="message">The message.</param>
     ValueTask SendGlobalNotificationAsync(string message);
+
+    /// <summary>
+    /// Sends a golden global notification to all players of the game, in the language of each player.
+    /// </summary>
+    /// <param name="message">The message, which may contain translations and format placeholders.</param>
+    /// <param name="formatArguments">The arguments for the format placeholders of the message.</param>
+    ValueTask SendGlobalNotificationAsync(LocalizedString message, params object?[] formatArguments);
 
     /// <summary>
     /// Executes an action for each player.

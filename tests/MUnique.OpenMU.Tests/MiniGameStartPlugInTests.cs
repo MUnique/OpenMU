@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -282,8 +284,17 @@ public class MiniGameStartPlugInTests
         await this._plugIn.StartForTestAsync(state).ConfigureAwait(false);
         Assert.That(notifications, Is.EqualTo(new[] { "Open 2" }));
 
-        Assert.That(game.SkipCurrentWait(), Is.True);
+        // The game loop runs in the background, so the entering phase may not have started its wait yet.
+        // A skip only affects a running wait, so we retry until it hits it.
         var deadline = DateTime.UtcNow.AddSeconds(10);
+        var skipped = game.SkipCurrentWait();
+        while (!skipped && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(10).ConfigureAwait(false);
+            skipped = game.SkipCurrentWait();
+        }
+
+        Assert.That(skipped, Is.True);
         while (game.State == MiniGameState.Open && DateTime.UtcNow < deadline)
         {
             await Task.Delay(50).ConfigureAwait(false);
@@ -348,6 +359,9 @@ public class MiniGameStartPlugInTests
         contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<string>()))
             .Callback<string>(notifications.Add)
             .Returns(ValueTask.CompletedTask);
+        contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<LocalizedString>(), It.IsAny<object?[]>()))
+            .Callback<LocalizedString, object?[]>((message, arguments) => notifications.Add(string.Format(CultureInfo.InvariantCulture, message.ValueInNeutralLanguage, arguments)))
+            .Returns(ValueTask.CompletedTask);
         var configurationMock = new Mock<GameConfiguration>();
         configurationMock.SetupGet(c => c.MiniGameDefinitions).Returns(new List<MiniGameDefinition> { definition });
         contextMock.SetupGet(c => c.Configuration).Returns(configurationMock.Object);
@@ -387,6 +401,10 @@ public class MiniGameStartPlugInTests
             definition,
             gameContextMock.Object,
             mapInitializerMock.Object);
+
+        // Mirrors MiniGameManager.GetOrCreateAsync, which starts the loop after
+        // construction so overridden members read post-construction values.
+        game.EnsureGameLoopRunning();
         this._gamesToDispose.Add(game);
         return game;
     }
@@ -538,6 +556,9 @@ public class MiniGameStartPlugInTests
 
         /// <inheritdoc />
         public IReadOnlyList<GameMap> Maps => this.Games.Select(game => game.Map).ToList();
+
+        /// <inheritdoc />
+        public ValueTask<bool> TryRejoinAsync(Player player) => ValueTask.FromResult(false);
 
         /// <inheritdoc />
         public ValueTask<MiniGameContext> GetOrCreateAsync(MiniGameDefinition miniGameDefinition, Player requester)

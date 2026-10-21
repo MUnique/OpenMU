@@ -69,7 +69,7 @@ public sealed class NavigationHistory
         this._nextPages.Clear();
         this._previousPages.Clear();
         this._current = null;
-        this._current = new HistoryEntry(this.NavigationManager.BaseUri, "Home");
+        this._current = new HistoryEntry(this.NavigationManager.BaseUri, MUnique.OpenMU.Web.Shared.Properties.Resources.Home);
         this.HistoryChanged?.Invoke(this, EventArgs.Empty);
     }
 

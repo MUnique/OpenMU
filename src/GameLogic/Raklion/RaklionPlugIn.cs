@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Raklion;
 
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -19,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.RaklionPlugIn_Name), Description = nameof(PlugInResources.RaklionPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("C5A1E7D3-8B24-4F69-9E0A-6D3B2F7C4E18")]
-public sealed class RaklionPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCustomConfiguration<RaklionEventDefinition>, ISupportDefaultCustomConfiguration, IDisposable
+public sealed class RaklionPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, IWarpGateEnteringPlugIn, ISupportCustomConfiguration<RaklionEventDefinition>, ISupportDefaultCustomConfiguration, IDisposable
 {
     private readonly ConcurrentDictionary<IGameContext, RaklionContext> _contexts = new();
     private readonly ConcurrentDictionary<IGameContext, int> _runningTicks = new();
@@ -79,6 +80,17 @@ public sealed class RaklionPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
         foreach (var context in this._contexts.Values)
         {
             context.SkipWaitingTime();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask WarpGateEnteringAsync(Player player, ExitGate targetGate, CancelEventArgs eventArgs)
+    {
+        if (targetGate.Map is { } map
+            && this._contexts.TryGetValue(player.GameContext, out var context)
+            && !await context.CanEnterThroughGateAsync(player, map).ConfigureAwait(false))
+        {
+            eventArgs.Cancel = true;
         }
     }
 

@@ -41,15 +41,6 @@ internal static class ItemExtensions
     }
 
     /// <summary>
-    /// Applies the settings for the <see cref="ItemBasePowerUpDefinition"/> entity.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    public static void Apply(this EntityTypeBuilder<ItemBasePowerUpDefinition> builder)
-    {
-        builder.Ignore(d => d.BaseValueElement);
-    }
-
-    /// <summary>
     /// Applies the settings for the <see cref="ItemLevelBonusTable"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>

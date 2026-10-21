@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Class which contains item definitions for packed jewels.
@@ -44,7 +46,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfBless()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Bless";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfBless);
         itemDefinition.Number = 30;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -62,7 +64,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfSoul()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Soul";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfSoul);
         itemDefinition.Number = 31;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -80,7 +82,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfLife()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Life";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfLife);
         itemDefinition.Number = 136;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -98,7 +100,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfCreation()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Creation";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfCreation);
         itemDefinition.Number = 137;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -116,7 +118,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfGuardian()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Guardian";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfGuardian);
         itemDefinition.Number = 138;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -134,7 +136,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateGemstone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Gemstone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedGemstone);
         itemDefinition.Number = 139;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -152,7 +154,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfHarmony()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Harmony";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfHarmony);
         itemDefinition.Number = 140;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -170,7 +172,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateJewelOfChaos()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Jewel of Chaos";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedJewelOfChaos);
         itemDefinition.Number = 141;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -188,7 +190,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateLowerRefineStone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Lower refine stone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedLowerRefineStone);
         itemDefinition.Number = 142;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;
@@ -206,7 +208,7 @@ public class PackedJewels : InitializerBase
     private ItemDefinition CreateHigherRefineStone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Packed Higher refine stone";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.PackedHigherRefineStone);
         itemDefinition.Number = 143;
         itemDefinition.Group = 12;
         itemDefinition.Durability = 1;

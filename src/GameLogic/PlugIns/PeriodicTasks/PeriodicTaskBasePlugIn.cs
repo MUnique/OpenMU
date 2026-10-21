@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 using System.Collections.Concurrent;
+using System.Threading;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -20,7 +21,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 {
     private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<IGameContext, TState>> States = new();
 
-    private bool _isStartForced = false;
+    private long _forceGeneration;
 
     /// <summary>
     /// Gets or sets configuration for periodic invasion.
@@ -28,11 +29,15 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     public TConfiguration? Configuration { get; set; }
 
     /// <summary>
-    /// Forces to start the task on the next start check.
+    /// Forces the task to start on the next start check of the game server which
+    /// owns this plug-in instance: every game server runs its own instance, so a
+    /// force only ever reaches the server on which it was requested.
     /// </summary>
     public void ForceStart()
     {
-        this._isStartForced = true;
+        // A generation counter instead of a boolean, so that a forced start which
+        // arrives while a run is being prepared isn't lost by a concurrent consume.
+        Interlocked.Increment(ref this._forceGeneration);
     }
 
     /// <inheritdoc />
@@ -48,8 +53,8 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
         // elapses. It's limited to NotStarted (a fresh start) and Started (promptly
         // finishing a stuck previous run, so the start that follows can proceed), so that
         // a Prepared run still waits out its PreStartMessageDelay before starting.
-        var isForcedStartPending = this._isStartForced
-            && state.State is PeriodicTaskState.NotStarted or PeriodicTaskState.Started;
+        var forceGeneration = Volatile.Read(ref this._forceGeneration);
+        var isForcedStartPending = IsForcedStartPending(state, forceGeneration);
         if (state.NextRunUtc > DateTime.UtcNow && !isForcedStartPending)
         {
             return;
@@ -73,6 +78,19 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
         {
             case PeriodicTaskState.NotStarted:
                 {
+                    // The scope is enforced here in the base flow rather than only in
+                    // IsItTimeToStart, so overrides of the start predicate can't bypass
+                    // it by accident. Only new runs are gated: a run which already
+                    // started always finishes, so removing a server from the list
+                    // mid-run still cleans up instead of freezing.
+                    if (!this.IsEnabledOnContext(gameContext))
+                    {
+                        // Observing the force counts as consuming it for this server: it must
+                        // not fire retroactively when the server is added back to the list later.
+                        state.ConsumedForceGeneration = forceGeneration;
+                        return;
+                    }
+
                     if (!this.IsItTimeToStart(gameContext))
                     {
                         return;
@@ -80,11 +98,11 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
                     if (this.IsPreviousEventStillRunning(state))
                     {
-                        this._isStartForced = false;
+                        state.ConsumedForceGeneration = forceGeneration;
                         return;
                     }
 
-                    this._isStartForced = false;
+                    state.ConsumedForceGeneration = forceGeneration;
                     state.NextRunUtc = DateTime.UtcNow.Add(configuration.PreStartMessageDelay);
                     await this.OnPrepareEventAsync(state).ConfigureAwait(false);
                     state.State = PeriodicTaskState.Prepared;
@@ -134,7 +152,22 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     }
 
     /// <summary>
-    /// Gets a value indicating whether if it's the right time to start the task.
+    /// Determines whether this task runs on the game server which owns the specified context.
+    /// Contexts without a game server (e.g. in tests) always run the task.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> if the task runs in this context; otherwise, <c>false</c>.</returns>
+    protected bool IsEnabledOnContext(IGameContext gameContext)
+    {
+        return gameContext is not IGameServerContext serverContext
+            || this.Configuration?.IsEnabledOnServer(serverContext.Id) != false;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the start condition of the task is met: a pending
+    /// forced start or the configured timetable. The server scope is intentionally not
+    /// part of this predicate; the base flow enforces it before calling it, so overrides
+    /// keep working unchanged.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <returns>
@@ -142,7 +175,11 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     /// </returns>
     protected virtual bool IsItTimeToStart(IGameContext gameContext)
     {
-        return this._isStartForced || (this.Configuration?.IsItTimeToStart(gameContext.ServerTimeZone) ?? false);
+        // The state lookup creates the per-context state on first use; the per-state
+        // force consumption keeps a forced start pending until this server starts.
+        var state = this.GetStateByGameContext(gameContext);
+        return IsForcedStartPending(state, Volatile.Read(ref this._forceGeneration))
+            || (this.Configuration?.IsItTimeToStart(gameContext.ServerTimeZone) ?? false);
     }
 
     /// <summary>
@@ -197,4 +234,16 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     /// </summary>
     /// <param name="state">State.</param>
     protected abstract ValueTask OnFinishedAsync(TState state);
+
+    /// <summary>
+    /// Determines whether a forced start is pending for the specified state.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="forceGeneration">The currently requested forced-start generation.</param>
+    /// <returns><c>true</c> if the state hasn't consumed the requested generation yet and may start; otherwise, <c>false</c>.</returns>
+    private static bool IsForcedStartPending(TState state, long forceGeneration)
+    {
+        return state.ConsumedForceGeneration < forceGeneration
+            && state.State is PeriodicTaskState.NotStarted or PeriodicTaskState.Started;
+    }
 }

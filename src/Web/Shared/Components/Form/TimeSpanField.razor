@@ -10,8 +10,8 @@
                class="form-control @CssClass"
                onchange="@this.OnValueChange"
                pattern="^[0-9]+$" min="0"
-               title="@this.FieldIdentifier.FieldName in milliseconds"
-               alt="@this.FieldIdentifier.FieldName in milliseconds" />
+               title="@string.Format(Resources.MillisecondsHint, this.Label ?? MUnique.OpenMU.DataModel.ModelResourceProvider.GetPropertyCaption(this.FieldIdentifier.Model.GetType(), this.FieldIdentifier.FieldName))"
+               alt="@string.Format(Resources.MillisecondsHint, this.Label ?? MUnique.OpenMU.DataModel.ModelResourceProvider.GetPropertyCaption(this.FieldIdentifier.Model.GetType(), this.FieldIdentifier.FieldName))" />
         <ValidationMessage For=@this.ValueExpression />
     </div>
 
@@ -33,7 +33,7 @@
             return true;
         }
 
-        validationErrorMessage = "Wrong Format";
+        validationErrorMessage = Resources.WrongFormat;
         return false;
     }
 

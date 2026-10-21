@@ -228,7 +228,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
         }
 
         List<IAttackable> candidates;
-        using (await monster.ObserverLock.ReaderLockAsync())
+        using (await monster.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             candidates = monster.Observers.OfType<IAttackable>().Where(candidate => this.IsValidTarget(monster, candidate)).ToList();
         }

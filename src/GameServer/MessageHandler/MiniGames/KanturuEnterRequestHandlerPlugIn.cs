@@ -46,15 +46,23 @@ internal class KanturuEnterRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
         if (packet.Length < KanturuEnterRequest.Length
             || player.SelectedCharacter?.CharacterClass is null
-            || player.OpenedNpc?.Definition.Number != KanturuGatewayPlugIn.GatewayMachineNumber)
+            || !player.OpenedNpc.IsNpcOf<KanturuGatewayPlugIn>(player.GameContext))
         {
             return;
         }
 
         // Try to enter the Kanturu mini game.
+        // While the tower window is open without a running event, this recreates the
+        // tower first, so the generic entry below finds a joinable game. Otherwise the
+        // generic entry handles everything, including clean rejections.
         // On success: the player is teleported to the event map.
         // On failure: TryEnterMiniGameAsync shows a message to the player and the client
         //             NPC animation resets naturally at frame 50, so the dialog stays usable.
+        if (player.GetSuitableMiniGameDefinition(MiniGameType.Kanturu, 1) is { } miniGameDefinition)
+        {
+            await KanturuTowerEntry.EnsureTowerGameAsync(player, miniGameDefinition).ConfigureAwait(false);
+        }
+
         await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.Kanturu, 1, UndefinedTicketSlot)
             .ConfigureAwait(false);
 

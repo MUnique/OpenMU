@@ -11,13 +11,10 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the random experience config attributes for version 0.75.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRandomExperienceConfigAttributesPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRandomExperienceConfigAttributesPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("5F412933-CC0F-483B-B6AE-7B358A6257FD")]
 public class AddRandomExperienceConfigAttributesPlugIn075 : AddRandomExperienceConfigAttributesPlugInBase
 {
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddRandomExperienceConfigAttributes075;
-
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 }

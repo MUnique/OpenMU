@@ -44,7 +44,11 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
         }
         else
         {
+            // A walk without steps is how the client reports that it stopped a walk on its own, which it
+            // does when the player attacks or casts a skill mid-walk. It carries the position it stopped
+            // at and the rotation it ended up with.
             player.Rotation = request.TargetRotation.ParseAsDirection();
+            await player.StopWalkAtAsync(sourcePoint).ConfigureAwait(false);
         }
     }
 

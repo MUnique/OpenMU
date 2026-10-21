@@ -22,23 +22,6 @@ public sealed class GuildPositionComparer : IComparer<GuildPosition>, IComparer<
     /// </summary>
     public static GuildPositionComparer Instance { get; } = new();
 
-    /// <summary>
-    /// Gets the numerical rank for ordering purposes. A lower value means a higher rank.
-    /// </summary>
-    /// <param name="position">The guild position.</param>
-    /// <returns>The rank of the position.</returns>
-    private static int GetRank(GuildPosition position)
-    {
-        return position switch
-        {
-            GuildPosition.GuildMaster => 0,
-            GuildPosition.AssistantMaster => 1,
-            GuildPosition.BattleMaster => 2,
-            GuildPosition.NormalMember => 3,
-            _ => 4,
-        };
-    }
-
     /// <inheritdoc/>
     public int Compare(GuildPosition x, GuildPosition y)
     {
@@ -70,5 +53,22 @@ public sealed class GuildPositionComparer : IComparer<GuildPosition>, IComparer<
         }
 
         return StringComparer.OrdinalIgnoreCase.Compare(x.PlayerName, y.PlayerName);
+    }
+
+    /// <summary>
+    /// Gets the numerical rank for ordering purposes. A lower value means a higher rank.
+    /// </summary>
+    /// <param name="position">The guild position.</param>
+    /// <returns>The rank of the position.</returns>
+    private static int GetRank(GuildPosition position)
+    {
+        return position switch
+        {
+            GuildPosition.GuildMaster => 0,
+            GuildPosition.AssistantMaster => 1,
+            GuildPosition.BattleMaster => 2,
+            GuildPosition.NormalMember => 3,
+            _ => 4,
+        };
     }
 }

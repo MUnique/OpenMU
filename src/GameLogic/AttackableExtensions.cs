@@ -232,15 +232,18 @@ public static class AttackableExtensions
                 dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
 
                 var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
-                if (skillMultiplier > 0)
+                var pvmSkillMultiplier = skillAttributes[Stats.SkillFinalMultiplierPvm];
+                if (!isPvp && pvmSkillMultiplier > 0)
+                {
+                    multiplier = pvmSkillMultiplier;
+                }
+                else if (skillMultiplier > 0)
                 {
                     multiplier = skillMultiplier;
-
-                    // DragonSlasher.
-                    if (skill.Skill!.Number == 265 && !isPvp)
-                    {
-                        multiplier *= 3;
-                    }
+                }
+                else
+                {
+                    // The skill doesn't define a final multiplier, so the general skill multiplier applies.
                 }
             }
 
@@ -303,7 +306,7 @@ public static class AttackableExtensions
             }
         }
 
-        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll);
+        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll, skill);
     }
 
     /// <summary>
@@ -314,13 +317,21 @@ public static class AttackableExtensions
     /// <param name="attributes">The attributes.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="manaToll">The mana reduction amount that is traded for damage (e.g. from Soul Barrier).</param>
+    /// <param name="skill">The <paramref name="attacker"/>'s skill.</param>
     /// <returns>The calculated hit info.</returns>
-    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0)
+    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null)
     {
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
         {
             return new HitInfo(damage, 0, attributes, manaToll);
+        }
+
+        if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
+            && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
+        {
+            var shieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
+            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll);
         }
 
         var shieldRatio = 0.90;
@@ -406,6 +417,13 @@ public static class AttackableExtensions
             return false;
         }
 
+        if (hitInfo is null)
+        {
+            // The attack was blocked (e.g. guard NPC, safezone, or another attack restriction),
+            // so no elemental effect may be applied.
+            return false;
+        }
+
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
         var skipModifier = skillEntry.Skill.SkipElementalModifier;
@@ -452,6 +470,13 @@ public static class AttackableExtensions
     {
         if (!target.IsAlive)
         {
+            return false;
+        }
+
+        if (hitInfo is null)
+        {
+            // The attack was blocked (e.g. safezone or another attack restriction),
+            // so no elemental effect may be applied.
             return false;
         }
 
@@ -637,6 +662,26 @@ public static class AttackableExtensions
     }
 
     /// <summary>
+    /// Applies the stun effect to the player for the specified duration, e.g. by a skill of a monster.
+    /// </summary>
+    /// <param name="target">The player.</param>
+    /// <param name="duration">The duration of the stun.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public static async ValueTask ApplyStunEffectAsync(this Player target, TimeSpan duration)
+    {
+        if (target.Attributes is not { } attributes
+            || target.GameContext.Configuration.MagicEffects.FirstOrDefault(m => m.Number == StunnedMagicEffectNumber) is not { } effectDefinition
+            || effectDefinition.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.IsStunned) is not { } powerUpDefinition)
+        {
+            return;
+        }
+
+        var powerUp = attributes.CreateElement(powerUpDefinition);
+        var magicEffect = new MagicEffect(duration, effectDefinition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
+        await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Ensures the skill attributes of the specified skill entry are set up.
     /// </summary>
     /// <param name="skillEntry">The skill entry.</param>
@@ -663,16 +708,7 @@ public static class AttackableExtensions
             return skillAttributes;
         }
 
-        skillAttributes = skillEntry.Attributes = new AttributeSystem([], [], []);
-        var levelElement = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
-        skillEntry.PropertyChanged += (_, _) => levelElement.Value = skillEntry.Level;
-        skillAttributes.AddElement(levelElement, Stats.SkillLevel);
-        foreach (var relationship in baseSkills.SelectMany(s => s.AttributeRelationships))
-        {
-            skillAttributes.AddAttributeRelationship(relationship, attackerSystem, relationship.AggregateType);
-        }
-
-        return skillAttributes;
+        return skillEntry.Attributes = new SkillAttributeSystem(skillEntry, baseSkills.SelectMany(s => s.AttributeRelationships), attackerSystem);
     }
 
     /// <summary>
@@ -907,13 +943,13 @@ public static class AttackableExtensions
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsBleeding))
         {
-            if (hitInfo is not { } hit || hit.HealthDamage + hit.ShieldDamage < 1)
+            if (hitInfo is not { } hit || hit.TotalDamage < 1)
             {
                 return;
             }
 
             var multiplier = magicEffectDefinition.Number == ExplosionMagicEffectNumber ? attacker.Attributes[Stats.BleedingDamageMultiplier] : 0.6f;
-            var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
+            var damage = hit.TotalDamage * multiplier;
             magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))

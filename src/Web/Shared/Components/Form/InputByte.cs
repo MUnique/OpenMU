@@ -22,7 +22,7 @@ public class InputByte : InputByteBase<byte>
             return true;
         }
 
-        validationErrorMessage = string.Format(this.ParsingErrorMessage, this.FieldIdentifier.FieldName);
+        validationErrorMessage = string.Format(this.ParsingErrorMessage, this.DisplayName ?? FieldCaption.Get(this.FieldIdentifier));
         return false;
     }
 

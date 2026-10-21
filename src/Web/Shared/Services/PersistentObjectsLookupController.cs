@@ -48,9 +48,14 @@ public class PersistentObjectsLookupController : ILookupController
             }
 
             var owner = await this._gameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
+            var gameConfigurationContext = await this._gameConfigurationSource.GetContextAsync().ConfigureAwait(true);
             IEnumerable<T> values;
+
+            // When the context is the one of the game configuration source, its objects are already loaded,
+            // so we don't need to query the whole object graph from the database on every keystroke again.
             if (this._gameConfigurationSource.IsSupporting(typeof(T))
-                && persistenceContext?.IsSupporting(typeof(T)) is not true)
+                && (ReferenceEquals(persistenceContext, gameConfigurationContext)
+                    || persistenceContext?.IsSupporting(typeof(T)) is not true))
             {
                 values = this._gameConfigurationSource.GetAll<T>();
             }
@@ -60,8 +65,10 @@ public class PersistentObjectsLookupController : ILookupController
                     ? this._contextProvider.CreateNewContext(owner)
                     : null;
                 var effectiveContext = persistenceContext ?? context;
-                if (effectiveContext is null)
+                if (effectiveContext is null || effectiveContext.IsSupporting(typeof(T)) is not true)
                 {
+                    // Not a persisted entity (e.g. a game-logic definition class whose
+                    // name merely contains "Definition"): nothing to suggest.
                     return Enumerable.Empty<T>();
                 }
 

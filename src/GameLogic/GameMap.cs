@@ -30,6 +30,16 @@ public class GameMap
 
     private readonly ExitGate? _safezoneSpawnGate;
 
+    /// <summary>
+    /// The registrations which live as long as this map instance, released by <see cref="TearDownAsync"/>.
+    /// </summary>
+    private readonly ConcurrentBag<IDisposable> _ownedRegistrations = new();
+
+    /// <summary>
+    /// Whether the map has been torn down, see <see cref="TearDownAsync"/>.
+    /// </summary>
+    private volatile bool _isTornDown;
+
     private int _playerCount;
 
     /// <summary>
@@ -93,6 +103,11 @@ public class GameMap
     public Guid Id { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the map has been torn down, see <see cref="TearDownAsync"/>.
+    /// </summary>
+    public bool IsTornDown => this._isTornDown;
+
+    /// <summary>
     /// Gets the object with the specified identifier.
     /// </summary>
     /// <param name="id">The identifier.</param>
@@ -101,6 +116,15 @@ public class GameMap
     {
         this._objectsInMap.TryGetValue(id, out var result);
         return result;
+    }
+
+    /// <summary>
+    /// Gets the players which are currently on this map.
+    /// </summary>
+    /// <returns>The players which are currently on this map.</returns>
+    public IList<Player> GetPlayers()
+    {
+        return this._objectsInMap.Values.OfType<Player>().ToList();
     }
 
     /// <summary>
@@ -229,9 +253,13 @@ public class GameMap
     /// <param name="target">The new coordinates.</param>
     /// <param name="moveLock">The move lock.</param>
     /// <param name="moveType">Type of the move.</param>
-    public ValueTask MoveAsync(ILocateable locatable, Point target, AsyncLock moveLock, MoveType moveType)
+    /// <param name="notifyMovedObject">
+    /// If set to <c>true</c>, the moved object is notified about its own move as well.
+    /// Pass <c>false</c> when the move only confirms a position the object already reported itself.
+    /// </param>
+    public ValueTask MoveAsync(ILocateable locatable, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true)
     {
-        return this._areaOfInterestManager.MoveObjectAsync(locatable, target, moveLock, moveType);
+        return this._areaOfInterestManager.MoveObjectAsync(locatable, target, moveLock, moveType, notifyMovedObject);
     }
 
     /// <summary>
@@ -270,6 +298,51 @@ public class GameMap
     }
 
     /// <summary>
+    /// Ties a registration to the lifetime of this map instance: it's released when the map is torn down.
+    /// </summary>
+    /// <param name="registration">The registration, e.g. of a configuration change handler.</param>
+    public void RegisterOwnedRegistration(IDisposable registration)
+    {
+        this._ownedRegistrations.Add(registration);
+        if (this._isTornDown)
+        {
+            // Registered while (or after) the map got torn down, e.g. by a spawn which raced the teardown.
+            this.ReleaseOwnedRegistrations();
+        }
+    }
+
+    /// <summary>
+    /// Tears down a map instance which is no longer used, e.g. the map of a finished mini game: its NPCs and
+    /// drops are disposed and the registrations it owns are released, so that nothing keeps it alive.
+    /// The players have to be moved off the map before. Afterwards, the map accepts no spawns anymore.
+    /// </summary>
+    public async ValueTask TearDownAsync()
+    {
+        this._isTornDown = true;
+        try
+        {
+            foreach (var npc in this._objectsInMap.Values.OfType<NonPlayerCharacter>().ToList())
+            {
+                if (npc is ISupportWalk walkingNpc)
+                {
+                    await walkingNpc.StopWalkingAsync().ConfigureAwait(false);
+                }
+
+                await npc.DisposeAsync().ConfigureAwait(false);
+            }
+
+            foreach (var drop in this._objectsInMap.Values.Where(o => o is DroppedItem or DroppedMoney).Cast<IAsyncDisposable>().ToList())
+            {
+                await drop.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            this.ReleaseOwnedRegistrations();
+        }
+    }
+
+    /// <summary>
     /// Clears the drops on invalid terrain.
     /// </summary>
     public async ValueTask ClearDropsOnInvalidTerrainAsync()
@@ -282,6 +355,14 @@ public class GameMap
         foreach (var drop in drops)
         {
             await drop.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private void ReleaseOwnedRegistrations()
+    {
+        while (this._ownedRegistrations.TryTake(out var registration))
+        {
+            registration.Dispose();
         }
     }
 }

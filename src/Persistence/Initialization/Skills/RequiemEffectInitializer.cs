@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer for the requiem effect (book of neil). Similar to <see cref="ExplosionEffectInitializer"/>, but different graphic effect on the client.
@@ -29,7 +30,7 @@ public class RequiemEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Requiem;
-        magicEffect.Name = "Requiem Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.RequiemEffect);
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;

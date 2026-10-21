@@ -35,6 +35,11 @@ public partial class CastleSiegeStateScheduleEntry
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.State} on {this.DayOfWeek} at {this.Hour:D2}:{this.Minute:D2}";
+        return string.Format(
+            Properties.Resources.CastleSiegeScheduleSummary,
+            this.State.GetEnumCaption(),
+            CultureHelper.GetDayName(this.DayOfWeek),
+            this.Hour,
+            this.Minute);
     }
 }
