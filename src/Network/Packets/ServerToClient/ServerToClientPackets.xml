@@ -3924,6 +3924,11 @@
               <Value>12</Value>
             </EnumValue>
             <EnumValue>
+              <Name>CastleSiegeGuardsman</Name>
+              <Description>The castle siege guardsman window. The client requests the castle siege status (C1 B2 00) when it opens.</Description>
+              <Value>13</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>ElphisRefinery</Name>
               <Description>The elphis refinery window.</Description>
               <Value>17</Value>
