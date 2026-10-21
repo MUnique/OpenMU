@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.Discord;
 
 /// <summary>
 /// The result of checking the Discord server whose channels receive the notifications and the status,
-/// see <see cref="DiscordBot.CheckDiscordServer"/>.
+/// see <see cref="DiscordBot.CheckDiscordServerAsync"/>.
 /// </summary>
 /// <param name="ServerName">The name of the Discord server.</param>
 /// <param name="MissingPermissions">The permissions which the bot needs, but doesn't have on the Discord server.</param>

@@ -133,7 +133,11 @@ public sealed partial class DiscordBot
     /// the role of linked players and the channels of the categories.
     /// </summary>
     /// <returns>The result, or <c>null</c>, if the bot isn't connected or doesn't know which Discord server to use.</returns>
-    public DiscordServerCheck? CheckDiscordServer()
+    /// <remarks>
+    /// The roles are loaded from Discord, because the positions in the cache of the client may be outdated: when a role
+    /// is created, Discord moves the others up without telling the client about each of them.
+    /// </remarks>
+    public async ValueTask<DiscordServerCheck?> CheckDiscordServerAsync()
     {
         if (this._client is not { } client || this.GetRoutingGuild(client) is not { } guild)
         {
@@ -151,12 +155,11 @@ public sealed partial class DiscordBot
         }
 
         var linkedRoleName = this._layout.Roles.FirstOrDefault(role => role.Key == DiscordServerLayout.LinkedRoleKey)?.Name;
-        var linkedRoleState = guild.Roles.FirstOrDefault(role => string.Equals(role.Name, linkedRoleName, StringComparison.OrdinalIgnoreCase)) switch
-        {
-            null => DiscordRoleState.Missing,
-            { } role when role.Position >= guild.CurrentUser.Hierarchy => DiscordRoleState.AboveBot,
-            _ => DiscordRoleState.Assignable,
-        };
+        var roles = await client.Rest.GetGuildAsync(guild.Id).ConfigureAwait(false) is { } restGuild
+            ? restGuild.Roles.Select(role => (role.Id, role.Name, role.Position)).ToList()
+            : guild.Roles.Select(role => (role.Id, role.Name, role.Position)).ToList();
+        var botRoleIds = guild.CurrentUser.Roles.Where(role => !role.IsEveryone).Select(role => role.Id).ToList();
+        var linkedRoleState = DiscordRoleHierarchy.GetState(roles, botRoleIds, linkedRoleName);
 
         var categoriesWithoutChannel = Enum.GetValues<DiscordChannelCategory>().Where(category => this.GetChannelId(category) is null).ToList();
         return new DiscordServerCheck(guild.Name, missingPermissions, linkedRoleState, categoriesWithoutChannel, this._routing.StatusChannelId is not null);

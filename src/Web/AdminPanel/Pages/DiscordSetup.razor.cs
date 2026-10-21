@@ -340,12 +340,20 @@ public partial class DiscordSetup : IDisposable
         }
     }
 
-    private void CheckServer()
+    private async Task CheckServerAsync()
     {
-        this._serverCheck = this.Bot?.CheckDiscordServer();
-        if (this._serverCheck is null)
+        try
         {
-            this.ToastService.ShowError(Resources.DiscordCheckServerNeedsServer);
+            this._serverCheck = this.Bot is { } bot ? await bot.CheckDiscordServerAsync().ConfigureAwait(true) : null;
+            if (this._serverCheck is null)
+            {
+                this.ToastService.ShowError(Resources.DiscordCheckServerNeedsServer);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error when checking the Discord server.");
+            this.ToastService.ShowError(ex.Message);
         }
     }
 

@@ -191,7 +191,7 @@
             <p>@Resources.DiscordSetUpRoleHint</p>
         }
         <p>@Resources.DiscordCheckServerText</p>
-        <button type="button" class="btn btn-secondary mb-2" disabled="@(this.Bot?.ServerState != ServerState.Started)" @onclick="this.CheckServer">
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(this.Bot?.ServerState != ServerState.Started)" @onclick="this.CheckServerAsync">
             <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordCheckServer
         </button>
         @if (this._serverCheck is { } check)
