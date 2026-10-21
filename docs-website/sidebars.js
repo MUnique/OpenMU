@@ -59,7 +59,7 @@ const sidebars = {
       type: 'category',
       label: 'Server features',
       items: [
-        'server-features/castle-siege',
+        "server-features/castle-siege",
         'server-features/bots',
         'server-features/test-actors',
         'server-features/gens',

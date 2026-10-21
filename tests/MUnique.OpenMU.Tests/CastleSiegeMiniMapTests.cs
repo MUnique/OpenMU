@@ -167,6 +167,8 @@ public class CastleSiegeMiniMapTests
             case "off-map":
                 issuer.SetCurrentMapSilently(null);
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(scenario), scenario, "Unknown authorization scenario.");
         }
 
         await IssueAsync(fixture, issuer).ConfigureAwait(false);
