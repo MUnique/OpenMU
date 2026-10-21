@@ -92,10 +92,19 @@ public static class CastleSiegeNpcBuyAction
             state.LifeLevel = 0;
             state.RegenLevel = 0;
             state.CurrentHp = initialHealth;
-            await context.NpcController.RespawnAsync(runtime).ConfigureAwait(false);
-            if (runtime.SpawnedInstance is CastleSiegeGate gate)
+            if (context.CurrentState is CastleSiegeState.Ready or CastleSiegeState.End)
             {
-                await gate.CloseAsync().ConfigureAwait(false);
+                await context.NpcController.RespawnAsync(runtime).ConfigureAwait(false);
+                if (runtime.SpawnedInstance is CastleSiegeGate gate)
+                {
+                    await gate.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                // The structures and their levers are only deployed from Ready until EndCycle.
+                // PrepareAsync spawns the bought structure together with the others.
+                runtime.IsAlive = true;
             }
 
             await context.SaveNpcStatesAsync().ConfigureAwait(false);
