@@ -794,6 +794,10 @@ public class CastleSiegeNpcTests
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         var defender = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
         var otherAttacker = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+
+        // The mocked characters all share Guid.Empty, which would make the players share one join side entry.
+        defender.SelectedCharacter!.Id = Guid.NewGuid();
+        otherAttacker.SelectedCharacter!.Id = Guid.NewGuid();
         try
         {
             await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
