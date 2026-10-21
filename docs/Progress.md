@@ -82,7 +82,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *CSRequest_NPC_DB_List*     | 0xB3              | 100%     | 3          | Gate and statue list                          |
 | *RequestCSRegGuildList*     | 0xB4              | 100%     | 2          |                                               |
 | *RequestCSAttGuildList*     | 0xB5              | 100%     | 2          |                                               |
-| RequestCSWeaponUse          | 0xB7              | 50%      | 1          | Firing the catapult works, the weapon explosion (0xB704) is missing |
+| *RequestCSWeaponUse*        | 0xB7              | 100%     | 1          | The server applies the impact itself; the weapon explosion request (0xB704) is accepted without effect |
 | *LoggedIn*                    | 0xB8              | 100%     | 1          |                                               |
 | RequestGuildMarkCastleOwner | 0xB902            | 0%       | 1          | Entering the hunting zone (0xB905) is implemented |
 | *JewelMix*                    | 0xBC              | 100%     | 4          |                                               |
