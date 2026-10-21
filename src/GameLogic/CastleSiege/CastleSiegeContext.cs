@@ -592,6 +592,35 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Gets the gate at which players of a side are spawned during the battle.
+    /// </summary>
+    /// <param name="side">The side.</param>
+    /// <returns>The gate of the side's respawn area, or <see langword="null"/> if the side has none.</returns>
+    internal ExitGate? GetRespawnGate(CastleSiegeJoinSide side)
+    {
+        var area = side switch
+        {
+            CastleSiegeJoinSide.Defense => this.Configuration.DefenseRespawnArea,
+            CastleSiegeJoinSide.Attack1 or CastleSiegeJoinSide.Attack2 or CastleSiegeJoinSide.Attack3 => this.Configuration.AttackRespawnArea,
+            _ => null,
+        };
+        if (area is null || this.Configuration.CastleSiegeMapDefinition is not { } siegeMap)
+        {
+            return null;
+        }
+
+        return new ExitGate
+        {
+            Map = siegeMap,
+            X1 = area.X1,
+            Y1 = area.Y1,
+            X2 = area.X2,
+            Y2 = area.Y2,
+            Direction = Direction.South,
+        };
+    }
+
+    /// <summary>
     /// Gets a snapshot of players currently tracked on the Castle Siege map.
     /// </summary>
     /// <returns>The tracked players which are still on the Castle Siege map.</returns>

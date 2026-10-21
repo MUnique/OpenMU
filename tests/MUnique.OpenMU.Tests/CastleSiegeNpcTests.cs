@@ -1205,6 +1205,64 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that the battle start moves participants to their side's respawn area,
+    /// and that participants respawn there during the battle.
+    /// </summary>
+    [Test]
+    public async ValueTask BattleStartMovesParticipantsToTheirSidesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Configuration.AttackRespawnArea = new BasicModel.CastleSiegeZoneDefinition { X1 = 30, Y1 = 30, X2 = 32, Y2 = 32 };
+        fixture.Configuration.DefenseRespawnArea = new BasicModel.CastleSiegeZoneDefinition { X1 = 100, Y1 = 100, X2 = 102, Y2 = 102 };
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 65, 65).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext)!;
+            context.FinalGuildList[OwnerRuntimeGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = OwnerRuntimeGuildId,
+                PersistentGuildId = fixture.OwnerPersistentGuildId,
+                GuildName = "Owner",
+                Side = CastleSiegeJoinSide.Attack1,
+            };
+            context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack1;
+            Assert.That(fixture.Player.Position, Is.EqualTo(new Point(65, 65)));
+
+            plugIn.ForceState(CastleSiegeState.Start);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Start));
+                Assert.That(fixture.Player.Position.X, Is.InRange((byte)30, (byte)32));
+                Assert.That(fixture.Player.Position.Y, Is.InRange((byte)30, (byte)32));
+            });
+
+            context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id] = CastleSiegeJoinSide.Defense;
+            var args = new SpawnGateSelectionArgs();
+            await plugIn.SelectSpawnGateAsync(fixture.Player, args).ConfigureAwait(false);
+            Assert.That(args.Gate, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(args.Gate!.X1, Is.EqualTo(100));
+                Assert.That(args.Gate.Y2, Is.EqualTo(102));
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
     /// Verifies that leaving the battle state removes all active Life Stones.
     /// </summary>
     [Test]
