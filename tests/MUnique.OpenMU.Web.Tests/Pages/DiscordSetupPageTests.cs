@@ -87,7 +87,7 @@ public class DiscordSetupPageTests
     {
         var cut = this._context.Render<DiscordSetup>();
         cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
-        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive)));
+        cut.WaitForState(() => cut.Markup.Contains(Resources.DiscordPublisherInactive));
         Assert.That(cut.Markup, Does.Contain(Resources.DiscordInviteNeedsToken));
 
         cut.Find("#discordToken").Input("MTIzNDU2Nzg5MDEyMzQ1Njc4.abc.def");
@@ -155,19 +155,19 @@ public class DiscordSetupPageTests
     public void TestsNeedSavedSettings()
     {
         var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+        cut.WaitForState(() => cut.FindAll("#discordPublisher").Count > 0);
         Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordUnsavedChanges));
         Assert.That(cut.FindAll("button").First(b => b.TextContent.Contains(Resources.DiscordTestAll)).HasAttribute("disabled"), Is.False);
 
         cut.Find("#discordLanguage").Change("de");
 
-        Assert.That(cut.Markup, Does.Contain(Resources.DiscordUnsavedChanges));
+        cut.WaitForState(() => cut.Markup.Contains(Resources.DiscordUnsavedChanges));
         Assert.That(cut.FindAll("button").First(b => b.TextContent.Contains(Resources.DiscordTestAll)).HasAttribute("disabled"), Is.True);
 
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
         cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordSaved, null)));
-        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordUnsavedChanges)));
+        cut.WaitForState(() => !cut.Markup.Contains(Resources.DiscordUnsavedChanges));
     }
 
     /// <summary>
