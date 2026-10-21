@@ -98,6 +98,7 @@ public sealed class DiscordGameMasterCommands
         var gameServers = this._serverProvider.Servers.OfType<IGameServer>().ToList();
         string resultKey;
         object[] resultArgs = [DiscordMessageFormatter.Escape(argument)];
+        DiscordEmbed? announcement = null;
         switch (commandName)
         {
             case "announce":
@@ -113,6 +114,17 @@ public sealed class DiscordGameMasterCommands
 
                 resultKey = announced == gameServers.Count ? nameof(Resources.Gm_Announced) : nameof(Resources.Gm_AnnouncedPartially);
                 resultArgs = [DiscordMessageFormatter.Escape(argument), announced, gameServers.Count];
+                if (announced > 0)
+                {
+                    // Posted like a notice which a game master sends in the game, but without a game server in the footer.
+                    announcement = new DiscordEmbed(
+                        DiscordCommands.GetText(this._culture, nameof(Resources.GlobalNotice_Title)),
+                        DiscordMessageFormatter.Escape(argument),
+                        DiscordMessageFormatter.NoticeColor,
+                        DateTime.UtcNow,
+                        null);
+                }
+
                 break;
             case "kick":
                 resultKey = await this.AnyAsync(gameServers, server => server.DisconnectPlayerAsync(argument)).ConfigureAwait(false)
@@ -133,7 +145,7 @@ public sealed class DiscordGameMasterCommands
             StaffAlertColor,
             DateTime.UtcNow,
             null);
-        return new(this.Answer(resultKey, resultArgs), alert);
+        return new(this.Answer(resultKey, resultArgs), alert, announcement);
     }
 
     private async ValueTask<bool> AnyAsync(IEnumerable<IGameServer> gameServers, Func<IGameServer, ValueTask<bool>> action)

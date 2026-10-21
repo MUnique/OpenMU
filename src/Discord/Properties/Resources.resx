@@ -222,7 +222,7 @@
     <value>You're sending messages too fast. Please wait a moment.</value>
   </data>
   <data name="Command_Announce_Description" xml:space="preserve">
-    <value>Sends a notice to all players in the game. For game masters.</value>
+    <value>Sends a notice to all players in the game and into the announcements channel. For game masters.</value>
   </data>
   <data name="Command_Announce_TextOption" xml:space="preserve">
     <value>The text of the notice.</value>

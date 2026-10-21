@@ -57,13 +57,15 @@ public class DiscordGameMasterCommandsTest
         var withoutGameMaster = await this._commands.ExecuteAsync("announce", "Hello", PlayerUser, "hero", true).ConfigureAwait(false);
 
         Assert.That(withoutRole.StaffAlert, Is.Null);
+        Assert.That(withoutRole.Announcement, Is.Null);
         Assert.That(withoutGameMaster.StaffAlert, Is.Null);
+        Assert.That(withoutGameMaster.Announcement, Is.Null);
         Assert.That(withoutGameMaster.Embed.Description, Does.StartWith("Only game masters can use this command."));
         this._server1.Verify(s => s.SendGlobalMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
     }
 
     /// <summary>
-    /// Tests that a notice is sent to all game servers, and that the staff is alerted.
+    /// Tests that a notice is sent to all game servers and announced in Discord, and that the staff is alerted.
     /// </summary>
     [Test]
     public async Task AnnounceSendsToAllGameServersAsync()
@@ -73,6 +75,24 @@ public class DiscordGameMasterCommandsTest
         this._server1.Verify(s => s.SendGlobalMessageAsync("Hello", MessageType.GoldenCenter), Times.Once);
         this._server2.Verify(s => s.SendGlobalMessageAsync("Hello", MessageType.GoldenCenter), Times.Once);
         Assert.That(answer.StaffAlert?.Description, Is.EqualTo("admin (Admin) used /announce Hello"));
+        Assert.That(answer.Announcement?.Title, Is.EqualTo("Notice"));
+        Assert.That(answer.Announcement?.Description, Is.EqualTo("Hello"));
+        Assert.That(answer.Announcement?.Footer, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that nothing is announced in Discord, when no game server got the notice.
+    /// </summary>
+    [Test]
+    public async Task NothingIsAnnouncedWhenNoGameServerGotTheNoticeAsync()
+    {
+        this._server1.Setup(s => s.SendGlobalMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>())).ThrowsAsync(new InvalidOperationException("Test"));
+        this._server2.Setup(s => s.SendGlobalMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>())).ThrowsAsync(new InvalidOperationException("Test"));
+
+        var answer = await this._commands.ExecuteAsync("announce", "Hello", GameMasterUser, "admin", true).ConfigureAwait(false);
+
+        Assert.That(answer.Announcement, Is.Null);
+        Assert.That(answer.Embed.Description, Is.EqualTo("The notice was sent to 0 of 2 game servers: Hello"));
     }
 
     /// <summary>

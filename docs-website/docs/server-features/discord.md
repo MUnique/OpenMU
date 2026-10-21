@@ -282,7 +282,7 @@ Game masters can use these commands in Discord:
 
 | Command | Effect |
 |---|---|
-| `/announce <text>` | Sends the text as golden notice to all players of all game servers. |
+| `/announce <text>` | Sends the text as golden notice to all players of all game servers, and posts it into the channel of the `Notices` category, e.g. `#announcements`. |
 | `/kick <character>` | Disconnects the character from the game. |
 | `/ban <character>` | Bans the account of the character, which has to be online, and disconnects it. |
 
