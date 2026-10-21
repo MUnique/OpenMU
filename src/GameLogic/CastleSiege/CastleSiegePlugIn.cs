@@ -89,7 +89,8 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             context,
             player,
             this._timeProvider.GetUtcNow().UtcDateTime);
-        await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
+        // See PlayerStateChangedAsync for why this doesn't take the ExecutionLock.
+        context.NpcController.ClearMachineOperator(player);
         await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
     }
 
@@ -106,7 +107,9 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             && currentState == PlayerState.EnteredWorld
             && player.CurrentMap?.Definition.Number == context.Configuration.CastleSiegeMapDefinition?.Number)
         {
-            await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
+            // No ExecutionLock here: this also runs while the siege tick holds the lock, e.g. when
+            // attackers are respawned after a Crown capture, and the lock isn't re-entrant.
+            context.NpcController.ClearMachineOperator(player);
         }
 
         if (currentState == PlayerState.EnteredWorld
@@ -255,19 +258,6 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         var elapsedTicks = utcNow.Ticks - stateStartUtc.Ticks;
         var completedIntervals = elapsedTicks / interval.Ticks;
         return stateStartUtc.AddTicks((completedIntervals + 1) * interval.Ticks);
-    }
-
-    private async ValueTask ClearMachineOperatorAsync(CastleSiegeContext context, Player player)
-    {
-        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            context.NpcController.ClearMachineOperator(player);
-        }
-        finally
-        {
-            context.ExecutionLock.Release();
-        }
     }
 
     private async ValueTask SynchronizePlayerAsync(

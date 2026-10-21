@@ -1315,6 +1315,67 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that respawning an attacker who operates a warfare machine while the siege tick holds the
+    /// execution lock, as after a Crown capture, completes and releases the machine.
+    /// </summary>
+    [Test]
+    public async ValueTask RespawningMachineOperatorDuringSiegeTickDoesNotDeadlockAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<IObjectRemovedFromMapPlugIn>(plugIn);
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(plugIn);
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 20, 20).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext);
+            var machine = context!.NpcController
+                .GetRuntimeSnapshot()
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeMachine>()
+                .Single(candidate => candidate.MachineType == CastleSiegeMachineType.Attack);
+            machine.Operator = fixture.Player;
+            fixture.Player.OpenedNpc = machine;
+            Assert.That(await fixture.Player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+
+            await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                var respawn = fixture.Player.RespawnAtAsync(new ExitGate
+                {
+                    Map = fixture.SiegeMap,
+                    X1 = 30,
+                    X2 = 30,
+                    Y1 = 30,
+                    Y2 = 30,
+                    Direction = Direction.South,
+                }).AsTask();
+                var completed = await Task.WhenAny(respawn, Task.Delay(TimeSpan.FromSeconds(5))).ConfigureAwait(false);
+                Assert.That(completed, Is.SameAs(respawn));
+                await respawn.ConfigureAwait(false);
+            }
+            finally
+            {
+                context.ExecutionLock.Release();
+            }
+
+            Assert.That(machine.Operator, Is.Null);
+        }
+        finally
+        {
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies machine validation, configured-zone targeting, visual ranges, delayed damage, and cooldown.
     /// </summary>
     [Test]
