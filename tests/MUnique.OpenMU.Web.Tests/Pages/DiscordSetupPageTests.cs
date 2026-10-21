@@ -85,8 +85,7 @@ public class DiscordSetupPageTests
     [Test]
     public void SavesEnteredSettings()
     {
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+        var cut = this.RenderLoaded();
         cut.WaitForState(() => cut.Markup.Contains(Resources.DiscordPublisherInactive));
         Assert.That(cut.Markup, Does.Contain(Resources.DiscordInviteNeedsToken));
 
@@ -112,8 +111,7 @@ public class DiscordSetupPageTests
     [Test]
     public void SwitchesGameEventPublisher()
     {
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordPublisher").Count > 0);
+        var cut = this.RenderLoaded();
         Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive));
         Assert.That(cut.Find("#discordPublisher").HasAttribute("checked"), Is.False);
 
@@ -137,8 +135,7 @@ public class DiscordSetupPageTests
     public void BotShowsChannelsOfTheLayoutInsteadOfWebhooks()
     {
         File.WriteAllText(this._filePath, """{ "Discord": { "Bot": { "Token": "token" } } }""");
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+        var cut = this.RenderLoaded();
 
         Assert.That(cut.FindAll("tbody input[type=password]"), Is.Empty);
         Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordWebhookUrl));
@@ -154,8 +151,7 @@ public class DiscordSetupPageTests
     [Test]
     public void TestsNeedSavedSettings()
     {
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordPublisher").Count > 0);
+        var cut = this.RenderLoaded();
         Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordUnsavedChanges));
         Assert.That(cut.FindAll("button").First(b => b.TextContent.Contains(Resources.DiscordTestAll)).HasAttribute("disabled"), Is.False);
 
@@ -176,8 +172,7 @@ public class DiscordSetupPageTests
     [Test]
     public void ShowsWhatTheSetupCreates()
     {
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+        var cut = this.RenderLoaded();
 
         var preview = cut.FindAll("details").First(d => d.TextContent.Contains(Resources.DiscordLayoutPreview)).TextContent;
         Assert.That(preview, Does.Contain(string.Format(Resources.DiscordLayoutRoles, "GM, Linked Player")));
@@ -192,13 +187,12 @@ public class DiscordSetupPageTests
     public void DoesNotSaveInvalidIdentifier()
     {
         var content = File.ReadAllText(this._filePath);
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordServerId").Count > 0);
+        var cut = this.RenderLoaded();
 
         cut.Find("#discordServerId").Change("my server");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
-        this._toastService.Verify(t => t.ShowError(string.Format(Resources.DiscordInvalidId, "my server"), null));
+        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowError(string.Format(Resources.DiscordInvalidId, "my server"), null)));
         Assert.That(File.ReadAllText(this._filePath), Is.EqualTo(content));
     }
 
@@ -208,8 +202,7 @@ public class DiscordSetupPageTests
     [Test]
     public void RemovesWebhook()
     {
-        var cut = this._context.Render<DiscordSetup>();
-        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+        var cut = this.RenderLoaded();
 
         cut.FindAll("tbody button").Single(b => b.TextContent.Contains(Resources.Remove)).Click();
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
@@ -217,5 +210,16 @@ public class DiscordSetupPageTests
         cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordSaved, null)));
         var discord = JsonNode.Parse(File.ReadAllText(this._filePath))!["Discord"]!;
         Assert.That(discord["Webhooks"]!.AsObject(), Is.Empty);
+    }
+
+    /// <summary>
+    /// Renders the page and waits until it's loaded completely: the settings, then the state of the game event
+    /// publisher and the bound chats. Before, an input might be changed while the page still loads.
+    /// </summary>
+    private IRenderedComponent<DiscordSetup> RenderLoaded()
+    {
+        var cut = this._context.Render<DiscordSetup>();
+        cut.WaitForState(() => cut.FindAll("#discordPublisher").Count > 0);
+        return cut;
     }
 }
