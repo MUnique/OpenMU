@@ -631,6 +631,50 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that a structure bought outside the deployed phases isn't spawned on its own,
+    /// because its lever only exists from Ready on, and that the next preparation spawns it.
+    /// </summary>
+    [Test]
+    public async ValueTask BuyOutsideSiegeSpawnsStructureWithNextPreparationAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        try
+        {
+            var runtime = fixture.Context.NpcController.FindDefenseStructure((uint)CastleSiegeGate.MonsterNumber, GateInstanceId)!;
+            runtime.IsAlive = false;
+            runtime.PersistedState!.CurrentHp = 0;
+            fixture.Context.CurrentState = CastleSiegeState.RegisterGuild;
+            fixture.Player.Money = fixture.Configuration.GateBuyPrice;
+
+            var result = await CastleSiegeNpcBuyAction
+                .BuyAsync(fixture.Player, fixture.Context, (uint)CastleSiegeGate.MonsterNumber, GateInstanceId)
+                .ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(CastleSiegeNpcOperationResult.Success));
+                Assert.That(fixture.Player.Money, Is.Zero);
+                Assert.That(runtime.IsAlive, Is.True);
+                Assert.That(runtime.SpawnedInstance, Is.Null);
+            });
+
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+            var lever = fixture.Context.ActiveNpcs
+                .Select(candidate => candidate.SpawnedInstance)
+                .OfType<CastleSiegeLever>()
+                .Single();
+            Assert.Multiple(() =>
+            {
+                Assert.That(runtime.SpawnedInstance, Is.InstanceOf<CastleSiegeGate>());
+                Assert.That(lever.Gate, Is.SameAs(runtime.SpawnedInstance));
+            });
+        }
+        finally
+        {
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies the repair formula and destroyed-structure purchase behavior.
     /// </summary>
     [Test]
@@ -668,6 +712,7 @@ public class CastleSiegeNpcTests
             runtime.IsAlive = false;
             runtime.PersistedState.CurrentHp = 0;
             fixture.Player.Money = 500;
+            fixture.Context.CurrentState = CastleSiegeState.Ready;
 
             var buyResult = await CastleSiegeNpcBuyAction
                 .BuyAsync(fixture.Player, fixture.Context, (uint)CastleSiegeGate.MonsterNumber, GateInstanceId)
