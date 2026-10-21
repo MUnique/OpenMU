@@ -15,6 +15,16 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 public class SeedSphereCrafting : SimpleItemCraftingHandler
 {
     /// <summary>
+    /// The number of the first seed sphere item definition.
+    /// </summary>
+    internal const int SeedSphereNumberStart = 100;
+
+    /// <summary>
+    /// The number of different kind of seeds.
+    /// </summary>
+    internal const int SeedTypes = 6;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SeedSphereCrafting"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
@@ -43,15 +53,13 @@ public class SeedSphereCrafting : SimpleItemCraftingHandler
 
         // The following is a bit "magic", because it implicitly relies on the item data and how its built up.
         // Because it has some structure, we can calculate which number the resulting seed sphere will have.
-        const int seedTypes = 6; // There are 6 different kind of seeds
         const int seedNumberStart = 60;
         const int sphereNumberStart = 70;
-        const int seedSphereNumberStart = 100;
 
         var sphereLevel = sphere.Definition.Number - sphereNumberStart;
-        var resultSphereNumber = seedSphereNumberStart
+        var resultSphereNumber = SeedSphereNumberStart
                                  + (seed.Definition.Number - seedNumberStart)
-                                 + (sphereLevel * seedTypes);
+                                 + (sphereLevel * SeedTypes);
 
         var result = player.PersistenceContext.CreateNew<Item>();
         result.Definition = player.GameContext.Configuration.Items.Single(i => i.Number == resultSphereNumber && i.Group == 12);
