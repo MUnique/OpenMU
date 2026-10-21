@@ -89,6 +89,7 @@ public class DiscordServerProvisionerTest
 
     /// <summary>
     /// Tests the permissions: Read-only channels can only be written by the bot, and the staff category can only be seen by the game masters and the bot.
+    /// The overwrite of the bot comes first, so that the bot doesn't lock itself out of a private channel before its own overwrite is set.
     /// </summary>
     [Test]
     public async Task PermissionsAreAppliedAsync()
@@ -100,21 +101,21 @@ public class DiscordServerProvisionerTest
 
         Assert.That(server.Overwrites[result.ChannelIds["events"]], Is.EqualTo(new DiscordPermissionOverwrite[]
         {
-            new(server.EveryoneRoleId, true, DiscordChannelAccess.None, DiscordChannelAccess.Send),
             new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
+            new(server.EveryoneRoleId, true, DiscordChannelAccess.None, DiscordChannelAccess.Send),
         }));
         Assert.That(server.Overwrites.ContainsKey(result.ChannelIds["general"]), Is.False);
         Assert.That(server.Overwrites[server.GetId("Staff")], Is.EqualTo(new DiscordPermissionOverwrite[]
         {
+            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
             new(server.EveryoneRoleId, true, DiscordChannelAccess.None, DiscordChannelAccess.View),
             new(gmRoleId, true, viewAndSend, DiscordChannelAccess.None),
-            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
         }));
         Assert.That(server.Overwrites[result.ChannelIds["staff-alerts"]], Is.EqualTo(new DiscordPermissionOverwrite[]
         {
+            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
             new(server.EveryoneRoleId, true, DiscordChannelAccess.None, viewAndSend),
             new(gmRoleId, true, DiscordChannelAccess.View, DiscordChannelAccess.None),
-            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
         }));
     }
 

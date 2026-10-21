@@ -126,6 +126,9 @@ public sealed class DiscordServerProvisioner
                            | (isReadOnly ? DiscordChannelAccess.Send : DiscordChannelAccess.None);
         var overwrites = new List<DiscordPermissionOverwrite>
         {
+            // The bot always needs to see the channels and to post into them. Its overwrite comes first: the overwrites
+            // are set one after another, and once @everyone is denied to view a channel, the bot couldn't set the others.
+            new(server.BotUserId, false, DiscordChannelAccess.View | DiscordChannelAccess.Send, DiscordChannelAccess.None),
             new(server.EveryoneRoleId, true, DiscordChannelAccess.None, everyoneDeny),
         };
 
@@ -137,8 +140,6 @@ public sealed class DiscordServerProvisioner
                 .Select(roleKey => new DiscordPermissionOverwrite(roleIds[roleKey], true, roleAccess, DiscordChannelAccess.None)));
         }
 
-        // The bot always needs to see the channels and to post into them.
-        overwrites.Add(new(server.BotUserId, false, DiscordChannelAccess.View | DiscordChannelAccess.Send, DiscordChannelAccess.None));
         return overwrites;
     }
 
