@@ -113,7 +113,9 @@ Players can link their Discord user to their game account:
 
 1. In the game, the player enters `/discord link`. The game shows a one-time
    code like `ABCD-EFGH`, which is valid for 10 minutes.
-2. In Discord, the player enters `/link ABCD-EFGH`.
+2. In Discord, the player chooses the command `/link` of the bot from the list
+   which Discord shows while typing, and enters the code. Typed as a normal
+   message, `/link ABCD-EFGH` doesn't reach the bot.
 
 The link is to the account, not to a character. The player appears as the
 character which requested the code, and chooses another character of the account

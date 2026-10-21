@@ -563,7 +563,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your code to link Discord is {0}. Enter /link {0} in Discord within {1} minutes..
+        ///   Looks up a localized string similar to Your code to link Discord is {0}. In Discord, choose the command /link of the bot from the list and enter the code within {1} minutes..
         /// </summary>
         public static string DiscordLinkCode {
             get {
