@@ -2271,4 +2271,55 @@
   <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
     <value>Ein Webhook postet nur eine Kategorie, die keinen Kanal des Bots hat. Mit dem Bot brauchst du sie nicht und kannst sie entfernen.</value>
   </data>
+  <data name="DiscordStepDone" xml:space="preserve">
+    <value>Erledigt</value>
+  </data>
+  <data name="DiscordStepProblem" xml:space="preserve">
+    <value>Bitte prüfen</value>
+  </data>
+  <data name="DiscordUnsavedChanges" xml:space="preserve">
+    <value>Es gibt ungespeicherte Änderungen. Speichere sie zuerst: die Tests und die Einrichtung des Discord-Servers verwenden die gespeicherten Einstellungen.</value>
+  </data>
+  <data name="DiscordTestAll" xml:space="preserve">
+    <value>Alle testen</value>
+  </data>
+  <data name="DiscordLayoutPreview" xml:space="preserve">
+    <value>Was erstellt wird</value>
+  </data>
+  <data name="DiscordLayoutRoles" xml:space="preserve">
+    <value>Rollen: {0}</value>
+  </data>
+  <data name="DiscordLayoutVisibleTo" xml:space="preserve">
+    <value>nur sichtbar für {0}</value>
+  </data>
+  <data name="DiscordChatBindings" xml:space="preserve">
+    <value>Gebundene Chats</value>
+  </data>
+  <data name="DiscordChatBindingsNone" xml:space="preserve">
+    <value>Noch ist kein Chat einer Gilde oder Allianz gebunden.</value>
+  </data>
+  <data name="DiscordChatBindingsNeedBot" xml:space="preserve">
+    <value>Die gebundenen Chats werden angezeigt, wenn der Bot verbunden ist.</value>
+  </data>
+  <data name="DiscordChatBindingGuild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="DiscordChatBindingChannel" xml:space="preserve">
+    <value>Kanal</value>
+  </data>
+  <data name="DiscordChatBindingBoundBy" xml:space="preserve">
+    <value>Gebunden von</value>
+  </data>
+  <data name="DiscordChatBindingUnknownChannel" xml:space="preserve">
+    <value>unbekannter Kanal {0}</value>
+  </data>
+  <data name="DiscordChatBindingRemoved" xml:space="preserve">
+    <value>Die Bindung wurde entfernt. Der Kanal in Discord bleibt erhalten.</value>
+  </data>
+  <data name="DiscordScope_Guild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="DiscordScope_Alliance" xml:space="preserve">
+    <value>Allianz</value>
+  </data>
 </root>

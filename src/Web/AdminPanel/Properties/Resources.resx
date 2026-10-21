@@ -2362,4 +2362,55 @@
   <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
     <value>A webhook only posts a category which has no channel of the bot. With the bot, you don't need them, and can remove them.</value>
   </data>
+  <data name="DiscordStepDone" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="DiscordStepProblem" xml:space="preserve">
+    <value>Check this</value>
+  </data>
+  <data name="DiscordUnsavedChanges" xml:space="preserve">
+    <value>There are unsaved changes. Save them first: the tests and the setup of the Discord server use the saved settings.</value>
+  </data>
+  <data name="DiscordTestAll" xml:space="preserve">
+    <value>Test all</value>
+  </data>
+  <data name="DiscordLayoutPreview" xml:space="preserve">
+    <value>What is created</value>
+  </data>
+  <data name="DiscordLayoutRoles" xml:space="preserve">
+    <value>Roles: {0}</value>
+  </data>
+  <data name="DiscordLayoutVisibleTo" xml:space="preserve">
+    <value>only visible to {0}</value>
+  </data>
+  <data name="DiscordChatBindings" xml:space="preserve">
+    <value>Bound chats</value>
+  </data>
+  <data name="DiscordChatBindingsNone" xml:space="preserve">
+    <value>No chat of a guild or an alliance is bound yet.</value>
+  </data>
+  <data name="DiscordChatBindingsNeedBot" xml:space="preserve">
+    <value>The bound chats are shown when the bot is connected.</value>
+  </data>
+  <data name="DiscordChatBindingGuild" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="DiscordChatBindingChannel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="DiscordChatBindingBoundBy" xml:space="preserve">
+    <value>Bound by</value>
+  </data>
+  <data name="DiscordChatBindingUnknownChannel" xml:space="preserve">
+    <value>unknown channel {0}</value>
+  </data>
+  <data name="DiscordChatBindingRemoved" xml:space="preserve">
+    <value>The binding was removed. The channel in Discord is kept.</value>
+  </data>
+  <data name="DiscordScope_Guild" xml:space="preserve">
+    <value>guild</value>
+  </data>
+  <data name="DiscordScope_Alliance" xml:space="preserve">
+    <value>alliance</value>
+  </data>
 </root>

@@ -16,6 +16,7 @@ using MUnique.OpenMU.Discord;
 using MUnique.OpenMU.Discord.ChatBridge;
 using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
@@ -45,6 +46,8 @@ public partial class DiscordSetup : IDisposable
     private bool _isSaving;
     private bool _isSettingUp;
     private bool? _isPublisherActive;
+    private IReadOnlyList<DiscordChatBindingInfo>? _chatBindings;
+    private string _savedInputs = string.Empty;
     private bool _isChangingPublisher;
 
     private string _newToken = string.Empty;
@@ -58,6 +61,27 @@ public partial class DiscordSetup : IDisposable
     /// The signature of the <c>TryParse</c> methods of the number types.
     /// </summary>
     private delegate bool TryParseFunc<T>(string text, NumberStyles style, IFormatProvider provider, out T value);
+
+    /// <summary>
+    /// The state of a step of the setup, which its header shows.
+    /// </summary>
+    private enum StepState
+    {
+        /// <summary>
+        /// The step is still to be done.
+        /// </summary>
+        Open,
+
+        /// <summary>
+        /// The step is done.
+        /// </summary>
+        Done,
+
+        /// <summary>
+        /// The step has a problem, which the administrator has to look at.
+        /// </summary>
+        Problem,
+    }
 
     [Inject]
     private DiscordConfigurationService ConfigurationService { get; set; } = null!;
@@ -105,6 +129,34 @@ public partial class DiscordSetup : IDisposable
         ? DiscordBotToken.CreateInviteUrl(applicationId)
         : null;
 
+    private bool IsBotConnected => this.Bot?.ServerState == ServerState.Started;
+
+    /// <summary>
+    /// Gets a value indicating whether the inputs differ from the saved settings. The tests and the setup use the saved
+    /// settings, so they are only possible without unsaved changes.
+    /// </summary>
+    private bool HasUnsavedChanges => this._settings is not null && this.SerializeInputs() != this._savedInputs;
+
+    /// <summary>
+    /// Gets the text channels of the Discord server of the bot, from which the channels are chosen.
+    /// </summary>
+    private IReadOnlyList<DiscordChannelOption> TextChannels => this.IsBotConnected ? this.Bot!.GetTextChannels() : [];
+
+    private StepState BotStepState => this.Bot?.Problem is DiscordBotProblem.TokenRejected
+        ? StepState.Problem
+        : this.IsBotConnected ? StepState.Done : StepState.Open;
+
+    private StepState InviteStepState => this.IsBotConnected && this.Bot!.CurrentConnections > 0 ? StepState.Done : StepState.Open;
+
+    private StepState ServerStepState => this._serverCheck is { } check
+                                         && (check.MissingPermissions.Count > 0 || check.LinkedRole != DiscordRoleState.Assignable)
+        ? StepState.Problem
+        : this.Bot?.RoutingServerId is not null ? StepState.Done : StepState.Open;
+
+    private StepState NotificationsStepState => this._testResults.Values.Any(result => !IsSent(result))
+        ? StepState.Problem
+        : this._testResults.Count > 0 || this._isPublisherActive == true ? StepState.Done : StepState.Open;
+
     /// <inheritdoc />
     public void Dispose()
     {
@@ -131,6 +183,7 @@ public partial class DiscordSetup : IDisposable
 
         await this.LoadAsync().ConfigureAwait(true);
         await this.LoadPublisherStateAsync().ConfigureAwait(true);
+        await this.LoadChatBindingsAsync().ConfigureAwait(true);
     }
 
     /// <summary>
@@ -160,6 +213,20 @@ public partial class DiscordSetup : IDisposable
     }
 
     private static string Join<T>(IEnumerable<T> values) => string.Join(", ", values);
+
+    private static bool IsSent(DiscordTestResult result) => result.Outcome is DiscordTestOutcome.SentByBot or DiscordTestOutcome.SentByWebhook;
+
+    private static string ScopeText(MUnique.OpenMU.DataModel.Entities.GuildChatScope scope)
+    {
+        return Resources.ResourceManager.GetString($"DiscordScope_{scope}", Resources.Culture) ?? scope.ToString();
+    }
+
+    private static MarkupString StepBadge(StepState state) => state switch
+    {
+        StepState.Done => new MarkupString($"<span class=\"badge text-bg-success ms-2\">✓ {System.Net.WebUtility.HtmlEncode(Resources.DiscordStepDone)}</span>"),
+        StepState.Problem => new MarkupString($"<span class=\"badge text-bg-warning ms-2\">⚠ {System.Net.WebUtility.HtmlEncode(Resources.DiscordStepProblem)}</span>"),
+        _ => default,
+    };
 
     private static string TestResultText(DiscordTestResult result)
     {
@@ -220,6 +287,7 @@ public partial class DiscordSetup : IDisposable
             this._layout = LoadLayout(this._integration?.Settings.Bot.LayoutFile ?? settings.Bot.LayoutFile);
             this._settings = settings;
             this._loadError = null;
+            this._savedInputs = this.SerializeInputs();
         }
         catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException or InvalidOperationException)
         {
@@ -391,6 +459,74 @@ public partial class DiscordSetup : IDisposable
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Serializes the inputs, to find out if they differ from the saved settings.
+    /// </summary>
+    private string SerializeInputs()
+    {
+        return JsonSerializer.Serialize(new
+        {
+            Settings = this._settings,
+            this._newToken,
+            NewWebhooks = this._newWebhooks.Where(entry => !string.IsNullOrWhiteSpace(entry.Value)).OrderBy(entry => entry.Key).ToList(),
+            ChannelIds = this._channelIdTexts.Where(entry => !string.IsNullOrWhiteSpace(entry.Value)).OrderBy(entry => entry.Key).ToList(),
+            this._serverIdText,
+            this._statusChannelIdText,
+            this._eventServerIdsText,
+            this._allowedServerIdsText,
+            this._statusUpdateSeconds,
+        });
+    }
+
+    private async Task TestAllAsync()
+    {
+        foreach (var category in Categories)
+        {
+            await this.TestAsync(category).ConfigureAwait(true);
+        }
+
+        if (this.IsBotConnected)
+        {
+            await this.CheckServerAsync().ConfigureAwait(true);
+        }
+    }
+
+    private async Task LoadChatBindingsAsync()
+    {
+        try
+        {
+            this._chatBindings = this.IsBotConnected ? await this.Bot!.GetChatBindingsAsync().ConfigureAwait(true) : null;
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Couldn't load the bound chats.");
+            this._chatBindings = null;
+        }
+    }
+
+    private async Task RemoveChatBindingAsync(ulong channelId)
+    {
+        if (this.Bot is not { } bot)
+        {
+            return;
+        }
+
+        try
+        {
+            if (await bot.RemoveChatBindingAsync(channelId).ConfigureAwait(true))
+            {
+                this.ToastService.ShowSuccess(Resources.DiscordChatBindingRemoved);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Couldn't remove the binding of the Discord channel {channelId}.", channelId);
+            this.ToastService.ShowError(ex.Message);
+        }
+
+        await this.LoadChatBindingsAsync().ConfigureAwait(true);
     }
 
     private async Task TestAsync(DiscordChannelCategory category)

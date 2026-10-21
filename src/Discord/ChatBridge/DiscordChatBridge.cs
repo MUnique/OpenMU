@@ -85,6 +85,13 @@ public sealed class DiscordChatBridge
     public GuildChatBindingStore Store => this._store;
 
     /// <summary>
+    /// Gets the name of a guild.
+    /// </summary>
+    /// <param name="guildId">The identifier of the guild.</param>
+    /// <returns>The name, or <c>null</c>, if the guild doesn't exist.</returns>
+    public ValueTask<string?> GetGuildNameAsync(Guid guildId) => this._guildServer.GetPersistentGuildNameAsync(guildId);
+
+    /// <summary>
     /// Gets the Discord channel and the text of a chat message of the game.
     /// </summary>
     /// <param name="chatMessage">The chat message.</param>

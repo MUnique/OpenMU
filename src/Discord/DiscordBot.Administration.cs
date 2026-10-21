@@ -10,6 +10,7 @@ using global::Discord;
 using global::Discord.Net;
 using global::Discord.WebSocket;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Discord.ChatBridge;
 using MUnique.OpenMU.Discord.Provisioning;
 
 /// <summary>
@@ -163,6 +164,62 @@ public sealed partial class DiscordBot
 
         var categoriesWithoutChannel = Enum.GetValues<DiscordChannelCategory>().Where(category => this.GetChannelId(category) is null).ToList();
         return new DiscordServerCheck(guild.Name, missingPermissions, linkedRoleState, categoriesWithoutChannel, this._routing.StatusChannelId is not null);
+    }
+
+    /// <summary>
+    /// Gets the text channels of the Discord server whose channels receive the notifications and the status.
+    /// </summary>
+    /// <returns>The channels, in the order of Discord.</returns>
+    public IReadOnlyList<DiscordChannelOption> GetTextChannels()
+    {
+        if (this._client is not { } client || this.GetRoutingGuild(client) is not { } guild)
+        {
+            return [];
+        }
+
+        return guild.TextChannels
+            .OrderBy(channel => channel.Category?.Position ?? -1)
+            .ThenBy(channel => channel.Position)
+            .Select(channel => new DiscordChannelOption(channel.Id, channel.Name, channel.Category?.Name))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Gets the chats of guilds and alliances which are bound to Discord channels.
+    /// </summary>
+    /// <returns>The bound chats.</returns>
+    public async ValueTask<IReadOnlyList<DiscordChatBindingInfo>> GetChatBindingsAsync()
+    {
+        var result = new List<DiscordChatBindingInfo>();
+        foreach (var binding in this._chatBridge.Store.Bindings.ToList())
+        {
+            if (!ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var channelId))
+            {
+                continue;
+            }
+
+            var channel = this._client?.GetChannel(channelId) as IGuildChannel;
+            var guildName = await this._chatBridge.GetGuildNameAsync(binding.GuildId).ConfigureAwait(false);
+            result.Add(new DiscordChatBindingInfo(channelId, guildName, binding.Scope, channel?.Name, channel?.Guild.Name, binding.IsHosted, binding.BoundBy, binding.BoundAt));
+        }
+
+        return result.OrderBy(binding => binding.GuildName, StringComparer.CurrentCultureIgnoreCase).ToList();
+    }
+
+    /// <summary>
+    /// Removes the binding of a channel, like <c>/guildchat unbind</c>. The channel itself is kept.
+    /// </summary>
+    /// <param name="channelId">The identifier of the channel.</param>
+    /// <returns><c>true</c>, if a binding was removed.</returns>
+    public async ValueTask<bool> RemoveChatBindingAsync(ulong channelId)
+    {
+        var removed = await this._chatBridge.Store.RemoveAsync(channelId, null).ConfigureAwait(false) > 0;
+        if (removed)
+        {
+            this._logger.LogInformation("The binding of the Discord channel {channelId} was removed in the admin panel.", channelId);
+        }
+
+        return removed;
     }
 
     /// <summary>

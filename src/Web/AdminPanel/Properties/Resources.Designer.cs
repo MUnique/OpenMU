@@ -1612,6 +1612,78 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bound by.
+        /// </summary>
+        public static string DiscordChatBindingBoundBy {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingBoundBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Channel.
+        /// </summary>
+        public static string DiscordChatBindingChannel {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild.
+        /// </summary>
+        public static string DiscordChatBindingGuild {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingGuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The binding was removed. The channel in Discord is kept..
+        /// </summary>
+        public static string DiscordChatBindingRemoved {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bound chats.
+        /// </summary>
+        public static string DiscordChatBindings {
+            get {
+                return ResourceManager.GetString("DiscordChatBindings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bound chats are shown when the bot is connected..
+        /// </summary>
+        public static string DiscordChatBindingsNeedBot {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingsNeedBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No chat of a guild or an alliance is bound yet..
+        /// </summary>
+        public static string DiscordChatBindingsNone {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingsNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to unknown channel {0}.
+        /// </summary>
+        public static string DiscordChatBindingUnknownChannel {
+            get {
+                return ResourceManager.GetString("DiscordChatBindingUnknownChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to These categories have no channel of the bot: {0}. They are only posted by a webhook..
         /// </summary>
         public static string DiscordCheckChannelsMissing {
@@ -1837,6 +1909,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What is created.
+        /// </summary>
+        public static string DiscordLayoutPreview {
+            get {
+                return ResourceManager.GetString("DiscordLayoutPreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roles: {0}.
+        /// </summary>
+        public static string DiscordLayoutRoles {
+            get {
+                return ResourceManager.GetString("DiscordLayoutRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to only visible to {0}.
+        /// </summary>
+        public static string DiscordLayoutVisibleTo {
+            get {
+                return ResourceManager.GetString("DiscordLayoutVisibleTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The settings couldn&apos;t be loaded from {0}: {1}.
         /// </summary>
         public static string DiscordLoadError {
@@ -2004,6 +2103,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string DiscordSaveError {
             get {
                 return ResourceManager.GetString("DiscordSaveError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to alliance.
+        /// </summary>
+        public static string DiscordScope_Alliance {
+            get {
+                return ResourceManager.GetString("DiscordScope_Alliance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to guild.
+        /// </summary>
+        public static string DiscordScope_Guild {
+            get {
+                return ResourceManager.GetString("DiscordScope_Guild", resourceCulture);
             }
         }
         
@@ -2323,6 +2440,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Done.
+        /// </summary>
+        public static string DiscordStepDone {
+            get {
+                return ResourceManager.GetString("DiscordStepDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check this.
+        /// </summary>
+        public static string DiscordStepProblem {
+            get {
+                return ResourceManager.GetString("DiscordStepProblem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test.
         /// </summary>
         public static string DiscordTest {
@@ -2395,6 +2530,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Test all.
+        /// </summary>
+        public static string DiscordTestAll {
+            get {
+                return ResourceManager.GetString("DiscordTestAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test posts a test message with the saved settings, in the same way as the notifications of the category: by the bot into its channel, otherwise by the webhook. Save your changes first..
         /// </summary>
         public static string DiscordTestHint {
@@ -2409,6 +2553,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string DiscordToken {
             get {
                 return ResourceManager.GetString("DiscordToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are unsaved changes. Save them first: the tests and the setup of the Discord server use the saved settings..
+        /// </summary>
+        public static string DiscordUnsavedChanges {
+            get {
+                return ResourceManager.GetString("DiscordUnsavedChanges", resourceCulture);
             }
         }
         

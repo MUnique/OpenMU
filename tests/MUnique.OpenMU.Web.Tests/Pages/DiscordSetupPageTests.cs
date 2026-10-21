@@ -149,6 +149,43 @@ public class DiscordSetupPageTests
     }
 
     /// <summary>
+    /// Unsaved changes are shown, and the tests are only possible after saving, because they use the saved settings.
+    /// </summary>
+    [Test]
+    public void TestsNeedSavedSettings()
+    {
+        var cut = this._context.Render<DiscordSetup>();
+        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+        Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordUnsavedChanges));
+        Assert.That(cut.FindAll("button").First(b => b.TextContent.Contains(Resources.DiscordTestAll)).HasAttribute("disabled"), Is.False);
+
+        cut.Find("#discordLanguage").Change("de");
+
+        Assert.That(cut.Markup, Does.Contain(Resources.DiscordUnsavedChanges));
+        Assert.That(cut.FindAll("button").First(b => b.TextContent.Contains(Resources.DiscordTestAll)).HasAttribute("disabled"), Is.True);
+
+        cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
+
+        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordSaved, null)));
+        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordUnsavedChanges)));
+    }
+
+    /// <summary>
+    /// The channels and roles which the setup creates are shown before.
+    /// </summary>
+    [Test]
+    public void ShowsWhatTheSetupCreates()
+    {
+        var cut = this._context.Render<DiscordSetup>();
+        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+
+        var preview = cut.FindAll("details").First(d => d.TextContent.Contains(Resources.DiscordLayoutPreview)).TextContent;
+        Assert.That(preview, Does.Contain(string.Format(Resources.DiscordLayoutRoles, "GM, Linked Player")));
+        Assert.That(preview, Does.Contain("#events"));
+        Assert.That(preview, Does.Contain(string.Format(Resources.DiscordLayoutVisibleTo, "GM")));
+    }
+
+    /// <summary>
     /// An invalid identifier is not saved.
     /// </summary>
     [Test]

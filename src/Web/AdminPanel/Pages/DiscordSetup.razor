@@ -95,7 +95,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header">@Resources.DiscordStep1Title</div>
+    <div class="card-header">@Resources.DiscordStep1Title @StepBadge(this.BotStepState)</div>
     <div class="card-body">
         <p>@Resources.DiscordStep1Text</p>
         <p><a href="https://discord.com/developers/applications" target="_blank" rel="noopener noreferrer">@Resources.DiscordOpenDeveloperPortal</a></p>
@@ -120,7 +120,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header">@Resources.DiscordStep2Title</div>
+    <div class="card-header">@Resources.DiscordStep2Title @StepBadge(this.InviteStepState)</div>
     <div class="card-body">
         <p>@Resources.DiscordStep2Text</p>
         @if (this.InviteUrl is { } inviteUrl)
@@ -137,7 +137,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header">@Resources.DiscordStep3Title</div>
+    <div class="card-header">@Resources.DiscordStep3Title @StepBadge(this.ServerStepState)</div>
     <div class="card-body">
         <p>@Resources.DiscordStep3Text</p>
         <div class="mb-3 col-md-6">
@@ -169,7 +169,23 @@
             }
         </div>
         <p>@Resources.DiscordSetUpServerText</p>
-        <button type="button" class="btn btn-secondary mb-2" disabled="@(this._isSettingUp || this.Bot?.ServerState != ServerState.Started)" @onclick="this.SetUpServerAsync">
+        <details class="mb-2">
+            <summary>@Resources.DiscordLayoutPreview</summary>
+            <ul class="mt-2 mb-0">
+                <li>@string.Format(Resources.DiscordLayoutRoles, Join(this._layout.Roles.Select(role => role.Name)))</li>
+                @foreach (var layoutCategory in this._layout.Categories)
+                {
+                    <li>
+                        <strong>@layoutCategory.Name</strong>@(layoutCategory.Channels.Count > 0 ? ": " + Join(layoutCategory.Channels.Select(channel => "#" + channel.Name)) : null)
+                        @if (layoutCategory.VisibleTo.Count > 0)
+                        {
+                            <span class="text-muted ms-1">(@string.Format(Resources.DiscordLayoutVisibleTo, Join(this._layout.Roles.Where(role => layoutCategory.VisibleTo.Contains(role.Key)).Select(role => role.Name))))</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </details>
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(this._isSettingUp || !this.IsBotConnected || this.HasUnsavedChanges)" @onclick="this.SetUpServerAsync">
             <span class="oi oi-wrench" aria-hidden="true"></span> @Resources.DiscordSetUpServer
         </button>
         @if (this.Bot?.ServerState != ServerState.Started)
@@ -199,7 +215,7 @@
             <p>@Resources.DiscordSetUpRoleHint</p>
         }
         <p>@Resources.DiscordCheckServerText</p>
-        <button type="button" class="btn btn-secondary mb-2" disabled="@(this.Bot?.ServerState != ServerState.Started)" @onclick="this.CheckServerAsync">
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(!this.IsBotConnected || this.HasUnsavedChanges)" @onclick="this.CheckServerAsync">
             <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordCheckServer
         </button>
         @if (this._serverCheck is { } check)
@@ -230,7 +246,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header">@Resources.DiscordStep4Title</div>
+    <div class="card-header">@Resources.DiscordStep4Title @StepBadge(this.NotificationsStepState)</div>
     <div class="card-body">
         @if (this.UsesBot)
         {
@@ -273,9 +289,28 @@
                             }
                             else
                             {
-                                <input type="text" inputmode="numeric" class="form-control form-control-sm" aria-label="@Resources.DiscordChannelId"
-                                       placeholder="@this.DefaultChannelText(category)"
-                                       value="@this._channelIdTexts.GetValueOrDefault(category)" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty"/>
+                                var channelIdText = this._channelIdTexts.GetValueOrDefault(category) ?? string.Empty;
+                                @if (this.TextChannels is { Count: > 0 } textChannels)
+                                {
+                                    <select class="form-select form-select-sm" aria-label="@Resources.DiscordChannelId"
+                                            value="@channelIdText" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty">
+                                        <option value="">@this.DefaultChannelText(category)</option>
+                                        @foreach (var textChannel in textChannels)
+                                        {
+                                            <option value="@textChannel.Id" selected="@(textChannel.Id.ToString() == channelIdText)">#@textChannel.Name@(textChannel.CategoryName is { } categoryName ? $" ({categoryName})" : null)</option>
+                                        }
+                                        @if (channelIdText.Length > 0 && textChannels.All(textChannel => textChannel.Id.ToString() != channelIdText))
+                                        {
+                                            <option value="@channelIdText" selected>@channelIdText</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input type="text" inputmode="numeric" class="form-control form-control-sm" aria-label="@Resources.DiscordChannelId"
+                                           placeholder="@this.DefaultChannelText(category)"
+                                           value="@channelIdText" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty"/>
+                                }
                             }
                         </td>
                     }
@@ -301,10 +336,10 @@
                         </td>
                     }
                     <td>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@this._runningTests.Contains(category)" @onclick="() => this.TestAsync(category)">@Resources.DiscordTest</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(this._runningTests.Contains(category) || this.HasUnsavedChanges)" @onclick="() => this.TestAsync(category)">@Resources.DiscordTest</button>
                         @if (this._testResults.GetValueOrDefault(category) is { } testResult)
                         {
-                            <div class="small @(testResult.Outcome is DiscordTestOutcome.SentByBot or DiscordTestOutcome.SentByWebhook ? "text-success" : "text-danger")">@TestResultText(testResult)</div>
+                            <div class="small @(IsSent(testResult) ? "text-success" : "text-danger")">@TestResultText(testResult)</div>
                         }
                     </td>
                 </tr>
@@ -313,6 +348,9 @@
         </table>
         </div>
         <p class="form-text">@Resources.DiscordTestHint</p>
+        <button type="button" class="btn btn-secondary mb-3" disabled="@(this._runningTests.Count > 0 || this.HasUnsavedChanges)" @onclick="this.TestAllAsync">
+            <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordTestAll
+        </button>
         <div class="row">
             <div class="mb-3 col-md-3">
                 <label class="form-label" for="discordLanguage">@Resources.DiscordLanguage</label>
@@ -332,8 +370,8 @@
     </div>
 </div>
 
-<div class="card mb-3">
-    <div class="card-header">@Resources.DiscordStep5Title</div>
+<details class="card mb-3">
+    <summary class="card-header">@Resources.DiscordStep5Title</summary>
     <div class="card-body">
         <p>@Resources.DiscordStep5Text</p>
         <div class="row">
@@ -367,17 +405,81 @@
                 <input id="discordMessagesPerMinute" type="number" min="1" class="form-control" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:MaximumMessagesPerMinute")" @bind="settings.Bot.ChatBridge.MaximumMessagesPerMinute"/>
             </div>
         </div>
+        <h2 class="h6 mt-2">@Resources.DiscordChatBindings</h2>
+        @if (this._chatBindings is not { } chatBindings)
+        {
+            <p class="form-text">@Resources.DiscordChatBindingsNeedBot</p>
+        }
+        else if (chatBindings.Count == 0)
+        {
+            <p class="form-text">@Resources.DiscordChatBindingsNone</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                <tr>
+                    <th>@Resources.DiscordChatBindingGuild</th>
+                    <th>@Resources.DiscordChatBindingChannel</th>
+                    <th>@Resources.DiscordChatBindingBoundBy</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var binding in chatBindings)
+                {
+                    <tr>
+                        <td>@(binding.GuildName ?? "?") <span class="text-muted small">(@ScopeText(binding.Scope))</span></td>
+                        <td>
+                            @if (binding.ChannelName is { } channelName)
+                            {
+                                <span>#@channelName</span> <span class="text-muted small">@binding.ServerName</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">@string.Format(Resources.DiscordChatBindingUnknownChannel, binding.ChannelId)</span>
+                            }
+                        </td>
+                        <td>@binding.BoundBy <span class="text-muted small">@binding.BoundAt.ToLocalTime()</span></td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => this.RemoveChatBindingAsync(binding.ChannelId)">@Resources.Remove</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+        }
+        <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(!this.IsBotConnected)" @onclick="this.LoadChatBindingsAsync">
+            <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload
+        </button>
     </div>
-</div>
+</details>
 
-<div class="card mb-3">
-    <div class="card-header">@Resources.DiscordStep6Title</div>
+<details class="card mb-3">
+    <summary class="card-header">@Resources.DiscordStep6Title</summary>
     <div class="card-body">
         <div class="row">
             <div class="mb-3 col-md-6">
                 <label class="form-label" for="discordStatusChannel">@Resources.DiscordStatusChannelId</label>
-                <input id="discordStatusChannel" type="text" inputmode="numeric" class="form-control font-monospace" placeholder="@this.DefaultStatusChannelText"
-                       disabled="@this.IsDefinedElsewhere("Bot:StatusChannelId")" @bind="this._statusChannelIdText"/>
+                @if (this.TextChannels is { Count: > 0 } statusChannels && !this.IsDefinedElsewhere("Bot:StatusChannelId"))
+                {
+                    <select id="discordStatusChannel" class="form-select" @bind="this._statusChannelIdText">
+                        <option value="">@this.DefaultStatusChannelText</option>
+                        @foreach (var textChannel in statusChannels)
+                        {
+                            <option value="@textChannel.Id">#@textChannel.Name@(textChannel.CategoryName is { } categoryName ? $" ({categoryName})" : null)</option>
+                        }
+                        @if (this._statusChannelIdText.Length > 0 && statusChannels.All(textChannel => textChannel.Id.ToString() != this._statusChannelIdText))
+                        {
+                            <option value="@this._statusChannelIdText">@this._statusChannelIdText</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <input id="discordStatusChannel" type="text" inputmode="numeric" class="form-control font-monospace" placeholder="@this.DefaultStatusChannelText"
+                           disabled="@this.IsDefinedElsewhere("Bot:StatusChannelId")" @bind="this._statusChannelIdText"/>
+                }
             </div>
             <div class="mb-3 col-md-6">
                 <label class="form-label" for="discordStatusInterval">@Resources.DiscordStatusUpdateInterval</label>
@@ -398,9 +500,13 @@
             <label class="form-check-label" for="discordScheduledEvents">@Resources.DiscordCreateScheduledEvents</label>
         </div>
     </div>
-</div>
+</details>
 
-<div class="mb-3">
+<div class="mb-3 py-2 sticky-bottom bg-body">
+    @if (this.HasUnsavedChanges)
+    {
+        <div class="alert alert-warning py-2 mb-2" role="alert">@Resources.DiscordUnsavedChanges</div>
+    }
     <button type="button" class="btn btn-primary" disabled="@this._isSaving" @onclick="this.SaveAsync">
         <span class="oi oi-check" aria-hidden="true"></span> @Resources.Save
     </button>
