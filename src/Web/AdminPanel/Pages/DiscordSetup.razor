@@ -232,14 +232,27 @@
 <div class="card mb-3">
     <div class="card-header">@Resources.DiscordStep4Title</div>
     <div class="card-body">
-        <p>@Resources.DiscordStep4Text</p>
+        @if (this.UsesBot)
+        {
+            <p>@Resources.DiscordStep4Text</p>
+        }
+        @if (this.ShowsWebhooks)
+        {
+            <p>@(this.UsesBot ? Resources.DiscordStep4WebhookFallbackText : Resources.DiscordStep4WebhookText)</p>
+        }
         <div class="table-responsive">
         <table class="table table-sm align-middle">
             <thead>
             <tr>
                 <th>@Resources.DiscordCategory</th>
-                <th>@Resources.DiscordChannelId</th>
-                <th>@Resources.DiscordWebhookUrl</th>
+                @if (this.UsesBot)
+                {
+                    <th>@Resources.DiscordChannelId</th>
+                }
+                @if (this.ShowsWebhooks)
+                {
+                    <th>@Resources.DiscordWebhookUrl</th>
+                }
                 <th>@Resources.DiscordTest</th>
             </tr>
             </thead>
@@ -251,36 +264,42 @@
                         <strong>@category</strong><br/>
                         <span class="text-muted small">@CategoryText(category)</span>
                     </td>
-                    <td>
-                        @if (this.IsDefinedElsewhere($"Bot:Channels:{category}"))
-                        {
-                            <span class="form-text">@Resources.DiscordDefinedElsewhere</span>
-                        }
-                        else
-                        {
-                            <input type="text" inputmode="numeric" class="form-control form-control-sm" aria-label="@Resources.DiscordChannelId"
-                                   placeholder="@Resources.DiscordChannelIdPlaceholder"
-                                   value="@this._channelIdTexts.GetValueOrDefault(category)" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty"/>
-                        }
-                    </td>
-                    <td>
-                        @if (this.IsDefinedElsewhere($"Webhooks:{category}"))
-                        {
-                            <span class="form-text">@Resources.DiscordDefinedElsewhere</span>
-                        }
-                        else
-                        {
-                            <div class="input-group input-group-sm">
-                                <input type="password" class="form-control" autocomplete="off" aria-label="@Resources.DiscordWebhookUrl"
-                                       placeholder="@(settings.Webhooks.ContainsKey(category) ? Resources.DiscordSecretSet : null)"
-                                       value="@this._newWebhooks.GetValueOrDefault(category)" @onchange="e => this._newWebhooks[category] = e.Value?.ToString() ?? string.Empty"/>
-                                @if (settings.Webhooks.ContainsKey(category))
-                                {
-                                    <button type="button" class="btn btn-outline-danger" @onclick="() => this.RemoveWebhook(category)">@Resources.Remove</button>
-                                }
-                            </div>
-                        }
-                    </td>
+                    @if (this.UsesBot)
+                    {
+                        <td>
+                            @if (this.IsDefinedElsewhere($"Bot:Channels:{category}"))
+                            {
+                                <span class="form-text">@Resources.DiscordDefinedElsewhere</span>
+                            }
+                            else
+                            {
+                                <input type="text" inputmode="numeric" class="form-control form-control-sm" aria-label="@Resources.DiscordChannelId"
+                                       placeholder="@this.DefaultChannelText(category)"
+                                       value="@this._channelIdTexts.GetValueOrDefault(category)" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty"/>
+                            }
+                        </td>
+                    }
+                    @if (this.ShowsWebhooks)
+                    {
+                        <td>
+                            @if (this.IsDefinedElsewhere($"Webhooks:{category}"))
+                            {
+                                <span class="form-text">@Resources.DiscordDefinedElsewhere</span>
+                            }
+                            else
+                            {
+                                <div class="input-group input-group-sm">
+                                    <input type="password" class="form-control" autocomplete="off" aria-label="@Resources.DiscordWebhookUrl"
+                                           placeholder="@(settings.Webhooks.ContainsKey(category) ? Resources.DiscordSecretSet : null)"
+                                           value="@this._newWebhooks.GetValueOrDefault(category)" @onchange="e => this._newWebhooks[category] = e.Value?.ToString() ?? string.Empty"/>
+                                    @if (settings.Webhooks.ContainsKey(category))
+                                    {
+                                        <button type="button" class="btn btn-outline-danger" @onclick="() => this.RemoveWebhook(category)">@Resources.Remove</button>
+                                    }
+                                </div>
+                            }
+                        </td>
+                    }
                     <td>
                         <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@this._runningTests.Contains(category)" @onclick="() => this.TestAsync(category)">@Resources.DiscordTest</button>
                         @if (this._testResults.GetValueOrDefault(category) is { } testResult)
@@ -357,7 +376,7 @@
         <div class="row">
             <div class="mb-3 col-md-6">
                 <label class="form-label" for="discordStatusChannel">@Resources.DiscordStatusChannelId</label>
-                <input id="discordStatusChannel" type="text" inputmode="numeric" class="form-control font-monospace" placeholder="@Resources.DiscordChannelIdPlaceholder"
+                <input id="discordStatusChannel" type="text" inputmode="numeric" class="form-control font-monospace" placeholder="@this.DefaultStatusChannelText"
                        disabled="@this.IsDefinedElsewhere("Bot:StatusChannelId")" @bind="this._statusChannelIdText"/>
             </div>
             <div class="mb-3 col-md-6">

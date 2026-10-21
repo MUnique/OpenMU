@@ -1612,15 +1612,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the one of the layout.
-        /// </summary>
-        public static string DiscordChannelIdPlaceholder {
-            get {
-                return ResourceManager.GetString("DiscordChannelIdPlaceholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to These categories have no channel of the bot: {0}. They are only posted by a webhook..
         /// </summary>
         public static string DiscordCheckChannelsMissing {
@@ -1747,6 +1738,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default: #{0}.
+        /// </summary>
+        public static string DiscordDefaultChannel {
+            get {
+                return ResourceManager.GetString("DiscordDefaultChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set by an environment variable or another configuration source, which takes precedence over this page..
         /// </summary>
         public static string DiscordDefinedElsewhere {
@@ -1869,6 +1869,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string DiscordMaximumQueuedMessages {
             get {
                 return ResourceManager.GetString("DiscordMaximumQueuedMessages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not posted.
+        /// </summary>
+        public static string DiscordNoDefaultChannel {
+            get {
+                return ResourceManager.GetString("DiscordNoDefaultChannel", resourceCulture);
             }
         }
         
@@ -2251,7 +2260,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Each category is posted into its own channel. The bot uses the channel of its layout, e.g. #events, unless you enter another channel here. Without the bot, enter the URL of a webhook of the channel (channel settings → Integrations → Webhooks). Treat it like a password..
+        ///   Looks up a localized string similar to Each category is posted into its own channel. The placeholders show the channels of the layout, which the bot uses by default. To use another channel, enter its identifier: with the developer mode of Discord, right-click the channel and select Copy Channel ID..
         /// </summary>
         public static string DiscordStep4Text {
             get {
@@ -2265,6 +2274,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string DiscordStep4Title {
             get {
                 return ResourceManager.GetString("DiscordStep4Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A webhook only posts a category which has no channel of the bot. With the bot, you don&apos;t need them, and can remove them..
+        /// </summary>
+        public static string DiscordStep4WebhookFallbackText {
+            get {
+                return ResourceManager.GetString("DiscordStep4WebhookFallbackText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without the bot, each category is posted by a webhook of its channel: in Discord, open the settings of the channel, Integrations → Webhooks, create a webhook and paste its URL here. Treat it like a password..
+        /// </summary>
+        public static string DiscordStep4WebhookText {
+            get {
+                return ResourceManager.GetString("DiscordStep4WebhookText", resourceCulture);
             }
         }
         

@@ -131,6 +131,24 @@ public class DiscordSetupPageTests
     }
 
     /// <summary>
+    /// With the bot, the webhooks aren't needed and hidden, and the channels show the ones of the layout as default.
+    /// </summary>
+    [Test]
+    public void BotShowsChannelsOfTheLayoutInsteadOfWebhooks()
+    {
+        File.WriteAllText(this._filePath, """{ "Discord": { "Bot": { "Token": "token" } } }""");
+        var cut = this._context.Render<DiscordSetup>();
+        cut.WaitForState(() => cut.FindAll("#discordToken").Count > 0);
+
+        Assert.That(cut.FindAll("tbody input[type=password]"), Is.Empty);
+        Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordWebhookUrl));
+        var channelInputs = cut.FindAll("tbody input[inputmode='numeric']");
+        Assert.That(channelInputs[0].GetAttribute("placeholder"), Is.EqualTo(string.Format(Resources.DiscordDefaultChannel, "events")));
+        Assert.That(channelInputs[3].GetAttribute("placeholder"), Is.EqualTo(string.Format(Resources.DiscordDefaultChannel, "announcements")));
+        Assert.That(cut.Find("#discordStatusChannel").GetAttribute("placeholder"), Is.EqualTo(string.Format(Resources.DiscordDefaultChannel, "server-status")));
+    }
+
+    /// <summary>
     /// An invalid identifier is not saved.
     /// </summary>
     [Test]

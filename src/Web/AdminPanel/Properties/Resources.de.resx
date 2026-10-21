@@ -2092,16 +2092,13 @@
     <value>4. Benachrichtigungen</value>
   </data>
   <data name="DiscordStep4Text" xml:space="preserve">
-    <value>Jede Kategorie wird in einen eigenen Kanal gepostet. Der Bot verwendet den Kanal seines Layouts, z.B. #events, außer du gibst hier einen anderen Kanal an. Ohne Bot gibst du die URL eines Webhooks des Kanals an (Kanaleinstellungen → Integrationen → Webhooks). Behandle sie wie ein Passwort.</value>
+    <value>Jede Kategorie wird in einen eigenen Kanal gepostet. Die Platzhalter zeigen die Kanäle des Layouts, die der Bot standardmäßig verwendet. Für einen anderen Kanal gib seine Kennung ein: klicke im Entwicklermodus von Discord mit der rechten Maustaste auf den Kanal und wähle Kanal-ID kopieren.</value>
   </data>
   <data name="DiscordCategory" xml:space="preserve">
     <value>Kategorie</value>
   </data>
   <data name="DiscordChannelId" xml:space="preserve">
     <value>Kanal des Bots</value>
-  </data>
-  <data name="DiscordChannelIdPlaceholder" xml:space="preserve">
-    <value>der des Layouts</value>
   </data>
   <data name="DiscordWebhookUrl" xml:space="preserve">
     <value>Webhook-URL</value>
@@ -2261,5 +2258,17 @@
   </data>
   <data name="DiscordPublisherDeactivated" xml:space="preserve">
     <value>Der Game Event Publisher ist jetzt inaktiv, deshalb wird nichts mehr aus dem Spiel in Discord gepostet.</value>
+  </data>
+  <data name="DiscordDefaultChannel" xml:space="preserve">
+    <value>Standard: #{0}</value>
+  </data>
+  <data name="DiscordNoDefaultChannel" xml:space="preserve">
+    <value>Wird nicht gepostet</value>
+  </data>
+  <data name="DiscordStep4WebhookText" xml:space="preserve">
+    <value>Ohne Bot wird jede Kategorie durch einen Webhook ihres Kanals gepostet: öffne in Discord die Einstellungen des Kanals, Integrationen → Webhooks, erstelle einen Webhook und füge seine URL hier ein. Behandle sie wie ein Passwort.</value>
+  </data>
+  <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
+    <value>Ein Webhook postet nur eine Kategorie, die keinen Kanal des Bots hat. Mit dem Bot brauchst du sie nicht und kannst sie entfernen.</value>
   </data>
 </root>

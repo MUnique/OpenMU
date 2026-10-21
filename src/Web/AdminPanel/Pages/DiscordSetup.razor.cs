@@ -39,6 +39,7 @@ public partial class DiscordSetup : IDisposable
     private DiscordSettings? _settings;
     private DiscordIntegration? _integration;
     private DiscordProvisioningResult? _setupResult;
+    private DiscordServerLayout _layout = DiscordServerLayout.LoadDefault();
     private DiscordServerCheck? _serverCheck;
     private string? _loadError;
     private bool _isSaving;
@@ -82,6 +83,24 @@ public partial class DiscordSetup : IDisposable
         ? this._integration?.Settings.Bot.Token ?? this._settings?.Bot.Token
         : this._newToken.Trim();
 
+    /// <summary>
+    /// Gets a value indicating whether the bot is configured, or about to be: then the channels of the bot are shown.
+    /// </summary>
+    private bool UsesBot => !string.IsNullOrWhiteSpace(this._newToken)
+                            || (this.IsDefinedElsewhere("Bot:Token")
+                                ? !string.IsNullOrWhiteSpace(this._integration?.Settings.Bot.Token)
+                                : this._settings?.Bot.Token is not null);
+
+    /// <summary>
+    /// Gets a value indicating whether the webhooks are shown: without the bot, and when webhooks are configured,
+    /// so that they can be removed.
+    /// </summary>
+    private bool ShowsWebhooks => !this.UsesBot
+                                  || this._settings?.Webhooks.Count > 0
+                                  || Categories.Any(category => this.IsDefinedElsewhere($"Webhooks:{category}"));
+
+    private string DefaultStatusChannelText => this.DefaultChannelText(this._layout.Channels.FirstOrDefault(channel => channel.ShowsStatus)?.Name);
+
     private string? InviteUrl => DiscordBotToken.GetApplicationId(this.EffectiveToken) is { } applicationId
         ? DiscordBotToken.CreateInviteUrl(applicationId)
         : null;
@@ -114,6 +133,22 @@ public partial class DiscordSetup : IDisposable
         await this.LoadPublisherStateAsync().ConfigureAwait(true);
     }
 
+    /// <summary>
+    /// Loads the layout of the Discord server, to show the default channels. A layout file which can't be read is
+    /// reported in the status, so the default layout is shown then.
+    /// </summary>
+    private static DiscordServerLayout LoadLayout(string? layoutFile)
+    {
+        try
+        {
+            return layoutFile is { Length: > 0 } ? DiscordServerLayout.Load(layoutFile) : DiscordServerLayout.LoadDefault();
+        }
+        catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            return DiscordServerLayout.LoadDefault();
+        }
+    }
+
     private static string CategoryText(DiscordChannelCategory category)
     {
         return Resources.ResourceManager.GetString($"DiscordCategory_{category}", Resources.Culture) ?? category.ToString();
@@ -135,6 +170,16 @@ public partial class DiscordSetup : IDisposable
     private static string LinkedRoleText(DiscordRoleState state)
     {
         return Resources.ResourceManager.GetString($"DiscordCheckLinkedRole_{state}", Resources.Culture) ?? state.ToString();
+    }
+
+    private string DefaultChannelText(string? channelName)
+    {
+        return channelName is null ? Resources.DiscordNoDefaultChannel : string.Format(Resources.DiscordDefaultChannel, channelName);
+    }
+
+    private string DefaultChannelText(DiscordChannelCategory category)
+    {
+        return this.DefaultChannelText(this._layout.Channels.FirstOrDefault(channel => channel.Notifications.Contains(category))?.Name);
     }
 
     private bool IsDefinedElsewhere(string key)
@@ -172,6 +217,7 @@ public partial class DiscordSetup : IDisposable
             this._allowedServerIdsText = Join(settings.Bot.ChatBridge.AllowedDiscordServerIds);
             this._statusUpdateSeconds = (int)settings.Bot.StatusUpdateInterval.TotalSeconds;
             this._definedElsewhere.Clear();
+            this._layout = LoadLayout(this._integration?.Settings.Bot.LayoutFile ?? settings.Bot.LayoutFile);
             this._settings = settings;
             this._loadError = null;
         }

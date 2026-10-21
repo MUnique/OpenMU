@@ -2183,16 +2183,13 @@
     <value>4. Notifications</value>
   </data>
   <data name="DiscordStep4Text" xml:space="preserve">
-    <value>Each category is posted into its own channel. The bot uses the channel of its layout, e.g. #events, unless you enter another channel here. Without the bot, enter the URL of a webhook of the channel (channel settings → Integrations → Webhooks). Treat it like a password.</value>
+    <value>Each category is posted into its own channel. The placeholders show the channels of the layout, which the bot uses by default. To use another channel, enter its identifier: with the developer mode of Discord, right-click the channel and select Copy Channel ID.</value>
   </data>
   <data name="DiscordCategory" xml:space="preserve">
     <value>Category</value>
   </data>
   <data name="DiscordChannelId" xml:space="preserve">
     <value>Channel of the bot</value>
-  </data>
-  <data name="DiscordChannelIdPlaceholder" xml:space="preserve">
-    <value>the one of the layout</value>
   </data>
   <data name="DiscordWebhookUrl" xml:space="preserve">
     <value>Webhook URL</value>
@@ -2352,5 +2349,17 @@
   </data>
   <data name="DiscordPublisherDeactivated" xml:space="preserve">
     <value>The Game Event Publisher is inactive now, so nothing of the game is posted to Discord anymore.</value>
+  </data>
+  <data name="DiscordDefaultChannel" xml:space="preserve">
+    <value>Default: #{0}</value>
+  </data>
+  <data name="DiscordNoDefaultChannel" xml:space="preserve">
+    <value>Not posted</value>
+  </data>
+  <data name="DiscordStep4WebhookText" xml:space="preserve">
+    <value>Without the bot, each category is posted by a webhook of its channel: in Discord, open the settings of the channel, Integrations → Webhooks, create a webhook and paste its URL here. Treat it like a password.</value>
+  </data>
+  <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
+    <value>A webhook only posts a category which has no channel of the bot. With the bot, you don't need them, and can remove them.</value>
   </data>
 </root>
