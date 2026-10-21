@@ -67,6 +67,11 @@ public sealed partial class DiscordBot
                 await this.SendAsync(channelId, [alert], CancellationToken.None).ConfigureAwait(false);
             }
 
+            if (answer.Announcement is { } announcement && this._routing.GetChannelId(DiscordChannelCategory.Notices) is { } noticesChannelId)
+            {
+                await this.SendAsync(noticesChannelId, [announcement], CancellationToken.None).ConfigureAwait(false);
+            }
+
             await command.FollowupAsync(embed: ToDiscordEmbed(answer.Embed), ephemeral: true, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
         }
         catch (Exception ex)

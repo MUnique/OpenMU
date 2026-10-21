@@ -430,7 +430,7 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sends a notice to all players in the game. For game masters..
+        ///   Looks up a localized string similar to Sends a notice to all players in the game and into the announcements channel. For game masters..
         /// </summary>
         public static string Command_Announce_Description {
             get {

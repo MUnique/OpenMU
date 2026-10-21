@@ -222,7 +222,7 @@
     <value>Du sendest zu schnell Nachrichten. Bitte warte einen Moment.</value>
   </data>
   <data name="Command_Announce_Description" xml:space="preserve">
-    <value>Sendet eine Nachricht an alle Spieler im Spiel. Für Spielleiter.</value>
+    <value>Sendet eine Nachricht an alle Spieler im Spiel und in den Ankündigungskanal. Für Spielleiter.</value>
   </data>
   <data name="Command_Announce_TextOption" xml:space="preserve">
     <value>Der Text der Nachricht.</value>
