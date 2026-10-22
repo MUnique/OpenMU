@@ -14,6 +14,15 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal static class CashShopExtensions
 {
     /// <summary>
+    /// Applies the settings for the <see cref="CashShopPackage"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<CashShopPackage> builder)
+    {
+        builder.Property(package => package.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="CashShopStorageItem"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>

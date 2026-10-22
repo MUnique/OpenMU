@@ -20,6 +20,11 @@ using MUnique.OpenMU.Web.Shared.Components.Toast;
 /// <summary>
 /// Tests for the <see cref="LoggingConfiguration"/> page.
 /// </summary>
+/// <remarks>
+/// The page loads the configuration file asynchronously. When the tests interact with it right after
+/// the content appeared, the page may still finish its initialization, and the event is handled after
+/// <c>Click</c> or <c>Change</c> returned. So the tests wait for the result of each interaction.
+/// </remarks>
 [TestFixture]
 [NonParallelizable]
 public class LoggingConfigurationPageTests
@@ -75,9 +80,13 @@ public class LoggingConfigurationPageTests
         Assert.That(cut.Find("#defaultLogLevel").GetAttribute("value"), Is.EqualTo("Information"));
 
         cut.Find("#defaultLogLevel").Change("Debug");
+        cut.WaitForState(() => cut.Find("#defaultLogLevel").GetAttribute("value") == "Debug");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.AddNew)).Click();
+        cut.WaitForState(() => cut.FindAll("tbody input").Count == 2);
         cut.FindAll("tbody input")[1].Change("MUnique.OpenMU.GameLogic");
+        cut.WaitForState(() => cut.FindAll("tbody input")[1].GetAttribute("value") == "MUnique.OpenMU.GameLogic");
         cut.FindAll("tbody select")[1].Change("Verbose");
+        cut.WaitForState(() => cut.FindAll("tbody select")[1].GetAttribute("value") == "Verbose");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
         cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.LoggingConfigurationSaved, null)));
@@ -98,9 +107,10 @@ public class LoggingConfigurationPageTests
         cut.WaitForState(() => cut.FindAll("tbody tr").Count == 1);
 
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.AddNew)).Click();
+        cut.WaitForState(() => cut.FindAll("tbody tr").Count == 2);
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
-        this._toastService.Verify(t => t.ShowError(Resources.LogLevelOverridesInvalid, null));
+        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowError(Resources.LogLevelOverridesInvalid, null)));
         Assert.That(File.ReadAllText(this._filePath), Is.EqualTo(content));
     }
 
@@ -117,6 +127,7 @@ public class LoggingConfigurationPageTests
         cut.FindAll("button.nav-link")[1].Click();
         cut.WaitForElement("textarea");
         cut.Find("textarea").Change("{ \"MinimumLevel\": ");
+        cut.WaitForState(() => cut.Find("textarea").GetAttribute("value") == "{ \"MinimumLevel\": ");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
         cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowError(It.Is<string>(m => m.StartsWith("The JSON is invalid")), null)));

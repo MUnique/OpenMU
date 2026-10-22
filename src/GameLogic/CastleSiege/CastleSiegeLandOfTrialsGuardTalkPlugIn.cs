@@ -1,4 +1,4 @@
-// <copyright file="CastleSiegeGuardsmanTalkPlugIn.cs" company="MUnique">
+// <copyright file="CastleSiegeLandOfTrialsGuardTalkPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,22 +11,26 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Opens the Land of Trials entry dialog when a player talks to a Castle Siege guardsman.
+/// Opens the Land of Trials entry dialog when a player talks to the guard at the Land of Trials entrance.
 /// </summary>
+/// <remarks>
+/// The guardsmen at the bridge open the Castle Siege registration window instead,
+/// see <see cref="CastleSiegeRegistrationGuardsmanTalkPlugIn"/>.
+/// </remarks>
 [PlugIn]
-[Display(Name = nameof(PlugInResources.CastleSiegeGuardsmanTalkPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeGuardsmanTalkPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Display(Name = nameof(PlugInResources.CastleSiegeLandOfTrialsGuardTalkPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeLandOfTrialsGuardTalkPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3E2AD5FD-E5D0-4464-91EE-70DF686BBB6A")]
-public sealed class CastleSiegeGuardsmanTalkPlugIn : NpcTalkPlugInBase
+public sealed class CastleSiegeLandOfTrialsGuardTalkPlugIn : NpcTalkPlugInBase
 {
     /// <summary>
-    /// The number of the guardsman NPC.
+    /// The number of the guard NPC at the Land of Trials entrance.
     /// </summary>
-    internal const short GuardsmanNumber = 224;
+    internal const short GuardNumber = 220;
 
     private readonly CastleSiegeTaxProvider _taxProvider = new();
 
     /// <inheritdoc />
-    public override short DefaultNpcNumber => GuardsmanNumber;
+    public override short DefaultNpcNumber => GuardNumber;
 
     /// <inheritdoc />
     protected override async ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)

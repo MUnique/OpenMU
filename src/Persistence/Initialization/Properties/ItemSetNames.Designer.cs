@@ -300,5 +300,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Warrior", resourceCulture);
             }
         }
+
+        /// <summary>Gets Vega from the configuration name resources.</summary>
+        public static string Vega {
+            get {
+                return ResourceManager.GetString("Vega", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Chamer from the configuration name resources.</summary>
+        public static string Chamer {
+            get {
+                return ResourceManager.GetString("Chamer", resourceCulture);
+            }
+        }
     }
 }

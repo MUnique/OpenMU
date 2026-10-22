@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -11,6 +12,8 @@ using MUnique.OpenMU.Persistence.BasicModel;
 /// </summary>
 public class InMemoryRepositoryProvider : BaseRepositoryProvider
 {
+    private readonly Lock _creationLock = new();
+
     /// <summary>
     /// Gets all <see cref="IMemoryRepository"/> which were added to this manager.
     /// </summary>
@@ -24,7 +27,7 @@ public class InMemoryRepositoryProvider : BaseRepositoryProvider
     public new IRepository<T> GetRepository<T>()
         where T : class
     {
-        var repository = this.InternalGetRepository(typeof(T)) ?? this.CreateAndRegisterMemoryRepository(typeof(T));
+        var repository = this.GetOrCreateMemoryRepository(typeof(T));
         return new InMemoryRepositoryAdapter<T>((IMemoryRepository)repository);
     }
 
@@ -35,9 +38,24 @@ public class InMemoryRepositoryProvider : BaseRepositoryProvider
     /// <returns>The repository of the specified type.</returns>
     public new IRepository GetRepository(Type objectType)
     {
-        var repository = this.InternalGetRepository(objectType) ?? this.CreateAndRegisterMemoryRepository(objectType);
+        var repository = this.GetOrCreateMemoryRepository(objectType);
 
         return repository;
+    }
+
+    private IRepository GetOrCreateMemoryRepository(Type type)
+    {
+        if (this.InternalGetRepository(type) is { } repository)
+        {
+            return repository;
+        }
+
+        // The repositories are created on demand, possibly by concurrent contexts. Without the lock,
+        // both would create one, and the changes made in the one which isn't registered get lost.
+        lock (this._creationLock)
+        {
+            return this.InternalGetRepository(type) ?? this.CreateAndRegisterMemoryRepository(type);
+        }
     }
 
     private IRepository CreateAndRegisterMemoryRepository(Type type)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -328,6 +328,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Kanturu Refinery Tower event configuration.</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>Standardize event entrance duration</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>This update raises the entrance duration of the events with a shared entrance, like Blood Castle, Devil Square and Kanturu, to the five minutes which every event entrance announces.</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>Fix Drain Life Skill</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>Updates the attributes of the summoner's Drain Life skill to make it work properly.</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Rage Fighter Master Tree PlugIn</value></data>
@@ -384,4 +386,8 @@
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly.</value></data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve"><value>Fix transformation ring rules</value></data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve"><value>Requires character level 50 for transformation ring levels 3 to 5 and adds the Death Cow ring's 20% maximum-health bonus.</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>Add Rage Fighter Ancient Sets</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
 </root>

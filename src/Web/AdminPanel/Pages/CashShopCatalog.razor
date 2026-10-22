@@ -67,7 +67,7 @@ else if (this._selectedPackage is not { } package)
             <div class="table-responsive">
             <QuickGrid Items="@this.FilteredPackages" Pagination="@this._pagination" Theme="none" Class="table table-striped table-sm">
                 <PropertyColumn Title="@Resources.CashShopPackageSequence" Property="@(p => p.PackageSequence)" Sortable="true" />
-                <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(p => string.IsNullOrEmpty(p.Name) ? NoValue : p.Name)" Sortable="true" />
+                <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(p => string.IsNullOrEmpty(GetPackageName(p)) ? NoValue : GetPackageName(p))" Sortable="true" />
                 <TemplateColumn Title="@Resources.CashShopCoinType">@CashShopCoinCaption.Get(context.CoinType)</TemplateColumn>
                 <TemplateColumn Title="@Resources.CashShopPrice">@GetPriceText(context)</TemplateColumn>
                 <TemplateColumn Title="@Resources.CashShopForSale">@GetFlagText(context.IsForSale)</TemplateColumn>
@@ -102,7 +102,7 @@ else
 {
     <div class="d-flex flex-row">
         <button type="button" class="btn btn-secondary me-3" @onclick="this.OnBackToList">&lt; @Resources.Back</button>
-        <h2>@(string.IsNullOrEmpty(package.Name) ? package.PackageSequence.ToString() : $"{package.PackageSequence}: {package.Name}")</h2>
+        <h2>@(string.IsNullOrEmpty(GetPackageName(package)) ? package.PackageSequence.ToString() : $"{package.PackageSequence}: {GetPackageName(package)}")</h2>
     </div>
     <hr />
     @foreach (var issue in CashShopCatalogCheck.GetIssues(configuration, package))
@@ -118,8 +118,7 @@ else
                     <InputNumber class="form-control" id="packageSequence" @bind-Value="package.PackageSequence" />
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label" for="packageName">@Resources.ConfigurationEntryName</label>
-                    <InputText class="form-control" id="packageName" @bind-Value="package.Name" />
+                    <LocalizedStringField Label="@Resources.ConfigurationEntryName" @bind-Value="package.Name" />
                 </div>
                 <div class="col-md-2">
                     <label class="form-label" for="coinType">@Resources.CashShopCoinType</label>

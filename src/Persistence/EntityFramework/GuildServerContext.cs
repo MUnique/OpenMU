@@ -137,4 +137,18 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             .Distinct()
             .ToListAsync().ConfigureAwait(false);
     }
+
+    /// <inheritdoc/>
+    public async ValueTask<GuildStatistics> GetGuildStatisticsAsync(CancellationToken cancellationToken = default)
+    {
+        var guilds = this.Context.Set<Guild>().AsNoTracking();
+        var guildCount = await guilds.CountAsync(cancellationToken).ConfigureAwait(false);
+        var allianceCount = await guilds
+            .Where(g => g.AllianceGuildId != null)
+            .Select(g => g.AllianceGuildId)
+            .Distinct()
+            .CountAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return new GuildStatistics(guildCount, allianceCount);
+    }
 }

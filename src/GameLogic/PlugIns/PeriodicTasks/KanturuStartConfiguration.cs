@@ -13,10 +13,11 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
 {
     /// <summary>
     /// Gets the default configuration for the Kanturu event.
-    /// The event runs every 6 hours: each tick opens a silent entry lobby while no
-    /// fight runs and the tower is closed. Entry is additionally always open on demand,
-    /// and the tower stays open for <see cref="TowerOpenDuration"/> after Nightmare dies,
-    /// during which scheduled starts are skipped.
+    /// The event runs three times a day, at 03:00, 11:00 and 19:00: each tick opens a
+    /// silent entry lobby while no fight runs and the tower is closed. Entry is
+    /// additionally always open on demand, and the tower stays open for
+    /// <see cref="TowerOpenDuration"/> after Nightmare dies, during which scheduled
+    /// starts are skipped.
     /// There are no entrance announcements; the gateway dialog shows the live state.
     /// </summary>
     public static KanturuStartConfiguration Default =>
@@ -26,7 +27,7 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             EntranceOpenedMessage = "Kanturu Refinery Tower entrance is open and closes in {0} minute(s).",
             EntranceClosedMessage = "Kanturu Refinery Tower entrance closed.",
             TaskDuration = TimeSpan.FromHours(6),
-            Timetable = GenerateTimeSequence(TimeSpan.FromHours(6)).ToList(),
+            Timetable = GenerateTimeSequence(TimeSpan.FromHours(8), startLimit: new TimeOnly(3, 0)).ToList(),
             TowerOpenDuration = TimeSpan.FromHours(23),
         };
 

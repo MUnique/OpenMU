@@ -139,6 +139,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CastleSiegePendingReward>().Apply();
         modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
         modelBuilder.Entity<CastleSiegeNpcState>().Apply();
+        modelBuilder.Entity<CashShopPackage>().Apply();
         modelBuilder.Entity<CashShopStorageItem>().Apply();
         modelBuilder.Entity<CashShopCoinGrant>().Apply();
         modelBuilder.Entity<AccountExternalLink>().Apply();

@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -20,6 +23,85 @@ internal class CashShopUpdateTest
     /// Character Cards, the Magic Backpack and the Vault Expansion Certificate, for WCoin (C) and (P).
     /// </summary>
     private static readonly int[] DeliveryPackages = [126, 127, 258, 259, 260, 261, 263, 264];
+
+    /// <summary>
+    /// Old package names link by their script number even when database ids differ, without replacing custom names.
+    /// </summary>
+    [Test]
+    public async Task PackageNamesLinkAndTranslateWithoutChangingTheCatalogAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var packages = gameConfiguration.CashShopConfiguration!.Packages.ToList();
+        var chinese = CultureInfo.GetCultureInfo("zh-CN");
+        Assert.That(packages, Has.All.Matches<CashShopPackage>(p =>
+            p.Name.SourceKey?.StartsWith("CashShopPackageNames/", StringComparison.Ordinal) is true));
+        var reference = CaptionLinkReference.Create(gameConfiguration);
+        var original = packages.ToDictionary(p => p.PackageSequence, p => p.Name);
+        var catalog = packages.Select(p => (p.PackageSequence, p.Price, p.CoinType, p.IsForSale, p.IsGiftable, p.IsBundle, Products: p.Products.ToArray())).ToArray();
+        foreach (var package in packages)
+        {
+            package.SetGuid(Guid.NewGuid());
+            package.Name = new LocalizedString(package.Name.ValueInNeutralLanguage);
+        }
+
+        var customized = packages.Single(p => p.PackageSequence == 3);
+        customized.Name = "Custom ticket";
+        var customTranslation = packages.Single(p => p.PackageSequence == 4);
+        customTranslation.Name = customTranslation.Name.WithTranslation(chinese, "自定义药水");
+        var result = ConfigurationCaptions.LinkSourceKeys(gameConfiguration, reference);
+        Assert.That(result.Linked, Is.EqualTo(204));
+        Assert.That(result.SkippedBecauseOfCustomizedNeutralText, Is.EqualTo(1));
+        Assert.That(customized.Name.SourceKey, Is.Null);
+        Assert.That(customTranslation.Name.GetOwnTranslation(chinese), Is.EqualTo("自定义药水"));
+        Assert.That(packages.Single(p => p.PackageSequence == 6).Name.GetOwnTranslation(chinese), Is.Null);
+        var changes = ConfigurationCaptions.DetermineChanges(gameConfiguration)
+            .Where(change => change.CultureName == chinese.Name && change.IsRecommended).ToList();
+        ConfigurationCaptions.ApplyChanges(gameConfiguration, changes.Select(change => change.Id));
+        foreach (var package in packages.Where(p => p != customized && p != customTranslation))
+        {
+            Assert.That(package.Name.GetOwnTranslation(chinese), Is.EqualTo(original[package.PackageSequence].GetOwnTranslation(chinese)));
+            Assert.That(package.Name.ValueInNeutralLanguage, Is.EqualTo(original[package.PackageSequence].ValueInNeutralLanguage));
+        }
+
+        Assert.That(customTranslation.Name.GetOwnTranslation(chinese), Is.EqualTo("自定义药水"));
+        Assert.That(ConfigurationCaptions.LinkSourceKeys(gameConfiguration, reference).Linked, Is.Zero);
+        Assert.That(ConfigurationCaptions.DetermineChanges(gameConfiguration).Any(change => change.CultureName == chinese.Name && change.IsRecommended), Is.False);
+        Assert.That(packages.Select(p => (p.PackageSequence, p.Price, p.CoinType, p.IsForSale, p.IsGiftable, p.IsBundle, Products: p.Products.ToArray())), Is.EqualTo(catalog));
+    }
+
+    /// <summary>
+    /// Duplicate script numbers on either side cannot identify an old package safely.
+    /// </summary>
+    /// <param name="duplicateReference">Whether the reference rather than the target has duplicate numbers.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public void DuplicatePackageNumbersAreNotLinked(bool duplicateReference)
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using var context = provider.CreateNewContext();
+        GameConfiguration CreateConfiguration(bool reference)
+        {
+            var configuration = context.CreateNew<GameConfiguration>();
+            configuration.CashShopConfiguration = context.CreateNew<CashShopConfiguration>();
+            for (var i = 0; i < (reference == duplicateReference ? 2 : 1); i++)
+            {
+                var package = context.CreateNew<CashShopPackage>();
+                package.PackageSequence = 6;
+                package.Name = reference
+                    ? LocalizedString.FromResource(() => Properties.CashShopPackageNames.SDBoostAura)
+                    : new LocalizedString("SD Boost Aura");
+                configuration.CashShopConfiguration.Packages.Add(package);
+            }
+
+            return configuration;
+        }
+
+        var reference = CreateConfiguration(true);
+        var existing = CreateConfiguration(false);
+        Assert.That(ConfigurationCaptions.LinkSourceKeys(existing, reference).Linked, Is.Zero);
+        Assert.That(existing.CashShopConfiguration!.Packages, Has.All.Matches<CashShopPackage>(p => p.Name.SourceKey is null));
+    }
 
     /// <summary>
     /// Tests that a freshly initialized database contains the cash shop configuration
@@ -46,7 +128,7 @@ internal class CashShopUpdateTest
         Assert.That(configuration.Packages.Where(p => DeliveryPackages.Contains(p.PackageSequence)), Has.All.Matches<CashShopPackage>(p => p.IsForSale));
 
         var seal = configuration.Packages.Single(p => p.PackageSequence == 122);
-        Assert.That(seal.Name, Is.EqualTo("Seal of Wealth"));
+        Assert.That(seal.Name.ValueInNeutralLanguage, Is.EqualTo("Seal of Wealth"));
         Assert.That(seal.CoinType, Is.EqualTo(CashShopCoinType.WCoinC));
         Assert.That(seal.IsBundle, Is.False);
         Assert.That(seal.Products.Select(p => p.Duration), Is.EquivalentTo(new[] { TimeSpan.FromDays(1), TimeSpan.FromDays(3), TimeSpan.FromDays(7), TimeSpan.FromDays(30) }));

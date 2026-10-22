@@ -373,6 +373,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     {
         try
         {
+            if (this.IsDisposed || this.IsDisposing)
+            {
+                // It got disposed while waiting for the respawn, e.g. because its spawn area was removed.
+                return;
+            }
+
             if (!this.ShouldRespawn)
             {
                 await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);

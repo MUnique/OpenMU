@@ -1,0 +1,153 @@
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.Shared.Properties
+
+@implements IAsyncDisposable
+
+@if (this._selectedMap is null)
+{
+    return;
+}
+
+<h3>@this._selectedMap.Name.ToString()</h3>
+
+<div class="terrain-select row g-2 mb-2">
+    <div class="col-md-5">
+        <label class="form-label" for="terrainMapSelect">@Resources.SelectedMap:</label>
+        <select class="form-select" id="terrainMapSelect" @onchange="this.OnMapSelectedAsync" autocomplete="off" @ref="this._mapSelectRef">
+            @foreach (var map in this.Maps)
+            {
+                <option value="@map.GetId()" selected="@(ReferenceEquals(this._selectedMap, map))">@Resources.Map: @map.ToString()</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="terrainSelect">@Resources.TerrainEditorTerrain:</label>
+        <select class="form-select" id="terrainSelect" @onchange="this.OnTerrainSelected" autocomplete="off">
+            <option value="@Guid.Empty" selected="@(this._selectedVariant is null)">@Resources.DefaultTerrain</option>
+            @foreach (var variant in this._selectedMap.TerrainVariants.OrderBy(v => v.Number))
+            {
+                <option value="@variant.GetId()" selected="@(ReferenceEquals(this._selectedVariant, variant))">@variant.ToString()</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="btn-toolbar my-2 gap-2" role="toolbar" aria-label="@Resources.Toolbar">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-secondary" @onclick="this.TriggerFileImportAsync" title="@Resources.ImportTerrainHint">
+            <span class="oi oi-data-transfer-upload"></span> @Resources.ImportTerrain
+        </button>
+        <BlazorInputFile.InputFile OnChange="@this.ImportFileSelectedAsync" accept=".att" style="display:none" id="@ImportInputId" />
+        <button type="button" class="btn btn-secondary" @onclick="this.DownloadServerFileAsync" title="@Resources.DownloadServerTerrainHint">
+            <span class="oi oi-data-transfer-download"></span> @Resources.DownloadServerTerrain
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="this.DownloadClientFileAsync" title="@string.Format(Resources.DownloadClientTerrainHint, this._selectedMap.Number + 1)">
+            <span class="oi oi-data-transfer-download"></span> @Resources.DownloadClientTerrain
+        </button>
+    </div>
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-secondary" @onclick="this.UndoAsync" disabled="@(!this._canUndo)" title="@Resources.Undo">
+            <span class="oi oi-action-undo"></span> @Resources.Undo
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="this.RedoAsync" disabled="@(!this._canRedo)" title="@Resources.Redo">
+            <span class="oi oi-action-redo"></span> @Resources.Redo
+        </button>
+        <button type="button" class="btn btn-primary" @onclick="this.SaveAsync" title="@Resources.Save">
+            <span class="oi oi-cloud-upload"></span> @Resources.Save
+        </button>
+    </div>
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-secondary" @onclick="() => this.ZoomByAsync(-1)" disabled="@(this._zoom <= MinimumZoom)" title="@Resources.ZoomOut">
+            <span class="oi oi-zoom-out"></span>
+        </button>
+        <button type="button" class="btn btn-secondary zoom-display" disabled>@(this._zoom * 100)%</button>
+        <button type="button" class="btn btn-secondary" @onclick="() => this.ZoomByAsync(1)" disabled="@(this._zoom >= MaximumZoom)" title="@Resources.ZoomIn">
+            <span class="oi oi-zoom-in"></span>
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="this.ResetZoomAsync" title="@Resources.ResetZoom">
+            <span class="oi oi-reload"></span>
+        </button>
+        <button type="button" class="btn @(this._showGrid ? "btn-primary" : "btn-secondary")" @onclick="this.ToggleGridAsync" title="@Resources.ToggleGrid">
+            <span class="oi oi-grid-three-up"></span>
+        </button>
+    </div>
+</div>
+
+<div class="terrain-editor-row">
+    <div class="terrain-column">
+        <div class="terrain-host-container">
+            <div class="terrain-host" @ref="this._hostRef">
+                <div class="terrain-content">
+                    <canvas @ref="this._canvasRef" aria-label="@string.Format(Resources.TerrainOf, this._selectedMap.Name.ToString())"></canvas>
+                    <div class="terrain-grid"></div>
+                    <div class="terrain-selection" @ref="this._selectionRef"></div>
+                </div>
+            </div>
+            <div class="terrain-status"><span @ref="this._statusRef"></span></div>
+        </div>
+
+        <div class="alert alert-info py-1 px-2 mt-2 mb-0 small" role="alert">
+            <div>@Resources.TerrainEditorShortcutPaint</div>
+            <div>@Resources.TerrainEditorShortcutPan</div>
+            <div>@Resources.TerrainEditorShortcutZoom</div>
+        </div>
+    </div>
+
+    <div class="terrain-tool-column">
+        <fieldset class="mb-3">
+            <legend class="fs-6">@Resources.TerrainTool</legend>
+            <div class="btn-group w-100" role="group">
+                @foreach (var tool in Enum.GetValues<TerrainTool>())
+                {
+                    <button type="button" class="btn @(this._tool == tool ? "btn-primary" : "btn-outline-primary")" @onclick="() => this.SetToolAsync(tool)">
+                        <span class="oi @GetToolIcon(tool)"></span> @GetToolCaption(tool)
+                    </button>
+                }
+            </div>
+            @if (this._tool == TerrainTool.Brush)
+            {
+                <label class="form-label mt-2" for="terrainBrushSize">@Resources.TerrainBrushSize: @this._brushSize</label>
+                <input type="range" class="form-range" id="terrainBrushSize" min="1" max="@MaximumBrushSize" value="@this._brushSize" @onchange="this.OnBrushSizeChangedAsync" />
+            }
+        </fieldset>
+
+        <fieldset class="mb-3">
+            <legend class="fs-6">@Resources.TerrainEditMode</legend>
+            @foreach (var mode in Enum.GetValues<TerrainEditMode>())
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="terrainEditMode" id="@($"terrainEditMode{mode}")" checked="@(this._mode == mode)" @onchange="() => this.SetModeAsync(mode)" />
+                    <label class="form-check-label" for="@($"terrainEditMode{mode}")">@GetModeCaption(mode)</label>
+                </div>
+            }
+        </fieldset>
+
+        <fieldset class="mb-3">
+            <legend class="fs-6">@Resources.TerrainAttributes</legend>
+            @foreach (var attributeType in EditableAttributes)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="@($"terrainAttribute{attributeType}")" checked="@this._attributes.HasFlag(attributeType)" @onchange="() => this.ToggleAttributeAsync(attributeType)" />
+                    <label class="form-check-label" for="@($"terrainAttribute{attributeType}")">
+                        <span class="terrain-swatch" style="background-color: @GetColor(attributeType)"></span> @attributeType.GetEnumCaption()
+                    </label>
+                </div>
+            }
+        </fieldset>
+
+        <fieldset class="mb-3">
+            <legend class="fs-6">@Resources.TerrainLegend</legend>
+            <ul class="list-unstyled small mb-0">
+                <li><span class="terrain-swatch" style="background-color: @WalkableColor"></span> @Resources.TerrainWalkable</li>
+                @foreach (var entry in Palette)
+                {
+                    <li><span class="terrain-swatch" style="background-color: @entry.Color"></span> @GetLegendCaption(entry.Mask)</li>
+                }
+            </ul>
+        </fieldset>
+
+        <div class="alert alert-secondary small" role="note">@Resources.TerrainEditorRestartHint</div>
+    </div>
+</div>

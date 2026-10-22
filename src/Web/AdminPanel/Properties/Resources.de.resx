@@ -1878,6 +1878,9 @@
   <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
     <value>Produkt {0} hat eine Menge kleiner als 1.</value>
   </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>Terrain-Editor</value>
+  </data>
   <data name="LoggingConfiguration" xml:space="preserve">
     <value>Logging-Konfiguration</value>
   </data>
@@ -1922,6 +1925,117 @@
   </data>
   <data name="LogLevelOverridesInvalid" xml:space="preserve">
     <value>Jede Quelle benötigt einen Namen, und jeder Name darf nur einmal verwendet werden.</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DashboardPlayersOnline" xml:space="preserve">
+    <value>Spieler online</value>
+  </data>
+  <data name="DashboardPlayerCapacity" xml:space="preserve">
+    <value>von {0} Plätzen auf den laufenden Spielservern</value>
+  </data>
+  <data name="DashboardServersRunning" xml:space="preserve">
+    <value>Laufende Server</value>
+  </data>
+  <data name="DashboardServersNotRunning" xml:space="preserve">
+    <value>{0} nicht gestartet</value>
+  </data>
+  <data name="DashboardAllServersRunning" xml:space="preserve">
+    <value>Alle Server laufen</value>
+  </data>
+  <data name="DashboardNewAccounts" xml:space="preserve">
+    <value>+{0} in den letzten 7 Tagen registriert</value>
+  </data>
+  <data name="DashboardBannedAccounts" xml:space="preserve">
+    <value>{0} gesperrt</value>
+  </data>
+  <data name="DashboardAlliances" xml:space="preserve">
+    <value>{0} Allianzen</value>
+  </data>
+  <data name="DashboardCharacters" xml:space="preserve">
+    <value>{0} Charaktere</value>
+  </data>
+  <data name="DashboardNotAvailable" xml:space="preserve">
+    <value>Nicht verfügbar</value>
+  </data>
+  <data name="DashboardOnlineHistory" xml:space="preserve">
+    <value>Spieler online in den letzten 24 Stunden</value>
+  </data>
+  <data name="DashboardOnlineHistoryDescription" xml:space="preserve">
+    <value>Diagramm der Spieler online in den letzten 24 Stunden. Aktuell {0}, Höchstwert {1}, Tiefstwert {2}.</value>
+  </data>
+  <data name="DashboardSampleInterval" xml:space="preserve">
+    <value>alle {0} Minuten erfasst</value>
+  </data>
+  <data name="DashboardCollectingData" xml:space="preserve">
+    <value>Daten werden gesammelt. Der Verlauf beginnt mit dem Start des Admin-Panels.</value>
+  </data>
+  <data name="DashboardHoursAgo" xml:space="preserve">
+    <value>vor {0} Std.</value>
+  </data>
+  <data name="DashboardNow" xml:space="preserve">
+    <value>jetzt</value>
+  </data>
+  <data name="DashboardCurrent" xml:space="preserve">
+    <value>Aktuell</value>
+  </data>
+  <data name="DashboardPeak" xml:space="preserve">
+    <value>Höchstwert</value>
+  </data>
+  <data name="DashboardLow" xml:space="preserve">
+    <value>Tiefstwert</value>
+  </data>
+  <data name="DashboardManageServers" xml:space="preserve">
+    <value>Server verwalten</value>
+  </data>
+  <data name="DashboardConnections" xml:space="preserve">
+    <value>{0} Verbindungen</value>
+  </data>
+  <data name="DashboardAdministratorsOnly" xml:space="preserve">
+    <value>Nur für Administratoren</value>
+  </data>
+  <data name="DashboardUptime" xml:space="preserve">
+    <value>Laufzeit</value>
+  </data>
+  <data name="DashboardUptimeValue" xml:space="preserve">
+    <value>{0} T. {1} Std. {2} Min.</value>
+  </data>
+  <data name="DashboardMemory" xml:space="preserve">
+    <value>Arbeitsspeicher</value>
+  </data>
+  <data name="DashboardMemoryValue" xml:space="preserve">
+    <value>{0:N0} MB Arbeitssatz</value>
+  </data>
+  <data name="DashboardVersion" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="DashboardDatabase" xml:space="preserve">
+    <value>Datenbank</value>
+  </data>
+  <data name="DashboardDatabaseConnected" xml:space="preserve">
+    <value>Verbunden</value>
+  </data>
+  <data name="DashboardDatabaseNotReachable" xml:space="preserve">
+    <value>Nicht erreichbar</value>
+  </data>
+  <data name="DashboardConfigurationUpdates" xml:space="preserve">
+    <value>Konfigurationsaktualisierungen</value>
+  </data>
+  <data name="DashboardUpdatesAvailable" xml:space="preserve">
+    <value>Aktualisierungen sind für Ihre Spielkonfiguration verfügbar.</value>
+  </data>
+  <data name="DashboardNoUpdates" xml:space="preserve">
+    <value>Ihre Spielkonfiguration ist aktuell.</value>
+  </data>
+  <data name="DashboardReviewUpdates" xml:space="preserve">
+    <value>Aktualisierungen prüfen</value>
+  </data>
+  <data name="DashboardQuickActions" xml:space="preserve">
+    <value>Schnellzugriff</value>
+  </data>
+  <data name="DashboardOpen" xml:space="preserve">
+    <value>Öffnen</value>
   </data>
   <data name="ExternalLinks" xml:space="preserve">
     <value>Verknüpfungen</value>

@@ -287,6 +287,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>添加新的系统配置。</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>添加坎特鲁副本数据</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>添加坎特鲁提炼之塔副本配置。</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>统一活动入口持续时间</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>此更新将共用入口的活动（如血色城堡、恶魔广场和坎特鲁）的入口持续时间统一为所有活动入口公告的五分钟。</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>修正摄魂咒</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>更新召唤术师摄魂咒的属性，使其正常工作。</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>补全格斗家大师技能树</value></data>
@@ -369,4 +371,14 @@
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
     <value>变身戒指等级 3 至 5 需要角色等级达到 50，并为死亡牛戒指增加 20% 最大生命值加成。</value>
   </data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>添加格斗家古代套装</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>此更新添加圣火装备的古代套装：维加和卡默。</value></data>
+  <data name="AddCashShopUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加商城</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加商城配置，包含游戏客户端商城脚本 512.2012.084 中的商品包，以及从商城保管箱使用时生效的物品（角色卡、仓库和背包扩展道具）。</value>
+  </data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战守卫</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>攻城战地图桥边的守卫打开报名窗口，魔炼之地入口的守卫变为被动NPC，并打开魔炼之地对话框。</value></data>
 </root>

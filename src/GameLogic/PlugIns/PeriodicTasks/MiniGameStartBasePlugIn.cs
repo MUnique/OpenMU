@@ -124,7 +124,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
                 announcement.LastAnnouncedMinutes = minutesLeft;
                 if (this.Configuration?.EntranceOpenedMessage is { } openMessage)
                 {
-                    await gameContext.SendGlobalNotificationAsync(string.Format(openMessage, minutesLeft)).ConfigureAwait(false);
+                    await gameContext.SendGlobalNotificationAsync(openMessage, minutesLeft).ConfigureAwait(false);
                 }
             }
 
@@ -211,7 +211,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         Announcements[(this.GetType(), state.Context)] = new EntranceAnnouncement { LastAnnouncedMinutes = initialMinutes };
         if (initialMinutes >= 1 && this.Configuration?.EntranceOpenedMessage is { } openMessage)
         {
-            await state.Context.SendGlobalNotificationAsync(string.Format(openMessage, initialMinutes)).ConfigureAwait(false);
+            await state.Context.SendGlobalNotificationAsync(openMessage, initialMinutes).ConfigureAwait(false);
         }
     }
 
