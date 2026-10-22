@@ -84,7 +84,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *RequestCSAttGuildList*     | 0xB5              | 100%     | 2          |                                               |
 | *RequestCSWeaponUse*        | 0xB7              | 100%     | 1          | The server applies the impact itself; the weapon explosion request (0xB704) is accepted without effect |
 | *LoggedIn*                    | 0xB8              | 100%     | 1          |                                               |
-| RequestGuildMarkCastleOwner | 0xB902            | 0%       | 1          | Entering the hunting zone (0xB905) is implemented |
+| *RequestGuildMarkCastleOwner* | 0xB902            | 100%     | 1          | Entering the hunting zone (0xB905) is implemented |
 | *JewelMix*                    | 0xBC              | 100%     | 4          |                                               |
 | *CrywolfGroup*              | 0xBD              | 100%     | 10         |                                               |
 | FriendListRequest           | 0xC0              | 0%       | 0          | Not needed, friend list is sent automatically |

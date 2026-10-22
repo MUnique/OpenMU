@@ -2681,6 +2681,18 @@
   <data name="ShowShopCurrenciesExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="CastleSiegeOwnerLogoHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege owner logo request handler</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request for the guild logo of the castle owner, which the client sends when it enters the Castle Siege map.</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege owner logo view</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoPlugIn_Description" xml:space="preserve">
+    <value>Sends the guild logo of the castle owner to the game client.</value>
+  </data>
   <data name="CastleSiegeWeaponExplosionHandlerPlugIn_Name" xml:space="preserve">
     <value>Castle Siege weapon explosion handler</value>
   </data>

@@ -1303,6 +1303,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the request for the guild logo of the castle owner, which the client sends when it enters the Castle Siege map..
+        /// </summary>
+        public static string CastleSiegeOwnerLogoHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege owner logo request handler.
+        /// </summary>
+        public static string CastleSiegeOwnerLogoHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the guild logo of the castle owner to the game client..
+        /// </summary>
+        public static string CastleSiegeOwnerLogoPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege owner logo view.
+        /// </summary>
+        public static string CastleSiegeOwnerLogoPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege ownership changes to the game client..
         /// </summary>
         public static string CastleSiegeOwnershipChangePlugIn_Description {
