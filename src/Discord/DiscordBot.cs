@@ -40,6 +40,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     internal const string SetupCommandName = "setup";
 
     private readonly DiscordBotSettings _settings;
+    private readonly IReadOnlyCollection<DiscordChannelCategory> _disabledNotifications;
     private readonly DiscordCommands _commands;
     private readonly DiscordAccountCommands _accountCommands;
     private readonly DiscordStatusFormatter _statusFormatter;
@@ -54,6 +55,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
 
     private DiscordSocketClient? _client;
+    private DiscordBackgroundQueue? _backgroundQueue;
     private TaskCompletionSource _ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private CancellationTokenSource? _statusLoopCancellation;
     private DiscordChannelRouting _routing;
@@ -76,9 +78,11 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <param name="gameMasterCommands">The commands for game masters.</param>
     /// <param name="directMessages">The direct messages to linked users.</param>
     /// <param name="logger">The logger.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, DiscordGameMasterCommands gameMasterCommands, DiscordDirectMessages directMessages, ILogger<DiscordBot> logger)
+    /// <param name="disabledNotifications">The categories which must not be sent, including direct GM announcements.</param>
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, DiscordGameMasterCommands gameMasterCommands, DiscordDirectMessages directMessages, ILogger<DiscordBot> logger, IReadOnlyCollection<DiscordChannelCategory>? disabledNotifications = null)
     {
         this._settings = settings;
+        this._disabledNotifications = disabledNotifications ?? [];
         this._commands = commands;
         this._accountCommands = accountCommands;
         this._statusFormatter = statusFormatter;
@@ -149,6 +153,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             this._ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            this._backgroundQueue = new DiscordBackgroundQueue(this._logger);
             var client = new DiscordSocketClient(new DiscordSocketConfig { GatewayIntents = this.GetGatewayIntents() });
             client.Log += this.OnLogAsync;
             client.Ready += () => this.OnReadyAsync(client);
@@ -198,7 +203,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <remarks>
     /// The channels of the layout are known after the bot connected to Discord.
     /// </remarks>
-    public ulong? GetChannelId(DiscordChannelCategory category) => this._routing.GetChannelId(category);
+    public ulong? GetChannelId(DiscordChannelCategory category) => this._disabledNotifications.Contains(category) ? null : this._routing.GetChannelId(category);
 
     /// <inheritdoc />
     public async Task SendAsync(ulong channelId, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
@@ -270,6 +275,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
 
     private async ValueTask StopClientAsync()
     {
+        if (this._backgroundQueue is { } backgroundQueue)
+        {
+            this._backgroundQueue = null;
+            await backgroundQueue.DisposeAsync().ConfigureAwait(false);
+        }
+
         if (this._statusLoopCancellation is { } cancellation)
         {
             await cancellation.CancelAsync().ConfigureAwait(false);
@@ -336,18 +347,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             return (ApplicationCommandProperties)builder.Build();
         }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).Concat(this.CreateExtraCommands()).ToArray();
 
+        // Guild-owned chat channels need /link, /guildchat and /say outside the routing guild, too.
+        await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         if (this._settings.GuildId is { } guildId && client.GetGuild(guildId) is { } guild)
         {
+            // Keep immediate availability on the main Discord server.
             await guild.BulkOverwriteApplicationCommandAsync(commands).ConfigureAwait(false);
-        }
-        else
-        {
-            if (this._settings.GuildId is { } missingGuildId)
-            {
-                this._logger.LogWarning("The bot isn't on the configured Discord server {guildId}, so the slash commands are registered globally, which can take up to an hour. Is the identifier correct, and was the bot invited?", missingGuildId);
-            }
-
-            await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         }
     }
 

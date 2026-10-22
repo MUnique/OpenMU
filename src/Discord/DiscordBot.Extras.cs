@@ -62,12 +62,12 @@ public sealed partial class DiscordBot
             await command.DeferAsync(ephemeral: true).ConfigureAwait(false);
             var argument = command.Data.Options.FirstOrDefault()?.Value as string ?? string.Empty;
             var answer = await this._gameMasterCommands.ExecuteAsync(command.Data.Name, argument, command.User.Id, command.User.Username, this.HasGameMasterRole(command)).ConfigureAwait(false);
-            if (answer.StaffAlert is { } alert && this._routing.GetChannelId(DiscordChannelCategory.StaffAlerts) is { } channelId)
+            if (answer.StaffAlert is { } alert && this.GetChannelId(DiscordChannelCategory.StaffAlerts) is { } channelId)
             {
                 await this.SendAsync(channelId, [alert], CancellationToken.None).ConfigureAwait(false);
             }
 
-            if (answer.Announcement is { } announcement && this._routing.GetChannelId(DiscordChannelCategory.Notices) is { } noticesChannelId)
+            if (answer.Announcement is { } announcement && this.GetChannelId(DiscordChannelCategory.Notices) is { } noticesChannelId)
             {
                 await this.SendAsync(noticesChannelId, [announcement], CancellationToken.None).ConfigureAwait(false);
             }
@@ -115,20 +115,24 @@ public sealed partial class DiscordBot
     /// </summary>
     private void SendDirectMessages(GameEvent gameEvent)
     {
-        _ = Task.Run(async () =>
+        this._backgroundQueue?.Enqueue(async cancellationToken =>
         {
             try
             {
                 foreach (var (userId, embed) in await this._directMessages.GetMessagesAsync(gameEvent).ConfigureAwait(false))
                 {
-                    await this._ready.Task.WaitAsync(CancellationToken.None).ConfigureAwait(false);
+                    await this._ready.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
                     if (this._client is { } client
-                        && await client.Rest.GetUserAsync(userId).ConfigureAwait(false) is { } user)
+                        && await client.Rest.GetUserAsync(userId, options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false) is { } user)
                     {
-                        var channel = await user.CreateDMChannelAsync().ConfigureAwait(false);
-                        await channel.SendMessageAsync(embed: ToDiscordEmbed(embed), allowedMentions: AllowedMentions.None).ConfigureAwait(false);
+                        var channel = await user.CreateDMChannelAsync(new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
+                        await channel.SendMessageAsync(embed: ToDiscordEmbed(embed), allowedMentions: AllowedMentions.None, options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
                     }
                 }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // The connection lifetime ended.
             }
             catch (Exception ex)
             {
@@ -151,11 +155,11 @@ public sealed partial class DiscordBot
         }
 
         var endUtc = stateChanged.NextBattleEndUtc is { } end && end > startUtc ? end : startUtc.AddHours(2);
-        _ = Task.Run(async () =>
+        this._backgroundQueue?.Enqueue(async cancellationToken =>
         {
             try
             {
-                await this._ready.Task.WaitAsync(CancellationToken.None).ConfigureAwait(false);
+                await this._ready.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
                 if (this._client is not { } client || this.GetRoutingGuild(client) is not { } guild)
                 {
                     return;
@@ -164,7 +168,7 @@ public sealed partial class DiscordBot
                 var name = this._commands.Text(nameof(Resources.Event_CastleSiege_Name));
                 var start = new DateTimeOffset(DateTime.SpecifyKind(startUtc, DateTimeKind.Utc));
                 var endTime = new DateTimeOffset(DateTime.SpecifyKind(endUtc, DateTimeKind.Utc));
-                var events = await guild.GetEventsAsync().ConfigureAwait(false);
+                var events = await guild.GetEventsAsync(options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
                 var existing = events.FirstOrDefault(e => e.Name == name && e.Type == GuildScheduledEventType.External && e.Status == GuildScheduledEventStatus.Scheduled);
                 if (existing is null)
                 {
@@ -175,16 +179,23 @@ public sealed partial class DiscordBot
                         GuildScheduledEventPrivacyLevel.Private,
                         this._commands.Text(nameof(Resources.Event_CastleSiege_Description)),
                         endTime,
-                        location: this._commands.Text(nameof(Resources.Event_Location))).ConfigureAwait(false);
+                        location: this._commands.Text(nameof(Resources.Event_Location)),
+                        options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
                 }
                 else if (existing.StartTime != start || existing.EndTime != endTime)
                 {
-                    await existing.ModifyAsync(properties =>
-                    {
-                        properties.StartTime = start;
-                        properties.EndTime = endTime;
-                    }).ConfigureAwait(false);
+                    await existing.ModifyAsync(
+                        properties =>
+                        {
+                            properties.StartTime = start;
+                            properties.EndTime = endTime;
+                        },
+                        options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
                 }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // The connection lifetime ended.
             }
             catch (Exception ex)
             {

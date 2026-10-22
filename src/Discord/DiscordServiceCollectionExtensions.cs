@@ -52,7 +52,8 @@ public static class DiscordServiceCollectionExtensions
     public static IServiceCollection AddDiscord(this IServiceCollection services, DiscordSettings settings, Func<TimeZoneInfo> getServerTimeZone)
     {
         var culture = settings.GetCulture();
-        if (settings.Bot.IsEnabled)
+        var useBot = settings.UseBot is not false && settings.Bot.IsEnabled;
+        if (useBot)
         {
             services
                 .AddSingleton<IDiscordGameDataProvider>(provider => new DiscordGameDataProvider(
@@ -108,7 +109,8 @@ public static class DiscordServiceCollectionExtensions
                     provider.GetRequiredService<DiscordChatCommands>(),
                     provider.GetRequiredService<DiscordGameMasterCommands>(),
                     provider.GetRequiredService<DiscordDirectMessages>(),
-                    provider.GetRequiredService<ILogger<DiscordBot>>()))
+                    provider.GetRequiredService<ILogger<DiscordBot>>(),
+                    settings.DisabledNotifications))
                 .AddHostedService(provider => provider.GetRequiredService<DiscordBot>())
                 .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordBot>());
         }
@@ -118,7 +120,7 @@ public static class DiscordServiceCollectionExtensions
             services.AddSingleton<IGameEventListener>(provider => new DiscordNotifier(
                 settings,
                 DiscordHttpClient.Create(),
-                settings.Bot.IsEnabled ? provider.GetRequiredService<DiscordBot>() : null,
+                useBot ? provider.GetRequiredService<DiscordBot>() : null,
                 serverId => provider.GetRequiredService<IServerProvider>().Servers.OfType<IGameServer>().FirstOrDefault(server => server.Id == serverId)?.Description,
                 guildId => provider.GetRequiredService<IGuildServer>().GetPersistentGuildNameAsync(guildId),
                 provider.GetRequiredService<ILoggerFactory>()));

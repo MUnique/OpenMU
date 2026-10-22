@@ -126,6 +126,36 @@ public class DiscordConfigurationServiceTests
         Assert.That(service.IsDefinedElsewhere("Bot:LayoutFile"), Is.False);
     }
 
+    /// <summary>
+    /// Managed values are displayed correctly but never copied from the environment into the file.
+    /// </summary>
+    [Test]
+    public async Task ManagedValuesAreDisplayedWithoutPersistingSecretsAsync()
+    {
+        var configuration = new ConfigurationBuilder().AddJsonFile(this._filePath)
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Discord:Language"] = "en",
+                ["Discord:Bot:Token"] = "environment-secret",
+                ["Discord:Webhooks:Notices"] = "https://discord.example/environment-secret",
+                ["Discord:Bot:ChatBridge:AllowedDiscordServerIds:0"] = "99",
+            }).Build();
+        var service = new DiscordConfigurationService(this._filePath, configuration);
+        var editable = await service.LoadForEditingAsync().ConfigureAwait(false);
+        Assert.That(editable.Language, Is.EqualTo("en"));
+        Assert.That(editable.Bot.Token, Is.EqualTo("environment-secret"));
+        Assert.That(editable.Bot.ChatBridge.AllowedDiscordServerIds[0], Is.EqualTo(99));
+        editable.MaximumQueuedMessages = 200;
+        await service.SaveAsync(editable).ConfigureAwait(false);
+        var saved = await service.LoadAsync().ConfigureAwait(false);
+        Assert.That(saved.Language, Is.EqualTo("de"));
+        Assert.That(saved.Bot.Token, Is.EqualTo("token"));
+        Assert.That(saved.Webhooks.ContainsKey(DiscordChannelCategory.Notices), Is.False);
+        Assert.That(saved.Bot.ChatBridge.AllowedDiscordServerIds, Is.EqualTo(new ulong[] { 1, 2 }));
+        Assert.That(saved.MaximumQueuedMessages, Is.EqualTo(200));
+        Assert.That(File.ReadAllText(this._filePath), Does.Not.Contain("environment-secret"));
+    }
+
     private DiscordConfigurationService CreateService()
     {
         return new DiscordConfigurationService(this._filePath, new ConfigurationBuilder().AddJsonFile(this._filePath).Build());

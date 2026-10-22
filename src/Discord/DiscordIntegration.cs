@@ -189,12 +189,13 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
             DateTime.UtcNow,
             null);
 
-        if (this.Bot is { ServerState: ServerState.Started } bot && bot.GetChannelId(category) is { } channelId)
+        var route = DiscordDeliveryRoute.Resolve(settings, this.Bot, category);
+        if (this.Bot is { } bot && route.ChannelId is { } channelId)
         {
             return await bot.SendTestMessageAsync(channelId, embed).ConfigureAwait(false);
         }
 
-        if (!settings.Webhooks.TryGetValue(category, out var url) || string.IsNullOrWhiteSpace(url))
+        if (route.WebhookUrl is not { } url)
         {
             return new DiscordTestResult(DiscordTestOutcome.NoChannel);
         }
@@ -244,7 +245,7 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
     /// <summary>
     /// Creates the bot and the notifier with the settings of the configuration, if they changed since the last time.
     /// </summary>
-    internal async ValueTask ApplySettingsAsync()
+    public async ValueTask ApplySettingsAsync()
     {
         await this._lock.WaitAsync().ConfigureAwait(false);
         try

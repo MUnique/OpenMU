@@ -1972,7 +1972,7 @@
     <value>Die Einstellungen konnten nicht gespeichert werden: {0}</value>
   </data>
   <data name="DiscordSaved" xml:space="preserve">
-    <value>Die Einstellungen wurden gespeichert. Die Discord-Integration startet mit ihnen neu.</value>
+    <value>Einstellungen gespeichert und angewendet. Zustellung zur Prüfung der Ziele testen.</value>
   </data>
   <data name="DiscordInvalidId" xml:space="preserve">
     <value>'{0}' ist keine gültige Kennung von Discord.</value>
@@ -2092,7 +2092,7 @@
     <value>4. Benachrichtigungen</value>
   </data>
   <data name="DiscordStep4Text" xml:space="preserve">
-    <value>Jede Kategorie wird in einen eigenen Kanal gepostet. Die Platzhalter zeigen die Kanäle des Layouts, die der Bot standardmäßig verwendet. Für einen anderen Kanal gib seine Kennung ein: klicke im Entwicklermodus von Discord mit der rechten Maustaste auf den Kanal und wähle Kanal-ID kopieren.</value>
+    <value>Einen Kanal anhand des Namens wählen. Eine leere Auswahl übernimmt den Layoutstandard. Bei verbundenem Bot hat der Bot-Kanal Vorrang vor dem Webhook.</value>
   </data>
   <data name="DiscordCategory" xml:space="preserve">
     <value>Kategorie</value>
@@ -2131,7 +2131,7 @@
     <value>5. Chat-Brücke (optional)</value>
   </data>
   <data name="DiscordStep5Text" xml:space="preserve">
-    <value>Spiegelt den Welt-Chat nach #world-chat und die Chats von Gilden und Allianzen in die Kanäle, die ihre Meister mit /guildchat in Discord binden. Schalte dazu auch Gilden-, Allianz- und Welt-Chat veröffentlichen in der Konfiguration des Plugins Game Event Publisher ein.</value>
+    <value>Wählen Sie, wo Gildenchats verbunden und ob Discord-Nachrichten ins Spiel weitergeleitet werden. Spielchat-Veröffentlichung unten für die Gegenrichtung aktivieren.</value>
   </data>
   <data name="DiscordBindingMode" xml:space="preserve">
     <value>Wo Gilden ihren Chat binden können</value>
@@ -2185,7 +2185,7 @@
     <value>Maximal wartende Nachrichten pro Kanal</value>
   </data>
   <data name="DiscordTest" xml:space="preserve">
-    <value>Testen</value>
+    <value>Testnachricht senden</value>
   </data>
   <data name="DiscordTestHint" xml:space="preserve">
     <value>Testen postet eine Testnachricht mit den gespeicherten Einstellungen, genauso wie die Benachrichtigungen der Kategorie: durch den Bot in seinen Kanal, sonst durch den Webhook. Speichere deine Änderungen vorher.</value>
@@ -2212,7 +2212,7 @@
     <value>Fehlgeschlagen: {0}</value>
   </data>
   <data name="DiscordCheckServer" xml:space="preserve">
-    <value>Discord-Server prüfen</value>
+    <value>Rechte und Kanäle prüfen</value>
   </data>
   <data name="DiscordCheckServerText" xml:space="preserve">
     <value>Prüft die Berechtigungen des Bots, die Rolle für verknüpfte Spieler und die Kanäle auf dem gewählten Discord-Server, mit den gespeicherten Einstellungen.</value>
@@ -2272,7 +2272,7 @@
     <value>Ein Webhook postet nur eine Kategorie, die keinen Kanal des Bots hat. Mit dem Bot brauchst du sie nicht und kannst sie entfernen.</value>
   </data>
   <data name="DiscordStepDone" xml:space="preserve">
-    <value>Erledigt</value>
+    <value>Geprüft</value>
   </data>
   <data name="DiscordStepProblem" xml:space="preserve">
     <value>Bitte prüfen</value>
@@ -2281,7 +2281,7 @@
     <value>Es gibt ungespeicherte Änderungen. Speichere sie zuerst: die Tests und die Einrichtung des Discord-Servers verwenden die gespeicherten Einstellungen.</value>
   </data>
   <data name="DiscordTestAll" xml:space="preserve">
-    <value>Alle testen</value>
+    <value>Testnachrichten für aktive Kategorien senden</value>
   </data>
   <data name="DiscordLayoutPreview" xml:space="preserve">
     <value>Was erstellt wird</value>
@@ -2322,4 +2322,50 @@
   <data name="DiscordScope_Alliance" xml:space="preserve">
     <value>Allianz</value>
   </data>
+  <data name="DiscordOverview" xml:space="preserve"><value>Discord-Benachrichtigungen, Kontoverknüpfung und Chat einrichten. Änderungen vor dem Prüfen speichern und anwenden.</value></data>
+  <data name="DiscordConfigurationSource" xml:space="preserve"><value>Konfigurationsquelle</value></data>
+  <data name="DiscordConfigurationSourcesHint" xml:space="preserve"><value>Dateieinstellungen können hier geändert werden. Umgebungsvariablen und andere vorrangige Quellen werden extern verwaltet. Geheimnisse bleiben verborgen.</value></data>
+  <data name="DiscordMode" xml:space="preserve"><value>Integrationsmodus</value></data>
+  <data name="DiscordModeBot" xml:space="preserve"><value>Discord-Bot — Benachrichtigungen, Befehle und Chat</value></data>
+  <data name="DiscordModeWebhooks" xml:space="preserve"><value>Webhooks — nur Benachrichtigungen</value></data>
+  <data name="DiscordModeHint" xml:space="preserve"><value>Wählen Sie die benötigten Funktionen. Im Webhook-Modus wird der Bot beim Speichern gestoppt; sein Token bleibt für später erhalten.</value></data>
+  <data name="DiscordWebhooksModeReady" xml:space="preserve"><value>Webhook-Modus: keine Bot-Verbindung erforderlich. Ziele unten einrichten.</value></data>
+  <data name="DiscordConfigured" xml:space="preserve"><value>Konfiguriert · nicht geprüft</value></data>
+  <data name="DiscordApplying" xml:space="preserve"><value>Änderungen werden angewendet…</value></data>
+  <data name="DiscordApplied" xml:space="preserve"><value>Einstellungen angewendet. Zustellung prüfen, um diese Konfiguration zu bestätigen.</value></data>
+  <data name="DiscordSaveApply" xml:space="preserve"><value>Speichern und anwenden</value></data>
+  <data name="DiscordDiscardChanges" xml:space="preserve"><value>Änderungen verwerfen</value></data>
+  <data name="DiscordKeepEditing" xml:space="preserve"><value>Weiter bearbeiten</value></data>
+  <data name="DiscordConfirmDiscard" xml:space="preserve"><value>Alle ungespeicherten Einstellungen auf dieser Seite verwerfen?</value></data>
+  <data name="DiscordNavigationBlocked" xml:space="preserve"><value>Änderungen vor dem Verlassen dieser Seite speichern oder verwerfen.</value></data>
+  <data name="DiscordPublisherStaged" xml:space="preserve"><value>Änderungen an Spielereignissen werden mit Speichern und anwenden übernommen. Die Ereignisauswahl steht bei jeder Benachrichtigungskategorie.</value></data>
+  <data name="DiscordPublisherMissing" xml:space="preserve"><value>Die Konfiguration des Game Event Publisher fehlt. Auf der Plugin-Seite einrichten.</value></data>
+  <data name="DiscordSecretStaged" xml:space="preserve"><value>Feld leer lassen, um das gespeicherte Token zu behalten. Ersetzen und Entfernen werden beim Speichern wirksam.</value></data>
+  <data name="DiscordProvisioningChanges" xml:space="preserve"><value>Vorhandene Kanäle und Rollen werden anhand des Namens übernommen. Zugriffsrechte können geändert werden. Nichts wird gelöscht. Private Teamkanäle werden bei fehlenden Rollen oder Rechten übersprungen.</value></data>
+  <data name="DiscordShowWebhookFallbacks" xml:space="preserve"><value>Optionale Webhook-Ziele anzeigen</value></data>
+  <data name="DiscordSourceEvents" xml:space="preserve"><value>Zu veröffentlichende Spielereignisse</value></data>
+  <data name="DiscordOff" xml:space="preserve"><value>Aus</value></data>
+  <data name="DiscordRouteBot" xml:space="preserve"><value>Bot → #{0}</value></data>
+  <data name="DiscordRouteWebhook" xml:space="preserve"><value>Webhook konfiguriert</value></data>
+  <data name="DiscordRouteNone" xml:space="preserve"><value>Kein verfügbares Ziel</value></data>
+  <data name="DiscordCategoryName_Events" xml:space="preserve"><value>Ereignisse</value></data>
+  <data name="DiscordCategoryName_CastleSiege" xml:space="preserve"><value>Burgbelagerung</value></data>
+  <data name="DiscordCategoryName_WorldNews" xml:space="preserve"><value>Weltnachrichten</value></data>
+  <data name="DiscordCategoryName_Notices" xml:space="preserve"><value>GM-Ankündigungen</value></data>
+  <data name="DiscordCategoryName_StaffAlerts" xml:space="preserve"><value>Team-Auditprotokoll</value></data>
+  <data name="DiscordDeliveryOnly" xml:space="preserve"><value>Dies sendet eine Nachricht an Discord und prüft nur die Zustellung, nicht die Aktivierung von Spielereignissen.</value></data>
+  <data name="DiscordLastChecked" xml:space="preserve"><value>Zuletzt geprüft: {0} (UTC)</value></data>
+  <data name="DiscordEventFilters" xml:space="preserve"><value>Filter für Bosse und Stufenmeilensteine</value></data>
+  <data name="DiscordFilterHint" xml:space="preserve"><value>Zahlen durch Kommas trennen. Eine leere Bossliste meldet keine Bosstötungen; eine leere Meilensteinliste meldet keine Stufenmeilensteine.</value></data>
+  <data name="DiscordChatSetup" xml:space="preserve"><value>Konto im Spiel verknüpfen, Code in Discord einlösen und bei Bedarf den Gildenmeister mit /character wählen. Auf dem Hauptserver /guildchat create, auf dem Gildenserver in einem verwalteten Kanal /guildchat bind verwenden.</value></data>
+  <data name="DiscordForwardNormalMessages" xml:space="preserve"><value>Normale Kanalnachrichten ins Spiel weiterleiten (sonst /say verwenden)</value></data>
+  <data name="DiscordBindingRemovalImmediate" xml:space="preserve"><value>Das Aufheben einer Bindung wirkt sofort und beendet die Weiterleitung. Der Discord-Kanal bleibt erhalten.</value></data>
+  <data name="DiscordConfirmUnbind" xml:space="preserve"><value>Weiterleitung dieses Gilden- oder Allianzchats jetzt beenden? Kanal und Nachrichten bleiben erhalten.</value></data>
+  <data name="DiscordUnbindChat" xml:space="preserve"><value>Chat jetzt trennen</value></data>
+  <data name="DiscordManagedKey" xml:space="preserve"><value>Extern verwaltet. Konfigurationsschlüssel: {0}</value></data>
+  <data name="DiscordMinimum" xml:space="preserve"><value>Einen Wert von mindestens {0} eingeben.</value></data>
+  <data name="DiscordSavedConnectionFailed" xml:space="preserve"><value>Einstellungen gespeichert, aber der Bot konnte keine Verbindung herstellen. Verbindungsproblem oben beheben.</value></data>
+  <data name="DiscordNotConfigured" xml:space="preserve"><value>Nicht konfiguriert</value></data>
+  <data name="DiscordChooseServer" xml:space="preserve"><value>Discord-Server wählen</value></data>
+  <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Einen privaten Teamkanal wählen. GM-Auditnachrichten können vertrauliche Informationen enthalten.</value></data>
 </root>

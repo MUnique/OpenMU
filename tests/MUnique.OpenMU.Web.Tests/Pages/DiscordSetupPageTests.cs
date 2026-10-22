@@ -9,6 +9,7 @@ using System.IO;
 using System.Text.Json.Nodes;
 using System.Threading;
 using Bunit;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Json;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Pages;
@@ -36,6 +38,7 @@ public class DiscordSetupPageTests
     private bool _previousIsHostingEmbedded;
     private string _filePath = string.Empty;
     private PlugInConfiguration _publisherConfiguration = null!;
+    private GameConfiguration _gameConfiguration = null!;
 
     /// <summary>
     /// Sets up the test context with a configuration file.
@@ -56,7 +59,10 @@ public class DiscordSetupPageTests
         this._publisherConfiguration = new PlugInConfiguration { TypeId = typeof(GameEventPublisherPlugIn).GUID };
         gameConfiguration.SetupGet(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration> { this._publisherConfiguration });
         gameConfigurationSource.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(gameConfiguration.Object);
-        gameConfigurationSource.Setup(s => s.GetContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(Mock.Of<IContext>());
+        this._gameConfiguration = gameConfiguration.Object;
+        var dataContext = new Mock<IContext>();
+        dataContext.Setup(context => context.CreateNew<PlugInConfiguration>(It.IsAny<object?[]>())).Returns(() => new PlugInConfiguration());
+        gameConfigurationSource.Setup(s => s.GetContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(dataContext.Object);
 
         this._toastService = new Mock<IToastService>();
         this._context = new BunitContext();
@@ -65,6 +71,7 @@ public class DiscordSetupPageTests
         this._context.Services.AddSingleton(this._toastService.Object);
         this._context.Services.AddSingleton(Mock.Of<ILogger<DiscordSetup>>());
         this._context.ComponentFactories.AddStub<MUnique.OpenMU.Web.Shared.Components.Breadcrumb>();
+        this._context.ComponentFactories.AddStub<Microsoft.AspNetCore.Components.Routing.NavigationLock>();
     }
 
     /// <summary>
@@ -87,6 +94,7 @@ public class DiscordSetupPageTests
     {
         var cut = this.RenderLoaded();
         cut.WaitForState(() => cut.Markup.Contains(Resources.DiscordPublisherInactive));
+        cut.Find("#discordMode").Change("bot");
         Assert.That(cut.Markup, Does.Contain(Resources.DiscordInviteNeedsToken));
 
         cut.Find("#discordToken").Input("MTIzNDU2Nzg5MDEyMzQ1Njc4.abc.def");
@@ -117,13 +125,18 @@ public class DiscordSetupPageTests
 
         cut.Find("#discordPublisher").Change(true);
 
-        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordPublisherActivated, null)));
+        Assert.That(this._publisherConfiguration.IsActive, Is.False, "publisher changes are staged until Save and apply");
+        cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
+        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordSaved, null)));
         Assert.That(this._publisherConfiguration.IsActive, Is.True);
-        Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherActive));
+        cut.WaitForState(() => !cut.Markup.Contains(Resources.DiscordUnsavedChanges));
+        Assert.That(cut.Find("#discordPublisher").HasAttribute("checked"), Is.True);
 
         cut.Find("#discordPublisher").Change(false);
 
-        cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordPublisherDeactivated, null)));
+        Assert.That(this._publisherConfiguration.IsActive, Is.True);
+        cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
+        cut.WaitForState(() => !this._publisherConfiguration.IsActive);
         Assert.That(this._publisherConfiguration.IsActive, Is.False);
         Assert.That(cut.Markup, Does.Contain(Resources.DiscordPublisherInactive));
     }
@@ -174,6 +187,7 @@ public class DiscordSetupPageTests
     {
         var cut = this.RenderLoaded();
 
+        cut.Find("#discordMode").Change("bot");
         var preview = cut.FindAll("details").First(d => d.TextContent.Contains(Resources.DiscordLayoutPreview)).TextContent;
         Assert.That(preview, Does.Contain(string.Format(Resources.DiscordLayoutRoles, "GM, Linked Player")));
         Assert.That(preview, Does.Contain("#events"));
@@ -189,6 +203,7 @@ public class DiscordSetupPageTests
         var content = File.ReadAllText(this._filePath);
         var cut = this.RenderLoaded();
 
+        cut.Find("#discordMode").Change("bot");
         cut.Find("#discordServerId").Change("my server");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
@@ -210,6 +225,156 @@ public class DiscordSetupPageTests
         cut.WaitForAssertion(() => this._toastService.Verify(t => t.ShowSuccess(Resources.DiscordSaved, null)));
         var discord = JsonNode.Parse(File.ReadAllText(this._filePath))!["Discord"]!;
         Assert.That(discord["Webhooks"]!.AsObject(), Is.Empty);
+    }
+
+    /// <summary>
+    /// Webhook-only setup does not present incomplete bot steps or bot-only controls.
+    /// </summary>
+    [Test]
+    public void WebhookModeSkipsBotSetup()
+    {
+        var cut = this.RenderLoaded();
+        Assert.That(cut.FindAll("#discordToken"), Is.Empty);
+        Assert.That(cut.FindAll("#discordServerId"), Is.Empty);
+        Assert.That(cut.FindAll("#discordReadMessages"), Is.Empty);
+        Assert.That(cut.Markup, Does.Not.Contain(Resources.DiscordStatusNotConfigured));
+    }
+
+    /// <summary>
+    /// Numeric validation does not let browser minimum attributes be bypassed by saving.
+    /// </summary>
+    [Test]
+    public void InvalidQueueSizeIsNotSaved()
+    {
+        var cut = this.RenderLoaded();
+        var original = File.ReadAllText(this._filePath);
+        cut.Find("#discordQueuedMessages").Change("0");
+        cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
+        Assert.That(cut.FindAll(".invalid-feedback"), Is.Not.Empty);
+        Assert.That(File.ReadAllText(this._filePath), Is.EqualTo(original));
+    }
+
+    /// <summary>
+    /// A category can be disabled without deleting its configured webhook.
+    /// </summary>
+    [Test]
+    public void DisablingCategoryKeepsItsDestination()
+    {
+        var cut = this.RenderLoaded();
+        cut.Find("#discordEnabled-Events").Change(false);
+        cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
+        cut.WaitForState(() => !cut.Markup.Contains(Resources.DiscordUnsavedChanges));
+        var settings = JsonNode.Parse(File.ReadAllText(this._filePath))!["Discord"]!;
+        Assert.That(settings["DisabledNotifications"]!.AsArray().Select(node => node!.ToString()), Does.Contain("Events"));
+        Assert.That(settings["Webhooks"]!["Events"], Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Discard requires confirmation and leaves settings untouched when cancelled.
+    /// </summary>
+    [Test]
+    public void DiscardingRequiresConfirmation()
+    {
+        var cut = this.RenderLoaded();
+        cut.Find("#discordLanguage").Change("de");
+        cut.FindAll("button").Single(button => button.TextContent.Contains("Discard changes")).Click();
+        Assert.That(cut.FindAll("[role=alertdialog]"), Has.Count.EqualTo(1));
+        cut.FindAll("button").Single(button => button.TextContent.Contains("Keep editing")).Click();
+        Assert.That(cut.Markup, Does.Contain(Resources.DiscordUnsavedChanges));
+        Assert.That(cut.Find("#discordLanguage").GetAttribute("value"), Is.EqualTo("de"));
+    }
+
+    /// <summary>
+    /// Common event toggles and filters are saved with the rest of the page.
+    /// </summary>
+    [Test]
+    public async Task SavesEventSelectionAndFiltersAsync()
+    {
+        var cut = this.RenderLoaded();
+        cut.Find("#discordPublish-PublishBossKills").Change(false);
+        cut.Find("#discordLevels").Change("100, 400");
+        await cut.FindAll("button").First(button => button.TextContent.Contains(Resources.Save)).ClickAsync(new MouseEventArgs()).ConfigureAwait(false);
+        this._toastService.Verify(service => service.ShowSuccess(Resources.DiscordSaved, null));
+        Assert.That(this._publisherConfiguration.CustomConfiguration, Is.Not.Null);
+        var publisher = this._publisherConfiguration.GetConfiguration<GameEventPublisherConfiguration>(new IdReferenceHandler())!;
+        Assert.That(publisher.PublishBossKills, Is.False);
+        Assert.That(publisher.LevelMilestones, Is.EqualTo(new[] { 100, 400 }));
+    }
+
+    /// <summary>
+    /// Settings initialized with reference metadata remain editable and retain their filters.
+    /// </summary>
+    [Test]
+    public void LoadsInitializedPublisherSettings()
+    {
+        this._publisherConfiguration.SetConfiguration(new GameEventPublisherConfiguration
+        {
+            BossMonsterNumbers = new List<short> { 275 },
+            LevelMilestones = new List<int> { 100, 400 },
+        }, new IdReferenceHandler());
+        var cut = this.RenderLoaded();
+        Assert.That(cut.Find("#discordBosses").GetAttribute("value"), Is.EqualTo("275"));
+        Assert.That(cut.Find("#discordLevels").GetAttribute("value"), Is.EqualTo("100, 400"));
+        Assert.That(cut.FindAll("#discordPublisher"), Has.Count.EqualTo(1));
+    }
+
+    /// <summary>
+    /// A fresh server can configure publishing even when it has no publisher configuration yet.
+    /// </summary>
+    [Test]
+    public void CreatesMissingPublisherConfigurationWhenSaving()
+    {
+        this._gameConfiguration.PlugInConfigurations.Clear();
+        var cut = this.RenderLoaded();
+        Assert.That(cut.Find("#discordMode").GetAttribute("value"), Is.EqualTo("webhooks"));
+        cut.Find("#discordPublisher").Change(true);
+        cut.FindAll("button").First(button => button.TextContent.Contains(Resources.Save)).Click();
+        cut.WaitForAssertion(() => Assert.That(this._gameConfiguration.PlugInConfigurations.Single().IsActive, Is.True));
+        Assert.That(this._gameConfiguration.PlugInConfigurations.Single().TypeId, Is.EqualTo(typeof(GameEventPublisherPlugIn).GUID));
+    }
+
+    /// <summary>
+    /// Publishing alone does not mark notification delivery as verified.
+    /// </summary>
+    [Test]
+    public void ActivePublisherDoesNotVerifyDelivery()
+    {
+        this._publisherConfiguration.IsActive = true;
+        var cut = this.RenderLoaded();
+        var header = cut.FindAll(".card-header").Single(element => element.TextContent.Contains(Resources.DiscordStep4Title));
+        Assert.That(header.TextContent, Does.Not.Contain(Resources.DiscordStepDone));
+    }
+
+    /// <summary>
+    /// Switching to webhooks keeps the saved token for later bot use.
+    /// </summary>
+    [Test]
+    public async Task WebhookModeKeepsSavedTokenAsync()
+    {
+        File.WriteAllText(this._filePath, """{ "Discord": { "Bot": { "Token": "saved-token" } } }""");
+        var cut = this.RenderLoaded();
+        cut.Find("#discordMode").Change("webhooks");
+        await cut.FindAll("button").First(button => button.TextContent.Contains(Resources.Save)).ClickAsync(new MouseEventArgs()).ConfigureAwait(false);
+        this._toastService.Verify(service => service.ShowSuccess(Resources.DiscordSaved, null));
+        var settings = JsonNode.Parse(File.ReadAllText(this._filePath))!["Discord"]!;
+        Assert.That(settings["Bot"]!["Token"]!.GetValue<string>(), Is.EqualTo("saved-token"));
+        Assert.That(settings["UseBot"]!.GetValue<bool>(), Is.False);
+    }
+
+    /// <summary>
+    /// Mode selection survives saving before any webhook has been entered.
+    /// </summary>
+    [Test]
+    public void WebhookModePersistsWithoutDestinations()
+    {
+        File.WriteAllText(this._filePath, """{ "Discord": { } }""");
+        var cut = this.RenderLoaded();
+        cut.Find("#discordMode").Change("webhooks");
+        cut.FindAll("button").First(button => button.TextContent.Contains(Resources.Save)).Click();
+        cut.WaitForState(() => !cut.Markup.Contains(Resources.DiscordUnsavedChanges));
+        Assert.That(cut.Find("#discordMode").GetAttribute("value"), Is.EqualTo("webhooks"));
+        Assert.That(cut.FindAll("#discordToken"), Is.Empty);
+        Assert.That(JsonNode.Parse(File.ReadAllText(this._filePath))!["Discord"]!["UseBot"]!.GetValue<bool>(), Is.False);
     }
 
     /// <summary>

@@ -45,7 +45,7 @@ internal sealed class SocketGuildServer : IDiscordServer
     {
         return guild.Channels
             .Where(channel => channel is SocketCategoryChannel or SocketTextChannel)
-            .Select(channel => new DiscordChannelInfo(channel.Id, channel.Name, channel is SocketCategoryChannel, (channel as INestedChannel)?.CategoryId))
+            .Select(channel => new DiscordChannelInfo(channel.Id, channel.Name, channel is SocketCategoryChannel, (channel as INestedChannel)?.CategoryId, channel.GetPermissionOverwrite(guild.EveryoneRole)?.ViewChannel == PermValue.Deny))
             .ToList();
     }
 

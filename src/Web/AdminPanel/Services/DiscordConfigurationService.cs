@@ -104,7 +104,9 @@ public class DiscordConfigurationService
         using (await this._lock.LockAsync(cancellationToken).ConfigureAwait(false))
         {
             var root = await this.ReadRootAsync(cancellationToken).ConfigureAwait(false);
-            root[DiscordSettings.SectionName] = JsonSerializer.SerializeToNode(settings, SerializerOptions);
+            var updated = JsonSerializer.SerializeToNode(settings, SerializerOptions)!.AsObject();
+            this.CopyManagedValues(updated, root[DiscordSettings.SectionName] as JsonObject ?? new JsonObject());
+            root[DiscordSettings.SectionName] = updated;
 
             // We overwrite the file in place instead of replacing it with a new one,
             // because it may be a single file which is mounted into a docker container.
@@ -145,6 +147,28 @@ public class DiscordConfigurationService
         return false;
     }
 
+    /// <summary>
+    /// Loads editable file settings with effective values for fields managed elsewhere.
+    /// Saving restores those fields from the original file, so environment secrets are never copied into it.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The settings as they should be displayed.</returns>
+    public async ValueTask<DiscordSettings> LoadForEditingAsync(CancellationToken cancellationToken = default)
+    {
+        var fileSettings = await this.LoadAsync(cancellationToken).ConfigureAwait(false);
+        var effective = this._configuration.GetSection(DiscordSettings.SectionName).Get<DiscordSettings>() ?? new DiscordSettings();
+        var editable = JsonSerializer.SerializeToNode(fileSettings, SerializerOptions)!.AsObject();
+        this.CopyManagedValues(editable, JsonSerializer.SerializeToNode(effective, SerializerOptions)!.AsObject());
+        return editable.Deserialize<DiscordSettings>(SerializerOptions)!;
+    }
+
+    /// <summary>
+    /// Gets the configuration key an operator can use to change a managed field.
+    /// </summary>
+    /// <param name="key">The key relative to the Discord section.</param>
+    /// <returns>The environment-variable form of the key.</returns>
+    public string GetEnvironmentKey(string key) => ConfigurationPath.Combine(DiscordSettings.SectionName, key).Replace(":", "__", StringComparison.Ordinal);
+
     private static void RemoveEmptyEntries(DiscordSettings settings)
     {
         foreach (var category in settings.Webhooks.Where(entry => string.IsNullOrWhiteSpace(entry.Value)).Select(entry => entry.Key).ToList())
@@ -167,6 +191,35 @@ public class DiscordConfigurationService
     {
         return JsonNode.Parse(json, documentOptions: DocumentOptions) as JsonObject
                ?? throw new JsonException("The JSON is not an object.");
+    }
+
+    private void CopyManagedValues(JsonObject target, JsonObject source, string prefix = "")
+    {
+        foreach (var name in target.Select(entry => entry.Key).Union(source.Select(entry => entry.Key)).ToList())
+        {
+            var key = string.IsNullOrEmpty(prefix) ? name : ConfigurationPath.Combine(prefix, name);
+            if ((target[name] ?? source[name]) is JsonObject)
+            {
+                if (target[name] is not JsonObject child)
+                {
+                    child = new JsonObject();
+                    target[name] = child;
+                }
+
+                this.CopyManagedValues(child, source[name] as JsonObject ?? new JsonObject(), key);
+            }
+            else if (this.IsDefinedElsewhere(key))
+            {
+                if (source[name] is { } value)
+                {
+                    target[name] = value.DeepClone();
+                }
+                else
+                {
+                    target.Remove(name);
+                }
+            }
+        }
     }
 
     private async ValueTask<JsonObject> ReadRootAsync(CancellationToken cancellationToken)

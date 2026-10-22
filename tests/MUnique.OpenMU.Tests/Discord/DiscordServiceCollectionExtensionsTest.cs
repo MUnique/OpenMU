@@ -67,6 +67,33 @@ public class DiscordServiceCollectionExtensionsTest
         Assert.That(bot.ServerState, Is.EqualTo(ServerState.Stopped));
     }
 
+    /// <summary>
+    /// Disabled categories also suppress direct messages to GM notification channels.
+    /// </summary>
+    [Test]
+    public async Task DisabledCategoryIsNotAvailableToDirectBotSendersAsync()
+    {
+        var settings = new DiscordSettings { DisabledNotifications = { DiscordChannelCategory.StaffAlerts } };
+        settings.Bot.Token = "token";
+        settings.Bot.Channels[DiscordChannelCategory.StaffAlerts] = 42;
+        await using var provider = CreateServices(settings).BuildServiceProvider();
+        Assert.That(provider.GetRequiredService<DiscordBot>().GetChannelId(DiscordChannelCategory.StaffAlerts), Is.Null);
+    }
+
+    /// <summary>
+    /// Webhook-only mode suppresses the bot even when an external source still provides a token.
+    /// </summary>
+    [Test]
+    public async Task WebhookOnlyModeDoesNotCreateBotAsync()
+    {
+        var settings = new DiscordSettings { UseBot = false };
+        settings.Bot.Token = "managed-token";
+        settings.Webhooks[DiscordChannelCategory.Events] = "https://discord.example/webhook";
+        await using var provider = CreateServices(settings).BuildServiceProvider();
+        Assert.That(provider.GetService<DiscordBot>(), Is.Null);
+        Assert.That(provider.GetServices<IGameEventListener>().Single(), Is.InstanceOf<DiscordNotifier>());
+    }
+
     private static IServiceCollection CreateServices(DiscordSettings settings)
     {
         var serverProvider = new Mock<IServerProvider>();

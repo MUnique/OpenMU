@@ -19,7 +19,10 @@ OpenMU can bring your game into your Discord server:
 ## Setting up
 
 Open **Discord** in the admin panel (route `/discord`, administrators only). The
-page guides you through the setup, step by step:
+page offers two modes: **Discord bot** for the full integration, or **Webhooks**
+for notifications only. Webhook-only mode skips the bot setup steps, and the
+selected mode is saved even before any destinations have been configured.
+For the bot, the page guides you through the setup, step by step:
 
 1. **Create the bot** in the Discord developer portal, and paste its token.
 2. **Invite the bot** to your Discord server, with the link the page creates. It
@@ -33,28 +36,31 @@ page guides you through the setup, step by step:
 ![The Discord page of the admin panel](/img/admin-panel/discord-setup.png)
 
 The status at the top tells what's missing, e.g. a rejected token, or that the
-*Game Event Publisher* plugin is inactive. Without it, nothing is posted; the
-status has a switch for it. On the
-[Plugins](../admin-panel/plugins.md#game-event-publisher) page, in its
-configuration, you choose which events are published, which monsters are bosses
-and which levels are milestones.
+*Game Event Publisher* plugin is inactive. Game event notifications require it; the
+status has a switch for it. Select game events beside each notification category;
+expand **Boss and level milestone filters** for boss monster numbers and level
+milestones. These changes are staged with the other settings and take effect
+with **Save and apply**. Game event settings remain in the database; Discord
+credentials and routing remain in the process configuration.
 
 To find out if everything works, the page has two tests, which use the saved
 settings:
 
-* **Check the Discord server** (step 3) tells which permissions the bot misses,
+* **Check permissions and channels** (step 3) tells which permissions the bot misses,
   whether it can give the role of linked players (its own role has to be above
   it), which categories have no channel and whether there is a status channel.
-* **Test** (step 4) posts a test message for a category, in the same way as its
+* **Send test message** (step 4) posts a test message for a category, in the same way as its
   notifications: by the bot into its channel, otherwise by the webhook. It tells
   where the message went, or why it failed, e.g. a webhook which Discord doesn't
   know or a channel into which the bot isn't allowed to post.
 
-**Save** writes the `Discord` section of the `appsettings.json` of the server,
+**Save and apply** writes the `Discord` section of the `appsettings.json` of the server,
 and the bot restarts with the new settings right away. The token and the
 webhook URLs are passwords; they are stored in this file, not in the database.
-Settings which are also set by an environment variable take its value, and the
-page shows them as such. In a docker container, the file lives inside the
+Settings managed by environment variables or another overriding source show
+their effective values and are read-only. Saving does not copy those values or
+secrets into the file. **Discard changes** asks before resetting edits; navigation
+is blocked until unsaved changes are saved or discarded. In a docker container, the file lives inside the
 container: mount it as a volume to keep the settings when the container is
 recreated.
 
@@ -62,6 +68,11 @@ The page is available when the admin panel runs in the server process. In the
 distributed deployment, the bot runs in its own container, which you configure
 with the [settings](#settings) as environment variables, see
 [Distributed deployment](../deployment/distributed.md#discord).
+
+A successful test verifies delivery, not that game events are enabled. Configured
+and verified states are separate; saving invalidates previous check results.
+**Unbind chat now** is an immediate action, with confirmation, and keeps the
+Discord channel and its existing messages.
 
 ## Notifications
 
@@ -77,7 +88,10 @@ Each category is posted into its own channel. The bot posts into the channel of
 its [layout](#the-layout-of-your-discord-server), e.g. the `Events` into
 `#events`, unless you choose another channel. Without the bot, a category is
 posted by a *webhook* of the channel (channel settings → *Integrations →
-Webhooks*). A category without either isn't posted.
+Webhooks*). A category without either isn't posted. A stopped or connecting bot falls back
+to the configured webhook, using the same route as the delivery test. Uncheck a
+category to turn it off without deleting its destinations. Clear a channel
+selection to inherit its layout default.
 
 ## The bot
 
@@ -314,6 +328,7 @@ with the parts separated by two underscores, like `Discord__Bot__Token`.
 | Setting | Default | Description |
 |---|---|---|
 | `Webhooks__<Category>` | — | The webhook URL per category, see the table above. |
+| `UseBot` | Use the bot (`false` selects webhook-only mode; unset preserves token-based activation) |
 | `Language` | `en` | The language of the messages and the bot. English (`en`) and German (`de`) are available. Names of maps, monsters and items are translated, too. |
 | `EventAnnouncingServerIds__0`, `__1`, … | all | The identifiers of the game servers which announce mini games and invasions. When several game servers run the same events, set it to one of them to avoid duplicate messages. |
 | `MaximumQueuedMessages` | `100` | The number of messages per channel which can wait to be sent. When there are more, the oldest ones are dropped. |
@@ -349,3 +364,9 @@ with the parts separated by two underscores, like `Discord__Bot__Token`.
 * Until the bot is connected to Discord, which takes a few seconds after the
   start, notifications for the channels of the layout are posted through the
   webhook of their category, if there is one.
+
+Private staff channels are skipped if their required roles or permissions cannot be set. Fix the reported permissions and run setup again. Public channels with staff channel names are not used automatically for notifications.
+
+Commands are registered globally so guild-owned Discord servers can use `/link`, `/guildchat` and `/say`. The main configured Discord server also gets guild-scoped registration for immediate availability. Binding and unbinding as a guild master require that the selected character still belongs to the linked account.
+
+Direct messages and scheduled-event updates use a bounded queue. Stopping or reconfiguring the bot cancels pending work, including notifications waiting for a gateway connection.

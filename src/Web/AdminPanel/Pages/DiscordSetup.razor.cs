@@ -5,10 +5,13 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -18,6 +21,7 @@ using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
@@ -36,6 +40,7 @@ public partial class DiscordSetup : IDisposable
     private readonly Dictionary<string, bool> _definedElsewhere = new();
     private readonly Dictionary<DiscordChannelCategory, DiscordTestResult> _testResults = new();
     private readonly HashSet<DiscordChannelCategory> _runningTests = new();
+    private readonly Dictionary<string, string> _validationErrors = new();
 
     private DiscordSettings? _settings;
     private DiscordIntegration? _integration;
@@ -45,10 +50,20 @@ public partial class DiscordSetup : IDisposable
     private string? _loadError;
     private bool _isSaving;
     private bool _isSettingUp;
+    private bool _isCheckingServer;
     private bool? _isPublisherActive;
     private IReadOnlyList<DiscordChatBindingInfo>? _chatBindings;
     private string _savedInputs = string.Empty;
-    private bool _isChangingPublisher;
+    private bool _useBot = true;
+    private bool _confirmDiscard;
+    private bool _showWebhookEditor;
+    private ulong? _bindingToRemove;
+    private DateTimeOffset? _lastCheckedAt;
+    private string? _applyStatus;
+    private GameEventPublisherConfiguration? _publisherSettings;
+    private string _bossMonsterNumbersText = string.Empty;
+    private string _levelMilestonesText = string.Empty;
+    private string _masterLevelMilestonesText = string.Empty;
 
     private string _newToken = string.Empty;
     private string _serverIdText = string.Empty;
@@ -75,7 +90,12 @@ public partial class DiscordSetup : IDisposable
         /// <summary>
         /// The step is done.
         /// </summary>
-        Done,
+        Verified,
+
+        /// <summary>
+        /// The feature has settings but has not been verified.
+        /// </summary>
+        Configured,
 
         /// <summary>
         /// The step has a problem, which the administrator has to look at.
@@ -110,16 +130,23 @@ public partial class DiscordSetup : IDisposable
     /// <summary>
     /// Gets a value indicating whether the bot is configured, or about to be: then the channels of the bot are shown.
     /// </summary>
-    private bool UsesBot => !string.IsNullOrWhiteSpace(this._newToken)
-                            || (this.IsDefinedElsewhere("Bot:Token")
-                                ? !string.IsNullOrWhiteSpace(this._integration?.Settings.Bot.Token)
-                                : this._settings?.Bot.Token is not null);
+    private bool UsesBot => this._useBot;
+
+    private string IntegrationMode
+    {
+        get => this._useBot ? "bot" : "webhooks";
+        set
+        {
+            this._useBot = value == "bot";
+            this.OnModeChanged();
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether the webhooks are shown: without the bot, and when webhooks are configured,
     /// so that they can be removed.
     /// </summary>
-    private bool ShowsWebhooks => !this.UsesBot
+    private bool ShowsWebhooks => this._showWebhookEditor || !this.UsesBot
                                   || this._settings?.Webhooks.Count > 0
                                   || Categories.Any(category => this.IsDefinedElsewhere($"Webhooks:{category}"));
 
@@ -144,18 +171,34 @@ public partial class DiscordSetup : IDisposable
 
     private StepState BotStepState => this.Bot?.Problem is DiscordBotProblem.TokenRejected
         ? StepState.Problem
-        : this.IsBotConnected ? StepState.Done : StepState.Open;
+        : this.IsBotConnected ? StepState.Verified : this.EffectiveToken is not null ? StepState.Configured : StepState.Open;
 
-    private StepState InviteStepState => this.IsBotConnected && this.Bot!.CurrentConnections > 0 ? StepState.Done : StepState.Open;
+    private StepState InviteStepState => this.IsBotConnected && this.Bot!.CurrentConnections > 0 ? StepState.Verified : StepState.Open;
 
-    private StepState ServerStepState => this._serverCheck is { } check
-                                         && (check.MissingPermissions.Count > 0 || check.LinkedRole != DiscordRoleState.Assignable)
-        ? StepState.Problem
-        : this.Bot?.RoutingServerId is not null ? StepState.Done : StepState.Open;
+    private StepState ServerStepState => this.HasUnsavedChanges ? StepState.Configured
+        : this._serverCheck is { } check
+            ? check.MissingPermissions.Count > 0 || check.LinkedRole != DiscordRoleState.Assignable ? StepState.Problem : StepState.Verified
+            : this.Bot?.RoutingServerId is not null ? StepState.Configured : StepState.Open;
 
-    private StepState NotificationsStepState => this._testResults.Values.Any(result => !IsSent(result))
-        ? StepState.Problem
-        : this._testResults.Count > 0 || this._isPublisherActive == true ? StepState.Done : StepState.Open;
+    private StepState NotificationsStepState
+    {
+        get
+        {
+            var enabled = Categories.Where(category => this._settings?.DisabledNotifications.Contains(category) is not true).ToList();
+            if (this.HasUnsavedChanges || this._testResults.Count == 0)
+            {
+                return this._settings is { IsNotificationEnabled: true } ? StepState.Configured : StepState.Open;
+            }
+
+            if (this._testResults.Values.Any(result => !IsSent(result)))
+            {
+                return StepState.Problem;
+            }
+
+            return enabled.Count > 0 && enabled.All(category => this._testResults.TryGetValue(category, out var result) && IsSent(result))
+                ? StepState.Verified : StepState.Configured;
+        }
+    }
 
     /// <inheritdoc />
     public void Dispose()
@@ -182,7 +225,6 @@ public partial class DiscordSetup : IDisposable
         }
 
         await this.LoadAsync().ConfigureAwait(true);
-        await this.LoadPublisherStateAsync().ConfigureAwait(true);
         await this.LoadChatBindingsAsync().ConfigureAwait(true);
     }
 
@@ -223,9 +265,10 @@ public partial class DiscordSetup : IDisposable
 
     private static MarkupString StepBadge(StepState state) => state switch
     {
-        StepState.Done => new MarkupString($"<span class=\"badge text-bg-success ms-2\">✓ {System.Net.WebUtility.HtmlEncode(Resources.DiscordStepDone)}</span>"),
+        StepState.Verified => new MarkupString($"<span class=\"badge text-bg-success ms-2\">✓ {System.Net.WebUtility.HtmlEncode(Resources.DiscordStepDone)}</span>"),
+        StepState.Configured => new MarkupString($"<span class=\"badge text-bg-secondary ms-2\">{System.Net.WebUtility.HtmlEncode(UiText("DiscordConfigured"))}</span>"),
         StepState.Problem => new MarkupString($"<span class=\"badge text-bg-warning ms-2\">⚠ {System.Net.WebUtility.HtmlEncode(Resources.DiscordStepProblem)}</span>"),
-        _ => default,
+        _ => new MarkupString($"<span class=\"badge text-bg-light ms-2\">{System.Net.WebUtility.HtmlEncode(UiText("DiscordNotConfigured"))}</span>"),
     };
 
     private static string TestResultText(DiscordTestResult result)
@@ -238,6 +281,23 @@ public partial class DiscordSetup : IDisposable
     {
         return Resources.ResourceManager.GetString($"DiscordCheckLinkedRole_{state}", Resources.Culture) ?? state.ToString();
     }
+
+    private static string UiText(string key, params object[] args)
+    {
+        var text = Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
+        return args.Length == 0 ? text : string.Format(CultureInfo.CurrentUICulture, text, args);
+    }
+
+    private static string PublisherLabel(string name) => typeof(GameEventPublisherConfiguration).GetProperty(name)?.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? name;
+
+    private static IEnumerable<string> PublisherOptions(DiscordChannelCategory category) => category switch
+    {
+        DiscordChannelCategory.Events => [nameof(GameEventPublisherConfiguration.PublishMiniGameEvents), nameof(GameEventPublisherConfiguration.PublishInvasionEvents)],
+        DiscordChannelCategory.CastleSiege => [nameof(GameEventPublisherConfiguration.PublishCastleSiegeEvents)],
+        DiscordChannelCategory.Notices => [nameof(GameEventPublisherConfiguration.PublishGlobalNotices)],
+        DiscordChannelCategory.WorldNews => [nameof(GameEventPublisherConfiguration.PublishExcellentItemDrops), nameof(GameEventPublisherConfiguration.PublishAncientItemDrops), nameof(GameEventPublisherConfiguration.PublishBossKills), nameof(GameEventPublisherConfiguration.PublishLevelMilestones)],
+        _ => [],
+    };
 
     private string DefaultChannelText(string? channelName)
     {
@@ -262,14 +322,22 @@ public partial class DiscordSetup : IDisposable
 
     private void OnIntegrationPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        _ = this.InvokeAsync(this.StateHasChanged);
+        _ = this.InvokeAsync(() =>
+        {
+            if (this.Bot?.ServerState == ServerState.Started)
+            {
+                this._applyStatus = UiText("DiscordApplied");
+            }
+
+            this.StateHasChanged();
+        });
     }
 
     private async Task LoadAsync()
     {
         try
         {
-            var settings = await this.ConfigurationService.LoadAsync().ConfigureAwait(true);
+            var settings = await this.ConfigurationService.LoadForEditingAsync().ConfigureAwait(true);
             this._newToken = string.Empty;
             this._newWebhooks.Clear();
             this._channelIdTexts.Clear();
@@ -286,7 +354,12 @@ public partial class DiscordSetup : IDisposable
             this._definedElsewhere.Clear();
             this._layout = LoadLayout(this._integration?.Settings.Bot.LayoutFile ?? settings.Bot.LayoutFile);
             this._settings = settings;
+            this._useBot = settings.UseBot ?? (settings.Bot.IsEnabled || settings.Webhooks.Count == 0);
             this._loadError = null;
+            this._confirmDiscard = false;
+            this._validationErrors.Clear();
+            this.InvalidateChecks();
+            await this.LoadPublisherStateAsync().ConfigureAwait(true);
             this._savedInputs = this.SerializeInputs();
         }
         catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException or InvalidOperationException)
@@ -302,8 +375,12 @@ public partial class DiscordSetup : IDisposable
         try
         {
             var gameConfiguration = await this.GameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
-            this._isPublisherActive = gameConfiguration.PlugInConfigurations
-                .FirstOrDefault(configuration => configuration.TypeId == typeof(GameEventPublisherPlugIn).GUID)?.IsActive ?? false;
+            var publisher = gameConfiguration.PlugInConfigurations.FirstOrDefault(configuration => configuration.TypeId == typeof(GameEventPublisherPlugIn).GUID);
+            this._isPublisherActive = publisher?.IsActive ?? false;
+            this._publisherSettings = publisher?.GetConfiguration<GameEventPublisherConfiguration>(new ByDataSourceReferenceHandler(this.GameConfigurationSource)) ?? new GameEventPublisherConfiguration();
+            this._bossMonsterNumbersText = Join(this._publisherSettings?.BossMonsterNumbers ?? []);
+            this._levelMilestonesText = Join(this._publisherSettings?.LevelMilestones ?? []);
+            this._masterLevelMilestonesText = Join(this._publisherSettings?.MasterLevelMilestones ?? []);
         }
         catch (Exception ex)
         {
@@ -312,32 +389,26 @@ public partial class DiscordSetup : IDisposable
         }
     }
 
-    private async Task SetPublisherActiveAsync(bool isActive)
+    private async Task SavePublisherSettingsAsync()
     {
-        this._isChangingPublisher = true;
-        try
+        if (this._publisherSettings is not { } publisherSettings || this._isPublisherActive is not { } active)
         {
-            var gameConfiguration = await this.GameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
-            if (gameConfiguration.PlugInConfigurations.FirstOrDefault(configuration => configuration.TypeId == typeof(GameEventPublisherPlugIn).GUID) is not { } publisher)
-            {
-                return;
-            }
+            return;
+        }
 
-            // Like on the plugins page: the game servers apply the saved change at once.
-            publisher.IsActive = isActive;
-            await (await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true)).SaveChangesAsync().ConfigureAwait(true);
-            this._isPublisherActive = isActive;
-            this.ToastService.ShowSuccess(isActive ? Resources.DiscordPublisherActivated : Resources.DiscordPublisherDeactivated);
-        }
-        catch (Exception ex)
+        var gameConfiguration = await this.GameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
+        var context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true);
+        var publisher = gameConfiguration.PlugInConfigurations.FirstOrDefault(configuration => configuration.TypeId == typeof(GameEventPublisherPlugIn).GUID);
+        if (publisher is null)
         {
-            this.Logger.LogError(ex, "Couldn't change the game event publisher.");
-            this.ToastService.ShowError(ex.Message);
+            publisher = context.CreateNew<PlugInConfiguration>();
+            publisher.TypeId = typeof(GameEventPublisherPlugIn).GUID;
+            gameConfiguration.PlugInConfigurations.Add(publisher);
         }
-        finally
-        {
-            this._isChangingPublisher = false;
-        }
+
+        publisher.IsActive = active;
+        publisher.SetConfiguration(publisherSettings, new ByDataSourceReferenceHandler(this.GameConfigurationSource));
+        await context.SaveChangesAsync().ConfigureAwait(true);
     }
 
     private void RemoveToken()
@@ -365,12 +436,34 @@ public partial class DiscordSetup : IDisposable
         this._isSaving = true;
         try
         {
+            this._applyStatus = UiText("DiscordApplying");
             await this.ConfigurationService.SaveAsync(settings).ConfigureAwait(true);
-            this.ToastService.ShowSuccess(Resources.DiscordSaved);
+            await this.SavePublisherSettingsAsync().ConfigureAwait(true);
+            if (this._integration is { } integration)
+            {
+                await integration.ApplySettingsAsync().ConfigureAwait(true);
+                if (integration.SettingsError is { } error)
+                {
+                    throw new InvalidOperationException(error);
+                }
+            }
+
+            if (this.Bot is { Problem: not DiscordBotProblem.None })
+            {
+                this._applyStatus = UiText("DiscordSavedConnectionFailed");
+                this.ToastService.ShowWarning(this._applyStatus);
+            }
+            else
+            {
+                this._applyStatus = this.Bot?.ServerState == ServerState.Starting ? Resources.DiscordStatusConnecting : UiText("DiscordApplied");
+                this.ToastService.ShowSuccess(Resources.DiscordSaved);
+            }
+
             await this.LoadAsync().ConfigureAwait(true);
         }
-        catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException or InvalidOperationException)
         {
+            this._applyStatus = string.Format(Resources.DiscordSaveError, ex.Message);
             this.Logger.LogError(ex, "Couldn't save the Discord settings to {filePath}.", this.ConfigurationService.FilePath);
             this.ToastService.ShowError(string.Format(Resources.DiscordSaveError, ex.Message));
         }
@@ -385,18 +478,42 @@ public partial class DiscordSetup : IDisposable
     /// </summary>
     private bool TryApplyInputs(DiscordSettings settings)
     {
-        if (!this.TryParseId(this._serverIdText, out var serverId)
-            || !this.TryParseId(this._statusChannelIdText, out var statusChannelId)
+        this._validationErrors.Clear();
+        this.ValidateMinimum("discordMessageLength", settings.Bot.ChatBridge.MaximumMessageLength, 1);
+        this.ValidateMinimum("discordMessagesPerMinute", settings.Bot.ChatBridge.MaximumMessagesPerMinute, 1);
+        this.ValidateMinimum("discordQueuedMessages", settings.MaximumQueuedMessages, 1);
+        this.ValidateMinimum("discordStatusInterval", this._statusUpdateSeconds, 10);
+        if (this._validationErrors.Count > 0)
+        {
+            return false;
+        }
+
+        if (!this.TryParseId(this._serverIdText, out var serverId, "discordServer")
+            || !this.TryParseId(this._statusChannelIdText, out var statusChannelId, "discordStatusChannel")
             || !this.TryParseList<byte>(this._eventServerIdsText, byte.TryParse, out var eventServerIds)
             || !this.TryParseList<ulong>(this._allowedServerIdsText, ulong.TryParse, out var allowedServerIds))
         {
             return false;
         }
 
+        if (!this.TryParseList<short>(this._bossMonsterNumbersText, short.TryParse, out var bosses)
+            || !this.TryParseList<int>(this._levelMilestonesText, int.TryParse, out var levels)
+            || !this.TryParseList<int>(this._masterLevelMilestonesText, int.TryParse, out var masterLevels))
+        {
+            return false;
+        }
+
+        if (this._publisherSettings is { } publisherSettings)
+        {
+            publisherSettings.BossMonsterNumbers = bosses;
+            publisherSettings.LevelMilestones = levels;
+            publisherSettings.MasterLevelMilestones = masterLevels;
+        }
+
         var channels = new Dictionary<DiscordChannelCategory, ulong>();
         foreach (var (category, text) in this._channelIdTexts)
         {
-            if (!this.TryParseId(text, out var channelId))
+            if (!this.TryParseId(text, out var channelId, "discordChannel-" + category))
             {
                 return false;
             }
@@ -407,7 +524,7 @@ public partial class DiscordSetup : IDisposable
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(this._newToken))
+        if (this._useBot && !string.IsNullOrWhiteSpace(this._newToken))
         {
             settings.Bot.Token = this._newToken.Trim();
         }
@@ -417,6 +534,7 @@ public partial class DiscordSetup : IDisposable
             settings.Webhooks[category] = url.Trim();
         }
 
+        settings.UseBot = this._useBot;
         settings.Bot.GuildId = serverId;
         settings.Bot.StatusChannelId = statusChannelId;
         settings.Bot.Channels = channels;
@@ -426,7 +544,7 @@ public partial class DiscordSetup : IDisposable
         return true;
     }
 
-    private bool TryParseId(string text, out ulong? id)
+    private bool TryParseId(string text, out ulong? id, string field = "")
     {
         id = null;
         if (string.IsNullOrWhiteSpace(text))
@@ -434,13 +552,14 @@ public partial class DiscordSetup : IDisposable
             return true;
         }
 
-        if (ulong.TryParse(text.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var value))
+        if (ulong.TryParse(text.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var value) && value > 0)
         {
             id = value;
             return true;
         }
 
-        this.ToastService.ShowError(string.Format(Resources.DiscordInvalidId, text));
+        this._validationErrors[field] = string.Format(Resources.DiscordInvalidId, text);
+        this.ToastService.ShowError(this._validationErrors[field]);
         return false;
     }
 
@@ -469,6 +588,12 @@ public partial class DiscordSetup : IDisposable
         return JsonSerializer.Serialize(new
         {
             Settings = this._settings,
+            Publisher = this._publisherSettings,
+            this._isPublisherActive,
+            this._useBot,
+            this._bossMonsterNumbersText,
+            this._levelMilestonesText,
+            this._masterLevelMilestonesText,
             this._newToken,
             NewWebhooks = this._newWebhooks.Where(entry => !string.IsNullOrWhiteSpace(entry.Value)).OrderBy(entry => entry.Key).ToList(),
             ChannelIds = this._channelIdTexts.Where(entry => !string.IsNullOrWhiteSpace(entry.Value)).OrderBy(entry => entry.Key).ToList(),
@@ -482,7 +607,7 @@ public partial class DiscordSetup : IDisposable
 
     private async Task TestAllAsync()
     {
-        foreach (var category in Categories)
+        foreach (var category in Categories.Where(category => this._settings?.DisabledNotifications.Contains(category) is not true))
         {
             await this.TestAsync(category).ConfigureAwait(true);
         }
@@ -539,6 +664,7 @@ public partial class DiscordSetup : IDisposable
         try
         {
             this._testResults[category] = await integration.SendTestMessageAsync(category).ConfigureAwait(true);
+            this._lastCheckedAt = DateTimeOffset.UtcNow;
         }
         catch (Exception ex)
         {
@@ -553,9 +679,11 @@ public partial class DiscordSetup : IDisposable
 
     private async Task CheckServerAsync()
     {
+        this._isCheckingServer = true;
         try
         {
             this._serverCheck = this.Bot is { } bot ? await bot.CheckDiscordServerAsync().ConfigureAwait(true) : null;
+            this._lastCheckedAt = DateTimeOffset.UtcNow;
             if (this._serverCheck is null)
             {
                 this.ToastService.ShowError(Resources.DiscordCheckServerNeedsServer);
@@ -565,6 +693,10 @@ public partial class DiscordSetup : IDisposable
         {
             this.Logger.LogError(ex, "Error when checking the Discord server.");
             this.ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            this._isCheckingServer = false;
         }
     }
 
@@ -594,6 +726,89 @@ public partial class DiscordSetup : IDisposable
         finally
         {
             this._isSettingUp = false;
+        }
+    }
+
+    private bool PublisherFlag(string name) => this._publisherSettings is { } settings && typeof(GameEventPublisherConfiguration).GetProperty(name)?.GetValue(settings) is true;
+
+    private void SetPublisherFlag(string name, bool value)
+    {
+        if (this._publisherSettings is { } settings)
+        {
+            typeof(GameEventPublisherConfiguration).GetProperty(name)?.SetValue(settings, value);
+        }
+    }
+
+    private void InvalidateChecks()
+    {
+        this._testResults.Clear();
+        this._serverCheck = null;
+        this._lastCheckedAt = null;
+    }
+
+    private void OnModeChanged()
+    {
+        this.InvalidateChecks();
+    }
+
+    private void SetCategoryEnabled(DiscordChannelCategory category, bool enabled)
+    {
+        if (this._settings is not { } settings)
+        {
+            return;
+        }
+
+        settings.DisabledNotifications.Remove(category);
+        if (!enabled)
+        {
+            settings.DisabledNotifications.Add(category);
+        }
+    }
+
+    private string RouteText(DiscordChannelCategory category)
+    {
+        if (this._settings?.DisabledNotifications.Contains(category) is true)
+        {
+            return UiText("DiscordOff");
+        }
+
+        var route = DiscordDeliveryRoute.Resolve(this._integration?.Settings ?? this._settings ?? new DiscordSettings(), this.Bot, category);
+        return route.ChannelId is { } id
+            ? UiText("DiscordRouteBot", this.TextChannels.FirstOrDefault(channel => channel.Id == id)?.Name ?? id.ToString(CultureInfo.InvariantCulture))
+            : route.WebhookUrl is not null ? UiText("DiscordRouteWebhook") : UiText("DiscordRouteNone");
+    }
+
+    private string ManagedHint(string key) => UiText("DiscordManagedKey", this.ConfigurationService.GetEnvironmentKey(key));
+
+    private void ValidateMinimum(string field, int value, int minimum)
+    {
+        if (value < minimum)
+        {
+            this._validationErrors[field] = UiText("DiscordMinimum", minimum);
+        }
+    }
+
+    private MarkupString FieldError(string field) => this._validationErrors.TryGetValue(field, out var message)
+        ? new MarkupString($"<div class=\"invalid-feedback d-block\" role=\"alert\">{System.Net.WebUtility.HtmlEncode(message)}</div>") : default;
+
+    private async Task RequestDiscardAsync()
+    {
+        if (this.HasUnsavedChanges)
+        {
+            this._confirmDiscard = true;
+        }
+        else
+        {
+            await this.LoadAsync().ConfigureAwait(true);
+        }
+    }
+
+    private void PreventUnsavedNavigation(LocationChangingContext context)
+    {
+        if (this.HasUnsavedChanges)
+        {
+            context.PreventNavigation();
+            this.ToastService.ShowWarning(UiText("DiscordNavigationBlocked"));
         }
     }
 }

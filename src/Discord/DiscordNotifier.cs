@@ -87,11 +87,12 @@ public sealed class DiscordNotifier : IGameEventListener, IAsyncDisposable
             return;
         }
 
-        if (this._botMessenger?.GetChannelId(message.Category) is { } channelId)
+        var route = DiscordDeliveryRoute.Resolve(this._settings, this._botMessenger, message.Category);
+        if (route.ChannelId is { } channelId)
         {
             this._botSenders.GetOrAdd(channelId, this.CreateBotSender).Enqueue(message.Embed);
         }
-        else if (this._webhookSenders.TryGetValue(message.Category, out var webhookSender))
+        else if (route.WebhookUrl is not null && this._webhookSenders.TryGetValue(message.Category, out var webhookSender))
         {
             webhookSender.Enqueue(message.Embed);
         }
