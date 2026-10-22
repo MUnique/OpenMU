@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the NPC configuration of the Castle Siege guard talk plug-ins:
-/// the guardsmen (224) open the registration window, the guard (220) opens the Land of Trials dialog.
+/// the guardsmen (224) open the registration window, the guard (220) is a passive NPC which opens the Land of Trials dialog.
 /// </summary>
 [TestFixture]
 internal class CastleSiegeGuardTalkPlugInsTest
@@ -35,7 +35,7 @@ internal class CastleSiegeGuardTalkPlugInsTest
     }
 
     /// <summary>
-    /// Tests that the update moves the Land of Trials dialog from the guardsman to the guard,
+    /// Tests that the update moves the Land of Trials dialog from the guardsman to the guard, turns the guard into a passive NPC,
     /// adds the registration plug-in to a database created without it, and can be applied twice.
     /// </summary>
     [Test]
@@ -51,6 +51,21 @@ internal class CastleSiegeGuardTalkPlugInsTest
             new NpcTalkPlugInConfiguration { Npc = GetMonster(gameConfiguration, GuardsmanNumber) },
             new ConfigureNpcTalkPlugInsPlugInBase.IdReferenceHandler());
         gameConfiguration.PlugInConfigurations.Remove(GetPlugInConfiguration<CastleSiegeRegistrationGuardsmanTalkPlugIn>(gameConfiguration)!);
+
+        // Before, the guard was an attacking guard with its own intelligence and combat attributes.
+        var guard = GetMonster(gameConfiguration, GuardNumber);
+        guard.ObjectKind = NpcObjectKind.Guard;
+        guard.IntelligenceTypeName = "MUnique.OpenMU.GameLogic.NPC.GuardIntelligence";
+        guard.MoveRange = 3;
+        guard.AttackRange = 2;
+        guard.ViewRange = 8;
+        guard.MoveDelay = TimeSpan.FromMilliseconds(400);
+        guard.AttackDelay = TimeSpan.FromMilliseconds(1500);
+        guard.RespawnDelay = TimeSpan.FromSeconds(3);
+        var attribute = context.CreateNew<MonsterAttribute>();
+        attribute.AttributeDefinition = gameConfiguration.Attributes.First();
+        attribute.Value = 500;
+        guard.Attributes.Add(attribute);
 
         var update = new ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -78,6 +93,21 @@ internal class CastleSiegeGuardTalkPlugInsTest
             Assert.That(ConfiguredNpcId<CastleSiegeRegistrationGuardsmanTalkPlugIn>(gameConfiguration), Is.EqualTo(GetMonsterId(gameConfiguration, GuardsmanNumber)));
             Assert.That(ConfiguredNpcId<CastleSiegeLandOfTrialsGuardTalkPlugIn>(gameConfiguration), Is.EqualTo(GetMonsterId(gameConfiguration, GuardNumber)));
             Assert.That(GetPlugInConfiguration<CastleSiegeRegistrationGuardsmanTalkPlugIn>(gameConfiguration)!.IsActive, Is.True);
+        });
+
+        // The guard is a passive NPC which players talk to, like the guardsman.
+        var guard = GetMonster(gameConfiguration, GuardNumber);
+        Assert.Multiple(() =>
+        {
+            Assert.That(guard.ObjectKind, Is.EqualTo(NpcObjectKind.PassiveNpc));
+            Assert.That(guard.IntelligenceTypeName, Is.Null);
+            Assert.That(guard.Attributes, Is.Empty);
+            Assert.That(guard.MoveRange, Is.Zero);
+            Assert.That(guard.AttackRange, Is.Zero);
+            Assert.That(guard.ViewRange, Is.Zero);
+            Assert.That(guard.MoveDelay, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(guard.AttackDelay, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(guard.RespawnDelay, Is.EqualTo(TimeSpan.Zero));
         });
     }
 

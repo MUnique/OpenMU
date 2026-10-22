@@ -17,6 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// Before, the guardsmen opened the Land of Trials dialog, and no NPC opened the registration window.
+/// The guard was an attacking guard with its own intelligence and combat attributes,
+/// which it doesn't need as a passive NPC which players talk to.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
@@ -31,7 +33,9 @@ public class ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug-in description.
     /// </summary>
-    internal const string PlugInDescription = "The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance opens the Land of Trials dialog.";
+    internal const string PlugInDescription = "The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.";
+
+    private const short GuardNumber = 220;
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -54,9 +58,35 @@ public class ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == GuardNumber) is { } guard)
+        {
+            MakePassive(guard);
+        }
+
         Configure(context, gameConfiguration, new CastleSiegeRegistrationGuardsmanTalkPlugIn());
         Configure(context, gameConfiguration, new CastleSiegeLandOfTrialsGuardTalkPlugIn());
         return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Turns the guard into a passive NPC, like the other Castle Siege NPCs which players talk to.
+    /// </summary>
+    /// <param name="guard">The guard.</param>
+    private static void MakePassive(MonsterDefinition guard)
+    {
+        guard.ObjectKind = NpcObjectKind.PassiveNpc;
+        guard.IntelligenceTypeName = null;
+        guard.MoveRange = default;
+        guard.AttackRange = default;
+        guard.ViewRange = default;
+        guard.MoveDelay = default;
+        guard.AttackDelay = default;
+        guard.RespawnDelay = default;
+        guard.NumberOfMaximumItemDrops = default;
+        foreach (var attribute in guard.Attributes.ToList())
+        {
+            guard.Attributes.Remove(attribute);
+        }
     }
 
     private static void Configure(IContext context, GameConfiguration gameConfiguration, NpcTalkPlugInBase plugIn)
