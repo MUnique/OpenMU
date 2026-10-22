@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence;
 
 using System.Threading;
+using System.Threading.Tasks;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 
@@ -201,7 +202,7 @@ public interface IPlayerContext : IContext
         DateTime nowUtc,
         string externalUserId,
         string externalUserName,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Gets the link of an account to a user of an external service.

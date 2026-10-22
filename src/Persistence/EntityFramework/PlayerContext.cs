@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -69,7 +70,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         DateTime nowUtc,
         string externalUserId,
         string externalUserName,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         await using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
