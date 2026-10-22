@@ -13,5 +13,6 @@ public class GuildDisconnectChatCommandArgs : ArgumentsBase
     /// Gets or sets the guild name.
     /// </summary>
     [Argument("guild")]
+    [ValueReference(ChatCommandValueReference.GuildName)]
     public string? GuildName { get; set; }
 }
