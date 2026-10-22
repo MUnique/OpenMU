@@ -89,6 +89,7 @@ public class DiscordServerProvisionerTest
 
     /// <summary>
     /// Tests the permissions: Read-only channels can only be written by the bot, and the staff category can only be seen by the game masters and the bot.
+    /// The overwrite of the bot comes first, so that the bot doesn't lock itself out of a private channel before its own overwrite is set.
     /// </summary>
     [Test]
     public async Task PermissionsAreAppliedAsync()
@@ -100,37 +101,61 @@ public class DiscordServerProvisionerTest
 
         Assert.That(server.Overwrites[result.ChannelIds["events"]], Is.EqualTo(new DiscordPermissionOverwrite[]
         {
-            new(server.EveryoneRoleId, true, DiscordChannelAccess.None, DiscordChannelAccess.Send),
             new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
+            new(server.EveryoneRoleId, true, DiscordChannelAccess.None, DiscordChannelAccess.Send),
         }));
         Assert.That(server.Overwrites.ContainsKey(result.ChannelIds["general"]), Is.False);
         Assert.That(server.Overwrites[server.GetId("Staff")], Is.EqualTo(new DiscordPermissionOverwrite[]
         {
+            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
             new(server.EveryoneRoleId, true, DiscordChannelAccess.None, DiscordChannelAccess.View),
             new(gmRoleId, true, viewAndSend, DiscordChannelAccess.None),
-            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
         }));
         Assert.That(server.Overwrites[result.ChannelIds["staff-alerts"]], Is.EqualTo(new DiscordPermissionOverwrite[]
         {
+            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
             new(server.EveryoneRoleId, true, DiscordChannelAccess.None, viewAndSend),
             new(gmRoleId, true, DiscordChannelAccess.View, DiscordChannelAccess.None),
-            new(server.BotUserId, false, viewAndSend, DiscordChannelAccess.None),
         }));
     }
 
     /// <summary>
-    /// Tests that a private category stays public, when its roles can't be created, instead of being visible to nobody.
+    /// Tests that a failed staff role never creates public staff channels.
     /// </summary>
     [Test]
-    public async Task PrivateCategoryWithoutRolesStaysPublicAsync()
+    public async Task PrivateCategoryWithoutRolesIsSkippedAsync()
     {
         var server = new FakeDiscordServer { FailingName = "GM" };
-
         var result = await this._provisioner.ProvisionAsync(server, DiscordServerLayout.LoadDefault()).ConfigureAwait(false);
+        Assert.That(result.PublicCategories, Is.Empty);
+        Assert.That(server.Channels.Any(channel => channel.Name == "Staff"), Is.False);
+        Assert.That(result.ChannelIds.ContainsKey("staff-alerts"), Is.False);
+        Assert.That(result.Failed.Any(failure => failure.Name == "Staff"), Is.True);
+    }
 
-        Assert.That(result.PublicCategories, Is.EqualTo(new[] { "Staff" }));
-        Assert.That(server.Overwrites.ContainsKey(server.GetId("Staff")), Is.False);
-        Assert.That(server.Overwrites[result.ChannelIds["staff-alerts"]].Single(o => o.TargetId == server.EveryoneRoleId).Deny, Is.EqualTo(DiscordChannelAccess.Send));
+    /// <summary>
+    /// Tests that failed staff permissions never enable notification routing.
+    /// </summary>
+    [TestCase("Staff")]
+    [TestCase("staff-alerts")]
+    public async Task FailedPrivatePermissionsAreNotRoutedAsync(string name)
+    {
+        var server = new FakeDiscordServer { FailingPermissionsName = name };
+        var layout = DiscordServerLayout.LoadDefault();
+        var result = await this._provisioner.ProvisionAsync(server, layout).ConfigureAwait(false);
+        Assert.That(result.ChannelIds.ContainsKey("staff-alerts"), Is.False);
+        Assert.That(DiscordServerProvisioner.FindChannels(layout, server.GetChannels()).ContainsKey("staff-alerts"), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that an old public staff channel is not adopted for delivery by name.
+    /// </summary>
+    [Test]
+    public void PublicStaffChannelIsNotRouted()
+    {
+        var server = new FakeDiscordServer();
+        server.AddChannel("staff-alerts", server.AddCategory("Staff"));
+        Assert.That(DiscordServerProvisioner.FindChannels(DiscordServerLayout.LoadDefault(), server.GetChannels()), Is.Empty);
     }
 
     /// <summary>

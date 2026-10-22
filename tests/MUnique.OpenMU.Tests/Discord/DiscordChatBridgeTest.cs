@@ -103,6 +103,32 @@ public class DiscordChatBridgeTest
     }
 
     /// <summary>
+    /// Tests that a saved character name does not authorize its former owner after a transfer.
+    /// </summary>
+    [TestCase(GuildChatScope.Guild)]
+    [TestCase(GuildChatScope.Alliance)]
+    public async Task FormerCharacterOwnerCannotChangeBindingsAsync(GuildChatScope scope)
+    {
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(GuildMasterUser, scope, ServerId, ChannelId, false).ConfigureAwait(false);
+        using (var context = this._persistence.CreateNewPlayerContext(new GameConfiguration()))
+        {
+            var previousOwner = await context.GetAccountByLoginNameAsync("hero").ConfigureAwait(false);
+            var newOwner = await context.GetAccountByLoginNameAsync("outsider").ConfigureAwait(false);
+            var character = previousOwner!.Characters.Single(c => c.Name == "Hero");
+            previousOwner.Characters.Remove(character);
+            newOwner!.Characters.Add(character);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var (result, _) = await bridge.BindAsync(GuildMasterUser, scope, ServerId, ChannelId + 1, false).ConfigureAwait(false);
+        Assert.That(result, Is.EqualTo(DiscordChatBindResult.NotGuildMaster));
+        Assert.That(await bridge.UnbindAsync(ChannelId, GuildMasterUser, false).ConfigureAwait(false), Is.EqualTo(DiscordChatBindResult.NotGuildMaster));
+        Assert.That(bridge.Store.GetByChannel(ChannelId), Is.Not.Null);
+        Assert.That(bridge.Store.GetByChannel(ChannelId + 1), Is.Null);
+    }
+
+    /// <summary>
     /// Tests that the alliance chat can only be bound by the master of the alliance, and that a channel can't be bound twice.
     /// </summary>
     [Test]

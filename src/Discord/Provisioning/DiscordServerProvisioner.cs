@@ -41,7 +41,8 @@ public sealed class DiscordServerProvisioner
             var categoryId = FindCategory(channels, category.Name)?.Id;
             foreach (var channel in category.Channels)
             {
-                if (FindChannel(channels, channel.Name, categoryId) is { } existing)
+                if (FindChannel(channels, channel.Name, categoryId) is { } existing
+                    && (category.VisibleTo.Count == 0 || existing.IsPrivate))
                 {
                     result[channel.Key] = existing.Id;
                 }
@@ -65,6 +66,13 @@ public sealed class DiscordServerProvisioner
         var channels = server.GetChannels();
         foreach (var category in layout.Categories)
         {
+            if (category.VisibleTo.Count > 0 && category.VisibleTo.Any(key => !roleIds.ContainsKey(key)))
+            {
+                // Do not create or adopt staff channels until every required role exists.
+                result.Failed.Add((category.Name, Properties.Resources.ResourceManager.GetString("Setup_PrivateRolesMissing") ?? string.Empty));
+                continue;
+            }
+
             var categoryId = await this.GetOrCreateAsync(
                 result,
                 category.Name,
@@ -75,13 +83,10 @@ public sealed class DiscordServerProvisioner
                 continue;
             }
 
-            if (category.VisibleTo.Count > 0 && !category.VisibleTo.Any(roleIds.ContainsKey))
+            if (!await this.ApplyPermissionsAsync(server, result, category.Name, categoryId.Value, CreateOverwrites(server, roleIds, category, null)).ConfigureAwait(false))
             {
-                // Without its roles, a private category would be visible to nobody but the bot.
-                result.PublicCategories.Add(category.Name);
+                continue;
             }
-
-            await this.ApplyPermissionsAsync(server, result, category.Name, categoryId.Value, CreateOverwrites(server, roleIds, category, null)).ConfigureAwait(false);
 
             foreach (var channel in category.Channels)
             {
@@ -95,8 +100,10 @@ public sealed class DiscordServerProvisioner
                     continue;
                 }
 
-                result.ChannelIds[channel.Key] = channelId.Value;
-                await this.ApplyPermissionsAsync(server, result, "#" + channel.Name, channelId.Value, CreateOverwrites(server, roleIds, category, channel)).ConfigureAwait(false);
+                if (await this.ApplyPermissionsAsync(server, result, "#" + channel.Name, channelId.Value, CreateOverwrites(server, roleIds, category, channel)).ConfigureAwait(false))
+                {
+                    result.ChannelIds[channel.Key] = channelId.Value;
+                }
             }
         }
 
@@ -113,9 +120,8 @@ public sealed class DiscordServerProvisioner
     /// <returns>The overwrites.</returns>
     internal static IReadOnlyList<DiscordPermissionOverwrite> CreateOverwrites(IDiscordServer server, IReadOnlyDictionary<string, ulong> roleIds, DiscordCategoryLayout category, DiscordChannelLayout? channel)
     {
-        // When none of the roles of a private category exist, e.g. because the bot can't create roles,
-        // the category stays public: a channel which nobody can see would look like the setup did nothing.
-        var isPrivate = category.VisibleTo.Any(roleIds.ContainsKey);
+        // Privacy is a property of the layout, never of whether role creation happened to succeed.
+        var isPrivate = category.VisibleTo.Count > 0;
         var isReadOnly = channel?.IsReadOnly ?? false;
         if (!isPrivate && !isReadOnly)
         {
@@ -126,6 +132,9 @@ public sealed class DiscordServerProvisioner
                            | (isReadOnly ? DiscordChannelAccess.Send : DiscordChannelAccess.None);
         var overwrites = new List<DiscordPermissionOverwrite>
         {
+            // The bot always needs to see the channels and to post into them. Its overwrite comes first: the overwrites
+            // are set one after another, and once @everyone is denied to view a channel, the bot couldn't set the others.
+            new(server.BotUserId, false, DiscordChannelAccess.View | DiscordChannelAccess.Send, DiscordChannelAccess.None),
             new(server.EveryoneRoleId, true, DiscordChannelAccess.None, everyoneDeny),
         };
 
@@ -137,8 +146,6 @@ public sealed class DiscordServerProvisioner
                 .Select(roleKey => new DiscordPermissionOverwrite(roleIds[roleKey], true, roleAccess, DiscordChannelAccess.None)));
         }
 
-        // The bot always needs to see the channels and to post into them.
-        overwrites.Add(new(server.BotUserId, false, DiscordChannelAccess.View | DiscordChannelAccess.Send, DiscordChannelAccess.None));
         return overwrites;
     }
 
@@ -198,21 +205,23 @@ public sealed class DiscordServerProvisioner
         }
     }
 
-    private async Task ApplyPermissionsAsync(IDiscordServer server, DiscordProvisioningResult result, string displayName, ulong channelId, IReadOnlyList<DiscordPermissionOverwrite> overwrites)
+    private async Task<bool> ApplyPermissionsAsync(IDiscordServer server, DiscordProvisioningResult result, string displayName, ulong channelId, IReadOnlyList<DiscordPermissionOverwrite> overwrites)
     {
         if (overwrites.Count == 0)
         {
-            return;
+            return true;
         }
 
         try
         {
             await server.ApplyPermissionsAsync(channelId, overwrites).ConfigureAwait(false);
+            return true;
         }
         catch (Exception ex)
         {
             this._logger.LogWarning(ex, "The permissions of {name} couldn't be set on the Discord server.", displayName);
             result.Failed.Add((displayName, ex.Message));
+            return false;
         }
     }
 }
