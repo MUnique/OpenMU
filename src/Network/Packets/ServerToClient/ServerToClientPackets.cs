@@ -10686,6 +10686,11 @@ public readonly struct NpcWindowResponse
             CastleSeniorNPC = 12,
 
         /// <summary>
+        /// The castle siege guardsman window. The client requests the castle siege status (C1 B2 00) when it opens.
+        /// </summary>
+            CastleSiegeGuardsman = 13,
+
+        /// <summary>
         /// The elphis refinery window.
         /// </summary>
             ElphisRefinery = 17,
