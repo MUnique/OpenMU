@@ -59,7 +59,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"Direction\", \"GameMapId\", \"MaximumHealthOverride\", \"MonsterDefinitionId\", \"Quantity\", \"SpawnTrigger\", \"WaveNumber\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"MonsterSpawnArea\"",
         "select \"Id\", \"Description\", \"GameMapDefinitionId\", \"Number\", \"TerrainData\" from config.\"GameMapTerrainVariant\"",
         "select \"Id\", \"GameConfigurationId\", \"Name\" from config.\"MasterSkillRoot\"",
-        "select \"Id\", \"AllowParty\", \"ArePlayerKillersAllowedToEnter\", \"Description\", \"EnterDuration\", \"EntranceFee\", \"EntranceId\", \"ExitDuration\", \"GameConfigurationId\", \"GameDuration\", \"GameLevel\", \"MapCreationPolicy\", \"MaximumCharacterLevel\", \"MaximumPlayerCount\", \"MaximumSpecialCharacterLevel\", \"MinimumCharacterLevel\", \"MinimumSpecialCharacterLevel\", \"Name\", \"RequiresMasterClass\", \"SaveRankingStatistics\", \"TicketItemId\", \"TicketItemLevel\", \"Type\" from config.\"MiniGameDefinition\"",
+        "select \"Id\", \"AllowParty\", \"ArePlayerKillersAllowedToEnter\", \"Description\", \"EnterDuration\", \"EntranceFee\", \"EntranceId\", \"ExitDuration\", \"GameConfigurationId\", \"GameDuration\", \"GameLevel\", \"MapCreationPolicy\", \"MaximumCharacterLevel\", \"MaximumPlayerCount\", \"MaximumSpecialCharacterLevel\", \"MinimumCharacterLevel\", \"MinimumPlayerCount\", \"MinimumSpecialCharacterLevel\", \"Name\", \"RequiresMasterClass\", \"SaveRankingStatistics\", \"TicketItemId\", \"TicketItemLevel\", \"Type\" from config.\"MiniGameDefinition\"",
         "select \"Id\", \"Description\", \"Index\", \"Message\", \"MiniGameDefinitionId\", \"MinimumTargetLevel\", \"MultiplyKillsByPlayers\", \"NumberOfKills\", \"SpawnAreaId\", \"Target\", \"TargetDefinitionId\" from config.\"MiniGameChangeEvent\"",
         "select \"Id\", \"EndX\", \"EndY\", \"IsClientUpdateRequired\", \"MiniGameChangeEventId\", \"SetTerrainAttribute\", \"StartX\", \"StartY\", \"TerrainAttribute\" from config.\"MiniGameTerrainChange\"",
         "select \"Id\", \"ItemRewardId\", \"MiniGameDefinitionId\", \"Rank\", \"RequiredKillId\", \"RequiredSuccess\", \"RewardAmount\", \"RewardType\" from config.\"MiniGameReward\"",
@@ -1158,15 +1158,16 @@ internal sealed partial class GameConfigurationLoader
             entity.MaximumPlayerCount = reader.GetInt32(13);
             entity.MaximumSpecialCharacterLevel = reader.GetInt32(14);
             entity.MinimumCharacterLevel = reader.GetInt32(15);
-            entity.MinimumSpecialCharacterLevel = reader.GetInt32(16);
-            entity.Name = reader.IsDBNull(17) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(17));
-            entity.RequiresMasterClass = reader.GetBoolean(18);
-            entity.SaveRankingStatistics = reader.GetBoolean(19);
-            if (!reader.IsDBNull(20)) { entity.TicketItemId = reader.GetGuid(20); }
-            entity.TicketItemLevel = reader.GetInt32(21);
-            entity.Type = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameType)reader.GetInt32(22);
+            entity.MinimumPlayerCount = reader.GetInt32(16);
+            entity.MinimumSpecialCharacterLevel = reader.GetInt32(17);
+            entity.Name = reader.IsDBNull(18) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(18));
+            entity.RequiresMasterClass = reader.GetBoolean(19);
+            entity.SaveRankingStatistics = reader.GetBoolean(20);
+            if (!reader.IsDBNull(21)) { entity.TicketItemId = reader.GetGuid(21); }
+            entity.TicketItemLevel = reader.GetInt32(22);
+            entity.Type = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameType)reader.GetInt32(23);
             this._MiniGameDefinition[entity.Id] = entity;
-            this._MiniGameDefinitionRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(20) ? null : reader.GetGuid(20), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
+            this._MiniGameDefinitionRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(21) ? null : reader.GetGuid(21), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
         }
     }
 

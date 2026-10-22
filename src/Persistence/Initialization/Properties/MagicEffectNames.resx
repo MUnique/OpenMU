@@ -147,4 +147,10 @@
   <data name="Freeze" xml:space="preserve">
     <value>Freeze</value>
   </data>
+  <data name="IllusionTempleOrderOfProtection" xml:space="preserve">
+    <value>Illusion Temple - Order of Protection</value>
+  </data>
+  <data name="IllusionTempleRestraint" xml:space="preserve">
+    <value>Illusion Temple - Restraint</value>
+  </data>
 </root>

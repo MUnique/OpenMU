@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -43,6 +44,9 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
                 break;
             case MiniGameType.Doppelganger:
                 await this._player.Connection.SendDoppelgangerEnterResultAsync(enterResult.ToDoppelgangerEnterResult()).ConfigureAwait(false);
+                break;
+            case MiniGameType.IllusionTemple:
+                await this._player.Connection.SendIllusionTempleEnterResultAsync(enterResult.ToIllusionTempleEnterResult()).ConfigureAwait(false);
                 break;
             case MiniGameType.ImperialGuardian:
                 if (enterResult != EnterResult.Success)

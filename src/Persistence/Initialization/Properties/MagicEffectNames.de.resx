@@ -144,4 +144,10 @@
   <data name="Freeze" xml:space="preserve">
     <value>Einfrieren</value>
   </data>
+  <data name="IllusionTempleOrderOfProtection" xml:space="preserve">
+    <value>Illusionstempel - Schutzbefehl</value>
+  </data>
+  <data name="IllusionTempleRestraint" xml:space="preserve">
+    <value>Illusionstempel - Fesselung</value>
+  </data>
 </root>

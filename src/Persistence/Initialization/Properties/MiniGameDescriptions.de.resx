@@ -114,4 +114,22 @@
   <data name="EventDefinitionForTheKanturuRefineryTowerEvent" xml:space="preserve">
     <value>Eventdefinition für das Event im Raffinerieturm von Kanturu.</value>
   </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel1" xml:space="preserve">
+    <value>Eventdefinition für das Illusionstempel-Event, Stufe 1.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel2" xml:space="preserve">
+    <value>Eventdefinition für das Illusionstempel-Event, Stufe 2.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel3" xml:space="preserve">
+    <value>Eventdefinition für das Illusionstempel-Event, Stufe 3.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel4" xml:space="preserve">
+    <value>Eventdefinition für das Illusionstempel-Event, Stufe 4.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel5" xml:space="preserve">
+    <value>Eventdefinition für das Illusionstempel-Event, Stufe 5.</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel6" xml:space="preserve">
+    <value>Eventdefinition für das Illusionstempel-Event, Stufe 6.</value>
+  </data>
 </root>
