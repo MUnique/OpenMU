@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -32,6 +33,9 @@ public class GameEventPublisherPlugIn
     ICastleSiegeStateChangedPlugIn,
     IMonsterItemDroppedPlugIn,
     IChatMessageSentPlugIn,
+    IAttackableGotKilledPlugIn,
+    ICharacterLevelUpPlugIn,
+    ICharacterMasterLevelUpPlugIn,
     ISupportCustomConfiguration<GameEventPublisherConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -186,6 +190,87 @@ public class GameEventPublisherPlugIn
         }
 
         return context.EventPublisher.GameEventAsync(new GlobalNoticeEvent(context.Id, DateTime.UtcNow, sender.Name, message.TrimStart('!')));
+    }
+
+    /// <inheritdoc />
+    public ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
+    {
+        if (killed is not Monster monster
+            || this.Configuration is not { PublishBossKills: true } configuration
+            || !configuration.BossMonsterNumbers.Contains(monster.Definition.Number))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // A summoned monster kills on behalf of its owner.
+        var player = killer as Player ?? (killer as Monster)?.SummonedBy;
+        if (player?.GameContext is not IGameServerContext context)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        return context.EventPublisher.GameEventAsync(new BossKilledEvent(
+            context.Id,
+            DateTime.UtcNow,
+            player.Name,
+            monster.Definition.Designation,
+            monster.CurrentMap.Definition.Name));
+    }
+
+    /// <inheritdoc />
+    public void CharacterLeveledUp(Player player)
+    {
+        if (this.Configuration is not { PublishLevelMilestones: true } configuration
+            || player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        var level = (int)attributes[Stats.Level];
+        if (configuration.LevelMilestones.Contains(level))
+        {
+            // The plugin point is synchronous, so the event is published in the background.
+            _ = PublishMilestoneAsync(player, level, false);
+        }
+    }
+
+    /// <inheritdoc />
+    public ValueTask CharacterMasterLeveledUpAsync(Player player)
+    {
+        if (this.Configuration is not { PublishLevelMilestones: true } configuration
+            || player.Attributes is not { } attributes)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        var level = (int)attributes[Stats.MasterLevel];
+        return configuration.MasterLevelMilestones.Contains(level)
+            ? new ValueTask(PublishMilestoneAsync(player, level, true))
+            : ValueTask.CompletedTask;
+    }
+
+    private static async Task PublishMilestoneAsync(Player player, int level, bool isMasterLevel)
+    {
+        if (player.GameContext is not IGameServerContext context
+            || player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        try
+        {
+            await context.EventPublisher.GameEventAsync(new CharacterLevelMilestoneEvent(
+                context.Id,
+                DateTime.UtcNow,
+                character.Name,
+                (string?)character.CharacterClass?.Name ?? string.Empty,
+                level,
+                isMasterLevel)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Error when publishing the level milestone of {character}", character.Name);
+        }
     }
 
     private static (Guid Id, string Name) GetInvasionIdentity(IPeriodicTaskPlugIn invasion)

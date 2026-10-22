@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -47,6 +48,8 @@ public class GameEventPublisherPlugInTest
         new CastleSiegeStateChangedEvent(1, DateTime.UtcNow, "Ready", "Start", DateTime.UtcNow.AddHours(2), Guid.NewGuid()),
         new MonsterItemDroppedEvent(1, DateTime.UtcNow, "Killer", "Kundun", "Kalima 7", "Sword of Destruction", 13, true, false),
         new GlobalNoticeEvent(1, DateTime.UtcNow, "GameMaster", "Hello"),
+        new BossKilledEvent(1, DateTime.UtcNow, "Killer", "Kundun", "Kalima 7"),
+        new CharacterLevelMilestoneEvent(1, DateTime.UtcNow, "Hero", "Blade Knight", 400, false),
     };
 
     /// <summary>
@@ -188,6 +191,76 @@ public class GameEventPublisherPlugInTest
         await plugIn.MonsterItemDroppedAsync(monster, killer, new DroppedItem(item, monster.Position, monster.CurrentMap, null, null)).ConfigureAwait(false);
 
         this._eventPublisher.Verify(p => p.GameEventAsync(It.IsAny<GameEvent>()), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that the kill of a configured boss monster is published.
+    /// </summary>
+    [Test]
+    public async Task BossKillIsPublishedAsync()
+    {
+        var (plugIn, monster, killer) = await this.CreateDropSetupAsync().ConfigureAwait(false);
+        plugIn.Configuration!.BossMonsterNumbers.Add(monster.Definition.Number);
+
+        await plugIn.AttackableGotKilledAsync(monster, killer).ConfigureAwait(false);
+
+        this._eventPublisher.Verify(
+            p => p.GameEventAsync(It.Is<BossKilledEvent>(e => e.ServerId == ServerId && e.MonsterName == "Kundun" && e.KillerName == killer.Name)),
+            Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that the kill of a monster which isn't configured as boss isn't published.
+    /// </summary>
+    [Test]
+    public async Task KillOfNormalMonsterIsNotPublishedAsync()
+    {
+        var (plugIn, monster, killer) = await this.CreateDropSetupAsync().ConfigureAwait(false);
+
+        await plugIn.AttackableGotKilledAsync(monster, killer).ConfigureAwait(false);
+
+        this._eventPublisher.Verify(p => p.GameEventAsync(It.IsAny<GameEvent>()), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that reaching a configured level milestone is published, and other levels are not.
+    /// </summary>
+    [Test]
+    public async Task LevelMilestoneIsPublishedAsync()
+    {
+        var (plugIn, _, player) = await this.CreateDropSetupAsync().ConfigureAwait(false);
+        plugIn.Configuration!.LevelMilestones = new List<int> { 10 };
+        var published = new TaskCompletionSource<CharacterLevelMilestoneEvent>(TaskCreationOptions.RunContinuationsAsynchronously);
+        this._eventPublisher.Setup(p => p.GameEventAsync(It.IsAny<CharacterLevelMilestoneEvent>()))
+            .Callback<GameEvent>(e => published.TrySetResult((CharacterLevelMilestoneEvent)e))
+            .Returns(ValueTask.CompletedTask);
+
+        player.Attributes![Stats.Level] = 9;
+        plugIn.CharacterLeveledUp(player);
+        player.Attributes[Stats.Level] = 10;
+        plugIn.CharacterLeveledUp(player);
+
+        var milestone = await published.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        Assert.That(milestone.Level, Is.EqualTo(10));
+        Assert.That(milestone.IsMasterLevel, Is.False);
+        this._eventPublisher.Verify(p => p.GameEventAsync(It.IsAny<GameEvent>()), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that reaching a configured master level milestone is published.
+    /// </summary>
+    [Test]
+    public async Task MasterLevelMilestoneIsPublishedAsync()
+    {
+        var (plugIn, _, player) = await this.CreateDropSetupAsync().ConfigureAwait(false);
+        plugIn.Configuration!.MasterLevelMilestones = new List<int> { 5 };
+        player.Attributes![Stats.MasterLevel] = 5;
+
+        await plugIn.CharacterMasterLeveledUpAsync(player).ConfigureAwait(false);
+
+        this._eventPublisher.Verify(
+            p => p.GameEventAsync(It.Is<CharacterLevelMilestoneEvent>(e => e.Level == 5 && e.IsMasterLevel)),
+            Times.Once);
     }
 
     private static GameEventPublisherPlugIn CreatePlugIn()

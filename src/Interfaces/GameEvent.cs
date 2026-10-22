@@ -26,4 +26,6 @@ using System.Text.Json.Serialization;
 [JsonDerivedType(typeof(CastleSiegeStateChangedEvent), nameof(CastleSiegeStateChangedEvent))]
 [JsonDerivedType(typeof(MonsterItemDroppedEvent), nameof(MonsterItemDroppedEvent))]
 [JsonDerivedType(typeof(GlobalNoticeEvent), nameof(GlobalNoticeEvent))]
+[JsonDerivedType(typeof(BossKilledEvent), nameof(BossKilledEvent))]
+[JsonDerivedType(typeof(CharacterLevelMilestoneEvent), nameof(CharacterLevelMilestoneEvent))]
 public abstract record GameEvent(byte ServerId, DateTime TimestampUtc);

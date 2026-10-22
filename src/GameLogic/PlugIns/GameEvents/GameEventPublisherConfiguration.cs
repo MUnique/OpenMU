@@ -44,4 +44,38 @@ public class GameEventPublisherConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_PublishAncientItemDrops_Name))]
     public bool PublishAncientItemDrops { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the kills of boss monsters are published.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_PublishBossKills_Name))]
+    public bool PublishBossKills { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the numbers of the monsters which are bosses, e.g. 275 for Kundun.
+    /// </summary>
+    /// <remarks>
+    /// The monster definitions don't tell which monsters are bosses, so the server owner decides it here.
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_BossMonsterNumbers_Name))]
+    public IList<short> BossMonsterNumbers { get; set; } = new List<short>();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether characters which reach one of the <see cref="LevelMilestones"/>
+    /// or <see cref="MasterLevelMilestones"/> are published.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_PublishLevelMilestones_Name))]
+    public bool PublishLevelMilestones { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the levels which are published when a character reaches them.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_LevelMilestones_Name))]
+    public IList<int> LevelMilestones { get; set; } = new List<int> { 400 };
+
+    /// <summary>
+    /// Gets or sets the master levels which are published when a character reaches them.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_MasterLevelMilestones_Name))]
+    public IList<int> MasterLevelMilestones { get; set; } = new List<int>();
 }
