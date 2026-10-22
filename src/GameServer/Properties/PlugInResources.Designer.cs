@@ -1447,6 +1447,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the Castle Siege status request which the client sends when the guardsman window opens..
+        /// </summary>
+        public static string CastleSiegeStatusHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege status request handler.
+        /// </summary>
+        public static string CastleSiegeStatusHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the Castle Siege state, schedule and castle owner to the game client..
+        /// </summary>
+        public static string CastleSiegeStatusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege status view.
+        /// </summary>
+        public static string CastleSiegeStatusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown switch occupancy information to the game client..
         /// </summary>
         public static string CastleSiegeSwitchInfoPlugIn_Description {

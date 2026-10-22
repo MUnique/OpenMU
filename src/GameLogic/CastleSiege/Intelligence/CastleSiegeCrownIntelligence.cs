@@ -62,12 +62,18 @@ public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBas
             return ValueTask.CompletedTask;
         }
 
-        var candidate = crown.CurrentMap.GetAttackablesInRange(crown.Position, 1)
+        // Only attackers can seal the Crown, so a defender or bystander standing next to it must not block them.
+        // The current user keeps the Crown while eligible; a newcomer with a lower object id must not interrupt them.
+        var candidates = crown.CurrentMap.GetAttackablesInRange(crown.Position, 1)
             .OfType<Player>()
             .Where(player => player.IsAlive
-                             && player.CurrentMap == crown.CurrentMap)
-            .MinBy(player => player.Id);
-        this._context.CrownUser = candidate;
+                             && player.CurrentMap == crown.CurrentMap
+                             && this._context.GetPlayerJoinSide(player) is not (CastleSiegeJoinSide.None or CastleSiegeJoinSide.Defense))
+            .ToList();
+        var currentUser = this._context.CrownUser;
+        this._context.CrownUser = currentUser is not null && candidates.Contains(currentUser)
+            ? currentUser
+            : candidates.MinBy(player => player.Id);
         return ValueTask.CompletedTask;
     }
 

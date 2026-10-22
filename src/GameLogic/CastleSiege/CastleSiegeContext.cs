@@ -130,7 +130,7 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the remaining time of the current state.
     /// </summary>
-    public TimeSpan RemainingTime => this.GetRemainingTime(DateTime.UtcNow);
+    public TimeSpan RemainingTime => this.GetRemainingTime(this._timeProvider.GetUtcNow().UtcDateTime);
 
     /// <summary>
     /// Gets a snapshot of the Life Stones which are currently placed by participating guilds.
@@ -313,6 +313,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// <returns>A task that represents the asynchronous save operation.</returns>
     public async ValueTask SaveFinalGuildListAsync()
     {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
         using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
             typeof(CastleSiegeData),
             false,
@@ -594,6 +599,35 @@ public class CastleSiegeContext : IEventStateProvider
                && this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participatingGuild)
             ? participatingGuild.Side
             : CastleSiegeJoinSide.None;
+    }
+
+    /// <summary>
+    /// Gets the gate at which players of a side are spawned during the battle.
+    /// </summary>
+    /// <param name="side">The side.</param>
+    /// <returns>The gate of the side's respawn area, or <see langword="null"/> if the side has none.</returns>
+    internal ExitGate? GetRespawnGate(CastleSiegeJoinSide side)
+    {
+        var area = side switch
+        {
+            CastleSiegeJoinSide.Defense => this.Configuration.DefenseRespawnArea,
+            CastleSiegeJoinSide.Attack1 or CastleSiegeJoinSide.Attack2 or CastleSiegeJoinSide.Attack3 => this.Configuration.AttackRespawnArea,
+            _ => null,
+        };
+        if (area is null || this.Configuration.CastleSiegeMapDefinition is not { } siegeMap)
+        {
+            return null;
+        }
+
+        return new ExitGate
+        {
+            Map = siegeMap,
+            X1 = area.X1,
+            Y1 = area.Y1,
+            X2 = area.X2,
+            Y2 = area.Y2,
+            Direction = Direction.South,
+        };
     }
 
     /// <summary>

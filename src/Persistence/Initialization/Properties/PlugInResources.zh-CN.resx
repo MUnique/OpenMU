@@ -379,4 +379,6 @@
   <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
     <value>添加商城配置，包含游戏客户端商城脚本 512.2012.084 中的商品包，以及从商城保管箱使用时生效的物品（角色卡、仓库和背包扩展道具）。</value>
   </data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战守卫</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>攻城战地图桥边的守卫打开报名窗口，魔炼之地入口的守卫变为被动NPC，并打开魔炼之地对话框。</value></data>
 </root>
