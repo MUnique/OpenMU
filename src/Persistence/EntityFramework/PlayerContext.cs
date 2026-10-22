@@ -63,6 +63,48 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
+        string provider,
+        string codeHash,
+        DateTime nowUtc,
+        string externalUserId,
+        string externalUserName,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        await using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+        var links = this.Context.Set<AccountExternalLink>();
+        var pending = await links.AsNoTracking()
+            .FirstOrDefaultAsync(link => link.Provider == provider && link.CodeHash == codeHash && link.CodeExpiresAt >= nowUtc, cancellationToken)
+            .ConfigureAwait(false);
+        if (pending is null)
+        {
+            return null;
+        }
+
+        // Deletion and consumption commit together. A losing redeemer rolls back the deletion, too.
+        await links.Where(link => link.Provider == provider && link.ExternalUserId == externalUserId && link.AccountId != pending.AccountId)
+            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+        var consumed = await links.Where(link => link.Id == pending.Id && link.CodeHash == codeHash && link.CodeExpiresAt >= nowUtc)
+            .ExecuteUpdateAsync(
+                setters => setters
+                .SetProperty(link => link.ExternalUserId, externalUserId)
+                .SetProperty(link => link.ExternalUserName, externalUserName)
+                .SetProperty(link => link.LinkedAt, nowUtc)
+                .SetProperty(link => link.CodeHash, (string?)null)
+                .SetProperty(link => link.CodeExpiresAt, (DateTime?)null),
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (consumed != 1)
+        {
+            return null;
+        }
+
+        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        return (pending.AccountId, pending.CharacterName, pending.ExternalUserId == externalUserId ? null : pending.ExternalUserId);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
@@ -351,46 +393,6 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
                from character in account.RawCharacters
                where characterNames.Contains(character.Name)
                select new CharacterAccountRow(character.Name, account.Id);
-    }
-
-    /// <inheritdoc />
-    public async ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
-        string provider,
-        string codeHash,
-        DateTime nowUtc,
-        string externalUserId,
-        string externalUserName,
-        CancellationToken cancellationToken = default)
-    {
-        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
-        await using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
-        var links = this.Context.Set<AccountExternalLink>();
-        var pending = await links.AsNoTracking()
-            .FirstOrDefaultAsync(link => link.Provider == provider && link.CodeHash == codeHash && link.CodeExpiresAt >= nowUtc, cancellationToken)
-            .ConfigureAwait(false);
-        if (pending is null)
-        {
-            return null;
-        }
-
-        // Deletion and consumption commit together. A losing redeemer rolls back the deletion, too.
-        await links.Where(link => link.Provider == provider && link.ExternalUserId == externalUserId && link.AccountId != pending.AccountId)
-            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
-        var consumed = await links.Where(link => link.Id == pending.Id && link.CodeHash == codeHash && link.CodeExpiresAt >= nowUtc)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(link => link.ExternalUserId, externalUserId)
-                .SetProperty(link => link.ExternalUserName, externalUserName)
-                .SetProperty(link => link.LinkedAt, nowUtc)
-                .SetProperty(link => link.CodeHash, (string?)null)
-                .SetProperty(link => link.CodeExpiresAt, (DateTime?)null), cancellationToken)
-            .ConfigureAwait(false);
-        if (consumed != 1)
-        {
-            return null;
-        }
-
-        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-        return (pending.AccountId, pending.CharacterName, pending.ExternalUserId == externalUserId ? null : pending.ExternalUserId);
     }
 
     /// <inheritdoc />
