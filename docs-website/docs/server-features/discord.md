@@ -316,3 +316,7 @@ the parts are separated by two underscores.
 * Until the bot is connected to Discord, which takes a few seconds after the
   start, notifications for the channels of the layout are posted through the
   webhook of their category, if there is one.
+
+Private staff channels are skipped if their required roles or permissions cannot be set. Fix the reported permissions and run setup again. Public channels with staff channel names are not used automatically for notifications.
+
+Commands are registered globally so guild-owned Discord servers can use `/link`, `/guildchat` and `/say`. The main configured Discord server also gets guild-scoped registration for immediate availability. Binding and unbinding as a guild master require that the selected character still belongs to the linked account.

@@ -11,4 +11,5 @@ namespace MUnique.OpenMU.Discord.Provisioning;
 /// <param name="Name">The name.</param>
 /// <param name="IsCategory">A value indicating whether it's a category.</param>
 /// <param name="CategoryId">The identifier of the category of the channel, if it has one.</param>
-public sealed record DiscordChannelInfo(ulong Id, string Name, bool IsCategory, ulong? CategoryId);
+/// <param name="IsPrivate">A value indicating whether the everyone role is denied access.</param>
+public sealed record DiscordChannelInfo(ulong Id, string Name, bool IsCategory, ulong? CategoryId, bool IsPrivate = false);

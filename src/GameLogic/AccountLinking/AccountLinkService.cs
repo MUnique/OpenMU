@@ -100,29 +100,10 @@ public sealed class AccountLinkService
     {
         var codeHash = HashCode(NormalizeCode(code));
         using var context = this._createContext();
-        if (await context.GetAccountExternalLinkByCodeAsync(provider, codeHash).ConfigureAwait(false) is not { } link
-            || link.CodeExpiresAt is not { } expiresAt
-            || expiresAt < this._timeProvider.GetUtcNow().UtcDateTime)
-        {
-            return null;
-        }
-
-        var previousUserId = link.ExternalUserId;
-        if (previousUserId != externalUserId
-            && await context.GetAccountExternalLinkByUserAsync(provider, externalUserId).ConfigureAwait(false) is { } otherLink)
-        {
-            // The user is linked to another account, which is replaced. It's saved first, because a user can only be linked once.
-            await context.DeleteAsync(otherLink).ConfigureAwait(false);
-            await context.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        link.ExternalUserId = externalUserId;
-        link.ExternalUserName = externalUserName;
-        link.LinkedAt = this._timeProvider.GetUtcNow().UtcDateTime;
-        link.CodeHash = null;
-        link.CodeExpiresAt = null;
-        await context.SaveChangesAsync().ConfigureAwait(false);
-        return new AccountLinkResult(link.AccountId, link.CharacterName, previousUserId == externalUserId ? null : previousUserId);
+        var result = await context.TryLinkAccountAsync(provider, codeHash, this._timeProvider.GetUtcNow().UtcDateTime, externalUserId, externalUserName).ConfigureAwait(false);
+        return result is { } linked
+            ? new AccountLinkResult(linked.AccountId, linked.CharacterName, linked.PreviousUserId)
+            : null;
     }
 
     /// <summary>

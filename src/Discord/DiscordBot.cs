@@ -317,18 +317,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             return (ApplicationCommandProperties)builder.Build();
         }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).ToArray();
 
+        // Guild-owned chat channels need /link, /guildchat and /say outside the routing guild, too.
+        await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         if (this._settings.GuildId is { } guildId && client.GetGuild(guildId) is { } guild)
         {
+            // Keep immediate availability on the main Discord server.
             await guild.BulkOverwriteApplicationCommandAsync(commands).ConfigureAwait(false);
-        }
-        else
-        {
-            if (this._settings.GuildId is { } missingGuildId)
-            {
-                this._logger.LogWarning("The bot isn't on the configured Discord server {guildId}, so the slash commands are registered globally, which can take up to an hour. Is the identifier correct, and was the bot invited?", missingGuildId);
-            }
-
-            await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         }
     }
 

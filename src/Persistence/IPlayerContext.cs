@@ -230,6 +230,25 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Atomically consumes an unexpired link code and replaces the user's previous link.
+    /// A rejected code must leave every existing link unchanged.
+    /// </summary>
+    /// <param name="provider">The external service.</param>
+    /// <param name="codeHash">The hash of the one-time code.</param>
+    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="externalUserId">The external user identifier.</param>
+    /// <param name="externalUserName">The external user name.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The account, character and replaced user; or null if the code was rejected.</returns>
+    ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
+        string provider,
+        string codeHash,
+        DateTime nowUtc,
+        string externalUserId,
+        string externalUserName,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the links of an account to users of external services.
     /// </summary>
     /// <param name="accountId">The persistent account identifier.</param>
