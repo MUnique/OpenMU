@@ -48,7 +48,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        var scepterRiseBonusTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Scepter Rise");
+        var scepterRiseBonusTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name.ValueInNeutralLanguage == "Scepter Rise");
 
         // Modify existing table name and description
         scepterRiseBonusTable.Name = "Scepter Rise (even)";
@@ -91,8 +91,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         // Fix Group 5 weapons (Skull & Divine Staves, sticks, and books)
         var weaponsG5 = gameConfiguration.Items.Where(i => i.Group == 5);
         var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name.ValueInNeutralLanguage == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included at this point
-        var staffEvenTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (even)");
-        var staffOddTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (odd)");
+        var staffEvenTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name.ValueInNeutralLanguage == "Staff Rise (even)");
+        var staffOddTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name.ValueInNeutralLanguage == "Staff Rise (odd)");
 
         // -> fix Skull Staff
         if (weaponsG5.FirstOrDefault(e => e.Number == 0) is { } skullStaff)

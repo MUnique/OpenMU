@@ -769,5 +769,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("WizardryBaseDamageMinAndMaxOption", resourceCulture);
             }
         }
+
+        /// <summary>Gets VegaAncientSet from the configuration name resources.</summary>
+        public static string VegaAncientSet {
+            get {
+                return ResourceManager.GetString("VegaAncientSet", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChamerAncientSet from the configuration name resources.</summary>
+        public static string ChamerAncientSet {
+            get {
+                return ResourceManager.GetString("ChamerAncientSet", resourceCulture);
+            }
+        }
     }
 }

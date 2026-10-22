@@ -67,7 +67,7 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
         };
         foreach (var (name, newName, costs, level) in warps)
         {
-            var warpInfo = gameConfiguration.WarpList.FirstOrDefault(w => w.Name == name);
+            var warpInfo = gameConfiguration.WarpList.FirstOrDefault(w => w.Name.ValueInNeutralLanguage == name);
             if (warpInfo is not null)
             {
                 if (newName is not null)
@@ -88,7 +88,7 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
         }
 
         // add LaCleon
-        var laCleon = gameConfiguration.WarpList.FirstOrDefault(w => w.Name == "LaCleon");
+        var laCleon = gameConfiguration.WarpList.FirstOrDefault(w => w.Name.ValueInNeutralLanguage == "LaCleon");
         if (laCleon is null)
         {
             laCleon = context.CreateNew<WarpInfo>();
@@ -97,7 +97,7 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
             laCleon.Costs = 15000;
             laCleon.LevelRequirement = 280;
             laCleon.Gate = gameConfiguration.Maps
-                .FirstOrDefault(m => m.Name == "LaCleon")
+                .FirstOrDefault(m => m.Name.ValueInNeutralLanguage == "LaCleon")
                 ?.ExitGates.FirstOrDefault(g => g.X1 == 222);
             gameConfiguration.WarpList.Add(laCleon);
         }

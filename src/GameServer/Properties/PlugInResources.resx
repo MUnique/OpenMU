@@ -2481,6 +2481,24 @@
   <data name="CastleSiegeHuntZoneResultPlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege hunting-zone request results to the game client.</value>
   </data>
+  <data name="CastleSiegeCommandHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guild Command Handler</value>
+  </data>
+  <data name="CastleSiegeCommandHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles directional guild commands issued by Castle Siege alliance masters.</value>
+  </data>
+  <data name="CastleSiegeCommandPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guild Command View</value>
+  </data>
+  <data name="CastleSiegeCommandPlugIn_Description" xml:space="preserve">
+    <value>Forwards an alliance master's directional guild command to same-side players.</value>
+  </data>
+  <data name="CastleSiegeMiniMapPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Mini-Map View</value>
+  </data>
+  <data name="CastleSiegeMiniMapPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege player and NPC mini-map positions to alliance masters.</value>
+  </data>
   <data name="CastleSiegeLifeStoneStatePlugIn_Name" xml:space="preserve">
     <value>Castle Siege Life Stone state view</value>
   </data>
@@ -2686,5 +2704,35 @@
   </data>
   <data name="DiscordIntegrationViewPlugIn_Description" xml:space="preserve">
     <value>Sends the Discord integration info, the link code and the messages written in Discord to the game client.</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege owner logo request handler</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request for the guild logo of the castle owner, which the client sends when it enters the Castle Siege map.</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege owner logo view</value>
+  </data>
+  <data name="CastleSiegeOwnerLogoPlugIn_Description" xml:space="preserve">
+    <value>Sends the guild logo of the castle owner to the game client.</value>
+  </data>
+  <data name="CastleSiegeWeaponExplosionHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege weapon explosion handler</value>
+  </data>
+  <data name="CastleSiegeWeaponExplosionHandlerPlugIn_Description" xml:space="preserve">
+    <value>Accepts the weapon explosion request of the client. The impact damage of warfare machines is applied by the server when the projectile lands, so the request has no effect.</value>
+  </data>
+  <data name="CastleSiegeStatusHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege status request handler</value>
+  </data>
+  <data name="CastleSiegeStatusHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the Castle Siege status request which the client sends when the guardsman window opens.</value>
+  </data>
+  <data name="CastleSiegeStatusPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege status view</value>
+  </data>
+  <data name="CastleSiegeStatusPlugIn_Description" xml:space="preserve">
+    <value>Sends the Castle Siege state, schedule and castle owner to the game client.</value>
   </data>
 </root>

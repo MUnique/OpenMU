@@ -103,7 +103,12 @@ public static class CastleSiegeCrownMechanics
             throw new InvalidOperationException("The Crown winner is not a selected attacking guild.");
         }
 
-        context.MiddleOwnerGuildId = guildStatus.GuildId;
+        // The castle belongs to the alliance of the sealing player, which is represented by its alliance master.
+        // The tax exemption, the owner's alliance checks and the next selection all compare against that guild.
+        var winnerGuild = context.FinalGuildList.Values
+            .FirstOrDefault(guild => guild.Side == capturingSide && guild.IsAllianceMaster)
+            ?? capturingGuild;
+        context.MiddleOwnerGuildId = winnerGuild.GuildId;
         foreach (var guild in context.FinalGuildList.Values)
         {
             if (guild.Side == capturingSide)
@@ -118,7 +123,7 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
-        var ownershipChanged = ApplyOwner(context, capturingGuild.PersistentGuildId);
+        var ownershipChanged = ApplyOwner(context, winnerGuild.PersistentGuildId);
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
         await context.SaveOwnerAsync().ConfigureAwait(false);
         if (ownershipChanged)
@@ -149,7 +154,7 @@ public static class CastleSiegeCrownMechanics
             siegeSwitch.Occupant = null;
         }
 
-        await BroadcastOwnershipChangeAsync(context, capturingGuild.GuildName).ConfigureAwait(false);
+        await BroadcastOwnershipChangeAsync(context, winnerGuild.GuildName).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -286,21 +291,10 @@ public static class CastleSiegeCrownMechanics
 
     private static async ValueTask RespawnAttackersAsync(CastleSiegeContext context)
     {
-        if (context.Configuration.AttackRespawnArea is not { } respawnArea
-            || context.Configuration.CastleSiegeMapDefinition is not { } siegeMap)
+        if (context.GetRespawnGate(CastleSiegeJoinSide.Attack1) is not { } respawnGate)
         {
             return;
         }
-
-        var respawnGate = new ExitGate
-        {
-            Map = siegeMap,
-            X1 = respawnArea.X1,
-            Y1 = respawnArea.Y1,
-            X2 = respawnArea.X2,
-            Y2 = respawnArea.Y2,
-            Direction = Direction.South,
-        };
         foreach (var player in context.GetSiegePlayers())
         {
             if (IsAttackingSide(context.GetPlayerJoinSide(player)))

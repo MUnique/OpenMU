@@ -436,6 +436,19 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask SendGlobalNotificationAsync(LocalizedString message, params object?[] formatArguments)
+    {
+        await this.ForEachPlayerGroupedByCultureAsync(
+            cultureInfo =>
+            {
+                var text = message.GetTranslation(cultureInfo) ?? string.Empty;
+                return formatArguments.Length > 0 ? string.Format(cultureInfo, text, formatArguments) : text;
+            },
+            (player, text) => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(text, MessageType.GoldenCenter)).AsTask())
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
         this.StopPeriodicTasks();

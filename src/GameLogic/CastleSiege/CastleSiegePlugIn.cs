@@ -18,11 +18,12 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
-public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn
+public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn, IPlayerSpawnGateSelectionPlugIn
 {
     private static readonly TimeSpan EconomySaveInterval = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan ParticipantUpdateInterval = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan MiniMapUpdateInterval = TimeSpan.FromSeconds(3);
 
     private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
     private readonly TimeProvider _timeProvider;
@@ -89,7 +90,8 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             context,
             player,
             this._timeProvider.GetUtcNow().UtcDateTime);
-        await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
+        // See PlayerStateChangedAsync for why this doesn't take the ExecutionLock.
+        context.NpcController.ClearMachineOperator(player);
         await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
     }
 
@@ -106,7 +108,9 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             && currentState == PlayerState.EnteredWorld
             && player.CurrentMap?.Definition.Number == context.Configuration.CastleSiegeMapDefinition?.Number)
         {
-            await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
+            // No ExecutionLock here: this also runs while the siege tick holds the lock, e.g. when
+            // attackers are respawned after a Crown capture, and the lock isn't re-entrant.
+            context.NpcController.ClearMachineOperator(player);
         }
 
         if (currentState == PlayerState.EnteredWorld
@@ -114,6 +118,21 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         {
             await this.SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public ValueTask SelectSpawnGateAsync(Player player, SpawnGateSelectionArgs args)
+    {
+        // During the battle, participants respawn in their side's area instead of the map's safezone,
+        // so defenders stay behind their gates.
+        if (args.Gate is null
+            && this.GetContext(player.GameContext) is { CurrentState: CastleSiegeState.Start } context
+            && context.GetRespawnGate(context.GetPlayerJoinSide(player)) is { } gate)
+        {
+            args.Gate = gate;
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -257,16 +276,35 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         return stateStartUtc.AddTicks((completedIntervals + 1) * interval.Ticks);
     }
 
-    private async ValueTask ClearMachineOperatorAsync(CastleSiegeContext context, Player player)
+    /// <summary>
+    /// Moves the players on the Castle Siege map to the respawn area of their side when the battle starts,
+    /// so nobody holds a switch or the Crown before the battle has begun.
+    /// Players without a side are sent to the safezone.
+    /// </summary>
+    private static async ValueTask MovePlayersToTheirSidesAsync(CastleSiegeContext context)
     {
-        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
-        try
+        foreach (var player in context.GetSiegePlayers())
         {
-            context.NpcController.ClearMachineOperator(player);
-        }
-        finally
-        {
-            context.ExecutionLock.Release();
+            if (!player.IsAlive)
+            {
+                continue;
+            }
+
+            try
+            {
+                if (context.GetRespawnGate(context.GetPlayerJoinSide(player)) is { } gate)
+                {
+                    await player.RespawnAtAsync(gate).ConfigureAwait(false);
+                }
+                else
+                {
+                    await player.WarpToSafezoneAsync().ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "The player could not be moved to its Castle Siege side.");
+            }
         }
     }
 
@@ -414,10 +452,16 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
                 await context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
                 await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
+                if (!isStartup)
+                {
+                    await MovePlayersToTheirSidesAsync(context).ConfigureAwait(false);
+                }
+
                 var utcNow = this._timeProvider.GetUtcNow().UtcDateTime;
                 context.LastCrownUpdateUtc = utcNow;
                 await CastleSiegeParticipantTracker.TrackAsync(context, utcNow).ConfigureAwait(false);
                 context.NextParticipantUpdateUtc = utcNow + ParticipantUpdateInterval;
+                context.NextMiniMapUpdateUtc = utcNow + MiniMapUpdateInterval;
                 break;
             case CastleSiegeState.End:
                 await CastleSiegeCrownMechanics.CheckResultAsync(context).ConfigureAwait(false);
@@ -448,6 +492,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context.LastBroadcastSwitchInfos.Clear();
                 context.LastBroadcastCrownAvailability = null;
                 context.NextParticipantUpdateUtc = DateTime.MaxValue;
+                context.NextMiniMapUpdateUtc = DateTime.MaxValue;
                 break;
         }
 
@@ -498,6 +543,19 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         {
             await context.SaveNpcStatesAsync().ConfigureAwait(false);
             context.NextNpcSaveUtc = utcNow + NpcSaveInterval;
+        }
+
+        // Runs last: a fan-out to many players is more failure-prone than the rest of this tick, and it must
+        // not be able to skip the periodic NPC state save above if one send throws.
+        if (context.CurrentState == CastleSiegeState.Start
+            && context.NextMiniMapUpdateUtc <= utcNow)
+        {
+            // Preserve the cadence even if one recipient fails, instead of retrying on every timer tick.
+            context.NextMiniMapUpdateUtc = GetNextInterval(
+                context.StateStartTimeUtc,
+                utcNow,
+                MiniMapUpdateInterval);
+            await CastleSiegeMiniMap.BroadcastAsync(context).ConfigureAwait(false);
         }
     }
 

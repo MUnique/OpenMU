@@ -781,6 +781,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles directional guild commands issued by Castle Siege alliance masters..
+        /// </summary>
+        public static string CastleSiegeCommandHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guild Command Handler.
+        /// </summary>
+        public static string CastleSiegeCommandHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Forwards an alliance master's directional guild command to same-side players..
+        /// </summary>
+        public static string CastleSiegeCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guild Command View.
+        /// </summary>
+        public static string CastleSiegeCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
         /// </summary>
         public static string CastleSiegeCrownAccessStatePlugIn_Description {
@@ -1195,6 +1231,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege player and NPC mini-map positions to alliance masters..
+        /// </summary>
+        public static string CastleSiegeMiniMapPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMiniMapPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Mini-Map View.
+        /// </summary>
+        public static string CastleSiegeMiniMapPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMiniMapPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Routes Castle Siege NPC-list packet subcodes..
         /// </summary>
         public static string CastleSiegeNpcGroupHandlerPlugIn_Description {
@@ -1245,6 +1299,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CastleSiegeNpcOperationResultPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeNpcOperationResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request for the guild logo of the castle owner, which the client sends when it enters the Castle Siege map..
+        /// </summary>
+        public static string CastleSiegeOwnerLogoHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege owner logo request handler.
+        /// </summary>
+        public static string CastleSiegeOwnerLogoHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the guild logo of the castle owner to the game client..
+        /// </summary>
+        public static string CastleSiegeOwnerLogoPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege owner logo view.
+        /// </summary>
+        public static string CastleSiegeOwnerLogoPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnerLogoPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1393,6 +1483,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the Castle Siege status request which the client sends when the guardsman window opens..
+        /// </summary>
+        public static string CastleSiegeStatusHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege status request handler.
+        /// </summary>
+        public static string CastleSiegeStatusHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the Castle Siege state, schedule and castle owner to the game client..
+        /// </summary>
+        public static string CastleSiegeStatusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege status view.
+        /// </summary>
+        public static string CastleSiegeStatusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown switch occupancy information to the game client..
         /// </summary>
         public static string CastleSiegeSwitchInfoPlugIn_Description {
@@ -1533,6 +1659,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CastleSiegeUnregisterHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeUnregisterHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepts the weapon explosion request of the client. The impact damage of warfare machines is applied by the server when the projectile lands, so the request has no effect..
+        /// </summary>
+        public static string CastleSiegeWeaponExplosionHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeWeaponExplosionHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege weapon explosion handler.
+        /// </summary>
+        public static string CastleSiegeWeaponExplosionHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeWeaponExplosionHandlerPlugIn_Name", resourceCulture);
             }
         }
         

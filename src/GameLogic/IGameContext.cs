@@ -202,6 +202,13 @@ public interface IGameContext
     ValueTask SendGlobalNotificationAsync(string message);
 
     /// <summary>
+    /// Sends a golden global notification to all players of the game, in the language of each player.
+    /// </summary>
+    /// <param name="message">The message, which may contain translations and format placeholders.</param>
+    /// <param name="formatArguments">The arguments for the format placeholders of the message.</param>
+    ValueTask SendGlobalNotificationAsync(LocalizedString message, params object?[] formatArguments);
+
+    /// <summary>
     /// Executes an action for each player.
     /// </summary>
     /// <param name="action">The action which is executed.</param>

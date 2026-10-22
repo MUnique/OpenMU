@@ -86,7 +86,7 @@ internal class ChaosCastleInitializer : InitializerBase
         this.GameConfiguration.MiniGameDefinitions.Add(chaosCastle);
         chaosCastle.Name = MiniGameNames.ResourceManager.GetLocalizedString($"ChaosCastle{level}");
         chaosCastle.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForChaosCastleEventLevel{level}");
-        chaosCastle.EnterDuration = TimeSpan.FromMinutes(5);
+        chaosCastle.EnterDuration = MiniGameConstants.EnterDuration;
         chaosCastle.GameDuration = TimeSpan.FromMinutes(10);
         chaosCastle.ExitDuration = TimeSpan.FromMinutes(1);
         chaosCastle.MaximumPlayerCount = 70;

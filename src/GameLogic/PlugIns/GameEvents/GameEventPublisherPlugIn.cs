@@ -60,7 +60,7 @@ public class GameEventPublisherPlugIn
             context.Id,
             DateTime.UtcNow,
             definition.Type.ToString(),
-            definition.Name,
+            definition.Name.ValueInNeutralLanguage,
             definition.GameLevel,
             miniGame.EnterEndsAtUtc));
     }
@@ -79,7 +79,7 @@ public class GameEventPublisherPlugIn
             context.Id,
             DateTime.UtcNow,
             definition.Type.ToString(),
-            definition.Name,
+            definition.Name.ValueInNeutralLanguage,
             definition.GameLevel,
             players.Count));
     }
@@ -98,7 +98,7 @@ public class GameEventPublisherPlugIn
             context.Id,
             DateTime.UtcNow,
             definition.Type.ToString(),
-            definition.Name,
+            definition.Name.ValueInNeutralLanguage,
             definition.GameLevel,
             winner?.Name,
             finishers.Select(player => player.Name).ToList()));
@@ -171,9 +171,9 @@ public class GameEventPublisherPlugIn
             context.Id,
             DateTime.UtcNow,
             killer.Name,
-            monster.Definition.Designation,
-            monster.CurrentMap.Definition.Name,
-            item.Definition?.Name ?? string.Empty,
+            monster.Definition.Designation.ValueInNeutralLanguage,
+            monster.CurrentMap.Definition.Name.ValueInNeutralLanguage,
+            item.Definition?.Name.ValueInNeutralLanguage ?? string.Empty,
             item.Level,
             isExcellent,
             isAncient));
@@ -306,6 +306,6 @@ public class GameEventPublisherPlugIn
 
     private static List<string> GetMapNames(IEnumerable<GameMapDefinition> maps)
     {
-        return maps.Select(map => (string)map.Name).ToList();
+        return maps.Select(map => map.Name.ValueInNeutralLanguage).ToList();
     }
 }

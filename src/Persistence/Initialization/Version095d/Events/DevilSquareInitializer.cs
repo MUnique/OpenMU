@@ -133,7 +133,7 @@ internal class DevilSquareInitializer : InitializerBase
         devilSquare.SetGuid((short)MiniGameType.DevilSquare, level);
         devilSquare.Name = MiniGameNames.ResourceManager.GetLocalizedString($"DevilSquare{level}");
         devilSquare.Description = MiniGameDescriptions.ResourceManager.GetLocalizedString($"EventDefinitionForDevilSquareEventLevel{level}");
-        devilSquare.EnterDuration = TimeSpan.FromMinutes(1);
+        devilSquare.EnterDuration = MiniGameConstants.EnterDuration;
         devilSquare.GameDuration = TimeSpan.FromMinutes(20);
         devilSquare.ExitDuration = TimeSpan.FromMinutes(3);
         devilSquare.MaximumPlayerCount = 10;

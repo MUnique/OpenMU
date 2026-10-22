@@ -101,6 +101,8 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<AdminUserManagementService>();
         services.AddScoped<CastleSiegeManagementService>();
+        services.AddSingleton<OnlinePlayerHistory>();
+        services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<OnlinePlayerHistory>());
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
 
         // The analyzers are only created when the network analyzer page is actually used,

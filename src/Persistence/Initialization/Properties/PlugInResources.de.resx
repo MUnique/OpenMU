@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -638,6 +638,12 @@
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Konfiguration des Events im Raffinerieturm von Kanturu hinzu.</value>
   </data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve">
+    <value>Eingangsdauer der Events vereinheitlichen</value>
+  </data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve">
+    <value>Diese Aktualisierung erhöht die Eingangsdauer der Events mit gemeinsamem Eingang, wie Blood Castle, Devil Square und Kanturu, auf die fünf Minuten, die jeder Event-Eingang ankündigt.</value>
+  </data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve">
     <value>Korrektur der Fähigkeit Drain Life</value>
   </data>
@@ -812,4 +818,8 @@
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
     <value>Erfordert Charakterlevel 50 für Transformationsring-Level 3 bis 5 und ergänzt den 20%igen Lebensbonus des Todeskuh-Rings.</value>
   </data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>Ancient-Sets des Rage Fighters hinzufügen</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>Dieses Update fügt die Ancient-Sets Vega und Chamer der Sacred-Gegenstände hinzu.</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Wachen von Castle Siege konfigurieren</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>Die Gardisten an der Brücke der Karte von Castle Siege öffnen das Anmeldefenster, und die Wache am Eingang zum Land der Prüfungen wird zu einem passiven NPC, der den Dialog des Landes der Prüfungen öffnet.</value></data>
 </root>

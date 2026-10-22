@@ -422,7 +422,7 @@ internal sealed partial class GameConfigurationLoader
             entity.IsBundle = reader.GetBoolean(3);
             entity.IsForSale = reader.GetBoolean(4);
             entity.IsGiftable = reader.GetBoolean(5);
-            entity.Name = reader.GetString(6);
+            entity.Name = reader.IsDBNull(6) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(6));
             entity.PackageSequence = reader.GetInt32(7);
             entity.Price = reader.GetInt32(8);
             this._CashShopPackage[entity.Id] = entity;

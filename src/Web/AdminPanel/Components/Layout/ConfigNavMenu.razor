@@ -39,6 +39,9 @@
         <NavLink class="dropdown-item" href="map-editor" @onclick="() => NavigationHistory.Clear()">
             <span class="oi oi-globe" aria-hidden="true"></span> @Resources.MapEditor
         </NavLink>
+        <NavLink class="dropdown-item" href="terrain-editor" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-brush" aria-hidden="true"></span> @Resources.TerrainEditor
+        </NavLink>
         <hr class="dropdown-divider"/>
         <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
             <span class="oi oi-cog" aria-hidden="true"></span> @Resources.FullConfiguration

@@ -69,7 +69,7 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
             return;
         }
 
-        var item = gameConfiguration.Items.FirstOrDefault(x => x.Name == jewelName);
+        var item = gameConfiguration.Items.FirstOrDefault(x => x.Name.ValueInNeutralLanguage == jewelName);
 
         if (item == null)
         {

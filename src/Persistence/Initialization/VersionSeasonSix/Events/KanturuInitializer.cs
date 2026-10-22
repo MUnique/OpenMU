@@ -31,7 +31,7 @@ internal class KanturuInitializer : InitializerBase
         this.GameConfiguration.MiniGameDefinitions.Add(kanturu);
         kanturu.Name = LocalizedString.FromResource(() => MiniGameNames.KanturuRefineryTower);
         kanturu.Description = LocalizedString.FromResource(() => MiniGameDescriptions.EventDefinitionForTheKanturuRefineryTowerEvent);
-        kanturu.EnterDuration = TimeSpan.FromMinutes(3);
+        kanturu.EnterDuration = MiniGameConstants.EnterDuration;
         kanturu.GameDuration = TimeSpan.FromMinutes(135);
         kanturu.ExitDuration = TimeSpan.FromMinutes(1);
         kanturu.MaximumPlayerCount = 15;

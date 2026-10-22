@@ -321,4 +321,10 @@
   <data name="WizardryBaseDamageMinAndMaxOption" xml:space="preserve">
     <value>基础魔法攻击力追加属性（最小值和最大值）</value>
   </data>
+  <data name="VegaAncientSet" xml:space="preserve">
+    <value>维加套装属性</value>
+  </data>
+  <data name="ChamerAncientSet" xml:space="preserve">
+    <value>卡默套装属性</value>
+  </data>
 </root>

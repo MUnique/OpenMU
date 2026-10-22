@@ -151,6 +151,26 @@ internal sealed class CastleSiegeSchedule
         return this._states[(index + 1) % this._states.Count].State;
     }
 
+    /// <summary>
+    /// Gets the next scheduled start of a state after <paramref name="utcNow"/>.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="utcNow">The reference time.</param>
+    /// <returns>The next state start, or <see langword="null"/> when the schedule does not contain the state.</returns>
+    public DateTime? GetNextStateStartUtc(CastleSiegeState state, DateTime utcNow)
+    {
+        if (!this.ContainsState(state))
+        {
+            return null;
+        }
+
+        utcNow = EnsureUtc(utcNow);
+        var scheduledState = this.GetScheduledState(state);
+        var weekStart = this.GetLocalWeekStart(utcNow);
+        var startUtc = this.GetStartUtc(weekStart, scheduledState);
+        return startUtc > utcNow ? startUtc : this.GetStartUtc(weekStart.AddDays(7), scheduledState);
+    }
+
     private static TimeSpan GetStartOfWeek(CastleSiegeStateScheduleEntry entry)
     {
         if (entry.Hour > 23)
