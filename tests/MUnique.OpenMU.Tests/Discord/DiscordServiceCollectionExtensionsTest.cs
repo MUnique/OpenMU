@@ -48,7 +48,7 @@ public class DiscordServiceCollectionExtensionsTest
     }
 
     /// <summary>
-    /// Tests that the bot is added as hosted service, and that the notifier posts through it.
+    /// Tests that the bot is added as hosted service and as listener of the game events, and that the notifier is added, too.
     /// </summary>
     [Test]
     public async Task BotIsAddedWithTokenAsync()
@@ -60,7 +60,10 @@ public class DiscordServiceCollectionExtensionsTest
 
         var bot = provider.GetRequiredService<DiscordBot>();
         Assert.That(provider.GetServices<IHostedService>(), Does.Contain(bot));
-        Assert.That(provider.GetServices<IGameEventListener>().Single(), Is.InstanceOf<DiscordNotifier>());
+        var listeners = provider.GetServices<IGameEventListener>().ToList();
+        Assert.That(listeners, Has.Count.EqualTo(2));
+        Assert.That(listeners, Has.One.InstanceOf<DiscordNotifier>());
+        Assert.That(listeners, Does.Contain(bot));
         Assert.That(bot.ServerState, Is.EqualTo(ServerState.Stopped));
     }
 

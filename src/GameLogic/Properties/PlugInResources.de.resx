@@ -1752,21 +1752,6 @@
   <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
     <value>Antike Gegenstände veröffentlichen</value>
   </data>
-  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
-    <value>Getötete Bossmonster veröffentlichen</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
-    <value>Nummern der Bossmonster</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
-    <value>Erreichte Level-Meilensteine veröffentlichen</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
-    <value>Level-Meilensteine</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
-    <value>Meisterlevel-Meilensteine</value>
-  </data>
   <data name="CastleSiegePlugIn_Name" xml:space="preserve">
     <value>Burgbelagerung</value>
   </data>
@@ -1880,5 +1865,32 @@
   </data>
   <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
     <value>Öffnet das Anmeldefenster von Castle Siege mit dem aktuellen Status, wenn ein Spieler mit einem Gardisten auf der Karte von Castle Siege spricht.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Gardist</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Zeigt die Verfügbarkeit des Landes der Prüfungen und die geltende Eintrittsgebühr an.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Getötete Bossmonster veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Nummern der Bossmonster</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Erreichte Level-Meilensteine veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level-Meilensteine</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Meisterlevel-Meilensteine</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Discord</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung.</value>
   </data>
 </root>

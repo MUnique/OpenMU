@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("750f48d1-2329-4b96-b749-a5acd51a1bc1"), entityTypeCount: 46)
+            : base(skipDetectChanges: false, modelId: new Guid("e53209e9-b4b9-474d-9c80-88038379d7dc"), entityTypeCount: 47)
         {
         }
 
@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
         {
             var account = AccountEntityType.Create(this);
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
+            var accountExternalLink = AccountExternalLinkEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var attributeRelationship = AttributeRelationshipEntityType.Create(this);
             var cashShopCoinGrant = CashShopCoinGrantEntityType.Create(this);
@@ -67,6 +68,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
 
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
+            AccountExternalLinkEntityType.CreateForeignKey1(accountExternalLink, account);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, powerUpDefinitionValue);
             CashShopCoinGrantEntityType.CreateForeignKey1(cashShopCoinGrant, account);
             CashShopStorageItemEntityType.CreateForeignKey1(cashShopStorageItem, account);
@@ -97,6 +99,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
 
             AccountEntityType.CreateAnnotations(account);
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
+            AccountExternalLinkEntityType.CreateAnnotations(accountExternalLink);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AttributeRelationshipEntityType.CreateAnnotations(attributeRelationship);
             CashShopCoinGrantEntityType.CreateAnnotations(cashShopCoinGrant);

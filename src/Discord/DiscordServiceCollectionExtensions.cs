@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.Discord;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Discord.Provisioning;
+using MUnique.OpenMU.GameLogic.AccountLinking;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -43,18 +45,24 @@ public static class DiscordServiceCollectionExtensions
                     provider.GetRequiredService<PlugInManager>(),
                     getServerTimeZone))
                 .AddSingleton(provider => new DiscordCommands(provider.GetRequiredService<IDiscordGameDataProvider>(), culture, provider.GetRequiredService<ILogger<DiscordCommands>>()))
+                .AddSingleton(provider => new DiscordAccountCommands(
+                    new AccountLinkService(() => provider.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(new GameConfiguration())),
+                    culture,
+                    provider.GetRequiredService<ILogger<DiscordAccountCommands>>()))
                 .AddSingleton(new DiscordStatusFormatter(culture))
                 .AddSingleton(settings.Bot.LayoutFile is { Length: > 0 } layoutFile ? DiscordServerLayout.Load(layoutFile) : DiscordServerLayout.LoadDefault())
                 .AddSingleton(provider => new DiscordServerProvisioner(provider.GetRequiredService<ILogger<DiscordServerProvisioner>>()))
                 .AddSingleton(provider => new DiscordBot(
                     settings.Bot,
                     provider.GetRequiredService<DiscordCommands>(),
+                    provider.GetRequiredService<DiscordAccountCommands>(),
                     provider.GetRequiredService<DiscordStatusFormatter>(),
                     provider.GetRequiredService<IDiscordGameDataProvider>(),
                     provider.GetRequiredService<DiscordServerLayout>(),
                     provider.GetRequiredService<DiscordServerProvisioner>(),
                     provider.GetRequiredService<ILogger<DiscordBot>>()))
-                .AddHostedService(provider => provider.GetRequiredService<DiscordBot>());
+                .AddHostedService(provider => provider.GetRequiredService<DiscordBot>())
+                .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordBot>());
         }
 
         if (settings.IsNotificationEnabled)

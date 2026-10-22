@@ -1622,21 +1622,6 @@
   <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
     <value>Publish ancient item drops</value>
   </data>
-  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
-    <value>Publish boss kills</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
-    <value>Boss monster numbers</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
-    <value>Publish level milestones</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
-    <value>Level milestones</value>
-  </data>
-  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
-    <value>Master level milestones</value>
-  </data>
   <data name="PlayerShopCurrenciesFeaturePlugIn_Name" xml:space="preserve">
     <value>Player shop currencies</value>
   </data>
@@ -1687,5 +1672,32 @@
   </data>
   <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
     <value>Opens the Castle Siege registration window, which shows the Castle Siege status, when a player talks to a guardsman on the Castle Siege map.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guardsman</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Shows Land of Trials availability and its applicable entry fee.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Publish boss kills</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Boss monster numbers</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Publish level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Master level milestones</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Discord command</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link.</value>
   </data>
 </root>

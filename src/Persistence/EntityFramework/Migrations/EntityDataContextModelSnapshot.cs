@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
-    [DbContext(typeof(MUnique.OpenMU.Persistence.EntityFramework.EntityDataContext))]
+    [DbContext(typeof(EntityDataContext))]
     partial class EntityDataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -116,6 +116,50 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("CharacterClassId");
 
                     b.ToTable("AccountCharacterClass", "data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountExternalLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CharacterName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CodeExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CodeHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalUserName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LinkedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CodeHash");
+
+                    b.HasIndex("AccountId", "Provider")
+                        .IsUnique();
+
+                    b.HasIndex("Provider", "ExternalUserId")
+                        .IsUnique();
+
+                    b.ToTable("AccountExternalLink", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
@@ -4286,6 +4330,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("CharacterClass");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountExternalLink", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>

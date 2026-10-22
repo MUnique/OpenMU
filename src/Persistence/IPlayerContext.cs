@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence;
 
 using System.Threading;
+using System.Threading.Tasks;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 
@@ -167,6 +168,71 @@ public interface IPlayerContext : IContext
     /// <returns>The grant; Otherwise, null, if no grant has the reference.</returns>
     ValueTask<CashShopCoinGrant?> GetCashShopCoinGrantByReferenceAsync(
         string reference,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically consumes an unexpired link code and replaces the user's previous link.
+    /// A rejected code must leave every existing link unchanged.
+    /// </summary>
+    /// <param name="provider">The external service.</param>
+    /// <param name="codeHash">The hash of the one-time code.</param>
+    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="externalUserId">The external user identifier.</param>
+    /// <param name="externalUserName">The external user name.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The account, character and replaced user; or null if the code was rejected.</returns>
+    ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
+        string provider,
+        string codeHash,
+        DateTime nowUtc,
+        string externalUserId,
+        string externalUserName,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Gets the link of an account to a user of an external service.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The link; Otherwise, null, if the account has no link to the service.</returns>
+    ValueTask<AccountExternalLink?> GetAccountExternalLinkAsync(
+        Guid accountId,
+        string provider,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the link of a user of an external service to an account.
+    /// </summary>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="externalUserId">The identifier of the user in the external service.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The link; Otherwise, null, if the user isn't linked.</returns>
+    ValueTask<AccountExternalLink?> GetAccountExternalLinkByUserAsync(
+        string provider,
+        string externalUserId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the link with a pending one-time code.
+    /// </summary>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="codeHash">The hash of the code.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The link; Otherwise, null, if no link has the code.</returns>
+    ValueTask<AccountExternalLink?> GetAccountExternalLinkByCodeAsync(
+        string provider,
+        string codeHash,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the links of an account to users of external services.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The links.</returns>
+    ValueTask<IReadOnlyList<AccountExternalLink>> GetAccountExternalLinksAsync(
+        Guid accountId,
         CancellationToken cancellationToken = default);
 
     /// <summary>

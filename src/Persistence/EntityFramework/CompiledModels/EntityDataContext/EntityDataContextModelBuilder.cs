@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("edc7bef9-dc99-4de0-a4d1-866509c3e38e"), entityTypeCount: 121)
+            : base(skipDetectChanges: false, modelId: new Guid("b9d48a9a-c807-40a2-9b41-a5bfa0fe2167"), entityTypeCount: 122)
         {
         }
 
@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
         {
             var account = AccountEntityType.Create(this);
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
+            var accountExternalLink = AccountExternalLinkEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var areaSkillSettings = AreaSkillSettingsEntityType.Create(this);
             var attributeDefinition = AttributeDefinitionEntityType.Create(this);
@@ -143,6 +144,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AccountCharacterClassEntityType.CreateForeignKey2(accountCharacterClass, characterClass);
+            AccountExternalLinkEntityType.CreateForeignKey1(accountExternalLink, account);
             AppearanceDataEntityType.CreateForeignKey1(appearanceData, characterClass);
             AttributeDefinitionEntityType.CreateForeignKey1(attributeDefinition, gameConfiguration);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, characterClass);
@@ -382,6 +384,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             AccountEntityType.CreateAnnotations(account);
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
+            AccountExternalLinkEntityType.CreateAnnotations(accountExternalLink);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AreaSkillSettingsEntityType.CreateAnnotations(areaSkillSettings);
             AttributeDefinitionEntityType.CreateAnnotations(attributeDefinition);
