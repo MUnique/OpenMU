@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.AccountLinking;
+using MUnique.OpenMU.GameLogic.PlayerActions.Discord;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -48,9 +48,8 @@ public class DiscordChatCommandPlugIn : ChatCommandPlugInBase<DiscordChatCommand
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DiscordLinkCode), code, (int)AccountLinkService.CodeValidity.TotalMinutes).ConfigureAwait(false);
                 break;
             case DiscordChatCommandArgs.UnlinkAction:
-                var gameServerContext = player.GameContext as IGameServerContext;
-                var unlinkedUserId = await service.UnlinkAccountAsync(accountId, AccountLinkService.DiscordProvider, gameServerContext?.EventPublisher, gameServerContext?.Id ?? 0).ConfigureAwait(false);
-                await player.ShowLocalizedBlueMessageAsync(unlinkedUserId is null ? nameof(PlayerMessage.DiscordNotLinked) : nameof(PlayerMessage.DiscordUnlinked)).ConfigureAwait(false);
+                var unlinked = await DiscordIntegrationAction.UnlinkAsync(player).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(unlinked ? nameof(PlayerMessage.DiscordUnlinked) : nameof(PlayerMessage.DiscordNotLinked)).ConfigureAwait(false);
                 break;
             case DiscordChatCommandArgs.NotifyAction:
                 var type = AccountNotificationKeywords.Parse(arguments.Type);

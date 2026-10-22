@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -248,7 +249,7 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     /// <inheritdoc/>
     public async ValueTask WorldChatMessageAsync(string sender, string message)
     {
-        await this._gameContext.ForEachPlayerAsync(player => player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WorldChatMessage), sender, message).AsTask()).ConfigureAwait(false);
+        await this._gameContext.ForEachPlayerAsync(player => ShowWorldChatMessageAsync(player, sender, message).AsTask()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -498,6 +499,22 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         {
             this.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Shows a message of the world chat. A message which was written in Discord is sent as external chat message
+    /// to the clients which support it.
+    /// </summary>
+    private static async ValueTask ShowWorldChatMessageAsync(Player player, string sender, string message)
+    {
+        if (BridgedChatSender.IsBridged(sender)
+            && player.ViewPlugIns.GetPlugIn<IDiscordIntegrationViewPlugIn>() is { } discordView
+            && await discordView.TryShowExternalChatMessageAsync(ExternalChatScope.World, BridgedChatSender.GetName(sender), message).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WorldChatMessage), sender, message).ConfigureAwait(false);
     }
 
     /// <summary>

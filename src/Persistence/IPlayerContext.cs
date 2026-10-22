@@ -197,6 +197,19 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the bindings of the chat of a guild and of the chat of its alliance to channels of external
+    /// services, without loading the bindings of other guilds.
+    /// </summary>
+    /// <param name="guildId">The persistent identifier of the guild; its <see cref="GuildChatScope.Guild"/> binding is returned.</param>
+    /// <param name="allianceMasterGuildId">The persistent identifier of the master guild of the alliance; its <see cref="GuildChatScope.Alliance"/> binding is returned.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The bindings, at most one per scope.</returns>
+    ValueTask<IReadOnlyList<GuildChatBinding>> GetGuildChatBindingsAsync(
+        Guid guildId,
+        Guid allianceMasterGuildId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Atomically consumes an unexpired link code and replaces the user's previous link.
     /// A rejected code must leave every existing link unchanged.
     /// </summary>

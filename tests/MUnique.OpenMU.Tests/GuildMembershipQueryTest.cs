@@ -31,4 +31,24 @@ public class GuildMembershipQueryTest
         Assert.That(sql, Does.Contain("JOIN"));
         Assert.That(sql, Does.Contain("\"AllianceGuildId\""));
     }
+
+    /// <summary>
+    /// Tests that the query of the chat bindings of a guild and its alliance is translated to SQL which only
+    /// reads their rows, instead of loading all bindings.
+    /// </summary>
+    [Test]
+    public void GuildChatBindingsQueryIsTranslatable()
+    {
+        if (!ConnectionConfigurator.IsInitialized)
+        {
+            ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        }
+
+        using var context = new AccountContext();
+
+        var sql = PlayerContext.CreateGuildChatBindingsQuery(context, Guid.NewGuid(), Guid.NewGuid()).ToQueryString();
+
+        Assert.That(sql, Does.Contain("WHERE"));
+        Assert.That(sql, Does.Contain("\"GuildId\""));
+    }
 }

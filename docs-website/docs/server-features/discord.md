@@ -255,7 +255,8 @@ bridge settings of the Discord page:
 * **On the Discord server of the guild:** the guild master invites the bot to
   the Discord server of the guild, and uses `/guildchat bind` in the channel
   which should be bound. This requires the permission to manage the channel. You
-  can allow only some Discord servers.
+can allow only some Discord servers with
+`Discord__Bot__ChatBridge__AllowedDiscordServerIds`.
 
 The option `scope` of these commands chooses the chat of the alliance instead,
 which only the master of an alliance can bind. `/guildchat unbind` in the channel
@@ -268,8 +269,8 @@ or the bot is removed from the Discord server.
 Only Discord users who are linked to an account can write into the game, as
 their selected character, which has to be a member of the guild or alliance. The
 chat ban of the account applies, and a user can send 10 messages per minute,
-by default. The messages go through the
-plugins of the plugin point *External chat message received*, e.g. a filter,
+by default (`Discord__Bot__ChatBridge__MaximumMessagesPerMinute`). The messages
+go through the plugins of the plugin point *External chat message received*, e.g. a filter,
 which can stop them; the plugins of *Chat message received* only get the
 messages of players in the game.
 
@@ -280,12 +281,39 @@ and long messages are cut, by default after 100 characters.
 
 To read the normal messages in the channels, the bot needs the privileged
 *Message Content* intent: enable it for the bot in the Discord developer portal
-under *Bot → Privileged Gateway Intents*, and turn on *Read messages* on the
-Discord page. When a message can't be sent to the
-game, the bot reacts with ❌ (permission *Add Reactions*), and `/say` tells why.
+under *Bot → Privileged Gateway Intents*, then turn on *Read messages* on the
+Discord page or set `Discord__Bot__ChatBridge__ReadMessages` to `true`. When a
+message can't be sent to the game, the bot reacts with ❌ (permission *Add Reactions*), and `/say` tells why.
 Without the intent, players use `/say <message>`. Discord only approves the
 intent for verified bots, which are in more than 100 Discord servers, with a
 reason.
+
+## The game client
+
+[MuMain](https://github.com/sven-n/MuMain), the open source game client, has
+its own Discord features. It asks the server how it's connected to Discord, when
+the character enters the game:
+
+* its **Discord** button opens the invite to your Discord server,
+* its **Rich Presence** shows the state of the player in the Discord profile,
+  with your Discord application,
+* players link and unlink their account in a dialog, without typing
+  `/discord link`,
+* messages written in Discord are shown as such, with the colours of the guild,
+  alliance or world chat, and can't be mistaken for messages of a character.
+
+For this, activate the feature plugin *Discord integration of the client* and
+fill its configuration:
+
+| Setting | Description |
+|---|---|
+| `InviteUrl` | The invite link to your Discord server, e.g. `https://discord.gg/abc123`. Create one which doesn't expire. |
+| `RichPresenceApplicationId` | The id of the Discord application which the client uses for the Rich Presence, usually the one of your bot (*General Information → Application ID* in the developer portal). |
+| `RichPresenceLargeImageKey`, `RichPresenceSmallImageKey` | The keys of the images of the Rich Presence, uploaded under *Rich Presence → Art Assets*. |
+
+Every player can read these values, so they must not contain secrets. Older game
+clients don't ask for them; they keep getting the messages from Discord as
+normal chat messages with the `@` prefix.
 
 ## Commands for game masters
 
