@@ -37,6 +37,25 @@ public class DiscordChatCommandPlugInTest
         Assert.That(await this.GetLinkAsync(player).ConfigureAwait(false), Is.Null);
     }
 
+    /// <summary>
+    /// Tests that <c>/discord notify</c> toggles the direct messages of a linked account.
+    /// </summary>
+    [Test]
+    public async Task NotifyTogglesDirectMessagesAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = new DiscordChatCommandPlugIn();
+        var service = new AccountLinkService(() => player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration));
+        var code = await service.CreateCodeAsync(player.Account!.GetId(), AccountLinkService.DiscordProvider, null).ConfigureAwait(false);
+        await service.LinkAsync(AccountLinkService.DiscordProvider, code, "42", "hero").ConfigureAwait(false);
+
+        await plugIn.HandleCommandAsync(player, "/discord notify letter").ConfigureAwait(false);
+        await plugIn.HandleCommandAsync(player, "/discord notify friend").ConfigureAwait(false);
+        await plugIn.HandleCommandAsync(player, "/discord notify letter").ConfigureAwait(false);
+
+        Assert.That((await this.GetLinkAsync(player).ConfigureAwait(false))?.Notifications, Is.EqualTo(DataModel.Entities.AccountNotificationTypes.FriendOnline));
+    }
+
     private async Task<DataModel.Entities.AccountExternalLink?> GetLinkAsync(Player player)
     {
         using var context = player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration);

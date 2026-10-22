@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Discord;
 
 using System.Globalization;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Discord.Properties;
 using MUnique.OpenMU.GameLogic.AccountLinking;
 
@@ -75,6 +76,49 @@ public sealed class DiscordAccountCommands
         {
             this._logger.LogError(ex, "Error when executing the Discord command {command}.", commandName);
             return this.Answer(nameof(Resources.Command_Failed));
+        }
+    }
+
+    /// <summary>
+    /// Turns a type of direct messages on or off.
+    /// </summary>
+    /// <param name="userId">The identifier of the Discord user.</param>
+    /// <param name="typeKeyword">The keyword of the type, see <see cref="AccountNotificationKeywords"/>.</param>
+    /// <param name="enabled">A value indicating whether the direct messages are turned on.</param>
+    /// <returns>The answer.</returns>
+    public async ValueTask<DiscordEmbed> SetNotificationAsync(ulong userId, string? typeKeyword, bool enabled)
+    {
+        try
+        {
+            var notifications = await this._linkService.SetNotificationByUserAsync(Provider, userId.ToString(CultureInfo.InvariantCulture), AccountNotificationKeywords.Parse(typeKeyword), enabled).ConfigureAwait(false);
+            if (notifications is not { } types)
+            {
+                return this.Answer(nameof(Resources.Link_NotLinked)).Embed;
+            }
+
+            var names = new List<string>();
+            if (types.HasFlag(AccountNotificationTypes.LoginAttempt))
+            {
+                names.Add(DiscordCommands.GetText(this._culture, nameof(Resources.Notify_Type_Login)));
+            }
+
+            if (types.HasFlag(AccountNotificationTypes.LetterReceived))
+            {
+                names.Add(DiscordCommands.GetText(this._culture, nameof(Resources.Notify_Type_Letter)));
+            }
+
+            if (types.HasFlag(AccountNotificationTypes.FriendOnline))
+            {
+                names.Add(DiscordCommands.GetText(this._culture, nameof(Resources.Notify_Type_Friend)));
+            }
+
+            var list = names.Count > 0 ? string.Join(", ", names) : DiscordCommands.GetText(this._culture, nameof(Resources.Notify_None));
+            return this.Answer(nameof(Resources.Notify_Changed), [], list).Embed;
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when changing the direct messages of the Discord user {userId}.", userId);
+            return this.Answer(nameof(Resources.Command_Failed)).Embed;
         }
     }
 

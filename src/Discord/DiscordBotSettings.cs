@@ -49,6 +49,12 @@ public class DiscordBotSettings
     public DiscordChatBridgeSettings ChatBridge { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets a value indicating whether the bot creates a scheduled event on the Discord server for the next castle siege.
+    /// It requires the permission to create events.
+    /// </summary>
+    public bool CreateScheduledEvents { get; set; }
+
+    /// <summary>
     /// Gets or sets the interval in which the status message and the presence of the bot are updated.
     /// </summary>
     public TimeSpan StatusUpdateInterval { get; set; } = TimeSpan.FromMinutes(1);

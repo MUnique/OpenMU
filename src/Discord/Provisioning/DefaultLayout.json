@@ -35,7 +35,7 @@
       "name": "Staff",
       "visibleTo": [ "gm" ],
       "channels": [
-        { "key": "staff-alerts", "name": "staff-alerts", "isReadOnly": true },
+        { "key": "staff-alerts", "name": "staff-alerts", "isReadOnly": true, "notifications": [ "StaffAlerts" ] },
         { "key": "gm-commands", "name": "gm-commands" }
       ]
     }

@@ -139,13 +139,17 @@ public class GameEventPublisherPlugIn
             return ValueTask.CompletedTask;
         }
 
+        var now = DateTime.UtcNow;
+        var nextBattle = castleSiege.Schedule.GetNextPeriod(CastleSiegeState.Start, now);
         return context.EventPublisher.GameEventAsync(new CastleSiegeStateChangedEvent(
             context.Id,
-            DateTime.UtcNow,
+            now,
             previousState.ToString(),
             castleSiege.CurrentState.ToString(),
             castleSiege.StateEndTimeUtc,
-            castleSiege.SiegeData?.OwnerGuildId));
+            castleSiege.SiegeData?.OwnerGuildId,
+            nextBattle?.StartUtc,
+            nextBattle?.EndUtc));
     }
 
     /// <inheritdoc />

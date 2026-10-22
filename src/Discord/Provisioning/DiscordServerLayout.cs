@@ -21,6 +21,11 @@ public sealed class DiscordServerLayout
     public const string LinkedRoleKey = "linked";
 
     /// <summary>
+    /// The key of the role of the game masters, which can use the commands for game masters.
+    /// </summary>
+    public const string GameMasterRoleKey = "gm";
+
+    /// <summary>
     /// The key of the category in which the bot creates the channels for the chats of guilds.
     /// </summary>
     public const string GuildsCategoryKey = "guilds";
