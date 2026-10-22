@@ -1483,6 +1483,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the Castle Siege status request which the client sends when the guardsman window opens..
+        /// </summary>
+        public static string CastleSiegeStatusHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege status request handler.
+        /// </summary>
+        public static string CastleSiegeStatusHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the Castle Siege state, schedule and castle owner to the game client..
+        /// </summary>
+        public static string CastleSiegeStatusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege status view.
+        /// </summary>
+        public static string CastleSiegeStatusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeStatusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown switch occupancy information to the game client..
         /// </summary>
         public static string CastleSiegeSwitchInfoPlugIn_Description {
@@ -1623,6 +1659,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CastleSiegeUnregisterHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeUnregisterHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepts the weapon explosion request of the client. The impact damage of warfare machines is applied by the server when the projectile lands, so the request has no effect..
+        /// </summary>
+        public static string CastleSiegeWeaponExplosionHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeWeaponExplosionHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege weapon explosion handler.
+        /// </summary>
+        public static string CastleSiegeWeaponExplosionHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeWeaponExplosionHandlerPlugIn_Name", resourceCulture);
             }
         }
         

@@ -820,4 +820,6 @@
   </data>
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>Ancient-Sets des Rage Fighters hinzufügen</value></data>
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>Dieses Update fügt die Ancient-Sets Vega und Chamer der Sacred-Gegenstände hinzu.</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Wachen von Castle Siege konfigurieren</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>Die Gardisten an der Brücke der Karte von Castle Siege öffnen das Anmeldefenster, und die Wache am Eingang zum Land der Prüfungen wird zu einem passiven NPC, der den Dialog des Landes der Prüfungen öffnet.</value></data>
 </root>

@@ -82,10 +82,10 @@
   <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
     <value>角色进入游戏时发放待领取的攻城战参与奖励。</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
-    <value>攻城战守卫</value>
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Name" xml:space="preserve">
+    <value>攻城战魔炼之地守卫</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Description" xml:space="preserve">
     <value>显示魔炼之地是否开放及适用的入场费用。</value>
   </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
@@ -1657,5 +1657,11 @@
   </data>
   <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
     <value>定义客户端对五重箭动画的计数方式：命中数据不包含动画计数器。</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>攻城战报名守卫</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>玩家在攻城战地图上与守卫对话时，打开显示攻城战状态的攻城战报名窗口。</value>
   </data>
 </root>
