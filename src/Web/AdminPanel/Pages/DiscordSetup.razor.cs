@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,11 @@ using MUnique.OpenMU.Web.Shared.Components.Toast;
 /// </summary>
 public partial class DiscordSetup : IDisposable
 {
+    /// <summary>
+    /// Keeps status refreshes from creating excessive Discord requests.
+    /// </summary>
+    private const int MinimumStatusUpdateSeconds = 10;
+
     private static readonly IReadOnlyList<DiscordChannelCategory> Categories = Enum.GetValues<DiscordChannelCategory>();
 
     private static readonly IReadOnlyList<(string Code, string Name)> Languages = [("en", "English"), ("de", "Deutsch")];
@@ -461,7 +467,7 @@ public partial class DiscordSetup : IDisposable
         this.ValidateMinimum("discordMessageLength", settings.Bot.ChatBridge.MaximumMessageLength, 1);
         this.ValidateMinimum("discordMessagesPerMinute", settings.Bot.ChatBridge.MaximumMessagesPerMinute, 1);
         this.ValidateMinimum("discordQueuedMessages", settings.MaximumQueuedMessages, 1);
-        this.ValidateMinimum("discordStatusInterval", this._statusUpdateSeconds, 10);
+        this.ValidateMinimum("discordStatusInterval", this._statusUpdateSeconds, MinimumStatusUpdateSeconds);
         if (this._validationErrors.Count > 0)
         {
             return false;
@@ -501,7 +507,7 @@ public partial class DiscordSetup : IDisposable
         settings.Bot.Channels = channels;
         settings.EventAnnouncingServerIds = eventServerIds;
         settings.Bot.ChatBridge.AllowedDiscordServerIds = allowedServerIds;
-        settings.Bot.StatusUpdateInterval = TimeSpan.FromSeconds(Math.Max(this._statusUpdateSeconds, 10));
+        settings.Bot.StatusUpdateInterval = TimeSpan.FromSeconds(Math.Max(this._statusUpdateSeconds, MinimumStatusUpdateSeconds));
         return true;
     }
 

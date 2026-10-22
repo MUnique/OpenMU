@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Discord;
 
 using System.Threading;
+using System.Threading.Tasks;
 using global::Discord;
 using global::Discord.WebSocket;
 using Microsoft.Extensions.Logging;

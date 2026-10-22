@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using MUnique.OpenMU.Discord;
@@ -151,9 +152,15 @@ public class DiscordConfigurationService
     /// Loads editable file settings with effective values for fields managed elsewhere.
     /// Saving restores those fields from the original file, so environment secrets are never copied into it.
     /// </summary>
+    /// <returns>The settings as they should be displayed.</returns>
+    public ValueTask<DiscordSettings> LoadForEditingAsync() => this.LoadForEditingAsync(CancellationToken.None);
+
+    /// <summary>
+    /// Loads editable settings using the supplied cancellation token.
+    /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The settings as they should be displayed.</returns>
-    public async ValueTask<DiscordSettings> LoadForEditingAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<DiscordSettings> LoadForEditingAsync(CancellationToken cancellationToken)
     {
         var fileSettings = await this.LoadAsync(cancellationToken).ConfigureAwait(false);
         var effective = this._configuration.GetSection(DiscordSettings.SectionName).Get<DiscordSettings>() ?? new DiscordSettings();

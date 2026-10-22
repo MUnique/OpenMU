@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -200,7 +201,12 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
             return new DiscordTestResult(DiscordTestOutcome.NoChannel);
         }
 
-        return await this.SendWebhookTestMessageAsync(category, url, embed, cancellationToken).ConfigureAwait(false);
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var webhookUrl))
+        {
+            return new DiscordTestResult(DiscordTestOutcome.WebhookInvalid);
+        }
+
+        return await this.SendWebhookTestMessageAsync(category, webhookUrl, embed, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -350,15 +356,10 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
 
     private async ValueTask<DiscordTestResult> SendWebhookTestMessageAsync(
         DiscordChannelCategory category,
-        string url,
+        Uri webhookUrl,
         DiscordEmbed embed,
         CancellationToken cancellationToken)
     {
-        if (!Uri.TryCreate(url, UriKind.Absolute, out var webhookUrl))
-        {
-            return new DiscordTestResult(DiscordTestOutcome.WebhookInvalid);
-        }
-
         try
         {
             this._httpClient ??= this.CreateHttpClient();

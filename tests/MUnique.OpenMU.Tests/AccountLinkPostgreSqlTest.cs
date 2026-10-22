@@ -84,7 +84,7 @@ public class AccountLinkPostgreSqlTest
         var attempts = Enumerable.Range(0, count).Select(async index =>
         {
             using var context = new PlayerContext(this.CreateDbContext(barrier), new RepositoryProvider(NullLoggerFactory.Instance, null, new ContextStack()), NullLogger<PlayerContext>.Instance);
-            var result = await context.TryLinkAccountAsync("discord", hash, now, $"user-{index}", "user").ConfigureAwait(false);
+            var result = await context.TryLinkAccountAsync("discord", hash, now, $"user-{index}", "user", CancellationToken.None).ConfigureAwait(false);
             return (Index: index, Result: result);
         }).ToArray();
         var results = await Task.WhenAll(attempts).ConfigureAwait(false);

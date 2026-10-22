@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Discord;
 
 using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 /// <summary>

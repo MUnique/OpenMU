@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using MUnique.OpenMU.Persistence.BasicModel;
 using Nito.AsyncEx;
 
@@ -197,7 +198,7 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
         DateTime nowUtc,
         string externalUserId,
         string externalUserName,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         using var l = await LinkLocks.GetValue(this.Provider, _ => new AsyncLock()).LockAsync(cancellationToken).ConfigureAwait(false);
         if (await this.GetAccountExternalLinkByCodeAsync(provider, codeHash, cancellationToken).ConfigureAwait(false) is not { } link
