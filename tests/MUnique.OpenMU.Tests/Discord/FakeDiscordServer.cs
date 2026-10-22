@@ -45,6 +45,11 @@ internal sealed class FakeDiscordServer : IDiscordServer
     public string? FailingName { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of a channel whose permissions cannot be applied.
+    /// </summary>
+    public string? FailingPermissionsName { get; set; }
+
+    /// <summary>
     /// Adds an existing category.
     /// </summary>
     /// <param name="name">The name.</param>
@@ -80,7 +85,12 @@ internal sealed class FakeDiscordServer : IDiscordServer
     public IReadOnlyCollection<DiscordRoleInfo> GetRoles() => this.Roles.ToList();
 
     /// <inheritdoc />
-    public IReadOnlyCollection<DiscordChannelInfo> GetChannels() => this.Channels.ToList();
+    public IReadOnlyCollection<DiscordChannelInfo> GetChannels() => this.Channels
+        .Select(channel => channel with
+        {
+            IsPrivate = this.Overwrites.GetValueOrDefault(channel.Id)?.Any(overwrite => overwrite.TargetId == this.EveryoneRoleId && overwrite.Deny.HasFlag(DiscordChannelAccess.View)) is true,
+        })
+        .ToList();
 
     /// <inheritdoc />
     public Task<ulong> CreateRoleAsync(DiscordRoleLayout role)
@@ -111,6 +121,11 @@ internal sealed class FakeDiscordServer : IDiscordServer
     /// <inheritdoc />
     public Task ApplyPermissionsAsync(ulong channelId, IReadOnlyList<DiscordPermissionOverwrite> overwrites)
     {
+        if (this.Channels.Single(channel => channel.Id == channelId).Name == this.FailingPermissionsName)
+        {
+            throw new InvalidOperationException("Missing Permissions");
+        }
+
         this.Overwrites[channelId] = overwrites;
         return Task.CompletedTask;
     }

@@ -217,10 +217,22 @@ public sealed class DiscordChatBridge
             return (DiscordChatBindResult.NotLinked, null);
         }
 
-        // The guild master has to be the selected character of the account, see /character.
+        if (link.CharacterName is not { } characterName)
+        {
+            return (DiscordChatBindResult.NotGuildMaster, null);
+        }
+
+        // A saved name can outlive a character transfer or be reused after deletion.
+        using (var playerContext = this._createPlayerContext())
+        {
+            if (await playerContext.GetAccountIdByCharacterNameAsync(characterName).ConfigureAwait(false) != link.AccountId)
+            {
+                return (DiscordChatBindResult.NotGuildMaster, null);
+            }
+        }
+
         using var guildContext = this._createGuildContext();
-        if (link.CharacterName is not { } characterName
-            || await guildContext.GetGuildMembershipAsync(characterName).ConfigureAwait(false) is not { Position: GuildPosition.GuildMaster } membership)
+        if (await guildContext.GetGuildMembershipAsync(characterName).ConfigureAwait(false) is not { Position: GuildPosition.GuildMaster } membership)
         {
             return (DiscordChatBindResult.NotGuildMaster, null);
         }
