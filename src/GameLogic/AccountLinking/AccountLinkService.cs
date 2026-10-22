@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.GameLogic.AccountLinking;
 
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
@@ -100,7 +102,13 @@ public sealed class AccountLinkService
     {
         var codeHash = HashCode(NormalizeCode(code));
         using var context = this._createContext();
-        var result = await context.TryLinkAccountAsync(provider, codeHash, this._timeProvider.GetUtcNow().UtcDateTime, externalUserId, externalUserName).ConfigureAwait(false);
+        var result = await context.TryLinkAccountAsync(
+            provider,
+            codeHash,
+            this._timeProvider.GetUtcNow().UtcDateTime,
+            externalUserId,
+            externalUserName,
+            CancellationToken.None).ConfigureAwait(false);
         return result is { } linked
             ? new AccountLinkResult(linked.AccountId, linked.CharacterName, linked.PreviousUserId)
             : null;
