@@ -506,5 +506,11 @@
   <data name="Status_Title" xml:space="preserve">
     <value>Serverstatus</value>
   </data>
+  <data name="Test_Description" xml:space="preserve">
+    <value>Dieser Kanal bekommt die Benachrichtigungen der Kategorie {0}. Diese Nachricht wurde aus dem Admin-Panel gesendet, um das zu testen.</value>
+  </data>
+  <data name="Test_Title" xml:space="preserve">
+    <value>Testnachricht</value>
+  </data>
   <data name="Setup_PrivateRolesMissing" xml:space="preserve"><value>Private Kanäle wurden übersprungen, weil die erforderlichen Rollen fehlen.</value></data>
 </root>

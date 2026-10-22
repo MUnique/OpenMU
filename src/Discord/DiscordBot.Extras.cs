@@ -63,12 +63,12 @@ public sealed partial class DiscordBot
             await command.DeferAsync(ephemeral: true).ConfigureAwait(false);
             var argument = command.Data.Options.FirstOrDefault()?.Value as string ?? string.Empty;
             var answer = await this._gameMasterCommands.ExecuteAsync(command.Data.Name, argument, command.User.Id, command.User.Username, this.HasGameMasterRole(command)).ConfigureAwait(false);
-            if (answer.StaffAlert is { } alert && this._routing.GetChannelId(DiscordChannelCategory.StaffAlerts) is { } channelId)
+            if (answer.StaffAlert is { } alert && this.GetChannelId(DiscordChannelCategory.StaffAlerts) is { } channelId)
             {
                 await this.SendAsync(channelId, [alert], CancellationToken.None).ConfigureAwait(false);
             }
 
-            if (answer.Announcement is { } announcement && this._routing.GetChannelId(DiscordChannelCategory.Notices) is { } noticesChannelId)
+            if (answer.Announcement is { } announcement && this.GetChannelId(DiscordChannelCategory.Notices) is { } noticesChannelId)
             {
                 await this.SendAsync(noticesChannelId, [announcement], CancellationToken.None).ConfigureAwait(false);
             }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Discord;
 
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -25,6 +26,22 @@ using MUnique.OpenMU.PlugIns;
 public static class DiscordServiceCollectionExtensions
 {
     /// <summary>
+    /// Adds the <see cref="DiscordIntegration"/>, which creates the Discord bot and the notifications as they are
+    /// configured in the given section, and creates them again when the section changes.
+    /// </summary>
+    /// <param name="services">The services to which the Discord integration is added.</param>
+    /// <param name="section">The configuration section with the <see cref="DiscordSettings"/>.</param>
+    /// <param name="getServerTimeZone">The function which gets the time zone of the server, in which the schedules of the events are defined.</param>
+    /// <returns>The same services, for chaining.</returns>
+    public static IServiceCollection AddDiscordIntegration(this IServiceCollection services, IConfiguration section, Func<TimeZoneInfo> getServerTimeZone)
+    {
+        return services
+            .AddSingleton(provider => new DiscordIntegration(section, provider, getServerTimeZone, provider.GetRequiredService<ILogger<DiscordIntegration>>()))
+            .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordIntegration>())
+            .AddHostedService(provider => provider.GetRequiredService<DiscordIntegration>());
+    }
+
+    /// <summary>
     /// Adds the Discord bot, if a token is configured, and the <see cref="DiscordNotifier"/> as <see cref="IGameEventListener"/>,
     /// if webhooks or the bot are configured.
     /// </summary>
@@ -35,7 +52,8 @@ public static class DiscordServiceCollectionExtensions
     public static IServiceCollection AddDiscord(this IServiceCollection services, DiscordSettings settings, Func<TimeZoneInfo> getServerTimeZone)
     {
         var culture = settings.GetCulture();
-        if (settings.Bot.IsEnabled)
+        var useBot = settings.UseBot is not false && settings.Bot.IsEnabled;
+        if (useBot)
         {
             services
                 .AddSingleton<IDiscordGameDataProvider>(provider => new DiscordGameDataProvider(
@@ -91,7 +109,10 @@ public static class DiscordServiceCollectionExtensions
                     provider.GetRequiredService<DiscordChatCommands>(),
                     provider.GetRequiredService<DiscordGameMasterCommands>(),
                     provider.GetRequiredService<DiscordDirectMessages>(),
-                    provider.GetRequiredService<ILogger<DiscordBot>>()))
+                    provider.GetRequiredService<ILogger<DiscordBot>>())
+                {
+                    DisabledNotifications = settings.DisabledNotifications.ToArray(),
+                })
                 .AddHostedService(provider => provider.GetRequiredService<DiscordBot>())
                 .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordBot>());
         }
@@ -101,7 +122,7 @@ public static class DiscordServiceCollectionExtensions
             services.AddSingleton<IGameEventListener>(provider => new DiscordNotifier(
                 settings,
                 DiscordHttpClient.Create(),
-                settings.Bot.IsEnabled ? provider.GetRequiredService<DiscordBot>() : null,
+                useBot ? provider.GetRequiredService<DiscordBot>() : null,
                 serverId => provider.GetRequiredService<IServerProvider>().Servers.OfType<IGameServer>().FirstOrDefault(server => server.Id == serverId)?.Description,
                 guildId => provider.GetRequiredService<IGuildServer>().GetPersistentGuildNameAsync(guildId),
                 provider.GetRequiredService<ILoggerFactory>()));

@@ -506,5 +506,11 @@
   <data name="Status_Title" xml:space="preserve">
     <value>Server status</value>
   </data>
+  <data name="Test_Description" xml:space="preserve">
+    <value>This channel receives the notifications of the category {0}. This message was sent from the admin panel to test it.</value>
+  </data>
+  <data name="Test_Title" xml:space="preserve">
+    <value>Test message</value>
+  </data>
   <data name="Setup_PrivateRolesMissing" xml:space="preserve"><value>Private channels were skipped because their required roles are missing.</value></data>
 </root>

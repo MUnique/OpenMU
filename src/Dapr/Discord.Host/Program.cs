@@ -14,7 +14,6 @@ using MUnique.OpenMU.ServerClients;
 var builder = DaprService.CreateBuilder("Discord", args);
 
 var plugInConfigurations = new List<PlugInConfiguration>();
-var settings = builder.Configuration.GetSection(DiscordSettings.SectionName).Get<DiscordSettings>() ?? new DiscordSettings();
 
 builder.Services
     .AddPeristenceProvider()
@@ -25,7 +24,7 @@ builder.Services
     .AddSingleton<IEventPublisher, EventPublisher>()
 
     // The game servers of the distributed deployment run in UTC, too.
-    .AddDiscord(settings, () => TimeZoneInfo.Utc);
+    .AddDiscordIntegration(builder.Configuration.GetSection(DiscordSettings.SectionName), () => TimeZoneInfo.Utc);
 
 var app = builder.BuildAndConfigure();
 

@@ -1283,5 +1283,23 @@ namespace MUnique.OpenMU.Discord.Properties {
                 return ResourceManager.GetString("Status_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel receives the notifications of the category {0}. This message was sent from the admin panel to test it..
+        /// </summary>
+        public static string Test_Description {
+            get {
+                return ResourceManager.GetString("Test_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test message.
+        /// </summary>
+        public static string Test_Title {
+            get {
+                return ResourceManager.GetString("Test_Title", resourceCulture);
+            }
+        }
     }
 }

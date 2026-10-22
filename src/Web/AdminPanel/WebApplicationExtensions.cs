@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -87,6 +88,7 @@ public static class WebApplicationExtensions
         services.AddSingleton<ConfigurationSearchIndexCache>();
         services.AddSingleton<SetupService>();
         services.AddSingleton(new LoggingConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")));
+        services.AddSingleton(provider => new DiscordConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"), provider.GetRequiredService<IConfiguration>()));
         services.AddScoped<DataUpdateService>();
         services.AddScoped<ConfigurationCaptionService>();
         services.AddScoped<AccountService>();

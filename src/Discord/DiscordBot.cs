@@ -97,6 +97,11 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Gets the notification categories disabled for this bot instance.
+    /// </summary>
+    public IReadOnlyCollection<DiscordChannelCategory> DisabledNotifications { get; init; } = [];
+
     /// <inheritdoc />
     public int Id => 0;
 
@@ -143,6 +148,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             this.ServerState = ServerState.Starting;
+            this.Problem = DiscordBotProblem.None;
             if (this._settings.StatusChannelId is { } statusChannelId && this._settings.Channels.ContainsValue(statusChannelId))
             {
                 this._logger.LogWarning("The status channel {channelId} is also configured for game events. Use a channel in which only the status is shown, otherwise the status message is posted again when the events push it out of the channel.", statusChannelId);
@@ -163,6 +169,9 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         catch (Exception ex)
         {
             this._logger.LogError(ex, "The Discord bot couldn't be started. Is the token valid?");
+            this.Problem = ex is ArgumentException || GetStoppingProblem(ex) == DiscordBotProblem.TokenRejected
+                ? DiscordBotProblem.TokenRejected
+                : DiscordBotProblem.StartFailed;
             await this.StopClientAsync().ConfigureAwait(false);
         }
         finally
@@ -196,7 +205,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <remarks>
     /// The channels of the layout are known after the bot connected to Discord.
     /// </remarks>
-    public ulong? GetChannelId(DiscordChannelCategory category) => this._routing.GetChannelId(category);
+    public ulong? GetChannelId(DiscordChannelCategory category) => this.DisabledNotifications.Contains(category) ? null : this._routing.GetChannelId(category);
 
     /// <inheritdoc />
     public async Task SendAsync(ulong channelId, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
@@ -491,12 +500,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             this._logger.LogInformation("The Discord server {guild} ({guildId}) is set up by {user}.", guild.Name, guild.Id, command.User.Username);
-            var result = await this._provisioner.ProvisionAsync(new SocketGuildServer(guild), this._layout).ConfigureAwait(false);
-            if (this.GetRoutingGuild(client)?.Id == guild.Id)
-            {
-                // The cache of the client might not know the created channels yet.
-                this._routing = DiscordChannelRouting.Create(this._settings, this._layout, result.ChannelIds);
-            }
+            var result = await this.ProvisionAsync(client, guild).ConfigureAwait(false);
 
             await command.FollowupAsync(embed: ToDiscordEmbed(this._commands.CreateSetupReport(result)), ephemeral: true, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
         }
@@ -645,10 +649,14 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         };
         this._logger.Log(level, message.Exception, "{source}: {message}", message.Source, message.Message);
 
-        // With an invalid token, the library would try to connect again and again.
-        if (message.Exception is global::Discord.Net.HttpException { HttpCode: System.Net.HttpStatusCode.Unauthorized })
+        // With an invalid token or a disallowed intent, the library would try to connect again and again.
+        if (GetStoppingProblem(message.Exception) is var problem and not DiscordBotProblem.None)
         {
-            this._logger.LogError("Discord rejected the token of the bot, so the bot is stopped. Please check the configured token.");
+            this._logger.LogError(
+                problem == DiscordBotProblem.TokenRejected
+                    ? "Discord rejected the token of the bot, so the bot is stopped. Please check the configured token."
+                    : "Discord doesn't allow the privileged Message Content intent for the bot, so the bot is stopped. Enable it in the Discord developer portal, or turn off reading the messages of the chat bridge.");
+            this.Problem = problem;
             _ = Task.Run(async () => await this.ShutdownAsync().ConfigureAwait(false));
         }
 
