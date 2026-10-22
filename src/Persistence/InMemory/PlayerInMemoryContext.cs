@@ -4,14 +4,19 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Runtime.CompilerServices;
 using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
+using Nito.AsyncEx;
 
 /// <summary>
 /// In-memory context implementation for <see cref="IPlayerContext"/>.
 /// </summary>
 public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
 {
+    // All contexts of one in-memory database share this lock. Different databases remain independent.
+    private static readonly ConditionalWeakTable<InMemoryRepositoryProvider, AsyncLock> LinkLocks = new();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerInMemoryContext"/> class.
     /// </summary>
@@ -190,6 +195,38 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .GetAllAsync(cancellationToken)
             .ConfigureAwait(false);
         return links.FirstOrDefault(link => link.Provider == provider && link.CodeHash == codeHash);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
+        string provider,
+        string codeHash,
+        DateTime nowUtc,
+        string externalUserId,
+        string externalUserName,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await LinkLocks.GetValue(this.Provider, _ => new AsyncLock()).LockAsync(cancellationToken).ConfigureAwait(false);
+        if (await this.GetAccountExternalLinkByCodeAsync(provider, codeHash, cancellationToken).ConfigureAwait(false) is not { } link
+            || link.CodeExpiresAt is not { } expiresAt || expiresAt < nowUtc)
+        {
+            return null;
+        }
+
+        if (await this.GetAccountExternalLinkByUserAsync(provider, externalUserId, cancellationToken).ConfigureAwait(false) is { } previous
+            && previous.AccountId != link.AccountId)
+        {
+            await this.DeleteAsync(previous).ConfigureAwait(false);
+        }
+
+        var previousUserId = link.ExternalUserId;
+        link.ExternalUserId = externalUserId;
+        link.ExternalUserName = externalUserName;
+        link.LinkedAt = nowUtc;
+        link.CodeHash = null;
+        link.CodeExpiresAt = null;
+        await this.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return (link.AccountId, link.CharacterName, previousUserId == externalUserId ? null : previousUserId);
     }
 
     /// <inheritdoc />

@@ -154,6 +154,38 @@ public class AccountLinkServiceTest
         Assert.That((await this._service.GetLinkAsync(this._accountId, Provider).ConfigureAwait(false))?.CharacterName, Is.EqualTo("Hero2"));
     }
 
+    /// <summary>
+    /// Tests that simultaneous redemptions in separate contexts have exactly one winner.
+    /// </summary>
+    [Test]
+    public async Task ConcurrentCodeRedemptionsHaveOneWinnerAsync()
+    {
+        var code = await this._service.CreateCodeAsync(this._accountId, Provider, "Hero").ConfigureAwait(false);
+        var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var attempts = Enumerable.Range(0, 20).Select(async index =>
+        {
+            await start.Task.ConfigureAwait(false);
+            var service = new AccountLinkService(this.CreateContext, this._time);
+            return await service.LinkAsync(Provider, code, index.ToString(), "user").ConfigureAwait(false);
+        }).ToArray();
+        start.SetResult();
+        var results = await Task.WhenAll(attempts).ConfigureAwait(false);
+        Assert.That(results.Count(result => result is not null), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that rejection does not remove the redeeming user's existing link.
+    /// </summary>
+    [Test]
+    public async Task UsedCodeKeepsPreviousAccountLinkAsync()
+    {
+        await this.LinkAsync(this._otherAccountId, "43").ConfigureAwait(false);
+        var code = await this._service.CreateCodeAsync(this._accountId, Provider, "Hero").ConfigureAwait(false);
+        await this._service.LinkAsync(Provider, code, "42", "winner").ConfigureAwait(false);
+        Assert.That(await this._service.LinkAsync(Provider, code, "43", "loser").ConfigureAwait(false), Is.Null);
+        Assert.That((await this._service.GetLinkByUserAsync(Provider, "43").ConfigureAwait(false))?.AccountId, Is.EqualTo(this._otherAccountId));
+    }
+
     private IPlayerContext CreateContext() => this._persistence.CreateNewPlayerContext(new GameConfiguration());
 
     private async Task LinkAsync(Guid accountId, string userId)

@@ -245,3 +245,5 @@ the parts are separated by two underscores.
 * Until the bot is connected to Discord, which takes a few seconds after the
   start, notifications for the channels of the layout are posted through the
   webhook of their category, if there is one.
+
+Private staff channels are skipped if their required roles or permissions cannot be set. Fix the reported permissions and run setup again. Public channels with staff channel names are not used automatically for notifications.
