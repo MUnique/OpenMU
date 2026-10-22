@@ -88,23 +88,7 @@ public sealed class DiscordServerProvisioner
                 continue;
             }
 
-            foreach (var channel in category.Channels)
-            {
-                var channelId = await this.GetOrCreateAsync(
-                    result,
-                    "#" + channel.Name,
-                    () => FindChannel(channels, channel.Name, categoryId)?.Id,
-                    () => server.CreateChannelAsync(channel, categoryId)).ConfigureAwait(false);
-                if (channelId is null)
-                {
-                    continue;
-                }
-
-                if (await this.ApplyPermissionsAsync(server, result, "#" + channel.Name, channelId.Value, CreateOverwrites(server, roleIds, category, channel)).ConfigureAwait(false))
-                {
-                    result.ChannelIds[channel.Key] = channelId.Value;
-                }
-            }
+            await this.ProvisionChannelsAsync(server, channels, roleIds, category, categoryId.Value, result).ConfigureAwait(false);
         }
 
         return result;
@@ -161,6 +145,33 @@ public sealed class DiscordServerProvisioner
     {
         var candidates = channels.Where(c => !c.IsCategory && string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase)).ToList();
         return candidates.FirstOrDefault(c => c.CategoryId == categoryId) ?? candidates.FirstOrDefault();
+    }
+
+    private async Task ProvisionChannelsAsync(
+        IDiscordServer server,
+        IReadOnlyCollection<DiscordChannelInfo> channels,
+        IReadOnlyDictionary<string, ulong> roleIds,
+        DiscordCategoryLayout category,
+        ulong categoryId,
+        DiscordProvisioningResult result)
+    {
+        foreach (var channel in category.Channels)
+        {
+            var channelId = await this.GetOrCreateAsync(
+                result,
+                "#" + channel.Name,
+                () => FindChannel(channels, channel.Name, categoryId)?.Id,
+                () => server.CreateChannelAsync(channel, categoryId)).ConfigureAwait(false);
+            if (channelId is null)
+            {
+                continue;
+            }
+
+            if (await this.ApplyPermissionsAsync(server, result, "#" + channel.Name, channelId.Value, CreateOverwrites(server, roleIds, category, channel)).ConfigureAwait(false))
+            {
+                result.ChannelIds[channel.Key] = channelId.Value;
+            }
+        }
     }
 
     private async Task<Dictionary<string, ulong>> ProvisionRolesAsync(IDiscordServer server, DiscordServerLayout layout, DiscordProvisioningResult result)
