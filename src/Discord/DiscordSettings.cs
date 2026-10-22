@@ -22,7 +22,7 @@ public class DiscordSettings
 
     /// <summary>
     /// Gets or sets the webhook URLs per <see cref="DiscordChannelCategory"/>.
-    /// A category without URL isn't posted, unless the bot posts it, see <see cref="DiscordBotSettings.Channels"/>.
+    /// A category without URL isn't posted, unless the bot posts it into a channel of the layout or of <see cref="DiscordBotSettings.Channels"/>.
     /// </summary>
     public Dictionary<DiscordChannelCategory, string> Webhooks { get; set; } = new();
 
@@ -52,8 +52,7 @@ public class DiscordSettings
     /// <summary>
     /// Gets a value indicating whether game events are posted, through webhooks or the bot.
     /// </summary>
-    public bool IsNotificationEnabled => this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url))
-                                         || (this.Bot.IsEnabled && this.Bot.Channels.Count > 0);
+    public bool IsNotificationEnabled => this.Bot.IsEnabled || this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url));
 
     /// <summary>
     /// Gets the culture of the <see cref="Language"/>; or the invariant culture, if the language is unknown.

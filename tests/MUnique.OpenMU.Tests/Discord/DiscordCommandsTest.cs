@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests.Discord;
 using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.Discord;
+using MUnique.OpenMU.Discord.Provisioning;
 
 /// <summary>
 /// Tests for the <see cref="DiscordCommands"/>.
@@ -128,6 +129,24 @@ public class DiscordCommandsTest
                 Assert.That(commands.Text(optionKey), Is.Not.EqualTo(optionKey));
             }
         }
+    }
+
+    /// <summary>
+    /// Tests the report of the setup of the Discord server.
+    /// </summary>
+    [Test]
+    public void SetupReportListsCreatedAdoptedAndFailed()
+    {
+        var result = new DiscordProvisioningResult();
+        result.Created.Add("#events");
+        result.Created.Add("@GM");
+        result.Adopted.Add("#general");
+        result.Failed.Add(("Staff", "Missing Permissions"));
+
+        var answer = CreateCommands("en", this._data).CreateSetupReport(result);
+
+        Assert.That(answer.Title, Is.EqualTo("Setup of the Discord server"));
+        Assert.That(answer.Description, Does.StartWith("**Created:** \\#events, @GM\n**Already existing:** \\#general\n**Failed:** Staff (Missing Permissions)\n"));
     }
 
     private static DiscordCommands CreateCommands(string language, IDiscordGameDataProvider data)

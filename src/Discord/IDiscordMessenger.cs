@@ -12,6 +12,13 @@ using System.Threading;
 public interface IDiscordMessenger
 {
     /// <summary>
+    /// Gets the identifier of the channel into which the notifications of the category are posted.
+    /// </summary>
+    /// <param name="category">The category.</param>
+    /// <returns>The identifier of the channel; or <c>null</c>, if the messenger doesn't post the category.</returns>
+    ulong? GetChannelId(DiscordChannelCategory category);
+
+    /// <summary>
     /// Sends a message with the embeds to the channel. It waits until the messenger is connected.
     /// Mentions in the message don't ping anybody.
     /// </summary>

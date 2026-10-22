@@ -1,0 +1,37 @@
+﻿{
+  // The default layout of the Discord server of an OpenMU game server.
+  // Existing roles, categories and channels are adopted by their name; the missing ones are created.
+  "roles": [
+    { "key": "gm", "name": "GM", "color": "#E67E22", "isHoisted": true },
+    { "key": "linked", "name": "Linked Player", "color": "#2ECC71" }
+  ],
+  "categories": [
+    {
+      "key": "info",
+      "name": "Info",
+      "channels": [
+        { "key": "announcements", "name": "announcements", "topic": "News from the game masters.", "isAnnouncement": true, "isReadOnly": true, "notifications": [ "Notices" ] },
+        { "key": "events", "name": "events", "topic": "Mini games, invasions and the castle siege.", "isReadOnly": true, "notifications": [ "Events", "CastleSiege" ] },
+        { "key": "server-status", "name": "server-status", "topic": "The status of the game servers.", "isReadOnly": true, "showsStatus": true }
+      ]
+    },
+    {
+      "key": "community",
+      "name": "Community",
+      "channels": [
+        { "key": "world-news", "name": "world-news", "topic": "Boss kills, rare drops and level milestones.", "isReadOnly": true, "notifications": [ "WorldNews" ] },
+        { "key": "world-chat", "name": "world-chat" },
+        { "key": "general", "name": "general" }
+      ]
+    },
+    {
+      "key": "staff",
+      "name": "Staff",
+      "visibleTo": [ "gm" ],
+      "channels": [
+        { "key": "staff-alerts", "name": "staff-alerts", "isReadOnly": true },
+        { "key": "gm-commands", "name": "gm-commands" }
+      ]
+    }
+  ]
+}
