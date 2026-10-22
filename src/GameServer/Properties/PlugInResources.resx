@@ -2681,6 +2681,12 @@
   <data name="ShowShopCurrenciesExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="CastleSiegeWeaponExplosionHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege weapon explosion handler</value>
+  </data>
+  <data name="CastleSiegeWeaponExplosionHandlerPlugIn_Description" xml:space="preserve">
+    <value>Accepts the weapon explosion request of the client. The impact damage of warfare machines is applied by the server when the projectile lands, so the request has no effect.</value>
+  </data>
   <data name="CastleSiegeStatusHandlerPlugIn_Name" xml:space="preserve">
     <value>Castle Siege status request handler</value>
   </data>

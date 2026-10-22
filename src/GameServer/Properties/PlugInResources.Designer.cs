@@ -1627,6 +1627,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accepts the weapon explosion request of the client. The impact damage of warfare machines is applied by the server when the projectile lands, so the request has no effect..
+        /// </summary>
+        public static string CastleSiegeWeaponExplosionHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeWeaponExplosionHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege weapon explosion handler.
+        /// </summary>
+        public static string CastleSiegeWeaponExplosionHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeWeaponExplosionHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for online state change packets..
         /// </summary>
         public static string ChangeOnlineStateHandlerPlugIn_Description {
