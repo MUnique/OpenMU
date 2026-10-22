@@ -109,8 +109,10 @@ public static class DiscordServiceCollectionExtensions
                     provider.GetRequiredService<DiscordChatCommands>(),
                     provider.GetRequiredService<DiscordGameMasterCommands>(),
                     provider.GetRequiredService<DiscordDirectMessages>(),
-                    provider.GetRequiredService<ILogger<DiscordBot>>(),
-                    settings.DisabledNotifications))
+                    provider.GetRequiredService<ILogger<DiscordBot>>())
+                {
+                    DisabledNotifications = settings.DisabledNotifications.ToArray(),
+                })
                 .AddHostedService(provider => provider.GetRequiredService<DiscordBot>())
                 .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordBot>());
         }

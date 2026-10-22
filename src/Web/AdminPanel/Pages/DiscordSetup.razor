@@ -1,4 +1,4 @@
-@page "/discord"
+﻿@page "/discord"
 @attribute [Authorize(Policy = AdminPolicies.Administrator)]
 
 @using MUnique.OpenMU.Discord
@@ -7,6 +7,7 @@
 @using MUnique.OpenMU.GameLogic.PlugIns.GameEvents
 @using Microsoft.AspNetCore.Components.Routing
 @using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
 
 <PageTitle>OpenMU: @Resources.Discord</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Discord"/>
@@ -248,7 +249,7 @@
             <p>@Resources.DiscordSetUpRoleHint</p>
         }
         <p>@Resources.DiscordCheckServerText</p>
-        <button type="button" class="btn btn-secondary mb-2" disabled="@(this._isCheckingServer || !this.IsBotConnected || this.HasUnsavedChanges)" @onclick="this.CheckServerAsync">
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(this.IsCheckingServer || !this.IsBotConnected || this.HasUnsavedChanges)" @onclick="this.CheckServerAsync">
             <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordCheckServer
         </button>
         @if (!this.HasUnsavedChanges && this._serverCheck is { } check)
@@ -294,7 +295,7 @@
         @if (this.UsesBot)
         {
             <div class="form-check mb-2">
-                <input id="discordShowWebhooks" type="checkbox" class="form-check-input" @bind="this._showWebhookEditor"/>
+                <input id="discordShowWebhooks" type="checkbox" class="form-check-input" checked="@this.ShowWebhookEditor" @onchange="e => this.SetWebhookEditorVisible(e.Value is true)"/>
                 <label for="discordShowWebhooks" class="form-check-label">@UiText("DiscordShowWebhookFallbacks")</label>
             </div>
         }
@@ -335,16 +336,16 @@
                             <div class="small text-warning">@UiText("DiscordStaffPrivacy")</div>
                         }
                         <div class="small">@this.RouteText(category)</div>
-                        @if (this._publisherSettings is not null && PublisherOptions(category).Any())
+                        @if (this._publisherSettings is not null && DiscordPublisherOptions.GetOptions(category).Any())
                         {
                             <details class="mt-1 small">
                                 <summary>@UiText("DiscordSourceEvents")</summary>
-                                @foreach (var option in PublisherOptions(category))
+                                @foreach (var option in DiscordPublisherOptions.GetOptions(category))
                                 {
                                     <div class="form-check">
                                         <input id="discordPublish-@option" type="checkbox" class="form-check-input" checked="@this.PublisherFlag(option)"
                                                @onchange="e => this.SetPublisherFlag(option, e.Value is true)"/>
-                                        <label class="form-check-label" for="discordPublish-@option">@PublisherLabel(option)</label>
+                                        <label class="form-check-label" for="discordPublish-@option">@DiscordPublisherOptions.GetLabel(option)</label>
                                     </div>
                                 }
                             </details>
@@ -419,7 +420,7 @@
         </table>
         </div>
         <p class="form-text">@Resources.DiscordTestHint @UiText("DiscordDeliveryOnly")</p>
-        @if (!this.HasUnsavedChanges && this._lastCheckedAt is { } checkedAt)
+        @if (!this.HasUnsavedChanges && this.LastCheckedAt is { } checkedAt)
         {
             <p class="form-text">@UiText("DiscordLastChecked", checkedAt.ToString("u"))</p>
         }
@@ -428,9 +429,9 @@
             <details class="mb-3">
                 <summary>@UiText("DiscordEventFilters")</summary>
                 <div class="row mt-2">
-                    <div class="col-md-4 mb-2"><label class="form-label" for="discordBosses">@PublisherLabel(nameof(GameEventPublisherConfiguration.BossMonsterNumbers))</label><input id="discordBosses" class="form-control" @bind="this._bossMonsterNumbersText"/></div>
-                    <div class="col-md-4 mb-2"><label class="form-label" for="discordLevels">@PublisherLabel(nameof(GameEventPublisherConfiguration.LevelMilestones))</label><input id="discordLevels" class="form-control" @bind="this._levelMilestonesText"/></div>
-                    <div class="col-md-4 mb-2"><label class="form-label" for="discordMasterLevels">@PublisherLabel(nameof(GameEventPublisherConfiguration.MasterLevelMilestones))</label><input id="discordMasterLevels" class="form-control" @bind="this._masterLevelMilestonesText"/></div>
+                    <div class="col-md-4 mb-2"><label class="form-label" for="discordBosses">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.BossMonsterNumbers))</label><input id="discordBosses" class="form-control" @bind="this._bossMonsterNumbersText"/></div>
+                    <div class="col-md-4 mb-2"><label class="form-label" for="discordLevels">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.LevelMilestones))</label><input id="discordLevels" class="form-control" @bind="this._levelMilestonesText"/></div>
+                    <div class="col-md-4 mb-2"><label class="form-label" for="discordMasterLevels">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.MasterLevelMilestones))</label><input id="discordMasterLevels" class="form-control" @bind="this._masterLevelMilestonesText"/></div>
                 </div>
                 <p class="form-text">@UiText("DiscordFilterHint")</p>
             </details>
@@ -466,7 +467,7 @@
         <div class="form-check mb-2">
             <input id="discordPublishChat" type="checkbox" class="form-check-input" checked="@this.PublisherFlag(nameof(GameEventPublisherConfiguration.PublishChatMessages))"
                    @onchange="e => this.SetPublisherFlag(nameof(GameEventPublisherConfiguration.PublishChatMessages), e.Value is true)"/>
-            <label for="discordPublishChat" class="form-check-label">@PublisherLabel(nameof(GameEventPublisherConfiguration.PublishChatMessages))</label>
+            <label for="discordPublishChat" class="form-check-label">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.PublishChatMessages))</label>
         </div>
         <p class="small">@UiText("DiscordChatSetup")</p>
         <p><code>/discord link</code> → <code>/link &lt;code&gt;</code> → <code>/guildchat create</code> / <code>/guildchat bind</code></p>
@@ -624,15 +625,15 @@
         <div class="alert alert-warning py-2 mb-2" role="alert">@Resources.DiscordUnsavedChanges</div>
     }
     <p class="small mb-2" role="status" aria-live="polite">@this._applyStatus</p>
-    @if (this._confirmDiscard)
+    @if (this.ConfirmDiscard)
     {
         <div class="alert alert-warning py-2" role="alertdialog" aria-label="@UiText("DiscordDiscardChanges")">
             <p>@UiText("DiscordConfirmDiscard")</p>
             <button class="btn btn-danger btn-sm" @onclick="this.LoadAsync">@UiText("DiscordDiscardChanges")</button>
-            <button class="btn btn-secondary btn-sm" @onclick="() => this._confirmDiscard = false">@UiText("DiscordKeepEditing")</button>
+            <button class="btn btn-secondary btn-sm" @onclick="() => this.ConfirmDiscard = false">@UiText("DiscordKeepEditing")</button>
         </div>
     }
-    <button type="button" class="btn btn-primary" disabled="@(this._isSaving || this._isSettingUp || this._isCheckingServer || this._runningTests.Count > 0 || !this.HasUnsavedChanges)" @onclick="this.SaveAsync">
+    <button type="button" class="btn btn-primary" disabled="@(this._isSaving || this._isSettingUp || this.IsCheckingServer || this._runningTests.Count > 0 || !this.HasUnsavedChanges)" @onclick="this.SaveAsync">
         <span class="oi oi-check" aria-hidden="true"></span> @(this._isSaving ? UiText("DiscordApplying") : UiText("DiscordSaveApply"))
     </button>
     <button type="button" class="btn btn-secondary" disabled="@this._isSaving" @onclick="this.RequestDiscardAsync">

@@ -1,4 +1,4 @@
-// <copyright file="DiscordDeliveryRoute.cs" company="MUnique">
+﻿// <copyright file="DiscordDeliveryRoute.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -25,7 +25,7 @@ public static class DiscordDeliveryRoute
             return (null, null);
         }
 
-        if (settings.UseBot is not false
+        if (settings.UseBot.GetValueOrDefault(true)
             && messenger is not IManageableServer { ServerState: not ServerState.Started }
             && messenger?.GetChannelId(category) is { } channelId)
         {

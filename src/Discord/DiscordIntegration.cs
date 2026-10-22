@@ -200,27 +200,7 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
             return new DiscordTestResult(DiscordTestOutcome.NoChannel);
         }
 
-        if (!Uri.TryCreate(url, UriKind.Absolute, out var webhookUrl))
-        {
-            return new DiscordTestResult(DiscordTestOutcome.WebhookInvalid);
-        }
-
-        try
-        {
-            this._httpClient ??= this.CreateHttpClient();
-            var statusCode = await DiscordWebhookSender.PostOnceAsync(webhookUrl, this._httpClient, [embed], cancellationToken).ConfigureAwait(false);
-            return statusCode switch
-            {
-                >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous => new DiscordTestResult(DiscordTestOutcome.SentByWebhook),
-                HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound => new DiscordTestResult(DiscordTestOutcome.WebhookInvalid),
-                _ => new DiscordTestResult(DiscordTestOutcome.Failed, $"{(int)statusCode} {statusCode}"),
-            };
-        }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        {
-            this._logger.LogWarning(ex, "The test message of the category {category} couldn't be posted by its webhook.", category);
-            return new DiscordTestResult(DiscordTestOutcome.Failed, ex.Message);
-        }
+        return await this.SendWebhookTestMessageAsync(category, url, embed, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -366,6 +346,35 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private async ValueTask<DiscordTestResult> SendWebhookTestMessageAsync(
+        DiscordChannelCategory category,
+        string url,
+        DiscordEmbed embed,
+        CancellationToken cancellationToken)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var webhookUrl))
+        {
+            return new DiscordTestResult(DiscordTestOutcome.WebhookInvalid);
+        }
+
+        try
+        {
+            this._httpClient ??= this.CreateHttpClient();
+            var statusCode = await DiscordWebhookSender.PostOnceAsync(webhookUrl, this._httpClient, [embed], cancellationToken).ConfigureAwait(false);
+            return statusCode switch
+            {
+                >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous => new DiscordTestResult(DiscordTestOutcome.SentByWebhook),
+                HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound => new DiscordTestResult(DiscordTestOutcome.WebhookInvalid),
+                _ => new DiscordTestResult(DiscordTestOutcome.Failed, $"{(int)statusCode} {statusCode}"),
+            };
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            this._logger.LogWarning(ex, "The test message of the category {category} couldn't be posted by its webhook.", category);
+            return new DiscordTestResult(DiscordTestOutcome.Failed, ex.Message);
+        }
     }
 
     /// <summary>

@@ -40,7 +40,6 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     internal const string SetupCommandName = "setup";
 
     private readonly DiscordBotSettings _settings;
-    private readonly IReadOnlyCollection<DiscordChannelCategory> _disabledNotifications;
     private readonly DiscordCommands _commands;
     private readonly DiscordAccountCommands _accountCommands;
     private readonly DiscordStatusFormatter _statusFormatter;
@@ -78,11 +77,9 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <param name="gameMasterCommands">The commands for game masters.</param>
     /// <param name="directMessages">The direct messages to linked users.</param>
     /// <param name="logger">The logger.</param>
-    /// <param name="disabledNotifications">The categories which must not be sent, including direct GM announcements.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, DiscordGameMasterCommands gameMasterCommands, DiscordDirectMessages directMessages, ILogger<DiscordBot> logger, IReadOnlyCollection<DiscordChannelCategory>? disabledNotifications = null)
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, DiscordGameMasterCommands gameMasterCommands, DiscordDirectMessages directMessages, ILogger<DiscordBot> logger)
     {
         this._settings = settings;
-        this._disabledNotifications = disabledNotifications ?? [];
         this._commands = commands;
         this._accountCommands = accountCommands;
         this._statusFormatter = statusFormatter;
@@ -99,6 +96,11 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
 
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <summary>
+    /// Gets the notification categories disabled for this bot instance.
+    /// </summary>
+    public IReadOnlyCollection<DiscordChannelCategory> DisabledNotifications { get; init; } = [];
 
     /// <inheritdoc />
     public int Id => 0;
@@ -203,7 +205,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <remarks>
     /// The channels of the layout are known after the bot connected to Discord.
     /// </remarks>
-    public ulong? GetChannelId(DiscordChannelCategory category) => this._disabledNotifications.Contains(category) ? null : this._routing.GetChannelId(category);
+    public ulong? GetChannelId(DiscordChannelCategory category) => this.DisabledNotifications.Contains(category) ? null : this._routing.GetChannelId(category);
 
     /// <inheritdoc />
     public async Task SendAsync(ulong channelId, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)

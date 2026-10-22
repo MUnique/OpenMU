@@ -207,17 +207,21 @@ public class DiscordConfigurationService
                 }
 
                 this.CopyManagedValues(child, source[name] as JsonObject ?? new JsonObject(), key);
+                continue;
             }
-            else if (this.IsDefinedElsewhere(key))
+
+            if (!this.IsDefinedElsewhere(key))
             {
-                if (source[name] is { } value)
-                {
-                    target[name] = value.DeepClone();
-                }
-                else
-                {
-                    target.Remove(name);
-                }
+                continue;
+            }
+
+            if (source[name] is { } value)
+            {
+                target[name] = value.DeepClone();
+            }
+            else
+            {
+                target.Remove(name);
             }
         }
     }
