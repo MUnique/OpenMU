@@ -115,6 +115,7 @@ public class LoggingConfigurationPageTests
         cut.WaitForState(() => cut.FindAll("button.nav-link").Count == 2);
 
         cut.FindAll("button.nav-link")[1].Click();
+        cut.WaitForElement("textarea");
         cut.Find("textarea").Change("{ \"MinimumLevel\": ");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 

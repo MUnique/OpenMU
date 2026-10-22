@@ -279,6 +279,7 @@ public class DiscordSetupPageTests
     {
         var cut = this.RenderLoaded();
         cut.Find("#discordLanguage").Change("de");
+        cut.WaitForState(() => cut.Markup.Contains("Discard changes"));
         cut.FindAll("button").Single(button => button.TextContent.Contains("Discard changes")).Click();
         Assert.That(cut.FindAll("[role=alertdialog]"), Has.Count.EqualTo(1));
         cut.FindAll("button").Single(button => button.TextContent.Contains("Keep editing")).Click();
