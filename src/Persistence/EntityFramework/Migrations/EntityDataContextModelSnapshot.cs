@@ -145,6 +145,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<DateTime?>("LinkedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Notifications")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Provider")
                         .IsRequired()
                         .HasColumnType("text");

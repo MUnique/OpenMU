@@ -59,6 +59,7 @@ with `-adminpanel:disabled`.
 | [Map editor](map-editor.md) | Edit monster spawn areas, gates and the [terrain](map-editor.md#terrain-editor) graphically |
 | [Live map](live-map.md) | Watch what happens on a map in real time |
 | [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana with logs, metrics and traces |
+| [Discord](../server-features/discord.md#setting-up) | Set up the Discord bot and notifications, step by step |
 | [Users](users.md) | The users which may log into the admin panel |
 | [API keys](authentication.md#api-keys-for-external-applications) | The keys with which external applications use the public API |
 

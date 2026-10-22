@@ -28,4 +28,9 @@ public enum DiscordChannelCategory
     /// Notices of game masters.
     /// </summary>
     Notices,
+
+    /// <summary>
+    /// Alerts for the staff, e.g. the commands which game masters used in Discord.
+    /// </summary>
+    StaffAlerts,
 }

@@ -56,6 +56,12 @@ public class AccountExternalLink
     public DateTime? LinkedAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the types of notifications which the user receives in the external service.
+    /// They are opt-in, so there are none by default.
+    /// </summary>
+    public AccountNotificationTypes Notifications { get; set; }
+
+    /// <summary>
     /// Gets or sets the hash of the pending one-time code; <c>null</c>, if there is none.
     /// </summary>
     public string? CodeHash { get; set; }

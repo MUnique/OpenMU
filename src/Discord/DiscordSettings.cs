@@ -32,6 +32,11 @@ public class DiscordSettings
     public string Language { get; set; } = "en";
 
     /// <summary>
+    /// Gets or sets the notification categories which are explicitly disabled, regardless of their destination.
+    /// </summary>
+    public List<DiscordChannelCategory> DisabledNotifications { get; set; } = new();
+
+    /// <summary>
     /// Gets or sets the identifiers of the game servers which announce events like mini games and invasions.
     /// When several game servers run the same events, this avoids duplicate announcements.
     /// If it's empty, all game servers announce them.
@@ -50,9 +55,15 @@ public class DiscordSettings
     public DiscordBotSettings Bot { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets whether the bot is used. False selects webhook-only operation even when a token is configured.
+    /// Null preserves the behavior of existing installations, where a token enables the bot.
+    /// </summary>
+    public bool? UseBot { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether game events are posted, through webhooks or the bot.
     /// </summary>
-    public bool IsNotificationEnabled => this.Bot.IsEnabled || this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url));
+    public bool IsNotificationEnabled => (this.UseBot is not false && this.Bot.IsEnabled) || this.Webhooks.Values.Any(url => !string.IsNullOrWhiteSpace(url));
 
     /// <summary>
     /// Gets the culture of the <see cref="Language"/>; or the invariant culture, if the language is unknown.

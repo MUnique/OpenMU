@@ -48,10 +48,13 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     private readonly DiscordServerProvisioner _provisioner;
     private readonly DiscordChatBridge _chatBridge;
     private readonly DiscordChatCommands _chatCommands;
+    private readonly DiscordGameMasterCommands _gameMasterCommands;
+    private readonly DiscordDirectMessages _directMessages;
     private readonly ILogger<DiscordBot> _logger;
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
 
     private DiscordSocketClient? _client;
+    private DiscordBackgroundQueue? _backgroundQueue;
     private TaskCompletionSource _ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private CancellationTokenSource? _statusLoopCancellation;
     private DiscordChannelRouting _routing;
@@ -71,8 +74,10 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <param name="provisioner">The provisioner, which sets up the Discord server.</param>
     /// <param name="chatBridge">The chat bridge between the game and Discord.</param>
     /// <param name="chatCommands">The commands of the chat bridge.</param>
+    /// <param name="gameMasterCommands">The commands for game masters.</param>
+    /// <param name="directMessages">The direct messages to linked users.</param>
     /// <param name="logger">The logger.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, ILogger<DiscordBot> logger)
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, DiscordGameMasterCommands gameMasterCommands, DiscordDirectMessages directMessages, ILogger<DiscordBot> logger)
     {
         this._settings = settings;
         this._commands = commands;
@@ -83,12 +88,19 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         this._provisioner = provisioner;
         this._chatBridge = chatBridge;
         this._chatCommands = chatCommands;
+        this._gameMasterCommands = gameMasterCommands;
+        this._directMessages = directMessages;
         this._logger = logger;
         this._routing = DiscordChannelRouting.Create(settings, layout, new Dictionary<string, ulong>());
     }
 
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <summary>
+    /// Gets the notification categories disabled for this bot instance.
+    /// </summary>
+    public IReadOnlyCollection<DiscordChannelCategory> DisabledNotifications { get; init; } = [];
 
     /// <inheritdoc />
     public int Id => 0;
@@ -136,12 +148,14 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             this.ServerState = ServerState.Starting;
+            this.Problem = DiscordBotProblem.None;
             if (this._settings.StatusChannelId is { } statusChannelId && this._settings.Channels.ContainsValue(statusChannelId))
             {
                 this._logger.LogWarning("The status channel {channelId} is also configured for game events. Use a channel in which only the status is shown, otherwise the status message is posted again when the events push it out of the channel.", statusChannelId);
             }
 
             this._ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            this._backgroundQueue = new DiscordBackgroundQueue(this._logger);
             var client = new DiscordSocketClient(new DiscordSocketConfig { GatewayIntents = this.GetGatewayIntents() });
             client.Log += this.OnLogAsync;
             client.Ready += () => this.OnReadyAsync(client);
@@ -155,6 +169,9 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         catch (Exception ex)
         {
             this._logger.LogError(ex, "The Discord bot couldn't be started. Is the token valid?");
+            this.Problem = ex is ArgumentException || GetStoppingProblem(ex) == DiscordBotProblem.TokenRejected
+                ? DiscordBotProblem.TokenRejected
+                : DiscordBotProblem.StartFailed;
             await this.StopClientAsync().ConfigureAwait(false);
         }
         finally
@@ -188,7 +205,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <remarks>
     /// The channels of the layout are known after the bot connected to Discord.
     /// </remarks>
-    public ulong? GetChannelId(DiscordChannelCategory category) => this._routing.GetChannelId(category);
+    public ulong? GetChannelId(DiscordChannelCategory category) => this.DisabledNotifications.Contains(category) ? null : this._routing.GetChannelId(category);
 
     /// <inheritdoc />
     public async Task SendAsync(ulong channelId, IReadOnlyList<DiscordEmbed> embeds, CancellationToken cancellationToken)
@@ -206,6 +223,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     /// <remarks>
     /// Chat messages are mirrored to the bound channels.
+    /// Linked users get direct messages, if they turned them on, and the next castle siege becomes a scheduled event.
     /// When an account is unlinked in the game, the role of linked players is removed from its Discord user.
     /// </remarks>
     public async ValueTask OnGameEventAsync(GameEvent gameEvent)
@@ -213,6 +231,14 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         if (gameEvent is ChatMessageEvent chatMessage)
         {
             await this.OnChatMessageAsync(chatMessage).ConfigureAwait(false);
+        }
+        else if (gameEvent is AccountLoginBlockedEvent or LetterReceivedEvent or PlayerEnteredGameEvent)
+        {
+            this.SendDirectMessages(gameEvent);
+        }
+        else if (gameEvent is CastleSiegeStateChangedEvent castleSiegeStateChanged)
+        {
+            this.UpdateCastleSiegeEvent(castleSiegeStateChanged);
         }
         else if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
             && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
@@ -251,6 +277,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
 
     private async ValueTask StopClientAsync()
     {
+        if (this._backgroundQueue is { } backgroundQueue)
+        {
+            this._backgroundQueue = null;
+            await backgroundQueue.DisposeAsync().ConfigureAwait(false);
+        }
+
         if (this._statusLoopCancellation is { } cancellation)
         {
             await cancellation.CancelAsync().ConfigureAwait(false);
@@ -315,7 +347,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             return (ApplicationCommandProperties)builder.Build();
-        }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).ToArray();
+        }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).Concat(this.CreateExtraCommands()).ToArray();
 
         // Guild-owned chat channels need /link, /guildchat and /say outside the routing guild, too.
         await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
@@ -357,6 +389,18 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         if (IsChatCommand(command.Data.Name))
         {
             await this.ExecuteChatCommandAsync(command).ConfigureAwait(false);
+            return;
+        }
+
+        if (DiscordGameMasterCommands.IsGameMasterCommand(command.Data.Name))
+        {
+            await this.ExecuteGameMasterCommandAsync(command).ConfigureAwait(false);
+            return;
+        }
+
+        if (command.Data.Name == NotifyCommandName)
+        {
+            await this.ExecuteNotifyCommandAsync(command).ConfigureAwait(false);
             return;
         }
 
@@ -456,12 +500,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             }
 
             this._logger.LogInformation("The Discord server {guild} ({guildId}) is set up by {user}.", guild.Name, guild.Id, command.User.Username);
-            var result = await this._provisioner.ProvisionAsync(new SocketGuildServer(guild), this._layout).ConfigureAwait(false);
-            if (this.GetRoutingGuild(client)?.Id == guild.Id)
-            {
-                // The cache of the client might not know the created channels yet.
-                this._routing = DiscordChannelRouting.Create(this._settings, this._layout, result.ChannelIds);
-            }
+            var result = await this.ProvisionAsync(client, guild).ConfigureAwait(false);
 
             await command.FollowupAsync(embed: ToDiscordEmbed(this._commands.CreateSetupReport(result)), ephemeral: true, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
         }
@@ -610,10 +649,14 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         };
         this._logger.Log(level, message.Exception, "{source}: {message}", message.Source, message.Message);
 
-        // With an invalid token, the library would try to connect again and again.
-        if (message.Exception is global::Discord.Net.HttpException { HttpCode: System.Net.HttpStatusCode.Unauthorized })
+        // With an invalid token or a disallowed intent, the library would try to connect again and again.
+        if (GetStoppingProblem(message.Exception) is var problem and not DiscordBotProblem.None)
         {
-            this._logger.LogError("Discord rejected the token of the bot, so the bot is stopped. Please check the configured token.");
+            this._logger.LogError(
+                problem == DiscordBotProblem.TokenRejected
+                    ? "Discord rejected the token of the bot, so the bot is stopped. Please check the configured token."
+                    : "Discord doesn't allow the privileged Message Content intent for the bot, so the bot is stopped. Enable it in the Discord developer portal, or turn off reading the messages of the chat bridge.");
+            this.Problem = problem;
             _ = Task.Run(async () => await this.ShutdownAsync().ConfigureAwait(false));
         }
 
