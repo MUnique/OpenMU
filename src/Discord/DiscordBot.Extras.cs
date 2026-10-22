@@ -126,7 +126,10 @@ public sealed partial class DiscordBot
                         && await client.Rest.GetUserAsync(userId, options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false) is { } user)
                     {
                         var channel = await user.CreateDMChannelAsync(new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
-                        await channel.SendMessageAsync(embed: ToDiscordEmbed(embed), allowedMentions: AllowedMentions.None, options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
+                        await channel.SendMessageAsync(
+                            embed: ToDiscordEmbed(embed),
+                            allowedMentions: AllowedMentions.None,
+                            options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
                     }
                 }
             }
