@@ -246,4 +246,6 @@ the parts are separated by two underscores.
   start, notifications for the channels of the layout are posted through the
   webhook of their category, if there is one.
 
-Private staff channels are skipped if their required roles or permissions cannot be set. Fix the reported permissions and run setup again. Public channels with staff channel names are not used automatically for notifications.
+Private staff channels are skipped if their required roles or permissions cannot
+be set. Fix the reported permissions and run setup again. Public channels with
+staff channel names are not used automatically for notifications.
