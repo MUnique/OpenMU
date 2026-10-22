@@ -360,8 +360,16 @@ the parts are separated by two underscores.
   start, notifications for the channels of the layout are posted through the
   webhook of their category, if there is one.
 
-Private staff channels are skipped if their required roles or permissions cannot be set. Fix the reported permissions and run setup again. Public channels with staff channel names are not used automatically for notifications.
+Private staff channels are skipped if their required roles or permissions cannot
+be set. Fix the reported permissions and run setup again. Public channels with
+staff channel names are not used automatically for notifications.
 
-Commands are registered globally so guild-owned Discord servers can use `/link`, `/guildchat` and `/say`. The main configured Discord server also gets guild-scoped registration for immediate availability. Binding and unbinding as a guild master require that the selected character still belongs to the linked account.
+Commands are registered globally so guild-owned Discord servers can use `/link`,
+`/guildchat` and `/say`. The main configured Discord server also gets
+guild-scoped registration for immediate availability. Binding and unbinding as a
+guild master require that the selected character still belongs to the linked
+account.
 
-Direct messages and scheduled-event updates use a bounded queue. Stopping or reconfiguring the bot cancels pending work, including notifications waiting for a gateway connection.
+Direct messages and scheduled-event updates use a bounded queue. Stopping or
+reconfiguring the bot cancels pending work, including notifications waiting for
+a gateway connection.
