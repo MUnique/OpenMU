@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Discord.Provisioning;
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
