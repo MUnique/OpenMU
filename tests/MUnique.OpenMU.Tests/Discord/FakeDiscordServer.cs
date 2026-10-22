@@ -88,7 +88,8 @@ internal sealed class FakeDiscordServer : IDiscordServer
     public IReadOnlyCollection<DiscordChannelInfo> GetChannels() => this.Channels
         .Select(channel => channel with
         {
-            IsPrivate = this.Overwrites.GetValueOrDefault(channel.Id)?.Any(overwrite => overwrite.TargetId == this.EveryoneRoleId && overwrite.Deny.HasFlag(DiscordChannelAccess.View)) is true,
+            IsPrivate = this.Overwrites.TryGetValue(channel.Id, out var overwrites)
+                && overwrites.Any(overwrite => overwrite.TargetId == this.EveryoneRoleId && overwrite.Deny.HasFlag(DiscordChannelAccess.View)),
         })
         .ToList();
 
