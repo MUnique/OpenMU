@@ -812,4 +812,10 @@
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
     <value>Erfordert Charakterlevel 50 für Transformationsring-Level 3 bis 5 und ergänzt den 20%igen Lebensbonus des Todeskuh-Rings.</value>
   </data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve">
+    <value>Eis-Chance des Kristallschwerts hinzufügen</value>
+  </data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
+    <value>Fügt die Eis-Chance des Kristallschwerts hinzu, durch die ein Angriff stattdessen zu einer Eis-Fähigkeit wird.</value>
+  </data>
 </root>

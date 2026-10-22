@@ -320,6 +320,11 @@ internal class Weapons : InitializerBase
 
         item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
 
+        if (group == (int)ItemGroups.Scepters && number == 5)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.CrystalSwordIceChance, 1.0f / 20, AggregateType.AddRaw));
+        }
+
         if (group < (int)ItemGroups.Spears && width == 1)
         {
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.DoubleWieldWeaponCount, 1, AggregateType.AddRaw));

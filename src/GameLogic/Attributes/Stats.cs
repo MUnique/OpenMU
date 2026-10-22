@@ -510,6 +510,12 @@ public class Stats
     public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", string.Empty);
 
     /// <summary>
+    /// Gets the crystal sword ice chance.
+    /// </summary>
+    /// <remarks>On every attack, the ice skill may replace that hit by this chance.</remarks>
+    public static AttributeDefinition CrystalSwordIceChance { get; } = new(new Guid("A1B2C3D4-E5F6-47A8-B9C0-D1E2F3A4B5C6"), "Crystal Sword Ice Chance", string.Empty);
+
+    /// <summary>
     /// Gets the is a bow equipped.
     /// </summary>
     public static AttributeDefinition IsBowEquipped { get; } = new(new Guid("8B1135B7-C323-4822-9B98-1A56C802BB6A"), "Is Bow Equipped", string.Empty);

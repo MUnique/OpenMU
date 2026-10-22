@@ -533,6 +533,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddCrestOfMonarchDropGroupUpdateSeason6_Description text.</summary>
         public static string AddCrestOfMonarchDropGroupUpdateSeason6_Description => ResourceManager.GetString("AddCrestOfMonarchDropGroupUpdateSeason6_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddCrystalSwordIceChanceUpdatePlugIn_Name text.</summary>
+        public static string AddCrystalSwordIceChanceUpdatePlugIn_Name => ResourceManager.GetString("AddCrystalSwordIceChanceUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCrystalSwordIceChanceUpdatePlugIn_Description text.</summary>
+        public static string AddCrystalSwordIceChanceUpdatePlugIn_Description => ResourceManager.GetString("AddCrystalSwordIceChanceUpdatePlugIn_Description", resourceCulture)!;
+        
         /// <summary>Gets the localized FixSummonerCurseSkillsPlugIn_Name text.</summary>
         public static string FixSummonerCurseSkillsPlugIn_Name => ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Name", resourceCulture)!;
 

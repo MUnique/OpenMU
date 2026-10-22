@@ -58,7 +58,7 @@ public class AreaSkillAttackAction
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
-            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, rotation).ConfigureAwait(false);
         }
 
         await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
@@ -347,7 +347,7 @@ public class AreaSkillAttackAction
         }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
-        await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
+        var success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
 
         for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
         {
@@ -364,6 +364,17 @@ public class AreaSkillAttackAction
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } baseSkillStrategy)
         {
             await baseSkillStrategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter, hitInfo).ConfigureAwait(false);
+        }
+
+        if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+        {
+            // The hit generated a different skill (e.g. ice) than the one originally casted.
+            // A short delay ensures its animation is shown.
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+                await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
+            });
         }
     }
 }
