@@ -174,9 +174,12 @@ public sealed class CastleSiegeNpcController
     /// </summary>
     /// <param name="runtime">The structure runtime.</param>
     /// <returns>A task that represents the asynchronous respawn operation.</returns>
-    public ValueTask RespawnAsync(CastleSiegeNpcRuntime runtime)
+    public async ValueTask RespawnAsync(CastleSiegeNpcRuntime runtime)
     {
-        return this.EnsureSpawnedAsync(runtime);
+        await this.EnsureSpawnedAsync(runtime).ConfigureAwait(false);
+
+        // A re-purchased gate is a new object, so its lever has to point to it again.
+        this.AssociateLevers();
     }
 
     /// <summary>
@@ -342,6 +345,31 @@ public sealed class CastleSiegeNpcController
         }
     }
 
+    /// <summary>
+    /// Gets the configured defense structures of one type, in management-index order.
+    /// </summary>
+    /// <param name="monsterNumber">The gate or Guardian Statue monster number.</param>
+    /// <returns>The matching defense-structure runtimes.</returns>
+    /// <remarks>
+    /// Unlike <see cref="GetDefenseStructureSnapshotAsync"/>, this only takes the <see cref="_runtimeLock"/>
+    /// monitor (via <see cref="GetRuntimeSnapshot"/>) and not <see cref="CastleSiegeContext.ExecutionLock"/>,
+    /// so it is safe to call while the caller already holds that lock.
+    /// </remarks>
+    internal List<CastleSiegeNpcRuntime> GetDefenseStructures(short monsterNumber)
+    {
+        if (monsterNumber != CastleSiegeGate.MonsterNumber
+            && monsterNumber != CastleSiegeStatue.MonsterNumber)
+        {
+            return [];
+        }
+
+        return this.GetRuntimeSnapshot()
+            .Where(runtime => runtime.Definition.IsPersistedToDatabase
+                              && runtime.Definition.MonsterDefinition?.Number == monsterNumber)
+            .OrderBy(runtime => runtime.Definition.InstanceId)
+            .ToList();
+    }
+
     private static bool IsMachine(CastleSiegeNpcDefinition definition)
     {
         var monsterNumber = definition.MonsterDefinition?.Number;
@@ -381,21 +409,6 @@ public sealed class CastleSiegeNpcController
 
         runtime.SpawnedInstance = null;
         runtime.IsAlive = runtime.PersistedState is { CurrentHp: > 0 };
-    }
-
-    private List<CastleSiegeNpcRuntime> GetDefenseStructures(short monsterNumber)
-    {
-        if (monsterNumber != CastleSiegeGate.MonsterNumber
-            && monsterNumber != CastleSiegeStatue.MonsterNumber)
-        {
-            return [];
-        }
-
-        return this.GetRuntimeSnapshot()
-            .Where(runtime => runtime.Definition.IsPersistedToDatabase
-                              && runtime.Definition.MonsterDefinition?.Number == monsterNumber)
-            .OrderBy(runtime => runtime.Definition.InstanceId)
-            .ToList();
     }
 
     private CastleSiegeNpcInfo CreateInfo(CastleSiegeNpcRuntime runtime)

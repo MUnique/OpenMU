@@ -446,4 +446,15 @@
       <DependentUpon>WarpNames.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\CashShopPackageNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CashShopPackageNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\CashShopPackageNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CashShopPackageNames.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

@@ -64,6 +64,18 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<AccountStatistics> GetAccountStatisticsAsync(DateTime registeredSince, CancellationToken cancellationToken = default)
+    {
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        var accounts = allAccounts.Where(a => !a.IsTemplate && !a.IsBot).ToList();
+        return new AccountStatistics(
+            accounts.Count,
+            accounts.Count(a => a.RegistrationDate >= registeredSince),
+            accounts.Count(a => a.State is MUnique.OpenMU.DataModel.Entities.AccountState.Banned or MUnique.OpenMU.DataModel.Entities.AccountState.TemporarilyBanned),
+            accounts.Sum(a => a.Characters.Count));
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default)
     {
         var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);

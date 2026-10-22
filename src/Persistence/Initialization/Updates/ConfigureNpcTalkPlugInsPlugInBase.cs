@@ -63,7 +63,7 @@ public abstract class ConfigureNpcTalkPlugInsPlugInBase : UpdatePlugInBase
     /// <summary>
     /// A reference handler which serializes objects of the configuration by their id.
     /// </summary>
-    private sealed class IdReferenceHandler : ReferenceHandler
+    internal sealed class IdReferenceHandler : ReferenceHandler
     {
         /// <inheritdoc />
         public override ReferenceResolver CreateResolver() => new IdReferenceResolver();

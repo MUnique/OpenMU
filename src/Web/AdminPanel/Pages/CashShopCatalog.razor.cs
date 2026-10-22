@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Globalization;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
@@ -63,7 +64,8 @@ public partial class CashShopCatalog : ComponentBase, IAsyncDisposable
     private IQueryable<CashShopPackage>? FilteredPackages => this._configuration?.Packages
         .Where(p => !this._onlyForSale || p.IsForSale)
         .Where(p => string.IsNullOrWhiteSpace(this._searchText)
-                    || p.Name.Contains(this._searchText, StringComparison.OrdinalIgnoreCase)
+                    || GetPackageName(p).Contains(this._searchText, StringComparison.OrdinalIgnoreCase)
+                    || p.Name.ValueInNeutralLanguage.Contains(this._searchText, StringComparison.OrdinalIgnoreCase)
                     || p.PackageSequence.ToString() == this._searchText.Trim())
         .OrderBy(p => p.PackageSequence)
         .AsQueryable();
@@ -100,9 +102,11 @@ public partial class CashShopCatalog : ComponentBase, IAsyncDisposable
         await base.OnParametersSetAsync().ConfigureAwait(true);
     }
 
+    private static string GetPackageName(CashShopPackage package) => package.Name.GetTranslation(CultureInfo.CurrentUICulture) ?? string.Empty;
+
     private static string GetItemCaption(ItemDefinition? item)
     {
-        return item is null ? string.Empty : $"{(string)item.Name} ({item.Group}, {item.Number})";
+        return item is null ? string.Empty : $"{item.Name} ({item.Group}, {item.Number})";
     }
 
     private static string GetFlagText(bool value) => value ? "✓" : NoValue;

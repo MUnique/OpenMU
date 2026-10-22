@@ -20,6 +20,7 @@ public static class ConfigurationNameSources
     /// </summary>
     public static void Register()
     {
+        RegisterIfNeeded(nameof(CashShopPackageNames), CashShopPackageNames.ResourceManager);
         RegisterIfNeeded(nameof(CharacterClassNames), CharacterClassNames.ResourceManager);
         RegisterIfNeeded(nameof(MapNames), MapNames.ResourceManager);
         RegisterIfNeeded(nameof(MerchantNames), MerchantNames.ResourceManager);

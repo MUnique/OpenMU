@@ -38,7 +38,7 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
     public short MapNumber => this._map.Definition.Number;
 
     /// <inheritdoc/>
-    public string MapName => this._map.Definition.Name;
+    public string MapName => this._map.Definition.Name.ToString() ?? string.Empty;
 
     /// <inheritdoc/>
     public byte[]? TerrainData => this._map.Definition.TerrainData;

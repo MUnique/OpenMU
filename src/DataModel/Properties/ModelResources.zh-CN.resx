@@ -6226,4 +6226,22 @@
   <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
     <value>此要求开始生效的物品等级。留空表示始终生效。</value>
   </data>
+  <data name="Account_WCoinC_Caption" xml:space="preserve">
+    <value>WCoin (C)</value>
+  </data>
+  <data name="Account_WCoinC_Description" xml:space="preserve">
+    <value>商城中可用的 WCoin (C) 余额。</value>
+  </data>
+  <data name="Account_WCoinP_Caption" xml:space="preserve">
+    <value>WCoin (P)</value>
+  </data>
+  <data name="Account_WCoinP_Description" xml:space="preserve">
+    <value>商城中可用的 WCoin (P) 余额。</value>
+  </data>
+  <data name="Account_GoblinPoints_Caption" xml:space="preserve">
+    <value>哥布林积分</value>
+  </data>
+  <data name="Account_GoblinPoints_Description" xml:space="preserve">
+    <value>商城中可用的哥布林积分（Goblin Points）余额。</value>
+  </data>
 </root>

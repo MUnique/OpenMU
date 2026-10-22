@@ -45,7 +45,7 @@ public abstract class FixWingsDmgRatesUpdatePlugInBase : UpdatePlugInBase
 
         foreach (var tableName in wingDmgTableNames)
         {
-            var bonusEntries = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(ilbt => ilbt.Name == tableName)?.BonusPerLevel;
+            var bonusEntries = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(ilbt => ilbt.Name.ValueInNeutralLanguage == tableName)?.BonusPerLevel;
 
             if (bonusEntries is not null)
             {

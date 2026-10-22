@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable 219, 612, 618
@@ -80,9 +82,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             var name = runtimeEntityType.AddProperty(
                 "Name",
-                typeof(string),
+                typeof(MUnique.OpenMU.Interfaces.LocalizedString),
                 propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CashShopPackage).GetProperty("Name", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CashShopPackage).GetField("<Name>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            name.SetValueConverter(new ValueConverter<MUnique.OpenMU.Interfaces.LocalizedString, string>(
+                string (LocalizedString value) => value.Value ?? string.Empty,
+                LocalizedString (string value) => new LocalizedString(value)));
+            name.SetSentinelFromProviderValue("");
             name.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var packageSequence = runtimeEntityType.AddProperty(

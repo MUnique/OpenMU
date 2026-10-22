@@ -53,6 +53,7 @@ public static class Exports
             yield return $"{prefix}/css/common.css";
             yield return $"{prefix}/css/log.css";
             yield return $"{prefix}/css/map-editor.css";
+            yield return $"{prefix}/css/terrain-editor.css";
         }
     }
 

@@ -182,6 +182,23 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<AccountStatistics> GetAccountStatisticsAsync(DateTime registeredSince, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var accounts = this.Context.Set<Account>().AsNoTracking().Where(a => !a.IsTemplate && !a.IsBot);
+            var accountCount = await accounts.CountAsync(cancellationToken).ConfigureAwait(false);
+            var newAccountCount = await accounts.CountAsync(a => a.RegistrationDate >= registeredSince, cancellationToken).ConfigureAwait(false);
+            var bannedAccountCount = await accounts
+                .CountAsync(a => a.State == DataModel.Entities.AccountState.Banned || a.State == DataModel.Entities.AccountState.TemporarilyBanned, cancellationToken)
+                .ConfigureAwait(false);
+            var characterCount = await accounts.SelectMany(a => a.RawCharacters).CountAsync(cancellationToken).ConfigureAwait(false);
+            return new AccountStatistics(accountCount, newAccountCount, bannedAccountCount, characterCount);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);

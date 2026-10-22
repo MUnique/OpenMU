@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
-using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
-using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
 /// Tests that the versioned Kanturu update brings an existing season 6 database
@@ -33,7 +31,7 @@ internal class KanturuDataUpdateTest
     [Test]
     public async Task UpdateEnsuresKanturuDataOnExistingDatabaseAsync()
     {
-        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        var (context, gameConfiguration) = await TestGameConfiguration.CreateSeason6Async().ConfigureAwait(false);
         using var _ = context;
 
         var update = new AddKanturuDataUpdatePlugIn();
@@ -56,16 +54,5 @@ internal class KanturuDataUpdateTest
             .First(m => m.Number == KanturuEventMapNumber)
             .MonsterSpawns
             .Count(s => s.SpawnTrigger == SpawnTrigger.OnceAtWaveStart);
-    }
-
-    private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()
-    {
-        var contextProvider = new InMemoryPersistenceContextProvider();
-        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
-        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
-
-        var context = contextProvider.CreateNewContext();
-        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
-        return (context, gameConfiguration);
     }
 }
