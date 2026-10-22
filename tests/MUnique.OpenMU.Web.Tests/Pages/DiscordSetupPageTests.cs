@@ -188,6 +188,7 @@ public class DiscordSetupPageTests
         var cut = this.RenderLoaded();
 
         cut.Find("#discordMode").Change("bot");
+        cut.WaitForState(() => cut.FindAll("details").Any(d => d.TextContent.Contains(Resources.DiscordLayoutPreview)));
         var preview = cut.FindAll("details").First(d => d.TextContent.Contains(Resources.DiscordLayoutPreview)).TextContent;
         Assert.That(preview, Does.Contain(string.Format(Resources.DiscordLayoutRoles, "GM, Linked Player")));
         Assert.That(preview, Does.Contain("#events"));
@@ -204,6 +205,7 @@ public class DiscordSetupPageTests
         var cut = this.RenderLoaded();
 
         cut.Find("#discordMode").Change("bot");
+        cut.WaitForElement("#discordServerId");
         cut.Find("#discordServerId").Change("my server");
         cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
 
