@@ -27,6 +27,9 @@ services.AddPeristenceProvider(true)
     .AddManageableServerRegistry()
     .AddTransient<IDictionary<int, IGameServer>>(s => s.GetRequiredService<IServerProvider>().Servers.OfType<IGameServer>().ToDictionary(server => server.Id))
     .AddSingleton<ILoginServer, LoginServer>()
+
+    // E.g. to notify the Discord bot when an administrator removes the link of an account.
+    .AddSingleton<IEventPublisher, EventPublisher>()
     .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
     .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>()
     .AddSingleton<IBackupService, BackupService>()

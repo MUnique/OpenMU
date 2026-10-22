@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("b9d48a9a-c807-40a2-9b41-a5bfa0fe2167"), entityTypeCount: 122)
+            : base(skipDetectChanges: false, modelId: new Guid("e2795425-f3fb-4ca3-af47-e5d48685e5dc"), entityTypeCount: 123)
         {
         }
 
@@ -74,6 +74,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var gensAbuse = GensAbuseEntityType.Create(this);
             var gensMember = GensMemberEntityType.Create(this);
             var guild = GuildEntityType.Create(this);
+            var guildChatBinding = GuildChatBindingEntityType.Create(this);
             var guildMember = GuildMemberEntityType.Create(this);
             var increasableItemOption = IncreasableItemOptionEntityType.Create(this);
             var item = ItemEntityType.Create(this);
@@ -245,6 +246,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensMemberEntityType.CreateForeignKey1(gensMember, character);
             GuildEntityType.CreateForeignKey1(guild, guild);
             GuildEntityType.CreateForeignKey2(guild, guild);
+            GuildChatBindingEntityType.CreateForeignKey1(guildChatBinding, guild);
             GuildMemberEntityType.CreateForeignKey1(guildMember, guild);
             GuildMemberEntityType.CreateForeignKey2(guildMember, character);
             IncreasableItemOptionEntityType.CreateForeignKey1(increasableItemOption, itemOptionDefinition);
@@ -438,6 +440,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensAbuseEntityType.CreateAnnotations(gensAbuse);
             GensMemberEntityType.CreateAnnotations(gensMember);
             GuildEntityType.CreateAnnotations(guild);
+            GuildChatBindingEntityType.CreateAnnotations(guildChatBinding);
             GuildMemberEntityType.CreateAnnotations(guildMember);
             IncreasableItemOptionEntityType.CreateAnnotations(increasableItemOption);
             ItemEntityType.CreateAnnotations(item);

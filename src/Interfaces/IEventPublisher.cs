@@ -44,6 +44,13 @@ public interface IEventPublisher
     ValueTask AllianceMessageAsync(uint guildId, string sender, string message);
 
     /// <summary>
+    /// Notifies the game servers that a message was sent to the world chat, which all players of all game servers can read.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="message">The message.</param>
+    ValueTask WorldChatMessageAsync(string sender, string message);
+
+    /// <summary>
     /// Notifies that a client tried to log into an already logged-in account.
     /// The connected player can be notified about that.
     /// </summary>

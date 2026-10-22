@@ -29,4 +29,5 @@ using System.Text.Json.Serialization;
 [JsonDerivedType(typeof(BossKilledEvent), nameof(BossKilledEvent))]
 [JsonDerivedType(typeof(CharacterLevelMilestoneEvent), nameof(CharacterLevelMilestoneEvent))]
 [JsonDerivedType(typeof(AccountUnlinkedEvent), nameof(AccountUnlinkedEvent))]
+[JsonDerivedType(typeof(ChatMessageEvent), nameof(ChatMessageEvent))]
 public abstract record GameEvent(byte ServerId, DateTime TimestampUtc);

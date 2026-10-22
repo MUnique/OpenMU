@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
     public partial class TradeContextModel
     {
         private TradeContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("474248ae-e21e-4a0b-88b4-317ac8d5ca08"), entityTypeCount: 46)
+            : base(skipDetectChanges: false, modelId: new Guid("39bbdc13-ccd0-4c76-8fea-9289097beff5"), entityTypeCount: 47)
         {
         }
 
@@ -41,6 +41,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             var gameServerConfigurationGameMapDefinition = GameServerConfigurationGameMapDefinitionEntityType.Create(this);
             var gensAbuse = GensAbuseEntityType.Create(this);
             var gensMember = GensMemberEntityType.Create(this);
+            var guildChatBinding = GuildChatBindingEntityType.Create(this);
             var item = ItemEntityType.Create(this);
             var itemAppearance = ItemAppearanceEntityType.Create(this);
             var itemAppearanceItemOptionType = ItemAppearanceItemOptionTypeEntityType.Create(this);
@@ -116,6 +117,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             GameServerConfigurationGameMapDefinitionEntityType.CreateAnnotations(gameServerConfigurationGameMapDefinition);
             GensAbuseEntityType.CreateAnnotations(gensAbuse);
             GensMemberEntityType.CreateAnnotations(gensMember);
+            GuildChatBindingEntityType.CreateAnnotations(guildChatBinding);
             ItemEntityType.CreateAnnotations(item);
             ItemAppearanceEntityType.CreateAnnotations(itemAppearance);
             ItemAppearanceItemOptionTypeEntityType.CreateAnnotations(itemAppearanceItemOptionType);

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.Host;
+namespace MUnique.OpenMU.Dapr.Common;
 
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
@@ -17,14 +17,14 @@ public class EventPublisher : IEventPublisher
 {
     private const string PubSubName = "pubsub";
     private readonly DaprClient _daprClient;
-    private readonly ILogger<GameServerStatePublisher> _logger;
+    private readonly ILogger<EventPublisher> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventPublisher"/> class.
     /// </summary>
     /// <param name="daprClient">The dapr client.</param>
     /// <param name="logger">The logger.</param>
-    public EventPublisher(DaprClient daprClient, ILogger<GameServerStatePublisher> logger)
+    public EventPublisher(DaprClient daprClient, ILogger<EventPublisher> logger)
     {
         this._daprClient = daprClient;
         this._logger = logger;
@@ -95,6 +95,23 @@ public class EventPublisher : IEventPublisher
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when publishing an alliance message");
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask WorldChatMessageAsync(string sender, string message)
+    {
+        try
+        {
+            await this._daprClient
+                .PublishEventAsync(
+                    PubSubName,
+                    nameof(IGameServer.WorldChatMessageAsync),
+                    new WorldChatMessageArguments(sender, message)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when publishing a world chat message");
         }
     }
 

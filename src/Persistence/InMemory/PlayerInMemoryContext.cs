@@ -15,7 +15,7 @@ using Nito.AsyncEx;
 /// </summary>
 public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
 {
-    // All contexts of one in-memory database share this lock. Different databases remain independent.
+    // All contexts of one in-memory database share this lock.
     private static readonly ConditionalWeakTable<InMemoryRepositoryProvider, AsyncLock> LinkLocks = new();
 
     /// <summary>
@@ -175,6 +175,17 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DateTime?> GetAccountChatBanUntilAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return accounts.FirstOrDefault(account => account.Id == accountId)?.ChatBanUntil;
+    }
+
+    /// <inheritdoc />
     public async ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
         string provider,
         string codeHash,
@@ -240,6 +251,38 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .GetAllAsync(cancellationToken)
             .ConfigureAwait(false);
         return links.FirstOrDefault(link => link.Provider == provider && link.CodeHash == codeHash);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyDictionary<string, Guid>> GetAccountIdsByCharacterNamesAsync(
+        IReadOnlyCollection<string> characterNames,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var result = new Dictionary<string, Guid>();
+        foreach (var account in accounts)
+        {
+            foreach (var character in account.Characters.Where(c => characterNames.Contains(c.Name)))
+            {
+                result[character.Name] = account.Id;
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        string provider,
+        IReadOnlyCollection<Guid> accountIds,
+        CancellationToken cancellationToken = default)
+    {
+        var links = await this.Provider.GetRepository<AccountExternalLink>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return links.Where(link => link.Provider == provider && accountIds.Contains(link.AccountId)).ToList();
     }
 
     /// <inheritdoc />

@@ -22,6 +22,7 @@ builder.Services
     .AddManageableServerRegistry()
     .AddSingleton<IFriendServer, FriendServer>()
     .AddSingleton<IGuildServer, GuildServer>()
+    .AddSingleton<IEventPublisher, EventPublisher>()
 
     // The game servers of the distributed deployment run in UTC, too.
     .AddDiscord(settings, () => TimeZoneInfo.Utc);

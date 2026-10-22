@@ -14,12 +14,12 @@ using MUnique.OpenMU.Discord.Provisioning;
 public class DiscordChannelRoutingTest
 {
     /// <summary>
-    /// Tests that the notifications and the status are routed to the existing channels of the layout.
+    /// Tests that the notifications, the status and the world chat are routed to the existing channels of the layout.
     /// </summary>
     [Test]
     public void LayoutChannelsAreUsed()
     {
-        var channelIds = new Dictionary<string, ulong> { { "events", 10 }, { "server-status", 20 } };
+        var channelIds = new Dictionary<string, ulong> { { "events", 10 }, { "server-status", 20 }, { "world-chat", 30 } };
 
         var routing = DiscordChannelRouting.Create(new DiscordBotSettings(), DiscordServerLayout.LoadDefault(), channelIds);
 
@@ -27,6 +27,7 @@ public class DiscordChannelRoutingTest
         Assert.That(routing.GetChannelId(DiscordChannelCategory.CastleSiege), Is.EqualTo(10));
         Assert.That(routing.GetChannelId(DiscordChannelCategory.WorldNews), Is.Null);
         Assert.That(routing.StatusChannelId, Is.EqualTo(20));
+        Assert.That(routing.WorldChatChannelId, Is.EqualTo(30));
     }
 
     /// <summary>

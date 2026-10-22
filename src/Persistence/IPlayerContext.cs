@@ -171,6 +171,16 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the time until which the chat of an account is banned, without loading the account.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The time until which the chat is banned; or <c>null</c>, if it isn't banned.</returns>
+    ValueTask<DateTime?> GetAccountChatBanUntilAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Atomically consumes an unexpired link code and replaces the user's previous link.
     /// A rejected code must leave every existing link unchanged.
     /// </summary>
@@ -223,6 +233,28 @@ public interface IPlayerContext : IContext
     ValueTask<AccountExternalLink?> GetAccountExternalLinkByCodeAsync(
         string provider,
         string codeHash,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the identifiers of the accounts of characters, without loading the accounts.
+    /// </summary>
+    /// <param name="characterNames">The names of the characters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The identifiers of the accounts by the names of the existing characters.</returns>
+    ValueTask<IReadOnlyDictionary<string, Guid>> GetAccountIdsByCharacterNamesAsync(
+        IReadOnlyCollection<string> characterNames,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the links of accounts to users of an external service.
+    /// </summary>
+    /// <param name="provider">The name of the external service, e.g. <c>discord</c>.</param>
+    /// <param name="accountIds">The persistent account identifiers.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The links.</returns>
+    ValueTask<IReadOnlyList<AccountExternalLink>> GetAccountExternalLinksAsync(
+        string provider,
+        IReadOnlyCollection<Guid> accountIds,
         CancellationToken cancellationToken = default);
 
     /// <summary>

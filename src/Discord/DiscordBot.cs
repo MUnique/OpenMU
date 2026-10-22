@@ -11,6 +11,7 @@ using System.Threading;
 using global::Discord;
 using global::Discord.WebSocket;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Discord.ChatBridge;
 using MUnique.OpenMU.Discord.Properties;
 using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.GameLogic.AccountLinking;
@@ -22,9 +23,11 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 /// <remarks>
 /// It only needs the <see cref="GatewayIntents.Guilds"/> intent, and no privileged one,
-/// because it reacts on slash commands instead of reading messages.
+/// because it reacts on slash commands instead of reading messages. Only when the chat bridge reads
+/// the messages (<see cref="DiscordChatBridgeSettings.ReadMessages"/>), it needs the privileged
+/// <see cref="GatewayIntents.MessageContent"/> intent.
 /// </remarks>
-public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEventListener, IAsyncDisposable
+public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, IDiscordChatMessenger, IGameEventListener, IAsyncDisposable
 {
     /// <summary>
     /// The name of the command which administrates the integration.
@@ -43,6 +46,8 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
     private readonly IDiscordGameDataProvider _data;
     private readonly DiscordServerLayout _layout;
     private readonly DiscordServerProvisioner _provisioner;
+    private readonly DiscordChatBridge _chatBridge;
+    private readonly DiscordChatCommands _chatCommands;
     private readonly ILogger<DiscordBot> _logger;
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
 
@@ -64,8 +69,10 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
     /// <param name="data">The provider of the data of the game.</param>
     /// <param name="layout">The layout of the Discord server.</param>
     /// <param name="provisioner">The provisioner, which sets up the Discord server.</param>
+    /// <param name="chatBridge">The chat bridge between the game and Discord.</param>
+    /// <param name="chatCommands">The commands of the chat bridge.</param>
     /// <param name="logger">The logger.</param>
-    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, ILogger<DiscordBot> logger)
+    public DiscordBot(DiscordBotSettings settings, DiscordCommands commands, DiscordAccountCommands accountCommands, DiscordStatusFormatter statusFormatter, IDiscordGameDataProvider data, DiscordServerLayout layout, DiscordServerProvisioner provisioner, DiscordChatBridge chatBridge, DiscordChatCommands chatCommands, ILogger<DiscordBot> logger)
     {
         this._settings = settings;
         this._commands = commands;
@@ -74,6 +81,8 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
         this._data = data;
         this._layout = layout;
         this._provisioner = provisioner;
+        this._chatBridge = chatBridge;
+        this._chatCommands = chatCommands;
         this._logger = logger;
         this._routing = DiscordChannelRouting.Create(settings, layout, new Dictionary<string, ulong>());
     }
@@ -133,10 +142,11 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             }
 
             this._ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            var client = new DiscordSocketClient(new DiscordSocketConfig { GatewayIntents = GatewayIntents.Guilds });
+            var client = new DiscordSocketClient(new DiscordSocketConfig { GatewayIntents = this.GetGatewayIntents() });
             client.Log += this.OnLogAsync;
             client.Ready += () => this.OnReadyAsync(client);
             client.SlashCommandExecuted += this.OnSlashCommandExecutedAsync;
+            this.RegisterChatEvents(client);
             this._client = client;
 
             await client.LoginAsync(TokenType.Bot, this._settings.Token).ConfigureAwait(false);
@@ -195,11 +205,16 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
 
     /// <inheritdoc />
     /// <remarks>
+    /// Chat messages are mirrored to the bound channels.
     /// When an account is unlinked in the game, the role of linked players is removed from its Discord user.
     /// </remarks>
     public async ValueTask OnGameEventAsync(GameEvent gameEvent)
     {
-        if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
+        if (gameEvent is ChatMessageEvent chatMessage)
+        {
+            await this.OnChatMessageAsync(chatMessage).ConfigureAwait(false);
+        }
+        else if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
             && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
         {
             await this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false)).ConfigureAwait(false);
@@ -259,6 +274,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             await client.DisposeAsync().ConfigureAwait(false);
         }
 
+        await this.StopChatQueuesAsync().ConfigureAwait(false);
         this._statusMessageId = null;
         this.ServerState = ServerState.Stopped;
     }
@@ -275,6 +291,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
         }
 
         this.UpdateRouting(client);
+        await this.ReloadChatBindingsAsync().ConfigureAwait(false);
         this.ServerState = ServerState.Started;
         this._ready.TrySetResult();
 
@@ -298,20 +315,14 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             }
 
             return (ApplicationCommandProperties)builder.Build();
-        }).Append(this.CreateAdministrationCommand()).ToArray();
+        }).Append(this.CreateAdministrationCommand()).Concat(this.CreateChatCommands()).ToArray();
 
+        // Guild-owned chat channels need /link, /guildchat and /say outside the routing guild, too.
+        await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         if (this._settings.GuildId is { } guildId && client.GetGuild(guildId) is { } guild)
         {
+            // Keep immediate availability on the main Discord server.
             await guild.BulkOverwriteApplicationCommandAsync(commands).ConfigureAwait(false);
-        }
-        else
-        {
-            if (this._settings.GuildId is { } missingGuildId)
-            {
-                this._logger.LogWarning("The bot isn't on the configured Discord server {guildId}, so the slash commands are registered globally, which can take up to an hour. Is the identifier correct, and was the bot invited?", missingGuildId);
-            }
-
-            await ((IDiscordClient)client).BulkOverwriteGlobalApplicationCommand(commands).ConfigureAwait(false);
         }
     }
 
@@ -343,6 +354,12 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             return;
         }
 
+        if (IsChatCommand(command.Data.Name))
+        {
+            await this.ExecuteChatCommandAsync(command).ConfigureAwait(false);
+            return;
+        }
+
         try
         {
             // The data might come from the database, which can take longer than Discord waits for an answer.
@@ -369,6 +386,12 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             foreach (var roleChange in answer.RoleChanges)
             {
                 await this.UpdateLinkedRoleAsync(roleChange).ConfigureAwait(false);
+            }
+
+            if (answer.RoleChanges.Count > 0)
+            {
+                // The user might get or lose access to channels of guilds.
+                await this.SyncHostedChannelsAsync().ConfigureAwait(false);
             }
 
             await command.FollowupAsync(embed: ToDiscordEmbed(answer.Embed), ephemeral: true, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
@@ -480,6 +503,7 @@ public sealed class DiscordBot : IManageableServer, IDiscordMessenger, IGameEven
             do
             {
                 await this.UpdateStatusAsync().ConfigureAwait(false);
+                await this.MaintainChatBridgeAsync().ConfigureAwait(false);
             }
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false));
         }

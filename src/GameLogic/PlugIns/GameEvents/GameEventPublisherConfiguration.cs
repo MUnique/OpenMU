@@ -78,4 +78,14 @@ public class GameEventPublisherConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_MasterLevelMilestones_Name))]
     public IList<int> MasterLevelMilestones { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the messages of the guild, alliance and world chat are published,
+    /// e.g. for the chat bridge of Discord.
+    /// </summary>
+    /// <remarks>
+    /// It's off by default, because the chat of the players is private, unless the server owner decides otherwise.
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.GameEventPublisherConfiguration_PublishChatMessages_Name))]
+    public bool PublishChatMessages { get; set; }
 }

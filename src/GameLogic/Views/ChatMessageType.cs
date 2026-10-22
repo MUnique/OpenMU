@@ -48,4 +48,9 @@ public enum ChatMessageType
     /// A command message.
     /// </summary>
     Command,
+
+    /// <summary>
+    /// A message of the world chat, which all players of all game servers can read.
+    /// </summary>
+    World,
 }
