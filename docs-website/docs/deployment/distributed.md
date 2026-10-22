@@ -123,6 +123,17 @@ docker compose restart centralServer gameServer0 gameServer1
 ```
 :::
 
+### Discord
+
+The Discord bot and the Discord notifications run in their own container,
+`discord`. It's only started with the `discord` profile:
+
+```bash
+DISCORD_BOT_TOKEN=... docker compose --profile discord up -d
+```
+
+See [Discord](../server-features/discord.md) for how to set it up.
+
 ## Differences to the all-in-one deployment
 
 Some functions of the admin panel behave differently, because the panel runs in

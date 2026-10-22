@@ -147,7 +147,9 @@ public sealed class DiscordMessageFormatter
     /// <summary>
     /// Gets the Discord markup for a time, which each Discord user sees relative to the current time in their own language, e.g. "in 5 minutes".
     /// </summary>
-    private static string RelativeTime(DateTime utc) => $"<t:{new DateTimeOffset(DateTime.SpecifyKind(utc, DateTimeKind.Utc)).ToUnixTimeSeconds()}:R>";
+    /// <param name="utc">The time, in UTC.</param>
+    /// <returns>The markup.</returns>
+    internal static string RelativeTime(DateTime utc) => $"<t:{new DateTimeOffset(DateTime.SpecifyKind(utc, DateTimeKind.Utc)).ToUnixTimeSeconds()}:R>";
 
     /// <summary>
     /// Gets the Discord markup for a time, which each Discord user sees as date and time in their own time zone.

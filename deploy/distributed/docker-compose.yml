@@ -214,6 +214,51 @@ services:
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
 
+  # The Discord bot and notifications. It's only started with the profile "discord",
+  # e.g. "docker compose --profile discord up -d". See the documentation for the
+  # further settings, like the webhooks and channels, which are added as environment variables.
+  discord:
+    image: munique/openmu-discord
+    container_name: discord
+    restart: unless-stopped
+    profiles: [ "discord" ]
+    healthcheck: *openmu-healthcheck
+    build:
+      context: ../../src
+      dockerfile: Dapr/Discord.Host/Dockerfile
+    depends_on:
+      discord-dapr:
+        condition: service_started
+      centralServer:
+        condition: service_started
+      database:
+        condition: service_healthy
+    ports:
+      - "8080"
+    environment:
+      DAPR_HTTP_ENDPOINT: http://discord-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://discord-dapr:50001
+      ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
+      Discord__Bot__Token: ${DISCORD_BOT_TOKEN:-}
+      Discord__Language: ${DISCORD_LANGUAGE:-en}
+
+  discord-dapr:
+    <<: *dapr-sidecar
+    container_name: discord_dapr
+    profiles: [ "discord" ]
+    environment:
+      POD_NAME: discord
+    command: [ "./daprd", "-app-id", "discord", "-app-port", "8080",
+                "-app-channel-address", "discord",
+                "-dapr-listen-addresses", "0.0.0.0",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+
   gameServer0:
     image: munique/openmu-game
     container_name: gameServer0
