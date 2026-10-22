@@ -1,10 +1,9 @@
-// <copyright file="DiscordBackgroundQueueTest.cs" company="MUnique">
+﻿// <copyright file="DiscordBackgroundQueueTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests.Discord;
 
-using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.Discord;
 
@@ -30,7 +29,11 @@ public class DiscordBackgroundQueueTest
             await ready.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
         }), Is.True);
         await started.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-        Assert.That(queue.Enqueue(_ => { pendingRan = true; return Task.CompletedTask; }), Is.True);
+        Assert.That(queue.Enqueue(_ =>
+        {
+            pendingRan = true;
+            return Task.CompletedTask;
+        }), Is.True);
         Assert.That(queue.Enqueue(_ => Task.CompletedTask), Is.False);
         await queue.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
         Assert.That(pendingRan, Is.False);
@@ -47,7 +50,11 @@ public class DiscordBackgroundQueueTest
         await using var queue = new DiscordBackgroundQueue(NullLogger.Instance);
         var completed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         queue.Enqueue(_ => Task.FromException(operationTimedOut ? new OperationCanceledException("request timed out") : new InvalidOperationException("failed")));
-        queue.Enqueue(_ => { completed.SetResult(); return Task.CompletedTask; });
+        queue.Enqueue(_ =>
+        {
+            completed.SetResult();
+            return Task.CompletedTask;
+        });
         await completed.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
     }
 }

@@ -1,4 +1,4 @@
-// <copyright file="DiscordBackgroundQueue.cs" company="MUnique">
+﻿// <copyright file="DiscordBackgroundQueue.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -24,19 +24,22 @@ internal sealed class DiscordBackgroundQueue : IAsyncDisposable
     /// </summary>
     /// <param name="logger">The logger.</param>
     /// <param name="capacity">The maximum number of pending operations.</param>
-    public DiscordBackgroundQueue(ILogger logger, int capacity = 100)
+    internal DiscordBackgroundQueue(ILogger logger, int capacity = 100)
     {
         this._logger = logger;
         this._queue = Channel.CreateBounded<Func<CancellationToken, Task>>(new BoundedChannelOptions(capacity) { SingleReader = true });
         this._worker = Task.Run(this.RunAsync);
     }
 
+    /// <inheritdoc />
+    ValueTask IAsyncDisposable.DisposeAsync() => this.DisposeAsync();
+
     /// <summary>
     /// Queues an operation, or rejects it when the queue is full or stopped.
     /// </summary>
     /// <param name="operation">The operation.</param>
     /// <returns>Whether the operation was queued.</returns>
-    public bool Enqueue(Func<CancellationToken, Task> operation)
+    internal bool Enqueue(Func<CancellationToken, Task> operation)
     {
         if (this._queue.Writer.TryWrite(operation))
         {
@@ -47,8 +50,11 @@ internal sealed class DiscordBackgroundQueue : IAsyncDisposable
         return false;
     }
 
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    /// <summary>
+    /// Cancels the connection's operations and waits for the worker to stop.
+    /// </summary>
+    /// <returns>The asynchronous shutdown operation.</returns>
+    internal async ValueTask DisposeAsync()
     {
         if (Interlocked.Exchange(ref this._isDisposed, 1) != 0)
         {

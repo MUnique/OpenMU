@@ -155,52 +155,43 @@ public sealed partial class DiscordBot
         }
 
         var endUtc = stateChanged.NextBattleEndUtc is { } end && end > startUtc ? end : startUtc.AddHours(2);
-        this._backgroundQueue?.Enqueue(async cancellationToken =>
-        {
-            try
-            {
-                await this._ready.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
-                if (this._client is not { } client || this.GetRoutingGuild(client) is not { } guild)
-                {
-                    return;
-                }
+        this._backgroundQueue?.Enqueue(cancellationToken => this.UpdateCastleSiegeEventAsync(startUtc, endUtc, cancellationToken));
+    }
 
-                var name = this._commands.Text(nameof(Resources.Event_CastleSiege_Name));
-                var start = new DateTimeOffset(DateTime.SpecifyKind(startUtc, DateTimeKind.Utc));
-                var endTime = new DateTimeOffset(DateTime.SpecifyKind(endUtc, DateTimeKind.Utc));
-                var events = await guild.GetEventsAsync(options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
-                var existing = events.FirstOrDefault(e => e.Name == name && e.Type == GuildScheduledEventType.External && e.Status == GuildScheduledEventStatus.Scheduled);
-                if (existing is null)
+    private async Task UpdateCastleSiegeEventAsync(DateTime startUtc, DateTime endUtc, CancellationToken cancellationToken)
+    {
+        await this._ready.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        if (this._client is not { } client || this.GetRoutingGuild(client) is not { } guild)
+        {
+            return;
+        }
+
+        var name = this._commands.Text(nameof(Resources.Event_CastleSiege_Name));
+        var start = new DateTimeOffset(DateTime.SpecifyKind(startUtc, DateTimeKind.Utc));
+        var endTime = new DateTimeOffset(DateTime.SpecifyKind(endUtc, DateTimeKind.Utc));
+        var events = await guild.GetEventsAsync(options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
+        var existing = events.FirstOrDefault(e => e.Name == name && e.Type == GuildScheduledEventType.External && e.Status == GuildScheduledEventStatus.Scheduled);
+        if (existing is null)
+        {
+            await guild.CreateEventAsync(
+                name,
+                start,
+                GuildScheduledEventType.External,
+                GuildScheduledEventPrivacyLevel.Private,
+                this._commands.Text(nameof(Resources.Event_CastleSiege_Description)),
+                endTime,
+                location: this._commands.Text(nameof(Resources.Event_Location)),
+                options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
+        }
+        else if (existing.StartTime != start || existing.EndTime != endTime)
+        {
+            await existing.ModifyAsync(
+                properties =>
                 {
-                    await guild.CreateEventAsync(
-                        name,
-                        start,
-                        GuildScheduledEventType.External,
-                        GuildScheduledEventPrivacyLevel.Private,
-                        this._commands.Text(nameof(Resources.Event_CastleSiege_Description)),
-                        endTime,
-                        location: this._commands.Text(nameof(Resources.Event_Location)),
-                        options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
-                }
-                else if (existing.StartTime != start || existing.EndTime != endTime)
-                {
-                    await existing.ModifyAsync(
-                        properties =>
-                        {
-                            properties.StartTime = start;
-                            properties.EndTime = endTime;
-                        },
-                        options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
-                }
-            }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-            {
-                // The connection lifetime ended.
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogWarning(ex, "The scheduled event of the castle siege couldn't be updated. Has the bot the permission to create events?");
-            }
-        });
+                    properties.StartTime = start;
+                    properties.EndTime = endTime;
+                },
+                options: new RequestOptions { CancelToken = cancellationToken }).ConfigureAwait(false);
+        }
     }
 }
