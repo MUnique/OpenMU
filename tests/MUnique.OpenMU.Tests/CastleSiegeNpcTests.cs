@@ -17,6 +17,7 @@ using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
@@ -630,6 +631,50 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that a structure bought outside the deployed phases isn't spawned on its own,
+    /// because its lever only exists from Ready on, and that the next preparation spawns it.
+    /// </summary>
+    [Test]
+    public async ValueTask BuyOutsideSiegeSpawnsStructureWithNextPreparationAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        try
+        {
+            var runtime = fixture.Context.NpcController.FindDefenseStructure((uint)CastleSiegeGate.MonsterNumber, GateInstanceId)!;
+            runtime.IsAlive = false;
+            runtime.PersistedState!.CurrentHp = 0;
+            fixture.Context.CurrentState = CastleSiegeState.RegisterGuild;
+            fixture.Player.Money = fixture.Configuration.GateBuyPrice;
+
+            var result = await CastleSiegeNpcBuyAction
+                .BuyAsync(fixture.Player, fixture.Context, (uint)CastleSiegeGate.MonsterNumber, GateInstanceId)
+                .ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(CastleSiegeNpcOperationResult.Success));
+                Assert.That(fixture.Player.Money, Is.Zero);
+                Assert.That(runtime.IsAlive, Is.True);
+                Assert.That(runtime.SpawnedInstance, Is.Null);
+            });
+
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+            var lever = fixture.Context.ActiveNpcs
+                .Select(candidate => candidate.SpawnedInstance)
+                .OfType<CastleSiegeLever>()
+                .Single();
+            Assert.Multiple(() =>
+            {
+                Assert.That(runtime.SpawnedInstance, Is.InstanceOf<CastleSiegeGate>());
+                Assert.That(lever.Gate, Is.SameAs(runtime.SpawnedInstance));
+            });
+        }
+        finally
+        {
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies the repair formula and destroyed-structure purchase behavior.
     /// </summary>
     [Test]
@@ -667,11 +712,16 @@ public class CastleSiegeNpcTests
             runtime.IsAlive = false;
             runtime.PersistedState.CurrentHp = 0;
             fixture.Player.Money = 500;
+            fixture.Context.CurrentState = CastleSiegeState.Ready;
 
             var buyResult = await CastleSiegeNpcBuyAction
                 .BuyAsync(fixture.Player, fixture.Context, (uint)CastleSiegeGate.MonsterNumber, GateInstanceId)
                 .ConfigureAwait(false);
             var respawnedGate = (CastleSiegeGate)runtime.SpawnedInstance!;
+            var lever = fixture.Context.ActiveNpcs
+                .Select(candidate => candidate.SpawnedInstance)
+                .OfType<CastleSiegeLever>()
+                .Single();
             Assert.Multiple(() =>
             {
                 Assert.That(buyResult, Is.EqualTo(CastleSiegeNpcOperationResult.Success));
@@ -681,6 +731,7 @@ public class CastleSiegeNpcTests
                 Assert.That(runtime.PersistedState.LifeLevel, Is.Zero);
                 Assert.That(respawnedGate.Health, Is.EqualTo(1_000));
                 Assert.That(respawnedGate.IsClosed, Is.True);
+                Assert.That(lever.Gate, Is.SameAs(respawnedGate));
             });
         }
         finally
@@ -713,6 +764,7 @@ public class CastleSiegeNpcTests
             fixture.Context.IsCrownAvailable = true;
             fixture.Context.CrownAccumulatedTime = TimeSpan.FromSeconds(12);
             fixture.Player.IsAlive = true;
+            SetPlayerJoinSide(fixture, CastleSiegeJoinSide.Attack1);
             await fixture.Player.WarpToAsync(new ExitGate
             {
                 Map = fixture.SiegeMap,
@@ -778,6 +830,58 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that defenders can't claim or block the Crown, and that the current Crown user keeps it
+    /// when another attacker steps next to the Crown.
+    /// </summary>
+    [Test]
+    public async ValueTask CrownIgnoresDefendersAndKeepsCurrentUserAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var defender = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        var otherAttacker = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+
+        // The mocked characters all share Guid.Empty, which would make the players share one join side entry.
+        defender.SelectedCharacter!.Id = Guid.NewGuid();
+        otherAttacker.SelectedCharacter!.Id = Guid.NewGuid();
+        try
+        {
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            var crown = fixture.Context.ActiveNpcs
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeCrown>()
+                .Single();
+            using var crownIntelligence = new CastleSiegeCrownIntelligence(fixture.Context)
+            {
+                Npc = crown,
+            };
+
+            await AddSiegePlayerAsync(fixture, defender, CastleSiegeJoinSide.Defense, crown.Position.X, crown.Position.Y).ConfigureAwait(false);
+            await crownIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.CrownUser, Is.Null);
+
+            await AddSiegePlayerAsync(fixture, fixture.Player, CastleSiegeJoinSide.Attack1, crown.Position.X, crown.Position.Y).ConfigureAwait(false);
+            await crownIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.CrownUser, Is.SameAs(fixture.Player));
+
+            await AddSiegePlayerAsync(fixture, otherAttacker, CastleSiegeJoinSide.Attack1, crown.Position.X, crown.Position.Y).ConfigureAwait(false);
+            await crownIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.CrownUser, Is.SameAs(fixture.Player));
+
+            fixture.Player.IsAlive = false;
+            await crownIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.CrownUser, Is.SameAs(otherAttacker));
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(otherAttacker).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(defender).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies that a lever opens the gate interface and that a defender can operate its gate.
     /// </summary>
     [Test]
@@ -815,6 +919,17 @@ public class CastleSiegeNpcTests
                     Times.Once);
 
             fixture.Context.CurrentState = CastleSiegeState.Start;
+            var withoutLeverResult = await CastleSiegeGateOperateAction
+                .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
+                .ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(withoutLeverResult, Is.EqualTo(CastleSiegeNpcOperationResult.Failed));
+                Assert.That(gate.IsClosed, Is.True);
+            });
+
+            // The NPC talk action keeps the lever opened because the lever plug-in leaves the dialog open.
+            fixture.Player.OpenedNpc = lever;
             var operationResult = await CastleSiegeGateOperateAction
                 .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
                 .ConfigureAwait(false);
@@ -1090,6 +1205,64 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that the battle start moves participants to their side's respawn area,
+    /// and that participants respawn there during the battle.
+    /// </summary>
+    [Test]
+    public async ValueTask BattleStartMovesParticipantsToTheirSidesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Configuration.AttackRespawnArea = new BasicModel.CastleSiegeZoneDefinition { X1 = 30, Y1 = 30, X2 = 32, Y2 = 32 };
+        fixture.Configuration.DefenseRespawnArea = new BasicModel.CastleSiegeZoneDefinition { X1 = 100, Y1 = 100, X2 = 102, Y2 = 102 };
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 65, 65).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext)!;
+            context.FinalGuildList[OwnerRuntimeGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = OwnerRuntimeGuildId,
+                PersistentGuildId = fixture.OwnerPersistentGuildId,
+                GuildName = "Owner",
+                Side = CastleSiegeJoinSide.Attack1,
+            };
+            context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack1;
+            Assert.That(fixture.Player.Position, Is.EqualTo(new Point(65, 65)));
+
+            plugIn.ForceState(CastleSiegeState.Start);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Start));
+                Assert.That(fixture.Player.Position.X, Is.InRange((byte)30, (byte)32));
+                Assert.That(fixture.Player.Position.Y, Is.InRange((byte)30, (byte)32));
+            });
+
+            context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id] = CastleSiegeJoinSide.Defense;
+            var args = new SpawnGateSelectionArgs();
+            await plugIn.SelectSpawnGateAsync(fixture.Player, args).ConfigureAwait(false);
+            Assert.That(args.Gate, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(args.Gate!.X1, Is.EqualTo(100));
+                Assert.That(args.Gate.Y2, Is.EqualTo(102));
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
     /// Verifies that leaving the battle state removes all active Life Stones.
     /// </summary>
     [Test]
@@ -1230,6 +1403,67 @@ public class CastleSiegeNpcTests
             await plugIn
                 .PlayerStateChangedAsync(fixture.Player, PlayerState.NpcDialogOpened, PlayerState.EnteredWorld)
                 .ConfigureAwait(false);
+
+            Assert.That(machine.Operator, Is.Null);
+        }
+        finally
+        {
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that respawning an attacker who operates a warfare machine while the siege tick holds the
+    /// execution lock, as after a Crown capture, completes and releases the machine.
+    /// </summary>
+    [Test]
+    public async ValueTask RespawningMachineOperatorDuringSiegeTickDoesNotDeadlockAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<IObjectRemovedFromMapPlugIn>(plugIn);
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(plugIn);
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 20, 20).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext);
+            var machine = context!.NpcController
+                .GetRuntimeSnapshot()
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeMachine>()
+                .Single(candidate => candidate.MachineType == CastleSiegeMachineType.Attack);
+            machine.Operator = fixture.Player;
+            fixture.Player.OpenedNpc = machine;
+            Assert.That(await fixture.Player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+
+            await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                var respawn = fixture.Player.RespawnAtAsync(new ExitGate
+                {
+                    Map = fixture.SiegeMap,
+                    X1 = 30,
+                    X2 = 30,
+                    Y1 = 30,
+                    Y2 = 30,
+                    Direction = Direction.South,
+                }).AsTask();
+                var completed = await Task.WhenAny(respawn, Task.Delay(TimeSpan.FromSeconds(5))).ConfigureAwait(false);
+                Assert.That(completed, Is.SameAs(respawn));
+                await respawn.ConfigureAwait(false);
+            }
+            finally
+            {
+                context.ExecutionLock.Release();
+            }
 
             Assert.That(machine.Operator, Is.Null);
         }
@@ -1409,6 +1643,53 @@ public class CastleSiegeNpcTests
             Assert.That(CastleSiegeMachineGroupHandlerPlugIn.GroupKey, Is.EqualTo(0xB7));
             Assert.That(new CastleSiegeMachineUseHandlerPlugIn().Key, Is.EqualTo(0x01));
         });
+    }
+
+    /// <summary>
+    /// Verifies that defense management requests are only handled while the Senior's window is opened.
+    /// </summary>
+    [Test]
+    public async ValueTask RepairRequestRequiresOpenedSeniorAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        try
+        {
+            var packet = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.CastleSiegeDefenseRepairRequest.Length];
+            var request = new MUnique.OpenMU.Network.Packets.ClientToServer.CastleSiegeDefenseRepairRequest(packet);
+            request.NpcNumber = (uint)CastleSiegeGate.MonsterNumber;
+            request.NpcIndex = GateInstanceId;
+            var handler = new CastleSiegeDefenseRepairHandlerPlugIn();
+            var resultView = Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeNpcOperationResultPlugIn>()!);
+
+            fixture.Player.OpenedNpc = null;
+            await handler.HandlePacketAsync(fixture.Player, packet).ConfigureAwait(false);
+            resultView.Verify(
+                view => view.ShowRepairResultAsync(
+                    It.IsAny<CastleSiegeNpcOperationResult>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()),
+                Times.Never);
+
+            fixture.Player.OpenedNpc = new NonPlayerCharacter(
+                null!,
+                new MonsterDefinition { Number = 223, NpcWindow = NpcWindow.CastleSeniorNPC },
+                null!);
+            await handler.HandlePacketAsync(fixture.Player, packet).ConfigureAwait(false);
+            resultView.Verify(
+                view => view.ShowRepairResultAsync(
+                    It.IsAny<CastleSiegeNpcOperationResult>(),
+                    (uint)CastleSiegeGate.MonsterNumber,
+                    GateInstanceId,
+                    It.IsAny<int>(),
+                    It.IsAny<int>()),
+                Times.Once);
+        }
+        finally
+        {
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>

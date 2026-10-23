@@ -1,0 +1,22 @@
+.online-chart {
+    display: block;
+    width: 100%;
+    height: 12.5rem;
+}
+
+.online-chart-grid {
+    stroke: var(--bs-border-color);
+    stroke-width: 1;
+}
+
+.online-chart-area {
+    fill: var(--bs-primary);
+    fill-opacity: 0.12;
+}
+
+.online-chart-line {
+    fill: none;
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+    stroke-linejoin: round;
+}

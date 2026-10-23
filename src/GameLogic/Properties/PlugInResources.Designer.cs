@@ -324,18 +324,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
         /// </summary>
-        public static string CastleSiegeGuardsmanTalkPlugIn_Description {
+        public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Description {
             get {
-                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Guardsman.
+        ///   Looks up a localized string similar to Castle Siege Land of Trials guard.
         /// </summary>
-        public static string CastleSiegeGuardsmanTalkPlugIn_Name {
+        public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Name {
             get {
-                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Name", resourceCulture);
             }
         }
         
@@ -408,6 +408,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CastleSiegePlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Castle Siege registration window, which shows the Castle Siege status, when a player talks to a guardsman on the Castle Siege map..
+        /// </summary>
+        public static string CastleSiegeRegistrationGuardsmanTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationGuardsmanTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege registration guardsman.
+        /// </summary>
+        public static string CastleSiegeRegistrationGuardsmanTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationGuardsmanTalkPlugIn_Name", resourceCulture);
             }
         }
         

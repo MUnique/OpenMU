@@ -783,6 +783,33 @@ public class CastleSiegeStateMachineTests
         Assert.That(plugIn.GetContext(gameContext.Object), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies three-second mini-map scheduling and skipping missed intervals instead of sending catch-up bursts.
+    /// </summary>
+    [Test]
+    public async ValueTask MiniMapUpdatesFollowThreeSecondCadenceAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var start = new DateTimeOffset(2026, 8, 8, 20, 0, 0, TimeSpan.Zero);
+        var timeProvider = new ManualTimeProvider(start);
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(3).UtcDateTime));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(2));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(3).UtcDateTime));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(6).UtcDateTime));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(10));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(15).UtcDateTime));
+    }
+
     private static DateTime ParseUtc(string utcTime)
     {
         return DateTime.Parse(utcTime, null, System.Globalization.DateTimeStyles.AdjustToUniversal);

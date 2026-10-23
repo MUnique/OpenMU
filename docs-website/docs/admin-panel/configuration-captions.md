@@ -161,3 +161,29 @@ editors, a translated hint appears below the original name or description.
 The input still edits the stored English text, which configuration updates use to
 identify attributes. Unknown or customized text is shown unchanged.
 These display translations do not require linking or applying configuration names.
+
+## Cash shop package names
+
+The cash shop catalog uses localized package names, including the list, search and
+name editor. Searches accept both the displayed translation and the neutral name.
+New Season 6 configurations include the resource links. For an existing catalog,
+link the names and review and apply the translations on this page, then restart
+as described above. Linking uses the package number from the client script and
+requires an exact match of the neutral name. Customized names and ambiguous
+package numbers are not automatically linked.
+
+This changes admin panel captions only. The client still displays its own shop
+script. Package and product numbers, prices, delivery items and sale flags are
+unchanged. Names remain stored in the same database text column; the localized
+string converter also reads existing plain English values.
+
+Chinese names reuse the existing item translations where applicable. The
+[official legacy item guide](https://mu.zhaouc.com/01_news/updatecn/s5/s5_4.htm)
+confirms the unicorn, skeleton pet, transformation ring and AG/SD aura names.
+[Official VIP rewards](https://mu.zhaouc.com/event/vipxt/vip/) also document potion,
+seal and scroll terminology. English-client promotions such as eX700 celebration
+packages, gold-channel packages, charms, statues and rare-item tickets use
+provisional descriptive translations; they are not presented as verified Chinese
+Season 6 client labels. Other labels without a confirmed Season 6 counterpart
+also remain descriptive translations. Brackets, GP markers, durations and bundle
+quantities are preserved to distinguish the script's offers.

@@ -321,4 +321,10 @@
   <data name="WizardryBaseDamageMinAndMaxOption" xml:space="preserve">
     <value>Option: Magischer Basisschaden (min. und max.)</value>
   </data>
+  <data name="VegaAncientSet" xml:space="preserve">
+    <value>Vega (Ancient-Set)</value>
+  </data>
+  <data name="ChamerAncientSet" xml:space="preserve">
+    <value>Chamer (Ancient-Set)</value>
+  </data>
 </root>

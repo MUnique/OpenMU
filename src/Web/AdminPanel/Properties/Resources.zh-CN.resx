@@ -1786,4 +1786,286 @@
   <data name="GameMap" xml:space="preserve">
     <value>地图</value>
   </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>地形编辑器</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>仪表板</value>
+  </data>
+  <data name="DashboardPlayersOnline" xml:space="preserve">
+    <value>在线玩家</value>
+  </data>
+  <data name="DashboardPlayerCapacity" xml:space="preserve">
+    <value>运行中的游戏服务器共 {0} 个名额</value>
+  </data>
+  <data name="DashboardServersRunning" xml:space="preserve">
+    <value>运行中的服务器</value>
+  </data>
+  <data name="DashboardServersNotRunning" xml:space="preserve">
+    <value>{0} 个未运行</value>
+  </data>
+  <data name="DashboardAllServersRunning" xml:space="preserve">
+    <value>所有服务器均在运行</value>
+  </data>
+  <data name="DashboardNewAccounts" xml:space="preserve">
+    <value>最近 7 天新注册 +{0}</value>
+  </data>
+  <data name="DashboardBannedAccounts" xml:space="preserve">
+    <value>{0} 个已封禁</value>
+  </data>
+  <data name="DashboardAlliances" xml:space="preserve">
+    <value>{0} 个联盟</value>
+  </data>
+  <data name="DashboardCharacters" xml:space="preserve">
+    <value>{0} 个角色</value>
+  </data>
+  <data name="DashboardNotAvailable" xml:space="preserve">
+    <value>不可用</value>
+  </data>
+  <data name="DashboardOnlineHistory" xml:space="preserve">
+    <value>最近 24 小时在线玩家</value>
+  </data>
+  <data name="DashboardOnlineHistoryDescription" xml:space="preserve">
+    <value>最近 24 小时在线玩家图表。当前 {0}，峰值 {1}，最低值 {2}。</value>
+  </data>
+  <data name="DashboardSampleInterval" xml:space="preserve">
+    <value>每 {0} 分钟采样一次</value>
+  </data>
+  <data name="DashboardCollectingData" xml:space="preserve">
+    <value>正在收集数据。历史记录从管理面板启动时开始。</value>
+  </data>
+  <data name="DashboardHoursAgo" xml:space="preserve">
+    <value>{0} 小时前</value>
+  </data>
+  <data name="DashboardNow" xml:space="preserve">
+    <value>现在</value>
+  </data>
+  <data name="DashboardCurrent" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="DashboardPeak" xml:space="preserve">
+    <value>峰值</value>
+  </data>
+  <data name="DashboardLow" xml:space="preserve">
+    <value>最低值</value>
+  </data>
+  <data name="DashboardManageServers" xml:space="preserve">
+    <value>管理服务器</value>
+  </data>
+  <data name="DashboardConnections" xml:space="preserve">
+    <value>{0} 个连接</value>
+  </data>
+  <data name="DashboardAdministratorsOnly" xml:space="preserve">
+    <value>仅限管理员</value>
+  </data>
+  <data name="DashboardUptime" xml:space="preserve">
+    <value>运行时间</value>
+  </data>
+  <data name="DashboardUptimeValue" xml:space="preserve">
+    <value>{0} 天 {1} 小时 {2} 分钟</value>
+  </data>
+  <data name="DashboardMemory" xml:space="preserve">
+    <value>内存</value>
+  </data>
+  <data name="DashboardMemoryValue" xml:space="preserve">
+    <value>工作集 {0:N0} MB</value>
+  </data>
+  <data name="DashboardVersion" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="DashboardDatabase" xml:space="preserve">
+    <value>数据库</value>
+  </data>
+  <data name="DashboardDatabaseConnected" xml:space="preserve">
+    <value>已连接</value>
+  </data>
+  <data name="DashboardDatabaseNotReachable" xml:space="preserve">
+    <value>无法连接</value>
+  </data>
+  <data name="DashboardConfigurationUpdates" xml:space="preserve">
+    <value>配置更新</value>
+  </data>
+  <data name="DashboardUpdatesAvailable" xml:space="preserve">
+    <value>个更新可用于您的游戏配置。</value>
+  </data>
+  <data name="DashboardNoUpdates" xml:space="preserve">
+    <value>您的游戏配置已是最新。</value>
+  </data>
+  <data name="DashboardReviewUpdates" xml:space="preserve">
+    <value>查看更新</value>
+  </data>
+  <data name="DashboardQuickActions" xml:space="preserve">
+    <value>快捷操作</value>
+  </data>
+  <data name="DashboardOpen" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="RoleCashShop" xml:space="preserve">
+    <value>仅管理商城币</value>
+  </data>
+  <data name="CashShopCoinsOf" xml:space="preserve">
+    <value>{0} 的商城币</value>
+  </data>
+  <data name="CashShopCoinsDescription" xml:space="preserve">
+    <value>这里显示的是最近一次保存的余额。发放的商城币会暂时处于待生效状态，游戏服务器将在玩家下次打开商城时应用。</value>
+  </data>
+  <data name="CashShopCoinsAccountNotFound" xml:space="preserve">
+    <value>该账号不存在。</value>
+  </data>
+  <data name="CashShopGrantCoins" xml:space="preserve">
+    <value>发放商城币</value>
+  </data>
+  <data name="CashShopCoinType" xml:space="preserve">
+    <value>币种</value>
+  </data>
+  <data name="CashShopAmount" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="CashShopGrants" xml:space="preserve">
+    <value>发放记录</value>
+  </data>
+  <data name="CashShopGrantedBy" xml:space="preserve">
+    <value>发放人</value>
+  </data>
+  <data name="CashShopReference" xml:space="preserve">
+    <value>关联编号</value>
+  </data>
+  <data name="CashShopAppliedAt" xml:space="preserve">
+    <value>生效时间</value>
+  </data>
+  <data name="CashShopPending" xml:space="preserve">
+    <value>待生效</value>
+  </data>
+  <data name="CashShopPendingAmount" xml:space="preserve">
+    <value>{0} 待生效</value>
+  </data>
+  <data name="CashShopNoGrants" xml:space="preserve">
+    <value>暂无商城币发放记录。</value>
+  </data>
+  <data name="CashShopAmountMustNotBeZero" xml:space="preserve">
+    <value>数量不能为零。输入负数可扣除商城币。</value>
+  </data>
+  <data name="CashShopCoinsGranted" xml:space="preserve">
+    <value>商城币发放记录已创建。</value>
+  </data>
+  <data name="CashShopCoins" xml:space="preserve">
+    <value>商城币</value>
+  </data>
+  <data name="CashShopCatalog" xml:space="preserve">
+    <value>商城商品目录</value>
+  </data>
+  <data name="CashShopCatalogDescription" xml:space="preserve">
+    <value>游戏客户端使用自身的商城脚本显示商品包、名称、价格和有效期。此处编辑的是服务端配置：哪些商品包上架、发放哪些物品，以及实际收取的价格。商品包和商品通过客户端脚本中的编号识别，请确保编号与所配置版本的脚本一致；仅修改此处的价格不会改变客户端显示的价格。</value>
+  </data>
+  <data name="CashShopNotConfigured" xml:space="preserve">
+    <value>商城尚未配置。请安装“添加商城”配置更新，导入游戏客户端的商品目录。</value>
+  </data>
+  <data name="CashShopVersions" xml:space="preserve">
+    <value>客户端脚本版本</value>
+  </data>
+  <data name="CashShopScriptVersion" xml:space="preserve">
+    <value>商城脚本</value>
+  </data>
+  <data name="CashShopBannerVersion" xml:space="preserve">
+    <value>商城横幅</value>
+  </data>
+  <data name="CashShopSaleZone" xml:space="preserve">
+    <value>销售区域</value>
+  </data>
+  <data name="CashShopYear" xml:space="preserve">
+    <value>年份</value>
+  </data>
+  <data name="CashShopYearId" xml:space="preserve">
+    <value>年内版本编号</value>
+  </data>
+  <data name="CashShopPackages" xml:space="preserve">
+    <value>商品包</value>
+  </data>
+  <data name="CashShopOnlyForSale" xml:space="preserve">
+    <value>仅显示已上架商品包</value>
+  </data>
+  <data name="CashShopPackageSequence" xml:space="preserve">
+    <value>商品包编号</value>
+  </data>
+  <data name="CashShopProductSequence" xml:space="preserve">
+    <value>商品编号</value>
+  </data>
+  <data name="CashShopPriceSequence" xml:space="preserve">
+    <value>价格编号</value>
+  </data>
+  <data name="CashShopPrice" xml:space="preserve">
+    <value>价格</value>
+  </data>
+  <data name="CashShopBundlePrice" xml:space="preserve">
+    <value>组合售价</value>
+  </data>
+  <data name="CashShopForSale" xml:space="preserve">
+    <value>已上架</value>
+  </data>
+  <data name="CashShopGiftable" xml:space="preserve">
+    <value>允许赠送</value>
+  </data>
+  <data name="CashShopBundle" xml:space="preserve">
+    <value>组合销售</value>
+  </data>
+  <data name="CashShopSellable" xml:space="preserve">
+    <value>可售状态</value>
+  </data>
+  <data name="CashShopProducts" xml:space="preserve">
+    <value>商品</value>
+  </data>
+  <data name="CashShopBundleProductsDescription" xml:space="preserve">
+    <value>组合销售时，按组合售价收取费用，并发放其中的全部商品。</value>
+  </data>
+  <data name="CashShopPriceOptionsDescription" xml:space="preserve">
+    <value>各商品代表一种购买选项，玩家选择其中一种并按其价格购买。</value>
+  </data>
+  <data name="CashShopItem" xml:space="preserve">
+    <value>物品</value>
+  </data>
+  <data name="CashShopItemLevel" xml:space="preserve">
+    <value>物品等级</value>
+  </data>
+  <data name="CashShopQuantity" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="CashShopDurationHours" xml:space="preserve">
+    <value>有效期（小时）</value>
+  </data>
+  <data name="CashShopAddPackage" xml:space="preserve">
+    <value>添加商品包</value>
+  </data>
+  <data name="CashShopAddProduct" xml:space="preserve">
+    <value>添加商品</value>
+  </data>
+  <data name="CashShopDeletePackage" xml:space="preserve">
+    <value>删除商品包</value>
+  </data>
+  <data name="CashShopDeletePackageQuestion" xml:space="preserve">
+    <value>确定要删除此商品包吗？</value>
+  </data>
+  <data name="CashShopIssueNoProducts" xml:space="preserve">
+    <value>商品包中没有商品。</value>
+  </data>
+  <data name="CashShopIssueDuplicatePackageSequence" xml:space="preserve">
+    <value>已有其他商品包使用编号 {0}。</value>
+  </data>
+  <data name="CashShopIssueDuplicatePriceSequence" xml:space="preserve">
+    <value>多个商品使用了相同的价格编号 {0}。</value>
+  </data>
+  <data name="CashShopIssueMissingItem" xml:space="preserve">
+    <value>商品 {0} 未配置物品。</value>
+  </data>
+  <data name="CashShopIssueTimeLimited" xml:space="preserve">
+    <value>商品 {0} 为限时商品，目前尚不支持。</value>
+  </data>
+  <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
+    <value>组合售价不能为负数。</value>
+  </data>
+  <data name="CashShopIssueNegativePrice" xml:space="preserve">
+    <value>商品 {0} 的价格不能为负数。</value>
+  </data>
+  <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
+    <value>商品 {0} 的数量不能小于 1。</value>
+  </data>
 </root>
