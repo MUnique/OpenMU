@@ -47,6 +47,17 @@ does not independently impose the historical five-guild limit. Selection is
 limited to the three attack sides supported by the protocol even if its
 configured maximum is larger. These are deliberate current contracts.
 
+`GuildRivalrySynchronizationTests` additionally covers guild unloading, repeated
+reconnects, persistent-id lookup, and cold alliance loading through the real
+publisher and two game servers. Retired runtime IDs must lose their cached
+rivalries; replacement IDs must receive only the current persisted
+relationships. Fully cached alliance lookups stay independent of the lifecycle
+lock and database.
+
+Reconciliation awaits game-server notifications in lifecycle order. Large
+alliances or slow delivery can delay relationship and load/unload operations;
+profile changed-pair counts and operation latency before changing batching.
+
 ## Running the checks
 
 From the repository root, build once in the same configuration used for tests:
