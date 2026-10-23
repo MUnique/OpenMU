@@ -13,13 +13,13 @@ The letter appears in the letter list.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   79   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   107   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xC6  | Packet header - packet type identifier |
 | 4 | 2 | ShortLittleEndian |  | LetterIndex |
 | 6 | 10 | String |  | SenderName |
 | 16 | 30 | String |  | Timestamp |
-| 46 | 32 | String |  | Subject |
-| 78 | 1 | LetterState |  | State |
+| 46 | 60 | String |  | Subject |
+| 106 | 1 | LetterState |  | State |
 
 ### LetterState Enum
 

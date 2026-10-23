@@ -9942,42 +9942,42 @@
           <Name>RemainingSeconds</Name>
         </Field>
         <Field>
-          <Index>4</Index>
+          <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PlayerIndex</Name>
         </Field>
         <Field>
-          <Index>6</Index>
+          <Index>8</Index>
           <Type>Byte</Type>
           <Name>PositionX</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>9</Index>
           <Type>Byte</Type>
           <Name>PositionY</Name>
         </Field>
         <Field>
-          <Index>8</Index>
+          <Index>10</Index>
           <Type>Byte</Type>
           <Name>Team1Points</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>11</Index>
           <Type>Byte</Type>
           <Name>Team2Points</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>12</Index>
           <Type>Byte</Type>
           <Name>MyTeam</Name>
         </Field>
         <Field>
-          <Index>11</Index>
+          <Index>13</Index>
           <Type>Byte</Type>
           <Name>PartyCount</Name>
         </Field>
         <Field>
-          <Index>12</Index>
+          <Index>14</Index>
           <Type>Structure[]</Type>
           <TypeName>IllusionTemplePartyEntry</TypeName>
           <Name>PartyMembers</Name>
@@ -9987,7 +9987,7 @@
         <Structure>
           <Name>IllusionTemplePartyEntry</Name>
           <Description>Contains the info about a party member in illusion temple.</Description>
-          <Length>5</Length>
+          <Length>6</Length>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -9996,7 +9996,7 @@
             </Field>
             <Field>
               <Index>2</Index>
-              <Type>ShortLittleEndian</Type>
+              <Type>Byte</Type>
               <Name>MapNumber</Name>
             </Field>
             <Field>
@@ -10112,7 +10112,7 @@
           <Name>PlayerCount</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>7</Index>
           <Type>Structure[]</Type>
           <TypeName>PlayerResult</TypeName>
           <Name>Players</Name>
@@ -10123,12 +10123,13 @@
         <Structure>
           <Name>PlayerResult</Name>
           <Description>Contains the result of a player in the event.</Description>
-          <Length>17</Length>
+          <Length>20</Length>
           <Fields>
             <Field>
               <Index>0</Index>
               <Type>String</Type>
               <Name>Name</Name>
+              <Length>10</Length>
             </Field>
             <Field>
               <Index>10</Index>
@@ -10146,7 +10147,7 @@
               <Name>Class</Name>
             </Field>
             <Field>
-              <Index>13</Index>
+              <Index>16</Index>
               <Type>IntegerLittleEndian</Type>
               <Name>AddedExperience</Name>
             </Field>
@@ -10814,7 +10815,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>C6</Code>
       <Name>AddLetter</Name>
-      <Length>79</Length>
+      <Length>107</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a letter has been received or after the player entered the game with a character.</SentWhen>
       <CausedReaction>The letter appears in the letter list.</CausedReaction>
@@ -10840,10 +10841,10 @@
           <Index>46</Index>
           <Type>String</Type>
           <Name>Subject</Name>
-          <Length>32</Length>
+          <Length>60</Length>
         </Field>
         <Field>
-          <Index>78</Index>
+          <Index>106</Index>
           <Type>Enum</Type>
           <TypeName>LetterState</TypeName>
           <Name>State</Name>
@@ -12833,7 +12834,7 @@
       <Code>B2</Code>
       <SubCode>05</SubCode>
       <Name>CastleSiegeDefenseBuyResponse</Name>
-      <Length>13</Length>
+      <Length>16</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the player requested to buy a castle siege defense structure (gate or statue).</SentWhen>
       <CausedReaction>The client shows the result of the buy request.</CausedReaction>
@@ -12844,12 +12845,12 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcNumber</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>12</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcIndex</Name>
         </Field>
@@ -12860,7 +12861,7 @@
       <Code>B2</Code>
       <SubCode>06</SubCode>
       <Name>CastleSiegeDefenseRepairResponse</Name>
-      <Length>21</Length>
+      <Length>24</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the player requested to repair a castle siege defense structure (gate or statue).</SentWhen>
       <CausedReaction>The client shows the result of the repair request.</CausedReaction>
@@ -12871,22 +12872,22 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcNumber</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>12</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcIndex</Name>
         </Field>
         <Field>
-          <Index>13</Index>
+          <Index>16</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>CurrentHp</Name>
         </Field>
         <Field>
-          <Index>17</Index>
+          <Index>20</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>MaxHp</Name>
         </Field>
@@ -12897,7 +12898,7 @@
       <Code>B2</Code>
       <SubCode>07</SubCode>
       <Name>CastleSiegeDefenseUpgradeResponse</Name>
-      <Length>21</Length>
+      <Length>24</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the player requested to upgrade a castle siege defense structure (gate or statue).</SentWhen>
       <CausedReaction>The client shows the result of the upgrade request and the new upgrade values.</CausedReaction>
@@ -12908,22 +12909,22 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcNumber</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>12</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcIndex</Name>
         </Field>
         <Field>
-          <Index>13</Index>
+          <Index>16</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcUpgradeType</Name>
         </Field>
         <Field>
-          <Index>17</Index>
+          <Index>20</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcUpgradeValue</Name>
         </Field>
@@ -13117,7 +13118,7 @@
       <Code>B2</Code>
       <SubCode>15</SubCode>
       <Name>CastleSiegeCrownAccessState</Name>
-      <Length>9</Length>
+      <Length>12</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The server updates the access state of the castle crown during the siege.</SentWhen>
       <CausedReaction>The client updates the crown access state and accumulated time display.</CausedReaction>
@@ -13129,7 +13130,7 @@
           <Name>State</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>AccumulatedTimeMs</Name>
         </Field>
@@ -13386,12 +13387,12 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>NpcCount</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>12</Index>
           <Type>Structure[]</Type>
           <TypeName>CastleSiegeNpcInfo</TypeName>
           <Name>NpcList</Name>
@@ -13402,7 +13403,7 @@
         <Structure>
           <Name>CastleSiegeNpcInfo</Name>
           <Description>Information about one castle siege NPC (gate or statue).</Description>
-          <Length>27</Length>
+          <Length>28</Length>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -13467,12 +13468,12 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>GuildCount</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>12</Index>
           <Type>Structure[]</Type>
           <TypeName>RegisteredGuildEntry</TypeName>
           <Name>Guilds</Name>
@@ -13524,12 +13525,12 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>GuildCount</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>12</Index>
           <Type>Structure[]</Type>
           <TypeName>CastleSiegeGuildEntry</TypeName>
           <Name>Guilds</Name>
@@ -13540,7 +13541,7 @@
         <Structure>
           <Name>CastleSiegeGuildEntry</Name>
           <Description>Information about one guild in the castle siege.</Description>
-          <Length>14</Length>
+          <Length>16</Length>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -13560,7 +13561,7 @@
               <Length>8</Length>
             </Field>
             <Field>
-              <Index>10</Index>
+              <Index>12</Index>
               <Type>IntegerLittleEndian</Type>
               <Name>Score</Name>
             </Field>
@@ -13749,7 +13750,7 @@
       <Code>B9</Code>
       <SubCode>03</SubCode>
       <Name>CastleSiegeHuntingZoneGuardInfo</Name>
-      <Length>18</Length>
+      <Length>20</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The server sends information about the hunting zone guard configuration.</SentWhen>
       <CausedReaction>The client shows the hunting zone entrance configuration.</CausedReaction>
@@ -13765,17 +13766,17 @@
           <Name>IsEnabled</Name>
         </Field>
         <Field>
-          <Index>6</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>CurrentPrice</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>12</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>MaxPrice</Name>
         </Field>
         <Field>
-          <Index>14</Index>
+          <Index>16</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>UnitPrice</Name>
         </Field>

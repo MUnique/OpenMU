@@ -16,8 +16,8 @@ The client shows the list of registered guilds and their mark counts.
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xB4  | Packet header - packet type identifier |
 | 4 | 1 | Byte |  | Result |
-| 5 | 4 | IntegerLittleEndian |  | GuildCount |
-| 9 | RegisteredGuildEntry.Length * GuildCount | Array of RegisteredGuildEntry |  | Guilds |
+| 8 | 4 | IntegerLittleEndian |  | GuildCount |
+| 12 | RegisteredGuildEntry.Length * GuildCount | Array of RegisteredGuildEntry |  | Guilds |
 
 ### RegisteredGuildEntry Structure
 
