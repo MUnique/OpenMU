@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = "Crystal Sword Ice Chance", Description = "Adds the Crystal Sword ice proc to existing configurations.")]
 [Guid("D70AF6D6-A5D1-41B0-B922-A2AE8F6D3125")]
-public class AddCrystalSwordIceChanceUpdatePlugIn095d : AddCrystalSwordIceChanceUpdatePlugInBase
+public class AddCrystalSwordIceChanceUpdatePlugIn095D : AddCrystalSwordIceChanceUpdatePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;

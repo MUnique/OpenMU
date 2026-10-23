@@ -354,6 +354,12 @@ public class AreaSkillAttackAction
             await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
         }
 
+        if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+        {
+            // The hit generated a different skill (e.g. ice) than the one originally casted.
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
+        }
+
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
         {
             await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter, hitInfo).ConfigureAwait(false);
@@ -364,12 +370,6 @@ public class AreaSkillAttackAction
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } baseSkillStrategy)
         {
             await baseSkillStrategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter, hitInfo).ConfigureAwait(false);
-        }
-
-        if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
-        {
-            // The hit generated a different skill (e.g. ice) than the one originally casted.
-            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
         }
     }
 }

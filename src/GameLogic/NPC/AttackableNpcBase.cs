@@ -116,7 +116,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             && Rand.NextRandomBool(attacker.Attributes[Stats.CrystalSwordIceChance])
             && player_.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == IceSkillNumber) is { } ice)
         {
-            skill = new SkillEntry() { Skill = ice };
+            skill = new SkillEntry { Skill = ice };
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);

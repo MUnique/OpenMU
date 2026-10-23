@@ -140,7 +140,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             await target.MoveRandomlyAsync().ConfigureAwait(false);
         }
 
-        (bool Success, Skill Skill) appliedSkill = (false, skill);
+        (bool Success, Skill Skill, IAttackable Target) appliedSkill = (false, skill, target);
         if (skill.SkillType == SkillType.SummonMonster)
         {
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
@@ -154,7 +154,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             appliedSkill = await this.ApplySkillAsync(player, target, skillEntry).ConfigureAwait(false);
         }
 
-        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, appliedSkill.Skill, appliedSkill.Success), true).ConfigureAwait(false);
+        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, appliedSkill.Target, appliedSkill.Skill, appliedSkill.Success), true).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         return Enumerable.Empty<IAttackable>();
     }
 
-    private async ValueTask<(bool Success, Skill Skill)> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
+    private async ValueTask<(bool Success, Skill Skill, IAttackable Target)> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var skill = skillEntry.Skill;
@@ -300,6 +300,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                     {
                         // The hit generated a different skill (e.g. ice) than the one originally casted.
                         animatedSkill = hitInfo.Value.SkillEntry.Skill;
+                        targetedTarget = target;
                     }
                 }
             }
@@ -339,6 +340,6 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
         }
 
-        return (success, animatedSkill ?? skill);
+        return (success, animatedSkill ?? skill, targetedTarget);
     }
 }
