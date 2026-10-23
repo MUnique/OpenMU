@@ -43,18 +43,6 @@ public class ResetCharacterAction
             return;
         }
 
-        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
-        {
-            await this.ShowMessageAsync(nameof(PlayerMessage.CantResetWithOpenedWindows)).ConfigureAwait(false);
-            return;
-        }
-
-        if (this._player.Attributes is null || this._player.SelectedCharacter is null)
-        {
-            await this.ShowMessageAsync(nameof(PlayerMessage.NotEnteredTheGame)).ConfigureAwait(false);
-            return;
-        }
-
         var configuration = resetFeature.Configuration;
         if (configuration is null)
         {
@@ -62,29 +50,22 @@ public class ResetCharacterAction
             return;
         }
 
-        var resetProgression = ResetProgressionCalculator.Calculate(this.GetResetCount(), (int)this._player.Attributes[Stats.PointsPerReset], configuration);
-
-        if (this._player.Level < configuration.RequiredLevel)
+        if (!await this.ValidatePlayerAsync(configuration).ConfigureAwait(false))
         {
-            await this.ShowMessageAsync(nameof(PlayerMessage.RequiredLevelForReset), configuration.RequiredLevel).ConfigureAwait(false);
             return;
         }
 
-        if (configuration.ResetLimit > 0 && resetProgression.NextResetCount > configuration.ResetLimit)
-        {
-            await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
-            return;
-        }
-
-        if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
+        var resetProgression = ResetProgressionCalculator.Calculate(this.GetResetCount(), (int)this._player.Attributes![Stats.PointsPerReset], configuration);
+        if (!await this.ValidateResetProgressionAsync(configuration, resetProgression).ConfigureAwait(false))
         {
             return;
         }
 
         this._player.Attributes[Stats.Resets] = resetProgression.NextResetCount;
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
-        this._player.SelectedCharacter.Experience = 0;
+        this._player.SelectedCharacter!.Experience = 0;
         this.UpdateStats(configuration, resetProgression);
+
         if (configuration.MoveHome)
         {
             await this.MoveHomeAsync().ConfigureAwait(false);
@@ -98,6 +79,49 @@ public class ResetCharacterAction
         {
             await this.UpdateClientStatsAsync(configuration).ConfigureAwait(false);
         }
+    }
+
+    private async ValueTask<bool> ValidatePlayerAsync(ResetConfiguration configuration)
+    {
+        string? messageKey = null;
+        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
+        {
+            messageKey = nameof(PlayerMessage.CantResetWithOpenedWindows);
+        }
+        else if (this._player.Attributes is null || this._player.SelectedCharacter is null)
+        {
+            messageKey = nameof(PlayerMessage.NotEnteredTheGame);
+        }
+        else if (this._player.Level < configuration.RequiredLevel)
+        {
+            messageKey = nameof(PlayerMessage.RequiredLevelForReset);
+        }
+
+        if (messageKey is null)
+        {
+            return true;
+        }
+        else
+        {
+            await this.ShowMessageAsync(messageKey).ConfigureAwait(false);
+            return false;
+        }
+    }
+
+    private async ValueTask<bool> ValidateResetProgressionAsync(ResetConfiguration configuration, ResetProgression resetProgression)
+    {
+        if (configuration.ResetLimit > 0 && resetProgression.NextResetCount > configuration.ResetLimit)
+        {
+            await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
+            return false;
+        }
+
+        if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private async ValueTask ShowMessageAsync(string messageKey, params object?[] args)
