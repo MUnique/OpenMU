@@ -28,7 +28,7 @@ internal class NewDatabaseUpdatesTest
 
         await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [update]).ConfigureAwait(false);
 
-        Assert.That(update.Applied, Is.False);
+        Assert.That(MarkerNames(gameConfiguration), Does.Not.Contain(update.Name));
         Assert.That(await InstalledVersionAsync(context, update.Key).ConfigureAwait(false), Is.EqualTo(update.Version));
     }
 
@@ -75,13 +75,12 @@ internal class NewDatabaseUpdatesTest
     public async Task UpdatesRunInTheOrderOfTheirDatesAsync()
     {
         var (context, gameConfiguration) = CreateContext();
-        var applied = new List<string>();
-        var earlier = new EarlierTestUpdatePlugIn(applied);
-        var later = new LaterTestUpdatePlugIn(applied);
+        var earlier = new EarlierTestUpdatePlugIn();
+        var later = new LaterTestUpdatePlugIn();
 
         await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [later, earlier]).ConfigureAwait(false);
 
-        Assert.That(applied, Is.EqualTo(new[] { "earlier", "later" }));
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { earlier.Name, later.Name }));
         Assert.That(await InstalledVersionAsync(context, later.Key).ConfigureAwait(false), Is.EqualTo(3));
     }
 
@@ -96,6 +95,22 @@ internal class NewDatabaseUpdatesTest
         await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, []).ConfigureAwait(false);
 
         Assert.That(await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false), Is.Empty);
+    }
+
+    /// <summary>
+    /// Adds the marker item of an applied test update: an item named like the update.
+    /// </summary>
+    private static ValueTask AddMarkerAsync(IContext context, GameConfiguration gameConfiguration, string name)
+    {
+        var marker = context.CreateNew<ItemDefinition>();
+        marker.Name = name;
+        gameConfiguration.Items.Add(marker);
+        return ValueTask.CompletedTask;
+    }
+
+    private static List<string?> MarkerNames(GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.Items.Select(item => item.Name.Value).ToList();
     }
 
     private static (IContext Context, GameConfiguration GameConfiguration) CreateContext()
@@ -116,8 +131,6 @@ internal class NewDatabaseUpdatesTest
     [Guid("2B6E9C40-5A1D-4F83-9E07-C14D8A3B6F25")]
     private sealed class InitializedTestUpdatePlugIn : UpdatePlugInBase
     {
-        public bool Applied { get; private set; }
-
         public override string DataInitializationKey => "test";
 
         public override string Name => "Initialized test update";
@@ -130,24 +143,21 @@ internal class NewDatabaseUpdatesTest
 
         protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
         {
-            this.Applied = true;
-            return ValueTask.CompletedTask;
+            return AddMarkerAsync(context, gameConfiguration, this.Name);
         }
     }
 
     /// <summary>
-    /// The updates of the order test: they run on a new database and note when they're applied.
+    /// The updates of the order test: they run on a new database and add a marker item when they're applied.
     /// </summary>
     private abstract class OrderedTestUpdatePlugIn : UpdatePlugInBase
     {
-        private readonly List<string> _applied;
         private readonly string _name;
         private readonly DateTime _createdAt;
         private readonly int _version;
 
-        protected OrderedTestUpdatePlugIn(List<string> applied, string name, DateTime createdAt, int version)
+        protected OrderedTestUpdatePlugIn(string name, DateTime createdAt, int version)
         {
-            this._applied = applied;
             this._name = name;
             this._createdAt = createdAt;
             this._version = version;
@@ -157,7 +167,7 @@ internal class NewDatabaseUpdatesTest
 
         public override string Name => this._name;
 
-        public override string Description => "An update which notes when it's applied.";
+        public override string Description => "An update which adds a marker item when it's applied.";
 
         public override bool IsMandatory => true;
 
@@ -166,12 +176,6 @@ internal class NewDatabaseUpdatesTest
         public override int Version => this._version;
 
         public override bool RunsOnNewDatabase => true;
-
-        protected ValueTask NoteAppliedAsync()
-        {
-            this._applied.Add(this._name);
-            return ValueTask.CompletedTask;
-        }
     }
 
     /// <summary>
@@ -180,14 +184,14 @@ internal class NewDatabaseUpdatesTest
     [Guid("5E8A2D17-C94B-4F03-B6E1-0A7D3C9F2B48")]
     private sealed class EarlierTestUpdatePlugIn : OrderedTestUpdatePlugIn
     {
-        public EarlierTestUpdatePlugIn(List<string> applied)
-            : base(applied, "earlier", new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), 1)
+        public EarlierTestUpdatePlugIn()
+            : base("earlier", new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), 1)
         {
         }
 
         protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
         {
-            return this.NoteAppliedAsync();
+            return AddMarkerAsync(context, gameConfiguration, this.Name);
         }
     }
 
@@ -197,14 +201,14 @@ internal class NewDatabaseUpdatesTest
     [Guid("A1C6F3E8-2D74-4B95-8E0F-6B3A9D5C1E27")]
     private sealed class LaterTestUpdatePlugIn : OrderedTestUpdatePlugIn
     {
-        public LaterTestUpdatePlugIn(List<string> applied)
-            : base(applied, "later", new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), 3)
+        public LaterTestUpdatePlugIn()
+            : base("later", new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), 3)
         {
         }
 
         protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
         {
-            return this.NoteAppliedAsync();
+            return AddMarkerAsync(context, gameConfiguration, this.Name);
         }
     }
 
