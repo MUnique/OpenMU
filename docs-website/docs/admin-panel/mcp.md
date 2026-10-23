@@ -81,7 +81,12 @@ Add a server in `.vscode/mcp.json`. An input keeps the credential out of the fil
 ```json
 {
   "inputs": [
-    { "id": "openmu-key", "type": "promptString", "description": "OpenMU API key", "password": true }
+    {
+      "id": "openmu-key",
+      "type": "promptString",
+      "description": "OpenMU API key",
+      "password": true
+    }
   ],
   "servers": {
     "openmu": {

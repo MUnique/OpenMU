@@ -11,11 +11,11 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 internal sealed class TestReadModel : IAdminReadModel
 {
     /// <inheritdoc />
-    public ValueTask<IReadOnlyList<ConfigurationSearchHit>> SearchConfigurationAsync(string text, CancellationToken cancellationToken)
-        => ValueTask.FromResult<IReadOnlyList<ConfigurationSearchHit>>([new("Experience rate", "Game configuration > Experience rate", "/edit-config/test")]);
+    public IReadOnlyList<PlayerCountSample> PlayerHistory => [new(DateTime.UnixEpoch, 0)];
 
     /// <inheritdoc />
-    public IReadOnlyList<PlayerCountSample> GetPlayerHistory() => [new(DateTime.UnixEpoch, 0)];
+    public ValueTask<IReadOnlyList<ConfigurationSearchHit>> SearchConfigurationAsync(string text, CancellationToken cancellationToken)
+        => ValueTask.FromResult<IReadOnlyList<ConfigurationSearchHit>>([new("Experience rate", "Game configuration > Experience rate", "/edit-config/test")]);
 
     /// <inheritdoc />
     public ValueTask<int> GetPendingUpdatesAsync(CancellationToken cancellationToken) => ValueTask.FromResult(0);

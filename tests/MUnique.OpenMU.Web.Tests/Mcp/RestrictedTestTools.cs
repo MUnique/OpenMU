@@ -12,6 +12,10 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 [McpServerToolType]
 public sealed class RestrictedTestTools
 {
+    private RestrictedTestTools()
+    {
+    }
+
     /// <summary>Returns a harmless constant for administrators.</summary>
     /// <returns>The test result.</returns>
     [McpServerTool(Name = "test_admin_only", ReadOnly = true)]

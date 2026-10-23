@@ -7,28 +7,28 @@ namespace MUnique.OpenMU.Web.AdminPanel.Auth;
 /// <summary>
 /// The authorization policies of the admin panel.
 /// </summary>
-public static class AdminPolicies
+internal static class AdminPolicies
 {
     /// <summary>The API-key-only policy of the MCP endpoint.</summary>
-    public const string McpAccess = "OpenMU.McpAccess";
+    internal const string McpAccess = "OpenMU.McpAccess";
 
     /// <summary>
     /// Gets the policy which requires the viewer role.
     /// </summary>
-    public const string Viewer = "OpenMU.Viewer";
+    internal const string Viewer = "OpenMU.Viewer";
 
     /// <summary>
     /// Gets the  policy which requires the operator role.
     /// </summary>
-    public const string Operator = "OpenMU.Operator";
+    internal const string Operator = "OpenMU.Operator";
 
     /// <summary>
     /// Gets the policy which requires the administrator role.
     /// </summary>
-    public const string Administrator = "OpenMU.Administrator";
+    internal const string Administrator = "OpenMU.Administrator";
 
     /// <summary>
     /// The policy which requires the <see cref="MUnique.OpenMU.Persistence.AdminAuth.AdminRoles.CashShop"/> role, to grant cash shop coins.
     /// </summary>
-    public const string CashShop = "OpenMU.CashShop";
+    internal const string CashShop = "OpenMU.CashShop";
 }

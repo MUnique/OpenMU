@@ -19,12 +19,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
@@ -39,7 +41,7 @@ using MUnique.OpenMU.Web.Tests.AdminAuth;
 
 /// <summary>Exercises the real HTTP transport, API-key authentication and read operations.</summary>
 [TestFixture]
-public class McpIntegrationTests
+public sealed class McpIntegrationTests : IDisposable
 {
     private const string ViewerKey = "omu_viewer-key-for-mcp-integration-tests";
     private const string CashShopKey = "omu_cashshop-key-for-mcp-integration-tests";
@@ -47,6 +49,7 @@ public class McpIntegrationTests
     private HttpClient _http = null!;
     private InMemoryApiKeyRepository _keys = null!;
     private Guid _configurationId;
+    private Guid _guildId;
 
     /// <summary>Starts a minimal admin host with real in-memory persistence.</summary>
     [SetUp]
@@ -61,9 +64,9 @@ public class McpIntegrationTests
             ["AdminPanel:Auth:DataProtectionKeyPath"] = Path.Combine(Path.GetTempPath(), "openmu-mcp-test-keys"),
         });
         this._keys = new InMemoryApiKeyRepository();
-        await this._keys.AddAsync(new ApiKey { Name = "test-viewer", KeyHash = ApiKeyGenerator.Hash(ViewerKey), Roles = AdminRoles.Viewer }).ConfigureAwait(false);
-        await this._keys.AddAsync(new ApiKey { Name = "test-cashshop", KeyHash = ApiKeyGenerator.Hash(CashShopKey), Roles = AdminRoles.CashShop }).ConfigureAwait(false);
-        await this._keys.AddAsync(new ApiKey { Name = "test-admin", KeyHash = ApiKeyGenerator.Hash("omu_mcp-admin-test"), Roles = AdminRoles.Administrator }).ConfigureAwait(false);
+        await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "test-viewer", KeyHash = ApiKeyGenerator.Hash(ViewerKey), Roles = AdminRoles.Viewer }).ConfigureAwait(false);
+        await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "test-cashshop", KeyHash = ApiKeyGenerator.Hash(CashShopKey), Roles = AdminRoles.CashShop }).ConfigureAwait(false);
+        await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "test-admin", KeyHash = ApiKeyGenerator.Hash("omu_mcp-admin-test"), Roles = AdminRoles.Administrator }).ConfigureAwait(false);
         builder.Services.AddSingleton<IApiKeyRepository>(this._keys);
         builder.Services.AddSingleton(Mock.Of<IModalService>());
         builder.Services.AddSingleton(Mock.Of<IToastService>());
@@ -93,6 +96,7 @@ public class McpIntegrationTests
         account.Characters.Add(character);
         var guild = context.CreateNew<MUnique.OpenMU.DataModel.Entities.Guild>();
         guild.Name = "Knights";
+        this._guildId = guild.GetId();
         await context.SaveChangesAsync().ConfigureAwait(false);
         var configurations = new Mock<IDataSource<GameConfiguration>>();
         configurations.Setup(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(config);
@@ -101,6 +105,7 @@ public class McpIntegrationTests
         var login = new Mock<ILoginServer>();
         login.Setup(l => l.GetSnapshotAsync()).ReturnsAsync(new Dictionary<string, byte> { ["tester"] = 4 });
         builder.Services.AddSingleton(login.Object);
+        builder.Services.AddSingleton(Mock.Of<IGuildServer>());
         var servers = new Mock<IServerProvider>();
         servers.SetupGet(s => s.Servers).Returns(new List<IManageableServer>());
         builder.Services.AddSingleton(servers.Object);
@@ -123,11 +128,18 @@ public class McpIntegrationTests
     [TearDown]
     public async Task TearDownAsync()
     {
-        this._http?.Dispose();
+        this.Dispose();
         if (this._app is { } app)
         {
             await app.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    /// <summary>Disposes the HTTP client owned by this fixture.</summary>
+    public void Dispose()
+    {
+        this._http?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>Setup mode never bypasses MCP authentication or roles, and browser cookies are rejected.</summary>
@@ -261,6 +273,71 @@ public class McpIntegrationTests
         Assert.That(oversized.StatusCode, Is.EqualTo(HttpStatusCode.RequestEntityTooLarge));
     }
 
+    /// <summary>Guild filtering uses the separately registered guild service with a live member.</summary>
+    [Test]
+    public async Task ListsOnlineGuildMembersUsingGuildServiceAsync()
+    {
+        var persistence = this._app.Services.GetRequiredService<IPersistenceContextProvider>();
+        var config = await this._app.Services.GetRequiredService<IDataSource<GameConfiguration>>().GetOwnerAsync().ConfigureAwait(false);
+        using var context = persistence.CreateNewPlayerContext(config);
+        var account = await context.GetAccountByLoginNameAsync("tester").ConfigureAwait(false);
+        Assert.That(account, Is.Not.Null);
+        var gameContext = new Mock<IGameServerContext>();
+        gameContext.SetupGet(c => c.LoggerFactory).Returns(NullLoggerFactory.Instance);
+        gameContext.SetupGet(c => c.Configuration).Returns(config);
+        gameContext.SetupGet(c => c.PersistenceContextProvider).Returns(persistence);
+        gameContext.SetupGet(c => c.PlugInManager).Returns(this._app.Services.GetRequiredService<PlugInManager>());
+        await using var player = new Player(gameContext.Object)
+        {
+            Account = account,
+            GuildStatus = new GuildMemberStatus(7, GuildPosition.NormalMember),
+        };
+        gameContext.Setup(c => c.GetPlayersAsync()).ReturnsAsync(new List<Player> { player });
+        var server = new Mock<IManageableServer>();
+        server.SetupGet(s => s.Id).Returns(4);
+        server.SetupGet(s => s.Type).Returns(ServerType.GameServer);
+        server.As<IGameServerContextProvider>().SetupGet(s => s.Context).Returns(gameContext.Object);
+        Mock.Get(this._app.Services.GetRequiredService<IServerProvider>()).SetupGet(s => s.Servers).Returns(new List<IManageableServer> { server.Object });
+        var guildServer = Mock.Get(this._app.Services.GetRequiredService<IGuildServer>());
+        guildServer.Setup(g => g.GetGuildIdAsync(this._guildId)).ReturnsAsync(7U);
+
+        await using var client = await this.ConnectAsync().ConfigureAwait(false);
+        var result = await client.CallToolAsync("players_list", new Dictionary<string, object?> { ["guildName"] = "Knights" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.Not.True);
+        var data = JsonSerializer.SerializeToNode(result.StructuredContent);
+        Assert.That(data?["total"]?.GetValue<int>(), Is.EqualTo(1));
+        Assert.That(data?["items"]?[0]?["account"]?.GetValue<string>(), Is.EqualTo("tester"));
+        Assert.That(data?["items"]?[0]?["guildId"]?.GetValue<uint>(), Is.EqualTo(7));
+        Assert.That(data?["items"]?[0]?["liveDataAvailable"]?.GetValue<bool>(), Is.True);
+        guildServer.Verify(g => g.GetGuildIdAsync(this._guildId), Times.Once);
+
+        var missing = await client.CallToolAsync("players_list", new Dictionary<string, object?> { ["guildName"] = "Missing" }).ConfigureAwait(false);
+        Assert.That(JsonSerializer.SerializeToNode(missing.StructuredContent)?["total"]?.GetValue<int>(), Is.Zero);
+    }
+
+    /// <summary>Distinct API keys with the same display name have independent rate allowances.</summary>
+    [Test]
+    public async Task DuplicateKeyNamesHaveIndependentRateLimitsAsync()
+    {
+        const string secondKey = "omu_second-viewer-key-for-mcp-integration-tests";
+        await this._keys.AddAsync(new ApiKey
+        {
+            Id = Guid.NewGuid(),
+            Name = "test-viewer",
+            KeyHash = ApiKeyGenerator.Hash(secondKey),
+            Roles = AdminRoles.Viewer,
+        }).ConfigureAwait(false);
+        this._app.Services.GetRequiredService<AdminMcpOptions>().RequestsPerMinute = 2;
+
+        Assert.That(await this.PingAsync(ViewerKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(await this.PingAsync(ViewerKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(await this.PingAsync(ViewerKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(await this.PingAsync(secondKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(await this.PingAsync(secondKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(await this.PingAsync(secondKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(await this.PingAsync(ViewerKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.TooManyRequests));
+    }
+
     /// <summary>Disabled means the HTTP route is not registered.</summary>
     [Test]
     public async Task DisabledByDefaultAsync()
@@ -275,6 +352,16 @@ public class McpIntegrationTests
         using var http = new HttpClient(new HttpClientHandler { UseProxy = false }) { BaseAddress = new Uri(app.Urls.Single()) };
         using var response = await http.GetAsync("/mcp").ConfigureAwait(false);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
+    private async ValueTask<HttpStatusCode> PingAsync(string key)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/mcp");
+        request.Headers.Add("X-Api-Key", key);
+        request.Headers.Accept.ParseAdd("application/json, text/event-stream");
+        request.Content = JsonContent.Create(new { jsonrpc = "2.0", id = 1, method = "ping" });
+        using var response = await this._http.SendAsync(request).ConfigureAwait(false);
+        return response.StatusCode;
     }
 
     private async ValueTask<McpClient> ConnectAsync()

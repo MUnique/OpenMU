@@ -20,7 +20,8 @@ public sealed class ServerReadOperations(
     ILoginServer loginServer,
     IPersistenceContextProvider persistence,
     IDataSource<GameConfiguration> configurations,
-    IAdminReadModel readModel)
+    IAdminReadModel readModel,
+    IGuildServer? guildServer = null)
 {
     /// <summary>Reads the server dashboard as data.</summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -65,7 +66,7 @@ public sealed class ServerReadOperations(
         using var guildContext = persistence.CreateNewGuildContext();
         var accounts = await playerContext.GetAccountStatisticsAsync(DateTime.UtcNow.AddDays(-newAccountDays), cancellationToken).ConfigureAwait(false);
         var guilds = await guildContext.GetGuildStatisticsAsync(cancellationToken).ConfigureAwait(false);
-        return new AdminStatisticsSnapshot("Player accounts exclude bots and templates. History starts when the admin host starts.", newAccountDays, accounts, guilds, readModel.GetPlayerHistory());
+        return new AdminStatisticsSnapshot("Player accounts exclude bots and templates. History starts when the admin host starts.", newAccountDays, accounts, guilds, readModel.PlayerHistory);
     }
 
     /// <summary>Lists online accounts, enriched with live character data where available.</summary>
@@ -98,12 +99,11 @@ public sealed class ServerReadOperations(
         // stale persisted positions for unavailable live data, or silently return false negatives.
         if ((mapNumber is not null || !string.IsNullOrEmpty(guildName)) && live.Count < online.Count)
         {
-            throw new ArgumentException("Map and guild filters require live game server data, available in all-in-one deployments. Query by serverId in distributed deployments.");
+            throw new ArgumentException($"Map and guild filters require live game server data, available in all-in-one deployments. Query by {nameof(serverId)} in distributed deployments.", mapNumber is not null ? nameof(mapNumber) : nameof(guildName));
         }
 
         using var guildContext = persistence.CreateNewGuildContext();
         var guildId = string.IsNullOrEmpty(guildName) ? null : await guildContext.GetPersistentGuildIdByNameAsync(guildName).ConfigureAwait(false);
-        var guildServer = servers.Servers.OfType<IGuildServer>().FirstOrDefault();
         uint? liveGuildId = null;
         if (guildId is { } persistentId && guildServer is not null)
         {

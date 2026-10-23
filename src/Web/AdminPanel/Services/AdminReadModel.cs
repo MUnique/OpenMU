@@ -12,6 +12,9 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 public sealed class AdminReadModel(ConfigurationSearchIndexCache search, OnlinePlayerHistory history, DataUpdateService updates) : IAdminReadModel
 {
     /// <inheritdoc />
+    public IReadOnlyList<PlayerCountSample> PlayerHistory => history.GetSamples().Select(s => new PlayerCountSample(s.Timestamp, s.PlayerCount)).ToArray();
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<ConfigurationSearchHit>> SearchConfigurationAsync(string text, CancellationToken cancellationToken)
     {
         await search.EnsureLoadedAsync(cancellationToken).ConfigureAwait(false);
@@ -21,9 +24,6 @@ public sealed class AdminReadModel(ConfigurationSearchIndexCache search, OnlineP
             .OrderBy(e => e.Caption, StringComparer.OrdinalIgnoreCase).ThenBy(e => e.Url, StringComparer.Ordinal)
             .Select(e => new ConfigurationSearchHit(e.Caption, e.Path, e.Url)).ToArray();
     }
-
-    /// <inheritdoc />
-    public IReadOnlyList<PlayerCountSample> GetPlayerHistory() => history.GetSamples().Select(s => new PlayerCountSample(s.Timestamp, s.PlayerCount)).ToArray();
 
     /// <inheritdoc />
     public async ValueTask<int> GetPendingUpdatesAsync(CancellationToken cancellationToken)

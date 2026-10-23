@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using System.Text.Json.Nodes;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.PlugIns;
@@ -24,14 +23,14 @@ public sealed class PluginReadOperations(PlugInManager plugins)
         AdminReadResult.ValidatePage(offset, limit);
         var matches = plugins.KnownPlugInTypes.Select(t =>
         {
-            var display = t.GetCustomAttribute<DisplayAttribute>();
+            var display = t.GetCustomAttributes(typeof(DisplayAttribute), inherit: true).OfType<DisplayAttribute>().FirstOrDefault();
             return new
             {
                 id = t.GUID,
                 name = display?.GetName() ?? t.Name,
                 description = display?.GetDescription(),
                 active = plugins.IsPlugInActive(t),
-                pluginPoints = t.GetInterfaces().Where(i => i.GetCustomAttribute<PlugInPointAttribute>() is not null).Select(i => i.Name).ToArray(),
+                pluginPoints = t.GetInterfaces().Where(i => i.IsDefined(typeof(PlugInPointAttribute), inherit: true)).Select(i => i.Name).ToArray(),
                 hasCustomConfiguration = t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportCustomConfiguration<>)),
             };
         }).Where(p => p.name.Contains(text, StringComparison.OrdinalIgnoreCase)).OrderBy(p => p.name).ThenBy(p => p.id).ToList();

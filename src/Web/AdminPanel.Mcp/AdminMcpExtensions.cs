@@ -54,7 +54,7 @@ public static class AdminMcpExtensions
         {
             rateLimiter.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             rateLimiter.AddPolicy(RateLimitPolicy, context => RateLimitPartition.GetFixedWindowLimiter(
-                context.User.FindFirst(ApiKeyAuthenticationDefaults.ClientNameClaimType)?.Value ?? "anonymous",
+                context.User.FindFirst(ApiKeyAuthenticationDefaults.ClientIdClaimType)?.Value ?? "anonymous",
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = options.RequestsPerMinute, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
         });
         services.AddMcpServer()

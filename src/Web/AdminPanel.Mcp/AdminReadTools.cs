@@ -20,6 +20,10 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 [McpServerToolType]
 public sealed class AdminReadTools
 {
+    private AdminReadTools()
+    {
+    }
+
     /// <summary>Read server states, connection counts, version, admin host uptime, database connectivity and pending updates.</summary>
     /// <param name="operations">The admin operations.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
