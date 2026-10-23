@@ -25,7 +25,7 @@ public abstract class AddCrystalSwordIceChanceUpdatePlugInBase : UpdatePlugInBas
     public override string Description => PlugInResources.AddCrystalSwordIceChanceUpdatePlugIn_Description;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 10, 22, 11, 30, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 10, 23, 12, 00, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
@@ -52,12 +52,6 @@ public abstract class AddCrystalSwordIceChanceUpdatePlugInBase : UpdatePlugInBas
 
         powerUp.BaseValue = 1.0f / 20;
         powerUp.AggregateType = AggregateType.AddRaw;
-
-        var ice = gameConfiguration.Skills.FirstOrDefault(skill => skill.Number == IceSkillNumber);
-        if (ice is not null && !ice.AttributeRelationships.Any(ar => ar.TargetAttribute == Stats.SkillFinalMultiplier))
-        {
-            ice.AttributeRelationships.Add(new AttributeRelationship(Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier, InputOperator.Minimum));
-        }
 
         return ValueTask.CompletedTask;
     }

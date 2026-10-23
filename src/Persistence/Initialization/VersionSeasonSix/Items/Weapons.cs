@@ -508,7 +508,7 @@ internal class Weapons : InitializerBase
             else if (number == 5)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped, 1, AggregateType.AddRaw));
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.CrystalSwordIceChance, 0.75f/*1.0f / 20*/, AggregateType.AddRaw));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.CrystalSwordIceChance, 1.0f / 20, AggregateType.AddRaw));
             }
             else
             {
