@@ -52,16 +52,32 @@ configured maximum is larger. These are deliberate current contracts.
 From the repository root, build once in the same configuration used for tests:
 
 ```powershell
-dotnet build tests/MUnique.OpenMU.Tests/MUnique.OpenMU.Tests.csproj -c Debug -p:ci=true
-dotnet build tests/MUnique.OpenMU.Network.Packets.Tests/MUnique.OpenMU.Network.Packets.Tests.csproj -c Debug -p:ci=true
-dotnet build tests/MUnique.OpenMU.Persistence.Initialization.Tests/MUnique.OpenMU.Persistence.Initialization.Tests.csproj -c Debug -p:ci=true
+$coreTests = "tests/MUnique.OpenMU.Tests"
+$packetTests = "tests/MUnique.OpenMU.Network.Packets.Tests"
+$initializationTests =
+    "tests/MUnique.OpenMU.Persistence.Initialization.Tests"
 
-dotnet test tests/MUnique.OpenMU.Tests/MUnique.OpenMU.Tests.csproj -c Debug --no-build --filter "FullyQualifiedName~MUnique.OpenMU.Tests.CastleSiege|FullyQualifiedName~GuildAllianceTest|FullyQualifiedName~GuildActionTest|FullyQualifiedName~RivalGuild"
-dotnet test tests/MUnique.OpenMU.Network.Packets.Tests/MUnique.OpenMU.Network.Packets.Tests.csproj -c Debug --no-build --filter "FullyQualifiedName~CastleSiege"
-dotnet test tests/MUnique.OpenMU.Persistence.Initialization.Tests/MUnique.OpenMU.Persistence.Initialization.Tests.csproj -c Debug --no-build --filter "FullyQualifiedName~MUnique.OpenMU.Persistence.Initialization.Tests.CastleSiege"
+dotnet build $coreTests -c Debug -p:ci=true
+dotnet build $packetTests -c Debug -p:ci=true
+dotnet build $initializationTests -c Debug -p:ci=true
+
+$coreFilter = @(
+    "FullyQualifiedName~MUnique.OpenMU.Tests.CastleSiege",
+    "FullyQualifiedName~GuildAllianceTest",
+    "FullyQualifiedName~GuildActionTest",
+    "FullyQualifiedName~RivalGuild"
+) -join "|"
+$initializationFilter = "FullyQualifiedName~" +
+    "MUnique.OpenMU.Persistence.Initialization.Tests.CastleSiege"
+
+dotnet test $coreTests -c Debug --no-build --filter $coreFilter
+dotnet test $packetTests -c Debug --no-build `
+    --filter "FullyQualifiedName~CastleSiege"
+dotnet test $initializationTests -c Debug --no-build `
+    --filter $initializationFilter
 
 # Before submission, also run the complete core regression suite.
-dotnet test tests/MUnique.OpenMU.Tests/MUnique.OpenMU.Tests.csproj -c Debug --no-build
+dotnet test $coreTests -c Debug --no-build
 ```
 
 Rebuild after changing code. `-p:ci=true` avoids regenerating unrelated packet
