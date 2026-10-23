@@ -263,6 +263,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var skill = skillEntry.Skill;
         var success = false;
+        Skill? animatedSkill = null;
         var targets = this.DetermineTargets(player, targetedTarget, skill);
         bool isCombo = false;
         if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
@@ -295,9 +296,10 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                         await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
                     }
 
-                    if (hitInfo is { SkillEntry.Skill: not null })
+                    if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
                     {
-                        skill = hitInfo.Value.SkillEntry.Skill;
+                        // The hit generated a different skill (e.g. ice) than the one originally casted.
+                        animatedSkill = hitInfo.Value.SkillEntry.Skill;
                     }
                 }
             }
@@ -337,6 +339,6 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
         }
 
-        return (success, skill);
+        return (success, animatedSkill ?? skill);
     }
 }
