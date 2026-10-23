@@ -39,6 +39,17 @@ The updates take effect after a restart of the server process. Until then, the
 running server still works with the configuration it loaded at startup.
 :::
 
+## On a new database
+
+A new database already contains the changes of OpenMU's own updates, because the
+initialization creates the current configuration. It therefore marks them as
+applied, and this page starts empty.
+
+Plugins can bring configuration updates too, for example one which adds the
+plugin's own item. Their changes are not part of OpenMU's initialization, so such
+an update declares `RunsOnNewDatabase`, and a new database applies it right away.
+On an existing database it is listed here like any other update.
+
 ## Preconditions
 
 If the database is not installed yet, or a schema update is pending, this page
