@@ -76,8 +76,8 @@ internal class NewDatabaseUpdatesTest
     {
         var (context, gameConfiguration) = CreateContext();
         var applied = new List<string>();
-        var earlier = new OrderedTestUpdatePlugIn(applied, "earlier", new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), 1);
-        var later = new LaterOrderedTestUpdatePlugIn(applied, "later", new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), 3);
+        var earlier = new EarlierTestUpdatePlugIn(applied);
+        var later = new LaterTestUpdatePlugIn(applied);
 
         await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [later, earlier]).ConfigureAwait(false);
 
@@ -136,17 +136,16 @@ internal class NewDatabaseUpdatesTest
     }
 
     /// <summary>
-    /// An update which runs on a new database and notes when it's applied.
+    /// The updates of the order test: they run on a new database and note when they're applied.
     /// </summary>
-    [Guid("5E8A2D17-C94B-4F03-B6E1-0A7D3C9F2B48")]
-    private class OrderedTestUpdatePlugIn : UpdatePlugInBase
+    private abstract class OrderedTestUpdatePlugIn : UpdatePlugInBase
     {
         private readonly List<string> _applied;
         private readonly string _name;
         private readonly DateTime _createdAt;
         private readonly int _version;
 
-        public OrderedTestUpdatePlugIn(List<string> applied, string name, DateTime createdAt, int version)
+        protected OrderedTestUpdatePlugIn(List<string> applied, string name, DateTime createdAt, int version)
         {
             this._applied = applied;
             this._name = name;
@@ -168,7 +167,7 @@ internal class NewDatabaseUpdatesTest
 
         public override bool RunsOnNewDatabase => true;
 
-        protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+        protected ValueTask NoteAppliedAsync()
         {
             this._applied.Add(this._name);
             return ValueTask.CompletedTask;
@@ -176,14 +175,36 @@ internal class NewDatabaseUpdatesTest
     }
 
     /// <summary>
-    /// A second update of that kind: an update is identified by its type's GUID.
+    /// The earlier update of the order test.
+    /// </summary>
+    [Guid("5E8A2D17-C94B-4F03-B6E1-0A7D3C9F2B48")]
+    private sealed class EarlierTestUpdatePlugIn : OrderedTestUpdatePlugIn
+    {
+        public EarlierTestUpdatePlugIn(List<string> applied)
+            : base(applied, "earlier", new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc), 1)
+        {
+        }
+
+        protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+        {
+            return this.NoteAppliedAsync();
+        }
+    }
+
+    /// <summary>
+    /// The later update of the order test, at version 3.
     /// </summary>
     [Guid("A1C6F3E8-2D74-4B95-8E0F-6B3A9D5C1E27")]
-    private sealed class LaterOrderedTestUpdatePlugIn : OrderedTestUpdatePlugIn
+    private sealed class LaterTestUpdatePlugIn : OrderedTestUpdatePlugIn
     {
-        public LaterOrderedTestUpdatePlugIn(List<string> applied, string name, DateTime createdAt, int version)
-            : base(applied, name, createdAt, version)
+        public LaterTestUpdatePlugIn(List<string> applied)
+            : base(applied, "later", new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), 3)
         {
+        }
+
+        protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+        {
+            return this.NoteAppliedAsync();
         }
     }
 
