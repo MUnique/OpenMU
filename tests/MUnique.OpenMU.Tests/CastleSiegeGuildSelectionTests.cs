@@ -53,6 +53,79 @@ public class CastleSiegeGuildSelectionTests
     }
 
     /// <summary>
+    /// Verifies zero scores, integer division, and saturation at the supported score limit.
+    /// </summary>
+    /// <param name="marks">The submitted marks.</param>
+    /// <param name="members">The guild member count.</param>
+    /// <param name="level">The combined guild master level.</param>
+    /// <param name="expected">The expected score.</param>
+    [TestCase(0, 0, 0, 0)]
+    [TestCase(0, 1, 3, 1)]
+    [TestCase(0, 1, 4, 2)]
+    [TestCase(int.MaxValue, 0, 0, int.MaxValue)]
+    [TestCase(0, int.MaxValue, int.MaxValue, int.MaxValue)]
+    public void SelectionScoreHandlesBoundaries(int marks, int members, int level, int expected)
+    {
+        Assert.That(CastleSiegeGuildSelector.CalculateScore(marks, members, level), Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Verifies that ineligible registrations do not consume an attacking side.
+    /// </summary>
+    /// <param name="hasMarks">Whether the highest-ranked guild submitted marks.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async ValueTask SelectionSkipsGuildsWithoutMarksOrMembersAsync(bool hasMarks)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        if (hasMarks)
+        {
+            fixture.GuildServer.Setup(server => server.GetGuildListAsync(AlphaGuildId))
+                .ReturnsAsync(ImmutableList<GuildListEntry>.Empty);
+        }
+        else
+        {
+            fixture.Context.RegisteredGuilds[fixture.AlphaPersistentGuildId].Marks = 0;
+        }
+
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(AlphaGuildId));
+            Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(AlphaAllianceGuildId));
+            Assert.That(fixture.Context.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.FinalGuildList[BravoGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+            Assert.That(fixture.Context.FinalGuildList[DeltaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack3));
+        });
+    }
+
+    /// <summary>
+    /// Verifies the configured attacker limit without excluding the defending alliance.
+    /// </summary>
+    /// <param name="maximumAttackers">The configured limit.</param>
+    /// <param name="expectedAttackers">The supported number of attacking alliances.</param>
+    [TestCase(0, 0)]
+    [TestCase(1, 1)]
+    [TestCase(2, 2)]
+    [TestCase(3, 3)]
+    [TestCase(int.MaxValue, 3)]
+    public async ValueTask SelectionHonorsSupportedAttackerLimitAsync(int maximumAttackers, int expectedAttackers)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.CastleSiegeConfiguration.MaxAttackingGuilds = maximumAttackers;
+
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.FinalGuildList.Values.Count(guild => guild.IsAllianceMaster && guild.Side != CastleSiegeJoinSide.Defense), Is.EqualTo(expectedAttackers));
+            Assert.That(fixture.Context.FinalGuildList[DefenseGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+            Assert.That(fixture.Context.FinalGuildList[DefenseAllianceGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+        });
+    }
+
+    /// <summary>
     /// Verifies ranking, tie-breaking, offline guild loading, alliance expansion, persistence, and restart loading.
     /// </summary>
     [Test]
@@ -345,6 +418,41 @@ public class CastleSiegeGuildSelectionTests
                 AlphaAllianceGuildId,
                 fixture.CastleSiegeConfiguration.GuildScoreCastleSiegeMembers),
             Times.Once);
+    }
+
+    /// <summary>
+    /// Verifies the exact participation threshold for online delivery and offline queuing.
+    /// </summary>
+    /// <param name="secondsBelowThreshold">The number of seconds missing from eligibility.</param>
+    [TestCase(1)]
+    [TestCase(0)]
+    public async ValueTask ParticipantRewardThresholdAppliesOnlineAndOfflineAsync(int secondsBelowThreshold)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "Boundary").ConfigureAwait(false);
+        var participation = TimeSpan.FromSeconds(fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds - secondsBelowThreshold);
+        foreach (var characterId in new[] { player.SelectedCharacter!.Id, fixture.OfflineCharacterId })
+        {
+            fixture.Context.ParticipantTracking[characterId] = new CastleSiegeParticipant
+            {
+                CharacterId = characterId,
+                GuildId = AlphaGuildId,
+                ParticipationTime = participation,
+            };
+        }
+
+        await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegePendingReward), false, fixture.GameConfiguration);
+        var queuedRewards = await persistenceContext.GetAsync<CastleSiegePendingReward>().ConfigureAwait(false);
+        var expectedCount = secondsBelowThreshold == 0 ? 1 : 0;
+        Assert.Multiple(() =>
+        {
+            Assert.That(player.Inventory!.Items.Count(item => item.Definition == fixture.RewardItemDefinition), Is.EqualTo(expectedCount));
+            Assert.That(queuedRewards, Has.Count.EqualTo(expectedCount));
+            Assert.That(queuedRewards.All(reward => reward.CharacterId == fixture.OfflineCharacterId), Is.True);
+        });
     }
 
     /// <summary>

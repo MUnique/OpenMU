@@ -677,6 +677,39 @@ public class CastleSiegeCrownMechanicsTests
                 Times.Once);
     }
 
+    /// <summary>
+    /// Verifies every partial Crown/switch occupancy combination independently of packets.
+    /// </summary>
+    /// <param name="hasCrownUser">Whether the Crown is occupied.</param>
+    /// <param name="hasFirstSwitchUser">Whether the first switch is occupied.</param>
+    /// <param name="hasSecondSwitchUser">Whether the second switch is occupied.</param>
+    [TestCase(false, false, false)]
+    [TestCase(false, false, true)]
+    [TestCase(false, true, false)]
+    [TestCase(false, true, true)]
+    [TestCase(true, false, false)]
+    [TestCase(true, false, true)]
+    [TestCase(true, true, false)]
+    [TestCase(true, true, true)]
+    public async ValueTask CrownProgressRequiresCompleteOccupancyAsync(bool hasCrownUser, bool hasFirstSwitchUser, bool hasSecondSwitchUser)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var crownUser = await fixture.CreatePlayerAsync(AttackGuildId, "Crown", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var firstSwitchUser = await fixture.CreatePlayerAsync(AttackGuildId, "First", CastleSiegeJoinSide.Attack1, 70, 60).ConfigureAwait(false);
+        var secondSwitchUser = await fixture.CreatePlayerAsync(AttackGuildId, "Second", CastleSiegeJoinSide.Attack1, 80, 60).ConfigureAwait(false);
+        fixture.Context.CrownUser = hasCrownUser ? crownUser : null;
+        fixture.Context.SwitchUsers[0] = hasFirstSwitchUser ? firstSwitchUser : null;
+        fixture.Context.SwitchUsers[1] = hasSecondSwitchUser ? secondSwitchUser : null;
+
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(hasCrownUser && hasFirstSwitchUser && hasSecondSwitchUser ? TimeSpan.FromSeconds(1) : TimeSpan.Zero));
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.DefensePersistentGuildId));
+        });
+    }
+
     private static async ValueTask<TestFixture> CreateFixtureAsync()
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();

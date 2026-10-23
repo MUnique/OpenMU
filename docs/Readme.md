@@ -39,6 +39,9 @@ can be searched and navigated.
 * [Packet structure tests](PacketStructureTests.md): how the packet structures
   are verified
 
+* [Castle Siege testing strategy](CastleSiegeTesting.md): regression coverage,
+  test boundaries, execution commands and the client/server smoke checklist
+
 * [Progress](Progress.md): the implementation progress of the packet handlers.
   See also the [normal skill progress](https://github.com/MUnique/OpenMU/projects/9)
   and the [master skill progress](https://github.com/MUnique/OpenMU/projects/10)
