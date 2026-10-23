@@ -341,6 +341,12 @@
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
     <value>将囚禁之岛传送条目的索引修正为Season 6客户端请求的42。</value>
   </data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Name" xml:space="preserve">
+    <value>修正火舞旋风需求</value>
+  </data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve">
+    <value>将火舞旋风技能的智力和统率需求修正为150和70。此前两者被互换，导致统率低于150的圣导师可以学习该技能却无法使用。</value>
+  </data>
   <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve">
     <value>添加狼魂要塞活动</value>
   </data>
