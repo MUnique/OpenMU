@@ -41,7 +41,7 @@ using MUnique.OpenMU.Web.Tests.AdminAuth;
 
 /// <summary>Exercises the real HTTP transport, API-key authentication and read operations.</summary>
 [TestFixture]
-public sealed class McpIntegrationTests : IDisposable
+public sealed class McpIntegrationTests : System.IDisposable
 {
     private const string ViewerKey = "omu_viewer-key-for-mcp-integration-tests";
     private const string CashShopKey = "omu_cashshop-key-for-mcp-integration-tests";
