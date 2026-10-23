@@ -42,24 +42,10 @@ public class ResetCharacterAction
             return;
         }
 
-        this._player.Attributes![Stats.Resets] = resetParameter.Value.NextResetCount;
-        this._player.Attributes[Stats.Level] = resetParameter.Value.LevelAfterReset;
-        this._player.SelectedCharacter!.Experience = 0;
+        this.UpdatePlayer(resetParameter.Value);
         this.UpdateStats(resetParameter.Value);
 
-        if (resetParameter.Value.MoveHome)
-        {
-            await this.MoveHomeAsync().ConfigureAwait(false);
-        }
-
-        if (resetParameter.Value.LogOut)
-        {
-            await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
-        }
-        else
-        {
-            await this.UpdateClientStatsAsync(resetParameter.Value.ResetStats).ConfigureAwait(false);
-        }
+        await this.HandlePostResetAsync(resetParameter.Value).ConfigureAwait(false);
     }
 
     private async ValueTask<ResetParameter?> GetParametersToResetAsync()
@@ -222,6 +208,13 @@ public class ResetCharacterAction
         return requiredItems;
     }
 
+    private void UpdatePlayer(ResetParameter resetParameter)
+    {
+        this._player.Attributes![Stats.Resets] = resetParameter.NextResetCount;
+        this._player.Attributes[Stats.Level] = resetParameter.LevelAfterReset;
+        this._player.SelectedCharacter!.Experience = 0;
+    }
+
     private void UpdateStats(ResetParameter resetParameter)
     {
         if (resetParameter.ResetStats)
@@ -238,6 +231,23 @@ public class ResetCharacterAction
         else
         {
             this._player.SelectedCharacter!.LevelUpPoints += resetParameter.PointsForReset;
+        }
+    }
+
+    private async ValueTask HandlePostResetAsync(ResetParameter resetParameter)
+    {
+        if (resetParameter.MoveHome)
+        {
+            await this.MoveHomeAsync().ConfigureAwait(false);
+        }
+
+        if (resetParameter.LogOut)
+        {
+            await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
+        }
+        else
+        {
+            await this.UpdateClientStatsAsync(resetParameter.ResetStats).ConfigureAwait(false);
         }
     }
 
