@@ -1,4 +1,4 @@
-﻿// <copyright file="Program.cs" company="MUnique">
+// <copyright file="Program.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,6 +15,7 @@ using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Mcp;
 
 var builder = DaprService.CreateBuilder("AdminPanel", args);
 
@@ -37,6 +38,7 @@ services.AddPeristenceProvider(true)
     .AddAdminUserRepository();
 
 builder.AddAdminPanel();
+builder.Services.AddAdminMcp(builder.Configuration);
 
 var metricsRegistry = new MetricsRegistry();
 
@@ -52,6 +54,7 @@ app.MapStaticAssets();
 app.MapRazorComponents<MUnique.OpenMU.Web.AdminPanel.Components.App>()
     .AddInteractiveServerRenderMode();
 app.MapAdminPanelAuthEndpoints();
+app.MapAdminMcp();
 
 await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 

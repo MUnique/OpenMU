@@ -14,13 +14,13 @@ public static class ApiKeyAuthenticationDefaults
     /// <summary>
     /// Gets the name of the authentication scheme.
     /// </summary>
-    internal const string AuthenticationScheme = "OpenMU.ApiKey";
+    public const string AuthenticationScheme = "OpenMU.ApiKey";
 
     /// <summary>
     /// Gets the authentication schemes which are accepted by the public API: an API key for external
     /// applications, and the cookie of the admin panel, so a logged in user can use it as well.
     /// </summary>
-    internal const string ApiSchemes = CookieAuthenticationDefaults.AuthenticationScheme + "," + AuthenticationScheme;
+    public const string ApiSchemes = CookieAuthenticationDefaults.AuthenticationScheme + "," + AuthenticationScheme;
 
     /// <summary>
     /// Gets the request header which carries the API key.

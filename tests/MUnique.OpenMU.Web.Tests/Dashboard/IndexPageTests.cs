@@ -10,16 +10,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Pages;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Services;
+using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>
 /// Tests for the dashboard on the start page (<see cref="Index"/>).
@@ -96,19 +98,23 @@ public class IndexPageTests
         var playerContext = new Mock<IPlayerContext>();
         playerContext.Setup(c => c.GetAccountStatisticsAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new AccountStatistics(1234, 5, 2, 2000));
-        var accountSource = new Mock<IDataSource<Account>>();
-        accountSource.Setup(s => s.GetContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(playerContext.Object);
+        var configurations = new Mock<IDataSource<GameConfiguration>>();
+        configurations.Setup(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(new GameConfiguration());
 
         var guildContext = new Mock<IGuildServerContext>();
         guildContext.Setup(c => c.GetGuildStatisticsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new GuildStatistics(56, 3));
         var contextProvider = new Mock<IMigratableDatabaseContextProvider>();
         contextProvider.Setup(p => p.CreateNewGuildContext()).Returns(guildContext.Object);
+        contextProvider.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Returns(playerContext.Object);
         contextProvider.Setup(p => p.CanConnectToDatabaseAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true);
         var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
 
         context.Services.AddSingleton(serverProvider);
         context.Services.AddSingleton(new OnlinePlayerHistory(serverProvider, NullLogger<OnlinePlayerHistory>.Instance));
-        context.Services.AddSingleton(accountSource.Object);
+        context.Services.AddSingleton(configurations.Object);
+        context.Services.AddSingleton(Mock.Of<ILoginServer>());
+        context.Services.AddSingleton<IAdminReadModel, TestReadModel>();
+        context.Services.AddAdminReadOperations();
         context.Services.AddSingleton(contextProvider.Object);
         context.Services.AddSingleton<IPersistenceContextProvider>(contextProvider.Object);
         context.Services.AddSingleton(new DataUpdateService(contextProvider.Object, plugInManager));

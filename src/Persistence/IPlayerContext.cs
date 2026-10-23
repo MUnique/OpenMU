@@ -1,4 +1,4 @@
-﻿// <copyright file="IPlayerContext.cs" company="MUnique">
+// <copyright file="IPlayerContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -91,6 +91,15 @@ public interface IPlayerContext : IContext
     /// The account objects, without dependent data.
     /// </returns>
     ValueTask<IEnumerable<Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default);
+
+    /// <summary>Searches login names, e-mail addresses and character names with an optional state filter.</summary>
+    /// <param name="text">The case-insensitive search term.</param>
+    /// <param name="state">The optional account state.</param>
+    /// <param name="offset">The number of matches to skip.</param>
+    /// <param name="limit">The maximum number of matches.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching account page and total count.</returns>
+    ValueTask<(IReadOnlyList<Account> Accounts, int Total)> SearchAccountPageAsync(string text, AccountState? state, int offset, int limit, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets statistics about the player accounts.

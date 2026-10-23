@@ -1,0 +1,143 @@
+---
+sidebar_position: 18
+---
+
+# Connect an AI agent through MCP
+
+The admin panel can expose a read-only [Model Context Protocol](https://modelcontextprotocol.io/)
+server at `/mcp`. Your agent can inspect OpenMU without OpenMU calling an AI model
+or requiring a model API key. The endpoint is disabled by default.
+
+## Enable the endpoint
+
+Set the following in the admin host's `appsettings.json` and restart it:
+
+```json
+{
+  "AdminPanel": {
+    "Mcp": {
+      "Enabled": true,
+      "ReadOnly": true,
+      "RequestsPerMinute": 60,
+      "MaxRequestBodyBytes": 65536
+    }
+  }
+}
+```
+
+Alternatively, set `OPENMU_MCP_ENABLED=true` in the admin host's environment
+(including Docker), or `AdminPanel__Mcp__Enabled=true` through standard .NET
+configuration. Both the all-in-one host and distributed admin host support MCP.
+`ReadOnly` defaults to `true`; this first phase contains only read tools even
+when it is set to `false`.
+
+Use HTTPS for remote clients. Direct HTTP requests are accepted only from the
+loopback interface. If a reverse proxy terminates HTTPS, configure ASP.NET Core's
+trusted forwarded headers so that the admin host recognizes the original HTTPS
+scheme. Keep the proxy's request size limit at least as strict as the host's.
+The distributed deployment's proxy exposes the endpoint at `/admin/mcp`.
+
+Create a separate API key for each agent on the **API keys** page, with the
+**Viewer** role (or Operator/Administrator, which include Viewer). A CashShop-only
+key cannot read admin data. See [authentication](authentication.md#api-keys-for-external-applications).
+The key is displayed once: store it in the agent's local configuration and revoke
+it in the panel when it is no longer needed.
+
+MCP accepts `X-Api-Key: <key>` or `Authorization: Bearer <key>`. Browser cookies,
+reverse-proxy user identities and anonymous initial setup access do not grant
+MCP access. A revoked or disabled key is rejected on its next HTTP request.
+
+## Configure an agent
+
+Replace the example URL with your own admin endpoint and `<key>` with the key
+you created. These examples contain a placeholder, never an actual key.
+
+### Claude Code
+
+```bash
+claude mcp add --transport http openmu https://admin.example.com/mcp \
+  --header "X-Api-Key: <key>"
+```
+
+### Cursor
+
+Add a remote server to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "openmu": {
+      "url": "https://admin.example.com/mcp",
+      "headers": { "X-Api-Key": "<key>" }
+    }
+  }
+}
+```
+
+### VS Code / GitHub Copilot
+
+Add a server in `.vscode/mcp.json`. An input keeps the credential out of the file:
+
+```json
+{
+  "inputs": [
+    { "id": "openmu-key", "type": "promptString", "description": "OpenMU API key", "password": true }
+  ],
+  "servers": {
+    "openmu": {
+      "type": "http",
+      "url": "https://admin.example.com/mcp",
+      "headers": { "X-Api-Key": "${input:openmu-key}" }
+    }
+  }
+}
+```
+
+For clients which only support local stdio servers, a generic remote MCP bridge
+can connect to this HTTP endpoint. OAuth login and hosted connectors requiring
+OAuth are planned for a later phase; an API key is required today.
+
+## Available tools
+
+| Area | Tools |
+| --- | --- |
+| Server | `server_overview`, `server_statistics`, `diagnostics_check` |
+| Accounts and characters | `accounts_search`, `accounts_get`, `characters_get` |
+| Online players | `players_list` |
+| Guilds | `guilds_search`, `guilds_get` |
+| Plugins | `plugins_list` |
+| Configuration | `config_types`, `config_describe`, `config_search`, `config_query`, `config_get` |
+
+Try “Show the server overview and check for unresponsive servers”, “Find the
+account of character Hero”, or “Find the experience rate configuration”.
+Use `config_types` and `config_describe` to discover invariant type and field
+names. `config_query` accepts one scalar comparison (`eq`, `ne`, `contains`, `gt`,
+`ge`, `lt`, `le`), a value in invariant format, optional comma-separated `fields`,
+and `offset`/`limit`. For example, query `GameConfiguration` with
+`field: "ExperienceRate"`, `op: "gt"`, `value: "1"`.
+
+Pages default to 50 rows and allow at most 100, with a matching `total`.
+`config_get` accepts nesting depth 0–2 and returns references with `$ref` and
+`caption`; nested collections are capped at 100 and report `truncated`. Large
+strings and object traversals are bounded. Search uses the panel's existing
+configuration index. Restart requirements are reported as unknown rather than
+guessed.
+
+Account and character details are **saved snapshots**. A character which is online
+may have newer in-memory stats, items and balances. Online status comes from the
+login server. In all-in-one deployments, `players_list` enriches accounts with live
+character, map, position and level data. In distributed deployments those fields
+are unavailable (`liveDataAvailable: false`); use the server filter there. Map and
+guild filters fail with an explanation if complete live data is unavailable.
+The player history starts when the admin host starts.
+
+No password hashes, security codes, vault passwords, admin authentication secrets,
+IP addresses, plugin source or custom plugin configuration are exposed. Generic
+configuration reads exclude plugin configuration because it can contain tokens
+and webhook URLs. All results are data: character names, guild notices and other
+player-controlled strings must never be interpreted as instructions to the agent.
+
+Tools are filtered by role during discovery and checked again when called.
+The host limits requests per API client and returns HTTP 429 when the configured
+minute allowance is exhausted, or HTTP 413 for oversized request bodies. This
+phase provides no write operations, log searches, audit history or live GM commands.

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Web\AdminPanel.Mcp\MUnique.OpenMU.Web.AdminPanel.Mcp.csproj" />
     <ProjectReference Include="..\..\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\Common\MUnique.OpenMU.Dapr.Common.csproj" />
   </ItemGroup>

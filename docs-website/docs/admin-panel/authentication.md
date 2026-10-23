@@ -287,3 +287,8 @@ The location can be changed with `AdminPanel:Auth:DataProtectionKeyPath`.
   through a VPN or an SSH tunnel instead.
 * Remember that admin panel access means full access to your players' account
   data.
+
+## AI agents through MCP
+
+API keys with the Viewer role can also access the optional read-only
+[MCP endpoint](mcp.md). It is disabled by default and accepts API keys only.
