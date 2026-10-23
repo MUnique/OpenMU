@@ -28,7 +28,7 @@ boundary/authorization cases added with the testing strategy.
 
 | Area | Fixtures | Regression expectations |
 | --- | --- | --- |
-| Alliances | `GuildAllianceTest`, `GuildActionTest`, `RivalGuildCacheTest`, `RivalGuildCombatTest` | Creation, duplicate membership, self-referencing master, removal/disband in runtime and persistence, configured size at the action boundary, member-master authorization, symmetric cross-alliance hostility and cancellation, online-only alliance iteration, rival combat without PK penalties. |
+| Alliances | `GuildAllianceTest`, `GuildActionTest`, `GuildRivalrySynchronizationTests`, `RivalGuildCacheTest`, `RivalGuildCombatTest` | Creation, duplicate membership, self-referencing master, removal/disband in runtime and persistence, configured size at the action boundary, member-master authorization, symmetric cross-alliance hostility and cancellation, online-only alliance iteration, rival combat without PK penalties, and real game-server cache consistency after joining, leaving, disbanding or deleting a guild with pre-existing hostility. |
 | State machine | `CastleSiegeStateMachineTests`, `CastleSiegeStatusTests`, `CastleSiegeNextBattleTest` | Midweek/week-wrap recovery, server time zones and DST, persisted state/NPC recovery, expiry, EndCycle-to-registration, forced/per-context requests, one requested transition per tick, running only during Start, notification/countdown intervals. |
 | Selection and participation | `CastleSiegeGuildSelectionTests` | Score formula and integer rounding/saturation, descending ranking and registration-order ties, zero marks/members, zero/maximum attacker limits, owner defense, offline alliance expansion, persisted lists/restart, map-aware side effects and elapsed participation across reconnects. |
 | Crown and switches | `CastleSiegeCrownMechanicsTests`, `CastleSiegeNpcTests` | All eight occupancy combinations, mixed sides/dead/guildless users, hold threshold and interrupted progress cap, elapsed-time clamp, alliance-master ownership, side swap, Life Stone cleanup on capture, Crown reset, duplicate switches, restart recovery and ownership-economy reset. |
@@ -65,6 +65,7 @@ $coreFilter = @(
     "FullyQualifiedName~MUnique.OpenMU.Tests.CastleSiege",
     "FullyQualifiedName~GuildAllianceTest",
     "FullyQualifiedName~GuildActionTest",
+    "FullyQualifiedName~GuildRivalrySynchronizationTests",
     "FullyQualifiedName~RivalGuild"
 ) -join "|"
 $initializationFilter = "FullyQualifiedName~" +
