@@ -667,7 +667,7 @@ public class GuildServer : IGuildServer
         }
 
         // Check hostility (transitively through alliances)
-        if (this.HasHostility(guild1, guild2) || this.HasHostility(guild2, guild1))
+        if (this.AreAlliancesStillHostile(this.GetAllianceMemberIds(guild1Id), this.GetAllianceMemberIds(guild2Id)))
         {
             return ValueTask.FromResult(GuildRelationship.Rival);
         }
@@ -761,37 +761,6 @@ public class GuildServer : IGuildServer
         await this._changePublisher.GuildDeletedAsync(guildContainer.Id).ConfigureAwait(false);
 
         // TODO: Inform gameServers that guildwar/hostility ended
-    }
-
-    private bool HasHostility(Guild aggressor, Guild target)
-    {
-        if (aggressor.Hostility is null)
-        {
-            return false;
-        }
-
-        // Direct hostility
-        if (aggressor.Hostility is Guild hostileGuild && hostileGuild.Id == target.Id)
-        {
-            return true;
-        }
-
-        // Transitive: if target is in an alliance, check if aggressor is hostile to any of the target's alliance members
-        var targetMasterGuid = GetAllianceMasterGuid(target);
-        if (targetMasterGuid == Guid.Empty)
-        {
-            return false;
-        }
-
-        if (aggressor.Hostility is not Guild hostileGuild2)
-        {
-            return false;
-        }
-
-        // Check if aggressor's hostility target is in the same alliance as target
-        return this._guildDictionary.Values
-            .Any(g => GetAllianceMasterGuid(g.Guild) == targetMasterGuid
-                      && g.Guild.Id == hostileGuild2.Id);
     }
 
     private async ValueTask<uint> GuildMemberEnterGameAsync(Guid guildId, Guid characterId, byte serverId)
