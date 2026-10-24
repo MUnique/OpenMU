@@ -311,8 +311,17 @@ internal class ItemFormulasEqualTodayTest
             }
             catch (Exception ex)
             {
-                return $"throws {ex.GetType().Name}";
+                return DescribeException(ex);
             }
+        }
+
+        /// <summary>
+        /// Describes an exception by its type and message, so that two different failures of the same type differ.
+        /// Not by the method which threw it: the live code may compute the same in other methods.
+        /// </summary>
+        private static string DescribeException(Exception exception)
+        {
+            return $"throws {exception.GetType().Name}: {exception.Message}";
         }
 
         private static string DescribePowerUps(Item item, Func<Item, AttributeSystem, IEnumerable<PowerUpWrapper>> getPowerUps)
@@ -321,14 +330,23 @@ internal class ItemFormulasEqualTodayTest
             var powerUps = new List<PowerUpWrapper>();
             try
             {
-                powerUps.AddRange(getPowerUps(item, attributes));
+                // The power-ups before a throw are compared too.
+                string thrown = string.Empty;
+                try
+                {
+                    powerUps.AddRange(getPowerUps(item, attributes));
+                }
+                catch (Exception ex)
+                {
+                    thrown = $"; then {DescribeException(ex)}";
+                }
 
                 // Each power-up added itself to its target attribute, which tells the attribute.
                 var elements = attributes.OfType<ComposableAttribute>()
                     .SelectMany(attribute => attribute.Elements.Select(element =>
                         $"{attribute.Definition.Designation} {element.AggregateType} {element.Value.ToString("R", CultureInfo.InvariantCulture)}"))
                     .Order(StringComparer.Ordinal);
-                return $"{powerUps.Count}: {string.Join("; ", elements)}";
+                return $"{powerUps.Count}: {string.Join("; ", elements)}{thrown}";
             }
             finally
             {
@@ -339,10 +357,18 @@ internal class ItemFormulasEqualTodayTest
 
         private static string DescribeRequirements(Item item, IEnumerable<AttributeRequirement> madeUpRequirements, Func<Item, AttributeRequirement, (AttributeDefinition Attr, int Value)> getRequirement)
         {
+            // Each requirement on its own, so that one which throws doesn't hide the others.
             string Describe(IEnumerable<AttributeRequirement> requirements) => string.Join("; ", requirements.Select(requirement =>
             {
-                var (attribute, value) = getRequirement(item, requirement);
-                return $"{attribute.Designation} {value}";
+                try
+                {
+                    var (attribute, value) = getRequirement(item, requirement);
+                    return $"{attribute.Designation} {value}";
+                }
+                catch (Exception ex)
+                {
+                    return $"{requirement.Attribute?.Designation} {DescribeException(ex)}";
+                }
             }));
 
             return $"{Describe(item.Definition!.Requirements)}; made-up: {Describe(madeUpRequirements)}";
