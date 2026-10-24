@@ -13,7 +13,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// A frozen copy of the item requirement formulas in <c>src/GameLogic/ItemExtensions.cs</c> at commit 90a571100,
-/// with the item checks and durability functions the frozen formulas use,
+/// with the item checks and durability functions which the three frozen copies use,
 /// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code.
 /// Change it only together with an intentional change of the formula, see the remarks of the test.
 /// </summary>
@@ -21,13 +21,14 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// Lines 19-106, 131-141, 174-265, 279-289, 361-426, 474-500, 512-542 and 544-561 are copied unchanged, and between the
 /// last two, lines 14-27 of <c>src/GameLogic/ItemOptionExtensions.cs</c> (<c>IsFixedOption</c>).
 /// The extension method calls in the frozen copies bind to this class wherever it has a method of that name,
-/// because extension methods of the own namespace come before imported ones; the copies don't import the namespace
-/// of the game logic, so they call none of its helpers.
-/// They still call live code which the item formulas don't contain: <c>IsWearable</c>, <c>IsTrainablePet</c>,
-/// <c>IsDarkRaven</c>, <c>IsWing</c> and <c>Durability</c> of <c>src/DataModel/ItemExtensions.cs</c>, and the code which builds
-/// the elements of the power-ups and applies the durability factor to them: <c>PowerUpWrapper.CreateByPowerUpDefinition</c>,
-/// <c>PowerUpDefinitionValue.GetSimpleValueElement</c>, <c>ItemBasePowerUpDefinition.GetBaseValueElement</c> and
-/// <c>LevelBonus.GetAdditionalValueElement</c>.
+/// because extension methods of the own namespace come before imported ones; the copies don't import
+/// <c>MUnique.OpenMU.GameLogic</c>, so none of its extension methods can change the copies and the live code together.
+/// They still use live code which the item formulas don't contain: <c>IsWearable</c>, <c>IsTrainablePet</c>,
+/// <c>IsDarkRaven</c>, <c>IsWing</c> and <c>Durability</c> of <c>src/DataModel/ItemExtensions.cs</c>; the code which builds
+/// the elements of the power-ups and applies the durability factor to them: <c>PowerUpWrapper.CreateByPowerUpDefinition</c>
+/// of <c>MUnique.OpenMU.GameLogic.Attributes</c>, and <c>PowerUpDefinitionValue.GetSimpleValueElement</c>,
+/// <c>ItemBasePowerUpDefinition.GetBaseValueElement</c> and <c>LevelBonus.GetAdditionalValueElement</c> of the data model;
+/// and the attribute definitions of <c>Stats</c>, including the <c>ElementResistanceToDamageBonus</c> map of the ancient jewelry bonus.
 /// </remarks>
 internal static class LegacyItemExtensions
 {
