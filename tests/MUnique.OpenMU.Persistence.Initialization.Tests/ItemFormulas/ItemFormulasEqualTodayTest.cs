@@ -231,7 +231,7 @@ internal class ItemFormulasEqualTodayTest
                 {
                     foreach (var optionLevel in optionLevels)
                     {
-                        var item = new FormulaTestItem { Definition = definition, Level = (byte)level };
+                        var item = new TemporaryItem { Definition = definition, Level = (byte)level };
                         foreach (var excellentOption in quality.ExcellentOptions)
                         {
                             item.ItemOptions.Add(new ItemOptionLink { ItemOption = excellentOption });
@@ -467,21 +467,6 @@ internal class ItemFormulasEqualTodayTest
                 this.Compare(priceCase, "repair price", Capture(() => $"{this._legacyPrices.CalculateRepairPrice(item, false)}"), Capture(() => $"{this._prices.CalculateRepairPrice(item, false)}"));
                 this.Compare(priceCase, "repair price with discount", Capture(() => $"{this._legacyPrices.CalculateRepairPrice(item, true)}"), Capture(() => $"{this._prices.CalculateRepairPrice(item, true)}"));
             }
-        }
-    }
-
-    /// <summary>
-    /// An item which isn't persisted.
-    /// </summary>
-    private sealed class FormulaTestItem : Item
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormulaTestItem"/> class.
-        /// </summary>
-        public FormulaTestItem()
-        {
-            this.ItemOptions = new List<ItemOptionLink>();
-            this.ItemSetGroups = new List<ItemOfItemSet>();
         }
     }
 }
