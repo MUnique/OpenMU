@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.Discord;
 
 using System.ComponentModel;
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -312,7 +313,7 @@ public class DiscordChatBridgeTest
 
         // A bound chat, also on another Discord server, keeps its binding.
         await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
-        await this.CreateLinkService().UnlinkUserAsync(AccountLinkService.DiscordProvider, AllyUser.ToString()).ConfigureAwait(false);
+        await this.CreateLinkService().UnlinkUserAsync(AccountLinkService.DiscordProvider, AllyUser.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false);
         Assert.That(await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false), Is.Empty);
 
         // Binding it to the created channel happens only once.
@@ -362,7 +363,7 @@ public class DiscordChatBridgeTest
         var (otherServerResult, target) = await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId + 1, ChannelId + 2, false).ConfigureAwait(false);
         Assert.That(otherServerResult, Is.EqualTo(DiscordChatBindResult.AlreadyBound));
         Assert.That(target?.GuildId, Is.EqualTo(this._legendsId));
-        Assert.That(bridge.Store.Get(this._legendsId, GuildChatScope.Guild)?.ExternalChannelId, Is.EqualTo(ChannelId.ToString()));
+        Assert.That(bridge.Store.Get(this._legendsId, GuildChatScope.Guild)?.ExternalChannelId, Is.EqualTo(ChannelId.ToString(CultureInfo.InvariantCulture)));
 
         var (sameChannelResult, _) = await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
         Assert.That(sameChannelResult, Is.EqualTo(DiscordChatBindResult.Success), "binding the same channel again changes nothing");

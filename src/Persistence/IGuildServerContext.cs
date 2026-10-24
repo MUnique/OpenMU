@@ -44,8 +44,9 @@ public interface IGuildServerContext : IContext
     /// <summary>
     /// Gets the names of the guild masters of all guilds.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The names of the guild masters by the identifiers of their guilds.</returns>
-    ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync();
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the guild membership of a character.

@@ -57,11 +57,11 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync()
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default)
     {
-        var members = (await this.Provider.GetRepository<GuildMember>().GetAllAsync().ConfigureAwait(false))
+        var members = (await this.Provider.GetRepository<GuildMember>().GetAllAsync(cancellationToken).ConfigureAwait(false))
             .Where(member => member.Status == MUnique.OpenMU.Interfaces.GuildPosition.GuildMaster);
-        var characters = await this.Provider.GetRepository<Character>().GetAllAsync().ConfigureAwait(false);
+        var characters = await this.Provider.GetRepository<Character>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return members
             .Select(m => (m.GuildId, Name: characters.FirstOrDefault(c => c.Id == m.Id)?.Name))
             .Where(m => m.Name is not null)

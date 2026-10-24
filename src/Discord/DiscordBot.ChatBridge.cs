@@ -68,6 +68,8 @@ public sealed partial class DiscordBot
         await channel.SendMessageAsync(text, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
     }
 
+    private static OverwritePermissions GetPermissions(ulong userId, ulong moderatorId) => userId == moderatorId ? ModeratorPermissions : MemberPermissions;
+
     private static bool IsChatCommand(string commandName) => commandName is DiscordChatCommands.SayCommandName or DiscordChatCommands.GuildChatCommandName;
 
     /// <summary>
@@ -510,7 +512,6 @@ public sealed partial class DiscordBot
                 .Where(overwrite => overwrite.TargetType == PermissionTarget.User && overwrite.TargetId != client.CurrentUser.Id)
                 .ToDictionary(overwrite => overwrite.TargetId, overwrite => overwrite.Permissions);
             var currentMembers = currentOverwrites.Keys.ToHashSet();
-            OverwritePermissions GetPermissions(ulong userId) => userId == moderatorId ? ModeratorPermissions : MemberPermissions;
 
             // The removals first, so that they free overwrites for the additions.
             foreach (var userId in currentMembers.Except(linkedMembers))
@@ -523,11 +524,11 @@ public sealed partial class DiscordBot
             }
 
             // E.g. a former guild master, or a new one.
-            foreach (var userId in currentMembers.Where(userId => currentOverwrites[userId].AllowValue != GetPermissions(userId).AllowValue || currentOverwrites[userId].DenyValue != GetPermissions(userId).DenyValue).ToList())
+            foreach (var userId in currentMembers.Where(userId => currentOverwrites[userId].AllowValue != GetPermissions(userId, moderatorId).AllowValue || currentOverwrites[userId].DenyValue != GetPermissions(userId, moderatorId).DenyValue).ToList())
             {
                 if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
                 {
-                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId)).ConfigureAwait(false);
+                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId, moderatorId)).ConfigureAwait(false);
                 }
             }
 
@@ -539,7 +540,7 @@ public sealed partial class DiscordBot
             {
                 if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
                 {
-                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId)).ConfigureAwait(false);
+                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId, moderatorId)).ConfigureAwait(false);
                 }
             }
 
