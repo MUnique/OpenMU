@@ -20,10 +20,12 @@ using MUnique.OpenMU.Persistence;
 /// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
 /// </summary>
 /// <remarks>
-/// Lines 17-455 are copied unchanged, except the class name in lines 30, 33 and 36.
+/// Lines 17-455 are copied unchanged, except the class name in lines 30, 33 and 36, and the documentation of
+/// <c>GetPowerUps</c> (line 41) and <c>GetSetPowerUps</c> (line 103), which took it from the interface the copy doesn't implement,
+/// so that a change of the live interface doesn't change the copy.
 /// The item checks, the drop level and the durability factor come from <see cref="LegacyItemExtensions"/>.
 /// </remarks>
-internal class LegacyItemPowerUpFactory : IItemPowerUpFactory
+internal class LegacyItemPowerUpFactory
 {
     private static readonly HashSet<AttributeDefinition> DurabilityAffectedItemAttributes =
     [
@@ -48,7 +50,12 @@ internal class LegacyItemPowerUpFactory : IItemPowerUpFactory
         this._logger = logger;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the power ups of an individual item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="attributeHolder">The attribute system of the player who equipped the item.</param>
+    /// <returns>The created power ups.</returns>
     public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder)
     {
         if (item.Definition is null)
@@ -110,7 +117,13 @@ internal class LegacyItemPowerUpFactory : IItemPowerUpFactory
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the set power ups, which are created for existing <see cref="ItemSetGroup"/>s in the equipped items.
+    /// </summary>
+    /// <param name="equippedItems">The equipped items.</param>
+    /// <param name="attributeHolder">The attribute system of the player who equipped the items.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The created set power ups.</returns>
     public IEnumerable<PowerUpWrapper> GetSetPowerUps(
         IEnumerable<Item> equippedItems,
         AttributeSystem attributeHolder,
