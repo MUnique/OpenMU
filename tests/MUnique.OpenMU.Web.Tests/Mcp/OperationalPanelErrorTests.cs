@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.API;
@@ -20,6 +21,7 @@ using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
+using MUnique.OpenMU.Web.Shared.Services;
 using MUnique.OpenMU.Web.Tests.NetworkAnalyzer;
 
 /// <summary>Expected operational failures stay within the component or HTTP boundary.</summary>
@@ -55,6 +57,19 @@ public sealed class OperationalPanelErrorTests
         server.Verify(s => s.ShutdownAsync(), Times.Never);
         manager.Verify(m => m.RemoveGameServerAsync(It.IsAny<byte>()), Times.Never);
         Assert.That(component.FindAll("button"), Is.Not.Empty);
+    }
+
+    /// <summary>Account creation reports an audit outage without escaping its UI handler or touching game data.</summary>
+    [Test]
+    public async Task AccountCreationContainsAuditFailureAsync()
+    {
+        var source = new Mock<IDataSource<Account>>();
+        var toast = new Mock<IToastService>();
+        using var service = new AccountService(source.Object, new TestModalService(true),
+            AdminOperationTestServices.CreateExecutor(audit: new InMemoryAdminAuditRepository { RejectWrites = true }), toast.Object);
+        await service.CreateNewInModalDialogAsync().ConfigureAwait(false);
+        toast.Verify(t => t.ShowError(It.Is<string>(message => message.Contains("Audit storage is unavailable", StringComparison.Ordinal)), null), Times.Once);
+        source.Verify(s => s.GetContextAsync(It.IsAny<System.Threading.CancellationToken>()), Times.Never);
     }
 
     /// <summary>Bad announcement arguments become safe HTTP 400 responses and never reach a server.</summary>
