@@ -222,6 +222,13 @@ internal class ItemFormulasEqualTodayTest
 
             var allReductions = harmonyReductions.Concat(this._madeUpReductions).ToList();
 
+            // What the prices add a surcharge for, besides the excellent and normal options: luck, each wing option and the
+            // option of the Jewel of Guardian (and a skill, see ComparePrices).
+            var priceExtras = possibleOptions.Where(o => o.OptionType == ItemOptionTypes.Luck).Take(1)
+                .Concat(possibleOptions.Where(o => o.OptionType == ItemOptionTypes.Wing))
+                .Concat(possibleOptions.Where(o => o.OptionType == ItemOptionTypes.GuardianOption).Take(1))
+                .ToList();
+
             // Level 1 of an option is its own power-up, the higher levels are in its level dependent options.
             // A fixed option (e.g. of the Dinorant) has only level 1. The option adds its level times a factor to the
             // strength requirement, so the first and the highest level show the factor.
@@ -258,7 +265,7 @@ internal class ItemFormulasEqualTodayTest
                         if (this.GetMaximumDurability(item, itemCase) is { } maximumDurability)
                         {
                             this.ComparePowerUps(item, maximumDurability, itemCase);
-                            this.ComparePrices(item, maximumDurability, itemCase);
+                            this.ComparePrices(item, maximumDurability, priceExtras, itemCase);
                         }
                     }
                 }
@@ -514,7 +521,24 @@ internal class ItemFormulasEqualTodayTest
             }
         }
 
-        private void ComparePrices(Item item, byte fullDurability, string itemCase)
+        private void ComparePrices(Item item, byte fullDurability, List<IncreasableItemOption> priceExtras, string itemCase)
+        {
+            this.ComparePricesAtEachDurability(item, fullDurability, itemCase);
+            if (priceExtras.Count == 0 && item.Definition!.Skill is null)
+            {
+                return;
+            }
+
+            // An item as the merchants sell it: with its skill and luck, and wings with their wing options.
+            var extraLinks = priceExtras.Select(option => new ItemOptionLink { ItemOption = option, Level = 1 }).ToList();
+            extraLinks.ForEach(item.ItemOptions.Add);
+            item.HasSkill = item.Definition!.Skill is not null;
+            this.ComparePricesAtEachDurability(item, fullDurability, $"{itemCase}, with {(item.HasSkill ? "skill, " : string.Empty)}{string.Join(", ", priceExtras.Select(o => o.OptionType?.Name))}");
+            item.HasSkill = false;
+            extraLinks.ForEach(link => item.ItemOptions.Remove(link));
+        }
+
+        private void ComparePricesAtEachDurability(Item item, byte fullDurability, string itemCase)
         {
             item.ItemSlot = (byte)(item.Definition!.ItemSlot?.ItemSlots.FirstOrDefault() ?? 0);
 
