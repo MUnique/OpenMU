@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
@@ -237,6 +238,7 @@ public partial class MonsterDefinition
     /// <summary>
     /// Gets or sets the unique number of this monster.
     /// </summary>
+    [ShowInTable]
     public short Number { get; set; }
 
     /// <summary>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.Shared.Components.Form;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.AspNetCore.Components;
@@ -22,6 +23,17 @@ using MUnique.OpenMU.Web.Shared.Components.Modal;
 public partial class ItemTable<TItem>
     where TItem : class
 {
+    /// <summary>
+    /// The properties of <typeparamref name="TItem"/> which are shown as additional columns,
+    /// because they are marked with the <see cref="ShowInTableAttribute"/>.
+    /// </summary>
+    private static readonly PropertyInfo[] AdditionalColumns = typeof(TItem).GetProperties()
+        .Select(p => (Property: p, Attribute: (ShowInTableAttribute?)Attribute.GetCustomAttribute(p, typeof(ShowInTableAttribute), true)))
+        .Where(c => c.Attribute is not null)
+        .OrderBy(c => c.Attribute!.Order)
+        .Select(c => c.Property)
+        .ToArray();
+
     private readonly int _searchThreshold = 10;
 
     private bool _isEditable;
@@ -95,6 +107,17 @@ public partial class ItemTable<TItem>
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out ICollection<TItem> result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotImplementedException();
+    }
+
+    private static string GetColumnValue(PropertyInfo column, TItem item)
+    {
+        return column.GetValue(item) switch
+        {
+            null => string.Empty,
+            IFormattable formattable => formattable.ToString(null, CultureInfo.CurrentCulture),
+            string text => text,
+            var value => value.GetName(),
+        };
     }
 
     private void OnToggleCollapseClick()
