@@ -275,8 +275,13 @@ internal class ItemStatProfilesDataTest
 
         await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
+        Assert.Multiple(() =>
+        {
+            Assert.That(gameConfiguration.ItemStatProfiles.Single(p => p.Name == BuiltInItemStatProfiles.Armor), Is.SameAs(armor));
+            Assert.That(armor.StrengthPerOptionLevel, Is.EqualTo(9));
+            Assert.That(sword.StatProfile, Is.SameAs(shield));
+        });
         armor.StrengthPerOptionLevel = 5;
-        Assert.That(sword.StatProfile, Is.SameAs(shield));
         sword.StatProfile = gameConfiguration.ItemStatProfiles.Single(p => p.Name == BuiltInItemStatProfiles.Weapon);
         Assert.That(Describe(gameConfiguration), Is.EqualTo(expected));
     }
