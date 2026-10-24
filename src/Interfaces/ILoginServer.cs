@@ -11,6 +11,17 @@ namespace MUnique.OpenMU.Interfaces;
 /// </summary>
 public interface ILoginServer
 {
+    /// <summary>Exclusively reserves an offline account for an administrative write.</summary>
+    /// <param name="accountName">The canonical account login name.</param>
+    /// <param name="reservationId">An unpredictable positive ownership token greater than 255.</param>
+    /// <returns>Whether the reservation is held; an online or reserved account is refused.</returns>
+    ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId);
+
+    /// <summary>Releases only the reservation owned by this request.</summary>
+    /// <param name="accountName">The canonical account name.</param>
+    /// <param name="reservationId">The ownership token returned by the caller.</param>
+    ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId);
+
     /// <summary>
     /// Tries to login the account on the specified server.
     /// </summary>

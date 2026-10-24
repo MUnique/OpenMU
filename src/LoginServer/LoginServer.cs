@@ -14,7 +14,33 @@ public class LoginServer : ILoginServer
 {
     private readonly Dictionary<string, byte> _connectedAccounts = new();
 
+    private readonly Dictionary<string, int> _reservations = new(StringComparer.OrdinalIgnoreCase);
+
     private readonly AsyncLock _syncRoot = new();
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(reservationId, byte.MaxValue);
+        using var gate = await this._syncRoot.LockAsync().ConfigureAwait(false);
+        if (this._connectedAccounts.ContainsKey(accountName) || (this._reservations.TryGetValue(accountName, out var existing) && existing != reservationId))
+        {
+            return false;
+        }
+
+        this._reservations[accountName] = reservationId;
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId)
+    {
+        using var gate = await this._syncRoot.LockAsync().ConfigureAwait(false);
+        if (this._reservations.TryGetValue(accountName, out var existing) && existing == reservationId)
+        {
+            this._reservations.Remove(accountName);
+        }
+    }
 
     /// <inheritdoc/>
     public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()
@@ -27,7 +53,7 @@ public class LoginServer : ILoginServer
     public async Task<bool> TryLoginAsync(string accountName, byte serverId)
     {
         using var l = await this._syncRoot.LockAsync();
-        if (this._connectedAccounts.ContainsKey(accountName))
+        if (this._connectedAccounts.ContainsKey(accountName) || this._reservations.ContainsKey(accountName))
         {
             return false;
         }

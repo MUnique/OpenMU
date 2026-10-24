@@ -32,6 +32,42 @@ public sealed class PersistentLoginServer : ILoginServer
         this._daprClient = daprClient;
     }
 
+    /// <inheritdoc />
+    public async ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(reservationId, byte.MaxValue);
+        var (current, etag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
+        if (current == reservationId)
+        {
+            return true;
+        }
+
+        if (current is >= 0)
+        {
+            return false;
+        }
+
+        // Accounts edited through the admin layer must have an initialized state entry.
+        // Failing closed avoids an unconditional first insert racing a real login.
+        if (string.IsNullOrEmpty(etag))
+        {
+            return false;
+        }
+
+        return await this._daprClient.TrySaveStateAsync(StoreName, accountName, reservationId, etag).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(reservationId, byte.MaxValue);
+        var (current, etag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
+        if (current == reservationId && !await this._daprClient.TrySaveStateAsync(StoreName, accountName, OfflineServerId, etag).ConfigureAwait(false))
+        {
+            throw new InvalidOperationException("The offline account reservation could not be released.");
+        }
+    }
+
     /// <summary>
     /// Removes the server.
     /// </summary>

@@ -9,9 +9,12 @@ using System.Reflection;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Models;
+using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
 /// A scoped controller to manage plugins.
@@ -21,6 +24,8 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
+    private readonly PluginWriteOperations _operations;
+    private readonly IToastService _toast;
 
     private Guid _pointFilter;
     private string _nameFilter = string.Empty;
@@ -32,11 +37,15 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <param name="dataSource">The data source.</param>
     /// <param name="modalService">The modal service.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
-    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService, IPersistenceContextProvider persistenceContextProvider)
+    /// <param name="operations">The shared authorized plugin operations.</param>
+    /// <param name="toast">The error presentation service.</param>
+    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService, IPersistenceContextProvider persistenceContextProvider, PluginWriteOperations operations, IToastService toast)
     {
         this._dataSource = dataSource;
         this._modalService = modalService;
         this._persistenceContextProvider = persistenceContextProvider;
+        this._operations = operations;
+        this._toast = toast;
     }
 
     /// <inheritdoc />
@@ -221,10 +230,20 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            item.Configuration.SetConfiguration(configuration!, referenceResolver);
-            await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
-
-            this.DataChanged?.Invoke(this, EventArgs.Empty);
+            try
+            {
+                var serialized = new PlugInConfiguration();
+                serialized.SetConfiguration(configuration!, referenceResolver);
+                var json = serialized.CustomConfiguration ?? "{}";
+                var preview = await this._operations.ReplaceFromPanelAsync(item.TypeId, configuration!, json, false, null, default).ConfigureAwait(false);
+                await this._operations.ReplaceFromPanelAsync(item.TypeId, configuration!, json, true, preview["confirmationToken"]!.GetValue<string>(), default).ConfigureAwait(false);
+                await this._dataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
+                this.DataChanged?.Invoke(this, EventArgs.Empty);
+            }
+            catch (AdminOperationException exception)
+            {
+                this._toast.ShowError(exception.Message);
+            }
         }
     }
 
@@ -332,9 +351,22 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
     private async ValueTask ChangeActiveFlagAsync(PlugInConfigurationViewItem item, bool value)
     {
-        item.Configuration.IsActive = value;
-        await (await this._dataSource.GetContextAsync().ConfigureAwait(true)).SaveChangesAsync().ConfigureAwait(true);
-        this.DataChanged?.Invoke(this, EventArgs.Empty);
+        try
+        {
+            var preview = await this._operations.SetActiveAsync(item.TypeId, value, false, null, default).ConfigureAwait(false);
+            if (!await this._modalService.ShowQuestionAsync(Resources.Change, preview["change"]!.ToJsonString()).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            await this._operations.SetActiveAsync(item.TypeId, value, true, preview["confirmationToken"]!.GetValue<string>(), default).ConfigureAwait(false);
+            await this._dataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
+            this.DataChanged?.Invoke(this, EventArgs.Empty);
+        }
+        catch (AdminOperationException exception)
+        {
+            this._toast.ShowError(exception.Message);
+        }
     }
 
     /// <summary>

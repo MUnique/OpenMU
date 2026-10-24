@@ -14,6 +14,9 @@ using System.Security.Claims;
 /// <param name="Roles">The effective roles of the client.</param>
 public record ApiKeyClient(Guid Id, string Name, IReadOnlyList<string> Roles)
 {
+    /// <summary>Gets the optional MCP tool allowlist in addition to the key's role.</summary>
+    public string AllowedToolGroups { get; init; } = string.Empty;
+
     /// <summary>
     /// Creates the claims of this client.
     /// </summary>
@@ -22,6 +25,7 @@ public record ApiKeyClient(Guid Id, string Name, IReadOnlyList<string> Roles)
     {
         yield return new Claim(ApiKeyAuthenticationDefaults.ClientIdClaimType, this.Id.ToString());
         yield return new Claim(ClaimTypes.Name, this.Name);
+        yield return new Claim(AdminToolGroups.ClaimType, this.AllowedToolGroups);
         yield return new Claim(ApiKeyAuthenticationDefaults.ClientNameClaimType, this.Name);
         foreach (var role in this.Roles)
         {

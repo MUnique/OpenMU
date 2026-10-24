@@ -6,11 +6,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Data;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -20,7 +22,7 @@ using Nito.Disposables;
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
 /// </summary>
-internal class EntityFrameworkContextBase : IContext
+internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 {
     private static readonly ConcurrentDictionary<IEntityType, IProperty?> PropertyToParentByEntityType = new();
 
@@ -30,6 +32,7 @@ internal class EntityFrameworkContextBase : IContext
     private readonly IConfigurationChangeListener? _changeListener;
     private readonly AsyncLock _lock = new();
     private readonly ILogger _logger;
+    private IDbContextTransaction? _configurationEditTransaction;
     private bool _isDisposed;
     private int _notificationSuspensions;
 
@@ -65,6 +68,18 @@ internal class EntityFrameworkContextBase : IContext
     /// Gets the repository provider.
     /// </summary>
     protected IContextAwareRepositoryProvider RepositoryProvider { get; }
+
+    /// <inheritdoc />
+    public async ValueTask BeginConfigurationEditAsync(CancellationToken cancellationToken)
+    {
+        using var gate = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
+        if (!this._isOwner || this._configurationEditTransaction is not null || this.Context.Database.CurrentTransaction is not null)
+        {
+            throw new InvalidOperationException("Configuration editing requires an owned context without an existing transaction.");
+        }
+
+        this._configurationEditTransaction = await this.Context.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -128,6 +143,27 @@ internal class EntityFrameworkContextBase : IContext
     {
         using var l = this._lock.Lock();
         var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew(type, args);
+        this.Context.Add(instance);
+        return instance;
+    }
+
+    /// <inheritdoc />
+    public object CreateNewWithId(Type type, Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException("A nonempty identity is required.", nameof(id));
+        }
+
+        using var gate = this._lock.Lock();
+        var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew(type);
+        if (instance is not IIdentifiable identified)
+        {
+            throw new ArgumentException($"The configuration {nameof(type)} must support persistent identities.", nameof(type));
+        }
+
+        // Set the key before tracking: detaching and reattaching would lose the Added state.
+        identified.Id = id;
         this.Context.Add(instance);
         return instance;
     }
@@ -337,6 +373,13 @@ internal class EntityFrameworkContextBase : IContext
         try
         {
             await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+            if (this._configurationEditTransaction is { } editTransaction)
+            {
+                // Notify caches and game servers only after the serializable transaction commits.
+                await editTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                await editTransaction.DisposeAsync().ConfigureAwait(false);
+                this._configurationEditTransaction = null;
+            }
 
             if (args is not null)
             {
