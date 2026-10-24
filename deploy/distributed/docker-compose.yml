@@ -182,7 +182,7 @@ services:
       database:
         condition: service_healthy
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
     environment:
       DAPR_HTTP_ENDPOINT: http://adminPanel-dapr:3500
       DAPR_GRPC_ENDPOINT: http://adminPanel-dapr:50001

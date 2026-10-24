@@ -9,6 +9,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Auth;
 /// </summary>
 internal static class AdminPolicies
 {
+    /// <summary>The API-key-only policy of the MCP endpoint.</summary>
+    internal const string McpAccess = "OpenMU.McpAccess";
+
     /// <summary>
     /// Gets the policy which requires the viewer role.
     /// </summary>

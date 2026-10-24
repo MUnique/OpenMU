@@ -182,6 +182,21 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<(IReadOnlyList<DataModel.Entities.Account> Accounts, int Total)> SearchAccountPageAsync(string text, DataModel.Entities.AccountState? state, int offset, int limit, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using var scope = this.RepositoryProvider.ContextStack.UseContext(this);
+        var term = text.ToLowerInvariant();
+        var query = this.Context.Set<Account>().AsNoTracking()
+            .Where(a => (state == null || a.State == state)
+                && (a.LoginName.ToLower().Contains(term) || a.EMail.ToLower().Contains(term)
+                    || a.RawCharacters.Any(c => c.Name.ToLower().Contains(term))));
+        var total = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+        var accounts = await query.OrderBy(a => a.LoginName).ThenBy(a => a.Id).Skip(offset).Take(limit).ToListAsync(cancellationToken).ConfigureAwait(false);
+        return (accounts, total);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<AccountStatistics> GetAccountStatisticsAsync(DateTime registeredSince, CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);

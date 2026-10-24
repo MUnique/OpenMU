@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Web\AdminPanel.Mcp\MUnique.OpenMU.Web.AdminPanel.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Web\Shared\MUnique.OpenMU.Web.Shared.csproj" />
     <ProjectReference Include="..\..\src\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\..\src\Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
@@ -49,5 +50,8 @@
     <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Mcp/tools.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
