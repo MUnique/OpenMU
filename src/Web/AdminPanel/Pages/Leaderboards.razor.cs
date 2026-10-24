@@ -95,7 +95,8 @@ public partial class Leaderboards : ComponentBase
 
     private async Task SelectTypeAsync(MiniGameType miniGameType)
     {
-        if (this._selectedType != miniGameType)
+        // A leaderboard which is still loading would overwrite the newly selected one when it finishes.
+        if (!this._isLoading && this._selectedType != miniGameType)
         {
             this._selectedType = miniGameType;
             await this.LoadAsync().ConfigureAwait(true);
@@ -104,7 +105,7 @@ public partial class Leaderboards : ComponentBase
 
     private async Task OnPeriodChangedAsync(ChangeEventArgs args)
     {
-        if (Enum.TryParse<LeaderboardPeriod>(args.Value?.ToString(), out var period) && period != this._period)
+        if (!this._isLoading && Enum.TryParse<LeaderboardPeriod>(args.Value?.ToString(), out var period) && period != this._period)
         {
             this._period = period;
             await this.LoadAsync().ConfigureAwait(true);
@@ -118,6 +119,7 @@ public partial class Leaderboards : ComponentBase
         try
         {
             this._entries = await this.LeaderboardService.GetLeaderboardAsync(this._selectedType, GetSince(this._period)).ConfigureAwait(true);
+            this.Logger.LogDebug("Loaded {Count} leaderboard entries of {MiniGameType} ({Period}).", this._entries.Count, this._selectedType, this._period);
         }
         catch (Exception ex)
         {
