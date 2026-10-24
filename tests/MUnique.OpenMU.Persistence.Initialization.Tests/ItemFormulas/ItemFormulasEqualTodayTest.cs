@@ -113,6 +113,11 @@ internal class ItemFormulasEqualTodayTest
 
         private const int MadeUpReduction = 7;
 
+        /// <summary>
+        /// The total level of the character who wears the items, which some power-ups follow, e.g. the excellent "damage +level/20".
+        /// </summary>
+        private const int CharacterTotalLevel = 400;
+
         private static readonly IReadOnlyDictionary<AttributeDefinition, AttributeDefinition> RequirementReductions = new Dictionary<AttributeDefinition, AttributeDefinition>
         {
             { Stats.TotalStrengthRequirementValue, Stats.RequiredStrengthReduction },
@@ -330,6 +335,7 @@ internal class ItemFormulasEqualTodayTest
         private static string DescribePowerUps(Item item, Func<Item, AttributeSystem, IEnumerable<PowerUpWrapper>> getPowerUps)
         {
             using var attributes = new AttributeSystem([], [], []);
+            attributes.AddElement(new ConstantElement(CharacterTotalLevel), Stats.TotalLevel);
             var powerUps = new List<PowerUpWrapper>();
             try
             {
@@ -346,7 +352,7 @@ internal class ItemFormulasEqualTodayTest
 
                 // Each power-up added itself to its target attribute, which tells the attribute.
                 var elements = attributes.OfType<ComposableAttribute>()
-                    .SelectMany(attribute => attribute.Elements.Select(element =>
+                    .SelectMany(attribute => attribute.Elements.OfType<PowerUpWrapper>().Select(element =>
                         $"{attribute.Definition.Designation} {element.AggregateType} {element.Value.ToString("R", CultureInfo.InvariantCulture)}"))
                     .Order(StringComparer.Ordinal);
                 return $"{powerUps.Count}: {string.Join("; ", elements)}{thrown}";
