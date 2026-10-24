@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests.Dashboard;
 
+using System.Globalization;
 using System.Threading;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,7 +100,7 @@ public class IndexPageTests
         page.WaitForAssertion(() =>
         {
             var values = page.FindAll(".statistic-value").Select(v => v.TextContent.Trim()).ToList();
-            Assert.That(values[accountFailure ? 3 : 2], Is.EqualTo((accountFailure ? 56 : 1234).ToString("N0")));
+            Assert.That(values[accountFailure ? 3 : 2], Is.EqualTo((accountFailure ? 56 : 1234).ToString("N0", CultureInfo.CurrentCulture)));
             Assert.That(values[accountFailure ? 2 : 3], Is.EqualTo(Resources.DashboardNotAvailable));
         });
     }

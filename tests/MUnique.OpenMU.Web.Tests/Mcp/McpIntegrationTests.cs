@@ -114,7 +114,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         builder.Services.AddSingleton(new PlugInManager([], Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, null, null));
         this._app = builder.Build();
         this._app.UseRouting();
-        // Model a container proxy without depending on the test runner's network interfaces.
+        // Model a container proxy with RFC 5737 documentation addresses; no traffic is sent to them.
         this._app.Use((http, next) =>
         {
             if (http.Request.Headers["X-Test-Remote-IP"].FirstOrDefault() is { } address)
@@ -125,7 +125,7 @@ public sealed class McpIntegrationTests : System.IDisposable
             return next(http);
         });
         var forwardedHeaders = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedProto };
-        forwardedHeaders.KnownProxies.Add(IPAddress.Parse("10.42.0.10"));
+        forwardedHeaders.KnownProxies.Add(IPAddress.Parse("192.0.2.10"));
         this._app.UseForwardedHeaders(forwardedHeaders);
         this._app.UseAdminMcpProtection();
         this._app.UseAdminPanelAuth();
@@ -354,9 +354,9 @@ public sealed class McpIntegrationTests : System.IDisposable
     }
 
     /// <summary>Only a trusted TLS proxy can make a remote HTTP connection secure.</summary>
-    [TestCase("10.42.0.10", "https", HttpStatusCode.OK)]
-    [TestCase("10.42.0.10", "http", HttpStatusCode.Forbidden)]
-    [TestCase("10.42.0.20", "https", HttpStatusCode.Forbidden)]
+    [TestCase("192.0.2.10", "https", HttpStatusCode.OK)]
+    [TestCase("192.0.2.10", "http", HttpStatusCode.Forbidden)]
+    [TestCase("192.0.2.20", "https", HttpStatusCode.Forbidden)]
     public async Task ChecksProxyTransportBeforeAuthenticationAsync(string remoteAddress, string scheme, HttpStatusCode expected)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "/mcp");

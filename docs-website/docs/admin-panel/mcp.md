@@ -57,8 +57,8 @@ the container network private. For other deployments, configure explicit trusted
 proxy addresses with ASP.NET Core `ForwardedHeadersOptions` instead.
 
 If you maintain a custom nginx configuration, add
-`proxy_set_header X-Forwarded-Proto $scheme;` to the admin location, overwriting any
-client-supplied value. Keep the proxy's request size limit at least as strict as
+`proxy_set_header X-Forwarded-Proto $scheme;` in the admin location to overwrite
+client-supplied values. Keep the proxy's request size limit at least as strict as
 the host's. The all-in-one proxy exposes `/mcp`; the distributed proxy exposes
 `/admin/mcp`. Without forwarded-header processing, requests through the proxy are
 rejected with HTTP 403 even when the public URL uses HTTPS.
