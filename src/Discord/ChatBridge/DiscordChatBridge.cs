@@ -283,9 +283,88 @@ public sealed class DiscordChatBridge
             return (DiscordChatBindResult.ChannelInUse, null);
         }
 
+        // Moving the chat silently to another channel could take it away from the guild, e.g. by a mistake.
+        if (this._store.Get(target.GuildId, scope) is { } current && current.ExternalChannelId != GuildChatBindingStore.ToText(channelId))
+        {
+            return (DiscordChatBindResult.AlreadyBound, target);
+        }
+
         await this._store.SetAsync(target.GuildId, scope, serverId, channelId, isHosted, target.CharacterName, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
         this._logger.LogInformation("The {scope} chat of {guild} was bound to the Discord channel {channelId} by {character}.", scope, target.GuildName, channelId, target.CharacterName);
         return (DiscordChatBindResult.Success, target);
+    }
+
+    /// <summary>
+    /// Binds the chat of a guild to its channel on the Discord server of the game server, which the bot created for it.
+    /// </summary>
+    /// <param name="target">The guild.</param>
+    /// <param name="serverId">The identifier of the Discord server.</param>
+    /// <param name="channelId">The identifier of the channel.</param>
+    /// <returns>The task.</returns>
+    public async ValueTask BindHostedAsync(GuildChatTarget target, ulong serverId, ulong channelId)
+    {
+        await this._store.SetAsync(target.GuildId, GuildChatScope.Guild, serverId, channelId, true, target.CharacterName, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
+        this._logger.LogInformation("The guild chat of {guild} was bound to the hosted Discord channel {channelId}, because its guild master {character} is linked.", target.GuildName, channelId, target.CharacterName);
+    }
+
+    /// <summary>
+    /// Gets the guilds which get a channel on the Discord server of the game server, because their guild master is linked
+    /// to a Discord user, and the guild chat isn't bound yet.
+    /// </summary>
+    /// <returns>The guilds.</returns>
+    public async ValueTask<IReadOnlyList<GuildChatTarget>> GetGuildsWithoutHostedChannelAsync()
+    {
+        IReadOnlyDictionary<Guid, string> masters;
+        using (var guildContext = this._createGuildContext())
+        {
+            masters = await guildContext.GetGuildMasterNamesAsync().ConfigureAwait(false);
+        }
+
+        var unbound = masters.Where(master => this._store.Get(master.Key, GuildChatScope.Guild) is null).ToList();
+        if (unbound.Count == 0)
+        {
+            return [];
+        }
+
+        var linkedMasters = await this.GetLinkedCharactersAsync(unbound.Select(master => master.Value).ToList()).ConfigureAwait(false);
+        var targets = new List<GuildChatTarget>();
+        foreach (var (guildId, masterName) in unbound.Where(master => linkedMasters.ContainsKey(master.Value)))
+        {
+            var guildName = await this._guildServer.GetPersistentGuildNameAsync(guildId).ConfigureAwait(false) ?? masterName;
+            targets.Add(new GuildChatTarget(guildId, guildName, masterName));
+        }
+
+        return targets;
+    }
+
+    /// <summary>
+    /// Gets the Discord users who moderate the channels of bindings: the users who are linked to the guild masters.
+    /// For an alliance, it's the guild master of the master guild of the alliance.
+    /// </summary>
+    /// <param name="bindings">The bindings.</param>
+    /// <returns>The identifiers of the Discord users by the identifiers of the guilds of the bindings.</returns>
+    public async ValueTask<IReadOnlyDictionary<Guid, ulong>> GetModeratorsAsync(IReadOnlyCollection<GuildChatBinding> bindings)
+    {
+        if (bindings.Count == 0)
+        {
+            return new Dictionary<Guid, ulong>();
+        }
+
+        IReadOnlyDictionary<Guid, string> masters;
+        using (var guildContext = this._createGuildContext())
+        {
+            masters = await guildContext.GetGuildMasterNamesAsync().ConfigureAwait(false);
+        }
+
+        var bindingMasters = bindings
+            .Select(binding => binding.GuildId)
+            .Distinct()
+            .Where(masters.ContainsKey)
+            .ToDictionary(guildId => guildId, guildId => masters[guildId]);
+        var linkedMasters = await this.GetLinkedCharactersAsync(bindingMasters.Values.Distinct().ToList()).ConfigureAwait(false);
+        return bindingMasters
+            .Where(master => linkedMasters.ContainsKey(master.Value))
+            .ToDictionary(master => master.Key, master => linkedMasters[master.Value]);
     }
 
     /// <summary>
@@ -368,6 +447,25 @@ public sealed class DiscordChatBridge
             .Select(link => ulong.TryParse(link.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId) ? userId : (ulong?)null)
             .OfType<ulong>()
             .ToHashSet();
+    }
+
+    /// <summary>
+    /// Gets the Discord users who are linked to the accounts of characters.
+    /// </summary>
+    /// <param name="characterNames">The names of the characters.</param>
+    /// <returns>The identifiers of the Discord users by the names of the characters, whose accounts are linked.</returns>
+    private async ValueTask<IReadOnlyDictionary<string, ulong>> GetLinkedCharactersAsync(IReadOnlyCollection<string> characterNames)
+    {
+        using var context = this._createPlayerContext();
+        var accountIds = await context.GetAccountIdsByCharacterNamesAsync(characterNames).ConfigureAwait(false);
+        var links = await context.GetAccountExternalLinksAsync(Provider, accountIds.Values.Distinct().ToList()).ConfigureAwait(false);
+        var userIds = links
+            .Where(link => ulong.TryParse(link.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out _))
+            .GroupBy(link => link.AccountId)
+            .ToDictionary(group => group.Key, group => ulong.Parse(group.First().ExternalUserId!, NumberStyles.None, CultureInfo.InvariantCulture));
+        return accountIds
+            .Where(character => userIds.ContainsKey(character.Value))
+            .ToDictionary(character => character.Key, character => userIds[character.Value]);
     }
 
     private async ValueTask<bool> IsMemberAsync(string characterName, GuildChatBinding binding)

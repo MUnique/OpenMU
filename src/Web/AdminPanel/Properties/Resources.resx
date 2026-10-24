@@ -2584,4 +2584,10 @@
   <data name="AuditOutcome" xml:space="preserve"><value>Outcome</value></data>
   <data name="AuditPrevious" xml:space="preserve"><value>Previous</value></data>
   <data name="AuditNext" xml:space="preserve"><value>Next</value></data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>Create guild channels automatically</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>As soon as a guild master is linked, the bot creates the channel of the guild in the GUILDS category of your Discord server and binds the guild chat to it. Only linked members of the guild can see it, and the guild master can moderate its messages. Guilds whose chat is already bound keep their channel. New guilds and new guild masters are picked up within about ten minutes.</value>
+  </data>
 </root>

@@ -62,6 +62,21 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     }
 
     /// <inheritdoc/>
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync()
+    {
+        var masters = await (from member in this.Context.Set<GuildMember>()
+                             join character in this.Context.Set<CharacterName>() on member.Id equals character.Id
+                             where member.Status == MUnique.OpenMU.Interfaces.GuildPosition.GuildMaster
+                             select new { member.GuildId, character.Name })
+            .ToListAsync().ConfigureAwait(false);
+
+        // A guild has one master, but the data isn't constrained to it.
+        return masters
+            .GroupBy(master => master.GuildId)
+            .ToDictionary(group => group.Key, group => group.First().Name);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName)
     {
         return await CreateGuildMembershipQuery(this.Context, characterName).FirstOrDefaultAsync().ConfigureAwait(false);

@@ -513,4 +513,7 @@
     <value>Test message</value>
   </data>
   <data name="Setup_PrivateRolesMissing" xml:space="preserve"><value>Private channels were skipped because their required roles are missing.</value></data>
+  <data name="Bind_AlreadyBound" xml:space="preserve">
+    <value>The chat of {0} is already bound to {1}. Use /guildchat unbind in that channel first.</value>
+  </data>
 </root>

@@ -37,7 +37,22 @@ public sealed partial class DiscordBot
     /// </summary>
     private const int MaximumPermissionOverwrites = 500;
 
+    /// <summary>
+    /// The permissions of the linked members of a guild in its hosted channel.
+    /// </summary>
+    private static readonly OverwritePermissions MemberPermissions = new(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow);
+
+    /// <summary>
+    /// The permissions of the linked guild master in the hosted channel of the guild. They only apply to this channel.
+    /// </summary>
+    private static readonly OverwritePermissions ModeratorPermissions = new(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow, manageMessages: PermValue.Allow);
+
     private readonly ConcurrentDictionary<ulong, DiscordChatQueue> _chatQueues = new();
+
+    /// <summary>
+    /// The lock for creating hosted channels, so that a guild doesn't get two channels.
+    /// </summary>
+    private readonly SemaphoreSlim _hostedChannelLock = new(1, 1);
     private int _maintenanceCount;
 
     /// <inheritdoc />
@@ -177,7 +192,7 @@ public sealed partial class DiscordBot
                     bindResult,
                     scope == GuildChatScope.Alliance ? nameof(Resources.Bind_AllianceBound) : nameof(Resources.Bind_GuildBound),
                     target,
-                    MentionUtils.MentionChannel(channel.Id));
+                    bindResult == DiscordChatBindResult.AlreadyBound ? this.GetBoundChannelMention(target, scope) : MentionUtils.MentionChannel(channel.Id));
             case DiscordChatCommands.CreateCommandName:
                 return await this.CreateHostedChannelAsync(client, user.Id, scope).ConfigureAwait(false);
             default:
@@ -209,38 +224,133 @@ public sealed partial class DiscordBot
         }
 
         IGuildChannel channel;
-        if (this._chatBridge.Store.Get(target.GuildId, scope) is { IsHosted: true } existing
-            && ulong.TryParse(existing.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var existingId)
-            && guild.GetTextChannel(existingId) is { } existingChannel)
+        DiscordChatBindResult bindResult;
+        GuildChatTarget? boundTarget;
+        await this._hostedChannelLock.WaitAsync().ConfigureAwait(false);
+        try
         {
-            channel = existingChannel;
-        }
-        else
-        {
-            var categoryName = this._layout.Categories.FirstOrDefault(c => c.Key == DiscordServerLayout.GuildsCategoryKey)?.Name;
-            var category = guild.CategoryChannels.FirstOrDefault(c => string.Equals(c.Name, categoryName, StringComparison.OrdinalIgnoreCase));
-            channel = await guild.CreateTextChannelAsync(GetHostedChannelName(scope, target.GuildName), properties =>
+            // A channel on another Discord server has to be unbound there first.
+            if (this._chatBridge.Store.Get(target.GuildId, scope) is { IsHosted: false })
             {
-                properties.CategoryId = category?.Id;
-                properties.PermissionOverwrites = new[]
-                {
-                    new Overwrite(guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),
-                    new Overwrite(client.CurrentUser.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow)),
-                };
-            }).ConfigureAwait(false);
+                return this._chatCommands.CreateBindAnswer(DiscordChatBindResult.AlreadyBound, string.Empty, target, this.GetBoundChannelMention(target, scope));
+            }
+
+            channel = await this.GetOrCreateHostedChannelAsync(client, guild, scope, target).ConfigureAwait(false);
+            (bindResult, boundTarget) = await this._chatBridge.BindAsync(userId, scope, guild.Id, channel.Id, true).ConfigureAwait(false);
+        }
+        finally
+        {
+            this._hostedChannelLock.Release();
         }
 
-        var (bindResult, boundTarget) = await this._chatBridge.BindAsync(userId, scope, guild.Id, channel.Id, true).ConfigureAwait(false);
         var allMembersFit = true;
         if (bindResult == DiscordChatBindResult.Success && this._chatBridge.Store.GetByChannel(channel.Id) is { } binding)
         {
-            allMembersFit = await this.SyncHostedChannelAsync(client, channel, binding).ConfigureAwait(false);
+            var moderators = await this._chatBridge.GetModeratorsAsync([binding]).ConfigureAwait(false);
+            allMembersFit = await this.SyncHostedChannelAsync(client, channel, binding, moderators.GetValueOrDefault(binding.GuildId)).ConfigureAwait(false);
         }
 
         var answer = this._chatCommands.CreateBindAnswer(bindResult, nameof(Resources.Bind_Created), boundTarget, MentionUtils.MentionChannel(channel.Id));
         return allMembersFit
             ? answer
             : answer with { Description = answer.Description + "\n" + DiscordCommands.GetText(this._chatCommands.Culture, nameof(Resources.Bind_TooManyMembers), MaximumPermissionOverwrites) };
+    }
+
+    /// <summary>
+    /// Gets the hosted channel of a guild or alliance: the bound one, otherwise one with its name, which isn't bound,
+    /// e.g. after the binding got lost, otherwise a new one. Only the bot can see a new channel, until the members are synchronized.
+    /// The caller holds the <see cref="_hostedChannelLock"/>.
+    /// </summary>
+    private async Task<IGuildChannel> GetOrCreateHostedChannelAsync(DiscordSocketClient client, SocketGuild guild, GuildChatScope scope, GuildChatTarget target)
+    {
+        if (this._chatBridge.Store.Get(target.GuildId, scope) is { IsHosted: true } existing
+            && ulong.TryParse(existing.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var existingId))
+        {
+            if (guild.GetTextChannel(existingId) is { } existingChannel)
+            {
+                return existingChannel;
+            }
+
+            // The channel was deleted while the bot wasn't connected.
+            await this._chatBridge.Store.RemoveAsync(existingId, null).ConfigureAwait(false);
+        }
+
+        var name = GetHostedChannelName(scope, target.GuildName);
+        var categoryName = this._layout.Categories.FirstOrDefault(c => c.Key == DiscordServerLayout.GuildsCategoryKey)?.Name;
+        var category = guild.CategoryChannels.FirstOrDefault(c => string.Equals(c.Name, categoryName, StringComparison.OrdinalIgnoreCase));
+        if (guild.TextChannels.FirstOrDefault(c => c.Name == name && c.CategoryId == category?.Id && this._chatBridge.Store.GetByChannel(c.Id) is null) is { } unboundChannel)
+        {
+            return unboundChannel;
+        }
+
+        return await guild.CreateTextChannelAsync(name, properties =>
+        {
+            properties.CategoryId = category?.Id;
+            properties.PermissionOverwrites = new[]
+            {
+                new Overwrite(guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),
+                new Overwrite(client.CurrentUser.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow)),
+            };
+        }).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates the hosted channels of the guilds whose guild master is linked, if the settings allow it.
+    /// It runs when a user is linked, and from time to time for e.g. new guilds and new guild masters.
+    /// Guilds which already have a bound chat, also on another Discord server, keep it.
+    /// </summary>
+    private async Task CreateMissingHostedChannelsAsync()
+    {
+        if (!this._settings.ChatBridge.AutoCreateHostedChannels
+            || this._client is not { } client
+            || this.GetRoutingGuild(client) is not { } guild
+            || this._chatBridge.CheckAllowed(guild.Id, true) is not null)
+        {
+            return;
+        }
+
+        try
+        {
+            foreach (var target in await this._chatBridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false))
+            {
+                IGuildChannel channel;
+                await this._hostedChannelLock.WaitAsync().ConfigureAwait(false);
+                try
+                {
+                    // E.g. the guild master used /guildchat in the meantime.
+                    if (this._chatBridge.Store.Get(target.GuildId, GuildChatScope.Guild) is not null)
+                    {
+                        continue;
+                    }
+
+                    channel = await this.GetOrCreateHostedChannelAsync(client, guild, GuildChatScope.Guild, target).ConfigureAwait(false);
+                    await this._chatBridge.BindHostedAsync(target, guild.Id, channel.Id).ConfigureAwait(false);
+                }
+                finally
+                {
+                    this._hostedChannelLock.Release();
+                }
+
+                if (this._chatBridge.Store.GetByChannel(channel.Id) is { } binding)
+                {
+                    var moderators = await this._chatBridge.GetModeratorsAsync([binding]).ConfigureAwait(false);
+                    await this.SyncHostedChannelAsync(client, channel, binding, moderators.GetValueOrDefault(binding.GuildId)).ConfigureAwait(false);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogWarning(ex, "The hosted channels of guilds couldn't be created. Has the bot the permission to manage channels?");
+        }
+    }
+
+    private string GetBoundChannelMention(GuildChatTarget? target, GuildChatScope scope)
+    {
+        return target is not null
+               && this._chatBridge.Store.Get(target.GuildId, scope) is { } binding
+               && ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var channelId)
+            ? MentionUtils.MentionChannel(channelId)
+            : "-";
     }
 
     private async ValueTask OnChatMessageAsync(ChatMessageEvent chatMessage)
@@ -344,6 +454,7 @@ public sealed partial class DiscordBot
         if (++this._maintenanceCount % HostedChannelSyncInterval == 0)
         {
             await this.ReloadChatBindingsAsync().ConfigureAwait(false);
+            await this.CreateMissingHostedChannelsAsync().ConfigureAwait(false);
             await this.SyncHostedChannelsAsync().ConfigureAwait(false);
         }
     }
@@ -356,31 +467,50 @@ public sealed partial class DiscordBot
         }
 
         var serverId = guild.Id.ToString(CultureInfo.InvariantCulture);
-        foreach (var binding in this._chatBridge.Store.Bindings.Where(b => b.IsHosted && b.ExternalServerId == serverId))
+        var bindings = this._chatBridge.Store.Bindings.Where(b => b.IsHosted && b.ExternalServerId == serverId).ToList();
+        IReadOnlyDictionary<Guid, ulong> moderators;
+        try
+        {
+            moderators = await this._chatBridge.GetModeratorsAsync(bindings).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogWarning(ex, "The guild masters of the hosted channels couldn't be determined.");
+            return;
+        }
+
+        foreach (var binding in bindings)
         {
             if (ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var channelId)
                 && guild.GetTextChannel(channelId) is { } channel)
             {
-                await this.SyncHostedChannelAsync(client, channel, binding).ConfigureAwait(false);
+                await this.SyncHostedChannelAsync(client, channel, binding, moderators.GetValueOrDefault(binding.GuildId)).ConfigureAwait(false);
             }
         }
     }
 
     /// <summary>
     /// Allows the linked members of the guild or alliance to see the channel, and removes the others.
+    /// The linked guild master can also moderate the messages, only in this channel. When the guild master changes,
+    /// the previous one becomes a normal member.
     /// The bot doesn't use roles for it, because it can't see the members of roles without the privileged intent for the members.
     /// Discord allows <see cref="MaximumPermissionOverwrites"/> overwrites per channel, so a very large alliance doesn't fit completely.
     /// </summary>
+    /// <param name="client">The client.</param>
+    /// <param name="channel">The channel.</param>
+    /// <param name="binding">The binding of the channel.</param>
+    /// <param name="moderatorId">The Discord user who is linked to the guild master, if there is one.</param>
     /// <returns><c>true</c>, if all linked members can see the channel; <c>false</c>, if some don't fit.</returns>
-    private async Task<bool> SyncHostedChannelAsync(DiscordSocketClient client, IGuildChannel channel, GuildChatBinding binding)
+    private async Task<bool> SyncHostedChannelAsync(DiscordSocketClient client, IGuildChannel channel, GuildChatBinding binding, ulong moderatorId)
     {
         try
         {
             var linkedMembers = await this._chatBridge.GetLinkedMembersAsync(binding).ConfigureAwait(false);
-            var currentMembers = channel.PermissionOverwrites
+            var currentOverwrites = channel.PermissionOverwrites
                 .Where(overwrite => overwrite.TargetType == PermissionTarget.User && overwrite.TargetId != client.CurrentUser.Id)
-                .Select(overwrite => overwrite.TargetId)
-                .ToHashSet();
+                .ToDictionary(overwrite => overwrite.TargetId, overwrite => overwrite.Permissions);
+            var currentMembers = currentOverwrites.Keys.ToHashSet();
+            OverwritePermissions GetPermissions(ulong userId) => userId == moderatorId ? ModeratorPermissions : MemberPermissions;
 
             // The removals first, so that they free overwrites for the additions.
             foreach (var userId in currentMembers.Except(linkedMembers))
@@ -392,6 +522,15 @@ public sealed partial class DiscordBot
                 }
             }
 
+            // E.g. a former guild master, or a new one.
+            foreach (var userId in currentMembers.Where(userId => currentOverwrites[userId].AllowValue != GetPermissions(userId).AllowValue || currentOverwrites[userId].DenyValue != GetPermissions(userId).DenyValue).ToList())
+            {
+                if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
+                {
+                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId)).ConfigureAwait(false);
+                }
+            }
+
             // E.g. the overwrites of @everyone and of the bot.
             var otherOverwrites = channel.PermissionOverwrites.Count(overwrite => overwrite.TargetType != PermissionTarget.User || overwrite.TargetId == client.CurrentUser.Id);
             var freeOverwrites = MaximumPermissionOverwrites - otherOverwrites - currentMembers.Count;
@@ -400,7 +539,7 @@ public sealed partial class DiscordBot
             {
                 if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
                 {
-                    await channel.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow)).ConfigureAwait(false);
+                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId)).ConfigureAwait(false);
                 }
             }
 
