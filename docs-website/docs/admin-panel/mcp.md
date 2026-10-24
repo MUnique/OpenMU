@@ -51,10 +51,11 @@ services:
 
 Recreate the admin container after changing its environment. This ASP.NET Core
 setting trusts forwarded headers from any proxy, so use it only when the admin
-host is reachable exclusively through trusted proxies. Remove the admin service's
-published `8080` port from the base Compose file, or bind it to loopback, and keep
-the container network private. For other deployments, configure explicit trusted
-proxy addresses with ASP.NET Core `ForwardedHeadersOptions` instead.
+host is reachable exclusively through trusted proxies. The shipped base and
+development Compose files bind the admin service's published port to loopback.
+Keep that binding (or remove the published port) and keep the container network
+private. For other deployments, configure explicit trusted proxy addresses with
+ASP.NET Core `ForwardedHeadersOptions` instead.
 
 If you maintain a custom nginx configuration, add
 `proxy_set_header X-Forwarded-Proto $scheme;` in the admin location to overwrite
@@ -72,6 +73,14 @@ it in the panel when it is no longer needed.
 MCP accepts `X-Api-Key: <key>` or `Authorization: Bearer <key>`. Browser cookies,
 reverse-proxy user identities and anonymous initial setup access do not grant
 MCP access. A revoked or disabled key is rejected on its next HTTP request.
+
+### Local development
+
+The shipped `nginx.dev.conf` proxies serve plain HTTP, so MCP requests through
+those proxies receive HTTP 403. For local testing, run the admin host directly
+on loopback and connect to `http://localhost:<port>/mcp`, or use a TLS proxy.
+A Docker-published loopback port still reaches the container through its bridge;
+it does not make the connection appear local to the admin host.
 
 ## Configure an agent
 
@@ -161,6 +170,11 @@ character, map, position and level data. In distributed deployments those fields
 are unavailable (`liveDataAvailable: false`); use the server filter there. Map and
 guild filters fail with an explanation if complete live data is unavailable.
 The player history starts when the admin host starts.
+
+Configuration reads share the panel's current in-memory configuration. If a
+collection changes during a read, the host makes up to three attempts without
+reloading the database. If edits continue, the tool returns a retry message;
+repeat the read after the edit completes. Reads are not transactional snapshots.
 
 No password hashes, security codes, vault passwords, admin authentication secrets,
 IP addresses, plugin source or custom plugin configuration are exposed. Generic

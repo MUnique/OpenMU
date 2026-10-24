@@ -321,10 +321,10 @@ public sealed class AdminReadTools
             var result = await operation().ConfigureAwait(false);
             return result is JsonObject json ? json : AdminReadResult.From(result!);
         }
-        catch (ArgumentException ex)
+        catch (Exception ex) when (ex is ArgumentException or ConfigurationReadConflictException)
         {
-            // Only validation messages are sent to the client. Unexpected exceptions are handled
-            // by the SDK, which hides their details rather than leaking database or host secrets.
+            // Only validation and configuration-conflict messages are sent to the client.
+            // The SDK hides unexpected exceptions, including database and host details.
             throw new McpException(ex.Message);
         }
     }

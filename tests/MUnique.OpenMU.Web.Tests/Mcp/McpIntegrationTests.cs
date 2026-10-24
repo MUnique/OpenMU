@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests.Mcp;
 
+using System.Collections;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -26,6 +27,7 @@ using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
@@ -397,6 +399,42 @@ public sealed class McpIntegrationTests : System.IDisposable
         source.Verify(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>()), Times.Exactly(2));
     }
 
+    /// <summary>Concurrent collection edits restart a read, or produce a bounded, safe retry error.</summary>
+    [TestCase("config_query", 1)]
+    [TestCase("config_get", 1)]
+    [TestCase("config_query", 3)]
+    [TestCase("config_get", 3)]
+    public async Task ConfigurationCollectionEditsAreRetriedAsync(string tool, int conflicts)
+    {
+        using var context = new InMemoryPersistenceContextProvider().CreateNewContext();
+        var item = context.CreateNew<ItemDefinition>();
+        item.Name = "Surviving Sword";
+        var discarded = context.CreateNew<ItemDefinition>();
+        discarded.Name = "Discarded partial item";
+        var enumerations = 0;
+        var collection = new Mock<ICollection<ItemDefinition>>();
+        collection.As<IEnumerable>().Setup(c => c.GetEnumerator()).Returns(() =>
+            ++enumerations <= conflicts ? ModifiedItems(discarded).GetEnumerator() : ((IEnumerable)new[] { item }).GetEnumerator());
+        var cached = new Mock<GameConfiguration>();
+        var id = Guid.NewGuid();
+        cached.As<MUnique.OpenMU.Persistence.IIdentifiable>().SetupGet(c => c.Id).Returns(id);
+        cached.SetupGet(c => c.Items).Returns(collection.Object);
+        var source = Mock.Get(this._app.Services.GetRequiredService<IDataSource<GameConfiguration>>());
+        source.Setup(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(cached.Object);
+
+        await using var client = await this.ConnectAsync().ConfigureAwait(false);
+        var arguments = tool == "config_query"
+            ? new Dictionary<string, object?> { ["type"] = "ItemDefinition", ["fields"] = "Name" }
+            : new Dictionary<string, object?> { ["type"] = "GameConfiguration", ["id"] = id };
+        var result = await client.CallToolAsync(tool, arguments).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(result);
+        Assert.That(result.IsError == true, Is.EqualTo(conflicts == 3));
+        Assert.That(enumerations, Is.EqualTo(conflicts == 3 ? 3 : 2));
+        Assert.That(json, Does.Not.Contain(discarded.Name).And.Not.Contain("secret-config-edit-detail"));
+        Assert.That(json, Does.Contain(conflicts == 3 ? "Retry this read" : item.Name));
+        source.Verify(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>()), Times.Once);
+    }
+
     /// <summary>Disabled means the HTTP route is not registered.</summary>
     [Test]
     public async Task DisabledByDefaultAsync()
@@ -411,6 +449,12 @@ public sealed class McpIntegrationTests : System.IDisposable
         using var http = new HttpClient(new HttpClientHandler { UseProxy = false }) { BaseAddress = new Uri(app.Urls.Single()) };
         using var response = await http.GetAsync("/mcp").ConfigureAwait(false);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
+    private static IEnumerable<ItemDefinition> ModifiedItems(ItemDefinition item)
+    {
+        yield return item;
+        throw new InvalidOperationException("secret-config-edit-detail");
     }
 
     private async ValueTask<HttpStatusCode> PingAsync(string key)
