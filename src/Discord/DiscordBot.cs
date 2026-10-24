@@ -476,11 +476,28 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             return;
         }
 
-        var revoked = await this._pendingRoleRevocations.ProcessAsync(userId => this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false))).ConfigureAwait(false);
+        var revoked = await this._pendingRoleRevocations.ProcessAsync(this.IsLinkedAsync, userId => this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false))).ConfigureAwait(false);
         if (syncChannels || revoked > 0)
         {
             // The user might lose access to channels of guilds.
             await this.SyncHostedChannelsAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the Discord user is linked.
+    /// </summary>
+    /// <returns><c>null</c>, if it's unknown, e.g. because the database isn't available.</returns>
+    private async Task<bool?> IsLinkedAsync(ulong userId)
+    {
+        try
+        {
+            return await this._accountCommands.IsLinkedAsync(userId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogWarning(ex, "The link of the Discord user {userId} couldn't be checked.", userId);
+            return null;
         }
     }
 

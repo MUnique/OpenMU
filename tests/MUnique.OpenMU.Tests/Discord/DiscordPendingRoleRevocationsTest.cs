@@ -24,16 +24,16 @@ public class DiscordPendingRoleRevocationsTest
         revocations.Add(2);
         Assert.That(revocations.Count, Is.EqualTo(2));
 
-        var unavailable = await revocations.ProcessAsync(_ => Task.FromResult(false)).ConfigureAwait(false);
+        var unavailable = await revocations.ProcessAsync(NotLinked, _ => Task.FromResult(false)).ConfigureAwait(false);
         Assert.That(unavailable, Is.Zero);
         Assert.That(revocations.Count, Is.EqualTo(2));
 
-        var partial = await revocations.ProcessAsync(userId => Task.FromResult(userId == 1)).ConfigureAwait(false);
+        var partial = await revocations.ProcessAsync(NotLinked, userId => Task.FromResult(userId == 1)).ConfigureAwait(false);
         Assert.That(partial, Is.EqualTo(1));
         Assert.That(revocations.Count, Is.EqualTo(1));
 
         var revoked = new List<ulong>();
-        await revocations.ProcessAsync(userId =>
+        await revocations.ProcessAsync(NotLinked, userId =>
         {
             revoked.Add(userId);
             return Task.FromResult(true);
@@ -52,7 +52,7 @@ public class DiscordPendingRoleRevocationsTest
         revocations.Add(1);
         await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
         var called = false;
-        await revocations.ProcessAsync(_ =>
+        await revocations.ProcessAsync(NotLinked, _ =>
         {
             called = true;
             return Task.FromResult(true);
@@ -73,7 +73,7 @@ public class DiscordPendingRoleRevocationsTest
         var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var operations = new List<string>();
 
-        var processing = revocations.ProcessAsync(async _ =>
+        var processing = revocations.ProcessAsync(NotLinked, async _ =>
         {
             started.SetResult();
             await resume.Task.ConfigureAwait(false);
@@ -113,7 +113,7 @@ public class DiscordPendingRoleRevocationsTest
         revocations.Add(1);
         var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var processing = revocations.ProcessAsync(async _ =>
+        var processing = revocations.ProcessAsync(NotLinked, async _ =>
         {
             started.SetResult();
             await resume.Task.ConfigureAwait(false);
@@ -134,4 +134,33 @@ public class DiscordPendingRoleRevocationsTest
         await processing.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
         Assert.That(revocations.Count, Is.Zero);
     }
+
+    /// <summary>
+    /// Tests that an unlink, which is delivered after the user was linked again, doesn't remove the role,
+    /// and that a user stays pending when the link can't be checked.
+    /// </summary>
+    [Test]
+    public async Task StaleUnlinkAfterRelinkKeepsRoleAsync()
+    {
+        var revocations = new DiscordPendingRoleRevocations();
+        await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
+
+        // The late unlink event.
+        revocations.Add(1);
+        var revoked = false;
+        Task<bool> RevokeAsync(ulong userId)
+        {
+            revoked = true;
+            return Task.FromResult(true);
+        }
+
+        Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(null), RevokeAsync).ConfigureAwait(false), Is.Zero);
+        Assert.That(revocations.Count, Is.EqualTo(1));
+
+        Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(true), RevokeAsync).ConfigureAwait(false), Is.Zero);
+        Assert.That(revoked, Is.False);
+        Assert.That(revocations.Count, Is.Zero);
+    }
+
+    private static Task<bool?> NotLinked(ulong userId) => Task.FromResult<bool?>(false);
 }
