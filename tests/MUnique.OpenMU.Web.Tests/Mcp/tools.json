@@ -69,6 +69,26 @@
     }
   },
   {
+    "Name": "castle_siege_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "characters_get",
     "InputSchema": {
       "type": "object",

@@ -54,6 +54,12 @@ public sealed class McpIntegrationTests : System.IDisposable
     private Guid _configurationId;
     private Guid _guildId;
 
+    /// <summary>Gets or sets whether this host explicitly enables operational write tools.</summary>
+    public bool EnableWrites { get; set; }
+
+    /// <summary>Gets the running host for operational integration tests.</summary>
+    internal WebApplication App => this._app;
+
     /// <summary>Starts a minimal admin host with real in-memory persistence.</summary>
     [SetUp]
     public async Task SetUpAsync()
@@ -64,17 +70,20 @@ public sealed class McpIntegrationTests : System.IDisposable
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["AdminPanel:Mcp:Enabled"] = "true",
+            ["AdminPanel:Mcp:ReadOnly"] = this.EnableWrites ? "false" : "true",
             ["AdminPanel:Auth:DataProtectionKeyPath"] = Path.Combine(Path.GetTempPath(), "openmu-mcp-test-keys"),
         });
         this._keys = new InMemoryApiKeyRepository();
         await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "test-viewer", KeyHash = ApiKeyGenerator.Hash(ViewerKey), Roles = AdminRoles.Viewer }).ConfigureAwait(false);
         await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "test-cashshop", KeyHash = ApiKeyGenerator.Hash(CashShopKey), Roles = AdminRoles.CashShop }).ConfigureAwait(false);
         await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "test-admin", KeyHash = ApiKeyGenerator.Hash("omu_mcp-admin-test"), Roles = AdminRoles.Administrator }).ConfigureAwait(false);
+        await this._keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "unrelated", KeyHash = ApiKeyGenerator.Hash("omu_unrelated-role"), Roles = "Unrelated" }).ConfigureAwait(false);
         builder.Services.AddSingleton<IApiKeyRepository>(this._keys);
         builder.Services.AddSingleton(Mock.Of<IModalService>());
         builder.Services.AddSingleton(Mock.Of<IToastService>());
         builder.Services.AddAdminPanelAuth(builder.Configuration);
         builder.Services.AddAdminReadOperations();
+        builder.Services.AddSingleton<IAdminAuditRepository, InMemoryAdminAuditRepository>();
         builder.Services.AddAdminMcp(builder.Configuration);
         builder.Services.AddMcpServer().WithTools<RestrictedTestTools>();
         var persistence = new InMemoryPersistenceContextProvider();
@@ -172,7 +181,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         using var invalid = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         Assert.That(invalid.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         this._http.DefaultRequestHeaders.Remove("X-Api-Key");
-        this._http.DefaultRequestHeaders.Add("X-Api-Key", CashShopKey);
+        this._http.DefaultRequestHeaders.Add("X-Api-Key", "omu_unrelated-role");
         using var wrongRole = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         Assert.That(wrongRole.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
@@ -183,7 +192,7 @@ public sealed class McpIntegrationTests : System.IDisposable
     {
         await using var client = await this.ConnectAsync().ConfigureAwait(false);
         var tools = await client.ListToolsAsync().ConfigureAwait(false);
-        Assert.That(tools.Count, Is.EqualTo(15));
+        Assert.That(tools.Count, Is.EqualTo(16));
         var arguments = new Dictionary<string, Dictionary<string, object?>>
         {
             ["accounts_get"] = new() { ["loginName"] = "tester" },
@@ -467,12 +476,12 @@ public sealed class McpIntegrationTests : System.IDisposable
         return response.StatusCode;
     }
 
-    private async ValueTask<McpClient> ConnectAsync()
+    internal async ValueTask<McpClient> ConnectAsync(string key = ViewerKey)
     {
         var transport = new HttpClientTransport(new HttpClientTransportOptions
         {
             Endpoint = new Uri(this._http.BaseAddress!, "/mcp"),
-            AdditionalHeaders = new Dictionary<string, string> { ["X-Api-Key"] = ViewerKey },
+            AdditionalHeaders = new Dictionary<string, string> { ["X-Api-Key"] = key },
         }, this._http);
         return await McpClient.CreateAsync(transport).ConfigureAwait(false);
     }

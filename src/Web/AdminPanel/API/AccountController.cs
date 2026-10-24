@@ -8,10 +8,6 @@ using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>
@@ -25,28 +21,14 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 /// </remarks>
 [ApiController]
 [Route("api/accounts")]
-[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.Operator)]
+[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.AuthenticatedOperator)]
 public class AccountController : ControllerBase
 {
-    private readonly IPersistenceContextProvider _persistenceContextProvider;
-    private readonly IDataSource<GameConfiguration> _gameConfigurationSource;
-    private readonly ILogger<AccountController> _logger;
+    private readonly MUnique.OpenMU.Web.AdminPanel.Operations.AccountWriteOperations _operations;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AccountController"/> class.
-    /// </summary>
-    /// <param name="persistenceContextProvider">The persistence context provider.</param>
-    /// <param name="gameConfigurationSource">The source of the game configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public AccountController(
-        IPersistenceContextProvider persistenceContextProvider,
-        IDataSource<GameConfiguration> gameConfigurationSource,
-        ILogger<AccountController> logger)
-    {
-        this._persistenceContextProvider = persistenceContextProvider;
-        this._gameConfigurationSource = gameConfigurationSource;
-        this._logger = logger;
-    }
+    /// <summary>Initializes a new instance of the <see cref="AccountController"/> class.</summary>
+    /// <param name="operations">The shared, audited account operations.</param>
+    public AccountController(MUnique.OpenMU.Web.AdminPanel.Operations.AccountWriteOperations operations) => this._operations = operations;
 
     /// <summary>
     /// Registers a new account, which can log in right away.
@@ -60,46 +42,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> RegisterAsync([FromBody] AccountRegistration registration, CancellationToken cancellationToken)
     {
-        var gameConfiguration = await this._gameConfigurationSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false);
-        using var context = this._persistenceContextProvider.CreateNewPlayerContext(gameConfiguration);
-        if (await context.GetAccountByLoginNameAsync(registration.LoginName, cancellationToken).ConfigureAwait(false) is not null)
-        {
-            return this.Conflict();
-        }
-
-        var account = context.CreateNew<Account>();
-        account.LoginName = registration.LoginName;
-        account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registration.Password);
-        account.EMail = registration.EMail ?? string.Empty;
-        account.State = AccountState.Normal;
-        account.RegistrationDate = DateTime.UtcNow;
-
-        try
-        {
-            if (!await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false))
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
-        catch
-        {
-            // Another request may have registered the same name between the check above and this
-            // save, in which case the unique login name rejects this one.
-            if (await this.IsRegisteredAsync(registration.LoginName, gameConfiguration, cancellationToken).ConfigureAwait(false))
-            {
-                return this.Conflict();
-            }
-
-            throw;
-        }
-
-        this._logger.LogInformation("Account {LoginName} was registered by API client {Client}.", account.LoginName, this.User.Identity?.Name);
-        return this.StatusCode(StatusCodes.Status201Created);
-    }
-
-    private async ValueTask<bool> IsRegisteredAsync(string loginName, GameConfiguration gameConfiguration, CancellationToken cancellationToken)
-    {
-        using var context = this._persistenceContextProvider.CreateNewPlayerContext(gameConfiguration);
-        return await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null;
+        var result = await this._operations.CreateAsync(registration.LoginName, registration.Password, registration.EMail, cancellationToken).ConfigureAwait(false);
+        return result["status"]?.GetValue<string>() == "created" ? this.StatusCode(StatusCodes.Status201Created) : this.Conflict();
     }
 }

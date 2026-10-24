@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>Registers and maps the opt-in MCP endpoint in either admin host.</summary>
 public static class AdminMcpExtensions
@@ -36,12 +37,13 @@ public static class AdminMcpExtensions
         }
 
         services.AddSingleton(options);
+        services.AddSingleton<AdminWriteSettings>(options);
         if (!options.Enabled)
         {
             return services;
         }
 
-        if (options.RequestsPerMinute < 1 || options.MaxRequestBodyBytes < 1)
+        if (options.RequestsPerMinute < 1 || options.MaxRequestBodyBytes < 1 || options.MaxBulkSize is < 1 or > 1000)
         {
             throw new ArgumentException("MCP request and size limits must be positive.", nameof(configuration));
         }
@@ -49,7 +51,7 @@ public static class AdminMcpExtensions
         services.AddAuthorizationBuilder().AddPolicy(AdminPolicies.McpAccess, policy => policy
             .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
             .RequireAuthenticatedUser()
-            .RequireRole(AdminRoles.Viewer));
+            .RequireAssertion(context => context.User.IsInRole(AdminRoles.Viewer) || context.User.IsInRole(AdminRoles.CashShop)));
         services.AddRateLimiter(rateLimiter =>
         {
             rateLimiter.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -57,10 +59,16 @@ public static class AdminMcpExtensions
                 context.User.FindFirst(ApiKeyAuthenticationDefaults.ClientIdClaimType)?.Value ?? "anonymous",
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = options.RequestsPerMinute, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
         });
-        services.AddMcpServer()
+        var server = services.AddMcpServer()
             .WithHttpTransport(transport => transport.Stateless = true)
             .WithTools<AdminReadTools>()
-            .AddAuthorizationFilters();
+            .WithTools<AdminOperationReadTools>();
+        if (!options.ReadOnly)
+        {
+            server.WithTools<AdminWriteTools>();
+        }
+
+        server.AddAuthorizationFilters();
         return services;
     }
 
