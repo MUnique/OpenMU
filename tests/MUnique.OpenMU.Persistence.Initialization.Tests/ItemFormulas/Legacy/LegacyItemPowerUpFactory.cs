@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Attributes;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -20,9 +19,10 @@ using MUnique.OpenMU.Persistence;
 /// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
 /// </summary>
 /// <remarks>
-/// Lines 17-455 are copied unchanged, except the class name in lines 30, 33 and 36, and the documentation of
-/// <c>GetPowerUps</c> (line 41) and <c>GetSetPowerUps</c> (line 103), which took it from the interface the copy doesn't implement,
-/// so that a change of the live interface doesn't change the copy.
+/// Lines 17-101 and 218-455 are copied unchanged, except the class name in lines 30, 33 and 36, and the documentation of
+/// <c>GetPowerUps</c> (line 41), which took it from the interface the copy doesn't implement, so that a change of the live
+/// interface doesn't change the copy. The set power-ups (lines 103-216) are left out: the test doesn't compare them,
+/// and the item formulas aren't part of them.
 /// The item checks, the drop level and the durability factor come from <see cref="LegacyItemExtensions"/>.
 /// </remarks>
 internal class LegacyItemPowerUpFactory
@@ -115,127 +115,6 @@ internal class LegacyItemPowerUpFactory
         {
             yield return petLevel;
         }
-    }
-
-    /// <summary>
-    /// Gets the set power ups, which are created for existing <see cref="ItemSetGroup"/>s in the equipped items.
-    /// </summary>
-    /// <param name="equippedItems">The equipped items.</param>
-    /// <param name="attributeHolder">The attribute system of the player who equipped the items.</param>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    /// <returns>The created set power ups.</returns>
-    public IEnumerable<PowerUpWrapper> GetSetPowerUps(
-        IEnumerable<Item> equippedItems,
-        AttributeSystem attributeHolder,
-        GameConfiguration gameConfiguration)
-    {
-        var activeItems = equippedItems
-            .Where(i => i.Durability > 0)
-            .ToList();
-        var itemGroups = activeItems
-            .SelectMany(i => i.ItemSetGroups)
-            .Select(i => i.ItemSetGroup!)
-            .Distinct();
-
-        var result = Enumerable.Empty<PowerUpDefinition>();
-        var alwaysGroups = activeItems.SelectMany(i => i.Definition!.PossibleItemSetGroups).Where(i => i.AlwaysApplies).Distinct();
-
-        foreach (var group in alwaysGroups.Concat(itemGroups).Distinct())
-        {
-            var itemsOfGroup = activeItems.Where(i =>
-                ((group.AlwaysApplies && i.Definition!.PossibleItemSetGroups.Contains(group))
-                 || i.ItemSetGroups.Any(ios => ios.ItemSetGroup == group))
-                && (group.SetLevel == 0 || i.Level >= group.SetLevel));
-            var setMustBeComplete = group.MinimumItemCount == group.Items.Count;
-            if (group.SetLevel > 0 && setMustBeComplete && itemsOfGroup.All(i => i.Level > group.SetLevel))
-            {
-                // When all items are of higher level and the set bonus is applied when all items are there, another item set group will take care.
-                // This should prevent that for example set bonus defense is applied multiple times.
-                continue;
-            }
-
-            if (group.Options is not { } options)
-            {
-                this._logger.LogWarning("Options of set {group} is not initialized", group);
-                continue;
-            }
-
-            var itemCount = group.CountDistinct ? itemsOfGroup.Select(item => item.Definition).Distinct().Count() : itemsOfGroup.Count();
-            var setIsComplete = itemCount == group.Items.Count;
-            if (setIsComplete)
-            {
-                // Take all options when the set is complete
-                result = result.Concat(
-                    options.PossibleOptions
-                        .Select(o => o.PowerUpDefinition ?? throw Error.NotInitializedProperty(o, nameof(o.PowerUpDefinition))));
-                continue;
-            }
-
-            if (itemCount >= group.MinimumItemCount)
-            {
-                // Take the first n-1 options
-                result = result.Concat(options.PossibleOptions.OrderBy(o => o.Number)
-                    .Take(itemCount - 1)
-                    .Select(o => o.PowerUpDefinition ?? throw Error.NotInitializedProperty(o, nameof(o.PowerUpDefinition))));
-            }
-        }
-
-        result = result.Concat(this.GetOptionCombinationBonus(activeItems, gameConfiguration));
-
-        return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefinition(p, attributeHolder));
-    }
-
-    private IEnumerable<PowerUpDefinition> GetOptionCombinationBonus(IEnumerable<Item> activeItems, GameConfiguration gameConfiguration)
-    {
-        if (gameConfiguration?.ItemOptionCombinationBonuses is null
-            || gameConfiguration.ItemOptionCombinationBonuses.Count == 0)
-        {
-            yield break;
-        }
-
-        var activeItemOptions = activeItems.SelectMany(i => i.ItemOptions.Select(o => o.ItemOption ?? throw Error.NotInitializedProperty(o, nameof(o.ItemOption)))).ToList();
-        foreach (var combinationBonus in gameConfiguration.ItemOptionCombinationBonuses.Where(c => c.Bonus is { }))
-        {
-            var remainingOptions = activeItemOptions.ToList<ItemOption>();
-            while (this.AreRequiredOptionsFound(combinationBonus, remainingOptions))
-            {
-                if (combinationBonus.Bonus is not null)
-                {
-                    yield return combinationBonus.Bonus;
-                }
-                else
-                {
-                    this._logger.LogWarning("Bonus of ItemOptionCombinationBonus '{combinationBonusName}' is not initialized, id: {id}", combinationBonus.Description, combinationBonus.GetId());
-                }
-
-                if (!combinationBonus.AppliesMultipleTimes)
-                {
-                    break;
-                }
-            }
-        }
-    }
-
-    private bool AreRequiredOptionsFound(ItemOptionCombinationBonus bonus, IList<ItemOption> itemOptions)
-    {
-        var allMatches = new List<ItemOption>();
-        foreach (var requirement in bonus.Requirements)
-        {
-            var matches = itemOptions
-                .Where(o => o.OptionType is not null)
-                .Where(o => o.OptionType == requirement.OptionType && o.SubOptionType == requirement.SubOptionType)
-                .Take(requirement.MinimumCount)
-                .ToList();
-            if (matches.Count < requirement.MinimumCount)
-            {
-                return false;
-            }
-
-            allMatches.AddRange(matches);
-        }
-
-        allMatches.ForEach(o => itemOptions.Remove(o));
-        return true;
     }
 
     private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute, AttributeDefinition? targetAttribute = null)

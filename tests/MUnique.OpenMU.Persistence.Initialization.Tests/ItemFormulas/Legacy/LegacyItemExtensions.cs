@@ -17,7 +17,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
 /// </summary>
 /// <remarks>
-/// Lines 19-106, 131-141, 174-289, 361-426, 474-500 and 512-561 are copied unchanged.
+/// Lines 19-106, 131-141, 174-265, 279-289, 361-426, 474-500 and 512-561 are copied unchanged.
 /// The extension method calls in the frozen copies bind to this class wherever it has a method of that name,
 /// because extension methods of the own namespace come before imported ones.
 /// So the copies don't depend on <c>src/GameLogic/ItemExtensions.cs</c> any more; they still call
@@ -217,18 +217,6 @@ internal static class LegacyItemExtensions
     {
         bookRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.BookRise)?.BaseValue;
         return bookRise is not null;
-    }
-
-    /// <summary>
-    /// Determines whether this instance's durability decays with time.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns>
-    ///   <c>true</c> if this instance's durability decays with time; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsTimeDecaying(this Item item)
-    {
-        return item.IsJewelry() || item.IsWing();
     }
 
     /// <summary>
