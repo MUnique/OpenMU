@@ -30,6 +30,8 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
 
     private TOwner? _owner;
 
+    private bool _invalidated;
+
     private IDictionary<Guid, IIdentifiable>? _subObjects;
 
     /// <summary>
@@ -80,6 +82,11 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     {
         using var l = await this._loadLock.LockAsync(cancellationToken).ConfigureAwait(false);
 
+        if (this._invalidated && this._context?.HasChanges is not true)
+        {
+            this.Reset();
+        }
+
         if (this._owner is { } owner
             && (ownerId == Guid.Empty || owner.GetId() == ownerId))
         {
@@ -123,6 +130,17 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     {
         using var l = await this._loadLock.LockAsync().ConfigureAwait(false);
         this.Reset();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask InvalidateAsync()
+    {
+        using var gate = await this._loadLock.LockAsync().ConfigureAwait(false);
+        this._invalidated = true;
+        if (this._context?.HasChanges is not true)
+        {
+            this.Reset();
+        }
     }
 
     /// <inheritdoc />
@@ -193,6 +211,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
 
     private void Reset()
     {
+        this._invalidated = false;
         this._owner = null;
         this._context?.Dispose();
         this._context = null;

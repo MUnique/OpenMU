@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Threading;
 using MUnique.OpenMU.Persistence;
@@ -16,12 +17,17 @@ internal static class AdminChangeExecution
     /// <param name="cancellationToken">The cancellation token.</param>
     internal static async ValueTask SaveAsync(IContext context, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         try
         {
             if (!await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false))
             {
                 throw new AdminOperationException("The change could not be saved.");
             }
+        }
+        catch (Exception exception) when (exception is PersistenceConflictException or ValidationException)
+        {
+            throw new AdminOperationException("The change was rejected without being saved. Check constraints and request a new preview.", AdminOperationErrorKind.Conflict, exception);
         }
         catch (Exception exception) when (exception is not AdminOperationException)
         {

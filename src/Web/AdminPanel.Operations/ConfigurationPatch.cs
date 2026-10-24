@@ -52,8 +52,9 @@ internal static class ConfigurationPatch
 
     /// <summary>Returns supported scalar and reference fields, excluding identities and credentials.</summary>
     /// <param name="type">The configuration model type.</param>
-    internal static IEnumerable<PropertyInfo> Fields(Type type) => type.GetProperties().Where(p => p.GetIndexParameters().Length == 0
-        && p.CanRead && (p.SetMethod?.IsPublic == true || IsReferenceCollection(p)) && p.Name != "Id" && !SecretNames.Any(n => p.Name.Contains(n, StringComparison.OrdinalIgnoreCase))
+    /// <param name="pluginSettings">Whether plugin metadata, rather than legacy model name exclusions, defines sensitive fields.</param>
+    internal static IEnumerable<PropertyInfo> Fields(Type type, bool pluginSettings = false) => type.GetProperties().Where(p => p.GetIndexParameters().Length == 0
+        && p.CanRead && (p.SetMethod?.IsPublic == true || IsReferenceCollection(p)) && p.Name != "Id" && !p.IsDefined(typeof(SecretAttribute)) && (pluginSettings || !SecretNames.Any(n => p.Name.Contains(n, StringComparison.OrdinalIgnoreCase)))
         && (IsScalar(p.PropertyType) || IsReference(p.PropertyType) || IsReferenceCollection(p))).OrderBy(p => p.Name, StringComparer.Ordinal);
 
     /// <summary>Projects safe scalar values and reference identifiers, never full entity graphs.</summary>
@@ -79,14 +80,15 @@ internal static class ConfigurationPatch
     /// <param name="patch">The JSON merge patch.</param>
     /// <param name="context">The persistence context used for reference resolution.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    internal static async ValueTask<Dictionary<PropertyInfo, object?>> ConvertAsync(Type type, JsonObject patch, IContext context, CancellationToken cancellationToken)
+    /// <param name="pluginSettings">Whether to use plugin secret metadata when selecting patchable fields.</param>
+    internal static async ValueTask<Dictionary<PropertyInfo, object?>> ConvertAsync(Type type, JsonObject patch, IContext context, CancellationToken cancellationToken, bool pluginSettings = false)
     {
         if (patch.Count is < 1 or > 50)
         {
             throw new AdminOperationException("A patch must contain 1-50 fields.", AdminOperationErrorKind.InvalidInput);
         }
 
-        var fields = Fields(type).ToDictionary(p => p.Name, StringComparer.Ordinal);
+        var fields = Fields(type, pluginSettings).ToDictionary(p => p.Name, StringComparer.Ordinal);
         var result = new Dictionary<PropertyInfo, object?>();
         foreach (var (name, value) in patch)
         {

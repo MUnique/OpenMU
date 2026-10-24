@@ -74,7 +74,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
     internal ValueTask<JsonObject> RevertFromAuditAsync(AdminAuditEntry entry, bool apply, string? token, CancellationToken cancellationToken)
     {
         var change = JsonNode.Parse(entry.ResultJson)?["change"] as JsonObject;
-        if (change?["before"] is not JsonObject before || !Guid.TryParse(change["pluginId"]?.GetValue<string>(), out var id)
+        if (change?["revertAvailable"]?.GetValue<bool>() is not true || change["before"] is not JsonObject before || !Guid.TryParse(change["pluginId"]?.GetValue<string>(), out var id)
             || change["afterStateFingerprint"]?.GetValue<string>() is not { } expected)
         {
             throw new AdminOperationException("The audit entry has no complete reversible plugin diff.");
@@ -95,12 +95,12 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
             throw new AdminOperationException("The graphical configuration editor requires an authenticated panel circuit.", AdminOperationErrorKind.Forbidden);
         }
 
-        using var gate = await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false);
+        using var gate = apply ? await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false) : null;
         var pluginType = plugins.KnownPlugInTypes.FirstOrDefault(t => t.GUID == pluginId)
             ?? throw new AdminOperationException("Plugin not found in the installed plugin catalog.", AdminOperationErrorKind.InvalidInput);
         var configId = (await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).GetId();
         using var context = persistence.CreateNewContext();
-        if (context is IConfigurationEditContext editContext)
+        if (apply && context is IConfigurationEditContext editContext)
         {
             await editContext.BeginConfigurationEditAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -117,12 +117,13 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
         string? newJson = panelConfiguration;
         var before = new JsonObject { ["active"] = item.IsActive };
         var after = new JsonObject { ["active"] = active ?? item.IsActive };
+        var stringChange = false;
         if (patch is not null)
         {
             var type = pluginType.GetCustomConfigurationType()
                 ?? throw new AdminOperationException("This plugin has no custom configuration.", AdminOperationErrorKind.InvalidInput);
             var requested = ConfigurationPatch.Parse(patch);
-            if (requested.Any(p => ConfigurationPatch.Fields(type).All(f => f.Name != p.Key || !ConfigurationPatch.IsScalar(f.PropertyType))))
+            if (requested.Any(p => ConfigurationPatch.Fields(type, pluginSettings: true).All(f => f.Name != p.Key || !ConfigurationPatch.IsScalar(f.PropertyType))))
             {
                 throw new AdminOperationException("Only non-secret scalar plugin settings are supported. Use the panel for nested or sensitive configuration.", AdminOperationErrorKind.InvalidInput);
             }
@@ -138,15 +139,26 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
                 throw new AdminOperationException("The existing custom configuration is invalid. Repair it in the panel first.");
             }
 
-            var values = await ConfigurationPatch.ConvertAsync(type, requested, context, cancellationToken).ConfigureAwait(false);
+            var values = await ConfigurationPatch.ConvertAsync(type, requested, context, cancellationToken, pluginSettings: true).ConfigureAwait(false);
             var changedBefore = new JsonObject();
             var changedAfter = new JsonObject();
             foreach (var (property, value) in values)
             {
-                changedBefore[property.Name] = current.ContainsKey(property.Name) ? current[property.Name]?.DeepClone()
-                    : JsonSerializer.SerializeToNode(property.GetValue(current.Deserialize(type, ConfigurationPatch.Options)), property.PropertyType, ConfigurationPatch.Options);
+                if (property.PropertyType == typeof(string))
+                {
+                    // Even unmarked third-party strings may contain credentials. Never expose or retain their values.
+                    stringChange = true;
+                    changedBefore[property.Name] = new JsonObject { ["hidden"] = true };
+                    changedAfter[property.Name] = new JsonObject { ["changed"] = true };
+                }
+                else
+                {
+                    changedBefore[property.Name] = current.ContainsKey(property.Name) ? current[property.Name]?.DeepClone()
+                        : JsonSerializer.SerializeToNode(property.GetValue(current.Deserialize(type, ConfigurationPatch.Options)), property.PropertyType, ConfigurationPatch.Options);
+                    changedAfter[property.Name] = JsonSerializer.SerializeToNode(value, property.PropertyType, ConfigurationPatch.Options);
+                }
+
                 current[property.Name] = JsonSerializer.SerializeToNode(value, property.PropertyType, ConfigurationPatch.Options);
-                changedAfter[property.Name] = current[property.Name]?.DeepClone();
             }
 
             try
@@ -173,7 +185,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
         var change = new JsonObject
         {
             ["kind"] = panelConfiguration is null ? "plugin" : "pluginPanel",
-            ["revertAvailable"] = panelConfiguration is null, ["pluginId"] = pluginId.ToString(), ["before"] = before, ["after"] = after,
+            ["revertAvailable"] = panelConfiguration is null && !stringChange, ["pluginId"] = pluginId.ToString(), ["before"] = before, ["after"] = after,
             ["stateFingerprint"] = fingerprint, ["afterStateFingerprint"] = Fingerprint(active ?? item.IsActive, patch is null && panelConfiguration is null ? item.CustomConfiguration : newJson),
         };
         return await AdminChangeExecution.RunAsync(
@@ -182,7 +194,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
             actor,
             AdminRoles.Administrator,
             operationOverride ?? (patch is null && panelConfiguration is null ? "plugins_set_active" : "plugins_update_configuration"),
-            new { pluginId, active, patch, revertedAuditId },
+            new { pluginId, active, patchFingerprint = patch is null ? null : Fingerprint(false, patch), revertedAuditId },
             change,
             apply,
             token,
@@ -198,6 +210,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
                 }
 
                 await AdminChangeExecution.SaveAsync(context, cancellationToken).ConfigureAwait(false);
+                await configurations.InvalidateAsync().ConfigureAwait(false);
             },
             cancellationToken).ConfigureAwait(false);
     }

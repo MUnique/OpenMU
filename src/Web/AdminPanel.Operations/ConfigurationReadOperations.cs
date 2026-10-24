@@ -18,7 +18,7 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>Provides bounded, discoverable read access to the game configuration.</summary>
-public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> configurations, IAdminReadModel readModel)
+public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> configurations, IAdminReadModel readModel, IPersistenceContextProvider persistence)
 {
     private const int MaximumReadAttempts = 3;
 
@@ -104,7 +104,9 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         }
 
         var predicate = CreateFilter(modelType, field, op, value);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         return ReadConfiguration(cancellationToken, () =>
         {
             var matches = ReadCollection(GameConfigurationHelper.Enumerables[modelType](config)).Where(predicate).OrderBy(o => o.GetId()).ToList();
@@ -128,7 +130,9 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         }
 
         var modelType = ResolveType(type);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         return ReadConfiguration(cancellationToken, () =>
         {
             var item = ReadCollection(GameConfigurationHelper.Enumerables[modelType](config)).FirstOrDefault(o => o.GetId() == id);
@@ -219,7 +223,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         ?? throw new ArgumentException("Unknown or excluded configuration type. Use config_types to list supported types.", nameof(type));
 
     private static IEnumerable<PropertyInfo> Properties(Type type) => type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-        .Where(p => p.CanRead && p.GetIndexParameters().Length == 0 && p.PropertyType != typeof(byte[])
+        .Where(p => p.CanRead && !p.IsDefined(typeof(SecretAttribute)) && p.GetIndexParameters().Length == 0 && p.PropertyType != typeof(byte[])
             && p.PropertyType != typeof(PlugInConfiguration)
             && !(p.PropertyType.IsGenericType && p.PropertyType.GetGenericArguments().Contains(typeof(PlugInConfiguration))))
         .OrderBy(p => p.Name);
@@ -282,7 +286,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
 
     private static string Caption(object item, Type type)
     {
-        var name = type.GetProperty("Name")?.GetValue(item)?.ToString() ?? type.GetProperty("Designation")?.GetValue(item)?.ToString() ?? type.GetTypeCaption();
+        var name = Properties(type).FirstOrDefault(p => p.Name == "Name")?.GetValue(item)?.ToString() ?? Properties(type).FirstOrDefault(p => p.Name == "Designation")?.GetValue(item)?.ToString() ?? type.GetTypeCaption();
         return name.Length > 256 ? name[..256] : name;
     }
 

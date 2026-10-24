@@ -38,4 +38,28 @@ public class LoginServerTest
 
         Assert.That(await loginServer.TryLoginAsync("account", 2).ConfigureAwait(false), Is.True);
     }
+    /// <summary>A crashed caller cannot keep an account reserved indefinitely or release a replacement lease.</summary>
+    [Test]
+    public async Task ExpiredReservationAllowsLoginAndPreservesNewOwnerAsync()
+    {
+        var clock = new ReservationClock();
+        var server = new LoginServer.LoginServer(clock);
+        Assert.That(await server.TryReserveAccountAsync("account", 1000).ConfigureAwait(false), Is.True);
+        Assert.That(await server.TryLoginAsync("account", 1).ConfigureAwait(false), Is.False);
+        clock.Now = clock.Now.AddMinutes(6);
+        Assert.That(await server.TryReserveAccountAsync("account", 1001).ConfigureAwait(false), Is.True);
+        await server.ReleaseAccountReservationAsync("account", 1000).ConfigureAwait(false);
+        Assert.That(await server.TryLoginAsync("account", 1).ConfigureAwait(false), Is.False);
+        clock.Now = clock.Now.AddMinutes(6);
+        Assert.That(await server.TryLoginAsync("account", 1).ConfigureAwait(false), Is.True);
+        clock.Now = clock.Now.AddMinutes(10);
+        Assert.That(await server.TryLoginAsync("account", 2).ConfigureAwait(false), Is.False);
+    }
+
+    private sealed class ReservationClock : TimeProvider
+    {
+        internal DateTimeOffset Now { get; set; } = DateTimeOffset.UtcNow;
+
+        public override DateTimeOffset GetUtcNow() => this.Now;
+    }
 }

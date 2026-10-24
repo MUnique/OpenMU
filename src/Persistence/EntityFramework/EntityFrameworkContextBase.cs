@@ -99,7 +99,7 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             {
                 return await this.SaveChangesCoreAsync(cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception ex) when (attempt < maxAttempts && IsTransientConcurrencyConflict(ex))
+            catch (Exception ex) when (attempt < maxAttempts && this._configurationEditTransaction is null && IsTransientConcurrencyConflict(ex is PersistenceConflictException conflict ? conflict.InnerException! : ex))
             {
                 this._logger.LogWarning(ex, "Transient concurrency conflict while saving (attempt {Attempt}/{MaxAttempts}); retrying.", attempt, maxAttempts);
                 await Task.Delay(attempt * 10, cancellationToken).ConfigureAwait(false);
@@ -354,6 +354,26 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
         return this._lock.LockAsync(cancellationToken);
     }
 
+    private static bool IsRejectedSave(Exception exception)
+    {
+        // Npgsql may wrap server rejections in both an execution-strategy exception and a DbUpdateException.
+        for (Exception? error = exception; error is not null; error = error.InnerException)
+        {
+            if (error is DbUpdateConcurrencyException)
+            {
+                return true;
+            }
+
+            if (error is Npgsql.PostgresException databaseError)
+            {
+                return databaseError.SqlState.StartsWith("23", StringComparison.Ordinal)
+                    || databaseError.SqlState is "40001" or "40P01";
+            }
+        }
+
+        return false;
+    }
+
     private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
     {
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
@@ -372,13 +392,21 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 
         try
         {
-            await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
-            if (this._configurationEditTransaction is { } editTransaction)
+            try
             {
-                // Notify caches and game servers only after the serializable transaction commits.
-                await editTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-                await editTransaction.DisposeAsync().ConfigureAwait(false);
-                this._configurationEditTransaction = null;
+                await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+                if (this._configurationEditTransaction is { } editTransaction)
+                {
+                    // Notify caches and game servers only after the serializable transaction commits.
+                    await editTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                    await editTransaction.DisposeAsync().ConfigureAwait(false);
+                    this._configurationEditTransaction = null;
+                }
+            }
+            catch (Exception exception) when (IsRejectedSave(exception))
+            {
+                // Classify only explicit server rejections, never a lost connection during commit.
+                throw new PersistenceConflictException(exception);
             }
 
             if (args is not null)

@@ -149,9 +149,9 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
             throw new AdminOperationException("Use a finite nonnegative money amount multiplier.", AdminOperationErrorKind.InvalidInput);
         }
 
-        using var gate = await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false);
+        using var gate = apply ? await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false) : null;
         using var context = persistence.CreateNewContext();
-        if (context is IConfigurationEditContext editContext)
+        if (apply && context is IConfigurationEditContext editContext)
         {
             await editContext.BeginConfigurationEditAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -188,6 +188,7 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
             {
                 assignable.AssignValuesOf(candidate, config);
                 await AdminChangeExecution.SaveAsync(context, cancellationToken).ConfigureAwait(false);
+                await configurations.InvalidateAsync().ConfigureAwait(false);
             },
             cancellationToken).ConfigureAwait(false);
     }
@@ -324,9 +325,9 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
     private async ValueTask<JsonObject> ChangeAsync(string operation, string mode, string typeName, Guid id, string? parentType, Guid? parentId, string? collection, string patch, bool apply, string? token, CancellationToken cancellationToken, JsonObject? expected = null, Guid? auditId = null, string? expectedFingerprint = null)
     {
         var actor = await AdminChangeExecution.RequireAsync(executor, settings, AdminRoles.Administrator, cancellationToken).ConfigureAwait(false);
-        using var gate = await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false);
+        using var gate = apply ? await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false) : null;
         using var context = persistence.CreateNewContext();
-        if (context is IConfigurationEditContext editContext)
+        if (apply && context is IConfigurationEditContext editContext)
         {
             await editContext.BeginConfigurationEditAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -437,6 +438,7 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
                 }
 
                 await AdminChangeExecution.SaveAsync(context, cancellationToken).ConfigureAwait(false);
+                await configurations.InvalidateAsync().ConfigureAwait(false);
             },
             cancellationToken).ConfigureAwait(false);
     }

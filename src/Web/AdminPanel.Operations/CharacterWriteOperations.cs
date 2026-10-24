@@ -100,8 +100,13 @@ public sealed class CharacterWriteOperations(IPersistenceContextProvider persist
     private async ValueTask<JsonObject> ChangeAsync(string characterName, string patch, Guid? itemId, byte level, bool vault, bool apply, string? token, CancellationToken cancellationToken)
     {
         var actor = await AdminChangeExecution.RequireAsync(executor, settings, AdminRoles.Operator, cancellationToken).ConfigureAwait(false);
-        using var gate = await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(TimeSpan.FromMinutes(1));
+        cancellationToken = timeout.Token;
+        using var gate = apply ? await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false) : null;
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         using var context = persistence.CreateNewPlayerContext(config);
         var account = await context.GetAccountByCharacterNameAsync(characterName, cancellationToken).ConfigureAwait(false)
             ?? throw new AdminOperationException("Character not found.", AdminOperationErrorKind.InvalidInput);

@@ -25,7 +25,9 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
     public async ValueTask<JsonObject> RatesGetAsync(CancellationToken cancellationToken)
     {
         await executor.RequireAsync(AdminRoles.Viewer, cancellationToken).ConfigureAwait(false);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         using var context = persistence.CreateNewTypedContext(typeof(GameServerDefinition), false, config);
         var servers = (await context.GetAsync<GameServerDefinition>(cancellationToken).ConfigureAwait(false)).Where(s => s.GameConfiguration?.GetId() == config.GetId());
         return AdminReadResult.From(new
@@ -59,7 +61,9 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
             throw new AdminOperationException("Use a nonnegative finite experience multiplier. masterExperience and money are global; omit the server identifier.", AdminOperationErrorKind.InvalidInput);
         }
 
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         var property = rate == "experience" ? nameof(GameConfiguration.ExperienceRate) : nameof(GameConfiguration.MasterExperienceRate);
         var targetId = config.GetId();
         var type = nameof(GameConfiguration);
@@ -88,7 +92,9 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
     {
         await executor.RequireAsync(AdminRoles.Viewer, cancellationToken).ConfigureAwait(false);
         AdminReadResult.ValidatePage(offset, limit);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         var monster = config.Monsters.SingleOrDefault(m => m.Number == monsterNumber)
             ?? throw new AdminOperationException("Monster not found.", AdminOperationErrorKind.InvalidInput);
         var map = config.Maps.SingleOrDefault(m => m.Number == mapNumber)
@@ -134,7 +140,9 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
         var patch = new JsonObject { [nameof(DropItemGroup.Chance)] = chance };
         if (addItemId is { } itemId)
         {
-            var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            using var read = new ConfigurationReadScope();
+            await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+            var config = read.Configuration;
             var group = config.DropItemGroups.SingleOrDefault(g => g.GetId() == groupId)
                 ?? throw new AdminOperationException("Drop group not found.", AdminOperationErrorKind.InvalidInput);
             if (config.Items.All(i => i.GetId() != itemId))
@@ -160,7 +168,9 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
     {
         await executor.RequireAsync(AdminRoles.Viewer, cancellationToken).ConfigureAwait(false);
         AdminReadResult.ValidatePage(offset, limit);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         var map = config.Maps.SingleOrDefault(m => m.Number == mapNumber)
             ?? throw new AdminOperationException("Map not found.", AdminOperationErrorKind.InvalidInput);
         var spawns = map.MonsterSpawns.OrderBy(s => s.GetId()).ToArray();

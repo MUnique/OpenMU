@@ -206,11 +206,11 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             throw new ArgumentException($"{nameof(item.ConfigurationType)} must not be null.", nameof(item));
         }
 
-        await this.RefreshCustomConfigurationAsync(item).ConfigureAwait(true);
+        var persisted = await this.GetPersistedConfigurationAsync(item).ConfigureAwait(true);
 
         var referenceResolver = new ByDataSourceReferenceHandler(this._dataSource);
 
-        var configuration = item.Configuration.GetConfiguration(item.ConfigurationType, referenceResolver)
+        var configuration = persisted.GetConfiguration(item.ConfigurationType, referenceResolver)
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<object>.Item), configuration!);
@@ -237,7 +237,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                 var json = serialized.CustomConfiguration ?? "{}";
                 var preview = await this._operations.ReplaceFromPanelAsync(item.TypeId, configuration!, json, false, null, default).ConfigureAwait(false);
                 await this._operations.ReplaceFromPanelAsync(item.TypeId, configuration!, json, true, preview["confirmationToken"]!.GetValue<string>(), default).ConfigureAwait(false);
-                await this._dataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
                 this.DataChanged?.Invoke(this, EventArgs.Empty);
             }
             catch (AdminOperationException exception)
@@ -360,7 +359,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             }
 
             await this._operations.SetActiveAsync(item.TypeId, value, true, preview["confirmationToken"]!.GetValue<string>(), default).ConfigureAwait(false);
-            await this._dataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
         catch (AdminOperationException exception)
@@ -370,7 +368,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     }
 
     /// <summary>
-    /// Refreshes the custom configuration of the item with the persisted one.
+    /// Loads the persisted plugin settings without modifying the shared graphical editor context.
     /// </summary>
     /// <remarks>
     /// The data source keeps the configuration which it loaded first, but a plugin may change its own
@@ -378,21 +376,23 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// Without refreshing, the dialog would show the outdated values, and saving it would write them back.
     /// </remarks>
     /// <param name="item">The item.</param>
-    private async ValueTask RefreshCustomConfigurationAsync(PlugInConfigurationViewItem item)
+    /// <returns>The detached persisted configuration, or the supplied configuration for unsupported providers.</returns>
+    private async ValueTask<PlugInConfiguration> GetPersistedConfigurationAsync(PlugInConfigurationViewItem item)
     {
         try
         {
             using var context = this._persistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
-            if (await context.GetByIdAsync<PlugInConfiguration>(item.Id).ConfigureAwait(true) is { } persisted
-                && persisted.CustomConfiguration != item.Configuration.CustomConfiguration)
+            if (await context.GetByIdAsync<PlugInConfiguration>(item.Id).ConfigureAwait(true) is { } persisted)
             {
-                item.Configuration.CustomConfiguration = persisted.CustomConfiguration;
+                return persisted;
             }
         }
         catch (NotImplementedException)
         {
             // Ignored.
         }
+
+        return item.Configuration;
     }
 
     private bool FilterByTypeName(Type plugInType)

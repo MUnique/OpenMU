@@ -31,29 +31,10 @@ public sealed class AdminChangeConfirmation
     /// <param name="change">The safe proposed diff and state fingerprints.</param>
     internal JsonObject Preview(AdminActor actor, string operation, object arguments, JsonObject change)
     {
-        foreach (var entry in this._pending.Where(p => p.Value.ExpiresAt <= this._time.GetUtcNow()))
+        lock (this._pending)
         {
-            this._pending.TryRemove(entry.Key, out _);
+            return this.CreatePreview(actor, operation, arguments, change);
         }
-
-        if (this._pending.Count >= 1024)
-        {
-            throw new AdminOperationException("Too many outstanding previews. Wait for them to expire.", AdminOperationErrorKind.Unavailable);
-        }
-
-        var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-        var expires = this._time.GetUtcNow().AddMinutes(5);
-        this._pending[token] = new Confirmation(Binding(actor, operation, arguments, change), expires);
-        return new JsonObject
-        {
-            ["summary"] = "Preview only. Review the diff, then repeat exactly the same arguments with apply=true and the confirmationToken.",
-            ["change"] = change.DeepClone(),
-            ["affectedObjects"] = 1,
-            ["restartRequired"] = !operation.StartsWith("characters_", StringComparison.Ordinal),
-            ["restartGuidance"] = "Changes use the existing configuration notification path. Restart affected game servers when their subsystem does not reload these settings.",
-            ["confirmationToken"] = token,
-            ["expiresAt"] = expires.ToString("O"),
-        };
     }
 
     /// <summary>Consumes a confirmation atomically; mismatches, expiry and replays fail closed.</summary>
@@ -75,5 +56,32 @@ public sealed class AdminChangeConfirmation
     private static string Binding(AdminActor actor, string operation, object arguments, JsonObject change)
         => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { actor.Id, actor.Frontend, operation, arguments, change }))));
 
-    private sealed record Confirmation(string Digest, DateTimeOffset ExpiresAt);
+    private JsonObject CreatePreview(AdminActor actor, string operation, object arguments, JsonObject change)
+    {
+        foreach (var entry in this._pending.Where(p => p.Value.ExpiresAt <= this._time.GetUtcNow()))
+        {
+            this._pending.TryRemove(entry.Key, out _);
+        }
+
+        if (this._pending.Count >= 1024 || this._pending.Count(p => p.Value.ActorId == actor.Id && p.Value.Frontend == actor.Frontend) >= 64)
+        {
+            throw new AdminOperationException("Too many outstanding previews. Wait for them to expire.", AdminOperationErrorKind.Unavailable);
+        }
+
+        var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        var expires = this._time.GetUtcNow().AddMinutes(5);
+        this._pending[token] = new Confirmation(Binding(actor, operation, arguments, change), expires, actor.Id, actor.Frontend);
+        return new JsonObject
+        {
+            ["summary"] = "Preview only. Review the diff, then repeat exactly the same arguments with apply=true and the confirmationToken.",
+            ["change"] = change.DeepClone(),
+            ["affectedObjects"] = 1,
+            ["restartRequired"] = !operation.StartsWith("characters_", StringComparison.Ordinal),
+            ["restartGuidance"] = "Changes use the existing configuration notification path. Restart affected game servers when their subsystem does not reload these settings.",
+            ["confirmationToken"] = token,
+            ["expiresAt"] = expires.ToString("O"),
+        };
+    }
+
+    private sealed record Confirmation(string Digest, DateTimeOffset ExpiresAt, string ActorId, string Frontend);
 }

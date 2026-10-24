@@ -63,6 +63,28 @@ public sealed class ChangeConfirmationTests
     public void ToolGroupsFailClosed(string groups, string tool, bool allowed)
         => Assert.That(AdminToolGroups.Allows(groups, tool), Is.EqualTo(allowed));
 
+    /// <summary>A caller cannot exhaust another caller's preview capacity, even concurrently.</summary>
+    [Test]
+    public async Task PreviewCapacityIsIsolatedPerCallerAsync()
+    {
+        var confirmations = new AdminChangeConfirmation(TimeProvider.System);
+        var actor = new AdminActor("busy-key", "admin", "mcp", [AdminRoles.Administrator]);
+        var issued = await Task.WhenAll(Enumerable.Range(0, 100).Select(_ => Task.Run(() =>
+        {
+            try
+            {
+                confirmations.Preview(actor, "config_update", new { id = 1 }, new JsonObject());
+                return true;
+            }
+            catch (AdminOperationException)
+            {
+                return false;
+            }
+        }))).ConfigureAwait(false);
+        Assert.That(issued.Count(i => i), Is.EqualTo(64));
+        Assert.DoesNotThrow(() => confirmations.Preview(actor with { Id = "other-key" }, "config_update", new { id = 1 }, new JsonObject()));
+    }
+
     private sealed class MutableClock : TimeProvider
     {
         internal DateTimeOffset Now { get; set; } = new(2026, 10, 24, 0, 0, 0, TimeSpan.Zero);
