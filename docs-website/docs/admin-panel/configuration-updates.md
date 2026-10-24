@@ -53,7 +53,9 @@ any other update.
 
 An optional update of that kind is not applied on a new database: it is listed
 here as pending, as on an existing database, so you decide whether to apply it.
-The same goes for the updates which would be applied and depend on it.
+The same goes for the updates which would be applied and depend on it. Their
+dependencies are checked when you apply them, so an optional plugin update with a
+missing dependency doesn't stop the creation of a new database.
 
 ## Preconditions
 

@@ -198,6 +198,60 @@ internal class NewDatabaseUpdatesTest
     }
 
     /// <summary>
+    /// An optional update which stays pending doesn't stop the initialization when its dependency is missing, or comes
+    /// in a version that is too low: its dependencies are checked when it's applied. The other updates are installed.
+    /// </summary>
+    [Test]
+    public async Task BrokenOptionalUpdateStaysPendingAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var dependency = Configured("dependency", 1, version: 1);
+        var missing = Configured("missing dependency", 2, isMandatory: false, dependsOn: [Guid.NewGuid()]);
+        var tooLow = Configured("too low dependency", 3, isMandatory: false, dependsOn: [(dependency.Key, 2)]);
+        var mandatory = Configured("mandatory", 4);
+
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [dependency, missing, tooLow, mandatory]).ConfigureAwait(false);
+
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { "dependency", "mandatory" }));
+        Assert.That(await InstalledVersionAsync(context, missing.Key).ConfigureAwait(false), Is.Null);
+        Assert.That(await InstalledVersionAsync(context, tooLow.Key).ConfigureAwait(false), Is.Null);
+    }
+
+    /// <summary>
+    /// Optional updates which stay pending don't stop the initialization when they depend on each other in a circle.
+    /// </summary>
+    [Test]
+    public async Task OptionalUpdatesInACircleStayPendingAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var firstKey = Guid.NewGuid();
+        var secondKey = Guid.NewGuid();
+        var first = Configured("first", 1, isMandatory: false, key: firstKey, dependsOn: [secondKey]);
+        var second = Configured("second", 2, isMandatory: false, key: secondKey, dependsOn: [firstKey]);
+        var mandatory = Configured("mandatory", 3);
+
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [first, second, mandatory]).ConfigureAwait(false);
+
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { "mandatory" }));
+    }
+
+    /// <summary>
+    /// An update to apply can depend on one whose changes the initialization contains: that one counts as installed.
+    /// </summary>
+    [Test]
+    public async Task UpdateToApplyCanDependOnAnInitializedOneAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var initialized = Configured("initialized", 1, version: 2, runsOnNewDatabase: false);
+        var dependent = Configured("dependent", 2, dependsOn: [(initialized.Key, 2)]);
+
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [dependent, initialized]).ConfigureAwait(false);
+
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { "dependent" }));
+        Assert.That(await InstalledVersionAsync(context, initialized.Key).ConfigureAwait(false), Is.EqualTo(2));
+    }
+
+    /// <summary>
     /// Adds the marker item of an applied test update: an item named like the update.
     /// </summary>
     private static ValueTask AddMarkerAsync(IContext context, GameConfiguration gameConfiguration, string name)
