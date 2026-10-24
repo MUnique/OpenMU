@@ -112,6 +112,7 @@ public static class DiscordServiceCollectionExtensions
                     provider.GetRequiredService<ILogger<DiscordBot>>())
                 {
                     DisabledNotifications = settings.DisabledNotifications.ToArray(),
+                    PendingRoleRevocations = provider.GetService<DiscordPendingRoleRevocations>() ?? new DiscordPendingRoleRevocations(),
                 })
                 .AddHostedService(provider => provider.GetRequiredService<DiscordBot>())
                 .AddSingleton<IGameEventListener>(provider => provider.GetRequiredService<DiscordBot>());

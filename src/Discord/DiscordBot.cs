@@ -52,7 +52,6 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     private readonly DiscordDirectMessages _directMessages;
     private readonly ILogger<DiscordBot> _logger;
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
-    private readonly DiscordPendingRoleRevocations _pendingRoleRevocations = new();
 
     private DiscordSocketClient? _client;
     private DiscordBackgroundQueue? _backgroundQueue;
@@ -136,6 +135,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     /// <remarks>The number of the Discord servers which the bot is in.</remarks>
     public int CurrentConnections => this._client?.Guilds.Count ?? 0;
+
+    /// <summary>
+    /// Gets the users whose role of linked players still has to be removed.
+    /// The <see cref="DiscordIntegration"/> keeps them when it creates the bot again with changed settings.
+    /// </summary>
+    internal DiscordPendingRoleRevocations PendingRoleRevocations { get; init; } = new();
 
     /// <inheritdoc />
     public async ValueTask StartAsync()
@@ -245,7 +250,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         else if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
             && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
         {
-            this._pendingRoleRevocations.Add(userId);
+            this.PendingRoleRevocations.Add(userId);
             await this.ProcessPendingRoleRevocationsAsync(true).ConfigureAwait(false);
         }
     }
@@ -435,11 +440,11 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             {
                 if (roleChange.IsLinked)
                 {
-                    await this._pendingRoleRevocations.LinkAsync(roleChange.UserId, () => this.UpdateLinkedRoleAsync(roleChange)).ConfigureAwait(false);
+                    await this.PendingRoleRevocations.LinkAsync(roleChange.UserId, () => this.UpdateLinkedRoleAsync(roleChange)).ConfigureAwait(false);
                 }
                 else
                 {
-                    this._pendingRoleRevocations.Add(roleChange.UserId);
+                    this.PendingRoleRevocations.Add(roleChange.UserId);
                 }
             }
 
@@ -471,12 +476,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// </param>
     private async Task ProcessPendingRoleRevocationsAsync(bool syncChannels)
     {
-        if (this._pendingRoleRevocations.Count == 0 || this.ServerState != ServerState.Started)
+        if (this.PendingRoleRevocations.Count == 0 || this.ServerState != ServerState.Started)
         {
             return;
         }
 
-        var revoked = await this._pendingRoleRevocations.ProcessAsync(this.IsLinkedAsync, userId => this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false))).ConfigureAwait(false);
+        var revoked = await this.PendingRoleRevocations.ProcessAsync(this.IsLinkedAsync, userId => this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false))).ConfigureAwait(false);
         if (syncChannels || revoked > 0)
         {
             // The user might lose access to channels of guilds.
