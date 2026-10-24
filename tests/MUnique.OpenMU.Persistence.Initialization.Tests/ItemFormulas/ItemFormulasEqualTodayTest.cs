@@ -249,8 +249,11 @@ internal class ItemFormulasEqualTodayTest
 
                         var itemCase = $"{definition.Group}/{definition.Number} {definition.Name.ValueInNeutralLanguage} +{level} {quality.Name}, option level {optionLevel}";
                         this.CompareRequirementsWithReductions(item, quality.IsNormal && optionLevel == 0 ? allReductions : harmonyReductions, itemCase);
-                        this.ComparePowerUps(item, itemCase);
-                        this.ComparePrices(item, itemCase);
+                        if (this.GetMaximumDurability(item, itemCase) is { } maximumDurability)
+                        {
+                            this.ComparePowerUps(item, maximumDurability, itemCase);
+                            this.ComparePrices(item, maximumDurability, itemCase);
+                        }
                     }
                 }
             }
@@ -423,8 +426,30 @@ internal class ItemFormulasEqualTodayTest
         {
             if (before != now)
             {
-                this.Differences.Add($"{itemCase}, {what}: before [{before}], now [{now}]");
-                this.DifferencesByKind[what] = this.DifferencesByKind.GetValueOrDefault(what) + 1;
+                this.AddDifference(itemCase, what, $"before [{before}], now [{now}]");
+            }
+        }
+
+        private void AddDifference(string itemCase, string what, string description)
+        {
+            this.Differences.Add($"{itemCase}, {what}: {description}");
+            this.DifferencesByKind[what] = this.DifferencesByKind.GetValueOrDefault(what) + 1;
+        }
+
+        /// <summary>
+        /// Gets the maximum durability of the item, with which the power-up and price cases are prepared.
+        /// If it can't be computed, it's listed as a difference, and the item's power-ups and prices aren't compared.
+        /// </summary>
+        private byte? GetMaximumDurability(Item item, string itemCase)
+        {
+            try
+            {
+                return item.GetMaximumDurabilityOfOnePiece();
+            }
+            catch (Exception ex)
+            {
+                this.AddDifference(itemCase, "maximum durability", DescribeException(ex));
+                return null;
             }
         }
 
@@ -450,14 +475,13 @@ internal class ItemFormulasEqualTodayTest
                 Capture(() => DescribeRequirements(item, madeUpRequirements, (i, r) => i.GetRequirement(r))));
         }
 
-        private void ComparePowerUps(Item item, string itemCase)
+        private void ComparePowerUps(Item item, byte fullDurability, string itemCase)
         {
             if (item.Definition!.ItemSlot is not { } slotType)
             {
                 return;
             }
 
-            var fullDurability = item.GetMaximumDurabilityOfOnePiece();
             foreach (var slot in slotType.ItemSlots)
             {
                 foreach (var durability in new[] { fullDurability, fullDurability / 2 }.Distinct())
@@ -474,10 +498,9 @@ internal class ItemFormulasEqualTodayTest
             }
         }
 
-        private void ComparePrices(Item item, string itemCase)
+        private void ComparePrices(Item item, byte fullDurability, string itemCase)
         {
             item.ItemSlot = (byte)(item.Definition!.ItemSlot?.ItemSlots.FirstOrDefault() ?? 0);
-            var fullDurability = item.GetMaximumDurabilityOfOnePiece();
             item.Durability = fullDurability;
 
             // The buying prices don't depend on the durability.
