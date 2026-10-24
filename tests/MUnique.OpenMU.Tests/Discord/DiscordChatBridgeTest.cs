@@ -345,6 +345,34 @@ public class DiscordChatBridgeTest
     }
 
     /// <summary>
+    /// Tests that the binding of a deleted hosted channel is only removed while it still references the channel,
+    /// also when it happens at the same time as a new binding.
+    /// </summary>
+    [Test]
+    public async Task StaleHostedBindingIsRemovedConditionallyAsync()
+    {
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
+        Assert.That(await bridge.RemoveHostedBindingAsync(ChannelId).ConfigureAwait(false), Is.False, "a binding on another Discord server isn't hosted");
+        Assert.That(bridge.Store.GetByChannel(ChannelId), Is.Not.Null);
+
+        await bridge.UnbindAsync(ChannelId, GuildMasterUser, false).ConfigureAwait(false);
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId + 1, true).ConfigureAwait(false);
+
+        // The old channel is gone, while the guild master binds the chat again.
+        var removal = bridge.RemoveHostedBindingAsync(ChannelId + 1).AsTask();
+        var rebinding = bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId + 2, true).AsTask();
+        await Task.WhenAll(removal, rebinding).ConfigureAwait(false);
+
+        // Either order ends with at most one binding, which isn't the deleted channel, or the rebinding was refused before the removal.
+        Assert.That(bridge.Store.GetByChannel(ChannelId + 1), Is.Null);
+        var binding = bridge.Store.Get(this._legendsId, GuildChatScope.Guild);
+        Assert.That(binding is null || binding.ExternalChannelId == (ChannelId + 2).ToString(CultureInfo.InvariantCulture), Is.True);
+        Assert.That(bridge.Store.Bindings.Count(b => b.GuildId == this._legendsId && b.Scope == GuildChatScope.Guild), Is.LessThanOrEqualTo(1));
+        Assert.That(await bridge.RemoveHostedBindingAsync(ChannelId + 1).ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
     /// Tests that the guild master rights need the guild master character to be selected for the link,
     /// like <c>/guildchat</c>, and not just any character of the same account.
     /// </summary>

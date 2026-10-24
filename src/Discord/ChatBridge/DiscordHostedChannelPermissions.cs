@@ -1,4 +1,4 @@
-// <copyright file="DiscordHostedChannelPermissions.cs" company="MUnique">
+﻿// <copyright file="DiscordHostedChannelPermissions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -29,6 +29,11 @@ internal sealed record DiscordHostedChannelPermissions(
     internal static readonly OverwritePermissions ModeratorPermissions = new(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow, manageMessages: PermValue.Allow);
 
     /// <summary>
+    /// Gets a value indicating whether the overwrites have to be changed.
+    /// </summary>
+    internal bool HasChanges => this.Removals.Count > 0 || this.Changes.Count > 0;
+
+    /// <summary>
     /// Determines the changes.
     /// </summary>
     /// <param name="current">The current overwrites of the users, without the one of the bot.</param>
@@ -50,6 +55,40 @@ internal sealed record DiscordHostedChannelPermissions(
         var free = Math.Max(freeOverwrites - remaining.Count, 0);
         changes.AddRange(missing.Take(free).Select(userId => (userId, GetPermissions(userId, moderatorId))));
         return new DiscordHostedChannelPermissions(removals, changes, missing.Skip(free).ToList());
+    }
+
+    /// <summary>
+    /// Creates all overwrites of the channel after the changes. They replace the current ones in one request,
+    /// so that a failure changes nothing, removals don't need to look up the users, and the limit of overwrites holds.
+    /// </summary>
+    /// <param name="current">The current overwrites of the channel, also of the roles and of the bot.</param>
+    /// <param name="botUserId">The identifier of the bot user, whose overwrite is kept.</param>
+    /// <param name="addableUserIds">The users who don't have an overwrite yet and can get one, because they are members of the Discord server.</param>
+    /// <returns>The overwrites.</returns>
+    internal IReadOnlyList<Overwrite> Apply(IEnumerable<Overwrite> current, ulong botUserId, IReadOnlySet<ulong> addableUserIds)
+    {
+        var removals = this.Removals.ToHashSet();
+        var changes = this.Changes.ToDictionary(change => change.UserId, change => change.Permissions);
+        var result = new List<Overwrite>();
+        foreach (var overwrite in current)
+        {
+            if (overwrite.TargetType != PermissionTarget.User || overwrite.TargetId == botUserId)
+            {
+                result.Add(overwrite);
+            }
+            else if (!removals.Contains(overwrite.TargetId))
+            {
+                result.Add(changes.Remove(overwrite.TargetId, out var changed) ? new Overwrite(overwrite.TargetId, PermissionTarget.User, changed) : overwrite);
+            }
+            else
+            {
+                // It's removed.
+            }
+        }
+
+        // The remaining changes are the new users.
+        result.AddRange(changes.Where(change => addableUserIds.Contains(change.Key)).Select(change => new Overwrite(change.Key, PermissionTarget.User, change.Value)));
+        return result;
     }
 
     private static OverwritePermissions GetPermissions(ulong userId, ulong moderatorId) => userId == moderatorId ? ModeratorPermissions : MemberPermissions;

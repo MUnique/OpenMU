@@ -272,7 +272,7 @@ public sealed partial class DiscordBot
             }
 
             // The channel was deleted while the bot wasn't connected.
-            await this._chatBridge.Store.RemoveAsync(existingId, null).ConfigureAwait(false);
+            await this._chatBridge.RemoveHostedBindingAsync(existingId).ConfigureAwait(false);
         }
 
         var categoryName = this._layout.Categories.FirstOrDefault(c => c.Key == DiscordServerLayout.GuildsCategoryKey)?.Name;
@@ -518,21 +518,21 @@ public sealed partial class DiscordBot
             var otherOverwrites = channel.PermissionOverwrites.Count(overwrite => overwrite.TargetType != PermissionTarget.User || overwrite.TargetId == client.CurrentUser.Id);
             var permissions = DiscordHostedChannelPermissions.Create(currentOverwrites, linkedMembers, moderatorId, MaximumPermissionOverwrites - otherOverwrites);
 
-            // The removals first, so that they free overwrites for the additions.
-            foreach (var userId in permissions.Removals)
+            if (permissions.HasChanges)
             {
-                if (await client.Rest.GetUserAsync(userId).ConfigureAwait(false) is { } user)
+                // Only members of the Discord server get an overwrite. The members aren't cached, because the bot doesn't use the privileged intent for them.
+                var addableUserIds = new HashSet<ulong>();
+                foreach (var (userId, _) in permissions.Changes.Where(change => !currentOverwrites.ContainsKey(change.UserId)))
                 {
-                    await channel.RemovePermissionOverwriteAsync(user).ConfigureAwait(false);
+                    if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is not null)
+                    {
+                        addableUserIds.Add(userId);
+                    }
                 }
-            }
 
-            foreach (var (userId, userPermissions) in permissions.Changes)
-            {
-                if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
-                {
-                    await channel.AddPermissionOverwriteAsync(user, userPermissions).ConfigureAwait(false);
-                }
+                // One request for all overwrites: a failure changes nothing and is retried with the next synchronization.
+                var overwrites = permissions.Apply(channel.PermissionOverwrites, client.CurrentUser.Id, addableUserIds);
+                await channel.ModifyAsync(properties => properties.PermissionOverwrites = new Optional<IEnumerable<Overwrite>>(overwrites)).ConfigureAwait(false);
             }
 
             if (permissions.NotFitting.Count > 0)

@@ -339,6 +339,26 @@ public sealed class DiscordChatBridge
     }
 
     /// <summary>
+    /// Removes the binding of a hosted channel which doesn't exist anymore, e.g. because it was deleted while the bot wasn't connected.
+    /// It only removes the binding, if it still references the channel.
+    /// </summary>
+    /// <param name="channelId">The identifier of the channel.</param>
+    /// <returns><c>true</c>, if a binding was removed.</returns>
+    public async ValueTask<bool> RemoveHostedBindingAsync(ulong channelId)
+    {
+        await this._bindingLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            return this._store.GetByChannel(channelId) is { IsHosted: true }
+                   && await this._store.RemoveAsync(channelId, null).ConfigureAwait(false) > 0;
+        }
+        finally
+        {
+            this._bindingLock.Release();
+        }
+    }
+
+    /// <summary>
     /// Gets the guilds which get a channel on the Discord server of the game server, because their guild master is linked
     /// to a Discord user, as the selected character like for <c>/guildchat</c>, and the guild chat isn't bound yet.
     /// </summary>
