@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.Tests.Offline;
 
+using Moq;
 using NUnit.Framework;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
@@ -118,6 +120,61 @@ public class BuffHandlerTests
         }
     }
 
+    /// <summary>
+    /// Tests that a buff isn't cast while the player is stunned or asleep,
+    /// like it's the case when a human player casts it.
+    /// </summary>
+    /// <param name="stateAttributeName">The name of the attribute of the state.</param>
+    [TestCase(nameof(Stats.IsStunned))]
+    [TestCase(nameof(Stats.IsAsleep))]
+    public async ValueTask BuffIsNotAppliedWhileIncapacitatedAsync(string stateAttributeName)
+    {
+        var stateAttribute = stateAttributeName == nameof(Stats.IsStunned) ? Stats.IsStunned : Stats.IsAsleep;
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var skill = await AddSelfBuffSkillAsync(player, manaCost: 20).ConfigureAwait(false);
+        player.Attributes![Stats.CurrentHealth] = 100;
+        player.Attributes[Stats.CurrentMana] = 30;
+        player.Attributes.AddElement(new AttributeSystem.ConstantElement(1), stateAttribute);
+        var handler = new BuffHandler(player, new MuHelperSettings { BuffSkill0Id = skill.Number, HuntingRange = 5 });
+
+        var result = await handler.PerformBuffsAsync().ConfigureAwait(false);
+
+        Assert.That(result, Is.True);
+        Assert.That(player.MagicEffectList.HasEffect(skill.MagicEffectDef!), Is.False);
+        Assert.That(player.Attributes[Stats.CurrentMana], Is.EqualTo(30));
+    }
+
+    /// <summary>
+    /// Tests that a buff isn't cast when the current mini game doesn't allow the skill,
+    /// like it's the case when a human player casts it.
+    /// </summary>
+    [Test]
+    public async ValueTask BuffIsNotAppliedWhenMiniGameDisallowsItAsync()
+    {
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var skill = await AddSelfBuffSkillAsync(player, manaCost: 20).ConfigureAwait(false);
+        player.Attributes![Stats.CurrentHealth] = 100;
+        player.Attributes[Stats.CurrentMana] = 30;
+        var miniGame = this.CreateMiniGameMock();
+        miniGame.Setup(g => g.IsSkillAllowed(It.IsAny<Skill>(), It.IsAny<Player>(), It.IsAny<IAttackable>())).Returns(false);
+        player.CurrentMiniGame = miniGame.Object;
+        var handler = new BuffHandler(player, new MuHelperSettings { BuffSkill0Id = skill.Number, HuntingRange = 5 });
+
+        try
+        {
+            var result = await handler.PerformBuffsAsync().ConfigureAwait(false);
+
+            Assert.That(result, Is.True);
+            Assert.That(player.MagicEffectList.HasEffect(skill.MagicEffectDef!), Is.False);
+            Assert.That(player.Attributes[Stats.CurrentMana], Is.EqualTo(30));
+            miniGame.Verify(g => g.IsSkillAllowed(skill, player, player), Times.Once);
+        }
+        finally
+        {
+            player.CurrentMiniGame = null;
+        }
+    }
+
     private static async ValueTask<Skill> AddSelfBuffSkillAsync(OfflinePlayer player, int manaCost)
     {
         var magicEffect = new Persistence.BasicModel.MagicEffectDefinition
@@ -135,6 +192,24 @@ public class BuffHandlerTests
         skill.ConsumeRequirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.CurrentMana, MinimumValue = manaCost });
         await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
         return skill;
+    }
+
+    private Mock<MiniGameContext> CreateMiniGameMock()
+    {
+        var mapDefinition = new Persistence.BasicModel.GameMapDefinition { Number = 0 };
+        var definition = new Persistence.BasicModel.MiniGameDefinition
+        {
+            Type = MiniGameType.ChaosCastle,
+            Entrance = new Persistence.BasicModel.ExitGate { Map = mapDefinition },
+        };
+        var mapInitializer = new Mock<IMapInitializer>();
+        mapInitializer.Setup(m => m.CreateGameMap(It.IsAny<GameMapDefinition>()))
+            .Returns<GameMapDefinition>(map => new GameMap(map, TimeSpan.FromMinutes(1), 16));
+        return new Mock<MiniGameContext>(
+            new MiniGameMapKey(mapDefinition.Number, definition.GameLevel, string.Empty),
+            definition,
+            this._gameContext,
+            mapInitializer.Object);
     }
 
     private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()

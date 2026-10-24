@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
@@ -110,6 +111,14 @@ public sealed class BuffHandler
             return true;
         }
 
+        // A stunned or sleeping player can't cast skills (see TargetedSkillDefaultPlugin).
+        if (this._player.Attributes is not { } attributes
+            || attributes[Stats.IsStunned] > 0
+            || attributes[Stats.IsAsleep] > 0)
+        {
+            return true;
+        }
+
         this.UpdatePeriodicBuffTimer();
 
         for (int i = 0; i < BuffSlotCount; i++)
@@ -199,9 +208,10 @@ public sealed class BuffHandler
             return true;
         }
 
-        // The effect is applied directly instead of through the skill plugin, so the costs
-        // (mana, ability) have to be consumed here, just like the skill plugin would do.
-        if (!await this._player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
+        // The effect is applied directly instead of through the skill plugin, so the restrictions
+        // of the mini game and the costs (mana, ability) have to be checked here, just like the skill plugin would do.
+        if (!this.IsAllowedInMiniGame(skillEntry.Skill!, this._player)
+            || !await this._player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             return false;
         }
@@ -232,7 +242,8 @@ public sealed class BuffHandler
             }
 
             if (!this.NeedsPartyBuff(member, skillEntry)
-                || !this._player.IsInRange(member.Position, skillEntry.Skill!.Range + 2))
+                || !this._player.IsInRange(member.Position, skillEntry.Skill!.Range + 2)
+                || !this.IsAllowedInMiniGame(skillEntry.Skill, member))
             {
                 continue;
             }
@@ -290,6 +301,16 @@ public sealed class BuffHandler
         }
 
         return this._config!.BuffDurationForParty && this._buffTimerTriggered;
+    }
+
+    /// <summary>
+    /// Determines whether the current mini game allows to cast the skill on the target,
+    /// e.g. Chaos Castle doesn't allow to buff other players.
+    /// </summary>
+    private bool IsAllowedInMiniGame(Skill skill, IAttackable target)
+    {
+        return this._player.CurrentMiniGame is not { } miniGame
+               || miniGame.IsSkillAllowed(skill, this._player, target);
     }
 
     private bool IsSelfOnlySkill(SkillEntry skillEntry)
