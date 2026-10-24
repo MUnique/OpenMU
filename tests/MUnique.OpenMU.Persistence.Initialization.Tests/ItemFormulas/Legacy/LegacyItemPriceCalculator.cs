@@ -11,7 +11,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// A frozen copy of <c>src/GameLogic/ItemPriceCalculator.cs</c> at commit 90a571100,
-/// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
+/// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code.
+/// Change it only together with an intentional change of the formula, see the remarks of the test.
 /// </summary>
 /// <remarks>
 /// Lines 19-581 are copied unchanged. The maximum durability comes from <see cref="LegacyItemExtensions"/>.

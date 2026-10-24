@@ -14,7 +14,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// <summary>
 /// A frozen copy of the item requirement formulas in <c>src/GameLogic/ItemExtensions.cs</c> at commit 90a571100,
 /// with the item checks and durability functions the frozen formulas use,
-/// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
+/// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code.
+/// Change it only together with an intentional change of the formula, see the remarks of the test.
 /// </summary>
 /// <remarks>
 /// Lines 19-106, 131-141, 174-265, 279-289, 361-426, 474-500, 512-542 and 544-561 are copied unchanged, and between the

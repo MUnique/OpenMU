@@ -30,6 +30,12 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// each stat (0, 100 and 100 from item level 7); and, with the item's own and the made-up ones of 100, with each harmony
 /// option which reduces a requirement (at its lowest and highest level) and, on a normal item without its option, with a
 /// made-up reduction of each stat. All differences are listed in one report.
+/// <para>
+/// The test guards moving these formulas into configuration data, whose default values have to give the same results.
+/// After an intentional change of one of the formulas (e.g. a fixed price bug), change the frozen copy the same way in the
+/// same pull request and say so there. The copies and this test can be removed once the formulas are configuration data
+/// and its default values are tested otherwise.
+/// </para>
 /// </remarks>
 [TestFixture]
 internal class ItemFormulasEqualTodayTest

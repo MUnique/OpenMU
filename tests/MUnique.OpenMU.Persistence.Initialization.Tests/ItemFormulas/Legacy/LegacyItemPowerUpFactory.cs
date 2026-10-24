@@ -15,7 +15,8 @@ using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// A frozen copy of <c>src/GameLogic/ItemPowerUpFactory.cs</c> at commit 90a571100,
-/// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
+/// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code.
+/// Change it only together with an intentional change of the formula, see the remarks of the test.
 /// </summary>
 /// <remarks>
 /// Lines 17-101 and 218-455 are copied unchanged, except the class name in lines 30, 33 and 36, and the documentation of
