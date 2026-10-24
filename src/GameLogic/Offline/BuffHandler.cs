@@ -1,4 +1,4 @@
-// <copyright file="BuffHandler.cs" company="MUnique">
+﻿// <copyright file="BuffHandler.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -103,6 +103,13 @@ public sealed class BuffHandler
             return true;
         }
 
+        // Like for a human player (see TargetedSkillDefaultPlugin), buffs can't be cast in the safezone,
+        // except in mini games like Blood Castle.
+        if (this._player.IsAtSafezone() && this._player.CurrentMiniGame is null)
+        {
+            return true;
+        }
+
         this.UpdatePeriodicBuffTimer();
 
         for (int i = 0; i < BuffSlotCount; i++)
@@ -192,6 +199,13 @@ public sealed class BuffHandler
             return true;
         }
 
+        // The effect is applied directly instead of through the skill plugin, so the costs
+        // (mana, ability) have to be consumed here, just like the skill plugin would do.
+        if (!await this._player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
+        {
+            return false;
+        }
+
         await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
             p => p.ShowSkillAnimationAsync(this._player, this._player, skillEntry.Skill!, true),
             includeThis: true).ConfigureAwait(false);
@@ -217,9 +231,15 @@ public sealed class BuffHandler
                 continue;
             }
 
-            if (!this.NeedsPartyBuff(member, skillEntry))
+            if (!this.NeedsPartyBuff(member, skillEntry)
+                || !this._player.IsInRange(member.Position, skillEntry.Skill!.Range + 2))
             {
                 continue;
+            }
+
+            if (!await this._player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
+            {
+                return false;
             }
 
             await (member as IObservable ?? this._player).ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
