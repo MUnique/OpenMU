@@ -21,7 +21,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// </summary>
 /// <remarks>
 /// Each item is checked at every item level, without its option and at the option's first and highest level,
-/// in every slot it fits, and at full, half and no durability: as a normal item, as an excellent item with all its
+/// in every slot it fits, and at full durability, below each threshold of the durability factor (at 40, 25 and 10 % of it)
+/// and, for the prices, at none: as a normal item, as an excellent item with all its
 /// excellent options and with one of them, as an ancient item and as an excellent ancient item. A wearable item which
 /// can't be excellent or ancient in the data gets a made-up excellent option or ancient set, so that every kind of item
 /// runs through these formulas. The requirements are checked with the item's own requirements and with made-up ones of
@@ -332,6 +333,15 @@ internal class ItemFormulasEqualTodayTest
             return $"throws {exception.GetType().Name}: {exception.Message}";
         }
 
+        /// <summary>
+        /// Gets the durabilities to compare: the full one, and one below each threshold of the durability factor
+        /// (50, 30 and 20 % of the full durability), so that each factor applies.
+        /// </summary>
+        private static IEnumerable<int> GetDurabilities(byte fullDurability)
+        {
+            return new[] { fullDurability, fullDurability * 4 / 10, fullDurability / 4, fullDurability / 10 }.Distinct();
+        }
+
         private static string DescribePowerUps(Item item, Func<Item, AttributeSystem, IEnumerable<PowerUpWrapper>> getPowerUps)
         {
             using var attributes = new AttributeSystem([], [], []);
@@ -490,7 +500,7 @@ internal class ItemFormulasEqualTodayTest
 
             foreach (var slot in slotType.ItemSlots)
             {
-                foreach (var durability in new[] { fullDurability, fullDurability / 2 }.Distinct())
+                foreach (var durability in GetDurabilities(fullDurability))
                 {
                     item.ItemSlot = (byte)slot;
                     item.Durability = durability;
@@ -512,7 +522,7 @@ internal class ItemFormulasEqualTodayTest
             // The buying prices don't depend on the durability.
             this.Compare(itemCase, "buying price", Capture(() => $"{this._legacyPrices.CalculateFinalBuyingPrice(item)}"), Capture(() => $"{this._prices.CalculateFinalBuyingPrice(item)}"));
             this.Compare(itemCase, "old buying price", Capture(() => $"{this._legacyPrices.CalculateFinalOldBuyingPrice(item)}"), Capture(() => $"{this._prices.CalculateFinalOldBuyingPrice(item)}"));
-            foreach (var durability in new[] { fullDurability, fullDurability / 2, 0 }.Distinct())
+            foreach (var durability in GetDurabilities(fullDurability).Append(0).Distinct())
             {
                 item.Durability = durability;
                 this.PriceCases++;
