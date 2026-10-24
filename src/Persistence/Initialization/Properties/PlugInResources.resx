@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -392,4 +392,6 @@
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve"><value>Add Crystal Sword Ice Chance</value></data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve"><value>Adds the Crystal Sword ice chance, which turns an attack into an ice skill instead.</value></data>
 </root>

@@ -137,7 +137,13 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
 
         foreach (var target in targets)
         {
-            await target.AttackByAsync(player, skillEntry, false).ConfigureAwait(false);
+            var hitInfo = await target.AttackByAsync(player, skillEntry, false).ConfigureAwait(false);
+            if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+            {
+                // The hit generated a different skill (e.g. ice) than the one originally casted.
+                var success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
+                await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
+            }
         }
     }
 
