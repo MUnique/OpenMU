@@ -92,12 +92,13 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <returns>The resulting success rate.</returns>
     internal static byte ApplyCraftingBonus(byte successRate, float bonusPercentage)
     {
-        if (successRate is 0 or >= 100 || bonusPercentage == 0)
+        var bonus = (int)bonusPercentage;
+        if (successRate is 0 or >= 100 || bonus == 0)
         {
             return successRate;
         }
 
-        return (byte)Math.Clamp(successRate + (int)bonusPercentage, 1, 100);
+        return (byte)Math.Clamp(successRate + bonus, 1, 100);
     }
 
     /// <summary>
