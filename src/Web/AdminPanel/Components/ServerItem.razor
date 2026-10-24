@@ -3,7 +3,10 @@
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Operations
 @using MUnique.OpenMU.Web.AdminPanel.Properties
+@inject ServerWriteOperations Operations
+@inject IToastService ToastService
 @implements IDisposable
 
 @if (this._isDeleted)
@@ -178,12 +181,12 @@
 
     private async Task OnPauseClickAsync()
     {
-        await this.Server.StopAsync(default);
+        await this.RunOperationAsync(() => this.Operations.StopAsync(this.Server.Id, this.Server.Type, default)).ConfigureAwait(true);
     }
 
     private async Task OnStartClickAsync()
     {
-      await this.Server.StartAsync(default);
+      await this.RunOperationAsync(() => this.Operations.StartAsync(this.Server.Id, this.Server.Type, default)).ConfigureAwait(true);
     }
 
     private async Task OnDeleteServerClickAsync()
@@ -201,7 +204,11 @@
         return;
       }
 
-      await this.Server.StopAsync(default);
+      if (!await this.RunOperationAsync(() => this.Operations.StopAsync(this.Server.Id, this.Server.Type, default)).ConfigureAwait(true))
+      {
+        return;
+      }
+
       if (this.Server.Type == ServerType.GameServer)
       {
         await this.GameServerInstanceManager.RemoveGameServerAsync((byte)this.Server.Id);
@@ -211,6 +218,20 @@
       {
         await this.ConnectServerInstanceManager.RemoveConnectServerAsync(this.Server.ConfigurationId);
         await this.DeleteAsync<ConnectServerDefinition>(s => s.ConfigurationId == this.Server.ConfigurationId);
+      }
+    }
+
+    private async Task<bool> RunOperationAsync(Func<ValueTask<System.Text.Json.Nodes.JsonObject>> operation)
+    {
+      try
+      {
+        await operation().ConfigureAwait(true);
+        return true;
+      }
+      catch (AdminOperationException ex)
+      {
+        this.ToastService.ShowError(ex.Message);
+        return false;
       }
     }
 

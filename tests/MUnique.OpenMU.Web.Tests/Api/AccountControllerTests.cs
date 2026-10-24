@@ -8,13 +8,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Web.AdminPanel.API;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
+using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>
 /// Tests for the <see cref="AccountController"/>, which registers accounts through the public API.
@@ -37,7 +39,7 @@ public class AccountControllerTests
         gameConfigurationSource
             .Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new GameConfiguration());
-        this._controller = new AccountController(this._persistenceContextProvider, gameConfigurationSource.Object, Mock.Of<ILogger<AccountController>>())
+        this._controller = new AccountController(new AccountWriteOperations(this._persistenceContextProvider, gameConfigurationSource.Object, Mock.Of<ILoginServer>(), AdminOperationTestServices.CreateExecutor("api")))
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

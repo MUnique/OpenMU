@@ -8,6 +8,8 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
@@ -22,6 +24,9 @@ public partial class LoggingConfiguration
     private string? _loadError;
     private bool _showJson;
     private bool _isSaving;
+
+    [Inject]
+    private AdminOperationExecutor Executor { get; set; } = null!;
 
     [Inject]
     private LoggingConfigurationService LoggingConfigurationService { get; set; } = null!;
@@ -70,7 +75,16 @@ public partial class LoggingConfiguration
         {
             if (this._showJson)
             {
-                await this.LoggingConfigurationService.SaveSectionAsync(this._sectionJson).ConfigureAwait(true);
+                await this.Executor.ExecuteAsync(
+                    AdminRoles.Administrator,
+                    "logs_set_configuration",
+                    new { fullSection = true },
+                    async _ =>
+                    {
+                        await this.LoggingConfigurationService.SaveSectionAsync(this._sectionJson).ConfigureAwait(false);
+                        return true;
+                    },
+                    default).ConfigureAwait(true);
             }
             else if (settings.Overrides.Any(o => string.IsNullOrWhiteSpace(o.Source))
                      || settings.Overrides.GroupBy(o => o.Source.Trim()).Any(g => g.Count() > 1))
@@ -80,7 +94,16 @@ public partial class LoggingConfiguration
             }
             else
             {
-                await this.LoggingConfigurationService.SaveMinimumLevelsAsync(settings.DefaultLevel, settings.Overrides).ConfigureAwait(true);
+                await this.Executor.ExecuteAsync(
+                    AdminRoles.Administrator,
+                    "logs_set_level",
+                    new { settings.DefaultLevel, settings.Overrides },
+                    async _ =>
+                    {
+                        await this.LoggingConfigurationService.SaveMinimumLevelsAsync(settings.DefaultLevel, settings.Overrides).ConfigureAwait(false);
+                        return true;
+                    },
+                    default).ConfigureAwait(true);
             }
 
             this.ToastService.ShowSuccess(Resources.LoggingConfigurationSaved);
@@ -94,6 +117,11 @@ public partial class LoggingConfiguration
         {
             this.Logger.LogError(ex, "Couldn't save the logging configuration to {filePath}.", this.LoggingConfigurationService.FilePath);
             this.ToastService.ShowError(string.Format(Resources.LoggingConfigurationSaveError, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "The audited logging configuration operation failed.");
+            this.ToastService.ShowError(Resources.ResourceManager.GetString("AuditUnavailable", Resources.Culture) ?? Resources.UnexpectedErrorOccurred);
         }
         finally
         {

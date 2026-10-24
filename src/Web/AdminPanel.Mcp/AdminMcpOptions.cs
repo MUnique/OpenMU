@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Mcp;
 
 /// <summary>Settings for the optional read-only MCP endpoint.</summary>
-public sealed class AdminMcpOptions
+public sealed class AdminMcpOptions : MUnique.OpenMU.Web.AdminPanel.Operations.AdminWriteSettings
 {
     /// <summary>Gets or sets a value indicating whether the endpoint is enabled. Defaults to off.</summary>
     public bool Enabled { get; set; }
