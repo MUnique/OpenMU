@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.Discord;
+using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.GameLogic.AccountLinking;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
@@ -191,7 +192,7 @@ public class DiscordIntegrationTest
     }
 
     /// <summary>
-    /// Tests that a pending removal keeps the Discord server, in which the role was given, when the configured server changes.
+    /// Tests that a pending removal keeps the Discord server and the name of the role, which the user got, when the settings change.
     /// </summary>
     [Test]
     public async Task PendingRoleRevocationKeepsItsDiscordServerAsync()
@@ -205,9 +206,13 @@ public class DiscordIntegrationTest
         {
             await integration.OnGameEventAsync(new AccountUnlinkedEvent(0, DateTime.UtcNow, AccountLinkService.DiscordProvider, "42")).ConfigureAwait(false);
 
+            var roleName = DiscordServerLayout.LoadDefault().Roles.Single(role => role.Key == DiscordServerLayout.LinkedRoleKey).Name;
+
+            // Another server and another bot, which isn't in the old server: the removal must not get lost.
             configuration["Discord:Bot:GuildId"] = "200";
+            configuration["Discord:Bot:Token"] = "another";
             await integration.ApplySettingsAsync().ConfigureAwait(false);
-            Assert.That(integration.Bot!.PendingRoleRevocations.Entries, Is.EqualTo(new[] { new DiscordPendingRoleRevocation(42, 100) }));
+            Assert.That(integration.Bot!.PendingRoleRevocations.Entries, Is.EqualTo(new[] { new DiscordPendingRoleRevocation(42, 100, roleName) }));
         }
     }
 

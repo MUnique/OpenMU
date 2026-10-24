@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 /// </summary>
 /// <remarks>
 /// The users are kept in memory, so they are retried until the bot succeeds or the process ends.
-/// Every removal keeps its Discord server, so that it still applies to it when the configured server changes.
+/// Every removal keeps its Discord server and the name of the role, so that it still applies to them when the settings change.
 /// The updates of the role of a user run one after another, so that an older removal can't take away the role of a newer link.
 /// The updates of different users don't wait for each other.
 /// </remarks>
@@ -38,7 +38,8 @@ internal sealed class DiscordPendingRoleRevocations
     /// </summary>
     /// <param name="userId">The identifier of the Discord user.</param>
     /// <param name="guildId">The identifier of the Discord server, in which the role is removed; <c>null</c>, if it isn't known yet.</param>
-    internal void Add(ulong userId, ulong? guildId) => this._entries.TryAdd(new DiscordPendingRoleRevocation(userId, guildId), 0);
+    /// <param name="roleName">The name of the role, which the user got; <c>null</c> for the role of the current layout.</param>
+    internal void Add(ulong userId, ulong? guildId, string? roleName = null) => this._entries.TryAdd(new DiscordPendingRoleRevocation(userId, guildId, roleName), 0);
 
     /// <summary>
     /// Removes a pending removal of a user, who was linked again, and adds the role.

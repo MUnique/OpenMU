@@ -188,4 +188,23 @@ public class DiscordPendingRoleRevocationsTest
         await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
         Assert.That(revocations.Entries, Is.EqualTo(new[] { new DiscordPendingRoleRevocation(2, 100) }));
     }
+
+    /// <summary>
+    /// Tests that a removal keeps the name of the role, e.g. when the layout changes in the meantime.
+    /// </summary>
+    [Test]
+    public async Task RevocationKeepsTheNameOfTheRoleAsync()
+    {
+        var revocations = new DiscordPendingRoleRevocations();
+        revocations.Add(1, 100, "Old Linked Player");
+
+        DiscordPendingRoleRevocation? revoked = null;
+        await revocations.ProcessAsync(NotLinked, entry =>
+        {
+            revoked = entry;
+            return Task.FromResult(false);
+        }).ConfigureAwait(false);
+        Assert.That(revoked, Is.EqualTo(new DiscordPendingRoleRevocation(1, 100, "Old Linked Player")));
+        Assert.That(revocations.Count, Is.EqualTo(1), "a server which the bot can't reach keeps the removal pending");
+    }
 }
