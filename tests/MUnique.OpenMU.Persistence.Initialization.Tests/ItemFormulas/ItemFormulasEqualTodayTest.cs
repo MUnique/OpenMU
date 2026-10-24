@@ -248,7 +248,7 @@ internal class ItemFormulasEqualTodayTest
                         }
 
                         var itemCase = $"{definition.Group}/{definition.Number} {definition.Name.ValueInNeutralLanguage} +{level} {quality.Name}, option level {optionLevel}";
-                        this.CompareRequirements(item, quality.IsNormal && optionLevel == 0 ? allReductions : harmonyReductions, itemCase);
+                        this.CompareRequirementsWithReductions(item, quality.IsNormal && optionLevel == 0 ? allReductions : harmonyReductions, itemCase);
                         this.ComparePowerUps(item, itemCase);
                         this.ComparePrices(item, itemCase);
                     }
@@ -402,7 +402,7 @@ internal class ItemFormulasEqualTodayTest
             }
         }
 
-        private void CompareRequirements(Item item, List<ReductionOption> reductions, string itemCase)
+        private void CompareRequirementsWithReductions(Item item, List<ReductionOption> reductions, string itemCase)
         {
             this.CompareRequirements(item, this._madeUpRequirements, itemCase);
             foreach (var reduction in reductions)
