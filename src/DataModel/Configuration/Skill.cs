@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -185,7 +184,7 @@ public partial class Skill
     /// <remarks>
     /// The client is referencing skills by this number.
     /// </remarks>
-    [ShowInTable]
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>

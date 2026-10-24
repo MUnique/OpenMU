@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Shared.Components.Form;
 
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -25,12 +26,12 @@ public partial class ItemTable<TItem>
 {
     /// <summary>
     /// The properties of <typeparamref name="TItem"/> which are shown as additional columns,
-    /// because they are marked with the <see cref="ShowInTableAttribute"/>.
+    /// because their <see cref="DisplayAttribute"/> has <see cref="DisplayAttribute.AutoGenerateField"/> set to <c>true</c>.
     /// </summary>
     private static readonly PropertyInfo[] AdditionalColumns = typeof(TItem).GetProperties()
-        .Select(p => (Property: p, Attribute: (ShowInTableAttribute?)Attribute.GetCustomAttribute(p, typeof(ShowInTableAttribute), true)))
-        .Where(c => c.Attribute is not null)
-        .OrderBy(c => c.Attribute!.Order)
+        .Select(p => (Property: p, Display: (DisplayAttribute?)Attribute.GetCustomAttribute(p, typeof(DisplayAttribute), true)))
+        .Where(c => c.Display?.GetAutoGenerateField() == true)
+        .OrderBy(c => c.Display!.GetOrder() ?? 0)
         .Select(c => c.Property)
         .ToArray();
 
