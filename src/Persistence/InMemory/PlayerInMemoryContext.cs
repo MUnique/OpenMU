@@ -87,6 +87,16 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .Take(count);
     }
 
+    /// <inheritdoc />
+    public async ValueTask<(IReadOnlyList<DataModel.Entities.Account> Accounts, int Total)> SearchAccountPageAsync(string text, DataModel.Entities.AccountState? state, int offset, int limit, CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        var matches = accounts.Where(a => (state == null || a.State == state)
+            && (a.LoginName.Contains(text, StringComparison.OrdinalIgnoreCase) || a.EMail.Contains(text, StringComparison.OrdinalIgnoreCase)
+                || a.Characters.Any(c => c.Name.Contains(text, StringComparison.OrdinalIgnoreCase)))).OrderBy(a => a.LoginName).ThenBy(a => a.GetId()).ToList();
+        return (matches.Skip(offset).Take(limit).ToList(), matches.Count);
+    }
+
     /// <inheritdoc/>
     public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader, CancellationToken cancellationToken = default)
     {

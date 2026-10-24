@@ -115,11 +115,20 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             .AsNoTracking()
             .Include(g => g.RawMembers)
             .Include(g => g.RawAllianceGuild)
+            .Include(g => g.RawHostility)
             .Where(g => g.Name != null && g.Name.ToLower().Contains(term))
             .OrderBy(g => g.Name)
             .Skip(skip)
             .Take(count)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<int> CountGuildsAsync(string text, CancellationToken cancellationToken = default)
+    {
+        var term = text.ToLowerInvariant();
+        return await this.Context.Set<Guild>().AsNoTracking()
+            .CountAsync(g => g.Name != null && g.Name.ToLower().Contains(term), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

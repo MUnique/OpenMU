@@ -246,13 +246,17 @@ public class DiscordSetupPageTests
     /// Numeric validation does not let browser minimum attributes be bypassed by saving.
     /// </summary>
     [Test]
-    public void InvalidQueueSizeIsNotSaved()
+    public async Task InvalidQueueSizeIsNotSavedAsync()
     {
         var cut = this.RenderLoaded();
         var original = File.ReadAllText(this._filePath);
-        cut.Find("#discordQueuedMessages").Change("0");
-        cut.FindAll("button").First(b => b.TextContent.Contains(Resources.Save)).Click();
-        Assert.That(cut.FindAll(".invalid-feedback"), Is.Not.Empty);
+        await cut.Find("#discordQueuedMessages").ChangeAsync("0").ConfigureAwait(false);
+
+        // The change event must render an enabled Save button before the click is dispatched.
+        cut.WaitForState(() => !cut.FindAll("button").First(button => button.TextContent.Contains(Resources.Save)).HasAttribute("disabled"));
+        await cut.FindAll("button").First(button => button.TextContent.Contains(Resources.Save)).ClickAsync(new MouseEventArgs()).ConfigureAwait(false);
+
+        cut.WaitForAssertion(() => Assert.That(cut.FindAll("#discordQueuedMessages + .invalid-feedback"), Is.Not.Empty));
         Assert.That(File.ReadAllText(this._filePath), Is.EqualTo(original));
     }
 

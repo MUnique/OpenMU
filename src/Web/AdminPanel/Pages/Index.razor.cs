@@ -9,9 +9,9 @@ using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 
 /// <summary>
@@ -19,11 +19,6 @@ using MUnique.OpenMU.Web.AdminPanel.Properties;
 /// </summary>
 public partial class Index : IDisposable
 {
-    /// <summary>
-    /// The period in which registered accounts are counted as new.
-    /// </summary>
-    private static readonly TimeSpan NewAccountPeriod = TimeSpan.FromDays(7);
-
     private IList<IManageableServer> _servers = [];
 
     private AccountStatistics? _accountStatistics;
@@ -38,10 +33,7 @@ public partial class Index : IDisposable
     private IServerProvider ServerProvider { get; set; } = null!;
 
     [Inject]
-    private IDataSource<Account> AccountDataSource { get; set; } = null!;
-
-    [Inject]
-    private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+    private ServerReadOperations ReadOperations { get; set; } = null!;
 
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = null!;
@@ -128,8 +120,7 @@ public partial class Index : IDisposable
     {
         try
         {
-            var playerContext = (IPlayerContext)await this.AccountDataSource.GetContextAsync().ConfigureAwait(true);
-            this._accountStatistics = await playerContext.GetAccountStatisticsAsync(DateTime.UtcNow - NewAccountPeriod).ConfigureAwait(true);
+            this._accountStatistics = await this.ReadOperations.ReadAccountStatisticsAsync(7, default).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -138,8 +129,7 @@ public partial class Index : IDisposable
 
         try
         {
-            using var guildContext = this.PersistenceContextProvider.CreateNewGuildContext();
-            this._guildStatistics = await guildContext.GetGuildStatisticsAsync().ConfigureAwait(true);
+            this._guildStatistics = await this.ReadOperations.ReadGuildStatisticsAsync(default).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
