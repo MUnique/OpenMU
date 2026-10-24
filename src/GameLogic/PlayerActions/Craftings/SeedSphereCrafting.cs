@@ -17,11 +17,18 @@ public class SeedSphereCrafting : SimpleItemCraftingHandler
     /// <summary>
     /// The number of the first seed sphere item definition.
     /// </summary>
+    /// <remarks>
+    /// The item numbers of the seed spheres are defined by the client, so they can't be configured.
+    /// </remarks>
     internal const int SeedSphereNumberStart = 100;
 
     /// <summary>
     /// The number of different kind of seeds.
     /// </summary>
+    /// <remarks>
+    /// The client defines one seed sphere per seed type and sphere level, in this order,
+    /// so the number of a seed sphere follows from it and can't be configured.
+    /// </remarks>
     internal const int SeedTypes = 6;
 
     /// <summary>
