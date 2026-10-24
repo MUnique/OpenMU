@@ -22,14 +22,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// <remarks>
 /// Each item is checked at every item level, without a normal option and with each of its normal options at the option's
 /// first and highest level (and with all of its fixed options),
-/// in every slot it fits, and at full durability, below each threshold of the durability factor (at 40, 25 and 10 % of it)
-/// and, for the prices, at none: as a normal item, as an excellent item with all its
+/// in every slot it fits, at full durability and, at the lowest and highest item level, below each threshold of the
+/// durability factor (at 40, 25 and 10 % of it): as a normal item, as an excellent item with all its
 /// excellent options and with one of them, as an ancient item and as an excellent ancient item. A wearable item which
 /// can't be excellent or ancient in the data gets a made-up excellent option or ancient set, so that every kind of item
 /// runs through these formulas. The requirements are checked with the item's own requirements and with made-up ones of
 /// each stat (0, 100 and 100 from item level 7); and, with the item's own and the made-up ones of 100, with each harmony
 /// option which reduces a requirement (at its lowest and highest level) and, on a normal item without its option, with a
-/// made-up reduction of each stat. All differences are listed in one report.
+/// made-up reduction of each stat. The prices are compared at full, 40 % and no durability (a stackable item with one piece,
+/// a full stack and none), and, at full durability, also with the item's skill, luck, wing options and option of the Jewel
+/// of Guardian. All differences are listed in one report.
 /// <para>
 /// The test guards moving these formulas into configuration data, whose default values have to give the same results.
 /// After an intentional change of one of the formulas (e.g. a fixed price bug), change the frozen copy the same way in the
@@ -289,7 +291,10 @@ internal class ItemFormulasEqualTodayTest
                         this.CompareRequirementsWithReductions(item, quality.IsNormal && optionVariant.Options.Count == 0 ? allReductions : harmonyReductions, itemCase);
                         if (this.GetMaximumDurability(item, itemCase) is { } maximumDurability)
                         {
-                            this.ComparePowerUps(item, maximumDurability, itemCase);
+                            // The durability factor multiplies the same parts at every item level, so the lowest and the
+                            // highest one show it.
+                            var allDurabilities = level == 0 || level == definition.MaximumItemLevel;
+                            this.ComparePowerUps(item, maximumDurability, allDurabilities, itemCase);
                             this.ComparePrices(item, maximumDurability, priceExtras, itemCase);
                         }
                     }
@@ -523,7 +528,7 @@ internal class ItemFormulasEqualTodayTest
                 Capture(() => DescribeRequirements(item, madeUpRequirements, (i, r) => i.GetRequirement(r))));
         }
 
-        private void ComparePowerUps(Item item, byte fullDurability, string itemCase)
+        private void ComparePowerUps(Item item, byte fullDurability, bool allDurabilities, string itemCase)
         {
             if (item.Definition!.ItemSlot is not { } slotType)
             {
@@ -532,7 +537,7 @@ internal class ItemFormulasEqualTodayTest
 
             foreach (var slot in slotType.ItemSlots)
             {
-                foreach (var durability in GetDurabilities(fullDurability))
+                foreach (var durability in allDurabilities ? GetDurabilities(fullDurability) : [fullDurability])
                 {
                     item.ItemSlot = (byte)slot;
                     item.Durability = durability;
@@ -548,7 +553,14 @@ internal class ItemFormulasEqualTodayTest
 
         private void ComparePrices(Item item, byte fullDurability, List<IncreasableItemOption> priceExtras, string itemCase)
         {
-            this.ComparePricesAtEachDurability(item, fullDurability, itemCase);
+            item.ItemSlot = (byte)(item.Definition!.ItemSlot?.ItemSlots.FirstOrDefault() ?? 0);
+
+            // The prices have no durability factor: they follow the missing durability, and the durability of a stackable
+            // item is the number of pieces, which the prices of potions, arrows and others multiply.
+            var durabilities = item.IsStackable()
+                ? new[] { fullDurability, item.Definition.Durability, 0 }.Distinct().ToList()
+                : new[] { fullDurability, fullDurability * 4 / 10, 0 }.Distinct().ToList();
+            this.ComparePricesAtDurabilities(item, durabilities, itemCase);
             if (priceExtras.Count == 0 && item.Definition!.Skill is null)
             {
                 return;
@@ -558,19 +570,13 @@ internal class ItemFormulasEqualTodayTest
             var extraLinks = priceExtras.Select(option => new ItemOptionLink { ItemOption = option, Level = 1 }).ToList();
             extraLinks.ForEach(item.ItemOptions.Add);
             item.HasSkill = item.Definition!.Skill is not null;
-            this.ComparePricesAtEachDurability(item, fullDurability, $"{itemCase}, with {(item.HasSkill ? "skill, " : string.Empty)}{string.Join(", ", priceExtras.Select(o => o.OptionType?.Name))}");
+            this.ComparePricesAtDurabilities(item, [fullDurability], $"{itemCase}, with {(item.HasSkill ? "skill, " : string.Empty)}{string.Join(", ", priceExtras.Select(o => o.OptionType?.Name))}");
             item.HasSkill = false;
             extraLinks.ForEach(link => item.ItemOptions.Remove(link));
         }
 
-        private void ComparePricesAtEachDurability(Item item, byte fullDurability, string itemCase)
+        private void ComparePricesAtDurabilities(Item item, List<int> durabilities, string itemCase)
         {
-            item.ItemSlot = (byte)(item.Definition!.ItemSlot?.ItemSlots.FirstOrDefault() ?? 0);
-
-            // The durability of a stackable item is the number of pieces, which the prices of potions, arrows and others multiply.
-            var durabilities = item.IsStackable()
-                ? new[] { fullDurability, item.Definition.Durability, 0 }.Distinct()
-                : GetDurabilities(fullDurability).Append(0).Distinct();
             foreach (var durability in durabilities)
             {
                 item.Durability = durability;
