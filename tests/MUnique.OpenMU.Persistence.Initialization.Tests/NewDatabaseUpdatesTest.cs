@@ -133,7 +133,7 @@ internal class NewDatabaseUpdatesTest
     public async Task MinimumVersionOfTheDependencyCountsAsync()
     {
         var (context, gameConfiguration) = CreateContext();
-        var oldDependency = Configured("dependency", 1, version: 1);
+        var oldDependency = Configured("dependency", 1);
         var dependent = Configured("dependent", 2, dependsOn: [(oldDependency.Key, 2)]);
 
         Assert.ThrowsAsync<MissingUpdateDependencyException>(async () => await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [oldDependency, dependent]).ConfigureAwait(false));
@@ -205,7 +205,7 @@ internal class NewDatabaseUpdatesTest
     public async Task BrokenOptionalUpdateStaysPendingAsync()
     {
         var (context, gameConfiguration) = CreateContext();
-        var dependency = Configured("dependency", 1, version: 1);
+        var dependency = Configured("dependency", 1);
         var missing = Configured("missing dependency", 2, isMandatory: false, dependsOn: [Guid.NewGuid()]);
         var tooLow = Configured("too low dependency", 3, isMandatory: false, dependsOn: [(dependency.Key, 2)]);
         var mandatory = Configured("mandatory", 4);
