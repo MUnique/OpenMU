@@ -517,16 +517,18 @@ internal class ItemFormulasEqualTodayTest
         private void ComparePrices(Item item, byte fullDurability, string itemCase)
         {
             item.ItemSlot = (byte)(item.Definition!.ItemSlot?.ItemSlots.FirstOrDefault() ?? 0);
-            item.Durability = fullDurability;
 
-            // The buying prices don't depend on the durability.
-            this.Compare(itemCase, "buying price", Capture(() => $"{this._legacyPrices.CalculateFinalBuyingPrice(item)}"), Capture(() => $"{this._prices.CalculateFinalBuyingPrice(item)}"));
-            this.Compare(itemCase, "old buying price", Capture(() => $"{this._legacyPrices.CalculateFinalOldBuyingPrice(item)}"), Capture(() => $"{this._prices.CalculateFinalOldBuyingPrice(item)}"));
-            foreach (var durability in GetDurabilities(fullDurability).Append(0).Distinct())
+            // The durability of a stackable item is the number of pieces, which the prices of potions, arrows and others multiply.
+            var durabilities = item.IsStackable()
+                ? new[] { fullDurability, item.Definition.Durability, 0 }.Distinct()
+                : GetDurabilities(fullDurability).Append(0).Distinct();
+            foreach (var durability in durabilities)
             {
                 item.Durability = durability;
                 this.PriceCases++;
                 var priceCase = $"{itemCase}, durability {durability}";
+                this.Compare(priceCase, "buying price", Capture(() => $"{this._legacyPrices.CalculateFinalBuyingPrice(item)}"), Capture(() => $"{this._prices.CalculateFinalBuyingPrice(item)}"));
+                this.Compare(priceCase, "old buying price", Capture(() => $"{this._legacyPrices.CalculateFinalOldBuyingPrice(item)}"), Capture(() => $"{this._prices.CalculateFinalOldBuyingPrice(item)}"));
                 this.Compare(priceCase, "selling price", Capture(() => $"{this._legacyPrices.CalculateSellingPrice(item)}"), Capture(() => $"{this._prices.CalculateSellingPrice(item)}"));
                 this.Compare(priceCase, "selling price at durability", Capture(() => $"{this._legacyPrices.CalculateSellingPrice(item, item.Durability())}"), Capture(() => $"{this._prices.CalculateSellingPrice(item, item.Durability())}"));
                 this.Compare(priceCase, "repair price", Capture(() => $"{this._legacyPrices.CalculateRepairPrice(item, false)}"), Capture(() => $"{this._prices.CalculateRepairPrice(item, false)}"));
