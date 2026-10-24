@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -32,9 +33,11 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (error, null);
         }
 
+        // The price is based on the success rate of the items, so a bonus doesn't make the crafting more expensive.
+        var price = this.GetPrice(successRate, items);
+        successRate = ApplyCraftingBonus(successRate, player.Attributes?[Stats.CraftingBonusPercentage] ?? 0);
         player.Logger.LogInformation("Crafting success chance: {successRate} %", successRate);
 
-        var price = this.GetPrice(successRate, items);
         if (!await this._castleSiegeTaxProvider.TryPayChaosCostAsync(player, price).ConfigureAwait(false))
         {
             return (CraftingResult.NotEnoughMoney, null);
@@ -76,6 +79,26 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 
     /// <inheritdoc/>
     public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+
+    /// <summary>
+    /// Applies the <see cref="Stats.CraftingBonusPercentage"/> of the player to the success rate of a crafting.
+    /// </summary>
+    /// <remarks>
+    /// A success rate of 0 or 100 percent is kept, because such craftings either can't fail or
+    /// can't succeed by design. Otherwise, the result stays between 1 and 100 percent.
+    /// </remarks>
+    /// <param name="successRate">The success rate, which is defined by the required items.</param>
+    /// <param name="bonusPercentage">The bonus in percentage points.</param>
+    /// <returns>The resulting success rate.</returns>
+    internal static byte ApplyCraftingBonus(byte successRate, float bonusPercentage)
+    {
+        if (successRate is 0 or >= 100 || bonusPercentage == 0)
+        {
+            return successRate;
+        }
+
+        return (byte)Math.Clamp(successRate + (int)bonusPercentage, 1, 100);
+    }
 
     /// <summary>
     /// Gets the price based on the success rate and the required items.

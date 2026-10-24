@@ -1534,6 +1534,15 @@ public class Stats
     public static AttributeDefinition NearbyPartyMemberCount { get; } = new(new Guid("585CB9C8-FA23-4995-ABA9-3327321A6F44"), "Nearby party member count", "Defines how many party members are currently nearby.");
 
     /// <summary>
+    /// Gets the <see cref="CraftingBonusPercentage"/> attribute which defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine.
+    /// </summary>
+    /// <remarks>
+    /// It can be defined globally (<see cref="GameConfiguration.GlobalBaseAttributeValues"/>), per map, per account or per character,
+    /// e.g. for an event or a premium subscription. A negative value decreases the success rate.
+    /// </remarks>
+    public static AttributeDefinition CraftingBonusPercentage { get; } = new(new Guid("A1B714D3-AF71-446A-8C8B-227FAB856D58"), "Crafting bonus percentage", "Defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine. A negative value decreases it.");
+
+    /// <summary>
     /// Gets the <see cref="SkillLevel"/> attribute which defines the level of a skill.
     /// </summary>
     public static AttributeDefinition SkillLevel { get; } = new(new Guid("BB84DC85-D153-4BDE-84D6-0B893D653810"), "Skill level", "Defines the level of a skill.");
