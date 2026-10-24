@@ -10,7 +10,6 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence;
 
@@ -23,7 +22,8 @@ using MUnique.OpenMU.Persistence;
 /// <c>GetPowerUps</c> (line 41), which took it from the interface the copy doesn't implement, so that a change of the live
 /// interface doesn't change the copy. The set power-ups (lines 103-216) are left out: the test doesn't compare them,
 /// and the item formulas aren't part of them.
-/// The item checks, the drop level and the durability factor come from <see cref="LegacyItemExtensions"/>.
+/// The item checks, the drop level, the durability factor and <c>IsFixedOption</c> come from <see cref="LegacyItemExtensions"/>,
+/// which also names the live code the copies still call.
 /// </remarks>
 internal class LegacyItemPowerUpFactory
 {

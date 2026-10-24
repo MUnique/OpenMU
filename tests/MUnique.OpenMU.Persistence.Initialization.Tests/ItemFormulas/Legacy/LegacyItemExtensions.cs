@@ -17,11 +17,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// which <see cref="ItemFormulasEqualTodayTest"/> compares with the current code. Don't change it.
 /// </summary>
 /// <remarks>
-/// Lines 19-106, 131-141, 174-265, 279-289, 361-426, 474-500 and 512-561 are copied unchanged.
+/// Lines 19-106, 131-141, 174-265, 279-289, 361-426, 474-500, 512-542 and 544-561 are copied unchanged, and between the
+/// last two, lines 14-27 of <c>src/GameLogic/ItemOptionExtensions.cs</c> (<c>IsFixedOption</c>).
 /// The extension method calls in the frozen copies bind to this class wherever it has a method of that name,
-/// because extension methods of the own namespace come before imported ones.
-/// So the copies don't depend on <c>src/GameLogic/ItemExtensions.cs</c> any more; they still call
-/// <c>IsWearable</c>, <c>IsTrainablePet</c>, <c>IsDarkRaven</c>, <c>IsWing</c> and <c>Durability</c> of <c>src/DataModel/ItemExtensions.cs</c>.
+/// because extension methods of the own namespace come before imported ones; the copies don't import the namespace
+/// of the game logic, so they call none of its helpers.
+/// They still call live code which the item formulas don't contain: <c>IsWearable</c>, <c>IsTrainablePet</c>,
+/// <c>IsDarkRaven</c>, <c>IsWing</c> and <c>Durability</c> of <c>src/DataModel/ItemExtensions.cs</c>, and the code which builds
+/// the elements of the power-ups and applies the durability factor to them: <c>PowerUpWrapper.CreateByPowerUpDefinition</c>,
+/// <c>PowerUpDefinitionValue.GetSimpleValueElement</c>, <c>ItemBasePowerUpDefinition.GetBaseValueElement</c> and
+/// <c>LevelBonus.GetAdditionalValueElement</c>.
 /// </remarks>
 internal static class LegacyItemExtensions
 {
@@ -356,6 +361,21 @@ internal static class LegacyItemExtensions
         }
 
         return 1;
+    }
+
+    /// <summary>
+    /// Determines whether the option is a fixed option, which is a normal option without level dependent values.
+    /// </summary>
+    /// <remarks>
+    /// Several fixed options (e.g. of the Horn of Dinorant) can be on one item.
+    /// The client receives them in the field of the normal option level, where
+    /// the <see cref="ItemOption.Number"/> of each fixed option is its bit.
+    /// </remarks>
+    /// <param name="option">The option.</param>
+    /// <returns><c>true</c>, if the option is a fixed option; otherwise, <c>false</c>.</returns>
+    public static bool IsFixedOption(this IncreasableItemOption option)
+    {
+        return option.OptionType == ItemOptionTypes.Option && option.LevelDependentOptions is not { Count: > 0 };
     }
 
     private static int CalculateRequirement(this Item item, int requirementValue, int multiplier)
