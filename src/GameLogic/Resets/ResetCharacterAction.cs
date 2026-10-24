@@ -90,7 +90,8 @@ public class ResetCharacterAction
 
     private async ValueTask<bool> ValidatePlayerAsync(ResetConfiguration configuration)
     {
-        string? messageKey = null;
+        string? messageKey;
+        object? arg = null;
         if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
         {
             messageKey = nameof(PlayerMessage.CantResetWithOpenedWindows);
@@ -102,6 +103,11 @@ public class ResetCharacterAction
         else if (this._player.Level < configuration.RequiredLevel)
         {
             messageKey = nameof(PlayerMessage.RequiredLevelForReset);
+            arg = configuration.RequiredLevel;
+        }
+        else
+        {
+            messageKey = null;
         }
 
         if (messageKey is null)
@@ -110,7 +116,7 @@ public class ResetCharacterAction
         }
         else
         {
-            await this.ShowMessageAsync(messageKey).ConfigureAwait(false);
+            await this.ShowMessageAsync(messageKey, arg).ConfigureAwait(false);
             return false;
         }
     }
@@ -122,13 +128,14 @@ public class ResetCharacterAction
             await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
             return false;
         }
-
-        if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
+        else if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
         {
             return false;
         }
-
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     private async ValueTask ShowMessageAsync(string messageKey, params object?[] args)
