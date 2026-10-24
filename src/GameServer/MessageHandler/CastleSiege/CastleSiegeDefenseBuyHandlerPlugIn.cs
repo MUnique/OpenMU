@@ -19,6 +19,8 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CastleSiegeGroupHandlerPlugIn.GroupKey)]
 internal sealed class CastleSiegeDefenseBuyHandlerPlugIn : ISubPacketHandlerPlugIn
 {
+    private const short SeniorNumber = 223;
+
     /// <inheritdoc />
     public bool IsEncryptionExpected => false;
 
@@ -28,7 +30,9 @@ internal sealed class CastleSiegeDefenseBuyHandlerPlugIn : ISubPacketHandlerPlug
     /// <inheritdoc />
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        if (packet.Length < CastleSiegeDefenseBuyRequest.Length)
+        // Defense structures are managed in the Senior's window, like the taxes and the tribute.
+        if (packet.Length < CastleSiegeDefenseBuyRequest.Length
+            || player.OpenedNpc?.Definition.Number != SeniorNumber)
         {
             return;
         }

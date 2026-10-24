@@ -341,6 +341,12 @@
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
     <value>将囚禁之岛传送条目的索引修正为Season 6客户端请求的42。</value>
   </data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Name" xml:space="preserve">
+    <value>修正火舞旋风需求</value>
+  </data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve">
+    <value>将火舞旋风技能的智力和统率需求修正为150和70。此前两者被互换，导致统率低于150的圣导师可以学习该技能却无法使用。</value>
+  </data>
   <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve">
     <value>添加狼魂要塞活动</value>
   </data>
@@ -379,4 +385,6 @@
   <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
     <value>添加商城配置，包含游戏客户端商城脚本 512.2012.084 中的商品包，以及从商城保管箱使用时生效的物品（角色卡、仓库和背包扩展道具）。</value>
   </data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战守卫</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>攻城战地图桥边的守卫打开报名窗口，魔炼之地入口的守卫变为被动NPC，并打开魔炼之地对话框。</value></data>
 </root>

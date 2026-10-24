@@ -76,6 +76,16 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<CashShopCoinGrant> CashShopCoinGrants => this.Set<CashShopCoinGrant>();
 
     /// <summary>
+    /// Gets the links of the accounts to users of external services.
+    /// </summary>
+    internal DbSet<AccountExternalLink> AccountExternalLinks => this.Set<AccountExternalLink>();
+
+    /// <summary>
+    /// Gets the bindings of the chats of guilds to channels of external services.
+    /// </summary>
+    internal DbSet<GuildChatBinding> GuildChatBindings => this.Set<GuildChatBinding>();
+
+    /// <summary>
     /// Gets the gens memberships of the characters.
     /// </summary>
     internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
@@ -132,6 +142,8 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CashShopPackage>().Apply();
         modelBuilder.Entity<CashShopStorageItem>().Apply();
         modelBuilder.Entity<CashShopCoinGrant>().Apply();
+        modelBuilder.Entity<AccountExternalLink>().Apply();
+        modelBuilder.Entity<GuildChatBinding>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();

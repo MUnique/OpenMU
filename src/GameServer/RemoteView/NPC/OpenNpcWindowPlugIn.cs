@@ -62,6 +62,7 @@ public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
             NpcWindow.PetTrainer => NpcWindowResponse.NpcWindow.PetTrainer,
             NpcWindow.Lahap => NpcWindowResponse.NpcWindow.Lahap,
             NpcWindow.CastleSeniorNPC => NpcWindowResponse.NpcWindow.CastleSeniorNPC,
+            NpcWindow.CastleSiegeGuardsman => NpcWindowResponse.NpcWindow.CastleSiegeGuardsman,
             NpcWindow.ElphisRefinery => NpcWindowResponse.NpcWindow.ElphisRefinery,
             NpcWindow.RefineStoneMaking => NpcWindowResponse.NpcWindow.RefineStoneMaking,
             NpcWindow.RemoveJohOption => NpcWindowResponse.NpcWindow.RemoveJohOption,

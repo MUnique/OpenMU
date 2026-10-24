@@ -1,0 +1,65 @@
+@page "/accounts/{LoginName}/links"
+@attribute [Authorize(Policy = AdminPolicies.Operator)]
+
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@{
+    var title = string.Format(Resources.ExternalLinksOf, this.LoginName);
+}
+<PageTitle>OpenMU: @title</PageTitle>
+<Breadcrumb Caption="@title" />
+<h1>@title</h1>
+
+<p class="text-muted">@Resources.ExternalLinksDescription</p>
+
+@if (this._isLoading)
+{
+    <p>@Resources.Loading</p>
+}
+else if (this._links is not { } links)
+{
+    <p>@Resources.ExternalLinksAccountNotFound</p>
+}
+else
+{
+    <div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th>@Resources.ExternalLinkService</th>
+            <th>@Resources.ExternalLinkUser</th>
+            <th>@Resources.ExternalLinkCharacter</th>
+            <th>@Resources.ExternalLinkLinkedAt</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var link in links)
+        {
+            <tr>
+                <td>@link.Provider</td>
+                <td>
+                    @if (link.ExternalUserId is { } userId)
+                    {
+                        <span>@link.ExternalUserName</span> <code>@userId</code>
+                    }
+                    else if (link.CodeExpiresAt is { } expiresAt)
+                    {
+                        <span class="text-muted">@string.Format(Resources.ExternalLinkPending, expiresAt.ToLocalTime())</span>
+                    }
+                </td>
+                <td>@link.CharacterName</td>
+                <td>@link.LinkedAt?.ToLocalTime()</td>
+                <td><button type="button" class="btn btn-sm btn-danger" disabled="@this._isRemoving" @onclick="() => this.OnRemoveAsync(link.Provider)">@Resources.Remove</button></td>
+            </tr>
+        }
+        @if (links.Count == 0)
+        {
+            <tr>
+                <td colspan="5" class="text-muted">@Resources.ExternalLinksNone</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+}

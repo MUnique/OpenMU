@@ -1,0 +1,642 @@
+﻿@page "/discord"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@using MUnique.OpenMU.Discord
+@using MUnique.OpenMU.Discord.ChatBridge
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.GameLogic.PlugIns.GameEvents
+@using Microsoft.AspNetCore.Components.Routing
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+<PageTitle>OpenMU: @Resources.Discord</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Discord"/>
+<h1>@Resources.Discord</h1>
+
+@if (!AdminPanelEnvironment.IsHostingEmbedded)
+{
+    <div class="alert alert-info" role="alert">@Resources.DiscordNotAvailable</div>
+    return;
+}
+
+<p class="text-muted">@UiText("DiscordOverview")</p>
+<details class="mb-3 small text-muted">
+    <summary>@UiText("DiscordConfigurationSource")</summary>
+    <code>@this.ConfigurationService.FilePath</code>
+    <p>@UiText("DiscordConfigurationSourcesHint")</p>
+</details>
+
+@if (this._loadError is { } loadError)
+{
+    <div class="alert alert-danger" role="alert">@string.Format(Resources.DiscordLoadError, this.ConfigurationService.FilePath, loadError)</div>
+    <button type="button" class="btn btn-secondary" @onclick="this.LoadAsync">
+        <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload
+    </button>
+    return;
+}
+
+@if (this._settings is not { } settings)
+{
+    <p>@Resources.Loading</p>
+    return;
+}
+
+<NavigationLock ConfirmExternalNavigation="@this.HasUnsavedChanges" OnBeforeInternalNavigation="this.PreventUnsavedNavigation"/>
+<div class="card mb-3">
+    <div class="card-body">
+        <label for="discordMode" class="form-label">@UiText("DiscordMode")</label>
+        <select id="discordMode" class="form-select" disabled="@this.IsDefinedElsewhere("UseBot")" @bind="this.IntegrationMode">
+            <option value="bot">@UiText("DiscordModeBot")</option>
+            <option value="webhooks">@UiText("DiscordModeWebhooks")</option>
+        </select>
+        <p class="form-text mb-0">@UiText("DiscordModeHint")</p>
+        @if (this.IsDefinedElsewhere("UseBot"))
+        {
+            <p class="form-text mb-0">@this.ManagedHint("UseBot")</p>
+        }
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">@Resources.DiscordStatus</div>
+    <div class="card-body">
+        @if (this.Bot is not { } bot)
+        {
+            <p class="mb-2">@(this.UsesBot ? Resources.DiscordStatusNotConfigured : UiText("DiscordWebhooksModeReady"))</p>
+            @if (this._integration?.Settings.IsNotificationEnabled == true)
+            {
+                <p class="mb-2 text-muted">@Resources.DiscordWebhooksOnly</p>
+            }
+        }
+        else if (bot.ServerState == ServerState.Started)
+        {
+            <p class="mb-2 text-success">@string.Format(Resources.DiscordStatusConnected, bot.UserName, bot.CurrentConnections)</p>
+        }
+        else if (bot.ServerState == ServerState.Starting)
+        {
+            <p class="mb-2">@Resources.DiscordStatusConnecting</p>
+        }
+        else
+        {
+            <p class="mb-2">@Resources.DiscordStatusStopped</p>
+        }
+
+        @if (this.UsesBot)
+        {
+        @switch (this.Bot?.Problem)
+        {
+            case DiscordBotProblem.TokenRejected:
+                <div class="alert alert-danger mb-2" role="alert">@Resources.DiscordProblemTokenRejected</div>
+                break;
+            case DiscordBotProblem.IntentNotEnabled:
+                <div class="alert alert-danger mb-2" role="alert">@Resources.DiscordProblemIntentNotEnabled</div>
+                break;
+            case DiscordBotProblem.StartFailed:
+                <div class="alert alert-danger mb-2" role="alert">@Resources.DiscordProblemStartFailed</div>
+                break;
+        }
+
+        }
+        @if (this._integration?.SettingsError is { } settingsError)
+        {
+            <div class="alert alert-danger mb-2" role="alert">@string.Format(Resources.DiscordSettingsError, settingsError)</div>
+        }
+
+        @if (this._isPublisherActive is { } isPublisherActive)
+        {
+            <div class="form-check form-switch mb-1">
+                <input id="discordPublisher" class="form-check-input" type="checkbox" role="switch" checked="@isPublisherActive" disabled="@this._isSaving"
+                       @onchange="e => this._isPublisherActive = e.Value is true"/>
+                <label class="form-check-label" for="discordPublisher">@Resources.DiscordPublisherSwitch</label>
+            </div>
+            @if (isPublisherActive)
+            {
+                <p class="mb-0 text-muted">@UiText("DiscordPublisherStaged")</p>
+            }
+            else
+            {
+                <div class="alert alert-warning mb-0" role="alert">@Resources.DiscordPublisherInactive</div>
+            }
+        }
+    </div>
+</div>
+
+@if (this.UsesBot)
+{
+<details class="card mb-3" open="@(this.BotStepState != StepState.Verified)">
+    <summary class="card-header">@Resources.DiscordStep1Title @StepBadge(this.BotStepState)</summary>
+    <div class="card-body">
+        <p>@Resources.DiscordStep1Text</p>
+        <p><a href="https://discord.com/developers/applications" target="_blank" rel="noopener noreferrer">@Resources.DiscordOpenDeveloperPortal</a></p>
+        <label class="form-label" for="discordToken">@Resources.DiscordToken</label>
+        @if (this.IsDefinedElsewhere("Bot:Token"))
+        {
+            <p class="form-text">@this.ManagedHint("Bot:Token")</p>
+        }
+        else
+        {
+            <div class="input-group mb-2">
+                <input id="discordToken" type="password" class="form-control font-monospace" autocomplete="off"
+                       placeholder="@(settings.Bot.Token is null ? null : Resources.DiscordSecretSet)" @bind="this._newToken" @bind:event="oninput"/>
+                @if (settings.Bot.Token is not null)
+                {
+                    <button type="button" class="btn btn-outline-danger" @onclick="this.RemoveToken">@Resources.Remove</button>
+                }
+            </div>
+        }
+        <p class="form-text mb-0">@UiText("DiscordSecretStaged")</p>
+    </div>
+</details>
+
+<details class="card mb-3" open="@(this.InviteStepState != StepState.Verified)">
+    <summary class="card-header">@Resources.DiscordStep2Title @StepBadge(this.InviteStepState)</summary>
+    <div class="card-body">
+        <p>@Resources.DiscordStep2Text</p>
+        @if (this.InviteUrl is { } inviteUrl)
+        {
+            <a class="btn btn-secondary" href="@inviteUrl" target="_blank" rel="noopener noreferrer">
+                <span class="oi oi-external-link" aria-hidden="true"></span> @Resources.DiscordInviteBot
+            </a>
+        }
+        else
+        {
+            <p class="text-muted mb-0">@Resources.DiscordInviteNeedsToken</p>
+        }
+    </div>
+</details>
+
+<details class="card mb-3" open="@(this.ServerStepState != StepState.Verified)">
+    <summary class="card-header">@Resources.DiscordStep3Title @StepBadge(this.ServerStepState)</summary>
+    <div class="card-body">
+        <p>@Resources.DiscordStep3Text</p>
+        <div class="mb-3 col-md-6">
+            @if (this.IsDefinedElsewhere("Bot:GuildId"))
+            {
+                <label class="form-label">@Resources.DiscordServer</label>
+                <p class="form-text">@this.ManagedHint("Bot:GuildId") · @this._serverIdText</p>
+            }
+            else if (this.Bot?.GetDiscordServers() is { Count: > 0 } servers)
+            {
+                <label class="form-label" for="discordServer">@Resources.DiscordServer</label>
+                <select id="discordServer" class="form-select" @bind="this._serverIdText">
+                    <option value="">@(servers.Count == 1 ? Resources.DiscordServerNone : UiText("DiscordChooseServer"))</option>
+                    @foreach (var server in servers)
+                    {
+                        <option value="@server.Id">@server.Name (@server.Id)</option>
+                    }
+                    @if (this._serverIdText.Length > 0 && servers.All(server => server.Id.ToString() != this._serverIdText))
+                    {
+                        <option value="@this._serverIdText">@this._serverIdText</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <label class="form-label" for="discordServerId">@Resources.DiscordServerId</label>
+                <input id="discordServerId" type="text" inputmode="numeric" class="form-control font-monospace" @bind="this._serverIdText"/>
+                <p class="form-text">@Resources.DiscordServerIdHint</p>
+            }
+        </div>
+        @this.FieldError("discordServer")
+        <p>@Resources.DiscordSetUpServerText</p>
+        <p class="form-text">@UiText("DiscordProvisioningChanges")</p>
+        @if (this.HasUnsavedChanges)
+        {
+            <p class="text-warning">@Resources.DiscordUnsavedChanges</p>
+        }
+        <details class="mb-2">
+            <summary>@Resources.DiscordLayoutPreview</summary>
+            <ul class="mt-2 mb-0">
+                <li>@string.Format(Resources.DiscordLayoutRoles, Join(this._layout.Roles.Select(role => role.Name)))</li>
+                @foreach (var layoutCategory in this._layout.Categories)
+                {
+                    <li>
+                        <strong>@layoutCategory.Name</strong>@(layoutCategory.Channels.Count > 0 ? ": " + Join(layoutCategory.Channels.Select(channel => "#" + channel.Name)) : null)
+                        @if (layoutCategory.VisibleTo.Count > 0)
+                        {
+                            <span class="text-muted ms-1">(@string.Format(Resources.DiscordLayoutVisibleTo, Join(this._layout.Roles.Where(role => layoutCategory.VisibleTo.Contains(role.Key)).Select(role => role.Name))))</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </details>
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(this._isSettingUp || !this.IsBotConnected || this.HasUnsavedChanges)" @onclick="this.SetUpServerAsync">
+            <span class="oi oi-wrench" aria-hidden="true"></span> @Resources.DiscordSetUpServer
+        </button>
+        @if (this.Bot?.ServerState != ServerState.Started)
+        {
+            <p class="form-text">@Resources.DiscordSetUpServerNeedsBot</p>
+        }
+        @if (this._setupResult is { } result)
+        {
+            <ul class="mb-2">
+                @if (result.Created.Count > 0)
+                {
+                    <li>@string.Format(Resources.DiscordSetUpCreated, Join(result.Created))</li>
+                }
+                @if (result.Adopted.Count > 0)
+                {
+                    <li>@string.Format(Resources.DiscordSetUpAdopted, Join(result.Adopted))</li>
+                }
+                @if (result.Failed.Count > 0)
+                {
+                    <li class="text-danger">@string.Format(Resources.DiscordSetUpFailed, Join(result.Failed.Select(failure => $"{failure.Name} ({failure.Reason})")))</li>
+                }
+                @if (result.PublicCategories.Count > 0)
+                {
+                    <li class="text-warning">@string.Format(Resources.DiscordSetUpPublic, Join(result.PublicCategories))</li>
+                }
+            </ul>
+            <p>@Resources.DiscordSetUpRoleHint</p>
+        }
+        <p>@Resources.DiscordCheckServerText</p>
+        <button type="button" class="btn btn-secondary mb-2" disabled="@(this.IsCheckingServer || !this.IsBotConnected || this.HasUnsavedChanges)" @onclick="this.CheckServerAsync">
+            <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordCheckServer
+        </button>
+        @if (!this.HasUnsavedChanges && this._serverCheck is { } check)
+        {
+            <p class="mb-1">@string.Format(Resources.DiscordCheckServerName, check.ServerName)</p>
+            <ul class="mb-0">
+                @if (check.MissingPermissions.Count == 0)
+                {
+                    <li class="text-success">@Resources.DiscordCheckPermissionsOk</li>
+                }
+                else
+                {
+                    <li class="text-danger">@string.Format(Resources.DiscordCheckPermissionsMissing, Join(check.MissingPermissions))</li>
+                }
+                <li class="@(check.LinkedRole == DiscordRoleState.Assignable ? "text-success" : "text-danger")">@LinkedRoleText(check.LinkedRole)</li>
+                @if (check.CategoriesWithoutChannel.Count == 0)
+                {
+                    <li class="text-success">@Resources.DiscordCheckChannelsOk</li>
+                }
+                else
+                {
+                    <li class="text-warning">@string.Format(Resources.DiscordCheckChannelsMissing, Join(check.CategoriesWithoutChannel))</li>
+                }
+                <li class="@(check.HasStatusChannel ? "text-success" : "text-warning")">@(check.HasStatusChannel ? Resources.DiscordCheckStatusChannelOk : Resources.DiscordCheckStatusChannelMissing)</li>
+            </ul>
+        }
+    </div>
+</details>
+
+}
+
+<div class="card mb-3">
+    <div class="card-header">@Resources.DiscordStep4Title @StepBadge(this.NotificationsStepState)</div>
+    <div class="card-body">
+        @if (this.UsesBot)
+        {
+            <p>@Resources.DiscordStep4Text</p>
+        }
+        @if (this.ShowsWebhooks)
+        {
+            <p>@(this.UsesBot ? Resources.DiscordStep4WebhookFallbackText : Resources.DiscordStep4WebhookText)</p>
+        }
+        @if (this.UsesBot)
+        {
+            <div class="form-check mb-2">
+                <input id="discordShowWebhooks" type="checkbox" class="form-check-input" checked="@this.ShowWebhookEditor" @onchange="e => this.SetWebhookEditorVisible(e.Value is true)"/>
+                <label for="discordShowWebhooks" class="form-check-label">@UiText("DiscordShowWebhookFallbacks")</label>
+            </div>
+        }
+        @if (this.HasUnsavedChanges)
+        {
+            <p class="text-warning">@Resources.DiscordUnsavedChanges</p>
+        }
+        <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead>
+            <tr>
+                <th>@Resources.DiscordCategory</th>
+                @if (this.UsesBot)
+                {
+                    <th>@Resources.DiscordChannelId</th>
+                }
+                @if (this.ShowsWebhooks)
+                {
+                    <th>@Resources.DiscordWebhookUrl</th>
+                }
+                <th>@Resources.DiscordTest</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var category in Categories)
+            {
+                <tr>
+                    <td>
+                        <div class="form-check">
+                            <input id="discordEnabled-@category" type="checkbox" class="form-check-input"
+                                   checked="@(!settings.DisabledNotifications.Contains(category))" disabled="@this.IsDefinedElsewhere("DisabledNotifications")"
+                                   @onchange="e => this.SetCategoryEnabled(category, e.Value is true)"/>
+                            <label for="discordEnabled-@category" class="form-check-label fw-semibold">@UiText($"DiscordCategoryName_{category}")</label>
+                        </div>
+                        <span class="text-muted small">@CategoryText(category)</span>
+                        @if (category == DiscordChannelCategory.StaffAlerts)
+                        {
+                            <div class="small text-warning">@UiText("DiscordStaffPrivacy")</div>
+                        }
+                        <div class="small">@this.RouteText(category)</div>
+                        @if (this._publisherSettings is not null && DiscordPublisherOptions.GetOptions(category).Any())
+                        {
+                            <details class="mt-1 small">
+                                <summary>@UiText("DiscordSourceEvents")</summary>
+                                @foreach (var option in DiscordPublisherOptions.GetOptions(category))
+                                {
+                                    <div class="form-check">
+                                        <input id="discordPublish-@option" type="checkbox" class="form-check-input" checked="@this.PublisherFlag(option)"
+                                               @onchange="e => this.SetPublisherFlag(option, e.Value is true)"/>
+                                        <label class="form-check-label" for="discordPublish-@option">@DiscordPublisherOptions.GetLabel(option)</label>
+                                    </div>
+                                }
+                            </details>
+                        }
+                    </td>
+                    @if (this.UsesBot)
+                    {
+                        <td>
+                            @if (this.IsDefinedElsewhere($"Bot:Channels:{category}"))
+                            {
+                                <span class="form-text">@this.ManagedHint($"Bot:Channels:{category}") · @this._channelIdTexts.GetValueOrDefault(category)</span>
+                            }
+                            else
+                            {
+                                var channelIdText = this._channelIdTexts.GetValueOrDefault(category) ?? string.Empty;
+                                @if (this.TextChannels is { Count: > 0 } textChannels)
+                                {
+                                    <select class="form-select form-select-sm" aria-label="@($"{UiText($"DiscordCategoryName_{category}")}: {Resources.DiscordChannelId}")"
+                                            value="@channelIdText" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty">
+                                        <option value="">@this.DefaultChannelText(category)</option>
+                                        @foreach (var textChannel in textChannels)
+                                        {
+                                            <option value="@textChannel.Id" selected="@(textChannel.Id.ToString() == channelIdText)">#@textChannel.Name@(textChannel.CategoryName is { } categoryName ? $" ({categoryName})" : null)</option>
+                                        }
+                                        @if (channelIdText.Length > 0 && textChannels.All(textChannel => textChannel.Id.ToString() != channelIdText))
+                                        {
+                                            <option value="@channelIdText" selected>@channelIdText</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input type="text" inputmode="numeric" class="form-control form-control-sm" aria-label="@($"{UiText($"DiscordCategoryName_{category}")}: {Resources.DiscordChannelId}")"
+                                           placeholder="@this.DefaultChannelText(category)"
+                                           value="@channelIdText" @onchange="e => this._channelIdTexts[category] = e.Value?.ToString() ?? string.Empty"/>
+                                }
+                            }
+                            @this.FieldError("discordChannel-" + category)
+                        </td>
+                    }
+                    @if (this.ShowsWebhooks)
+                    {
+                        <td>
+                            @if (this.IsDefinedElsewhere($"Webhooks:{category}"))
+                            {
+                                <span class="form-text">@this.ManagedHint($"Webhooks:{category}")</span>
+                            }
+                            else
+                            {
+                                <div class="input-group input-group-sm">
+                                    <input type="password" class="form-control" autocomplete="off" aria-label="@($"{UiText($"DiscordCategoryName_{category}")}: {Resources.DiscordWebhookUrl}")"
+                                           placeholder="@(settings.Webhooks.ContainsKey(category) ? Resources.DiscordSecretSet : null)"
+                                           value="@this._newWebhooks.GetValueOrDefault(category)" @onchange="e => this._newWebhooks[category] = e.Value?.ToString() ?? string.Empty"/>
+                                    @if (settings.Webhooks.ContainsKey(category))
+                                    {
+                                        <button type="button" class="btn btn-outline-danger" @onclick="() => this.RemoveWebhook(category)">@Resources.Remove</button>
+                                    }
+                                </div>
+                            }
+                        </td>
+                    }
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(this._runningTests.Contains(category) || this.HasUnsavedChanges || settings.DisabledNotifications.Contains(category))" @onclick="() => this.TestAsync(category)">@Resources.DiscordTest</button>
+                        @if (!this.HasUnsavedChanges && this._testResults.GetValueOrDefault(category) is { } testResult)
+                        {
+                            <div role="status" class="small @(IsSent(testResult) ? "text-success" : "text-danger")">@TestResultText(testResult)</div>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <p class="form-text">@Resources.DiscordTestHint @UiText("DiscordDeliveryOnly")</p>
+        @if (!this.HasUnsavedChanges && this.LastCheckedAt is { } checkedAt)
+        {
+            <p class="form-text">@UiText("DiscordLastChecked", checkedAt.ToString("u"))</p>
+        }
+        @if (this._publisherSettings is not null)
+        {
+            <details class="mb-3">
+                <summary>@UiText("DiscordEventFilters")</summary>
+                <div class="row mt-2">
+                    <div class="col-md-4 mb-2"><label class="form-label" for="discordBosses">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.BossMonsterNumbers))</label><input id="discordBosses" class="form-control" @bind="this._bossMonsterNumbersText"/></div>
+                    <div class="col-md-4 mb-2"><label class="form-label" for="discordLevels">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.LevelMilestones))</label><input id="discordLevels" class="form-control" @bind="this._levelMilestonesText"/></div>
+                    <div class="col-md-4 mb-2"><label class="form-label" for="discordMasterLevels">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.MasterLevelMilestones))</label><input id="discordMasterLevels" class="form-control" @bind="this._masterLevelMilestonesText"/></div>
+                </div>
+                <p class="form-text">@UiText("DiscordFilterHint")</p>
+            </details>
+        }
+        <button type="button" class="btn btn-secondary mb-3" disabled="@(this._runningTests.Count > 0 || this.HasUnsavedChanges)" @onclick="this.TestAllAsync">
+            <span class="oi oi-check" aria-hidden="true"></span> @Resources.DiscordTestAll
+        </button>
+        <div class="row">
+            <div class="mb-3 col-md-3">
+                <label class="form-label" for="discordLanguage">@Resources.DiscordLanguage</label>
+                <select id="discordLanguage" class="form-select" disabled="@this.IsDefinedElsewhere("Language")" @bind="settings.Language">
+                    @foreach (var (languageCode, languageName) in Languages)
+                    {
+                        <option value="@languageCode">@languageName</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3 col-md-9">
+                <label class="form-label" for="discordEventServers">@Resources.DiscordEventAnnouncingServers</label>
+                <input id="discordEventServers" type="text" class="form-control font-monospace" disabled="@this.IsDefinedElsewhere("EventAnnouncingServerIds")" @bind="this._eventServerIdsText"/>
+                <p class="form-text">@Resources.DiscordEventAnnouncingServersHint</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (this.UsesBot)
+{
+<details class="card mb-3">
+    <summary class="card-header">@Resources.DiscordStep5Title</summary>
+    <div class="card-body">
+        <p>@Resources.DiscordStep5Text</p>
+        <div class="form-check mb-2">
+            <input id="discordPublishChat" type="checkbox" class="form-check-input" checked="@this.PublisherFlag(nameof(GameEventPublisherConfiguration.PublishChatMessages))"
+                   @onchange="e => this.SetPublisherFlag(nameof(GameEventPublisherConfiguration.PublishChatMessages), e.Value is true)"/>
+            <label for="discordPublishChat" class="form-check-label">@DiscordPublisherOptions.GetLabel(nameof(GameEventPublisherConfiguration.PublishChatMessages))</label>
+        </div>
+        <p class="small">@UiText("DiscordChatSetup")</p>
+        <p><code>/discord link</code> → <code>/link &lt;code&gt;</code> → <code>/guildchat create</code> / <code>/guildchat bind</code></p>
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordBindingMode">@Resources.DiscordBindingMode</label>
+                <select id="discordBindingMode" class="form-select" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:BindingMode")" @bind="settings.Bot.ChatBridge.BindingMode">
+                    @foreach (var mode in Enum.GetValues<DiscordGuildChatBindingMode>())
+                    {
+                        <option value="@mode">@BindingModeText(mode)</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordAllowedServers">@Resources.DiscordAllowedServers</label>
+                <input id="discordAllowedServers" type="text" class="form-control font-monospace" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:AllowedDiscordServerIds")" @bind="this._allowedServerIdsText"/>
+                <p class="form-text">@Resources.DiscordAllowedServersHint</p>
+            </div>
+        </div>
+        <div class="form-check mb-1">
+            <input id="discordReadMessages" type="checkbox" class="form-check-input" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:ReadMessages")" @bind="settings.Bot.ChatBridge.ReadMessages"/>
+            <label class="form-check-label" for="discordReadMessages">@UiText("DiscordForwardNormalMessages")</label>
+        </div>
+        <p class="form-text">@Resources.DiscordReadMessagesHint</p>
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordMessageLength">@Resources.DiscordMaximumMessageLength</label>
+                <input id="discordMessageLength" type="number" min="1" class="form-control" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:MaximumMessageLength")" @bind="settings.Bot.ChatBridge.MaximumMessageLength"/>
+                @this.FieldError("discordMessageLength")
+            </div>
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordMessagesPerMinute">@Resources.DiscordMaximumMessagesPerMinute</label>
+                <input id="discordMessagesPerMinute" type="number" min="1" class="form-control" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:MaximumMessagesPerMinute")" @bind="settings.Bot.ChatBridge.MaximumMessagesPerMinute"/>
+                @this.FieldError("discordMessagesPerMinute")
+            </div>
+        </div>
+        <h2 class="h6 mt-2">@Resources.DiscordChatBindings</h2>
+        <p class="form-text">@UiText("DiscordBindingRemovalImmediate")</p>
+        @if (this._bindingToRemove is { } removingBinding)
+        {
+            <div class="alert alert-warning" role="alertdialog" aria-label="@UiText("DiscordUnbindChat")">
+                <p>@UiText("DiscordConfirmUnbind")</p>
+                <button class="btn btn-danger btn-sm" @onclick="async () => { await this.RemoveChatBindingAsync(removingBinding); this._bindingToRemove = null; }">@UiText("DiscordUnbindChat")</button>
+                <button class="btn btn-secondary btn-sm" @onclick="() => this._bindingToRemove = null">@Resources.Cancel</button>
+            </div>
+        }
+        @if (this._chatBindings is not { } chatBindings)
+        {
+            <p class="form-text">@Resources.DiscordChatBindingsNeedBot</p>
+        }
+        else if (chatBindings.Count == 0)
+        {
+            <p class="form-text">@Resources.DiscordChatBindingsNone</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                <tr>
+                    <th>@Resources.DiscordChatBindingGuild</th>
+                    <th>@Resources.DiscordChatBindingChannel</th>
+                    <th>@Resources.DiscordChatBindingBoundBy</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var binding in chatBindings)
+                {
+                    <tr>
+                        <td>@(binding.GuildName ?? "?") <span class="text-muted small">(@ScopeText(binding.Scope))</span></td>
+                        <td>
+                            @if (binding.ChannelName is { } channelName)
+                            {
+                                <span>#@channelName</span> <span class="text-muted small">@binding.ServerName</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">@string.Format(Resources.DiscordChatBindingUnknownChannel, binding.ChannelId)</span>
+                            }
+                        </td>
+                        <td>@binding.BoundBy <span class="text-muted small">@binding.BoundAt.ToLocalTime()</span></td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => this._bindingToRemove = binding.ChannelId">@UiText("DiscordUnbindChat")</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+        }
+        <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(!this.IsBotConnected)" @onclick="this.LoadChatBindingsAsync">
+            <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload
+        </button>
+    </div>
+</details>
+
+}
+<details class="card mb-3">
+    <summary class="card-header">@Resources.DiscordStep6Title</summary>
+    <div class="card-body">
+        <div class="row">
+            @if (this.UsesBot)
+            {
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordStatusChannel">@Resources.DiscordStatusChannelId</label>
+                @if (this.TextChannels is { Count: > 0 } statusChannels && !this.IsDefinedElsewhere("Bot:StatusChannelId"))
+                {
+                    <select id="discordStatusChannel" class="form-select" @bind="this._statusChannelIdText">
+                        <option value="">@this.DefaultStatusChannelText</option>
+                        @foreach (var textChannel in statusChannels)
+                        {
+                            <option value="@textChannel.Id">#@textChannel.Name@(textChannel.CategoryName is { } categoryName ? $" ({categoryName})" : null)</option>
+                        }
+                        @if (this._statusChannelIdText.Length > 0 && statusChannels.All(textChannel => textChannel.Id.ToString() != this._statusChannelIdText))
+                        {
+                            <option value="@this._statusChannelIdText">@this._statusChannelIdText</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <input id="discordStatusChannel" type="text" inputmode="numeric" class="form-control font-monospace" placeholder="@this.DefaultStatusChannelText"
+                           disabled="@this.IsDefinedElsewhere("Bot:StatusChannelId")" @bind="this._statusChannelIdText"/>
+                }
+            </div>
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordStatusInterval">@Resources.DiscordStatusUpdateInterval</label>
+                <input id="discordStatusInterval" type="number" min="10" class="form-control" disabled="@this.IsDefinedElsewhere("Bot:StatusUpdateInterval")" @bind="this._statusUpdateSeconds"/>
+                @this.FieldError("discordStatusInterval")
+            </div>
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordLayoutFile">@Resources.DiscordLayoutFile</label>
+                <input id="discordLayoutFile" type="text" class="form-control font-monospace" placeholder="@Resources.DiscordLayoutFilePlaceholder"
+                       disabled="@this.IsDefinedElsewhere("Bot:LayoutFile")" @bind="settings.Bot.LayoutFile"/>
+            </div>
+            }
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="discordQueuedMessages">@Resources.DiscordMaximumQueuedMessages</label>
+                <input id="discordQueuedMessages" type="number" min="1" class="form-control" disabled="@this.IsDefinedElsewhere("MaximumQueuedMessages")" @bind="settings.MaximumQueuedMessages"/>
+                @this.FieldError("discordQueuedMessages")
+            </div>
+        </div>
+        @if (this.UsesBot)
+        {
+        <div class="form-check">
+            <input id="discordScheduledEvents" type="checkbox" class="form-check-input" disabled="@this.IsDefinedElsewhere("Bot:CreateScheduledEvents")" @bind="settings.Bot.CreateScheduledEvents"/>
+            <label class="form-check-label" for="discordScheduledEvents">@Resources.DiscordCreateScheduledEvents</label>
+        </div>
+        }
+    </div>
+</details>
+
+<div class="mb-3 py-2 sticky-bottom bg-body">
+    @if (this.HasUnsavedChanges)
+    {
+        <div class="alert alert-warning py-2 mb-2" role="alert">@Resources.DiscordUnsavedChanges</div>
+    }
+    <p class="small mb-2" role="status" aria-live="polite">@this._applyStatus</p>
+    @if (this.ConfirmDiscard)
+    {
+        <div class="alert alert-warning py-2" role="alertdialog" aria-label="@UiText("DiscordDiscardChanges")">
+            <p>@UiText("DiscordConfirmDiscard")</p>
+            <button class="btn btn-danger btn-sm" @onclick="this.LoadAsync">@UiText("DiscordDiscardChanges")</button>
+            <button class="btn btn-secondary btn-sm" @onclick="() => this.ConfirmDiscard = false">@UiText("DiscordKeepEditing")</button>
+        </div>
+    }
+    <button type="button" class="btn btn-primary" disabled="@(this._isSaving || this._isSettingUp || this.IsCheckingServer || this._runningTests.Count > 0 || !this.HasUnsavedChanges)" @onclick="this.SaveAsync">
+        <span class="oi oi-check" aria-hidden="true"></span> @(this._isSaving ? UiText("DiscordApplying") : UiText("DiscordSaveApply"))
+    </button>
+    <button type="button" class="btn btn-secondary" disabled="@this._isSaving" @onclick="this.RequestDiscardAsync">
+        <span class="oi oi-reload" aria-hidden="true"></span> @(this.HasUnsavedChanges ? UiText("DiscordDiscardChanges") : Resources.Reload)
+    </button>
+</div>

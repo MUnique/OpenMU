@@ -2128,4 +2128,449 @@
   <data name="DashboardOpen" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="ExternalLinks" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="ExternalLinksOf" xml:space="preserve">
+    <value>Links of {0}</value>
+  </data>
+  <data name="ExternalLinksDescription" xml:space="preserve">
+    <value>The users of external services, like Discord, which are linked to the account. Players link their account in the game with /discord link.</value>
+  </data>
+  <data name="ExternalLinksAccountNotFound" xml:space="preserve">
+    <value>The account wasn't found.</value>
+  </data>
+  <data name="ExternalLinksNone" xml:space="preserve">
+    <value>The account isn't linked.</value>
+  </data>
+  <data name="ExternalLinkService" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="ExternalLinkUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ExternalLinkCharacter" xml:space="preserve">
+    <value>Appears as</value>
+  </data>
+  <data name="ExternalLinkLinkedAt" xml:space="preserve">
+    <value>Linked at</value>
+  </data>
+  <data name="ExternalLinkPending" xml:space="preserve">
+    <value>Code valid until {0}</value>
+  </data>
+  <data name="ExternalLinkRemoved" xml:space="preserve">
+    <value>The link was removed.</value>
+  </data>
+  <data name="Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="DiscordDescription" xml:space="preserve">
+    <value>Brings the game into your Discord server: notifications of events, a bot with slash commands, linked accounts and the chat bridge. Go through the steps from top to bottom. The settings are saved in {0}, and the Discord integration restarts with them right away.</value>
+  </data>
+  <data name="DiscordNotAvailable" xml:space="preserve">
+    <value>This page is only available when the admin panel runs in the process of the server. In the distributed deployment, the Discord integration runs in its own container, which is configured with environment variables, see the documentation.</value>
+  </data>
+  <data name="DiscordLoadError" xml:space="preserve">
+    <value>The settings couldn't be loaded from {0}: {1}</value>
+  </data>
+  <data name="DiscordSaveError" xml:space="preserve">
+    <value>The settings couldn't be saved: {0}</value>
+  </data>
+  <data name="DiscordSaved" xml:space="preserve">
+    <value>Settings saved and applied. Check delivery to verify the destinations.</value>
+  </data>
+  <data name="DiscordInvalidId" xml:space="preserve">
+    <value>'{0}' isn't a valid identifier of Discord.</value>
+  </data>
+  <data name="DiscordDefinedElsewhere" xml:space="preserve">
+    <value>Set by an environment variable or another configuration source, which takes precedence over this page.</value>
+  </data>
+  <data name="DiscordSecretSet" xml:space="preserve">
+    <value>Set - leave it empty to keep it</value>
+  </data>
+  <data name="DiscordStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="DiscordStatusNotConfigured" xml:space="preserve">
+    <value>The bot isn't configured yet. Start with step 1.</value>
+  </data>
+  <data name="DiscordStatusConnected" xml:space="preserve">
+    <value>The bot is connected as {0}, and is in {1} Discord servers.</value>
+  </data>
+  <data name="DiscordStatusConnecting" xml:space="preserve">
+    <value>The bot is connecting to Discord...</value>
+  </data>
+  <data name="DiscordStatusStopped" xml:space="preserve">
+    <value>The bot isn't running. You can start it on the servers page.</value>
+  </data>
+  <data name="DiscordProblemTokenRejected" xml:space="preserve">
+    <value>Discord rejected the token. Copy it again from the developer portal (Bot → Reset Token).</value>
+  </data>
+  <data name="DiscordProblemIntentNotEnabled" xml:space="preserve">
+    <value>Discord doesn't allow the bot to read messages. Enable Message Content under Bot → Privileged Gateway Intents in the developer portal, or turn off Read messages in step 5.</value>
+  </data>
+  <data name="DiscordProblemStartFailed" xml:space="preserve">
+    <value>The bot couldn't be started. The log file says why.</value>
+  </data>
+  <data name="DiscordSettingsError" xml:space="preserve">
+    <value>The settings couldn't be applied: {0}</value>
+  </data>
+  <data name="DiscordWebhooksOnly" xml:space="preserve">
+    <value>Without the bot, the notifications are posted by the webhooks of step 4.</value>
+  </data>
+  <data name="DiscordPublisherInactive" xml:space="preserve">
+    <value>The plugin Game Event Publisher is inactive, so nothing happens in Discord when something happens in the game.</value>
+  </data>
+  <data name="DiscordPublisherActive" xml:space="preserve">
+    <value>The plugin Game Event Publisher is active. On the plugins page, you choose what it publishes.</value>
+  </data>
+  <data name="DiscordStep1Title" xml:space="preserve">
+    <value>1. Create the bot</value>
+  </data>
+  <data name="DiscordStep1Text" xml:space="preserve">
+    <value>In the Discord developer portal, create a New Application with the name of your server. Under Bot, click Reset Token and paste the token here. Treat it like a password: it's stored in the configuration file of the server, not in the database.</value>
+  </data>
+  <data name="DiscordOpenDeveloperPortal" xml:space="preserve">
+    <value>Open the Discord developer portal</value>
+  </data>
+  <data name="DiscordToken" xml:space="preserve">
+    <value>Token of the bot</value>
+  </data>
+  <data name="DiscordSkipBot" xml:space="preserve">
+    <value>You can skip the bot and only post notifications with webhooks, see step 4.</value>
+  </data>
+  <data name="DiscordStep2Title" xml:space="preserve">
+    <value>2. Invite the bot</value>
+  </data>
+  <data name="DiscordStep2Text" xml:space="preserve">
+    <value>Invite the bot to your Discord server. The link asks for the permissions which the bot needs.</value>
+  </data>
+  <data name="DiscordInviteBot" xml:space="preserve">
+    <value>Invite the bot</value>
+  </data>
+  <data name="DiscordInviteNeedsToken" xml:space="preserve">
+    <value>Enter the token first.</value>
+  </data>
+  <data name="DiscordStep3Title" xml:space="preserve">
+    <value>3. Set up your Discord server</value>
+  </data>
+  <data name="DiscordStep3Text" xml:space="preserve">
+    <value>Choose the Discord server whose channels receive the notifications and the status. On it, the commands of the bot are available immediately.</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord server</value>
+  </data>
+  <data name="DiscordServerNone" xml:space="preserve">
+    <value>(the only one which the bot is in)</value>
+  </data>
+  <data name="DiscordServerId" xml:space="preserve">
+    <value>Identifier of the Discord server</value>
+  </data>
+  <data name="DiscordServerIdHint" xml:space="preserve">
+    <value>When the bot is connected, you can choose the Discord server here. Otherwise, enable the developer mode in the advanced settings of Discord, right-click the server and select Copy Server ID.</value>
+  </data>
+  <data name="DiscordSetUpServer" xml:space="preserve">
+    <value>Create channels and roles</value>
+  </data>
+  <data name="DiscordSetUpServerText" xml:space="preserve">
+    <value>Creates the roles, categories and channels which the bot uses, like /openmu setup in Discord. What already exists is kept, so you can do it again at any time. The bot needs the permissions Manage Channels and Manage Roles for it.</value>
+  </data>
+  <data name="DiscordSetUpServerNeedsBot" xml:space="preserve">
+    <value>The bot has to be connected and in the Discord server.</value>
+  </data>
+  <data name="DiscordSetUpCreated" xml:space="preserve">
+    <value>Created: {0}</value>
+  </data>
+  <data name="DiscordSetUpAdopted" xml:space="preserve">
+    <value>Already there: {0}</value>
+  </data>
+  <data name="DiscordSetUpFailed" xml:space="preserve">
+    <value>Failed: {0}</value>
+  </data>
+  <data name="DiscordSetUpPublic" xml:space="preserve">
+    <value>Visible to everyone, because their roles are missing: {0}</value>
+  </data>
+  <data name="DiscordSetUpRoleHint" xml:space="preserve">
+    <value>In the role list of the Discord server, move the role of the bot above Linked Player, so that the bot can give this role to linked players.</value>
+  </data>
+  <data name="DiscordStep4Title" xml:space="preserve">
+    <value>4. Notifications</value>
+  </data>
+  <data name="DiscordStep4Text" xml:space="preserve">
+    <value>Choose a channel by name. An empty selection inherits the layout default; a configured bot channel is preferred over its webhook while the bot is connected.</value>
+  </data>
+  <data name="DiscordCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="DiscordChannelId" xml:space="preserve">
+    <value>Channel of the bot</value>
+  </data>
+  <data name="DiscordWebhookUrl" xml:space="preserve">
+    <value>Webhook URL</value>
+  </data>
+  <data name="DiscordCategory_Events" xml:space="preserve">
+    <value>Mini games, invasions and their winners</value>
+  </data>
+  <data name="DiscordCategory_CastleSiege" xml:space="preserve">
+    <value>The castle siege</value>
+  </data>
+  <data name="DiscordCategory_WorldNews" xml:space="preserve">
+    <value>Boss kills, rare drops and level milestones</value>
+  </data>
+  <data name="DiscordCategory_Notices" xml:space="preserve">
+    <value>Notices of game masters</value>
+  </data>
+  <data name="DiscordCategory_StaffAlerts" xml:space="preserve">
+    <value>Commands which game masters used in Discord</value>
+  </data>
+  <data name="DiscordLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="DiscordEventAnnouncingServers" xml:space="preserve">
+    <value>Game servers which announce events</value>
+  </data>
+  <data name="DiscordEventAnnouncingServersHint" xml:space="preserve">
+    <value>Identifiers separated by commas. Empty: all. When several game servers run the same events, choose one of them to avoid duplicate messages.</value>
+  </data>
+  <data name="DiscordStep5Title" xml:space="preserve">
+    <value>5. Chat bridge (optional)</value>
+  </data>
+  <data name="DiscordStep5Text" xml:space="preserve">
+    <value>Choose where guild chats can be connected and whether Discord messages are forwarded into the game. Enable game chat publishing below to forward messages in the other direction.</value>
+  </data>
+  <data name="DiscordBindingMode" xml:space="preserve">
+    <value>Where guilds can bind their chat</value>
+  </data>
+  <data name="DiscordBindingMode_Both" xml:space="preserve">
+    <value>On your Discord server and on the ones of the guilds</value>
+  </data>
+  <data name="DiscordBindingMode_HostedOnly" xml:space="preserve">
+    <value>Only on your Discord server</value>
+  </data>
+  <data name="DiscordBindingMode_GuildOwnedOnly" xml:space="preserve">
+    <value>Only on the Discord servers of the guilds</value>
+  </data>
+  <data name="DiscordAllowedServers" xml:space="preserve">
+    <value>Allowed Discord servers of guilds</value>
+  </data>
+  <data name="DiscordAllowedServersHint" xml:space="preserve">
+    <value>Identifiers separated by commas. Empty: all.</value>
+  </data>
+  <data name="DiscordReadMessages" xml:space="preserve">
+    <value>Read messages</value>
+  </data>
+  <data name="DiscordReadMessagesHint" xml:space="preserve">
+    <value>The normal messages in the bound channels are sent into the game. This requires the privileged intent Message Content (developer portal → Bot → Privileged Gateway Intents). Without it, players write with /say.</value>
+  </data>
+  <data name="DiscordMaximumMessageLength" xml:space="preserve">
+    <value>Maximum length of a message from Discord</value>
+  </data>
+  <data name="DiscordMaximumMessagesPerMinute" xml:space="preserve">
+    <value>Maximum messages per minute of a Discord user</value>
+  </data>
+  <data name="DiscordStep6Title" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="DiscordStatusChannelId" xml:space="preserve">
+    <value>Channel of the status message</value>
+  </data>
+  <data name="DiscordStatusUpdateInterval" xml:space="preserve">
+    <value>Status update interval (seconds)</value>
+  </data>
+  <data name="DiscordLayoutFile" xml:space="preserve">
+    <value>Layout file</value>
+  </data>
+  <data name="DiscordLayoutFilePlaceholder" xml:space="preserve">
+    <value>the default layout</value>
+  </data>
+  <data name="DiscordCreateScheduledEvents" xml:space="preserve">
+    <value>Create a Discord event for the next castle siege</value>
+  </data>
+  <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
+    <value>Maximum waiting messages per channel</value>
+  </data>
+  <data name="DiscordTest" xml:space="preserve">
+    <value>Send test message</value>
+  </data>
+  <data name="DiscordTestHint" xml:space="preserve">
+    <value>Test posts a test message with the saved settings, in the same way as the notifications of the category: by the bot into its channel, otherwise by the webhook. Save your changes first.</value>
+  </data>
+  <data name="DiscordTest_SentByBot" xml:space="preserve">
+    <value>Posted into {0} by the bot.</value>
+  </data>
+  <data name="DiscordTest_SentByWebhook" xml:space="preserve">
+    <value>Posted by the webhook.</value>
+  </data>
+  <data name="DiscordTest_NoChannel" xml:space="preserve">
+    <value>Not posted: there is neither a channel of the bot nor a webhook.</value>
+  </data>
+  <data name="DiscordTest_ChannelUnavailable" xml:space="preserve">
+    <value>The bot doesn't see the channel {0}. Was it deleted?</value>
+  </data>
+  <data name="DiscordTest_MissingPermissions" xml:space="preserve">
+    <value>The bot isn't allowed to post into {0}. Check the permissions of the channel.</value>
+  </data>
+  <data name="DiscordTest_WebhookInvalid" xml:space="preserve">
+    <value>Discord doesn't know the webhook. Copy its URL again.</value>
+  </data>
+  <data name="DiscordTest_Failed" xml:space="preserve">
+    <value>Failed: {0}</value>
+  </data>
+  <data name="DiscordCheckServer" xml:space="preserve">
+    <value>Check permissions and channels</value>
+  </data>
+  <data name="DiscordCheckServerText" xml:space="preserve">
+    <value>Checks the permissions of the bot, the role of linked players and the channels on the chosen Discord server, with the saved settings.</value>
+  </data>
+  <data name="DiscordCheckServerNeedsServer" xml:space="preserve">
+    <value>The bot has to be connected, and the Discord server has to be chosen and saved.</value>
+  </data>
+  <data name="DiscordCheckServerName" xml:space="preserve">
+    <value>Discord server {0}:</value>
+  </data>
+  <data name="DiscordCheckPermissionsOk" xml:space="preserve">
+    <value>The bot has all permissions which it needs.</value>
+  </data>
+  <data name="DiscordCheckPermissionsMissing" xml:space="preserve">
+    <value>The bot misses these permissions: {0}. Invite it again with the link of step 2, or give them to its role.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Assignable" xml:space="preserve">
+    <value>The bot can give the role of linked players.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Missing" xml:space="preserve">
+    <value>The role of linked players doesn't exist. Create the channels and roles.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_AboveBot" xml:space="preserve">
+    <value>The role of linked players is above the role of the bot, so the bot can't give it. Move the role of the bot above it in the role list.</value>
+  </data>
+  <data name="DiscordCheckChannelsOk" xml:space="preserve">
+    <value>Every category of notifications has a channel of the bot.</value>
+  </data>
+  <data name="DiscordCheckChannelsMissing" xml:space="preserve">
+    <value>These categories have no channel of the bot: {0}. They are only posted by a webhook.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelOk" xml:space="preserve">
+    <value>The bot shows the status in its status channel.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
+    <value>There is no status channel, so the bot doesn't show the status.</value>
+  </data>
+  <data name="DiscordPublisherActivated" xml:space="preserve">
+    <value>The Game Event Publisher is active now. On the plugins page, you choose what it publishes.</value>
+  </data>
+  <data name="DiscordPublisherSwitch" xml:space="preserve">
+    <value>Publish the events of the game (plugin Game Event Publisher)</value>
+  </data>
+  <data name="DiscordPublisherDeactivated" xml:space="preserve">
+    <value>The Game Event Publisher is inactive now, so nothing of the game is posted to Discord anymore.</value>
+  </data>
+  <data name="DiscordDefaultChannel" xml:space="preserve">
+    <value>Default: #{0}</value>
+  </data>
+  <data name="DiscordNoDefaultChannel" xml:space="preserve">
+    <value>Not posted</value>
+  </data>
+  <data name="DiscordStep4WebhookText" xml:space="preserve">
+    <value>Without the bot, each category is posted by a webhook of its channel: in Discord, open the settings of the channel, Integrations → Webhooks, create a webhook and paste its URL here. Treat it like a password.</value>
+  </data>
+  <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
+    <value>A webhook only posts a category which has no channel of the bot. With the bot, you don't need them, and can remove them.</value>
+  </data>
+  <data name="DiscordStepDone" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="DiscordStepProblem" xml:space="preserve">
+    <value>Check this</value>
+  </data>
+  <data name="DiscordUnsavedChanges" xml:space="preserve">
+    <value>There are unsaved changes. Save them first: the tests and the setup of the Discord server use the saved settings.</value>
+  </data>
+  <data name="DiscordTestAll" xml:space="preserve">
+    <value>Send test messages for enabled categories</value>
+  </data>
+  <data name="DiscordLayoutPreview" xml:space="preserve">
+    <value>What is created</value>
+  </data>
+  <data name="DiscordLayoutRoles" xml:space="preserve">
+    <value>Roles: {0}</value>
+  </data>
+  <data name="DiscordLayoutVisibleTo" xml:space="preserve">
+    <value>only visible to {0}</value>
+  </data>
+  <data name="DiscordChatBindings" xml:space="preserve">
+    <value>Bound chats</value>
+  </data>
+  <data name="DiscordChatBindingsNone" xml:space="preserve">
+    <value>No chat of a guild or an alliance is bound yet.</value>
+  </data>
+  <data name="DiscordChatBindingsNeedBot" xml:space="preserve">
+    <value>The bound chats are shown when the bot is connected.</value>
+  </data>
+  <data name="DiscordChatBindingGuild" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="DiscordChatBindingChannel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="DiscordChatBindingBoundBy" xml:space="preserve">
+    <value>Bound by</value>
+  </data>
+  <data name="DiscordChatBindingUnknownChannel" xml:space="preserve">
+    <value>unknown channel {0}</value>
+  </data>
+  <data name="DiscordChatBindingRemoved" xml:space="preserve">
+    <value>The binding was removed. The channel in Discord is kept.</value>
+  </data>
+  <data name="DiscordScope_Guild" xml:space="preserve">
+    <value>guild</value>
+  </data>
+  <data name="DiscordScope_Alliance" xml:space="preserve">
+    <value>alliance</value>
+  </data>
+  <data name="DiscordOverview" xml:space="preserve"><value>Set up Discord notifications, account linking and chat. Save and apply your changes before checking delivery.</value></data>
+  <data name="DiscordConfigurationSource" xml:space="preserve"><value>Configuration source</value></data>
+  <data name="DiscordConfigurationSourcesHint" xml:space="preserve"><value>File settings are editable here. Environment variables and other overriding sources remain managed externally; secret values are kept masked.</value></data>
+  <data name="DiscordMode" xml:space="preserve"><value>Integration mode</value></data>
+  <data name="DiscordModeBot" xml:space="preserve"><value>Discord bot — notifications, commands and chat</value></data>
+  <data name="DiscordModeWebhooks" xml:space="preserve"><value>Webhooks — notifications only</value></data>
+  <data name="DiscordModeHint" xml:space="preserve"><value>Choose the features you need. Webhook-only mode stops the bot when you save and keeps its token for later use.</value></data>
+  <data name="DiscordWebhooksModeReady" xml:space="preserve"><value>Webhooks mode: no bot connection is required. Configure destinations below.</value></data>
+  <data name="DiscordConfigured" xml:space="preserve"><value>Configured · not verified</value></data>
+  <data name="DiscordApplying" xml:space="preserve"><value>Applying changes…</value></data>
+  <data name="DiscordApplied" xml:space="preserve"><value>Settings applied. Check delivery to verify this configuration.</value></data>
+  <data name="DiscordSaveApply" xml:space="preserve"><value>Save and apply</value></data>
+  <data name="DiscordDiscardChanges" xml:space="preserve"><value>Discard changes</value></data>
+  <data name="DiscordKeepEditing" xml:space="preserve"><value>Keep editing</value></data>
+  <data name="DiscordConfirmDiscard" xml:space="preserve"><value>Discard all unsaved settings on this page?</value></data>
+  <data name="DiscordNavigationBlocked" xml:space="preserve"><value>Save or discard your changes before leaving this page.</value></data>
+  <data name="DiscordPublisherStaged" xml:space="preserve"><value>Changes to game event publishing are applied with Save and apply. Event selection is available beside each notification category.</value></data>
+  <data name="DiscordPublisherMissing" xml:space="preserve"><value>The Game Event Publisher configuration is missing. Configure it on the plugins page.</value></data>
+  <data name="DiscordSecretStaged" xml:space="preserve"><value>Leave the field empty to keep the saved token. Replacements and removals take effect when you save.</value></data>
+  <data name="DiscordProvisioningChanges" xml:space="preserve"><value>Existing channels and roles are adopted by name. Their access permissions may be updated. Nothing is deleted. Private staff channels are skipped if their required roles or permissions are missing.</value></data>
+  <data name="DiscordShowWebhookFallbacks" xml:space="preserve"><value>Show optional webhook destinations</value></data>
+  <data name="DiscordSourceEvents" xml:space="preserve"><value>Game events to publish</value></data>
+  <data name="DiscordOff" xml:space="preserve"><value>Off</value></data>
+  <data name="DiscordRouteBot" xml:space="preserve"><value>Bot → #{0}</value></data>
+  <data name="DiscordRouteWebhook" xml:space="preserve"><value>Webhook configured</value></data>
+  <data name="DiscordRouteNone" xml:space="preserve"><value>No available destination</value></data>
+  <data name="DiscordCategoryName_Events" xml:space="preserve"><value>Events</value></data>
+  <data name="DiscordCategoryName_CastleSiege" xml:space="preserve"><value>Castle Siege</value></data>
+  <data name="DiscordCategoryName_WorldNews" xml:space="preserve"><value>World news</value></data>
+  <data name="DiscordCategoryName_Notices" xml:space="preserve"><value>GM announcements</value></data>
+  <data name="DiscordCategoryName_StaffAlerts" xml:space="preserve"><value>Staff audit log</value></data>
+  <data name="DiscordDeliveryOnly" xml:space="preserve"><value>This posts a message to Discord and checks delivery only. It does not prove that game event publishing is enabled.</value></data>
+  <data name="DiscordLastChecked" xml:space="preserve"><value>Last checked: {0} (UTC)</value></data>
+  <data name="DiscordEventFilters" xml:space="preserve"><value>Boss and level milestone filters</value></data>
+  <data name="DiscordFilterHint" xml:space="preserve"><value>Enter numbers separated by commas. An empty boss list announces no boss kills; an empty milestone list announces no level milestones.</value></data>
+  <data name="DiscordChatSetup" xml:space="preserve"><value>Link your account in game, redeem the code in Discord, and select your guild-master character with /character if needed. Use /guildchat create on the main Discord server or /guildchat bind in a channel you manage on your guild’s server.</value></data>
+  <data name="DiscordForwardNormalMessages" xml:space="preserve"><value>Forward normal channel messages into the game (otherwise use /say)</value></data>
+  <data name="DiscordBindingRemovalImmediate" xml:space="preserve"><value>Unbinding applies immediately and stops forwarding chat. The Discord channel is kept.</value></data>
+  <data name="DiscordConfirmUnbind" xml:space="preserve"><value>Stop forwarding this guild or alliance chat now? The channel and its messages will be kept.</value></data>
+  <data name="DiscordUnbindChat" xml:space="preserve"><value>Unbind chat now</value></data>
+  <data name="DiscordManagedKey" xml:space="preserve"><value>Managed externally. Configuration key: {0}</value></data>
+  <data name="DiscordMinimum" xml:space="preserve"><value>Enter a value of at least {0}.</value></data>
+  <data name="DiscordSavedConnectionFailed" xml:space="preserve"><value>Settings saved, but the bot could not connect. Resolve the connection problem shown above.</value></data>
+  <data name="DiscordNotConfigured" xml:space="preserve"><value>Not configured</value></data>
+  <data name="DiscordChooseServer" xml:space="preserve"><value>Choose a Discord server</value></data>
+  <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Choose a private staff channel. GM audit messages may contain sensitive information.</value></data>
 </root>

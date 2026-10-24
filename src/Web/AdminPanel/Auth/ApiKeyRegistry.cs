@@ -53,7 +53,7 @@ public class ApiKeyRegistry
 
         return storedKey is null
             ? null
-            : new ApiKeyClient(storedKey.Name, GetEffectiveRoles(storedKey.Roles));
+            : new ApiKeyClient(storedKey.Id, storedKey.Name, GetEffectiveRoles(storedKey.Roles));
     }
 
     private static IReadOnlyList<string> GetEffectiveRoles(string? assignedRoles)

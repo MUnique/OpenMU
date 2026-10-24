@@ -138,10 +138,10 @@
   <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
     <value>Liefert vorgemerkte Belohnungen für Teilnehmer von Castle Siege aus, wenn ein Charakter das Spiel betritt.</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
-    <value>Castle Siege: Gardist</value>
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Wache des Landes der Prüfungen</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Description" xml:space="preserve">
     <value>Zeigt die Verfügbarkeit des Landes der Prüfungen und die geltende Eintrittsgebühr an.</value>
   </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
@@ -1859,5 +1859,59 @@
   </data>
   <data name="ServerAnnouncementsConfiguration_Type_Description" xml:space="preserve">
     <value>Wie die Ankündigung gezeigt wird, z. B. als goldene Nachricht in der Bildschirmmitte oder als blaue Systemnachricht.</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Gardist für die Anmeldung</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Öffnet das Anmeldefenster von Castle Siege mit dem aktuellen Status, wenn ein Spieler mit einem Gardisten auf der Karte von Castle Siege spricht.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Gardist</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Zeigt die Verfügbarkeit des Landes der Prüfungen und die geltende Eintrittsgebühr an.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Getötete Bossmonster veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Nummern der Bossmonster</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Erreichte Level-Meilensteine veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level-Meilensteine</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Meisterlevel-Meilensteine</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Discord</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung, '/discord notify letter' schaltet Direktnachrichten über Briefe ein oder aus (auch 'login' und 'friend').</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Weltchat</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht in den Weltchat, den alle Spieler aller Spielserver lesen, z.B. '/world Hallo!'. Er kann mit Discord verbunden werden.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>Gilden-, Allianz- und Weltchat veröffentlichen</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Name" xml:space="preserve">
+    <value>Hinweis auf die Chat-Brücke</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
+    <value>Teilt Spielern beim Betreten des Spiels mit, ob der Chat ihrer Gilde oder Allianz nach Discord gespiegelt wird.</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Name" xml:space="preserve">
+    <value>Discord-Integration des Clients</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
+    <value>Teilt Game-Clients, die danach fragen, mit, wie der Server mit Discord verbunden ist (Einladungslink, Rich-Presence-Anwendung, Kontoverknüpfung, gespiegelte Chats), lässt Spieler ihr Konto im Client verknüpfen und schickt ihnen in Discord geschriebene Nachrichten als solche.</value>
   </data>
 </root>

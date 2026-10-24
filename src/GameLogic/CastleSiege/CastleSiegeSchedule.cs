@@ -1,4 +1,4 @@
-// <copyright file="CastleSiegeSchedule.cs" company="MUnique">
+﻿// <copyright file="CastleSiegeSchedule.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -145,10 +145,56 @@ internal sealed class CastleSiegeSchedule
     /// </summary>
     /// <param name="state">The current state.</param>
     /// <returns>The next configured state.</returns>
+    /// <summary>
+    /// Gets the next period of a state which starts now or later, e.g. the next battle.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="utcNow">The current time, in UTC.</param>
+    /// <returns>The next period; or <c>null</c>, if the schedule doesn't contain the state.</returns>
+    public CastleSiegeStatePeriod? GetNextPeriod(CastleSiegeState state, DateTime utcNow)
+    {
+        if (!this.ContainsState(state))
+        {
+            return null;
+        }
+
+        // Calculated in the week of the server time zone, so that a change of the daylight saving time doesn't shift it.
+        utcNow = EnsureUtc(utcNow);
+        var scheduledState = this.GetScheduledState(state);
+        var weekStart = this.GetLocalWeekStart(utcNow);
+        var startUtc = this.GetStartUtc(weekStart, scheduledState);
+        if (startUtc < utcNow)
+        {
+            startUtc = this.GetStartUtc(weekStart.AddDays(7), scheduledState);
+        }
+
+        return this.CreatePeriod(state, startUtc);
+    }
+
     public CastleSiegeState GetNextState(CastleSiegeState state)
     {
         var index = this.GetStateIndex(state);
         return this._states[(index + 1) % this._states.Count].State;
+    }
+
+    /// <summary>
+    /// Gets the next scheduled start of a state after <paramref name="utcNow"/>.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="utcNow">The reference time.</param>
+    /// <returns>The next state start, or <see langword="null"/> when the schedule does not contain the state.</returns>
+    public DateTime? GetNextStateStartUtc(CastleSiegeState state, DateTime utcNow)
+    {
+        if (!this.ContainsState(state))
+        {
+            return null;
+        }
+
+        utcNow = EnsureUtc(utcNow);
+        var scheduledState = this.GetScheduledState(state);
+        var weekStart = this.GetLocalWeekStart(utcNow);
+        var startUtc = this.GetStartUtc(weekStart, scheduledState);
+        return startUtc > utcNow ? startUtc : this.GetStartUtc(weekStart.AddDays(7), scheduledState);
     }
 
     private static TimeSpan GetStartOfWeek(CastleSiegeStateScheduleEntry entry)

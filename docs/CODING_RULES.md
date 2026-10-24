@@ -277,6 +277,21 @@ database. See [Architecture](../docs-website/docs/development/architecture.md).
   separate processes. When you change such an interface, update the
   [`Dapr`](../src/Dapr) glue with it.
 
+### Admin operations and agents
+
+Implement new admin functionality in the UI independent
+`MUnique.OpenMU.Web.AdminPanel.Operations` layer; Razor pages and REST controllers
+call that layer. Expose every operation through an MCP tool with a description,
+a minimum role and read-only, destructive and idempotent annotations. Link the
+tool with `[ExposesOperation(typeof(Service), nameof(Service.OperationAsync))]`,
+or mark the operation `[NotExposedToAgents("reason")]` when it has no useful agent
+equivalent, such as a graphical editor. Update the tool in the same change when
+an operation's parameters or meaning change. The parity and tool schema tests in
+`MUnique.OpenMU.Web.Tests/Mcp` enforce this for operations in the new layer.
+Existing UI-bound operations are migrated one area at a time; this rule does not
+require a retroactive rewrite. Phase one exposes only reads: adding write tools
+also requires the authorization, audit and preview safeguards of issue #1257.
+
 ## 8. Extend through the existing seam
 
 Before adding a special case to shared code, look for the extension point that

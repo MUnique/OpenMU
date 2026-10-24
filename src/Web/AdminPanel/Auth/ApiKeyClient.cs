@@ -9,9 +9,10 @@ using System.Security.Claims;
 /// <summary>
 /// An external application which is allowed to use the public API.
 /// </summary>
+/// <param name="Id">The persistent identifier of the API key.</param>
 /// <param name="Name">The name of the client.</param>
 /// <param name="Roles">The effective roles of the client.</param>
-public record ApiKeyClient(string Name, IReadOnlyList<string> Roles)
+public record ApiKeyClient(Guid Id, string Name, IReadOnlyList<string> Roles)
 {
     /// <summary>
     /// Creates the claims of this client.
@@ -19,6 +20,7 @@ public record ApiKeyClient(string Name, IReadOnlyList<string> Roles)
     /// <returns>The claims.</returns>
     public IEnumerable<Claim> CreateClaims()
     {
+        yield return new Claim(ApiKeyAuthenticationDefaults.ClientIdClaimType, this.Id.ToString());
         yield return new Claim(ClaimTypes.Name, this.Name);
         yield return new Claim(ApiKeyAuthenticationDefaults.ClientNameClaimType, this.Name);
         foreach (var role in this.Roles)

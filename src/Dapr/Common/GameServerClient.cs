@@ -65,6 +65,10 @@ public sealed class GameServerClient : ManageableServerClient, IGameServer
         => this.PublishAsync(nameof(this.AllianceChatMessageAsync), new GuildMessageArguments(guildId, sender, message));
 
     /// <inheritdoc />
+    public ValueTask WorldChatMessageAsync(string sender, string message)
+        => this.PublishAsync(nameof(this.WorldChatMessageAsync), new WorldChatMessageArguments(sender, message));
+
+    /// <inheritdoc />
     public ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
         => this.PublishCommandAsync(nameof(this.SendGlobalMessageAsync), new MessageArguments(this.Id, message, messageType));
 

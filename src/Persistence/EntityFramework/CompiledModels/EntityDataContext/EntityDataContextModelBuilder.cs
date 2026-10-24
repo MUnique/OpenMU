@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("edc7bef9-dc99-4de0-a4d1-866509c3e38e"), entityTypeCount: 121)
+            : base(skipDetectChanges: false, modelId: new Guid("3c3d6acf-c70b-44c8-b4f1-cf06d8de08b8"), entityTypeCount: 123)
         {
         }
 
@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
         {
             var account = AccountEntityType.Create(this);
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
+            var accountExternalLink = AccountExternalLinkEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var areaSkillSettings = AreaSkillSettingsEntityType.Create(this);
             var attributeDefinition = AttributeDefinitionEntityType.Create(this);
@@ -73,6 +74,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var gensAbuse = GensAbuseEntityType.Create(this);
             var gensMember = GensMemberEntityType.Create(this);
             var guild = GuildEntityType.Create(this);
+            var guildChatBinding = GuildChatBindingEntityType.Create(this);
             var guildMember = GuildMemberEntityType.Create(this);
             var increasableItemOption = IncreasableItemOptionEntityType.Create(this);
             var item = ItemEntityType.Create(this);
@@ -143,6 +145,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AccountCharacterClassEntityType.CreateForeignKey2(accountCharacterClass, characterClass);
+            AccountExternalLinkEntityType.CreateForeignKey1(accountExternalLink, account);
             AppearanceDataEntityType.CreateForeignKey1(appearanceData, characterClass);
             AttributeDefinitionEntityType.CreateForeignKey1(attributeDefinition, gameConfiguration);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, characterClass);
@@ -243,6 +246,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensMemberEntityType.CreateForeignKey1(gensMember, character);
             GuildEntityType.CreateForeignKey1(guild, guild);
             GuildEntityType.CreateForeignKey2(guild, guild);
+            GuildChatBindingEntityType.CreateForeignKey1(guildChatBinding, guild);
             GuildMemberEntityType.CreateForeignKey1(guildMember, guild);
             GuildMemberEntityType.CreateForeignKey2(guildMember, character);
             IncreasableItemOptionEntityType.CreateForeignKey1(increasableItemOption, itemOptionDefinition);
@@ -382,6 +386,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             AccountEntityType.CreateAnnotations(account);
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
+            AccountExternalLinkEntityType.CreateAnnotations(accountExternalLink);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AreaSkillSettingsEntityType.CreateAnnotations(areaSkillSettings);
             AttributeDefinitionEntityType.CreateAnnotations(attributeDefinition);
@@ -435,6 +440,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensAbuseEntityType.CreateAnnotations(gensAbuse);
             GensMemberEntityType.CreateAnnotations(gensMember);
             GuildEntityType.CreateAnnotations(guild);
+            GuildChatBindingEntityType.CreateAnnotations(guildChatBinding);
             GuildMemberEntityType.CreateAnnotations(guildMember);
             IncreasableItemOptionEntityType.CreateAnnotations(increasableItemOption);
             ItemEntityType.CreateAnnotations(item);

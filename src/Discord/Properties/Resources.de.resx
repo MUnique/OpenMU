@@ -1,0 +1,516 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+  <data name="Bind_AllianceBound" xml:space="preserve">
+    <value>Dieser Kanal ist jetzt mit dem Chat der Allianz von {0} verbunden. Die Nachrichten werden in beide Richtungen gespiegelt.</value>
+  </data>
+  <data name="Bind_ChannelInUse" xml:space="preserve">
+    <value>Dieser Kanal ist bereits mit dem Chat einer anderen Gilde oder Allianz verbunden.</value>
+  </data>
+  <data name="Bind_Created" xml:space="preserve">
+    <value>{1} ist der Kanal für den Chat von {0}. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn sehen.</value>
+  </data>
+  <data name="Bind_GuildBound" xml:space="preserve">
+    <value>Dieser Kanal ist jetzt mit dem Chat der Gilde {0} verbunden. Die Nachrichten werden in beide Richtungen gespiegelt.</value>
+  </data>
+  <data name="Bind_HostedServerUnavailable" xml:space="preserve">
+    <value>Der Discord-Server des Spiels ist für den Bot nicht verfügbar.</value>
+  </data>
+  <data name="Bind_ManageChannelRequired" xml:space="preserve">
+    <value>Du brauchst die Berechtigung, diesen Kanal zu verwalten.</value>
+  </data>
+  <data name="Bind_ModeNotAllowed" xml:space="preserve">
+    <value>Der Serverbetreiber erlaubt diese Art der Verbindung nicht.</value>
+  </data>
+  <data name="Bind_NotAllianceMaster" xml:space="preserve">
+    <value>Nur der Meister einer Allianz kann den Chat der Allianz verbinden.</value>
+  </data>
+  <data name="Bind_NotBound" xml:space="preserve">
+    <value>Dieser Kanal ist nicht mit einem Chat des Spiels verbunden.</value>
+  </data>
+  <data name="Bind_NotGuildMaster" xml:space="preserve">
+    <value>Nur der Gildenmeister kann das. Wähle deinen Gildenmeister-Charakter mit /character.</value>
+  </data>
+  <data name="Bind_NotInChannel" xml:space="preserve">
+    <value>Verwende diesen Befehl in einem Textkanal eines Discord-Servers.</value>
+  </data>
+  <data name="Bind_ServerNotAllowed" xml:space="preserve">
+    <value>Der Serverbetreiber erlaubt keine Verbindungen auf diesem Discord-Server.</value>
+  </data>
+  <data name="Bind_Title" xml:space="preserve">
+    <value>Gildenchat</value>
+  </data>
+  <data name="Bind_TooManyMembers" xml:space="preserve">
+    <value>Discord erlaubt nur {0} Mitglieder pro Kanal, daher können nicht alle verknüpften Mitglieder den Kanal sehen.</value>
+  </data>
+  <data name="Bind_Unbound" xml:space="preserve">
+    <value>Die Verbindung dieses Kanals wurde entfernt.</value>
+  </data>
+  <data name="Bind_UseCreate" xml:space="preserve">
+    <value>Auf dem Discord-Server des Spiels verwende stattdessen /guildchat create.</value>
+  </data>
+  <data name="BossKilled_Description" xml:space="preserve">
+    <value>**{0}** hat **{1}** in {2} besiegt!</value>
+  </data>
+  <data name="BossKilled_Title" xml:space="preserve">
+    <value>Boss besiegt</value>
+  </data>
+  <data name="CastleSiege_Title" xml:space="preserve">
+    <value>Burgbelagerung</value>
+  </data>
+  <data name="CastleSiegeEndedWithoutOwner_Description" xml:space="preserve">
+    <value>Die Schlacht ist vorbei. Keine Gilde besitzt die Burg.</value>
+  </data>
+  <data name="CastleSiegeEndedWithOwner_Description" xml:space="preserve">
+    <value>Die Schlacht ist vorbei. **{0}** besitzt die Burg.</value>
+  </data>
+  <data name="CastleSiegeReady_Description" xml:space="preserve">
+    <value>Die Schlacht um die Burg beginnt {0}.</value>
+  </data>
+  <data name="CastleSiegeRegistration_Description" xml:space="preserve">
+    <value>Die Gildenanmeldung für die Burgbelagerung ist offen bis {0}.</value>
+  </data>
+  <data name="CastleSiegeStarted_Description" xml:space="preserve">
+    <value>Die Schlacht um die Burg hat begonnen! Sie endet {0}.</value>
+  </data>
+  <data name="Character_Level" xml:space="preserve">
+    <value>Level {0}</value>
+  </data>
+  <data name="Character_MasterLevel" xml:space="preserve">
+    <value>Meisterlevel {0}</value>
+  </data>
+  <data name="Character_NotFound" xml:space="preserve">
+    <value>Es gibt keinen Charakter mit dem Namen **{0}**.</value>
+  </data>
+  <data name="Character_NotOfAccount" xml:space="preserve">
+    <value>Dein Konto hat keinen Charakter namens {0}.</value>
+  </data>
+  <data name="Character_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Character_OnlineOn" xml:space="preserve">
+    <value>Online auf {0}</value>
+  </data>
+  <data name="Character_Resets" xml:space="preserve">
+    <value>Resets {0}</value>
+  </data>
+  <data name="Character_Selected" xml:space="preserve">
+    <value>Du erscheinst jetzt als **{0}**.</value>
+  </data>
+  <data name="Chat_ChatBanned" xml:space="preserve">
+    <value>Dein Chat ist gesperrt.</value>
+  </data>
+  <data name="Chat_Empty" xml:space="preserve">
+    <value>Die Nachricht ist leer.</value>
+  </data>
+  <data name="Chat_Filtered" xml:space="preserve">
+    <value>Die Nachricht ist im Spiel nicht erlaubt.</value>
+  </data>
+  <data name="Chat_NoCharacter" xml:space="preserve">
+    <value>Wähle zuerst mit /character einen Charakter deines Kontos.</value>
+  </data>
+  <data name="Chat_NotBridged" xml:space="preserve">
+    <value>Dieser Kanal ist nicht mit einem Chat des Spiels verbunden.</value>
+  </data>
+  <data name="Chat_NotMember" xml:space="preserve">
+    <value>Dein Charakter {0} ist kein Mitglied der Gilde oder Allianz dieses Kanals. Wähle mit /character einen anderen Charakter.</value>
+  </data>
+  <data name="Chat_Sent" xml:space="preserve">
+    <value>Die Nachricht wurde als {0} gesendet.</value>
+  </data>
+  <data name="Chat_Title" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Chat_TooFast" xml:space="preserve">
+    <value>Du sendest zu schnell Nachrichten. Bitte warte einen Moment.</value>
+  </data>
+  <data name="Command_Announce_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht an alle Spieler im Spiel und in den Ankündigungskanal. Für Spielleiter.</value>
+  </data>
+  <data name="Command_Announce_TextOption" xml:space="preserve">
+    <value>Der Text der Nachricht.</value>
+  </data>
+  <data name="Command_Ban_Description" xml:space="preserve">
+    <value>Sperrt das Konto eines Charakters, der online ist. Für Spielleiter.</value>
+  </data>
+  <data name="Command_Character_Description" xml:space="preserve">
+    <value>Wählt den Charakter deines Kontos, als der du erscheinst.</value>
+  </data>
+  <data name="Command_Character_NameOption" xml:space="preserve">
+    <value>Der Name des Charakters.</value>
+  </data>
+  <data name="Command_Events_Description" xml:space="preserve">
+    <value>Zeigt die Ereignisse der nächsten 24 Stunden.</value>
+  </data>
+  <data name="Command_Failed" xml:space="preserve">
+    <value>Das hat leider nicht funktioniert. Bitte versuche es später noch einmal.</value>
+  </data>
+  <data name="Command_Guild_Description" xml:space="preserve">
+    <value>Zeigt Informationen über eine Gilde.</value>
+  </data>
+  <data name="Command_Guild_GuildOption" xml:space="preserve">
+    <value>Der Name der Gilde.</value>
+  </data>
+  <data name="Command_GuildChat_Bind_Description" xml:space="preserve">
+    <value>Verbindet diesen Kanal mit dem Chat deiner Gilde oder Allianz.</value>
+  </data>
+  <data name="Command_GuildChat_Create_Description" xml:space="preserve">
+    <value>Erstellt einen Kanal für den Chat deiner Gilde oder Allianz auf dem Discord-Server des Spiels.</value>
+  </data>
+  <data name="Command_GuildChat_Description" xml:space="preserve">
+    <value>Verbindet den Chat deiner Gilde oder Allianz mit einem Discord-Kanal.</value>
+  </data>
+  <data name="Command_GuildChat_ScopeAlliance" xml:space="preserve">
+    <value>Allianz</value>
+  </data>
+  <data name="Command_GuildChat_ScopeGuild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="Command_GuildChat_ScopeOption" xml:space="preserve">
+    <value>Der Chat der Gilde oder der Allianz.</value>
+  </data>
+  <data name="Command_GuildChat_Unbind_Description" xml:space="preserve">
+    <value>Entfernt die Verbindung dieses Kanals mit dem Chat des Spiels.</value>
+  </data>
+  <data name="Command_Kick_Description" xml:space="preserve">
+    <value>Trennt einen Charakter vom Spiel. Für Spielleiter.</value>
+  </data>
+  <data name="Command_Link_CodeOption" xml:space="preserve">
+    <value>Der Code, den du im Spiel mit /discord link erhalten hast.</value>
+  </data>
+  <data name="Command_Link_Description" xml:space="preserve">
+    <value>Verknüpft deinen Discord-Benutzer mit deinem Spielkonto.</value>
+  </data>
+  <data name="Command_Notify_Description" xml:space="preserve">
+    <value>Schaltet Direktnachrichten über dein Spielkonto ein oder aus.</value>
+  </data>
+  <data name="Command_Notify_EnabledOption" xml:space="preserve">
+    <value>Ein oder aus.</value>
+  </data>
+  <data name="Command_Notify_TypeOption" xml:space="preserve">
+    <value>Die Art der Direktnachrichten.</value>
+  </data>
+  <data name="Command_Online_Description" xml:space="preserve">
+    <value>Zeigt, wie viele Spieler online sind.</value>
+  </data>
+  <data name="Command_OpenMu_Description" xml:space="preserve">
+    <value>Verwaltet die OpenMU-Integration dieses Discord-Servers.</value>
+  </data>
+  <data name="Command_Rank_Description" xml:space="preserve">
+    <value>Zeigt die besten Charaktere.</value>
+  </data>
+  <data name="Command_Say_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht aus diesem Kanal in den Chat des Spiels.</value>
+  </data>
+  <data name="Command_Say_MessageOption" xml:space="preserve">
+    <value>Die Nachricht.</value>
+  </data>
+  <data name="Command_Setup_Description" xml:space="preserve">
+    <value>Erstellt die fehlenden Kanäle und Rollen dieses Discord-Servers.</value>
+  </data>
+  <data name="Command_Unlink_Description" xml:space="preserve">
+    <value>Entfernt die Verknüpfung mit deinem Spielkonto.</value>
+  </data>
+  <data name="Command_Who_CharacterOption" xml:space="preserve">
+    <value>Der Name des Charakters.</value>
+  </data>
+  <data name="Command_Who_Description" xml:space="preserve">
+    <value>Zeigt Informationen über einen Charakter.</value>
+  </data>
+  <data name="Dm_FriendOnline" xml:space="preserve">
+    <value>Dein Freund {0} ist online.</value>
+  </data>
+  <data name="Dm_LetterReceived" xml:space="preserve">
+    <value>{0} hat einen Brief von {1} erhalten: {2}</value>
+  </data>
+  <data name="Dm_LoginAttempt" xml:space="preserve">
+    <value>Jemand hat versucht, sich auf {0} in dein Konto einzuloggen, während du eingeloggt warst. Wenn du es nicht warst, ändere dein Passwort.</value>
+  </data>
+  <data name="Event_CastleSiege_Description" xml:space="preserve">
+    <value>Der Kampf um die Burg im Spiel. Gilden melden sich im Spiel dafür an.</value>
+  </data>
+  <data name="Event_CastleSiege_Name" xml:space="preserve">
+    <value>Burgbelagerung</value>
+  </data>
+  <data name="Event_Location" xml:space="preserve">
+    <value>Im Spiel</value>
+  </data>
+  <data name="Events_None" xml:space="preserve">
+    <value>In den nächsten 24 Stunden gibt es keine Ereignisse.</value>
+  </data>
+  <data name="Events_Title" xml:space="preserve">
+    <value>Kommende Ereignisse</value>
+  </data>
+  <data name="GlobalNotice_Title" xml:space="preserve">
+    <value>Ankündigung</value>
+  </data>
+  <data name="Gm_Announced" xml:space="preserve">
+    <value>Die Nachricht wurde gesendet: {0}</value>
+  </data>
+  <data name="Gm_AnnouncedPartially" xml:space="preserve">
+    <value>Die Nachricht wurde an {1} von {2} Spielservern gesendet: {0}</value>
+  </data>
+  <data name="Gm_AnnouncementTooLong" xml:space="preserve">
+    <value>Die Nachricht darf höchstens {0} Zeichen haben.</value>
+  </data>
+  <data name="Gm_Banned" xml:space="preserve">
+    <value>Das Konto von {0} wurde gesperrt.</value>
+  </data>
+  <data name="Gm_Kicked" xml:space="preserve">
+    <value>{0} wurde getrennt.</value>
+  </data>
+  <data name="Gm_NotAllowed" xml:space="preserve">
+    <value>Nur Spielleiter können diesen Befehl verwenden. Du brauchst die Rolle GM und einen mit /character gewählten Spielleiter-Charakter deines verknüpften Kontos.</value>
+  </data>
+  <data name="Gm_NotOnline" xml:space="preserve">
+    <value>{0} ist nicht online.</value>
+  </data>
+  <data name="Gm_Title" xml:space="preserve">
+    <value>Spielleiter</value>
+  </data>
+  <data name="Guild_Master" xml:space="preserve">
+    <value>Gildenmeister: {0}</value>
+  </data>
+  <data name="Guild_Members" xml:space="preserve">
+    <value>Mitglieder: {0}</value>
+  </data>
+  <data name="Guild_NotFound" xml:space="preserve">
+    <value>Es gibt keine Gilde mit dem Namen **{0}**.</value>
+  </data>
+  <data name="Guild_OnlineMembers" xml:space="preserve">
+    <value>Online: {0}</value>
+  </data>
+  <data name="InvasionEnded_Description" xml:space="preserve">
+    <value>Die Invasion ist vorbei.</value>
+  </data>
+  <data name="InvasionStarted_Description" xml:space="preserve">
+    <value>Monster fallen in {0} ein!</value>
+  </data>
+  <data name="ItemDropped_Description" xml:space="preserve">
+    <value>**{0}** hat **{1}** von {2} in {3} gefunden.</value>
+  </data>
+  <data name="ItemDropped_Title" xml:space="preserve">
+    <value>Seltener Fund</value>
+  </data>
+  <data name="ItemQuality_Ancient" xml:space="preserve">
+    <value>Antik</value>
+  </data>
+  <data name="ItemQuality_Excellent" xml:space="preserve">
+    <value>Exzellent</value>
+  </data>
+  <data name="LevelMilestone_Description" xml:space="preserve">
+    <value>**{0}** ({1}) hat Level {2} erreicht!</value>
+  </data>
+  <data name="LevelMilestone_Title" xml:space="preserve">
+    <value>Meilenstein</value>
+  </data>
+  <data name="Link_InvalidCode" xml:space="preserve">
+    <value>Der Code ist ungültig oder abgelaufen. Im Spiel erhältst du mit /discord link einen neuen.</value>
+  </data>
+  <data name="Link_Linked" xml:space="preserve">
+    <value>Dein Discord-Benutzer ist jetzt mit deinem Spielkonto verknüpft. Du erscheinst als **{0}**; einen anderen Charakter wählst du mit /character.</value>
+  </data>
+  <data name="Link_NotLinked" xml:space="preserve">
+    <value>Dein Discord-Benutzer ist nicht mit einem Spielkonto verknüpft. Im Spiel erhältst du mit /discord link einen Code, den du hier mit /link eingibst.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>Spielkonto</value>
+  </data>
+  <data name="Link_Unlinked" xml:space="preserve">
+    <value>Dein Discord-Benutzer ist nicht mehr mit einem Spielkonto verknüpft.</value>
+  </data>
+  <data name="MasterLevelMilestone_Description" xml:space="preserve">
+    <value>**{0}** ({1}) hat Meisterlevel {2} erreicht!</value>
+  </data>
+  <data name="MiniGameEntranceOpened_Description" xml:space="preserve">
+    <value>Der Eingang schließt {0}.</value>
+  </data>
+  <data name="MiniGameEntranceOpened_Title" xml:space="preserve">
+    <value>{0} öffnet</value>
+  </data>
+  <data name="MiniGameWon_Description" xml:space="preserve">
+    <value>**{0}** hat {1} gewonnen!</value>
+  </data>
+  <data name="Notify_Changed" xml:space="preserve">
+    <value>Du erhältst Direktnachrichten über: {0}</value>
+  </data>
+  <data name="Notify_None" xml:space="preserve">
+    <value>nichts</value>
+  </data>
+  <data name="Notify_Type_Friend" xml:space="preserve">
+    <value>Freunde online</value>
+  </data>
+  <data name="Notify_Type_Letter" xml:space="preserve">
+    <value>Briefe</value>
+  </data>
+  <data name="Notify_Type_Login" xml:space="preserve">
+    <value>Anmeldeversuche</value>
+  </data>
+  <data name="Online_ServerLine" xml:space="preserve">
+    <value>{0}: **{1}** / {2}</value>
+  </data>
+  <data name="Online_ServerOffline" xml:space="preserve">
+    <value>{0}: offline</value>
+  </data>
+  <data name="Online_Title" xml:space="preserve">
+    <value>Spieler online</value>
+  </data>
+  <data name="Online_Total" xml:space="preserve">
+    <value>Gesamt: **{0}** Spieler</value>
+  </data>
+  <data name="Presence" xml:space="preserve">
+    <value>{0} Spieler online</value>
+  </data>
+  <data name="Rank_Empty" xml:space="preserve">
+    <value>Es gibt noch keine Charaktere.</value>
+  </data>
+  <data name="Rank_Title" xml:space="preserve">
+    <value>Rangliste</value>
+  </data>
+  <data name="ServerFooter" xml:space="preserve">
+    <value>Server: {0}</value>
+  </data>
+  <data name="Setup_AdministratorRequired" xml:space="preserve">
+    <value>Nur Administratoren können diesen Discord-Server einrichten.</value>
+  </data>
+  <data name="Setup_Adopted" xml:space="preserve">
+    <value>**Bereits vorhanden:** {0}</value>
+  </data>
+  <data name="Setup_Created" xml:space="preserve">
+    <value>**Erstellt:** {0}</value>
+  </data>
+  <data name="Setup_Failed" xml:space="preserve">
+    <value>**Fehlgeschlagen:** {0}</value>
+  </data>
+  <data name="Setup_FailedHint" xml:space="preserve">
+    <value>Bitte prüfe, ob der Bot die Berechtigungen "Kanäle verwalten" und "Rollen verwalten" hat, und ob seine Rolle über den Rollen steht, die er verwalten soll.</value>
+  </data>
+  <data name="Setup_PublicCategories" xml:space="preserve">
+    <value>**Für alle sichtbar:** {0}, weil ihre Rollen nicht erstellt werden konnten.</value>
+  </data>
+  <data name="Setup_Title" xml:space="preserve">
+    <value>Einrichtung des Discord-Servers</value>
+  </data>
+  <data name="StaffAlert_Text" xml:space="preserve">
+    <value>{0} ({1}) verwendete /{2} {3}</value>
+  </data>
+  <data name="StaffAlert_Title" xml:space="preserve">
+    <value>Spielleiter-Befehl</value>
+  </data>
+  <data name="Status_NoServers" xml:space="preserve">
+    <value>Es läuft kein Spielserver.</value>
+  </data>
+  <data name="Status_Offline" xml:space="preserve">
+    <value>🔴 **{0}**: offline</value>
+  </data>
+  <data name="Status_Online" xml:space="preserve">
+    <value>🟢 **{0}**: {1} / {2} Spieler</value>
+  </data>
+  <data name="Status_Title" xml:space="preserve">
+    <value>Serverstatus</value>
+  </data>
+  <data name="Test_Description" xml:space="preserve">
+    <value>Dieser Kanal bekommt die Benachrichtigungen der Kategorie {0}. Diese Nachricht wurde aus dem Admin-Panel gesendet, um das zu testen.</value>
+  </data>
+  <data name="Test_Title" xml:space="preserve">
+    <value>Testnachricht</value>
+  </data>
+  <data name="Setup_PrivateRolesMissing" xml:space="preserve"><value>Private Kanäle wurden übersprungen, weil die erforderlichen Rollen fehlen.</value></data>
+</root>

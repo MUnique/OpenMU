@@ -988,4 +988,28 @@ Inventarerweiterungen: {18}</value>
   <data name="ItemBoxRequiresLevel" xml:space="preserve">
     <value>Du musst Level {0} sein, um diese Box zu öffnen.</value>
   </data>
+  <data name="DiscordLinkCode" xml:space="preserve">
+    <value>Dein Code zum Verknüpfen mit Discord ist {0}. Wähle in Discord den Befehl /link des Bots aus der Liste und gib den Code innerhalb von {1} Minuten ein.</value>
+  </data>
+  <data name="DiscordLinked" xml:space="preserve">
+    <value>Dein Konto ist mit dem Discord-Benutzer {0} verknüpft, der als {1} erscheint. Mit /discord unlink entfernst du die Verknüpfung.</value>
+  </data>
+  <data name="DiscordNotLinked" xml:space="preserve">
+    <value>Dein Konto ist nicht mit Discord verknüpft. Mit /discord link erhältst du einen Code zum Verknüpfen.</value>
+  </data>
+  <data name="DiscordUnlinked" xml:space="preserve">
+    <value>Dein Konto ist nicht mehr mit Discord verknüpft.</value>
+  </data>
+  <data name="WorldChatMessage" xml:space="preserve">
+    <value>[Welt] {0}: {1}</value>
+  </data>
+  <data name="GuildChatMirrored" xml:space="preserve">
+    <value>Der Chat deiner Gilde wird nach Discord gespiegelt. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn dort lesen und schreiben.</value>
+  </data>
+  <data name="AllianceChatMirrored" xml:space="preserve">
+    <value>Der Chat deiner Allianz wird nach Discord gespiegelt. Mitglieder, die ihren Discord-Benutzer verknüpft haben, können ihn dort lesen und schreiben.</value>
+  </data>
+  <data name="DiscordNotifications" xml:space="preserve">
+    <value>Direktnachrichten in Discord über: {0}. Mit /discord notify login, letter oder friend schaltest du sie ein oder aus.</value>
+  </data>
 </root>
