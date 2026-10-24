@@ -152,7 +152,13 @@ Linked users get the role *Linked Player* of the
 for example, open channels only for players. The bot needs the *Manage Roles*
 permission for it, and its own role has to be above *Linked Player* in the role
 list. When a link is removed, also in the admin panel, the role is removed
-again.
+again, and the player loses access to the channels of guilds. If the bot isn't
+connected or can't remove the role, it retries it later, also after the Discord
+settings were changed. The role is removed on the Discord server on which it was
+given, also when you choose another server or layout in the meantime. If the bot
+isn't in that server anymore, it logs a warning and retries it when it's added
+again. These retries are only kept in memory: after a restart of the server,
+remove a role which is left over by hand.
 
 The answers to these commands are only visible to the player who used them.
 The codes are stored as hash in the database, and every code can only be used

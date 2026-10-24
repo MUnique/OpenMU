@@ -50,6 +50,11 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
     private readonly ILogger<DiscordIntegration> _logger;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
+    /// <summary>
+    /// The pending removals of roles, which survive the replacement of the bot when the settings change.
+    /// </summary>
+    private readonly DiscordPendingRoleRevocations _pendingRoleRevocations = new();
+
     private IDisposable? _changeRegistration;
     private Instance? _instance;
     private string? _appliedSettings;
@@ -303,6 +308,7 @@ public sealed class DiscordIntegration : IManageableServer, IGameEventListener, 
             services.AddSingleton(serviceType, _ => this._hostServices.GetRequiredService(serviceType));
         }
 
+        services.AddSingleton(this._pendingRoleRevocations);
         services.AddDiscord(settings, this._getServerTimeZone);
         var provider = services.BuildServiceProvider();
         try

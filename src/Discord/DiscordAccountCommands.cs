@@ -122,6 +122,16 @@ public sealed class DiscordAccountCommands
         }
     }
 
+    /// <summary>
+    /// Determines whether the Discord user is currently linked to an account.
+    /// </summary>
+    /// <param name="userId">The identifier of the Discord user.</param>
+    /// <returns><c>true</c>, if the user is linked; otherwise, <c>false</c>.</returns>
+    internal async ValueTask<bool> IsLinkedAsync(ulong userId)
+    {
+        return await this._linkService.GetLinkByUserAsync(Provider, userId.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false) is not null;
+    }
+
     private async ValueTask<DiscordCommandAnswer> LinkAsync(string code, ulong userId, string userName)
     {
         var userIdText = userId.ToString(CultureInfo.InvariantCulture);
