@@ -21,12 +21,12 @@ public sealed class MiniGameReadOperations(IPersistenceContextProvider persisten
     /// <summary>
     /// The maximum number of characters of a leaderboard.
     /// </summary>
-    public const int MaximumEntryCount = AdminReadResult.MaximumRows;
+    internal const int MaximumEntryCount = AdminReadResult.MaximumRows;
 
     /// <summary>
     /// The maximum number of past days of which finished games can be counted.
     /// </summary>
-    public const int MaximumDays = 3650;
+    internal const int MaximumDays = 3650;
 
     /// <summary>Reads the best characters of a mini game type, with all its levels combined.</summary>
     /// <param name="miniGameType">The type of the mini game; <c>null</c> for the first one which has a leaderboard.</param>

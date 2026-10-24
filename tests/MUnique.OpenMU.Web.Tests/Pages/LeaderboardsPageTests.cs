@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.Tests.Pages;
 using System.Globalization;
 using System.Threading;
 using Bunit;
+using Bunit.Extensions.WaitForHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -90,19 +91,21 @@ public class LeaderboardsPageTests
     {
         var cut = this._context.Render<Leaderboards>();
         this.CompleteNextLoad("Initial");
-        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain("Initial")));
+        cut.WaitForState(() => cut.Markup.Contains("Initial", StringComparison.Ordinal));
 
         cut.Find("select").Change(nameof(Leaderboards.LeaderboardPeriod.Last30Days));
         cut.Find("select").Change(nameof(Leaderboards.LeaderboardPeriod.Last7Days));
         Assert.That(this._pendingLoads, Has.Count.EqualTo(2));
         var previousLoad = this._pendingLoads.Dequeue();
         this.CompleteNextLoad("Current");
-        cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain("Current")));
+        cut.WaitForState(() => cut.Markup.Contains("Current", StringComparison.Ordinal));
 
         previousLoad.SetResult([new MiniGameRankingSummary(Guid.NewGuid(), "Previous", null, 10, 10, 1)]);
 
-        cut.WaitForAssertion(() => Assert.That(cut.Instance.Entries.Select(e => e.CharacterName), Is.EqualTo(new[] { "Current" })));
-        Assert.That(cut.Markup, Does.Not.Contain("Previous"));
+        // The ignored result causes no render, so give it some time to show up wrongly.
+        Assert.Throws<WaitForFailedException>(() => cut.WaitForState(() => cut.Markup.Contains("Previous", StringComparison.Ordinal), TimeSpan.FromMilliseconds(500)));
+        Assert.That(cut.Instance.Entries.Select(e => e.CharacterName), Is.EqualTo(new[] { "Current" }));
+        Assert.That(cut.Markup, Does.Contain("Current"));
     }
 
     private void CompleteNextLoad(string characterName)
