@@ -37,16 +37,6 @@ public sealed partial class DiscordBot
     /// </summary>
     private const int MaximumPermissionOverwrites = 500;
 
-    /// <summary>
-    /// The permissions of the linked members of a guild in its hosted channel.
-    /// </summary>
-    private static readonly OverwritePermissions MemberPermissions = new(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow);
-
-    /// <summary>
-    /// The permissions of the linked guild master in the hosted channel of the guild. They only apply to this channel.
-    /// </summary>
-    private static readonly OverwritePermissions ModeratorPermissions = new(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow, manageMessages: PermValue.Allow);
-
     private readonly ConcurrentDictionary<ulong, DiscordChatQueue> _chatQueues = new();
 
     /// <summary>
@@ -67,8 +57,6 @@ public sealed partial class DiscordBot
 
         await channel.SendMessageAsync(text, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
     }
-
-    private static OverwritePermissions GetPermissions(ulong userId, ulong moderatorId) => userId == moderatorId ? ModeratorPermissions : MemberPermissions;
 
     private static bool IsChatCommand(string commandName) => commandName is DiscordChatCommands.SayCommandName or DiscordChatCommands.GuildChatCommandName;
 
@@ -231,14 +219,21 @@ public sealed partial class DiscordBot
         await this._hostedChannelLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            // A channel on another Discord server has to be unbound there first.
-            if (this._chatBridge.Store.Get(target.GuildId, scope) is { IsHosted: false })
+            // A channel on another Discord server, e.g. the one of the guild or the previous server of the bot, has to be unbound there first.
+            if (this._chatBridge.Store.Get(target.GuildId, scope) is { } current
+                && (!current.IsHosted || current.ExternalServerId != GuildChatBindingStore.ToText(guild.Id)))
             {
                 return this._chatCommands.CreateBindAnswer(DiscordChatBindResult.AlreadyBound, string.Empty, target, this.GetBoundChannelMention(target, scope));
             }
 
-            channel = await this.GetOrCreateHostedChannelAsync(client, guild, scope, target).ConfigureAwait(false);
+            bool created;
+            (channel, created) = await this.GetOrCreateHostedChannelAsync(client, guild, scope, target).ConfigureAwait(false);
             (bindResult, boundTarget) = await this._chatBridge.BindAsync(userId, scope, guild.Id, channel.Id, true).ConfigureAwait(false);
+            if (bindResult != DiscordChatBindResult.Success && created)
+            {
+                // E.g. the chat was bound elsewhere in the meantime. The new channel would stay empty.
+                await channel.DeleteAsync().ConfigureAwait(false);
+            }
         }
         finally
         {
@@ -259,33 +254,30 @@ public sealed partial class DiscordBot
     }
 
     /// <summary>
-    /// Gets the hosted channel of a guild or alliance: the bound one, otherwise one with its name, which isn't bound,
-    /// e.g. after the binding got lost, otherwise a new one. Only the bot can see a new channel, until the members are synchronized.
+    /// Gets the hosted channel of a guild or alliance on this Discord server: the bound one, otherwise a new one.
+    /// An existing channel which isn't bound isn't reused, even with the name of the guild, because others might see it.
+    /// Only the bot can see a new channel, until the members are synchronized.
     /// The caller holds the <see cref="_hostedChannelLock"/>.
     /// </summary>
-    private async Task<IGuildChannel> GetOrCreateHostedChannelAsync(DiscordSocketClient client, SocketGuild guild, GuildChatScope scope, GuildChatTarget target)
+    /// <returns>The channel, and if it was created.</returns>
+    private async Task<(IGuildChannel Channel, bool Created)> GetOrCreateHostedChannelAsync(DiscordSocketClient client, SocketGuild guild, GuildChatScope scope, GuildChatTarget target)
     {
         if (this._chatBridge.Store.Get(target.GuildId, scope) is { IsHosted: true } existing
+            && existing.ExternalServerId == GuildChatBindingStore.ToText(guild.Id)
             && ulong.TryParse(existing.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var existingId))
         {
             if (guild.GetTextChannel(existingId) is { } existingChannel)
             {
-                return existingChannel;
+                return (existingChannel, false);
             }
 
             // The channel was deleted while the bot wasn't connected.
             await this._chatBridge.Store.RemoveAsync(existingId, null).ConfigureAwait(false);
         }
 
-        var name = GetHostedChannelName(scope, target.GuildName);
         var categoryName = this._layout.Categories.FirstOrDefault(c => c.Key == DiscordServerLayout.GuildsCategoryKey)?.Name;
         var category = guild.CategoryChannels.FirstOrDefault(c => string.Equals(c.Name, categoryName, StringComparison.OrdinalIgnoreCase));
-        if (guild.TextChannels.FirstOrDefault(c => c.Name == name && c.CategoryId == category?.Id && this._chatBridge.Store.GetByChannel(c.Id) is null) is { } unboundChannel)
-        {
-            return unboundChannel;
-        }
-
-        return await guild.CreateTextChannelAsync(name, properties =>
+        var channel = await guild.CreateTextChannelAsync(GetHostedChannelName(scope, target.GuildName), properties =>
         {
             properties.CategoryId = category?.Id;
             properties.PermissionOverwrites = new[]
@@ -294,6 +286,7 @@ public sealed partial class DiscordBot
                 new Overwrite(client.CurrentUser.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow)),
             };
         }).ConfigureAwait(false);
+        return (channel, true);
     }
 
     /// <summary>
@@ -325,8 +318,17 @@ public sealed partial class DiscordBot
                         continue;
                     }
 
-                    channel = await this.GetOrCreateHostedChannelAsync(client, guild, GuildChatScope.Guild, target).ConfigureAwait(false);
-                    await this._chatBridge.BindHostedAsync(target, guild.Id, channel.Id).ConfigureAwait(false);
+                    (channel, var created) = await this.GetOrCreateHostedChannelAsync(client, guild, GuildChatScope.Guild, target).ConfigureAwait(false);
+                    if (!await this._chatBridge.BindHostedAsync(target, guild.Id, channel.Id).ConfigureAwait(false))
+                    {
+                        // The guild master bound the chat elsewhere while the channel was created.
+                        if (created)
+                        {
+                            await channel.DeleteAsync().ConfigureAwait(false);
+                        }
+
+                        continue;
+                    }
                 }
                 finally
                 {
@@ -511,42 +513,31 @@ public sealed partial class DiscordBot
             var currentOverwrites = channel.PermissionOverwrites
                 .Where(overwrite => overwrite.TargetType == PermissionTarget.User && overwrite.TargetId != client.CurrentUser.Id)
                 .ToDictionary(overwrite => overwrite.TargetId, overwrite => overwrite.Permissions);
-            var currentMembers = currentOverwrites.Keys.ToHashSet();
+
+            // E.g. the overwrites of @everyone and of the bot.
+            var otherOverwrites = channel.PermissionOverwrites.Count(overwrite => overwrite.TargetType != PermissionTarget.User || overwrite.TargetId == client.CurrentUser.Id);
+            var permissions = DiscordHostedChannelPermissions.Create(currentOverwrites, linkedMembers, moderatorId, MaximumPermissionOverwrites - otherOverwrites);
 
             // The removals first, so that they free overwrites for the additions.
-            foreach (var userId in currentMembers.Except(linkedMembers))
+            foreach (var userId in permissions.Removals)
             {
                 if (await client.Rest.GetUserAsync(userId).ConfigureAwait(false) is { } user)
                 {
                     await channel.RemovePermissionOverwriteAsync(user).ConfigureAwait(false);
-                    currentMembers.Remove(userId);
                 }
             }
 
-            // E.g. a former guild master, or a new one.
-            foreach (var userId in currentMembers.Where(userId => currentOverwrites[userId].AllowValue != GetPermissions(userId, moderatorId).AllowValue || currentOverwrites[userId].DenyValue != GetPermissions(userId, moderatorId).DenyValue).ToList())
+            foreach (var (userId, userPermissions) in permissions.Changes)
             {
                 if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
                 {
-                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId, moderatorId)).ConfigureAwait(false);
+                    await channel.AddPermissionOverwriteAsync(user, userPermissions).ConfigureAwait(false);
                 }
             }
 
-            // E.g. the overwrites of @everyone and of the bot.
-            var otherOverwrites = channel.PermissionOverwrites.Count(overwrite => overwrite.TargetType != PermissionTarget.User || overwrite.TargetId == client.CurrentUser.Id);
-            var freeOverwrites = MaximumPermissionOverwrites - otherOverwrites - currentMembers.Count;
-            var missingMembers = linkedMembers.Except(currentMembers).Order().ToList();
-            foreach (var userId in missingMembers.Take(Math.Max(freeOverwrites, 0)))
+            if (permissions.NotFitting.Count > 0)
             {
-                if (await client.Rest.GetGuildUserAsync(channel.GuildId, userId).ConfigureAwait(false) is { } user)
-                {
-                    await channel.AddPermissionOverwriteAsync(user, GetPermissions(userId, moderatorId)).ConfigureAwait(false);
-                }
-            }
-
-            if (missingMembers.Count > freeOverwrites)
-            {
-                this._logger.LogWarning("The Discord channel {channel} can't be opened for {count} linked members, because Discord allows only {maximum} permission overwrites per channel.", channel.Name, missingMembers.Count - freeOverwrites, MaximumPermissionOverwrites);
+                this._logger.LogWarning("The Discord channel {channel} can't be opened for {count} linked members, because Discord allows only {maximum} permission overwrites per channel.", channel.Name, permissions.NotFitting.Count, MaximumPermissionOverwrites);
                 return false;
             }
         }

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Discord.ChatBridge;
 
 using System.ComponentModel;
 using System.Globalization;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.AccountLinking;
@@ -40,6 +41,11 @@ public sealed class DiscordChatBridge
     private readonly TimeProvider _timeProvider;
     private readonly DiscordFloodGuard _floodGuard;
     private readonly PlugInManager? _plugInManager;
+
+    /// <summary>
+    /// The lock for changing the bindings, so that e.g. an automatic binding doesn't replace a binding of the guild master.
+    /// </summary>
+    private readonly SemaphoreSlim _bindingLock = new(1, 1);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordChatBridge"/> class.
@@ -277,39 +283,64 @@ public sealed class DiscordChatBridge
             return (result, null);
         }
 
-        if (this._store.GetByChannel(channelId) is { } existing
-            && (existing.GuildId != target.GuildId || existing.Scope != scope))
+        await this._bindingLock.WaitAsync().ConfigureAwait(false);
+        try
         {
-            return (DiscordChatBindResult.ChannelInUse, null);
+            if (this._store.GetByChannel(channelId) is { } existing
+                && (existing.GuildId != target.GuildId || existing.Scope != scope))
+            {
+                return (DiscordChatBindResult.ChannelInUse, null);
+            }
+
+            // Moving the chat silently to another channel could take it away from the guild, e.g. by a mistake.
+            if (this._store.Get(target.GuildId, scope) is { } current && current.ExternalChannelId != GuildChatBindingStore.ToText(channelId))
+            {
+                return (DiscordChatBindResult.AlreadyBound, target);
+            }
+
+            await this._store.SetAsync(target.GuildId, scope, serverId, channelId, isHosted, target.CharacterName, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
+        }
+        finally
+        {
+            this._bindingLock.Release();
         }
 
-        // Moving the chat silently to another channel could take it away from the guild, e.g. by a mistake.
-        if (this._store.Get(target.GuildId, scope) is { } current && current.ExternalChannelId != GuildChatBindingStore.ToText(channelId))
-        {
-            return (DiscordChatBindResult.AlreadyBound, target);
-        }
-
-        await this._store.SetAsync(target.GuildId, scope, serverId, channelId, isHosted, target.CharacterName, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
         this._logger.LogInformation("The {scope} chat of {guild} was bound to the Discord channel {channelId} by {character}.", scope, target.GuildName, channelId, target.CharacterName);
         return (DiscordChatBindResult.Success, target);
     }
 
     /// <summary>
-    /// Binds the chat of a guild to its channel on the Discord server of the game server, which the bot created for it.
+    /// Binds the chat of a guild to its channel on the Discord server of the game server, which the bot created for it,
+    /// unless the chat or the channel was bound in the meantime, e.g. by the guild master.
     /// </summary>
     /// <param name="target">The guild.</param>
     /// <param name="serverId">The identifier of the Discord server.</param>
     /// <param name="channelId">The identifier of the channel.</param>
-    /// <returns>The task.</returns>
-    public async ValueTask BindHostedAsync(GuildChatTarget target, ulong serverId, ulong channelId)
+    /// <returns><c>true</c>, if it was bound; <c>false</c>, if the chat or the channel is already bound.</returns>
+    public async ValueTask<bool> BindHostedAsync(GuildChatTarget target, ulong serverId, ulong channelId)
     {
-        await this._store.SetAsync(target.GuildId, GuildChatScope.Guild, serverId, channelId, true, target.CharacterName, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
+        await this._bindingLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if (this._store.Get(target.GuildId, GuildChatScope.Guild) is not null || this._store.GetByChannel(channelId) is not null)
+            {
+                return false;
+            }
+
+            await this._store.SetAsync(target.GuildId, GuildChatScope.Guild, serverId, channelId, true, target.CharacterName, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
+        }
+        finally
+        {
+            this._bindingLock.Release();
+        }
+
         this._logger.LogInformation("The guild chat of {guild} was bound to the hosted Discord channel {channelId}, because its guild master {character} is linked.", target.GuildName, channelId, target.CharacterName);
+        return true;
     }
 
     /// <summary>
     /// Gets the guilds which get a channel on the Discord server of the game server, because their guild master is linked
-    /// to a Discord user, and the guild chat isn't bound yet.
+    /// to a Discord user, as the selected character like for <c>/guildchat</c>, and the guild chat isn't bound yet.
     /// </summary>
     /// <returns>The guilds.</returns>
     public async ValueTask<IReadOnlyList<GuildChatTarget>> GetGuildsWithoutHostedChannelAsync()
@@ -338,7 +369,8 @@ public sealed class DiscordChatBridge
     }
 
     /// <summary>
-    /// Gets the Discord users who moderate the channels of bindings: the users who are linked to the guild masters.
+    /// Gets the Discord users who moderate the channels of bindings: the users who are linked to the guild masters,
+    /// as their selected character like for <c>/guildchat</c>.
     /// For an alliance, it's the guild master of the master guild of the alliance.
     /// </summary>
     /// <param name="bindings">The bindings.</param>
@@ -411,7 +443,16 @@ public sealed class DiscordChatBridge
             }
         }
 
-        await this._store.RemoveAsync(channelId, null).ConfigureAwait(false);
+        await this._bindingLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await this._store.RemoveAsync(channelId, null).ConfigureAwait(false);
+        }
+        finally
+        {
+            this._bindingLock.Release();
+        }
+
         this._logger.LogInformation("The binding of the Discord channel {channelId} was removed by the user {userId}.", channelId, userId);
         return DiscordChatBindResult.Success;
     }
@@ -450,22 +491,29 @@ public sealed class DiscordChatBridge
     }
 
     /// <summary>
-    /// Gets the Discord users who are linked to the accounts of characters.
+    /// Gets the Discord users who are linked as characters: their link has the character selected, and the account still owns it.
+    /// It's the same rule as for the guild master in <see cref="GetBindableTargetAsync"/>.
     /// </summary>
     /// <param name="characterNames">The names of the characters.</param>
-    /// <returns>The identifiers of the Discord users by the names of the characters, whose accounts are linked.</returns>
+    /// <returns>The identifiers of the Discord users by the names of the characters.</returns>
     private async ValueTask<IReadOnlyDictionary<string, ulong>> GetLinkedCharactersAsync(IReadOnlyCollection<string> characterNames)
     {
         using var context = this._createPlayerContext();
         var accountIds = await context.GetAccountIdsByCharacterNamesAsync(characterNames).ConfigureAwait(false);
         var links = await context.GetAccountExternalLinksAsync(Provider, accountIds.Values.Distinct().ToList()).ConfigureAwait(false);
-        var userIds = links
-            .Where(link => ulong.TryParse(link.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out _))
-            .GroupBy(link => link.AccountId)
-            .ToDictionary(group => group.Key, group => ulong.Parse(group.First().ExternalUserId!, NumberStyles.None, CultureInfo.InvariantCulture));
-        return accountIds
-            .Where(character => userIds.ContainsKey(character.Value))
-            .ToDictionary(character => character.Key, character => userIds[character.Value]);
+        var result = new Dictionary<string, ulong>();
+        foreach (var link in links)
+        {
+            if (link.CharacterName is { } characterName
+                && accountIds.TryGetValue(characterName, out var accountId)
+                && accountId == link.AccountId
+                && ulong.TryParse(link.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
+            {
+                result[characterName] = userId;
+            }
+        }
+
+        return result;
     }
 
     private async ValueTask<bool> IsMemberAsync(string characterName, GuildChatBinding binding)

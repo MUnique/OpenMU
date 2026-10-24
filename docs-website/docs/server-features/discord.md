@@ -262,7 +262,10 @@ bridge settings of the Discord page:
   in this channel). The bot keeps this up to date when users link themselves
   and every 10 status updates, e.g. for new guilds, new members and a new
   guild master. It never creates a second channel for a guild: it reuses the
-  bound channel, or an unbound channel with the name of the guild. It needs the
+  bound channel. It doesn't reuse other existing channels, even with the name of
+  the guild, because others might see them. Only the selected character counts:
+  the guild master has to select the guild master character with `/character`,
+  for the channel and for the moderation. It needs the
   *Manage Channels* and *Manage Messages* permissions for it; *Check
   permissions and channels* on the Discord page tells if one is missing. Turn
   off *Create guild channels automatically* on the Discord page

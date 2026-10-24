@@ -319,9 +319,60 @@ public class DiscordChatBridgeTest
         // Binding it to the created channel happens only once.
         await this.LinkAgainAsync("ally", "Ally", AllyUser).ConfigureAwait(false);
         var allies = (await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false)).Single();
-        await bridge.BindHostedAsync(allies, ServerId, ChannelId + 5).ConfigureAwait(false);
+        Assert.That(await bridge.BindHostedAsync(allies, ServerId, ChannelId + 5).ConfigureAwait(false), Is.True);
         Assert.That(bridge.Store.GetByChannel(ChannelId + 5), Is.Not.Null.And.Property(nameof(GuildChatBinding.IsHosted)).True);
         Assert.That(await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false), Is.Empty);
+        Assert.That(await bridge.BindHostedAsync(allies, ServerId, ChannelId + 6).ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that an automatic binding doesn't replace a binding which the guild master made in the meantime,
+    /// e.g. while the bot created the channel.
+    /// </summary>
+    [Test]
+    public async Task AutomaticBindingDoesNotReplaceBindingOfGuildMasterAsync()
+    {
+        var bridge = this.CreateBridge();
+        var legends = (await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false)).Single(t => t.GuildId == this._legendsId);
+
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId + 1, ChannelId, false).ConfigureAwait(false);
+        Assert.That(await bridge.BindHostedAsync(legends, ServerId, ChannelId + 5).ConfigureAwait(false), Is.False);
+
+        var binding = bridge.Store.Get(this._legendsId, GuildChatScope.Guild);
+        Assert.That(binding?.ExternalChannelId, Is.EqualTo(ChannelId.ToString(CultureInfo.InvariantCulture)));
+        Assert.That(binding?.IsHosted, Is.False);
+        Assert.That(bridge.Store.GetByChannel(ChannelId + 5), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that the guild master rights need the guild master character to be selected for the link,
+    /// like <c>/guildchat</c>, and not just any character of the same account.
+    /// </summary>
+    [Test]
+    public async Task GuildMasterRightsNeedTheGuildMasterCharacterAsync()
+    {
+        using (var context = this._persistence.CreateNewPlayerContext(new GameConfiguration()))
+        {
+            var account = await context.GetAccountByLoginNameAsync("hero").ConfigureAwait(false);
+            var alt = context.CreateNew<Character>();
+            alt.Name = "HeroAlt";
+            account!.Characters.Add(alt);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var linkService = this.CreateLinkService();
+        var userText = GuildMasterUser.ToString(CultureInfo.InvariantCulture);
+        Assert.That(await linkService.SelectCharacterAsync(AccountLinkService.DiscordProvider, userText, "HeroAlt").ConfigureAwait(false), Is.EqualTo(CharacterSelectionResult.Selected));
+
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(AllyUser, GuildChatScope.Guild, ServerId, ChannelId + 1, true).ConfigureAwait(false);
+        Assert.That((await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false)).Select(t => t.GuildId), Does.Not.Contain(this._legendsId));
+        Assert.That((await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, true).ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatBindResult.NotGuildMaster));
+
+        await linkService.SelectCharacterAsync(AccountLinkService.DiscordProvider, userText, "Hero").ConfigureAwait(false);
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, true).ConfigureAwait(false);
+        await linkService.SelectCharacterAsync(AccountLinkService.DiscordProvider, userText, "HeroAlt").ConfigureAwait(false);
+        Assert.That(await bridge.GetModeratorsAsync(bridge.Store.Bindings).ConfigureAwait(false), Does.Not.ContainKey(this._legendsId));
     }
 
     /// <summary>
