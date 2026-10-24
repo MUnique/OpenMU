@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 
@@ -17,6 +18,7 @@ public partial class ItemDefinition
     /// <summary>
     /// Gets or sets the (Sub-)Id of this item. Must be unique in an item group.
     /// </summary>
+    [ShowInTable(Order = 1)]
     public short Number { get; set; }
 
     /// <summary>
@@ -128,6 +130,7 @@ public partial class ItemDefinition
     /// <summary>
     /// Gets or sets the item Group (0-15). TODO: Might change item groups to classes, and replace this by it.
     /// </summary>
+    [ShowInTable(Order = 0)]
     public byte Group { get; set; }
 
     /// <summary>

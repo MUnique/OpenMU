@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -29,6 +30,7 @@ public partial class GameMapDefinition
     /// <remarks>
     /// This number is identifying the map on the client.
     /// </remarks>
+    [ShowInTable]
     public short Number { get; set; }
 
     /// <summary>
