@@ -98,6 +98,106 @@ internal class NewDatabaseUpdatesTest
     }
 
     /// <summary>
+    /// An update runs after the update it depends on, also when its own date is earlier.
+    /// </summary>
+    [Test]
+    public async Task DependencyRunsFirstWhateverTheDatesAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var dependency = Configured("dependency", 2);
+        var dependent = Configured("dependent", 1, dependsOn: [dependency.Key]);
+
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [dependent, dependency]).ConfigureAwait(false);
+
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { "dependency", "dependent" }));
+    }
+
+    /// <summary>
+    /// An update which depends on an update that isn't there can't be installed.
+    /// </summary>
+    [Test]
+    public void MissingDependencyIsRefused()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var dependent = Configured("dependent", 1, dependsOn: [Guid.NewGuid()]);
+
+        Assert.ThrowsAsync<MissingUpdateDependencyException>(async () => await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [dependent]).ConfigureAwait(false));
+        Assert.That(MarkerNames(gameConfiguration), Is.Empty);
+    }
+
+    /// <summary>
+    /// An update which needs a higher version of its dependency than there is can't be installed; with that version,
+    /// it is.
+    /// </summary>
+    [Test]
+    public async Task MinimumVersionOfTheDependencyCountsAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var oldDependency = Configured("dependency", 1, version: 1);
+        var dependent = Configured("dependent", 2, dependsOn: [(oldDependency.Key, 2)]);
+
+        Assert.ThrowsAsync<MissingUpdateDependencyException>(async () => await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [oldDependency, dependent]).ConfigureAwait(false));
+
+        var newDependency = Configured("dependency", 1, version: 2, key: oldDependency.Key);
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [newDependency, dependent]).ConfigureAwait(false);
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { "dependency", "dependent" }));
+    }
+
+    /// <summary>
+    /// Updates which depend on each other can't be installed.
+    /// </summary>
+    [Test]
+    public void CircularDependenciesAreRefused()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var firstKey = Guid.NewGuid();
+        var secondKey = Guid.NewGuid();
+        var first = Configured("first", 1, key: firstKey, dependsOn: [secondKey]);
+        var second = Configured("second", 2, key: secondKey, dependsOn: [firstKey]);
+
+        Assert.ThrowsAsync<CircularUpdateDependencyException>(async () => await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [first, second]).ConfigureAwait(false));
+    }
+
+    /// <summary>
+    /// An optional update which would run on a new database stays pending, as on an existing database, so the operator
+    /// decides; so does a mandatory one which depends on it.
+    /// </summary>
+    [Test]
+    public async Task OptionalUpdateStaysPendingWithItsDependentsAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var optional = Configured("optional", 1, isMandatory: false);
+        var dependent = Configured("dependent", 2, dependsOn: [optional.Key]);
+        var independent = Configured("independent", 3);
+
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [optional, dependent, independent]).ConfigureAwait(false);
+
+        Assert.That(MarkerNames(gameConfiguration), Is.EqualTo(new[] { "independent" }));
+        Assert.That(await InstalledVersionAsync(context, optional.Key).ConfigureAwait(false), Is.Null);
+        Assert.That(await InstalledVersionAsync(context, dependent.Key).ConfigureAwait(false), Is.Null);
+    }
+
+    /// <summary>
+    /// An update whose changes the initialization contains is installed, optional or not, and also when it depends on
+    /// an update which stays pending.
+    /// </summary>
+    [Test]
+    public async Task UpdatesTheInitializationContainsAreInstalledAnywayAsync()
+    {
+        var (context, gameConfiguration) = CreateContext();
+        var optionalSeeding = Configured("optional seeding", 1, isMandatory: false);
+        var optionalInitialized = Configured("optional initialized", 2, isMandatory: false, runsOnNewDatabase: false);
+        var initializedDependent = Configured("initialized dependent", 3, runsOnNewDatabase: false, dependsOn: [optionalSeeding.Key]);
+
+        await NewDatabaseUpdates.InstallAsync(context, gameConfiguration, [optionalSeeding, optionalInitialized, initializedDependent]).ConfigureAwait(false);
+
+        Assert.That(MarkerNames(gameConfiguration), Is.Empty);
+        Assert.That(await InstalledVersionAsync(context, optionalInitialized.Key).ConfigureAwait(false), Is.EqualTo(1));
+        Assert.That(await InstalledVersionAsync(context, initializedDependent.Key).ConfigureAwait(false), Is.EqualTo(1));
+        Assert.That(await InstalledVersionAsync(context, optionalSeeding.Key).ConfigureAwait(false), Is.Null);
+    }
+
+    /// <summary>
     /// Adds the marker item of an applied test update: an item named like the update.
     /// </summary>
     private static ValueTask AddMarkerAsync(IContext context, GameConfiguration gameConfiguration, string name)
@@ -106,6 +206,15 @@ internal class NewDatabaseUpdatesTest
         marker.Name = name;
         gameConfiguration.Items.Add(marker);
         return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// An update for the dependency tests, by default a mandatory one which runs on a new database, dated on the given
+    /// day of April 2026.
+    /// </summary>
+    private static ConfiguredTestUpdatePlugIn Configured(string name, int day, int version = 1, bool isMandatory = true, bool runsOnNewDatabase = true, Guid? key = null, UpdateDependency[]? dependsOn = null)
+    {
+        return new ConfiguredTestUpdatePlugIn(key ?? Guid.NewGuid(), name, new DateTime(2026, 4, day, 0, 0, 0, DateTimeKind.Utc), version, isMandatory, runsOnNewDatabase, dependsOn ?? []);
     }
 
     private static List<string?> MarkerNames(GameConfiguration gameConfiguration)
@@ -238,6 +347,55 @@ internal class NewDatabaseUpdatesTest
             item.Name = ItemName;
             gameConfiguration.Items.Add(item);
             return ValueTask.CompletedTask;
+        }
+    }
+
+    /// <summary>
+    /// An update of the dependency tests, with its key, date, version, flags and dependencies given; applied, it adds
+    /// a marker item and its installed entry.
+    /// </summary>
+    private sealed class ConfiguredTestUpdatePlugIn : IConfigurationUpdatePlugIn
+    {
+        public ConfiguredTestUpdatePlugIn(Guid key, string name, DateTime createdAt, int version, bool isMandatory, bool runsOnNewDatabase, IEnumerable<UpdateDependency> dependsOn)
+        {
+            this.Key = key;
+            this.Name = name;
+            this.CreatedAt = createdAt;
+            this.Version = version;
+            this.IsMandatory = isMandatory;
+            this.RunsOnNewDatabase = runsOnNewDatabase;
+            this.DependsOn = dependsOn;
+        }
+
+        public Guid Key { get; }
+
+        public string DataInitializationKey => "test";
+
+        public string Name { get; }
+
+        public string Description => "An update of the dependency tests.";
+
+        public bool IsMandatory { get; }
+
+        public DateTime CreatedAt { get; }
+
+        public bool RunsOnNewDatabase { get; }
+
+        public int Version { get; }
+
+        public IEnumerable<UpdateDependency> DependsOn { get; }
+
+        public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
+        {
+            await AddMarkerAsync(context, gameConfiguration, this.Name).ConfigureAwait(false);
+            var entry = context.CreateNew<ConfigurationUpdate>();
+            entry.Key = this.Key;
+            entry.Version = this.Version;
+            entry.Name = this.Name;
+            entry.Description = this.Description;
+            entry.CreatedAt = this.CreatedAt;
+            entry.UpdatedAt = this.CreatedAt;
+            entry.InstalledAt = DateTime.UtcNow;
         }
     }
 }

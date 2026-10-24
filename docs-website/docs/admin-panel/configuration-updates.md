@@ -47,8 +47,13 @@ applied, and this page starts empty.
 
 Plugins can bring configuration updates too, for example one which adds the
 plugin's own item. Their changes are not part of OpenMU's initialization, so such
-an update declares `RunsOnNewDatabase`, and a new database applies it right away.
-On an existing database it is listed here like any other update.
+an update declares `RunsOnNewDatabase`, and a new database applies it right away,
+after the updates it depends on. On an existing database it is listed here like
+any other update.
+
+An optional update of that kind is not applied on a new database: it is listed
+here as pending, as on an existing database, so you decide whether to apply it.
+The same goes for the updates which would be applied and depend on it.
 
 ## Preconditions
 
