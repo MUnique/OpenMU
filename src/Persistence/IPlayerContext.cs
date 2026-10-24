@@ -110,6 +110,19 @@ public interface IPlayerContext : IContext
     ValueTask<AccountStatistics> GetAccountStatisticsAsync(DateTime registeredSince, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the leaderboard of the specified mini games, with the characters ordered by their total score.
+    /// </summary>
+    /// <remarks>
+    /// Characters of template and bot accounts are not included.
+    /// </remarks>
+    /// <param name="miniGameIds">The identifiers of the mini game definitions, e.g. all levels of Blood Castle.</param>
+    /// <param name="since">The optional point in time (UTC) since which finished games are counted.</param>
+    /// <param name="count">The maximum number of characters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The best characters, ordered by their total score.</returns>
+    ValueTask<IReadOnlyList<MiniGameRankingSummary>> GetMiniGameLeaderboardAsync(IReadOnlyCollection<Guid> miniGameIds, DateTime? since, int count, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the account by character name.
     /// </summary>
     /// <param name="characterName">The character name.</param>
