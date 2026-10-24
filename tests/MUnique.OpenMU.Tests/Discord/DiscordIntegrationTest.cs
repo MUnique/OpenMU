@@ -190,6 +190,27 @@ public class DiscordIntegrationTest
         }
     }
 
+    /// <summary>
+    /// Tests that a pending removal keeps the Discord server, in which the role was given, when the configured server changes.
+    /// </summary>
+    [Test]
+    public async Task PendingRoleRevocationKeepsItsDiscordServerAsync()
+    {
+        var (integration, configuration) = await StartAsync(new Dictionary<string, string?>
+        {
+            ["Discord:Bot:Token"] = "invalid",
+            ["Discord:Bot:GuildId"] = "100",
+        }).ConfigureAwait(false);
+        await using (integration.ConfigureAwait(false))
+        {
+            await integration.OnGameEventAsync(new AccountUnlinkedEvent(0, DateTime.UtcNow, AccountLinkService.DiscordProvider, "42")).ConfigureAwait(false);
+
+            configuration["Discord:Bot:GuildId"] = "200";
+            await integration.ApplySettingsAsync().ConfigureAwait(false);
+            Assert.That(integration.Bot!.PendingRoleRevocations.Entries, Is.EqualTo(new[] { new DiscordPendingRoleRevocation(42, 100) }));
+        }
+    }
+
     private static async Task<(DiscordIntegration Integration, IConfigurationRoot Configuration)> StartAsync(Dictionary<string, string?> values)
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();

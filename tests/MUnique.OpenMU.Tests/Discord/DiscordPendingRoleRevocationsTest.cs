@@ -21,23 +21,23 @@ public class DiscordPendingRoleRevocationsTest
     public async Task FailedRevocationsStayPendingAsync()
     {
         var revocations = new DiscordPendingRoleRevocations();
-        revocations.Add(1);
-        revocations.Add(2);
-        revocations.Add(2);
+        revocations.Add(1, null);
+        revocations.Add(2, null);
+        revocations.Add(2, null);
         Assert.That(revocations.Count, Is.EqualTo(2));
 
         var unavailable = await revocations.ProcessAsync(NotLinked, _ => Task.FromResult(false)).ConfigureAwait(false);
         Assert.That(unavailable, Is.Zero);
         Assert.That(revocations.Count, Is.EqualTo(2));
 
-        var partial = await revocations.ProcessAsync(NotLinked, userId => Task.FromResult(userId == 1)).ConfigureAwait(false);
+        var partial = await revocations.ProcessAsync(NotLinked, entry => Task.FromResult(entry.UserId == 1)).ConfigureAwait(false);
         Assert.That(partial, Is.EqualTo(1));
         Assert.That(revocations.Count, Is.EqualTo(1));
 
         var revoked = new List<ulong>();
-        await revocations.ProcessAsync(NotLinked, userId =>
+        await revocations.ProcessAsync(NotLinked, entry =>
         {
-            revoked.Add(userId);
+            revoked.Add(entry.UserId);
             return Task.FromResult(true);
         }).ConfigureAwait(false);
         Assert.That(revoked, Is.EqualTo(new ulong[] { 2 }));
@@ -51,7 +51,7 @@ public class DiscordPendingRoleRevocationsTest
     public async Task RelinkedUserIsNotRevokedAsync()
     {
         var revocations = new DiscordPendingRoleRevocations();
-        revocations.Add(1);
+        revocations.Add(1, null);
         await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
         var called = false;
         await revocations.ProcessAsync(NotLinked, _ =>
@@ -70,7 +70,7 @@ public class DiscordPendingRoleRevocationsTest
     public async Task LinkDuringRunningRevocationAddsRoleAfterwardsAsync()
     {
         var revocations = new DiscordPendingRoleRevocations();
-        revocations.Add(1);
+        revocations.Add(1, null);
         var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var operations = new List<string>();
@@ -112,7 +112,7 @@ public class DiscordPendingRoleRevocationsTest
     public async Task RunningRevocationDoesNotBlockOtherUsersAsync()
     {
         var revocations = new DiscordPendingRoleRevocations();
-        revocations.Add(1);
+        revocations.Add(1, null);
         var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var processing = revocations.ProcessAsync(NotLinked, async _ =>
@@ -148,9 +148,9 @@ public class DiscordPendingRoleRevocationsTest
         await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
 
         // The late unlink event.
-        revocations.Add(1);
+        revocations.Add(1, null);
         var revoked = false;
-        Func<ulong, Task<bool>> revokeAsync = _ =>
+        Func<DiscordPendingRoleRevocation, Task<bool>> revokeAsync = _ =>
         {
             revoked = true;
             return Task.FromResult(true);
@@ -162,5 +162,30 @@ public class DiscordPendingRoleRevocationsTest
         Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(true), revokeAsync).ConfigureAwait(false), Is.Zero);
         Assert.That(revoked, Is.False);
         Assert.That(revocations.Count, Is.Zero);
+    }
+
+    /// <summary>
+    /// Tests that a removal keeps its Discord server, e.g. when the configured server changed in the meantime,
+    /// and that a link removes the pending removals of the user in all servers.
+    /// </summary>
+    [Test]
+    public async Task RevocationKeepsItsDiscordServerAsync()
+    {
+        var revocations = new DiscordPendingRoleRevocations();
+        revocations.Add(1, 100);
+        revocations.Add(1, 200);
+        revocations.Add(2, 100);
+
+        var revoked = new List<DiscordPendingRoleRevocation>();
+        await revocations.ProcessAsync(NotLinked, entry =>
+        {
+            revoked.Add(entry);
+            return Task.FromResult(entry.GuildId == 200);
+        }).ConfigureAwait(false);
+        Assert.That(revoked, Is.EquivalentTo(new[] { new DiscordPendingRoleRevocation(1, 100), new DiscordPendingRoleRevocation(1, 200), new DiscordPendingRoleRevocation(2, 100) }));
+        Assert.That(revocations.Entries, Is.EquivalentTo(new[] { new DiscordPendingRoleRevocation(1, 100), new DiscordPendingRoleRevocation(2, 100) }));
+
+        await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
+        Assert.That(revocations.Entries, Is.EqualTo(new[] { new DiscordPendingRoleRevocation(2, 100) }));
     }
 }

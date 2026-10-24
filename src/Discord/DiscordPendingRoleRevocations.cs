@@ -14,24 +14,31 @@ using System.Threading.Tasks;
 /// </summary>
 /// <remarks>
 /// The users are kept in memory, so they are retried until the bot succeeds or the process ends.
+/// Every removal keeps its Discord server, so that it still applies to it when the configured server changes.
 /// The updates of the role of a user run one after another, so that an older removal can't take away the role of a newer link.
 /// The updates of different users don't wait for each other.
 /// </remarks>
 internal sealed class DiscordPendingRoleRevocations
 {
-    private readonly ConcurrentDictionary<ulong, byte> _userIds = new();
+    private readonly ConcurrentDictionary<DiscordPendingRoleRevocation, byte> _entries = new();
     private readonly Dictionary<ulong, UserLock> _locks = new();
 
     /// <summary>
-    /// Gets the number of pending users.
+    /// Gets the number of pending removals.
     /// </summary>
-    internal int Count => this._userIds.Count;
+    internal int Count => this._entries.Count;
+
+    /// <summary>
+    /// Gets the pending removals.
+    /// </summary>
+    internal IReadOnlyCollection<DiscordPendingRoleRevocation> Entries => this._entries.Keys.ToList();
 
     /// <summary>
     /// Adds a user, whose role has to be removed.
     /// </summary>
     /// <param name="userId">The identifier of the Discord user.</param>
-    internal void Add(ulong userId) => this._userIds.TryAdd(userId, 0);
+    /// <param name="guildId">The identifier of the Discord server, in which the role is removed; <c>null</c>, if it isn't known yet.</param>
+    internal void Add(ulong userId, ulong? guildId) => this._entries.TryAdd(new DiscordPendingRoleRevocation(userId, guildId), 0);
 
     /// <summary>
     /// Removes a pending removal of a user, who was linked again, and adds the role.
@@ -45,7 +52,7 @@ internal sealed class DiscordPendingRoleRevocations
         var userLock = await this.AcquireAsync(userId).ConfigureAwait(false);
         try
         {
-            this._userIds.TryRemove(userId, out _);
+            this.RemoveAll(userId);
             await addRoleAsync().ConfigureAwait(false);
         }
         finally
@@ -60,33 +67,33 @@ internal sealed class DiscordPendingRoleRevocations
     /// e.g. after the user was linked again.
     /// </summary>
     /// <param name="isLinkedAsync">Determines, if a user is currently linked; <c>null</c>, if it's unknown, e.g. because the database isn't available. Then the user stays pending.</param>
-    /// <param name="revokeAsync">Removes the role of a user and returns, if it succeeded.</param>
-    /// <returns>The number of users, for which the role was removed.</returns>
-    internal async Task<int> ProcessAsync(Func<ulong, Task<bool?>> isLinkedAsync, Func<ulong, Task<bool>> revokeAsync)
+    /// <param name="revokeAsync">Removes the role of a user in the Discord server of the removal and returns, if it succeeded.</param>
+    /// <returns>The number of removed roles.</returns>
+    internal async Task<int> ProcessAsync(Func<ulong, Task<bool?>> isLinkedAsync, Func<DiscordPendingRoleRevocation, Task<bool>> revokeAsync)
     {
         var succeeded = 0;
-        foreach (var userId in this._userIds.Keys)
+        foreach (var entry in this._entries.Keys)
         {
-            var userLock = await this.AcquireAsync(userId).ConfigureAwait(false);
+            var userLock = await this.AcquireAsync(entry.UserId).ConfigureAwait(false);
             try
             {
                 // The user might have been linked again in the meantime. A new link adds the role after it's stored,
                 // and under the same lock, so it can't happen between the check and the removal.
-                if (!this._userIds.ContainsKey(userId))
+                if (!this._entries.ContainsKey(entry))
                 {
                     continue;
                 }
 
-                switch (await isLinkedAsync(userId).ConfigureAwait(false))
+                switch (await isLinkedAsync(entry.UserId).ConfigureAwait(false))
                 {
                     case null:
                         // Unknown, so it's retried later.
                         break;
                     case true:
-                        this._userIds.TryRemove(userId, out _);
+                        this.RemoveAll(entry.UserId);
                         break;
-                    case false when await revokeAsync(userId).ConfigureAwait(false):
-                        this._userIds.TryRemove(userId, out _);
+                    case false when await revokeAsync(entry).ConfigureAwait(false):
+                        this._entries.TryRemove(entry, out _);
                         succeeded++;
                         break;
                     default:
@@ -96,11 +103,19 @@ internal sealed class DiscordPendingRoleRevocations
             }
             finally
             {
-                this.Release(userId, userLock);
+                this.Release(entry.UserId, userLock);
             }
         }
 
         return succeeded;
+    }
+
+    private void RemoveAll(ulong userId)
+    {
+        foreach (var entry in this._entries.Keys.Where(entry => entry.UserId == userId))
+        {
+            this._entries.TryRemove(entry, out _);
+        }
     }
 
     private async Task<UserLock> AcquireAsync(ulong userId)
