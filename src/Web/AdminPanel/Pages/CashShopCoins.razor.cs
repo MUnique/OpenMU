@@ -12,6 +12,8 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
@@ -46,6 +48,9 @@ public partial class CashShopCoins : ComponentBase
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    [Inject]
+    private AdminOperationExecutor Executor { get; set; } = null!;
 
     private CashShopCoinService CoinService => new(this.PersistenceContextProvider, this.GameConfigurationSource);
 
@@ -102,9 +107,17 @@ public partial class CashShopCoins : ComponentBase
         try
         {
             var user = this.AuthenticationState is { } state ? (await state.ConfigureAwait(true)).User.Identity?.Name : null;
-            var (status, _) = await this.CoinService
-                .GrantAsync(this.LoginName, this._input.CoinType, this._input.Amount, this._input.Reason, null, user)
-                .ConfigureAwait(true);
+            var status = await this.Executor.ExecuteAsync(
+                AdminRoles.CashShop,
+                "cashshop_grant",
+                new { this.LoginName, this._input.CoinType, this._input.Amount, this._input.Reason },
+                async actor =>
+                {
+                    var result = await this.CoinService.GrantAsync(this.LoginName, this._input.CoinType, this._input.Amount, this._input.Reason, null, actor.Name).ConfigureAwait(false);
+                    return result.Status;
+                },
+                default,
+                value => value is CashShopCoinGrantStatus.Created or CashShopCoinGrantStatus.AlreadyGranted).ConfigureAwait(true);
             if (status == CashShopCoinGrantStatus.Created)
             {
                 this.Logger.LogInformation("Admin {User} granted {Amount} {CoinType} to account {LoginName}.", user, this._input.Amount, this._input.CoinType, this.LoginName);

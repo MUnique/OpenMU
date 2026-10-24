@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
@@ -19,10 +21,11 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 [ApiController]
 [Route("api/accounts/{loginName}/cash-shop")]
-[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.CashShop)]
+[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.AuthenticatedCashShop)]
 public class CashShopController : ControllerBase
 {
     private readonly CashShopCoinService _coinService;
+    private readonly AdminOperationExecutor _executor;
     private readonly ILogger<CashShopController> _logger;
 
     /// <summary>
@@ -31,13 +34,16 @@ public class CashShopController : ControllerBase
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
     /// <param name="gameConfigurationSource">The game configuration source.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="executor">The shared audit executor.</param>
     public CashShopController(
         IPersistenceContextProvider persistenceContextProvider,
         IDataSource<GameConfiguration> gameConfigurationSource,
-        ILogger<CashShopController> logger)
+        ILogger<CashShopController> logger,
+        AdminOperationExecutor executor)
     {
         this._coinService = new CashShopCoinService(persistenceContextProvider, gameConfigurationSource);
         this._logger = logger;
+        this._executor = executor;
     }
 
     /// <summary>
@@ -88,9 +94,19 @@ public class CashShopController : ControllerBase
         var coinType = request.CoinType!.Value;
 
         var clientName = this.User.Identity?.Name;
-        var (status, grant) = await this._coinService
-            .GrantAsync(loginName, coinType, amount, request.Reason, request.Reference, clientName, cancellationToken)
-            .ConfigureAwait(false);
+        var result = await this._executor.ExecuteAsync(
+            AdminRoles.CashShop,
+            "cashshop_grant",
+            new { loginName, coinType = coinType.ToString(), amount, request.Reason, request.Reference },
+            async actor =>
+            {
+                var (grantStatus, createdGrant) = await this._coinService.GrantAsync(loginName, coinType, amount, request.Reason, request.Reference, actor.Name, cancellationToken).ConfigureAwait(false);
+                return new { Status = grantStatus, Grant = createdGrant };
+            },
+            cancellationToken,
+            value => value.Status is CashShopCoinGrantStatus.Created or CashShopCoinGrantStatus.AlreadyGranted).ConfigureAwait(false);
+        var status = result.Status;
+        var grant = result.Grant;
         switch (status)
         {
             case CashShopCoinGrantStatus.Created:

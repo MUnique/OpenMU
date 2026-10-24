@@ -38,9 +38,9 @@ public class OperationParityTests
             foreach (var tool in matching)
             {
                 var authorizedRoles = tool.GetCustomAttributes<AuthorizeAttribute>().SelectMany(a => (a.Roles ?? string.Empty).Split(','));
-                Assert.That(authorizedRoles.All(r => Enum.TryParse<AdminRole>(r, out var toolRole) && toolRole >= role!.Role), Is.True, tool.Name);
+                Assert.That(authorizedRoles.All(r => AdminRoles.GetEffectiveRoles(r).Contains(role!.Role)), Is.True, tool.Name);
                 Assert.That(authorizedRoles, Is.Not.Empty, tool.Name);
-                Assert.That(tool.GetCustomAttribute<McpServerToolAttribute>()!.ReadOnly, Is.True, tool.Name);
+                Assert.That(tool.GetCustomAttribute<McpServerToolAttribute>()!.ReadOnly, Is.EqualTo(role!.ReadOnly), tool.Name);
             }
         }
 

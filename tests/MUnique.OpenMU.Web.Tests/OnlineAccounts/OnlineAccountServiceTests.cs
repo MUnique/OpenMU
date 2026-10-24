@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Web.Tests.OnlineAccounts;
 
-using Moq;
 using Microsoft.Extensions.Caching.Memory;
+using Moq;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -26,7 +26,7 @@ public class OnlineAccountServiceTests
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(s => s.GetSnapshotAsync()).Returns(
             new ValueTask<Dictionary<string, byte>>(new Dictionary<string, byte> { ["bUser"] = 1, ["aUser"] = 2 }));
-        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()));
+        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()), MUnique.OpenMU.Web.Tests.Mcp.AdminOperationTestServices.CreateExecutor());
 
         var result = await service.GetAsync(0, 20);
 
@@ -44,7 +44,7 @@ public class OnlineAccountServiceTests
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(s => s.GetSnapshotAsync()).Returns(
             new ValueTask<Dictionary<string, byte>>(new Dictionary<string, byte> { ["cUser"] = 1, ["bUser"] = 1, ["aUser"] = 1 }));
-        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()));
+        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()), MUnique.OpenMU.Web.Tests.Mcp.AdminOperationTestServices.CreateExecutor());
 
         var result = await service.GetAsync(1, 1);
 

@@ -4,7 +4,11 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
+using System.IO;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>Registers UI independent admin read operations.</summary>
 public static class AdminOperationsExtensions
@@ -19,6 +23,22 @@ public static class AdminOperationsExtensions
         services.AddScoped<GuildReadOperations>();
         services.AddScoped<ConfigurationReadOperations>();
         services.AddScoped<PluginReadOperations>();
+        services.TryAddScoped<IAdminOperationContext, UnconfiguredAdminOperationContext>();
+        services.TryAddSingleton<IAdminAuditRepository, UnconfiguredAdminAuditRepository>();
+        services.TryAddSingleton<AdminWriteSettings>();
+        services.TryAddSingleton<AdminAuditSettings>();
+        services.TryAddSingleton<AdminLogAccess>();
+        services.TryAddSingleton(new LoggingConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")));
+        services.AddScoped<AdminOperationExecutor>();
+        services.AddScoped<ServerWriteOperations>();
+        services.AddScoped<PlayerWriteOperations>();
+        services.AddScoped<AccountWriteOperations>();
+        services.AddScoped<CashShopOperations>();
+        services.AddScoped<CastleSiegeOperations>();
+        services.AddScoped<LogOperations>();
+        services.AddScoped<AuditReadOperations>();
+        services.AddScoped<CashShopCoinService>();
+        services.AddScoped<CastleSiegeManagementService>();
         return services;
     }
 }

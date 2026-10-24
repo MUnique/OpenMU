@@ -69,7 +69,7 @@ public static class WebApplicationExtensions
             AdminPanelEnvironment.IsGrafanaAvailable = builder.Configuration.IsOtlpExportConfigured();
         }
 
-        services.AddControllers()
+        services.AddControllers(options => options.Filters.Add<MUnique.OpenMU.Web.AdminPanel.API.AdminOperationExceptionFilter>())
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
@@ -89,6 +89,7 @@ public static class WebApplicationExtensions
         services.AddSingleton<ConfigurationSearchIndexCache>();
         services.AddScoped<IAdminReadModel, AdminReadModel>();
         services.AddAdminReadOperations();
+        services.AddSingleton(new AdminLogAccess { LocalFilesAvailable = includeMapApp });
         services.AddSingleton<SetupService>();
         services.AddSingleton(new LoggingConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")));
         services.AddSingleton(provider => new DiscordConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"), provider.GetRequiredService<IConfiguration>()));
