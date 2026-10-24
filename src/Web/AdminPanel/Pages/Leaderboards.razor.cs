@@ -4,29 +4,27 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 
 /// <summary>
 /// The page which shows the leaderboards of the mini games.
 /// </summary>
-public partial class Leaderboards : ComponentBase
+public sealed partial class Leaderboards : ComponentBase, IDisposable
 {
-    private IReadOnlyList<MiniGameType> _miniGameTypes = [];
-    private IReadOnlyList<MiniGameLeaderboardEntry> _entries = [];
-    private MiniGameType _selectedType;
+    private MiniGameType? _selectedType;
     private LeaderboardPeriod _period = LeaderboardPeriod.AllTime;
-    private bool _isLoading = true;
+    private CancellationTokenSource? _loadCancellation;
 
     /// <summary>
     /// The period of the finished games which are counted.
     /// </summary>
-    private enum LeaderboardPeriod
+    internal enum LeaderboardPeriod
     {
         /// <summary>
         /// All games are counted.
@@ -44,11 +42,23 @@ public partial class Leaderboards : ComponentBase
         Last7Days,
     }
 
-    [Inject]
-    private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+    /// <summary>
+    /// Gets the mini game types which have a leaderboard.
+    /// </summary>
+    internal IReadOnlyList<MiniGameType> MiniGameTypes { get; private set; } = [];
+
+    /// <summary>
+    /// Gets the entries of the shown leaderboard.
+    /// </summary>
+    internal IReadOnlyList<MiniGameLeaderboardEntry> Entries { get; private set; } = [];
+
+    /// <summary>
+    /// Gets a value indicating whether a leaderboard is loading.
+    /// </summary>
+    internal bool IsLoading { get; private set; } = true;
 
     [Inject]
-    private IDataSource<GameConfiguration> GameConfigurationSource { get; set; } = null!;
+    private MiniGameReadOperations ReadOperations { get; set; } = null!;
 
     [Inject]
     private IToastService ToastService { get; set; } = null!;
@@ -56,47 +66,34 @@ public partial class Leaderboards : ComponentBase
     [Inject]
     private ILogger<Leaderboards> Logger { get; set; } = null!;
 
-    private MiniGameLeaderboardService LeaderboardService => new(this.PersistenceContextProvider, this.GameConfigurationSource);
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._loadCancellation?.Cancel();
+        this._loadCancellation?.Dispose();
+        this._loadCancellation = null;
+    }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync().ConfigureAwait(true);
-        try
-        {
-            this._miniGameTypes = await this.LeaderboardService.GetMiniGameTypesAsync().ConfigureAwait(true);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Error loading the mini game types of the leaderboards.");
-            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
-        }
-
-        if (this._miniGameTypes.Count > 0)
-        {
-            this._selectedType = this._miniGameTypes[0];
-            await this.LoadAsync().ConfigureAwait(true);
-        }
-        else
-        {
-            this._isLoading = false;
-        }
+        await this.LoadAsync().ConfigureAwait(true);
     }
 
-    private static DateTime? GetSince(LeaderboardPeriod period)
+    private static int? GetDays(LeaderboardPeriod period)
     {
         return period switch
         {
-            LeaderboardPeriod.Last7Days => DateTime.UtcNow.AddDays(-7),
-            LeaderboardPeriod.Last30Days => DateTime.UtcNow.AddDays(-30),
+            LeaderboardPeriod.Last7Days => 7,
+            LeaderboardPeriod.Last30Days => 30,
             _ => null,
         };
     }
 
     private async Task SelectTypeAsync(MiniGameType miniGameType)
     {
-        // A leaderboard which is still loading would overwrite the newly selected one when it finishes.
-        if (!this._isLoading && this._selectedType != miniGameType)
+        if (this._selectedType != miniGameType)
         {
             this._selectedType = miniGameType;
             await this.LoadAsync().ConfigureAwait(true);
@@ -105,7 +102,7 @@ public partial class Leaderboards : ComponentBase
 
     private async Task OnPeriodChangedAsync(ChangeEventArgs args)
     {
-        if (!this._isLoading && Enum.TryParse<LeaderboardPeriod>(args.Value?.ToString(), out var period) && period != this._period)
+        if (Enum.TryParse<LeaderboardPeriod>(args.Value?.ToString(), out var period) && period != this._period)
         {
             this._period = period;
             await this.LoadAsync().ConfigureAwait(true);
@@ -114,21 +111,48 @@ public partial class Leaderboards : ComponentBase
 
     private async Task LoadAsync()
     {
-        this._isLoading = true;
-        this._entries = [];
+        // A newer selection cancels the load of the previous one, so that a slow
+        // previous load can't overwrite the leaderboard of the current selection.
+        if (this._loadCancellation is { } previousCancellation)
+        {
+            await previousCancellation.CancelAsync().ConfigureAwait(true);
+            previousCancellation.Dispose();
+        }
+
+        var cancellation = new CancellationTokenSource();
+        this._loadCancellation = cancellation;
+        var miniGameType = this._selectedType;
+        var period = this._period;
+
+        this.IsLoading = true;
+        this.Entries = [];
         try
         {
-            this._entries = await this.LeaderboardService.GetLeaderboardAsync(this._selectedType, GetSince(this._period)).ConfigureAwait(true);
-            this.Logger.LogDebug("Loaded {Count} leaderboard entries of {MiniGameType} ({Period}).", this._entries.Count, this._selectedType, this._period);
+            var leaderboard = await this.ReadOperations.LeaderboardAsync(miniGameType, GetDays(period), cancellation.Token).ConfigureAwait(true);
+            if (cancellation.IsCancellationRequested)
+            {
+                return;
+            }
+
+            this.MiniGameTypes = leaderboard.AvailableTypes;
+            this._selectedType = leaderboard.MiniGameType;
+            this.Entries = leaderboard.Entries;
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+            // A newer selection is loading.
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Error loading the leaderboard of {MiniGameType}.", this._selectedType);
+            this.Logger.LogError(ex, "Error loading the leaderboard of {MiniGameType}.", miniGameType);
             this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
         }
         finally
         {
-            this._isLoading = false;
+            if (!cancellation.IsCancellationRequested)
+            {
+                this.IsLoading = false;
+            }
         }
     }
 }

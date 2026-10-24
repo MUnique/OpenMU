@@ -2,7 +2,7 @@
 
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Web.AdminPanel.Properties
-@using MUnique.OpenMU.Web.AdminPanel.Services
+@using MUnique.OpenMU.Web.AdminPanel.Operations
 
 <PageTitle>OpenMU: @Resources.Leaderboards</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Leaderboards" />
@@ -10,11 +10,11 @@
 
 <p class="text-muted">@Resources.LeaderboardsDescription</p>
 
-@if (this._isLoading && this._miniGameTypes.Count == 0)
+@if (this.IsLoading && this.MiniGameTypes.Count == 0)
 {
     <p>@Resources.Loading</p>
 }
-else if (this._miniGameTypes.Count == 0)
+else if (this.MiniGameTypes.Count == 0)
 {
     <p>@Resources.LeaderboardsNoMiniGames</p>
 }
@@ -23,7 +23,7 @@ else
     <div class="row g-2 align-items-end mb-3">
         <div class="col-auto">
             <ul class="nav nav-pills">
-                @foreach (var miniGameType in this._miniGameTypes)
+                @foreach (var miniGameType in this.MiniGameTypes)
                 {
                     <li class="nav-item">
                         <button type="button" class="nav-link @(miniGameType == this._selectedType ? "active" : string.Empty)" @onclick="() => this.SelectTypeAsync(miniGameType)">
@@ -55,7 +55,7 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var entry in this._entries)
+        @foreach (var entry in this.Entries)
         {
             <tr>
                 <td class="text-end">@entry.Rank</td>
@@ -66,10 +66,10 @@ else
                 <td class="text-end">@entry.GameCount.ToString("N0")</td>
             </tr>
         }
-        @if (this._entries.Count == 0)
+        @if (this.Entries.Count == 0)
         {
             <tr>
-                <td colspan="6" class="text-muted">@(this._isLoading ? Resources.Loading : Resources.LeaderboardNoEntries)</td>
+                <td colspan="6" class="text-muted">@(this.IsLoading ? Resources.Loading : Resources.LeaderboardNoEntries)</td>
             </tr>
         }
         </tbody>

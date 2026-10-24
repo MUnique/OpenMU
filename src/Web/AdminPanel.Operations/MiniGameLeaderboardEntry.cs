@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.AdminPanel.Services;
+namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>
 /// An entry of a mini game leaderboard.

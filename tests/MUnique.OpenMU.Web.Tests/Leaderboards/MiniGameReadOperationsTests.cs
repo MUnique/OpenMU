@@ -1,4 +1,4 @@
-// <copyright file="MiniGameLeaderboardServiceTests.cs" company="MUnique">
+// <copyright file="MiniGameReadOperationsTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,17 +11,17 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.DataModel.Statistics;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
-using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>
-/// Tests for the <see cref="MiniGameLeaderboardService"/>.
+/// Tests for the <see cref="MiniGameReadOperations"/>.
 /// </summary>
 [TestFixture]
-public class MiniGameLeaderboardServiceTests
+public class MiniGameReadOperationsTests
 {
     private InMemoryPersistenceContextProvider _persistenceContextProvider = null!;
     private Persistence.BasicModel.GameConfiguration _gameConfiguration = null!;
-    private MiniGameLeaderboardService _service = null!;
+    private MiniGameReadOperations _operations = null!;
 
     /// <summary>
     /// Sets up a game configuration with two levels of Blood Castle and one Devil Square, of which only Blood Castle saves its ranking.
@@ -42,18 +42,31 @@ public class MiniGameLeaderboardServiceTests
         gameConfigurationSource
             .Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(this._gameConfiguration);
-        this._service = new MiniGameLeaderboardService(this._persistenceContextProvider, gameConfigurationSource.Object);
+        this._operations = new MiniGameReadOperations(this._persistenceContextProvider, gameConfigurationSource.Object);
     }
 
     /// <summary>
-    /// Only the mini game types which save their ranking statistics have a leaderboard.
+    /// Only the mini game types which save their ranking statistics have a leaderboard,
+    /// and the first of them is shown when no type is requested.
     /// </summary>
     [Test]
     public async Task OnlyMiniGamesWhichSaveTheirRankingAreListedAsync()
     {
-        var types = await this._service.GetMiniGameTypesAsync().ConfigureAwait(false);
+        var leaderboard = await this._operations.LeaderboardAsync(null, null, CancellationToken.None).ConfigureAwait(false);
 
-        Assert.That(types, Is.EqualTo(new[] { MiniGameType.BloodCastle }));
+        Assert.That(leaderboard.AvailableTypes, Is.EqualTo(new[] { MiniGameType.BloodCastle }));
+        Assert.That(leaderboard.MiniGameType, Is.EqualTo(MiniGameType.BloodCastle));
+    }
+
+    /// <summary>
+    /// The number of days is validated.
+    /// </summary>
+    /// <param name="days">The invalid number of days.</param>
+    [TestCase(0)]
+    [TestCase(MiniGameReadOperations.MaximumDays + 1)]
+    public void InvalidDaysAreRejected(int days)
+    {
+        Assert.ThrowsAsync<ArgumentException>(async () => await this._operations.LeaderboardAsync(MiniGameType.BloodCastle, days, CancellationToken.None).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -81,9 +94,9 @@ public class MiniGameLeaderboardServiceTests
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        var leaderboard = await this._service.GetLeaderboardAsync(MiniGameType.BloodCastle, null).ConfigureAwait(false);
+        var leaderboard = await this._operations.LeaderboardAsync(MiniGameType.BloodCastle, 7, CancellationToken.None).ConfigureAwait(false);
 
-        Assert.That(leaderboard, Is.EqualTo(new[]
+        Assert.That(leaderboard.Entries, Is.EqualTo(new[]
         {
             new MiniGameLeaderboardEntry(1, "Knight", "Dark Knight", 350, 250, 2),
             new MiniGameLeaderboardEntry(2, "Newbie", string.Empty, 200, 200, 1),
@@ -96,9 +109,9 @@ public class MiniGameLeaderboardServiceTests
     [Test]
     public async Task UnknownMiniGameTypeHasEmptyLeaderboardAsync()
     {
-        var leaderboard = await this._service.GetLeaderboardAsync(MiniGameType.ChaosCastle, null).ConfigureAwait(false);
+        var leaderboard = await this._operations.LeaderboardAsync(MiniGameType.ChaosCastle, null, CancellationToken.None).ConfigureAwait(false);
 
-        Assert.That(leaderboard, Is.Empty);
+        Assert.That(leaderboard.Entries, Is.Empty);
     }
 
     private static void AddEntry(IContext context, Character character, MiniGameDefinition miniGame, int score)
