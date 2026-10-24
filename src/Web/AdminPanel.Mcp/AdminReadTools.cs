@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Mcp;
 
 using System.ComponentModel;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using Microsoft.AspNetCore.Authorization;
@@ -320,7 +319,7 @@ public sealed class AdminReadTools
         try
         {
             var result = await operation().ConfigureAwait(false);
-            return result is JsonObject json ? json : JsonSerializer.SerializeToNode(result, new JsonSerializerOptions(JsonSerializerDefaults.Web))!.AsObject();
+            return result is JsonObject json ? json : AdminReadResult.From(result!);
         }
         catch (ArgumentException ex)
         {

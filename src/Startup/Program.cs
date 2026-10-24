@@ -1,4 +1,4 @@
-// <copyright file="Program.cs" company="MUnique">
+﻿// <copyright file="Program.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -409,6 +409,7 @@ internal sealed class Program : IDisposable
 
         if (addAdminPanel)
         {
+            host.UseAdminMcpProtection();
             host.ConfigureAdminPanel();
             host.MapAdminMcp();
         }

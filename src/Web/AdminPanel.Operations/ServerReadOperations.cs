@@ -31,11 +31,12 @@ public sealed class ServerReadOperations(
     {
         var databaseReachable = await this.CanConnectAsync(cancellationToken).ConfigureAwait(false);
         int? pendingUpdates = databaseReachable ? await readModel.GetPendingUpdatesAsync(cancellationToken).ConfigureAwait(false) : null;
+        using var process = Process.GetCurrentProcess();
         return AdminReadResult.From(new
         {
             summary = "Current admin host and server status.",
             version = typeof(ServerReadOperations).Assembly.GetName().Version?.ToString(),
-            uptimeSeconds = (DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime()).TotalSeconds,
+            uptimeSeconds = (DateTime.UtcNow - process.StartTime.ToUniversalTime()).TotalSeconds,
             databaseReachable,
             pendingConfigurationUpdates = pendingUpdates,
             servers = servers.Servers.OrderBy(s => s.Type).ThenBy(s => s.Id).Take(AdminReadResult.MaximumRows).Select(s => new
@@ -62,10 +63,8 @@ public sealed class ServerReadOperations(
             throw new ArgumentException("New account period must be between 1 and 365 days.", nameof(newAccountDays));
         }
 
-        using var playerContext = persistence.CreateNewPlayerContext(await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false));
-        using var guildContext = persistence.CreateNewGuildContext();
-        var accounts = await playerContext.GetAccountStatisticsAsync(DateTime.UtcNow.AddDays(-newAccountDays), cancellationToken).ConfigureAwait(false);
-        var guilds = await guildContext.GetGuildStatisticsAsync(cancellationToken).ConfigureAwait(false);
+        var accounts = await this.ReadAccountStatisticsAsync(newAccountDays, cancellationToken).ConfigureAwait(false);
+        var guilds = await this.ReadGuildStatisticsAsync(cancellationToken).ConfigureAwait(false);
         return new AdminStatisticsSnapshot("Player accounts exclude bots and templates. History starts when the admin host starts.", newAccountDays, accounts, guilds, readModel.PlayerHistory);
     }
 
@@ -154,6 +153,25 @@ public sealed class ServerReadOperations(
             pendingConfigurationUpdates = pendingUpdates,
             externalAddressReachability = "not_tested",
         });
+    }
+
+    /// <summary>Loads account counts independently so the dashboard can still show guild counts on failure.</summary>
+    /// <param name="newAccountDays">The period for counting new accounts.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The account and character counts.</returns>
+    internal async ValueTask<AccountStatistics> ReadAccountStatisticsAsync(int newAccountDays, CancellationToken cancellationToken)
+    {
+        using var context = persistence.CreateNewPlayerContext(await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false));
+        return await context.GetAccountStatisticsAsync(DateTime.UtcNow.AddDays(-newAccountDays), cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Loads guild counts independently of account statistics.</summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The guild and alliance counts.</returns>
+    internal async ValueTask<GuildStatistics> ReadGuildStatisticsAsync(CancellationToken cancellationToken)
+    {
+        using var context = persistence.CreateNewGuildContext();
+        return await context.GetGuildStatisticsAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async ValueTask<bool> CanConnectAsync(CancellationToken cancellationToken)

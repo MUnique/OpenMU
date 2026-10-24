@@ -17,7 +17,7 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>Provides bounded, discoverable read access to the game configuration.</summary>
-public sealed class ConfigurationReadOperations(IPersistenceContextProvider persistence, IAdminReadModel readModel)
+public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> configurations, IAdminReadModel readModel)
 {
     // Plugin custom configurations can contain tokens and webhook URLs. They are intentionally
     // absent from generic reflection access, including nested objects and selected fields.
@@ -100,8 +100,7 @@ public sealed class ConfigurationReadOperations(IPersistenceContextProvider pers
         }
 
         var predicate = CreateFilter(modelType, field, op, value);
-        using var context = persistence.CreateNewConfigurationContext();
-        var config = await LoadConfigurationAsync(context, cancellationToken).ConfigureAwait(false);
+        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         var matches = GameConfigurationHelper.Enumerables[modelType](config).Cast<object>().Where(predicate).OrderBy(o => o.GetId()).ToList();
         var items = matches.Skip(offset).Take(limit).Select(o => Project(o, modelType, 0, selected, new HashSet<object>(ReferenceEqualityComparer.Instance), new[] { 1000 })).ToArray();
         return AdminReadResult.Page(items, matches.Count, offset, limit);
@@ -122,8 +121,7 @@ public sealed class ConfigurationReadOperations(IPersistenceContextProvider pers
         }
 
         var modelType = ResolveType(type);
-        using var context = persistence.CreateNewConfigurationContext();
-        var config = await LoadConfigurationAsync(context, cancellationToken).ConfigureAwait(false);
+        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         var item = GameConfigurationHelper.Enumerables[modelType](config).Cast<object>().FirstOrDefault(o => o.GetId() == id);
         if (item is null)
         {
@@ -279,12 +277,5 @@ public sealed class ConfigurationReadOperations(IPersistenceContextProvider pers
                 : actual is null ? expected is null ? 0 : -1 : 1;
             return op switch { "eq" => comparison == 0, "ne" => comparison != 0, "gt" => comparison > 0, "ge" => comparison >= 0, "lt" => comparison < 0, "le" => comparison <= 0, _ => false };
         };
-    }
-
-    private static async ValueTask<GameConfiguration> LoadConfigurationAsync(IConfigurationContext context, CancellationToken cancellationToken)
-    {
-        var id = await context.GetDefaultGameConfigurationIdAsync(cancellationToken).ConfigureAwait(false);
-        return id is { } configId && await context.GetByIdAsync<GameConfiguration>(configId, cancellationToken).ConfigureAwait(false) is { } config
-            ? config : throw new ArgumentException("Game configuration is unavailable. Initialize the database in the admin panel first.");
     }
 }

@@ -79,6 +79,31 @@ public class IndexPageTests
         });
     }
 
+    /// <summary>A failure in one statistics source does not hide the other source.</summary>
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ShowsAvailableStatisticsWhenOtherSourceFails(bool accountFailure)
+    {
+        using var context = CreateContext(isAdministrator: false);
+        var persistence = Mock.Get(context.Services.GetRequiredService<IPersistenceContextProvider>());
+        if (accountFailure)
+        {
+            persistence.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Throws(new InvalidOperationException("Unavailable accounts"));
+        }
+        else
+        {
+            persistence.Setup(p => p.CreateNewGuildContext()).Throws(new InvalidOperationException("Unavailable guilds"));
+        }
+
+        var page = context.Render<Index>();
+        page.WaitForAssertion(() =>
+        {
+            var values = page.FindAll(".statistic-value").Select(v => v.TextContent.Trim()).ToList();
+            Assert.That(values[accountFailure ? 3 : 2], Is.EqualTo((accountFailure ? 56 : 1234).ToString("N0")));
+            Assert.That(values[accountFailure ? 2 : 3], Is.EqualTo(Resources.DashboardNotAvailable));
+        });
+    }
+
     private static BunitContext CreateContext(bool isAdministrator)
     {
         var context = new BunitContext();

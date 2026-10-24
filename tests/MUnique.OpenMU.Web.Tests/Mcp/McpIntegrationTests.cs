@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -113,6 +114,20 @@ public sealed class McpIntegrationTests : System.IDisposable
         builder.Services.AddSingleton(new PlugInManager([], Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, null, null));
         this._app = builder.Build();
         this._app.UseRouting();
+        // Model a container proxy without depending on the test runner's network interfaces.
+        this._app.Use((http, next) =>
+        {
+            if (http.Request.Headers["X-Test-Remote-IP"].FirstOrDefault() is { } address)
+            {
+                http.Connection.RemoteIpAddress = IPAddress.Parse(address);
+            }
+
+            return next(http);
+        });
+        var forwardedHeaders = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedProto };
+        forwardedHeaders.KnownProxies.Add(IPAddress.Parse("10.42.0.10"));
+        this._app.UseForwardedHeaders(forwardedHeaders);
+        this._app.UseAdminMcpProtection();
         this._app.UseAdminPanelAuth();
         this._app.MapAdminMcp();
         this._app.MapGet("/test-cookie", async (HttpContext http) =>
@@ -336,6 +351,50 @@ public sealed class McpIntegrationTests : System.IDisposable
         Assert.That(await this.PingAsync(secondKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.OK));
         Assert.That(await this.PingAsync(secondKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.TooManyRequests));
         Assert.That(await this.PingAsync(ViewerKey).ConfigureAwait(false), Is.EqualTo(HttpStatusCode.TooManyRequests));
+    }
+
+    /// <summary>Only a trusted TLS proxy can make a remote HTTP connection secure.</summary>
+    [TestCase("10.42.0.10", "https", HttpStatusCode.OK)]
+    [TestCase("10.42.0.10", "http", HttpStatusCode.Forbidden)]
+    [TestCase("10.42.0.20", "https", HttpStatusCode.Forbidden)]
+    public async Task ChecksProxyTransportBeforeAuthenticationAsync(string remoteAddress, string scheme, HttpStatusCode expected)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/mcp");
+        request.Headers.Add("X-Test-Remote-IP", remoteAddress);
+        request.Headers.Add("X-Forwarded-Proto", scheme);
+        request.Headers.Add("X-Api-Key", ViewerKey);
+        request.Headers.Accept.ParseAdd("application/json, text/event-stream");
+        request.Content = JsonContent.Create(new { jsonrpc = "2.0", id = 1, method = "ping" });
+        using var response = await this._http.SendAsync(request).ConfigureAwait(false);
+        Assert.That(response.StatusCode, Is.EqualTo(expected));
+
+        using var anonymous = new HttpRequestMessage(HttpMethod.Post, "/mcp");
+        anonymous.Content = JsonContent.Create(new { jsonrpc = "2.0", id = 1, method = "ping" });
+        anonymous.Headers.Accept.ParseAdd("application/json, text/event-stream");
+        anonymous.Headers.Add("X-Test-Remote-IP", remoteAddress);
+        anonymous.Headers.Add("X-Forwarded-Proto", scheme);
+        using var anonymousResponse = await this._http.SendAsync(anonymous).ConfigureAwait(false);
+        Assert.That(anonymousResponse.StatusCode, Is.EqualTo(expected == HttpStatusCode.OK ? HttpStatusCode.Unauthorized : HttpStatusCode.Forbidden));
+    }
+
+    /// <summary>Configuration reads use the panel's current cached owner, including its identifiers.</summary>
+    [Test]
+    public async Task ConfigurationReadsUseSharedDataSourceAsync()
+    {
+        using var context = new InMemoryPersistenceContextProvider().CreateNewContext();
+        var cached = context.CreateNew<GameConfiguration>();
+        cached.ExperienceRate = 42;
+        var source = Mock.Get(this._app.Services.GetRequiredService<IDataSource<GameConfiguration>>());
+        source.Setup(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(cached);
+        await using var client = await this.ConnectAsync().ConfigureAwait(false);
+        var query = await client.CallToolAsync("config_query", new Dictionary<string, object?> { ["type"] = "GameConfiguration", ["fields"] = "ExperienceRate" }).ConfigureAwait(false);
+        var queryData = JsonSerializer.SerializeToNode(query.StructuredContent);
+        Assert.That(queryData?["items"]?[0]?["id"]?.GetValue<string>(), Is.EqualTo(cached.GetId().ToString()));
+        Assert.That(queryData?["items"]?[0]?["ExperienceRate"]?.GetValue<float>(), Is.EqualTo(42));
+        var result = await client.CallToolAsync("config_get", new Dictionary<string, object?> { ["type"] = "GameConfiguration", ["id"] = cached.GetId() }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.Not.True);
+        Assert.That(JsonSerializer.SerializeToNode(result.StructuredContent)?["item"]?["ExperienceRate"]?.GetValue<float>(), Is.EqualTo(42));
+        source.Verify(c => c.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>()), Times.Exactly(2));
     }
 
     /// <summary>Disabled means the HTTP route is not registered.</summary>

@@ -120,13 +120,20 @@ public partial class Index : IDisposable
     {
         try
         {
-            var statistics = await this.ReadOperations.StatisticsAsync(7, default).ConfigureAwait(true);
-            this._accountStatistics = statistics.Accounts;
-            this._guildStatistics = statistics.Guilds;
+            this._accountStatistics = await this.ReadOperations.ReadAccountStatisticsAsync(7, default).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
-            this.Logger.LogWarning(ex, "Couldn't load the dashboard statistics.");
+            this.Logger.LogWarning(ex, "Couldn't load the account statistics.");
+        }
+
+        try
+        {
+            this._guildStatistics = await this.ReadOperations.ReadGuildStatisticsAsync(default).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogWarning(ex, "Couldn't load the guild statistics.");
         }
 
         this._isLoadingStatistics = false;

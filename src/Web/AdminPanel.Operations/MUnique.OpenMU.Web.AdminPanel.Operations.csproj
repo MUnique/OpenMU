@@ -9,6 +9,5 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../../GameLogic/MUnique.OpenMU.GameLogic.csproj" />
-
   </ItemGroup>
 </Project>

@@ -17,7 +17,6 @@ Set the following in the admin host's `appsettings.json` and restart it:
   "AdminPanel": {
     "Mcp": {
       "Enabled": true,
-      "ReadOnly": true,
       "RequestsPerMinute": 60,
       "MaxRequestBodyBytes": 65536
     }
@@ -28,14 +27,41 @@ Set the following in the admin host's `appsettings.json` and restart it:
 Alternatively, set `OPENMU_MCP_ENABLED=true` in the admin host's environment
 (including Docker), or `AdminPanel__Mcp__Enabled=true` through standard .NET
 configuration. Both the all-in-one host and distributed admin host support MCP.
-`ReadOnly` defaults to `true`; this first phase contains only read tools even
-when it is set to `false`.
+This first phase contains only read tools.
 
 Use HTTPS for remote clients. Direct HTTP requests are accepted only from the
-loopback interface. If a reverse proxy terminates HTTPS, configure ASP.NET Core's
-trusted forwarded headers so that the admin host recognizes the original HTTPS
-scheme. Keep the proxy's request size limit at least as strict as the host's.
-The distributed deployment's proxy exposes the endpoint at `/admin/mcp`.
+loopback interface. The host rejects remote HTTP before authentication; this
+cannot protect a key already sent over an unencrypted connection. Always use an
+HTTPS URL in the agent.
+
+### HTTPS behind the shipped nginx proxy
+
+The production nginx configurations overwrite `X-Forwarded-Proto` with `$scheme`
+in the admin location. To let ASP.NET Core recognize that HTTPS connection, add
+this environment setting to `openmu-startup` (all-in-one) or `adminPanel`
+(distributed) in your Compose override:
+
+```yaml
+services:
+  adminPanel: # Use openmu-startup in the all-in-one deployment.
+    environment:
+      OPENMU_MCP_ENABLED: "true"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+```
+
+Recreate the admin container after changing its environment. This ASP.NET Core
+setting trusts forwarded headers from any proxy, so use it only when the admin
+host is reachable exclusively through trusted proxies. Remove the admin service's
+published `8080` port from the base Compose file, or bind it to loopback, and keep
+the container network private. For other deployments, configure explicit trusted
+proxy addresses with ASP.NET Core `ForwardedHeadersOptions` instead.
+
+If you maintain a custom nginx configuration, add
+`proxy_set_header X-Forwarded-Proto $scheme;` to the admin location, overwriting any
+client-supplied value. Keep the proxy's request size limit at least as strict as
+the host's. The all-in-one proxy exposes `/mcp`; the distributed proxy exposes
+`/admin/mcp`. Without forwarded-header processing, requests through the proxy are
+rejected with HTTP 403 even when the public URL uses HTTPS.
 
 Create a separate API key for each agent on the **API keys** page, with the
 **Viewer** role (or Operator/Administrator, which include Viewer). A CashShop-only

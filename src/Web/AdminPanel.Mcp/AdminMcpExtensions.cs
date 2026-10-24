@@ -64,10 +64,10 @@ public static class AdminMcpExtensions
         return services;
     }
 
-    /// <summary>Maps the MCP endpoint after routing and admin authentication.</summary>
+    /// <summary>Checks MCP transport security and request size before admin authentication.</summary>
     /// <param name="app">The application.</param>
     /// <returns>The same application for further endpoint mapping.</returns>
-    public static WebApplication MapAdminMcp(this WebApplication app)
+    public static WebApplication UseAdminMcpProtection(this WebApplication app)
     {
         var options = app.Services.GetRequiredService<AdminMcpOptions>();
         if (!options.Enabled)
@@ -102,6 +102,19 @@ public static class AdminMcpExtensions
 
             await next(context).ConfigureAwait(false);
         });
+        return app;
+    }
+
+    /// <summary>Maps the MCP endpoint after routing and admin authentication.</summary>
+    /// <param name="app">The application.</param>
+    /// <returns>The same application for further endpoint mapping.</returns>
+    public static WebApplication MapAdminMcp(this WebApplication app)
+    {
+        if (!app.Services.GetRequiredService<AdminMcpOptions>().Enabled)
+        {
+            return app;
+        }
+
         app.UseRateLimiter();
         app.MapMcp("/mcp").RequireAuthorization(AdminPolicies.McpAccess).RequireRateLimiting(RateLimitPolicy);
         return app;

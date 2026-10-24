@@ -10,9 +10,6 @@ public sealed class AdminMcpOptions
     /// <summary>Gets or sets a value indicating whether the endpoint is enabled. Defaults to off.</summary>
     public bool Enabled { get; set; }
 
-    /// <summary>Gets or sets a value indicating whether write tools are disabled. Phase one contains only read tools, regardless of this setting.</summary>
-    public bool ReadOnly { get; set; } = true;
-
     /// <summary>Gets or sets the maximum requests per API client in each minute.</summary>
     public int RequestsPerMinute { get; set; } = 60;
 

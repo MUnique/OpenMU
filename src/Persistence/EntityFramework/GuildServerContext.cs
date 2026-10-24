@@ -1,4 +1,4 @@
-// <copyright file="GuildServerContext.cs" company="MUnique">
+﻿// <copyright file="GuildServerContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -115,6 +115,7 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             .AsNoTracking()
             .Include(g => g.RawMembers)
             .Include(g => g.RawAllianceGuild)
+            .Include(g => g.RawHostility)
             .Where(g => g.Name != null && g.Name.ToLower().Contains(term))
             .OrderBy(g => g.Name)
             .Skip(skip)
