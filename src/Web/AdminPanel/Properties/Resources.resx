@@ -2573,4 +2573,15 @@
   <data name="DiscordNotConfigured" xml:space="preserve"><value>Not configured</value></data>
   <data name="DiscordChooseServer" xml:space="preserve"><value>Choose a Discord server</value></data>
   <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Choose a private staff channel. GM audit messages may contain sensitive information.</value></data>
+  <data name="AuditHistory" xml:space="preserve"><value>Audit history</value></data>
+  <data name="AuditPendingExplanation" xml:space="preserve"><value>Pending entries have an unknown outcome. Check the current state before retrying an action.</value></data>
+  <data name="AuditUnavailable" xml:space="preserve"><value>Audit history could not be loaded. Check the admin database connection.</value></data>
+  <data name="AuditTime" xml:space="preserve"><value>Time (UTC)</value></data>
+  <data name="AuditPrincipal" xml:space="preserve"><value>Principal</value></data>
+  <data name="AuditFrontend" xml:space="preserve"><value>Front end</value></data>
+  <data name="AuditOperation" xml:space="preserve"><value>Operation</value></data>
+  <data name="AuditArguments" xml:space="preserve"><value>Arguments</value></data>
+  <data name="AuditOutcome" xml:space="preserve"><value>Outcome</value></data>
+  <data name="AuditPrevious" xml:space="preserve"><value>Previous</value></data>
+  <data name="AuditNext" xml:space="preserve"><value>Next</value></data>
 </root>

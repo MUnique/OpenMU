@@ -56,7 +56,7 @@ public class NetworkAnalyzerLinkTests
         serverProvider.Setup(provider => provider.Servers).Returns(new List<IManageableServer>());
 
         context.Services.AddSingleton<NavigationHistory>();
-        context.Services.AddSingleton(new LoggedInAccountService(Mock.Of<ILoginServer>(), serverProvider.Object, new MemoryCache(new MemoryCacheOptions())));
+        context.Services.AddSingleton(new LoggedInAccountService(Mock.Of<ILoginServer>(), serverProvider.Object, new MemoryCache(new MemoryCacheOptions()), MUnique.OpenMU.Web.Tests.Mcp.AdminOperationTestServices.CreateExecutor()));
         context.Services.AddSingleton(new OfflineAccountService(serverProvider.Object));
         context.Services.AddSingleton(new BotAccountService(serverProvider.Object, new MemoryCache(new MemoryCacheOptions())));
         context.Services.AddSingleton<IDataService<LoggedInAccount>>(

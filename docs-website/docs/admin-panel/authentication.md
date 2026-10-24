@@ -189,7 +189,7 @@ have this role implicitly.
 |---|---|
 | `GET /api/status` | Viewer |
 | `GET /api/is-online/{account}` | Viewer |
-| `GET /api/send/{server}?msg=` | Operator |
+| `POST /api/send/{server}?msg=` | Operator |
 | `POST /api/accounts` | Operator |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |

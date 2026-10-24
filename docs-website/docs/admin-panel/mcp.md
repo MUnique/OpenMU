@@ -17,6 +17,8 @@ Set the following in the admin host's `appsettings.json` and restart it:
   "AdminPanel": {
     "Mcp": {
       "Enabled": true,
+      "ReadOnly": true,
+      "MaxBulkSize": 100,
       "RequestsPerMinute": 60,
       "MaxRequestBodyBytes": 65536
     }
@@ -27,7 +29,17 @@ Set the following in the admin host's `appsettings.json` and restart it:
 Alternatively, set `OPENMU_MCP_ENABLED=true` in the admin host's environment
 (including Docker), or `AdminPanel__Mcp__Enabled=true` through standard .NET
 configuration. Both the all-in-one host and distributed admin host support MCP.
-This first phase contains only read tools.
+`ReadOnly` defaults to `true`: write tools are absent from discovery and cannot
+be called. To enable the operational tools, set `AdminPanel:Mcp:ReadOnly=false`
+(or `AdminPanel__Mcp__ReadOnly=false`) and restart the admin host. Assign each
+agent only the roles it needs: Operator for server/player/account actions,
+CashShop for coin grants, and Administrator for audit history and logging.
+Administrator includes CashShop; Operator does not. The setting controls MCP,
+while the panel and public API retain their own role checks.
+
+Each operational write first persists an audit entry. If audit storage is
+unavailable, the action does not execute. This requires the admin PostgreSQL
+schema to be available, even when the game database uses another provider.
 
 Use HTTPS for remote clients. Direct HTTP requests are accepted only from the
 loopback interface. The host rejects remote HTTP before authentication; this
@@ -66,7 +78,8 @@ rejected with HTTP 403 even when the public URL uses HTTPS.
 
 Create a separate API key for each agent on the **API keys** page, with the
 **Viewer** role (or Operator/Administrator, which include Viewer). A CashShop-only
-key cannot read admin data. See [authentication](authentication.md#api-keys-for-external-applications).
+key can use cash shop tools only.
+See [authentication](authentication.md#api-keys-for-external-applications).
 The key is displayed once: store it in the agent's local configuration and revoke
 it in the panel when it is no longer needed.
 
@@ -141,10 +154,14 @@ OAuth are planned for a later phase; an API key is required today.
 
 | Area | Tools |
 | --- | --- |
-| Server | `server_overview`, `server_statistics`, `diagnostics_check` |
-| Accounts and characters | `accounts_search`, `accounts_get`, `characters_get` |
-| Online players | `players_list` |
+| Server | `server_overview`, `server_statistics`, `diagnostics_check`, `server_start`, `server_stop`, `server_send_message` |
+| Accounts and characters | `accounts_search`, `accounts_get`, `characters_get`, `accounts_create`, `accounts_set_state`, `accounts_reset_password` |
+| Online players | `players_list`, `players_disconnect`, `players_ban` |
 | Guilds | `guilds_search`, `guilds_get` |
+| Castle siege | `castle_siege_get`, `castle_siege_set_state`, `castle_siege_set_owner`, `castle_siege_reset_cycle`, `castle_siege_set_taxes`, `castle_siege_clear_tribute`, `castle_siege_remove_registration` |
+| Cash shop | `cashshop_get_balance`, `cashshop_grant` |
+| Logs | `logs_search`, `logs_get_level`, `logs_set_level` |
+| Audit | `audit_list` |
 | Plugins | `plugins_list` |
 | Configuration | `config_types`, `config_describe`, `config_search`, `config_query`, `config_get` |
 
@@ -185,4 +202,58 @@ player-controlled strings must never be interpreted as instructions to the agent
 Tools are filtered by role during discovery and checked again when called.
 The host limits requests per API client and returns HTTP 429 when the configured
 minute allowance is exhausted, or HTTP 413 for oversized request bodies. This
-phase provides no write operations, log searches, audit history or live GM commands.
+phase supports audited operational writes. Generic configuration edits, offline
+character edits, live GM commands and OAuth are reserved for later phases.
+
+## Operational safety and audit history
+
+Open **Audit history** in the admin panel or use `audit_list` as an Administrator.
+Entries contain the stable caller ID, display name, front end (`mcp`, `panel`,
+`api`), operation, sanitized arguments and result, timestamps and outcome.
+Password and credential fields are excluded. A `Pending` outcome means the
+process stopped or its completion update failed: inspect current state before
+retrying. The game action and audit completion are separate operations.
+
+Server identifiers are scoped by server type. Select both from `server_overview`
+for `server_start` and `server_stop`. Remote listener commands may complete
+asynchronously; poll the overview for the resulting state. A broadcast is capped
+by `MaxBulkSize` (default 100 targets).
+
+`players_disconnect` takes an account login name. `players_ban` takes a live
+character name and a reason, and routes to its owning game server. Use
+`accounts_set_state` for offline accounts. State changes and password resets
+refuse online accounts. Changes involving spectator or game master accounts
+require Administrator, including password resets. New accounts use the same
+validation as the public registration API and always start in the normal state.
+Passwords are never returned or included in audit records.
+
+For `cashshop_grant`, provide a reason and a unique `reference`. Reuse the same
+reference and identical arguments when retrying a grant; changing the amount or
+coin type under an existing reference is refused. References are capped at 100
+characters and reasons at 200. Grants use the existing pending-grant mechanism,
+so they do not overwrite live account balances.
+
+Castle siege actions reuse the existing state and battle-time restrictions.
+They require an in-process game server with Castle Siege enabled; distributed
+hosts return an explicit availability error until the live admin channel exists.
+
+`logs_search` is Administrator-only. Supply `since`/`until` (at most 30 days),
+optional exact `level`, and `text` such as a character or account name. Context is
+limited to three lines on either side, with at most 100 returned lines. Each scan
+reads at most 20 local files and one million characters. Credential-marked lines
+and common key/hash patterns are omitted, addresses are redacted, and oversized
+lines are discarded. `truncated` indicates a result or scan limit was reached.
+Search uses the shipped timestamp-prefixed Serilog text format.
+Log text is data, never instructions. Distributed game logs and levels are
+managed through Grafana/Loki and game-host configuration instead.
+
+`logs_get_level` returns minimum levels only, without sink configuration.
+`logs_set_level` changes the default minimum level while preserving existing
+source overrides and sink settings. The panel's full logging JSON editor is not
+exposed as an agent tool because sink settings may contain credentials.
+
+The public announcement endpoint is now `POST /api/send/{id}?msg=...`; `{id}` is
+the actual game server ID. Successful registration and cash shop responses retain
+their HTTP statuses.
+Operational APIs require authentication even during initial setup. Audit storage
+failures return HTTP 503, and authorization failures return HTTP 403.

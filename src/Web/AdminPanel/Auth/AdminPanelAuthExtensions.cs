@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
@@ -123,10 +124,14 @@ public static class AdminPanelAuthExtensions
         services.AddSingleton<IAuthorizationHandler, AdminAccessRequirementHandler>();
         services.AddAuthorizationBuilder()
             .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddRequirements(new AdminAccessRequirement()).Build())
+            .AddPolicy(AdminPolicies.AuthenticatedOperator, policy => policy.RequireAuthenticatedUser().RequireRole(AdminRoles.Operator))
+            .AddPolicy(AdminPolicies.AuthenticatedCashShop, policy => policy.RequireAuthenticatedUser().RequireRole(AdminRoles.CashShop))
             .AddPolicy(AdminPolicies.Viewer, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Viewer)))
             .AddPolicy(AdminPolicies.Operator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Operator)))
             .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)))
             .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)));
+        services.AddHttpContextAccessor();
+        services.AddScoped<IAdminOperationContext, AdminOperationContext>();
         services.AddCascadingAuthenticationState();
         services.AddScoped<AdminAuthenticationStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<AdminAuthenticationStateProvider>());

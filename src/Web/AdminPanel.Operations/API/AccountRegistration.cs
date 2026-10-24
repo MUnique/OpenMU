@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.API;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>
-/// The data of a new account, as sent to <see cref="AccountController.RegisterAsync"/>.
+/// The data of a new account, as sent to the account registration API.
 /// </summary>
 /// <remarks>
 /// The limits match what the game client can send when logging in: the login packet holds the

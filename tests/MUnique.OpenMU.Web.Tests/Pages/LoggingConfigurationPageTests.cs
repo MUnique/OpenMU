@@ -12,10 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using MUnique.OpenMU.Web.AdminPanel;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Pages;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
+using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>
 /// Tests for the <see cref="LoggingConfiguration"/> page.
@@ -51,6 +53,7 @@ public class LoggingConfigurationPageTests
 
         this._toastService = new Mock<IToastService>();
         this._context = new BunitContext();
+        this._context.Services.AddSingleton(AdminOperationTestServices.CreateExecutor());
         this._context.Services.AddSingleton(new LoggingConfigurationService(this._filePath));
         this._context.Services.AddSingleton(this._toastService.Object);
         this._context.Services.AddSingleton(Mock.Of<ILogger<LoggingConfiguration>>());

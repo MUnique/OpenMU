@@ -8,6 +8,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -18,6 +20,9 @@ using MUnique.OpenMU.Web.Shared.Properties;
 /// </summary>
 public class AccountService : IDataService<Account>, ISupportDataChangedNotification, IDisposable
 {
+    private readonly AccountWriteOperations _operations;
+    private readonly AdminOperationExecutor _executor;
+
     private readonly IDataSource<Account> _dataSource;
     private readonly IModalService _modalService;
     private readonly Debouncer _debouncer = new(300);
@@ -29,9 +34,13 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// </summary>
     /// <param name="dataSource">The player context.</param>
     /// <param name="modalService">The modal service.</param>
-    public AccountService(IDataSource<Account> dataSource, IModalService modalService)
+    /// <param name="operations">The shared account operations.</param>
+    /// <param name="executor">The shared audit executor.</param>
+    public AccountService(IDataSource<Account> dataSource, IModalService modalService, AccountWriteOperations operations, AdminOperationExecutor executor)
     {
         this._dataSource = dataSource;
+        this._operations = operations;
+        this._executor = executor;
         this._modalService = modalService;
     }
 
@@ -101,9 +110,8 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// <param name="account">The account.</param>
     public async ValueTask BanAsync(Account account)
     {
+        await this._operations.SetStateAsync(account.LoginName, AccountState.Banned, "Admin panel ban action", default).ConfigureAwait(false);
         account.State = AccountState.Banned;
-        var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
-        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -112,9 +120,8 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// <param name="account">The account.</param>
     public async ValueTask UnbanAsync(Account account)
     {
+        await this._operations.SetStateAsync(account.LoginName, AccountState.Normal, "Admin panel unban action", default).ConfigureAwait(false);
         account.State = AccountState.Normal;
-        var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
-        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -134,17 +141,31 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
-            await context.SaveChangesAsync().ConfigureAwait(false);
-            var item = context.CreateNew<Account>();
-            item.LoginName = accountParameters.LoginName;
-            item.PasswordHash = BCrypt.Net.BCrypt.HashPassword(accountParameters.Password);
-            item.EMail = accountParameters.EMail;
-            item.State = accountParameters.State;
-            item.SecurityCode = accountParameters.SecurityCode;
-            item.RegistrationDate = DateTime.UtcNow;
-            await context.SaveChangesAsync().ConfigureAwait(false);
-            this.DataChanged?.Invoke(this, EventArgs.Empty);
+            await this._executor.ExecuteAsync(
+                AdminRoles.Operator,
+                "accounts_create",
+                new { accountParameters.LoginName, accountParameters.EMail, accountParameters.State },
+                async _ =>
+                {
+                    if (accountParameters.State is not (AccountState.Normal or AccountState.Banned or AccountState.TemporarilyBanned))
+                    {
+                        await this._executor.RequireAsync(AdminRoles.Administrator, default).ConfigureAwait(false);
+                    }
+
+                    var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
+                    await context.SaveChangesAsync().ConfigureAwait(false);
+                    var item = context.CreateNew<Account>();
+                    item.LoginName = accountParameters.LoginName;
+                    item.PasswordHash = BCrypt.Net.BCrypt.HashPassword(accountParameters.Password);
+                    item.EMail = accountParameters.EMail;
+                    item.State = accountParameters.State;
+                    item.SecurityCode = accountParameters.SecurityCode;
+                    item.RegistrationDate = DateTime.UtcNow;
+                    await context.SaveChangesAsync().ConfigureAwait(false);
+                    this.DataChanged?.Invoke(this, EventArgs.Empty);
+                    return true;
+                },
+                default).ConfigureAwait(false);
         }
     }
 

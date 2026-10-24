@@ -1,3 +1,5 @@
+@using MUnique.OpenMU.Web.AdminPanel.Operations
+@inject ServerWriteOperations Operations
 @using Microsoft.Extensions.DependencyInjection
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.Web.AdminPanel.Properties
@@ -113,7 +115,7 @@
         {
             try
             {
-                await server.SendGlobalMessageAsync(message, _messageType);
+                await this.Operations.SendMessageAsync(server.Id, message, this._messageType, default).ConfigureAwait(true);
                 sent++;
             }
             catch (Exception ex)
