@@ -20,7 +20,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// what the server computed at commit 90a571100, which the frozen copies in the <c>Legacy</c> folder keep.
 /// </summary>
 /// <remarks>
-/// Each item is checked at every item level, without its option and at the option's first and highest level,
+/// Each item is checked at every item level, without a normal option and with each of its normal options at the option's
+/// first and highest level (and with all of its fixed options),
 /// in every slot it fits, and at full durability, below each threshold of the durability factor (at 40, 25 and 10 % of it)
 /// and, for the prices, at none: as a normal item, as an excellent item with all its
 /// excellent options and with one of them, as an ancient item and as an excellent ancient item. A wearable item which
@@ -96,6 +97,14 @@ internal class ItemFormulasEqualTodayTest
         /// </summary>
         public bool IsNormal => this.ExcellentOptions.Count == 0 && this.AncientSetItem is null;
     }
+
+    /// <summary>
+    /// The normal options of an item, at a level.
+    /// </summary>
+    /// <param name="Options">The options.</param>
+    /// <param name="Level">The level of the options.</param>
+    /// <param name="Name">The name in the report.</param>
+    private sealed record OptionVariant(IReadOnlyList<IncreasableItemOption> Options, int Level, string Name);
 
     /// <summary>
     /// An option which reduces a requirement, at a level.
@@ -208,7 +217,6 @@ internal class ItemFormulasEqualTodayTest
         public void CompareItem(ItemDefinition definition)
         {
             var possibleOptions = definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions).ToList();
-            var option = possibleOptions.FirstOrDefault(o => o.OptionType == ItemOptionTypes.Option);
 
             var harmonyReductions = new List<ReductionOption>();
             foreach (var harmonyOption in possibleOptions.Where(o => o.OptionType == ItemOptionTypes.HarmonyOption && ReducesRequirement(o)))
@@ -229,20 +237,31 @@ internal class ItemFormulasEqualTodayTest
                 .Concat(possibleOptions.Where(o => o.OptionType == ItemOptionTypes.GuardianOption).Take(1))
                 .ToList();
 
-            // Level 1 of an option is its own power-up, the higher levels are in its level dependent options.
-            // A fixed option (e.g. of the Dinorant) has only level 1. The option adds its level times a factor to the
-            // strength requirement, so the first and the highest level show the factor.
-            var optionLevels = new List<int> { 0 };
-            if (option is not null)
+            // An item has one of its options at a time (e.g. a wing either recovers health or adds damage), except the
+            // fixed options (e.g. of the Dinorant), which can be on the item together.
+            // Level 1 of an option is its own power-up, the higher levels are in its level dependent options; a fixed
+            // option has only level 1. The option adds its level times a factor to the strength requirement, so the
+            // first and the highest level show the factor.
+            var options = possibleOptions.Where(o => o.OptionType == ItemOptionTypes.Option).ToList();
+            var optionVariants = new List<OptionVariant> { new([], 0, "without option") };
+            foreach (var option in options)
             {
-                optionLevels.AddRange(new[] { 1, option.LevelDependentOptions.Select(o => o.Level).DefaultIfEmpty(1).Max() }.Distinct());
+                foreach (var optionLevel in new[] { 1, option.LevelDependentOptions.Select(o => o.Level).DefaultIfEmpty(1).Max() }.Distinct())
+                {
+                    optionVariants.Add(new OptionVariant([option], optionLevel, $"option {option.Number} level {optionLevel}"));
+                }
+            }
+
+            if (options.Count > 1 && options.All(o => o.LevelDependentOptions.Count == 0))
+            {
+                optionVariants.Add(new OptionVariant(options, 1, "all fixed options"));
             }
 
             foreach (var quality in this.GetQualities(definition, possibleOptions))
             {
                 for (int level = 0; level <= definition.MaximumItemLevel; level++)
                 {
-                    foreach (var optionLevel in optionLevels)
+                    foreach (var optionVariant in optionVariants)
                     {
                         var item = new TemporaryItem { Definition = definition, Level = (byte)level };
                         foreach (var excellentOption in quality.ExcellentOptions)
@@ -255,13 +274,13 @@ internal class ItemFormulasEqualTodayTest
                             AddAncientSet(item, ancientSetItem);
                         }
 
-                        if (optionLevel > 0)
+                        foreach (var option in optionVariant.Options)
                         {
-                            item.ItemOptions.Add(new ItemOptionLink { ItemOption = option, Level = optionLevel });
+                            item.ItemOptions.Add(new ItemOptionLink { ItemOption = option, Level = optionVariant.Level });
                         }
 
-                        var itemCase = $"{definition.Group}/{definition.Number} {definition.Name.ValueInNeutralLanguage} +{level} {quality.Name}, option level {optionLevel}";
-                        this.CompareRequirementsWithReductions(item, quality.IsNormal && optionLevel == 0 ? allReductions : harmonyReductions, itemCase);
+                        var itemCase = $"{definition.Group}/{definition.Number} {definition.Name.ValueInNeutralLanguage} +{level} {quality.Name}, {optionVariant.Name}";
+                        this.CompareRequirementsWithReductions(item, quality.IsNormal && optionVariant.Options.Count == 0 ? allReductions : harmonyReductions, itemCase);
                         if (this.GetMaximumDurability(item, itemCase) is { } maximumDurability)
                         {
                             this.ComparePowerUps(item, maximumDurability, itemCase);
