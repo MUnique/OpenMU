@@ -117,8 +117,11 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTerms>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem>();
@@ -181,6 +184,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawCharacterClasses).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemLevelBonusTables).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemStatProfiles).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemSlotTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemOptionTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -244,6 +248,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<ItemOptionDefinition>().HasMany(entity => entity.RawPossibleOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionOfLevel>().HasOne(entity => entity.RawPowerUpDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ItemStatProfile>().HasMany(entity => entity.RawStatTerms).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ItemStatProfile>().HasMany(entity => entity.RawRequirementFormulas).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemCrafting>().HasOne(entity => entity.RawSimpleCraftingSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SimpleCraftingSettings>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SimpleCraftingSettings>().HasMany(entity => entity.RawResultItems).WithOne().OnDelete(DeleteBehavior.Cascade);

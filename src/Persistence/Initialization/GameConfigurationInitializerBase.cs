@@ -50,6 +50,8 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.PreventExperienceOverflow = false;
         this.GameConfiguration.ClampMoneyOnPickup = false;
         this.GameConfiguration.ExcellentItemDropLevelDelta = 25;
+        this.GameConfiguration.ExcellentDropLevelBonus = 25;
+        this.GameConfiguration.AncientDropLevelBonus = 30;
         this.GameConfiguration.RecoveryInterval = 3000;
         this.GameConfiguration.MaximumLetters = 50;
         this.GameConfiguration.LetterSendPrice = 1000;

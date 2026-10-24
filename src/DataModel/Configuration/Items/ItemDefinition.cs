@@ -25,6 +25,24 @@ public partial class ItemDefinition
     public virtual ItemSlotType? ItemSlot { get; set; }
 
     /// <summary>
+    /// Gets or sets the stat profile: the item formulas of this item.
+    /// Without one, the item has the formulas of its kind: of the profile "armor", "book", "shield" or "default".
+    /// </summary>
+    public virtual ItemStatProfile? StatProfile { get; set; }
+
+    /// <summary>
+    /// Gets or sets a fixed bonus which an excellent item of this kind gets on its damage and magic power,
+    /// instead of the excellent part of its stat profile. 0 means the excellent part applies.
+    /// </summary>
+    public byte ExcellentBonus { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether an excellent item of this kind needs a higher level,
+    /// by the <see cref="ItemStatProfile.ExcellentLevelAdd"/> of its stat profile.
+    /// </summary>
+    public bool ExcellentRaisesLevel { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the width of the Item.
     /// </summary>
     public byte Width { get; set; }

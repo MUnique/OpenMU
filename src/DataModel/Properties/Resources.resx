@@ -248,4 +248,6 @@ or behind a firewall) and you want to use it within your computer or private net
   <data name="TerrainWithoutClientUpdate" xml:space="preserve"><value>without client update</value></data>
   <data name="ChatServerSummary" xml:space="preserve"><value>[ChatServerDefinition ServerID={0}, Description={1}]</value></data>
   <data name="ServerEndpointSummary" xml:space="preserve"><value>Client: {0}; Port: {1}</value></data>
+  <data name="ItemRequirementFormulaSummary" xml:space="preserve"><value>{0}: {1} + base × (drop level + level × {2}) × {3} / 100</value></data>
+  <data name="ItemRequirementFormulaKeptBaseSummary" xml:space="preserve"><value>{0}: base value</value></data>
 </root>

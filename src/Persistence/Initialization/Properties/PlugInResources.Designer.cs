@@ -935,5 +935,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description text.</summary>
         public static string ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description => ResourceManager.GetString("ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddItemStatProfilesUpdatePlugIn_Name text.</summary>
+        public static string AddItemStatProfilesUpdatePlugIn_Name => ResourceManager.GetString("AddItemStatProfilesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddItemStatProfilesUpdatePlugIn_Description text.</summary>
+        public static string AddItemStatProfilesUpdatePlugIn_Description => ResourceManager.GetString("AddItemStatProfilesUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }

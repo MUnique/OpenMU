@@ -19,6 +19,7 @@ using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.PlugIns;
 
@@ -108,6 +109,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         this.CreateGameClientDefinition();
         await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
         this.GameConfigurationInitializer.Initialize();
+
+        // After all items exist, for every version.
+        ItemStatProfiles.Apply(this.Context, this.GameConfiguration);
 
         var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
         await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers).ConfigureAwait(false);

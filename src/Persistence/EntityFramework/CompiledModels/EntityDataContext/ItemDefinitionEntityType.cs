@@ -25,10 +25,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition),
                 baseEntityType,
-                propertyCount: 28,
-                navigationCount: 9,
-                foreignKeyCount: 4,
-                unnamedIndexCount: 4,
+                propertyCount: 31,
+                navigationCount: 10,
+                foreignKeyCount: 5,
+                unnamedIndexCount: 5,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -73,6 +73,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<Durability>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: (byte)0);
             durability.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentBonus = runtimeEntityType.AddProperty(
+                "ExcellentBonus",
+                typeof(byte),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("ExcellentBonus", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<ExcellentBonus>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: (byte)0);
+            excellentBonus.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentRaisesLevel = runtimeEntityType.AddProperty(
+                "ExcellentRaisesLevel",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("ExcellentRaisesLevel", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<ExcellentRaisesLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            excellentRaisesLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var gameConfigurationId = runtimeEntityType.AddProperty(
                 "GameConfigurationId",
@@ -235,6 +251,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             skillId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var statProfileId = runtimeEntityType.AddProperty(
+                "StatProfileId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("StatProfileId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetField("<StatProfileId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            statProfileId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var storageLimitPerCharacter = runtimeEntityType.AddProperty(
                 "StorageLimitPerCharacter",
                 typeof(int),
@@ -274,6 +298,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             var index2 = runtimeEntityType.AddIndex(
                 new[] { skillId });
+
+            var index3 = runtimeEntityType.AddIndex(
+                new[] { statProfileId });
 
             return runtimeEntityType;
         }
@@ -336,6 +363,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 onDependent: true,
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Skill),
                 propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("RawSkill", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("StatProfileId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Restrict);
+
+            var rawStatProfile = declaringEntityType.AddNavigation("RawStatProfile",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("RawStatProfile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }
