@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Crystal Sword ice chance to existing version 0.75 configurations.
 /// </summary>
 [PlugIn]
-[Display(Name = "Crystal Sword Ice Chance", Description = "Adds the Crystal Sword ice proc to existing configurations.")]
+[Display(Name = nameof(PlugInResources.AddCrystalSwordIceChanceUpdatePlugIn_Name), Description = nameof(PlugInResources.AddCrystalSwordIceChanceUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("68982D35-C7B2-4A34-88BD-047905E3F8E2")]
 public class AddCrystalSwordIceChanceUpdatePlugIn075 : AddCrystalSwordIceChanceUpdatePlugInBase
 {

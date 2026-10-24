@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Crystal Sword ice chance to existing Season 6 configurations.
 /// </summary>
 [PlugIn]
-[Display(Name = "Crystal Sword Ice Chance", Description = "Adds the Crystal Sword ice proc to existing configurations.")]
+[Display(Name = nameof(PlugInResources.AddCrystalSwordIceChanceUpdatePlugIn_Name), Description = nameof(PlugInResources.AddCrystalSwordIceChanceUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("85AD7C42-7BAE-42A0-8CB1-0F3CC894DF05")]
 public class AddCrystalSwordIceChanceUpdatePlugInSeasonSix : AddCrystalSwordIceChanceUpdatePlugInBase
 {

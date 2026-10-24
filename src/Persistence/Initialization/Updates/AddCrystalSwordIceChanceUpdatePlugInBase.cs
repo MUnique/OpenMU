@@ -16,7 +16,6 @@ using MUnique.OpenMU.Persistence.Initialization.Items;
 public abstract class AddCrystalSwordIceChanceUpdatePlugInBase : UpdatePlugInBase
 {
     private const short CrystalSwordNumber = 5;
-    private const short IceSkillNumber = 7;
 
     /// <inheritdoc />
     public override string Name => PlugInResources.AddCrystalSwordIceChanceUpdatePlugIn_Name;
