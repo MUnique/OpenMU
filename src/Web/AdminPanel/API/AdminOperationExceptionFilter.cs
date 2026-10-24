@@ -19,7 +19,13 @@ public sealed class AdminOperationExceptionFilter : IExceptionFilter
         {
             context.Result = new ObjectResult(new { error = error.Message })
             {
-                StatusCode = error.Forbidden ? StatusCodes.Status403Forbidden : StatusCodes.Status503ServiceUnavailable,
+                StatusCode = error.Kind switch
+                {
+                    AdminOperationErrorKind.Forbidden => StatusCodes.Status403Forbidden,
+                    AdminOperationErrorKind.InvalidInput => StatusCodes.Status400BadRequest,
+                    AdminOperationErrorKind.Unavailable => StatusCodes.Status503ServiceUnavailable,
+                    _ => StatusCodes.Status409Conflict,
+                },
             };
             context.ExceptionHandled = true;
         }

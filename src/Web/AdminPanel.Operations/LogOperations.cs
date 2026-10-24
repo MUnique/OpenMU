@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -20,7 +21,7 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 public sealed class LogOperations(LoggingConfigurationService logging, AdminLogAccess access, AdminOperationExecutor executor)
 {
     private static readonly string[] SensitiveMarkers = ["password", "authorization", "api-key", "apikey", "secret", "token", "recovery", "securitycode", "connectionstring", "bearer ", "omu_", "$2a$", "$2b$", "$2y$"];
-    private static readonly Regex AddressPattern = new(@"\b(?:\d{1,3}\.){3}\d{1,3}\b|(?<![a-z0-9])(?:[a-f0-9]{0,4}:){2,}[a-f0-9:]{0,39}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+    private static readonly Regex AddressPattern = new(@"\b(?:\d{1,3}\.){3}\d{1,3}\b|(?<![a-z0-9])(?:[a-f0-9]{0,4}:){2,}[a-f0-9:.]{0,45}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
 
     /// <summary>Gets minimum logging levels without returning sink configuration or secrets.</summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -76,14 +77,14 @@ public sealed class LogOperations(LoggingConfigurationService logging, AdminLogA
         AdminReadResult.ValidatePage(0, limit);
         if (contextLines is < 0 or > 3 || text.Length > 200 || (level is not null && !LoggingConfigurationService.Levels.Contains(level)))
         {
-            throw new ArgumentException("Use at most three context lines, 200 search characters and a known logging level.");
+            throw new AdminOperationException("Use at most three context lines, 200 search characters and a known logging level.", AdminOperationErrorKind.InvalidInput);
         }
 
         var end = until ?? DateTimeOffset.UtcNow;
         var start = since ?? end.AddDays(-1);
         if (start > end || end - start > TimeSpan.FromDays(30))
         {
-            throw new ArgumentException("Use a time range of at most 30 days, with since before until.");
+            throw new AdminOperationException("Use a time range of at most 30 days, with since before until.", AdminOperationErrorKind.InvalidInput);
         }
 
         if (!access.LocalFilesAvailable)
@@ -199,6 +200,10 @@ public sealed class LogOperations(LoggingConfigurationService logging, AdminLogA
                             preceding.Dequeue();
                         }
                     }
+                    else
+                    {
+                        // No context was requested; ignore this unmatched line.
+                    }
 
                     if (results.Count >= limit)
                     {
@@ -224,6 +229,13 @@ public sealed class LogOperations(LoggingConfigurationService logging, AdminLogA
 
     private static JsonObject Unavailable() => AdminReadResult.From(new { available = false, hint = "Distributed deployments: use Grafana/Loki to inspect game host logs and levels." });
 
+    private static string RedactAddress(Match match)
+    {
+        // A sentence-ending dot is punctuation, including after an IPv4-mapped IPv6 address.
+        var candidate = match.Value.TrimEnd('.');
+        return IPAddress.TryParse(candidate, out _) ? "[address redacted]" + match.Value[candidate.Length..] : match.Value;
+    }
+
     private static string Redact(string line) => SensitiveMarkers.Any(marker => line.Contains(marker, StringComparison.OrdinalIgnoreCase))
-        ? "[sensitive log line redacted]" : AddressPattern.Replace(line, "[address redacted]");
+        ? "[sensitive log line redacted]" : AddressPattern.Replace(line, RedactAddress);
 }

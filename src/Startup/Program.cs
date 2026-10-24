@@ -322,6 +322,7 @@ internal sealed class Program : IDisposable
                 builder.Services.AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
             }
 
+            builder.Services.AddSingleton(new MUnique.OpenMU.Web.AdminPanel.Operations.AdminAuditSettings { IsDemo = args.Contains("-demo") });
             builder.AddAdminPanel(includeMapApp: true);
             builder.Services.AddAdminMcp(builder.Configuration);
         }

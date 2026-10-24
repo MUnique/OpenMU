@@ -47,5 +47,9 @@ internal static class AdminAuditSanitizer
                 Redact(child);
             }
         }
+        else
+        {
+            // Scalar values in explicit projections have no credential fields to traverse.
+        }
     }
 }

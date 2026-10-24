@@ -24,7 +24,7 @@ public sealed class CashShopOperations(CashShopCoinService coins, AdminOperation
     {
         await executor.RequireAsync(AdminRoles.CashShop, cancellationToken).ConfigureAwait(false);
         return AdminReadResult.From(await coins.GetSummaryAsync(loginName, cancellationToken).ConfigureAwait(false)
-            ?? throw new ArgumentException("Account not found.", nameof(loginName)));
+            ?? throw new AdminOperationException("Account not found.", AdminOperationErrorKind.InvalidInput));
     }
 
     /// <summary>Queues a coin grant with a unique reference to prevent duplicate credits on retries.</summary>
@@ -46,18 +46,18 @@ public sealed class CashShopOperations(CashShopCoinService coins, AdminOperation
                 AccountWriteOperations.ValidateReason(reason);
                 if (amount == 0 || string.IsNullOrWhiteSpace(reference) || reference.Length > 100 || reason.Length > 200)
                 {
-                    throw new ArgumentException("Supply a nonzero amount and a unique reference of at most 100 characters and a reason of at most 200 characters.");
+                    throw new AdminOperationException($"Supply a nonzero {nameof(amount)} and a unique {nameof(reference)} of at most 100 characters and a {nameof(reason)} of at most 200 characters.", AdminOperationErrorKind.InvalidInput);
                 }
 
                 var (status, grant) = await coins.GrantAsync(loginName, coinType, amount, reason, reference, actor.Name, cancellationToken).ConfigureAwait(false);
                 if (status is CashShopCoinGrantStatus.AccountNotFound or CashShopCoinGrantStatus.ReferenceUsedByOtherAccount)
                 {
-                    throw new AdminOperationException("Account not found, or the reference belongs to another account.");
+                    throw new AdminOperationException($"Account not found, or the {nameof(reference)} belongs to another account.");
                 }
 
                 if (status == CashShopCoinGrantStatus.AlreadyGranted && (grant?.Amount != amount || grant.CoinType != coinType || grant.Reason != reason))
                 {
-                    throw new AdminOperationException("The reference was already used with different grant arguments. No additional coins were granted.");
+                    throw new AdminOperationException($"The {nameof(reference)} was already used with different grant arguments. No additional coins were granted.");
                 }
 
                 return AdminReadResult.From(new { status = status.ToString(), grant });

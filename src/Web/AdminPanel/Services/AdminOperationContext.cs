@@ -14,7 +14,8 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 /// <summary>Resolves HTTP API callers and the current Blazor circuit user.</summary>
 /// <param name="http">The HTTP context accessor.</param>
 /// <param name="authentication">The circuit authentication state.</param>
-public sealed class AdminOperationContext(IHttpContextAccessor http, AuthenticationStateProvider authentication) : IAdminOperationContext
+/// <param name="userAvailability">The same initial-setup gate used by panel authorization.</param>
+public sealed class AdminOperationContext(IHttpContextAccessor http, AuthenticationStateProvider authentication, AdminUserAvailabilityService userAvailability) : IAdminOperationContext
 {
     /// <inheritdoc />
     public async ValueTask<AdminActor> GetActorAsync(CancellationToken cancellationToken)
@@ -32,19 +33,25 @@ public sealed class AdminOperationContext(IHttpContextAccessor http, Authenticat
 
         if (principal.Identity?.IsAuthenticated != true)
         {
-            throw new AdminOperationException("An authenticated administrator or API client is required.", forbidden: true);
+            // Anonymous setup applies only to panel circuits, never to MCP or REST requests.
+            if (!isMcp && !isApi && !await userAvailability.AnyUserExistsAsync(cancellationToken).ConfigureAwait(false))
+            {
+                return new AdminActor("setup", "Initial setup", "panel", [MUnique.OpenMU.Persistence.AdminAuth.AdminRoles.Administrator]) { IsInitialSetup = true };
+            }
+
+            throw new AdminOperationException("An authenticated administrator or API client is required.", AdminOperationErrorKind.Forbidden);
         }
 
         if (isMcp && !principal.HasClaim(c => c.Type == ApiKeyAuthenticationDefaults.ClientIdClaimType))
         {
-            throw new AdminOperationException("MCP requires an API key identity.", forbidden: true);
+            throw new AdminOperationException("MCP requires an API key identity.", AdminOperationErrorKind.Forbidden);
         }
 
         var id = principal.FindFirst(ApiKeyAuthenticationDefaults.ClientIdClaimType)?.Value
             ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(id))
         {
-            throw new AdminOperationException("The caller has no stable identity.", forbidden: true);
+            throw new AdminOperationException("The caller has no stable identity.", AdminOperationErrorKind.Forbidden);
         }
 
         return new AdminActor(

@@ -39,7 +39,7 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
                 var validation = new List<ValidationResult>();
                 if (!Validator.TryValidateObject(registration, new ValidationContext(registration), validation, true))
                 {
-                    throw new ArgumentException("Use a printable ASCII login of 3-10 characters, a printable ASCII password of 3-20 characters and a valid optional email address.");
+                    throw new AdminOperationException($"Use a printable ASCII login of 3-10 characters, a printable ASCII {nameof(password)} of 3-20 characters and a valid optional email address.", AdminOperationErrorKind.InvalidInput);
                 }
 
                 var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -91,12 +91,12 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
                 ValidateReason(reason);
                 if (!Enum.IsDefined(state))
                 {
-                    throw new ArgumentException("Unknown account state.", nameof(state));
+                    throw new AdminOperationException("Unknown account state.", AdminOperationErrorKind.InvalidInput);
                 }
 
                 using var context = persistence.CreateNewPlayerContext(await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false));
                 var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false)
-                    ?? throw new ArgumentException("Account not found.", nameof(loginName));
+                    ?? throw new AdminOperationException("Account not found.", AdminOperationErrorKind.InvalidInput);
                 await this.RequireOfflineAsync(account.LoginName).ConfigureAwait(false);
                 if (IsPrivileged(account.State) || IsPrivileged(state))
                 {
@@ -126,12 +126,12 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
                 ValidateReason(reason);
                 if (password.Length is < 3 or > 20 || password.Any(c => c is < ' ' or > '~'))
                 {
-                    throw new ArgumentException("The password must contain 3-20 printable ASCII characters.", nameof(password));
+                    throw new AdminOperationException($"The {nameof(password)} must contain 3-20 printable ASCII characters.", AdminOperationErrorKind.InvalidInput);
                 }
 
                 using var context = persistence.CreateNewPlayerContext(await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false));
                 var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false)
-                    ?? throw new ArgumentException("Account not found.", nameof(loginName));
+                    ?? throw new AdminOperationException("Account not found.", AdminOperationErrorKind.InvalidInput);
                 await this.RequireOfflineAsync(account.LoginName).ConfigureAwait(false);
                 if (IsPrivileged(account.State))
                 {
@@ -150,7 +150,7 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
     {
         if (string.IsNullOrWhiteSpace(reason) || reason.Length > 1000)
         {
-            throw new ArgumentException("An audit reason of 1-1000 characters is required.", nameof(reason));
+            throw new AdminOperationException($"An audit {nameof(reason)} of 1-1000 characters is required.", AdminOperationErrorKind.InvalidInput);
         }
     }
 

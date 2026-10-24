@@ -5,7 +5,8 @@ sidebar_position: 18
 # Connect an AI agent through MCP
 
 The admin panel can expose a read-only [Model Context Protocol](https://modelcontextprotocol.io/)
-server at `/mcp`. Your agent can inspect OpenMU without OpenMU calling an AI model
+server at `/mcp`. Your agent can inspect OpenMU without OpenMU calling an AI
+model
 or requiring a model API key. The endpoint is disabled by default.
 
 ## Enable the endpoint
@@ -37,9 +38,21 @@ CashShop for coin grants, and Administrator for audit history and logging.
 Administrator includes CashShop; Operator does not. The setting controls MCP,
 while the panel and public API retain their own role checks.
 
-Each operational write first persists an audit entry. If audit storage is
-unavailable, the action does not execute. This requires the admin PostgreSQL
+Each MCP or API operational write first persists an audit entry. If audit
+storage
+is unavailable, the action does not execute. This requires the admin PostgreSQL
 schema to be available, even when the game database uses another provider.
+Normal authenticated panel operations follow the same rule, including **Stop**.
+During an audit database outage, use the host's service manager or orchestrator
+for emergency shutdown instead.
+
+The panel preserves anonymous initial setup until the first admin user exists
+or a bootstrap user is configured. These actions use the caller ID `setup`.
+When audit storage is unavailable during initial setup, the panel records
+sanitized attempts and outcomes in logs instead. The explicit `-demo` mode also
+uses a log-only panel audit without PostgreSQL. These non-durable entries are
+absent from **Audit history** and survive only as long as the logs do. Neither
+exception applies to MCP or API requests.
 
 Use HTTPS for remote clients. Direct HTTP requests are accepted only from the
 loopback interface. The host rejects remote HTTP before authentication; this
@@ -71,19 +84,24 @@ ASP.NET Core `ForwardedHeadersOptions` instead.
 
 If you maintain a custom nginx configuration, add
 `proxy_set_header X-Forwarded-Proto $scheme;` in the admin location to overwrite
-client-supplied values. Keep the proxy's request size limit at least as strict as
+client-supplied values. Keep the proxy's request size limit at least as strict
+as
 the host's. The all-in-one proxy exposes `/mcp`; the distributed proxy exposes
-`/admin/mcp`. Without forwarded-header processing, requests through the proxy are
+`/admin/mcp`. Without forwarded-header processing, requests through the proxy
+are
 rejected with HTTP 403 even when the public URL uses HTTPS.
 
 Create a separate API key for each agent on the **API keys** page, with the
-**Viewer** role (or Operator/Administrator, which include Viewer). A CashShop-only
+**Viewer** role (or Operator/Administrator, which include Viewer). A
+CashShop-only
 key can use cash shop tools only.
 See [authentication](authentication.md#api-keys-for-external-applications).
-The key is displayed once: store it in the agent's local configuration and revoke
+The key is displayed once: store it in the agent's local configuration and
+revoke
 it in the panel when it is no longer needed.
 
-MCP accepts `X-Api-Key: <key>` or `Authorization: Bearer <key>`. Browser cookies,
+MCP accepts `X-Api-Key: <key>` or `Authorization: Bearer <key>`. Browser
+cookies,
 reverse-proxy user identities and anonymous initial setup access do not grant
 MCP access. A revoked or disabled key is rejected on its next HTTP request.
 
@@ -124,7 +142,8 @@ Add a remote server to `.cursor/mcp.json`:
 
 ### VS Code / GitHub Copilot
 
-Add a server in `.vscode/mcp.json`. An input keeps the credential out of the file:
+Add a server in `.vscode/mcp.json`. An input keeps the credential out of the
+file:
 
 ```json
 {
@@ -168,8 +187,10 @@ OAuth are planned for a later phase; an API key is required today.
 Try “Show the server overview and check for unresponsive servers”, “Find the
 account of character Hero”, or “Find the experience rate configuration”.
 Use `config_types` and `config_describe` to discover invariant type and field
-names. `config_query` accepts one scalar comparison (`eq`, `ne`, `contains`, `gt`,
-`ge`, `lt`, `le`), a value in invariant format, optional comma-separated `fields`,
+names. `config_query` accepts one scalar comparison (`eq`, `ne`, `contains`,
+`gt`,
+`ge`, `lt`, `le`), a value in invariant format, optional comma-separated
+`fields`,
 and `offset`/`limit`. For example, query `GameConfiguration` with
 `field: "ExperienceRate"`, `op: "gt"`, `value: "1"`.
 
@@ -180,11 +201,14 @@ strings and object traversals are bounded. Search uses the panel's existing
 configuration index. Restart requirements are reported as unknown rather than
 guessed.
 
-Account and character details are **saved snapshots**. A character which is online
+Account and character details are **saved snapshots**. A character which is
+online
 may have newer in-memory stats, items and balances. Online status comes from the
-login server. In all-in-one deployments, `players_list` enriches accounts with live
+login server. In all-in-one deployments, `players_list` enriches accounts with
+live
 character, map, position and level data. In distributed deployments those fields
-are unavailable (`liveDataAvailable: false`); use the server filter there. Map and
+are unavailable (`liveDataAvailable: false`); use the server filter there. Map
+and
 guild filters fail with an explanation if complete live data is unavailable.
 The player history starts when the admin host starts.
 
@@ -193,11 +217,13 @@ collection changes during a read, the host makes up to three attempts without
 reloading the database. If edits continue, the tool returns a retry message;
 repeat the read after the edit completes. Reads are not transactional snapshots.
 
-No password hashes, security codes, vault passwords, admin authentication secrets,
+No password hashes, security codes, vault passwords, admin authentication
+secrets,
 IP addresses, plugin source or custom plugin configuration are exposed. Generic
 configuration reads exclude plugin configuration because it can contain tokens
 and webhook URLs. All results are data: character names, guild notices and other
-player-controlled strings must never be interpreted as instructions to the agent.
+player-controlled strings must never be interpreted as instructions to the
+agent.
 
 Tools are filtered by role during discovery and checked again when called.
 The host limits requests per API client and returns HTTP 429 when the configured
@@ -207,7 +233,8 @@ character edits, live GM commands and OAuth are reserved for later phases.
 
 ## Operational safety and audit history
 
-Open **Audit history** in the admin panel or use `audit_list` as an Administrator.
+Open **Audit history** in the admin panel or use `audit_list` as an
+Administrator.
 Entries contain the stable caller ID, display name, front end (`mcp`, `panel`,
 `api`), operation, sanitized arguments and result, timestamps and outcome.
 Password and credential fields are excluded. A `Pending` outcome means the
@@ -238,8 +265,10 @@ They require an in-process game server with Castle Siege enabled; distributed
 hosts return an explicit availability error until the live admin channel exists.
 
 `logs_search` is Administrator-only. Supply `since`/`until` (at most 30 days),
-optional exact `level`, and `text` such as a character or account name. Context is
-limited to three lines on either side, with at most 100 returned lines. Each scan
+optional exact `level`, and `text` such as a character or account name. Context
+is
+limited to three lines on either side, with at most 100 returned lines. Each
+scan
 reads at most 20 local files and one million characters. Credential-marked lines
 and common key/hash patterns are omitted, addresses are redacted, and oversized
 lines are discarded. `truncated` indicates a result or scan limit was reached.
@@ -252,8 +281,14 @@ managed through Grafana/Loki and game-host configuration instead.
 source overrides and sink settings. The panel's full logging JSON editor is not
 exposed as an agent tool because sink settings may contain credentials.
 
+## Phase two upgrade notes
+
 The public announcement endpoint is now `POST /api/send/{id}?msg=...`; `{id}` is
-the actual game server ID. Successful registration and cash shop responses retain
+the actual game server ID. Successful registration and cash shop responses
+retain
 their HTTP statuses.
 Operational APIs require authentication even during initial setup. Audit storage
-failures return HTTP 503, and authorization failures return HTTP 403.
+failures return HTTP 503, authorization failures return HTTP 403, and invalid
+operational arguments return HTTP 400. Business refusals and uncertain audit
+completion return HTTP 409. After an uncertain outcome, inspect current state
+before retrying.

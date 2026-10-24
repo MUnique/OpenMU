@@ -4,9 +4,13 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
-/// <summary>Identifies an authenticated caller independently of a UI framework.</summary>
+/// <summary>Identifies a caller independently of a UI framework.</summary>
 /// <param name="Id">The stable user or API key identifier.</param>
 /// <param name="Name">The display name.</param>
 /// <param name="Frontend">The trusted front end identifier.</param>
 /// <param name="Roles">The effective roles.</param>
-public sealed record AdminActor(string Id, string Name, string Frontend, IReadOnlyList<string> Roles);
+public sealed record AdminActor(string Id, string Name, string Frontend, IReadOnlyList<string> Roles)
+{
+    /// <summary>Gets a value indicating whether the trusted panel admitted anonymous initial setup.</summary>
+    public bool IsInitialSetup { get; init; }
+}

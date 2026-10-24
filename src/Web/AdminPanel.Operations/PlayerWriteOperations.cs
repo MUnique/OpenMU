@@ -80,6 +80,6 @@ public sealed class PlayerWriteOperations(IServerProvider servers, ILoginServer 
         }
 
         return servers.Servers.OfType<IGameServer>().SingleOrDefault(s => s.Id == entry.Value)
-            ?? throw new AdminOperationException("The owning game server is unavailable; no player operation was executed.");
+            ?? throw new AdminOperationException("The owning game server is unavailable; no player operation was executed.", AdminOperationErrorKind.Unavailable);
     }
 }

@@ -8,12 +8,13 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
-/// <summary>Enforces authorization and persists an audit attempt before any side effects.</summary>
+/// <summary>Enforces authorization and audits operations, with a log-only exception for setup/demo panel actions.</summary>
 /// <param name="caller">The current caller.</param>
 /// <param name="audit">The durable audit store.</param>
 /// <param name="settings">The write safety policy.</param>
 /// <param name="logger">The operational logger.</param>
-public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdminAuditRepository audit, AdminWriteSettings settings, ILogger<AdminOperationExecutor> logger)
+/// <param name="auditSettings">The host-owned demo audit policy.</param>
+public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdminAuditRepository audit, AdminWriteSettings settings, ILogger<AdminOperationExecutor> logger, AdminAuditSettings auditSettings)
 {
     /// <summary>Checks an operation's role independently of its front end.</summary>
     /// <param name="role">The minimum role.</param>
@@ -25,7 +26,7 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
         var actor = await caller.GetActorAsync(cancellationToken).ConfigureAwait(false);
         if (!actor.Roles.SelectMany(AdminRoles.GetEffectiveRoles).Contains(role, StringComparer.Ordinal))
         {
-            throw new AdminOperationException("The operation is not allowed for this caller.", forbidden: true);
+            throw new AdminOperationException("The operation is not allowed for this caller.", AdminOperationErrorKind.Forbidden);
         }
 
         return actor;
@@ -63,14 +64,30 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
             throw new ArgumentException("The audit arguments exceed the size limit.", nameof(arguments));
         }
 
-        try
+        var logOnly = actor.Frontend == "panel" && auditSettings.IsDemo;
+        if (!logOnly)
         {
-            await audit.AddAsync(entry, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await audit.AddAsync(entry, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                if (actor.Frontend == "panel" && actor.IsInitialSetup)
+                {
+                    logOnly = true;
+                }
+                else
+                {
+                    logger.LogError(ex, "The admin audit attempt could not be persisted; nothing was executed.");
+                    throw new AdminOperationException("Audit storage is unavailable; nothing was executed. Check the admin database connection.", AdminOperationErrorKind.Unavailable);
+                }
+            }
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+
+        if (logOnly)
         {
-            logger.LogError(ex, "The admin audit attempt could not be persisted; no action was executed.");
-            throw new AdminOperationException("Audit storage is unavailable; no action was executed. Check the admin database connection.");
+            logger.LogWarning("Non-durable panel audit attempt {AuditId}: principal {PrincipalId} ({PrincipalName}), operation {Operation}, arguments {ArgumentsJson}. Setup/demo history is kept only in logs.", entry.Id, actor.Id, actor.Name, operation, entry.ArgumentsJson);
         }
 
         T result;
@@ -81,25 +98,32 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
         }
         catch
         {
-            await this.RecordOutcomeAsync(entry.Id, "Failed", "{}").ConfigureAwait(false);
+            await this.RecordOutcomeAsync(entry.Id, "Failed", "{}", logOnly).ConfigureAwait(false);
             throw;
         }
 
-        if (!await this.RecordOutcomeAsync(entry.Id, succeeded?.Invoke(result) == false ? "Refused" : "Succeeded", AdminAuditSanitizer.Serialize(result)).ConfigureAwait(false))
+        if (!await this.RecordOutcomeAsync(entry.Id, succeeded?.Invoke(result) == false ? "Refused" : "Succeeded", AdminAuditSanitizer.Serialize(result), logOnly).ConfigureAwait(false))
         {
-            throw new AdminOperationException("The action may have completed, but its audit outcome could not be saved. Check the current state before retrying.");
+            throw new AdminOperationException("The requested change may have completed, but its audit outcome could not be saved. Check the current state before retrying.", AdminOperationErrorKind.Uncertain);
         }
 
         return result;
     }
 
-    private async ValueTask<bool> RecordOutcomeAsync(Guid id, string outcome, string resultJson)
+    private async ValueTask<bool> RecordOutcomeAsync(Guid id, string outcome, string resultJson, bool logOnly)
     {
+        resultJson = resultJson.Length <= 16384 ? resultJson : "{\"truncated\":true}";
+        if (logOnly)
+        {
+            logger.LogWarning("Non-durable panel audit outcome {AuditId}: {Outcome}, result {ResultJson}.", id, outcome, resultJson);
+            return true;
+        }
+
         try
         {
             // Completion must survive caller cancellation after the operation has changed state.
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await audit.CompleteAsync(id, outcome, resultJson.Length <= 16384 ? resultJson : "{\"truncated\":true}", timeout.Token).ConfigureAwait(false);
+            await audit.CompleteAsync(id, outcome, resultJson, timeout.Token).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)

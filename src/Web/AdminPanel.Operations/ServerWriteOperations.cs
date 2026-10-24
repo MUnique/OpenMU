@@ -77,13 +77,13 @@ public sealed class ServerWriteOperations(IServerProvider servers, AdminOperatio
             {
                 if (string.IsNullOrWhiteSpace(message) || message.Length > 512 || messageType is not (MessageType.GoldenCenter or MessageType.BlueNormal or MessageType.SlideNotice))
                 {
-                    throw new ArgumentException("Supply a message of 1-512 characters and a golden, blue or slide message type.");
+                    throw new AdminOperationException($"Supply a {nameof(message)} of 1-512 characters and a golden, blue or slide {nameof(message)} type.", AdminOperationErrorKind.InvalidInput);
                 }
 
                 var targets = servers.Servers.OfType<IGameServer>().Where(s => serverId is null || s.Id == serverId).ToArray();
                 if (targets.Length == 0 || targets.Length > settings.MaxBulkSize)
                 {
-                    throw new ArgumentException("No matching game servers, or too many targets. Select a single server identifier.");
+                    throw new AdminOperationException("No matching game servers, or too many targets. Select a single server identifier.", AdminOperationErrorKind.InvalidInput);
                 }
 
                 foreach (var target in targets)
@@ -98,5 +98,5 @@ public sealed class ServerWriteOperations(IServerProvider servers, AdminOperatio
 
     private IManageableServer Resolve(int id, ServerType type)
         => servers.Servers.SingleOrDefault(s => s.Id == id && s.Type == type)
-            ?? throw new ArgumentException("Server not found. Use server_overview to select its identifier and type.");
+            ?? throw new AdminOperationException("Server not found. Use server_overview to select its identifier and type.", AdminOperationErrorKind.InvalidInput);
 }

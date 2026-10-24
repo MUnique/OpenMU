@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>An operational error whose fixed message is safe to show to a caller.</summary>
 /// <param name="message">The safe error message.</param>
-/// <param name="forbidden">Whether the caller lacks authorization.</param>
-public sealed class AdminOperationException(string message, bool forbidden = false) : Exception(message)
+/// <param name="kind">The operational error category.</param>
+public sealed class AdminOperationException(string message, AdminOperationErrorKind kind = AdminOperationErrorKind.Conflict) : Exception(message)
 {
-    /// <summary>Gets a value indicating whether access was denied.</summary>
-    public bool Forbidden { get; } = forbidden;
+    /// <summary>Gets the operational error category.</summary>
+    public AdminOperationErrorKind Kind { get; } = kind;
 }

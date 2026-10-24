@@ -51,6 +51,19 @@ public sealed class LogOperationsTests
         Assert.That(capped["truncated"]?.GetValue<bool>(), Is.True);
     }
 
+    /// <summary>Valid IP addresses are hidden while times and colon-separated identifiers remain searchable.</summary>
+    [Test]
+    public async Task RedactsAddressesWithoutCorruptingTimesAsync()
+    {
+        var time = DateTimeOffset.UtcNow;
+        var stamp = time.ToString("yyyy-MM-dd HH:mm:ss.fff zzz", CultureInfo.InvariantCulture);
+        await File.WriteAllTextAsync(Path.Combine(this._directory, "log.txt"), stamp + " [Information] Hero at 12:30:00 id ab:cd:ef addresses 2001:db8::1234 ::1 192.0.2.20 ::ffff:192.0.2.10").ConfigureAwait(false);
+        var result = await this.Create(true).SearchAsync("12:30", time.AddMinutes(-1), time.AddMinutes(1), null, 10, 0, default).ConfigureAwait(false);
+        var text = result["lines"]!.AsArray().Single()!["text"]!.GetValue<string>();
+        Assert.That(text, Does.StartWith(stamp).And.Contain("12:30:00").And.Contain("ab:cd:ef"));
+        Assert.That(text, Does.Not.Contain("2001:db8").And.Not.Contain("::1").And.Not.Contain("192.0.2"));
+    }
+
     /// <summary>Only minimum levels are returned, and changing them preserves secret sink configuration.</summary>
     [Test]
     public async Task LevelsExcludeSinkSecretsAsync()

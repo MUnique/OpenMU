@@ -26,6 +26,7 @@ public static class AdminOperationsExtensions
         services.TryAddScoped<IAdminOperationContext, UnconfiguredAdminOperationContext>();
         services.TryAddSingleton<IAdminAuditRepository, UnconfiguredAdminAuditRepository>();
         services.TryAddSingleton<AdminWriteSettings>();
+        services.TryAddSingleton<AdminAuditSettings>();
         services.TryAddSingleton<AdminLogAccess>();
         services.TryAddSingleton(new LoggingConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")));
         services.AddScoped<AdminOperationExecutor>();

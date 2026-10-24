@@ -20,7 +20,6 @@ using MUnique.OpenMU.Web.Shared.Properties;
 /// </summary>
 public class AccountService : IDataService<Account>, ISupportDataChangedNotification, IDisposable
 {
-    private readonly AccountWriteOperations _operations;
     private readonly AdminOperationExecutor _executor;
 
     private readonly IDataSource<Account> _dataSource;
@@ -34,12 +33,10 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// </summary>
     /// <param name="dataSource">The player context.</param>
     /// <param name="modalService">The modal service.</param>
-    /// <param name="operations">The shared account operations.</param>
     /// <param name="executor">The shared audit executor.</param>
-    public AccountService(IDataSource<Account> dataSource, IModalService modalService, AccountWriteOperations operations, AdminOperationExecutor executor)
+    public AccountService(IDataSource<Account> dataSource, IModalService modalService, AdminOperationExecutor executor)
     {
         this._dataSource = dataSource;
-        this._operations = operations;
         this._executor = executor;
         this._modalService = modalService;
     }
@@ -102,26 +99,6 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         {
             return new List<Account>();
         }
-    }
-
-    /// <summary>
-    /// Bans the specified account.
-    /// </summary>
-    /// <param name="account">The account.</param>
-    public async ValueTask BanAsync(Account account)
-    {
-        await this._operations.SetStateAsync(account.LoginName, AccountState.Banned, "Admin panel ban action", default).ConfigureAwait(false);
-        account.State = AccountState.Banned;
-    }
-
-    /// <summary>
-    /// Unbans the specified account.
-    /// </summary>
-    /// <param name="account">The account.</param>
-    public async ValueTask UnbanAsync(Account account)
-    {
-        await this._operations.SetStateAsync(account.LoginName, AccountState.Normal, "Admin panel unban action", default).ConfigureAwait(false);
-        account.State = AccountState.Normal;
     }
 
     /// <summary>

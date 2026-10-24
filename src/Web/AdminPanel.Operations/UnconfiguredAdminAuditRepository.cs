@@ -12,13 +12,13 @@ internal sealed class UnconfiguredAdminAuditRepository : IAdminAuditRepository
 {
     /// <inheritdoc />
     public ValueTask AddAsync(AdminAuditEntry entry, CancellationToken cancellationToken = default)
-        => throw new AdminOperationException("Audit storage is not configured; no action was executed.");
+        => throw new AdminOperationException("Audit storage is not configured; no action was executed.", AdminOperationErrorKind.Unavailable);
 
     /// <inheritdoc />
     public ValueTask CompleteAsync(Guid id, string outcome, string resultJson, CancellationToken cancellationToken = default)
-        => throw new AdminOperationException("Audit storage is not configured.");
+        => throw new AdminOperationException("Audit storage is not configured.", AdminOperationErrorKind.Unavailable);
 
     /// <inheritdoc />
     public ValueTask<(IReadOnlyList<AdminAuditEntry> Items, int Total)> ReadAsync(int offset, int limit, CancellationToken cancellationToken = default)
-        => throw new AdminOperationException("Audit storage is not configured.");
+        => throw new AdminOperationException("Audit storage is not configured.", AdminOperationErrorKind.Unavailable);
 }

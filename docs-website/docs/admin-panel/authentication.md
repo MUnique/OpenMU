@@ -292,3 +292,22 @@ The location can be changed with `AdminPanel:Auth:DataProtectionKeyPath`.
 
 API keys with the Viewer role can also access the optional read-only
 [MCP endpoint](mcp.md). It is disabled by default and accepts API keys only.
+
+### Phase two MCP and API upgrade notes
+
+The panel still permits anonymous initial setup until the first admin user
+exists or a bootstrap user is configured. Setup operations are attributed to
+`setup`; when admin audit storage is unavailable they use sanitized log-only
+auditing. Explicit `-demo` mode also uses log-only panel auditing. MCP and API
+writes always require authentication and durable admin audit storage.
+
+Outside demo mode and initial setup, panel operations including **Stop** require
+the admin audit database. An outage blocks the action and displays an error. Use
+the host's service manager or orchestrator for emergency shutdown during an
+audit outage.
+
+External applications must update announcement requests from GET to
+`POST /api/send/{id}?msg=...`. The identifier is now the actual game server ID,
+rather than its position in a list. Operational APIs no longer allow anonymous
+requests during initial setup. See [MCP](mcp.md#phase-two-upgrade-notes) for the
+operational HTTP error statuses and uncertain-outcome handling.
