@@ -15,7 +15,8 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 /// <param name="http">The HTTP context accessor.</param>
 /// <param name="authentication">The circuit authentication state.</param>
 /// <param name="userAvailability">The same initial-setup gate used by panel authorization.</param>
-public sealed class AdminOperationContext(IHttpContextAccessor http, AuthenticationStateProvider authentication, AdminUserAvailabilityService userAvailability) : IAdminOperationContext
+/// <param name="circuit">The scoped panel circuit lifecycle.</param>
+public sealed class AdminOperationContext(IHttpContextAccessor http, AuthenticationStateProvider authentication, AdminUserAvailabilityService userAvailability, AdminOperationCircuitState circuit) : IAdminOperationContext
 {
     /// <inheritdoc />
     public async ValueTask<AdminActor> GetActorAsync(CancellationToken cancellationToken)
@@ -23,6 +24,12 @@ public sealed class AdminOperationContext(IHttpContextAccessor http, Authenticat
         var request = http.HttpContext;
         var isMcp = request?.Request.Path.StartsWithSegments("/mcp") == true;
         var isApi = request?.Request.Path.StartsWithSegments("/api") == true;
+        var isPanel = !isMcp && !isApi && circuit.IsOpen;
+        if (!isMcp && !isApi && !isPanel)
+        {
+            throw new AdminOperationException("Admin operations require an open panel circuit or an API endpoint.", AdminOperationErrorKind.Forbidden);
+        }
+
         var principal = isMcp || isApi ? request!.User : (await authentication.GetAuthenticationStateAsync().ConfigureAwait(false)).User;
 
         // API keys carry their own roles; do not merge them with a simultaneous browser cookie.
@@ -34,7 +41,7 @@ public sealed class AdminOperationContext(IHttpContextAccessor http, Authenticat
         if (principal.Identity?.IsAuthenticated != true)
         {
             // Anonymous setup applies only to panel circuits, never to MCP or REST requests.
-            if (!isMcp && !isApi && !await userAvailability.AnyUserExistsAsync(cancellationToken).ConfigureAwait(false))
+            if (isPanel && !await userAvailability.AnyUserExistsAsync(cancellationToken).ConfigureAwait(false))
             {
                 return new AdminActor("setup", "Initial setup", "panel", [MUnique.OpenMU.Persistence.AdminAuth.AdminRoles.Administrator]) { IsInitialSetup = true };
             }

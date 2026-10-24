@@ -43,7 +43,15 @@ else if (this._page is { } page)
     private int _offset;
     private bool _unavailable;
 
-    protected override async Task OnInitializedAsync() => await this.LoadAsync().ConfigureAwait(true);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Audit authorization needs the running circuit, which is absent during prerendering.
+            await this.LoadAsync().ConfigureAwait(true);
+            this.StateHasChanged();
+        }
+    }
 
     private async Task LoadAsync()
     {

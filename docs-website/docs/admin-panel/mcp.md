@@ -49,8 +49,15 @@ for emergency shutdown instead.
 The panel preserves anonymous initial setup until the first admin user exists
 or a bootstrap user is configured. These actions use the caller ID `setup`.
 When audit storage is unavailable during initial setup, the panel records
-sanitized attempts and outcomes in logs instead. The explicit `-demo` mode also
-uses a log-only panel audit without PostgreSQL. These non-durable entries are
+sanitized attempts and outcomes in logs instead.
+
+After a restart with an unreachable admin database, the host cannot distinguish
+an existing installation from initial setup, so anonymous panel setup access and
+log-only auditing may apply again. Configure a bootstrap user with
+`OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` to prevent this fallback.
+
+The explicit `-demo` mode also uses a log-only panel audit without PostgreSQL.
+These non-durable entries are
 absent from **Audit history** and survive only as long as the logs do. Neither
 exception applies to MCP or API requests.
 

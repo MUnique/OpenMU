@@ -298,7 +298,14 @@ API keys with the Viewer role can also access the optional read-only
 The panel still permits anonymous initial setup until the first admin user
 exists or a bootstrap user is configured. Setup operations are attributed to
 `setup`; when admin audit storage is unavailable they use sanitized log-only
-auditing. Explicit `-demo` mode also uses log-only panel auditing. MCP and API
+auditing.
+
+If the host restarts while the admin database is unreachable, it cannot
+distinguish a previous installation from initial setup and may allow anonymous
+setup actions with log-only auditing. Configure a bootstrap user with
+`OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` to prevent that fallback.
+
+Explicit `-demo` mode also uses log-only panel auditing. MCP and API
 writes always require authentication and durable admin audit storage.
 
 Outside demo mode and initial setup, panel operations including **Stop** require

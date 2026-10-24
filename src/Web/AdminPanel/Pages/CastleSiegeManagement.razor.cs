@@ -272,6 +272,10 @@ public partial class CastleSiegeManagement : ComponentBase
                 this.ToastService.ShowError(GetErrorMessage(result.Error) ?? Resources.CastleSiegeErrorUnexpected);
             }
         }
+        catch (AdminOperationException exception)
+        {
+            this.ToastService.ShowError(exception.Message);
+        }
         catch (Exception exception)
         {
             this.Logger.LogError(exception, "A Castle Siege administration operation failed.");

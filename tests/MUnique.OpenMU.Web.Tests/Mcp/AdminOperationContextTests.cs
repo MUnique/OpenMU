@@ -6,12 +6,15 @@ namespace MUnique.OpenMU.Web.Tests.Mcp;
 
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -37,7 +40,7 @@ public sealed class AdminOperationContextTests
             new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "cookie-id"), new Claim(ClaimTypes.Name, "administrator"), new Claim(ClaimTypes.Role, AdminRoles.Administrator)], "Cookies"),
             new ClaimsIdentity([new Claim(ApiKeyAuthenticationDefaults.ClientIdClaimType, "key-id"), new Claim(ClaimTypes.Name, "payment-key"), new Claim(ClaimTypes.Role, AdminRoles.CashShop)], ApiKeyAuthenticationDefaults.AuthenticationScheme),
         });
-        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, Mock.Of<AuthenticationStateProvider>(), CreateAvailability(new InMemoryAdminUserRepository()));
+        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, Mock.Of<AuthenticationStateProvider>(), CreateAvailability(new InMemoryAdminUserRepository()), new AdminOperationCircuitState());
         var actor = await context.GetActorAsync(default).ConfigureAwait(false);
         Assert.That(actor.Id, Is.EqualTo("key-id"));
         Assert.That(actor.Name, Is.EqualTo("payment-key"));
@@ -52,7 +55,7 @@ public sealed class AdminOperationContextTests
         var http = new DefaultHttpContext();
         http.Request.Path = "/mcp";
         http.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "cookie-id"), new Claim(ClaimTypes.Role, AdminRoles.Administrator)], "Cookies"));
-        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, Mock.Of<AuthenticationStateProvider>(), CreateAvailability(new InMemoryAdminUserRepository()));
+        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, Mock.Of<AuthenticationStateProvider>(), CreateAvailability(new InMemoryAdminUserRepository()), new AdminOperationCircuitState());
         Assert.ThrowsAsync<AdminOperationException>(async () => await context.GetActorAsync(default).ConfigureAwait(false));
     }
 
@@ -89,7 +92,7 @@ public sealed class AdminOperationContextTests
         authentication.Setup(a => a.GetAuthenticationStateAsync()).ReturnsAsync(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
         var http = new DefaultHttpContext();
         http.Request.Path = "/_blazor";
-        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, authentication.Object, availability);
+        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, authentication.Object, availability, await OpenCircuitAsync().ConfigureAwait(false));
         var actor = await context.GetActorAsync(default).ConfigureAwait(false);
         Assert.That(actor.Id, Is.EqualTo("setup"));
         Assert.That(actor.Frontend, Is.EqualTo("panel"));
@@ -108,13 +111,72 @@ public sealed class AdminOperationContextTests
 
     /// <summary>A configured bootstrap identity closes anonymous setup even without a database user.</summary>
     [Test]
-    public void BootstrapUserPreventsAnonymousSetup()
+    public async Task BootstrapUserPreventsAnonymousSetupAsync()
     {
         var options = new AdminPanelAuthOptions { BootstrapUser = new BootstrapAdminUserOptions { LoginName = "bootstrap", Password = "long-bootstrap-password" } };
         var authentication = new Mock<AuthenticationStateProvider>();
         authentication.Setup(a => a.GetAuthenticationStateAsync()).ReturnsAsync(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
-        var context = new AdminOperationContext(new HttpContextAccessor(), authentication.Object, CreateAvailability(new InMemoryAdminUserRepository(), options));
+        var context = new AdminOperationContext(new HttpContextAccessor(), authentication.Object, CreateAvailability(new InMemoryAdminUserRepository(), options), await OpenCircuitAsync().ConfigureAwait(false));
         Assert.ThrowsAsync<AdminOperationException>(async () => await context.GetActorAsync(default).ConfigureAwait(false));
+    }
+
+    /// <summary>Unknown HTTP routes cannot borrow a circuit principal or gain setup privileges.</summary>
+    [TestCase(false)]
+    [TestCase(true)]
+    public void UnknownHttpEndpointsNeverBecomePanelCallers(bool authenticated)
+    {
+        var http = new DefaultHttpContext();
+        http.Request.Path = "/future-admin-action";
+        var authentication = new Mock<AuthenticationStateProvider>();
+        var principal = authenticated
+            ? new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Administrator)], "Cookies"))
+            : new ClaimsPrincipal(new ClaimsIdentity());
+        authentication.Setup(a => a.GetAuthenticationStateAsync()).ReturnsAsync(new AuthenticationState(principal));
+        var context = new AdminOperationContext(new HttpContextAccessor { HttpContext = http }, authentication.Object,
+            CreateAvailability(new InMemoryAdminUserRepository()), new AdminOperationCircuitState());
+        var error = Assert.ThrowsAsync<AdminOperationException>(async () => await context.GetActorAsync(default).ConfigureAwait(false));
+        Assert.That(error!.Kind, Is.EqualTo(AdminOperationErrorKind.Forbidden));
+        authentication.Verify(a => a.GetAuthenticationStateAsync(), Times.Never);
+    }
+
+    /// <summary>A closed circuit no longer grants anonymous setup access.</summary>
+    [Test]
+    public async Task ClosingCircuitRevokesPanelAttributionAsync()
+    {
+        var circuit = await OpenCircuitAsync().ConfigureAwait(false);
+        var authentication = new Mock<AuthenticationStateProvider>();
+        authentication.Setup(a => a.GetAuthenticationStateAsync()).ReturnsAsync(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+        var context = new AdminOperationContext(new HttpContextAccessor(), authentication.Object,
+            CreateAvailability(new InMemoryAdminUserRepository()), circuit);
+        Assert.That((await context.GetActorAsync(default).ConfigureAwait(false)).IsInitialSetup, Is.True);
+        await circuit.OnCircuitClosedAsync(null!, default).ConfigureAwait(false);
+        Assert.ThrowsAsync<AdminOperationException>(async () => await context.GetActorAsync(default).ConfigureAwait(false));
+    }
+
+    /// <summary>Only the circuit scope receives its lifecycle marker; ordinary HTTP scopes remain closed.</summary>
+    [Test]
+    public async Task CircuitMarkerRegistrationIsSharedAndScopedAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddAdminPanelAuth(new ConfigurationBuilder().Build());
+        using var provider = services.BuildServiceProvider();
+        using var circuitScope = provider.CreateScope();
+        using var httpScope = provider.CreateScope();
+        var marker = circuitScope.ServiceProvider.GetRequiredService<AdminOperationCircuitState>();
+        var handler = circuitScope.ServiceProvider.GetServices<CircuitHandler>().OfType<AdminOperationCircuitState>().Single();
+        Assert.That(handler, Is.SameAs(marker));
+        await handler.OnCircuitOpenedAsync(null!, default).ConfigureAwait(false);
+        Assert.That(marker.IsOpen, Is.True);
+        Assert.That(httpScope.ServiceProvider.GetRequiredService<AdminOperationCircuitState>().IsOpen, Is.False);
+    }
+
+    private static async ValueTask<AdminOperationCircuitState> OpenCircuitAsync()
+    {
+        var circuit = new AdminOperationCircuitState();
+        // The lifecycle token is unused; framework Circuit instances have no public constructor.
+        await circuit.OnCircuitOpenedAsync(null!, default).ConfigureAwait(false);
+        return circuit;
     }
 
     private static AdminUserAvailabilityService CreateAvailability(InMemoryAdminUserRepository repository, AdminPanelAuthOptions? options = null)
