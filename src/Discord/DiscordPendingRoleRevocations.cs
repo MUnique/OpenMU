@@ -14,12 +14,13 @@ using System.Threading.Tasks;
 /// </summary>
 /// <remarks>
 /// The users are kept in memory, so they are retried until the bot succeeds or the process ends.
-/// All updates of the role run one after another, so that an older removal can't take away the role of a newer link.
+/// The updates of the role of a user run one after another, so that an older removal can't take away the role of a newer link.
+/// The updates of different users don't wait for each other.
 /// </remarks>
 internal sealed class DiscordPendingRoleRevocations
 {
     private readonly ConcurrentDictionary<ulong, byte> _userIds = new();
-    private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly Dictionary<ulong, UserLock> _locks = new();
 
     /// <summary>
     /// Gets the number of pending users.
@@ -41,7 +42,7 @@ internal sealed class DiscordPendingRoleRevocations
     /// <returns>The task.</returns>
     internal async Task LinkAsync(ulong userId, Func<Task> addRoleAsync)
     {
-        await this._lock.WaitAsync().ConfigureAwait(false);
+        var userLock = await this.AcquireAsync(userId).ConfigureAwait(false);
         try
         {
             this._userIds.TryRemove(userId, out _);
@@ -49,7 +50,7 @@ internal sealed class DiscordPendingRoleRevocations
         }
         finally
         {
-            this._lock.Release();
+            this.Release(userId, userLock);
         }
     }
 
@@ -63,7 +64,7 @@ internal sealed class DiscordPendingRoleRevocations
         var succeeded = 0;
         foreach (var userId in this._userIds.Keys)
         {
-            await this._lock.WaitAsync().ConfigureAwait(false);
+            var userLock = await this.AcquireAsync(userId).ConfigureAwait(false);
             try
             {
                 // The user might have been linked again in the meantime.
@@ -75,10 +76,57 @@ internal sealed class DiscordPendingRoleRevocations
             }
             finally
             {
-                this._lock.Release();
+                this.Release(userId, userLock);
             }
         }
 
         return succeeded;
+    }
+
+    private async Task<UserLock> AcquireAsync(ulong userId)
+    {
+        UserLock userLock;
+        lock (this._locks)
+        {
+            if (!this._locks.TryGetValue(userId, out userLock!))
+            {
+                userLock = new UserLock();
+                this._locks.Add(userId, userLock);
+            }
+
+            userLock.Users++;
+        }
+
+        await userLock.Semaphore.WaitAsync().ConfigureAwait(false);
+        return userLock;
+    }
+
+    private void Release(ulong userId, UserLock userLock)
+    {
+        userLock.Semaphore.Release();
+        lock (this._locks)
+        {
+            // The lock is removed when nobody uses it, so that the locks don't pile up.
+            if (--userLock.Users == 0)
+            {
+                this._locks.Remove(userId);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The lock of a user, and the number of operations which use or wait for it.
+    /// </summary>
+    private sealed class UserLock
+    {
+        /// <summary>
+        /// Gets the semaphore.
+        /// </summary>
+        public SemaphoreSlim Semaphore { get; } = new(1, 1);
+
+        /// <summary>
+        /// Gets or sets the number of operations which use or wait for the lock.
+        /// </summary>
+        public int Users { get; set; }
     }
 }

@@ -102,4 +102,36 @@ public class DiscordPendingRoleRevocationsTest
         Assert.That(operations, Is.EqualTo(new[] { "remove", "add" }));
         Assert.That(revocations.Count, Is.Zero);
     }
+
+    /// <summary>
+    /// Tests that a running removal for one user doesn't block the link of another user.
+    /// </summary>
+    [Test]
+    public async Task RunningRevocationDoesNotBlockOtherUsersAsync()
+    {
+        var revocations = new DiscordPendingRoleRevocations();
+        revocations.Add(1);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var processing = revocations.ProcessAsync(async _ =>
+        {
+            started.SetResult();
+            await resume.Task.ConfigureAwait(false);
+            return true;
+        });
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+        var added = false;
+        await revocations.LinkAsync(2, () =>
+        {
+            added = true;
+            return Task.CompletedTask;
+        }).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        Assert.That(added, Is.True);
+        Assert.That(processing.IsCompleted, Is.False);
+
+        resume.SetResult();
+        await processing.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        Assert.That(revocations.Count, Is.Zero);
+    }
 }
