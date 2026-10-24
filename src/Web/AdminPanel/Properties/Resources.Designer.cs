@@ -3709,6 +3709,105 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Best score.
+        /// </summary>
+        public static string LeaderboardBestScore {
+            get {
+                return ResourceManager.GetString("LeaderboardBestScore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Games.
+        /// </summary>
+        public static string LeaderboardGames {
+            get {
+                return ResourceManager.GetString("LeaderboardGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No finished games yet..
+        /// </summary>
+        public static string LeaderboardNoEntries {
+            get {
+                return ResourceManager.GetString("LeaderboardNoEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Period.
+        /// </summary>
+        public static string LeaderboardPeriod {
+            get {
+                return ResourceManager.GetString("LeaderboardPeriod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All time.
+        /// </summary>
+        public static string LeaderboardPeriodAllTime {
+            get {
+                return ResourceManager.GetString("LeaderboardPeriodAllTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last 30 days.
+        /// </summary>
+        public static string LeaderboardPeriodLast30Days {
+            get {
+                return ResourceManager.GetString("LeaderboardPeriodLast30Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last 7 days.
+        /// </summary>
+        public static string LeaderboardPeriodLast7Days {
+            get {
+                return ResourceManager.GetString("LeaderboardPeriodLast7Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leaderboards.
+        /// </summary>
+        public static string Leaderboards {
+            get {
+                return ResourceManager.GetString("Leaderboards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The best characters of the mini games which save their ra....
+        /// </summary>
+        public static string LeaderboardsDescription {
+            get {
+                return ResourceManager.GetString("LeaderboardsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No mini game saves its ranking statistics. Enable "Save R....
+        /// </summary>
+        public static string LeaderboardsNoMiniGames {
+            get {
+                return ResourceManager.GetString("LeaderboardsNoMiniGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total score.
+        /// </summary>
+        public static string LeaderboardTotalScore {
+            get {
+                return ResourceManager.GetString("LeaderboardTotalScore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Live.
         /// </summary>
         public static string Live {
