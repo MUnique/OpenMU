@@ -570,7 +570,7 @@ internal class ItemFormulasEqualTodayTest
             var extraLinks = priceExtras.Select(option => new ItemOptionLink { ItemOption = option, Level = 1 }).ToList();
             extraLinks.ForEach(item.ItemOptions.Add);
             item.HasSkill = item.Definition!.Skill is not null;
-            this.ComparePricesAtDurabilities(item, [fullDurability], $"{itemCase}, with {(item.HasSkill ? "skill, " : string.Empty)}{string.Join(", ", priceExtras.Select(o => o.OptionType?.Name))}");
+            this.ComparePricesAtDurabilities(item, [fullDurability], $"{itemCase}, with {(item.HasSkill ? "skill, " : string.Empty)}{string.Join(", ", priceExtras.Select(o => o.OptionType?.Name.ValueInNeutralLanguage))}");
             item.HasSkill = false;
             extraLinks.ForEach(link => item.ItemOptions.Remove(link));
         }
