@@ -145,18 +145,21 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
 
     private static JsonObject ReadConfiguration(CancellationToken cancellationToken, Func<JsonObject> read)
     {
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 1; attempt < MaximumReadAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 return read();
             }
-            catch (ConfigurationReadConflictException) when (attempt < MaximumReadAttempts)
+            catch (ConfigurationReadConflictException)
             {
                 // Restart the entire projection so that a failed attempt never returns partial data.
             }
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return read();
     }
 
     private static object[] ReadCollection(IEnumerable collection, int limit = int.MaxValue)
