@@ -77,20 +77,21 @@ internal sealed class DiscordPendingRoleRevocations
                     continue;
                 }
 
-                var isLinked = await isLinkedAsync(userId).ConfigureAwait(false);
-                if (isLinked is null)
+                switch (await isLinkedAsync(userId).ConfigureAwait(false))
                 {
-                    continue;
-                }
-
-                if (isLinked.Value)
-                {
-                    this._userIds.TryRemove(userId, out _);
-                }
-                else if (await revokeAsync(userId).ConfigureAwait(false))
-                {
-                    this._userIds.TryRemove(userId, out _);
-                    succeeded++;
+                    case null:
+                        // Unknown, so it's retried later.
+                        break;
+                    case true:
+                        this._userIds.TryRemove(userId, out _);
+                        break;
+                    case false when await revokeAsync(userId).ConfigureAwait(false):
+                        this._userIds.TryRemove(userId, out _);
+                        succeeded++;
+                        break;
+                    default:
+                        // The removal failed, so it's retried later.
+                        break;
                 }
             }
             finally

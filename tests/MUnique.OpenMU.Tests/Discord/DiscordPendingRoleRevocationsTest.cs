@@ -12,6 +12,8 @@ using MUnique.OpenMU.Discord;
 [TestFixture]
 public class DiscordPendingRoleRevocationsTest
 {
+    private static readonly Func<ulong, Task<bool?>> NotLinked = _ => Task.FromResult<bool?>(false);
+
     /// <summary>
     /// Tests that the users, for which the removal fails (e.g. the bot isn't connected), are retried later.
     /// </summary>
@@ -148,19 +150,17 @@ public class DiscordPendingRoleRevocationsTest
         // The late unlink event.
         revocations.Add(1);
         var revoked = false;
-        Task<bool> RevokeAsync(ulong userId)
+        Func<ulong, Task<bool>> revokeAsync = _ =>
         {
             revoked = true;
             return Task.FromResult(true);
-        }
+        };
 
-        Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(null), RevokeAsync).ConfigureAwait(false), Is.Zero);
+        Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(null), revokeAsync).ConfigureAwait(false), Is.Zero);
         Assert.That(revocations.Count, Is.EqualTo(1));
 
-        Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(true), RevokeAsync).ConfigureAwait(false), Is.Zero);
+        Assert.That(await revocations.ProcessAsync(_ => Task.FromResult<bool?>(true), revokeAsync).ConfigureAwait(false), Is.Zero);
         Assert.That(revoked, Is.False);
         Assert.That(revocations.Count, Is.Zero);
     }
-
-    private static Task<bool?> NotLinked(ulong userId) => Task.FromResult<bool?>(false);
 }
