@@ -246,7 +246,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
         {
             this._pendingRoleRevocations.Add(userId);
-            await this.ProcessPendingRoleRevocationsAsync().ConfigureAwait(false);
+            await this.ProcessPendingRoleRevocationsAsync(true).ConfigureAwait(false);
         }
     }
 
@@ -329,7 +329,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         await this.ReloadChatBindingsAsync().ConfigureAwait(false);
         this.ServerState = ServerState.Started;
         this._ready.TrySetResult();
-        await this.ProcessPendingRoleRevocationsAsync().ConfigureAwait(false);
+        await this.ProcessPendingRoleRevocationsAsync(true).ConfigureAwait(false);
 
         if (this._statusLoopCancellation is null)
         {
@@ -435,11 +435,16 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             {
                 if (roleChange.IsLinked)
                 {
-                    this._pendingRoleRevocations.Remove(roleChange.UserId);
+                    await this._pendingRoleRevocations.LinkAsync(roleChange.UserId, () => this.UpdateLinkedRoleAsync(roleChange)).ConfigureAwait(false);
                 }
-
-                await this.UpdateLinkedRoleAsync(roleChange).ConfigureAwait(false);
+                else
+                {
+                    this._pendingRoleRevocations.Add(roleChange.UserId);
+                }
             }
+
+            // The channels are synchronized below.
+            await this.ProcessPendingRoleRevocationsAsync(false).ConfigureAwait(false);
 
             if (answer.RoleChanges.Count > 0)
             {
@@ -460,7 +465,11 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// Removes the roles of the users, whose accounts were unlinked, and synchronizes the channels of the guilds with the linked members.
     /// The users, for which it fails, are retried later, e.g. when the bot is connected again.
     /// </summary>
-    private async Task ProcessPendingRoleRevocationsAsync()
+    /// <param name="syncChannels">
+    /// If set to <c>true</c>, the channels are synchronized even if removing a role failed, because the channels don't depend on the role.
+    /// Otherwise, e.g. for the retries, only after a role was removed.
+    /// </param>
+    private async Task ProcessPendingRoleRevocationsAsync(bool syncChannels)
     {
         if (this._pendingRoleRevocations.Count == 0 || this.ServerState != ServerState.Started)
         {
@@ -468,7 +477,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         }
 
         var revoked = await this._pendingRoleRevocations.ProcessAsync(userId => this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false))).ConfigureAwait(false);
-        if (revoked > 0)
+        if (syncChannels || revoked > 0)
         {
             // The user might lose access to channels of guilds.
             await this.SyncHostedChannelsAsync().ConfigureAwait(false);
@@ -578,7 +587,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             {
                 await this.UpdateStatusAsync().ConfigureAwait(false);
                 await this.MaintainChatBridgeAsync().ConfigureAwait(false);
-                await this.ProcessPendingRoleRevocationsAsync().ConfigureAwait(false);
+                await this.ProcessPendingRoleRevocationsAsync(false).ConfigureAwait(false);
             }
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false));
         }

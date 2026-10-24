@@ -1,4 +1,4 @@
-// <copyright file="DiscordPendingRoleRevocationsTest.cs" company="MUnique">
+﻿// <copyright file="DiscordPendingRoleRevocationsTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -50,7 +50,7 @@ public class DiscordPendingRoleRevocationsTest
     {
         var revocations = new DiscordPendingRoleRevocations();
         revocations.Add(1);
-        revocations.Remove(1);
+        await revocations.LinkAsync(1, () => Task.CompletedTask).ConfigureAwait(false);
         var called = false;
         await revocations.ProcessAsync(_ =>
         {
@@ -58,5 +58,48 @@ public class DiscordPendingRoleRevocationsTest
             return Task.FromResult(true);
         }).ConfigureAwait(false);
         Assert.That(called, Is.False);
+        Assert.That(revocations.Count, Is.Zero);
+    }
+
+    /// <summary>
+    /// Tests that a link during a running removal adds the role after the removal, so that the linked user keeps the role.
+    /// </summary>
+    [Test]
+    public async Task LinkDuringRunningRevocationAddsRoleAfterwardsAsync()
+    {
+        var revocations = new DiscordPendingRoleRevocations();
+        revocations.Add(1);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var operations = new List<string>();
+
+        var processing = revocations.ProcessAsync(async _ =>
+        {
+            started.SetResult();
+            await resume.Task.ConfigureAwait(false);
+            lock (operations)
+            {
+                operations.Add("remove");
+            }
+
+            return true;
+        });
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+        var linking = revocations.LinkAsync(1, () =>
+        {
+            lock (operations)
+            {
+                operations.Add("add");
+            }
+
+            return Task.CompletedTask;
+        });
+        Assert.That(linking.IsCompleted, Is.False);
+
+        resume.SetResult();
+        await Task.WhenAll(processing, linking).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        Assert.That(operations, Is.EqualTo(new[] { "remove", "add" }));
+        Assert.That(revocations.Count, Is.Zero);
     }
 }
