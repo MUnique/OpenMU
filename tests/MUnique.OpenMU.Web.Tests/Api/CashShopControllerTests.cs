@@ -15,6 +15,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>
 /// Tests for the <see cref="CashShopController"/>, which grants cash shop coins through the public API.
@@ -38,7 +39,7 @@ public class CashShopControllerTests
         gameConfigurationSource
             .Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new GameConfiguration());
-        this._controller = new CashShopController(this._persistenceContextProvider, gameConfigurationSource.Object, Mock.Of<ILogger<CashShopController>>())
+        this._controller = new CashShopController(this._persistenceContextProvider, gameConfigurationSource.Object, Mock.Of<ILogger<CashShopController>>(), AdminOperationTestServices.CreateExecutor("api"))
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

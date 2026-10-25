@@ -488,6 +488,11 @@
             </div>
         </div>
         <div class="form-check mb-1">
+            <input id="discordAutoCreateChannels" type="checkbox" class="form-check-input" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:AutoCreateHostedChannels")" @bind="settings.Bot.ChatBridge.AutoCreateHostedChannels"/>
+            <label class="form-check-label" for="discordAutoCreateChannels">@Resources.DiscordAutoCreateHostedChannels</label>
+        </div>
+        <p class="form-text">@Resources.DiscordAutoCreateHostedChannelsHint</p>
+        <div class="form-check mb-1">
             <input id="discordReadMessages" type="checkbox" class="form-check-input" disabled="@this.IsDefinedElsewhere("Bot:ChatBridge:ReadMessages")" @bind="settings.Bot.ChatBridge.ReadMessages"/>
             <label class="form-check-label" for="discordReadMessages">@UiText("DiscordForwardNormalMessages")</label>
         </div>

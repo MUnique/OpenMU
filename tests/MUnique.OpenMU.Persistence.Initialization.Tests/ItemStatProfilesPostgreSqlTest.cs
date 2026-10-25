@@ -263,8 +263,9 @@ internal class ItemStatProfilesPostgreSqlTest
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
         addDuplicate(context, gameConfiguration);
 
-        var exception = Assert.ThrowsAsync<DbUpdateException>(async () => await context.SaveChangesAsync().ConfigureAwait(false));
-        Assert.That(exception!.InnerException, Is.InstanceOf<PostgresException>().With.Property(nameof(PostgresException.SqlState)).EqualTo(PostgresErrorCodes.UniqueViolation));
+        // The context reports a rejected change as a PersistenceConflictException around the exception of the database.
+        var exception = Assert.ThrowsAsync<PersistenceConflictException>(async () => await context.SaveChangesAsync().ConfigureAwait(false));
+        Assert.That(exception!.InnerException?.InnerException, Is.InstanceOf<PostgresException>().With.Property(nameof(PostgresException.SqlState)).EqualTo(PostgresErrorCodes.UniqueViolation));
     }
 
     /// <summary>

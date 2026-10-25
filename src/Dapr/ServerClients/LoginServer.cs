@@ -30,6 +30,14 @@ public class LoginServer : ILoginServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId)
+        => await this._daprClient.InvokeMethodAsync<AccountReservationArguments, bool>(this._targetAppId, GetMethodName(nameof(this.TryReserveAccountAsync)), new AccountReservationArguments(accountName, reservationId)).ConfigureAwait(false);
+
+    /// <inheritdoc />
+    public async ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId)
+        => await this._daprClient.InvokeMethodAsync(this._targetAppId, GetMethodName(nameof(this.ReleaseAccountReservationAsync)), new AccountReservationArguments(accountName, reservationId)).ConfigureAwait(false);
+
+    /// <inheritdoc />
     public async Task<bool> TryLoginAsync(string accountName, byte serverId)
     {
         try

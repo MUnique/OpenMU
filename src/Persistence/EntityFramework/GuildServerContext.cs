@@ -62,6 +62,21 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     }
 
     /// <inheritdoc/>
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default)
+    {
+        var masters = await (from member in this.Context.Set<GuildMember>()
+                             join character in this.Context.Set<CharacterName>() on member.Id equals character.Id
+                             where member.Status == MUnique.OpenMU.Interfaces.GuildPosition.GuildMaster
+                             select new { member.GuildId, character.Name })
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+        // A guild has one master, but the data isn't constrained to it.
+        return masters
+            .GroupBy(master => master.GuildId)
+            .ToDictionary(group => group.Key, group => group.First().Name);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName)
     {
         return await CreateGuildMembershipQuery(this.Context, characterName).FirstOrDefaultAsync().ConfigureAwait(false);
@@ -115,11 +130,20 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             .AsNoTracking()
             .Include(g => g.RawMembers)
             .Include(g => g.RawAllianceGuild)
+            .Include(g => g.RawHostility)
             .Where(g => g.Name != null && g.Name.ToLower().Contains(term))
             .OrderBy(g => g.Name)
             .Skip(skip)
             .Take(count)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<int> CountGuildsAsync(string text, CancellationToken cancellationToken = default)
+    {
+        var term = text.ToLowerInvariant();
+        return await this.Context.Set<Guild>().AsNoTracking()
+            .CountAsync(g => g.Name != null && g.Name.ToLower().Contains(term), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

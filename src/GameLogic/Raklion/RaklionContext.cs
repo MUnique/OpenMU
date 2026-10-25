@@ -295,7 +295,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     private IEnumerable<MonsterSpawnArea> GetWaveSpawns(byte waveNumber)
     {
         return this._hatcheryMap?.Definition.MonsterSpawns
-                   .Where(spawn => spawn.MonsterDefinition is not null
+                   .Where(spawn => spawn.MonsterDefinition is { IsActive: true }
                                    && spawn.SpawnTrigger == SpawnTrigger.OnceAtWaveStart
                                    && spawn.WaveNumber == waveNumber)
                ?? [];
@@ -432,6 +432,12 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
 
     private async ValueTask<Monster?> SpawnMonsterAsync(MonsterSpawnArea spawnArea, INpcIntelligence intelligence)
     {
+        if (spawnArea.MonsterDefinition is not { IsActive: true })
+        {
+            this._logger.LogDebug("Skipping the spawn of {monster} of the raklion event, because it's not active.", spawnArea.MonsterDefinition);
+            return null;
+        }
+
         var map = this._hatcheryMap!;
         var monster = new Monster(spawnArea, spawnArea.MonsterDefinition!, map, this._gameContext.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
         try

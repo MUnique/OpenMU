@@ -322,7 +322,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
     {
         var waveNumber = ImperialGuardianEventDefinition.GetWaveNumber(this.Day, zone);
         return this.Map.Definition.MonsterSpawns
-            .Where(spawn => spawn.MonsterDefinition is not null
+            .Where(spawn => spawn.MonsterDefinition is { IsActive: true }
                             && spawn.SpawnTrigger == SpawnTrigger.OnceAtWaveStart
                             && spawn.WaveNumber == waveNumber);
     }
@@ -473,7 +473,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
     private async ValueTask DropFragmentItemsAsync(Monster boss, DeathInformation e)
     {
         if (this._definition.FragmentDrops.FirstOrDefault(drop => drop.MonsterNumber == boss.Definition.Number) is not { } fragmentDrop
-            || this._gameContext.Configuration.Items.FirstOrDefault(item => item is { Group: 14 } && item.Number == fragmentDrop.ItemNumber) is not { } fragment)
+            || this._gameContext.Configuration.Items.FirstOrDefault(item => item is { Group: 14, IsActive: true } && item.Number == fragmentDrop.ItemNumber) is not { } fragment)
         {
             return;
         }

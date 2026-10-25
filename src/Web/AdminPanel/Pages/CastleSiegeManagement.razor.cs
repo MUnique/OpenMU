@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CastleSiege;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared;
@@ -58,6 +61,9 @@ public partial class CastleSiegeManagement : ComponentBase
     /// Gets or sets the guild name entered in the owner form.
     /// </summary>
     public string OwnerGuildName { get; set; } = string.Empty;
+
+    [Inject]
+    private AdminOperationExecutor Executor { get; set; } = null!;
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
@@ -221,12 +227,15 @@ public partial class CastleSiegeManagement : ComponentBase
 
         await this.RunOperationAsync(
             () => this.ManagementService.RemoveRegistrationAsync(this._selectedGameServerId!.Value, guildId),
-            Resources.CastleSiegeRegistrationRemoved).ConfigureAwait(true);
+            Resources.CastleSiegeRegistrationRemoved,
+            new { serverId = this._selectedGameServerId, guildId, guildName }).ConfigureAwait(true);
     }
 
     private async Task RunOperationAsync(
         Func<ValueTask<CastleSiegeAdministrationResult>> operation,
-        string successMessage)
+        string successMessage,
+        object? arguments = null,
+        [CallerMemberName] string operationName = "")
     {
         if (this._isWorking)
         {
@@ -237,7 +246,23 @@ public partial class CastleSiegeManagement : ComponentBase
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
         try
         {
-            var result = await operation().ConfigureAwait(true);
+            var operationId = operationName switch
+            {
+                nameof(this.ForceStateAsync) => "castle_siege_set_state",
+                nameof(this.SetOwnerAsync) => "castle_siege_set_owner",
+                nameof(this.ResetCycleAsync) => "castle_siege_reset_cycle",
+                nameof(this.SaveTaxesAsync) => "castle_siege_set_taxes",
+                nameof(this.ClearTributeAsync) => "castle_siege_clear_tribute",
+                nameof(this.RemoveRegistrationAsync) => "castle_siege_remove_registration",
+                _ => throw new InvalidOperationException("Unknown Castle Siege panel action."),
+            };
+            var result = await this.Executor.ExecuteAsync(
+                AdminRoles.Operator,
+                operationId,
+                arguments ?? new { serverId = this._selectedGameServerId, guildName = this.OwnerGuildName, state = this._forcedState.ToString(), chaosTax = this._chaosTax, storeTax = this._storeTax, huntTax = this._huntTax },
+                _ => operation(),
+                default,
+                result => result.IsSuccess).ConfigureAwait(true);
             if (result.IsSuccess)
             {
                 this.ToastService.ShowSuccess(successMessage);
@@ -246,6 +271,10 @@ public partial class CastleSiegeManagement : ComponentBase
             {
                 this.ToastService.ShowError(GetErrorMessage(result.Error) ?? Resources.CastleSiegeErrorUnexpected);
             }
+        }
+        catch (AdminOperationException exception)
+        {
+            this.ToastService.ShowError(exception.Message);
         }
         catch (Exception exception)
         {

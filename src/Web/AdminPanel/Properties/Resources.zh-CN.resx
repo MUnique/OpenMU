@@ -2068,4 +2068,40 @@
   <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
     <value>商品 {0} 的数量不能小于 1。</value>
   </data>
+  <data name="Leaderboards" xml:space="preserve">
+    <value>排行榜</value>
+  </data>
+  <data name="LeaderboardsDescription" xml:space="preserve">
+    <value>保存排名统计的小游戏中的最佳角色，按其分数总和排名。不包括机器人。</value>
+  </data>
+  <data name="LeaderboardsNoMiniGames" xml:space="preserve">
+    <value>没有小游戏保存其排名统计。为小游戏启用 "Save Ranking Statistics" 以查看其排行榜。</value>
+  </data>
+  <data name="LeaderboardNoEntries" xml:space="preserve">
+    <value>暂无已完成的游戏。</value>
+  </data>
+  <data name="LeaderboardPeriod" xml:space="preserve">
+    <value>时间段</value>
+  </data>
+  <data name="LeaderboardPeriodAllTime" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="LeaderboardPeriodLast30Days" xml:space="preserve">
+    <value>最近30天</value>
+  </data>
+  <data name="LeaderboardPeriodLast7Days" xml:space="preserve">
+    <value>最近7天</value>
+  </data>
+  <data name="LeaderboardTotalScore" xml:space="preserve">
+    <value>总分</value>
+  </data>
+  <data name="LeaderboardBestScore" xml:space="preserve">
+    <value>最高分</value>
+  </data>
+  <data name="LeaderboardGames" xml:space="preserve">
+    <value>场次</value>
+  </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>此编辑器打开期间配置已更改。请先复制未保存的修改，再使用刷新加载当前数据后保存。</value>
+  </data>
 </root>

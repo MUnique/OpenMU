@@ -39,6 +39,11 @@ public static class ApiKeyAuthenticationDefaults
     public static string ClientNameClaimType => "openmu:api-client";
 
     /// <summary>
+    /// Gets the claim type which holds the persistent, unique identifier of the API key.
+    /// </summary>
+    public static string ClientIdClaimType => "openmu:api-client-id";
+
+    /// <summary>
     /// Gets the path prefix of the public API. Requests below it get a status code instead of a
     /// redirect to the login page when they are not authenticated.
     /// </summary>

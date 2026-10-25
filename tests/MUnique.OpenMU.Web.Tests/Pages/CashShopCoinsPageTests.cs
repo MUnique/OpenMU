@@ -14,9 +14,11 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Pages;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
+using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>
 /// Tests for the <see cref="CashShopCoins"/> page.
@@ -58,6 +60,7 @@ public class CashShopCoinsPageTests
         this._toastService = new Mock<IToastService>();
 
         this._context = new BunitContext();
+        this._context.Services.AddSingleton(AdminOperationTestServices.CreateExecutor());
         this._context.Services.AddSingleton<IPersistenceContextProvider>(this._persistenceContextProvider);
         this._context.Services.AddSingleton(gameConfigurationSource.Object);
         this._context.Services.AddSingleton(this._toastService.Object);

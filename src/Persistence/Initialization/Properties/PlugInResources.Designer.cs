@@ -881,6 +881,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixVulcanusWarpIndexUpdatePlugIn_Description text.</summary>
         public static string FixVulcanusWarpIndexUpdatePlugIn_Description => ResourceManager.GetString("FixVulcanusWarpIndexUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixFireScreamRequirementsUpdatePlugIn_Name text.</summary>
+        public static string FixFireScreamRequirementsUpdatePlugIn_Name => ResourceManager.GetString("FixFireScreamRequirementsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixFireScreamRequirementsUpdatePlugIn_Description text.</summary>
+        public static string FixFireScreamRequirementsUpdatePlugIn_Description => ResourceManager.GetString("FixFireScreamRequirementsUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddCrywolfEventUpdatePlugIn_Name text.</summary>
         public static string AddCrywolfEventUpdatePlugIn_Name => ResourceManager.GetString("AddCrywolfEventUpdatePlugIn_Name", resourceCulture)!;
 
@@ -892,6 +898,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddSmallWingsUpdatePlugIn_Description text.</summary>
         public static string AddSmallWingsUpdatePlugIn_Description => ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized SetIntroducedGameVersionsPlugInBase_Name text.</summary>
+        public static string SetIntroducedGameVersionsPlugInBase_Name => ResourceManager.GetString("SetIntroducedGameVersionsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized SetIntroducedGameVersionsPlugInBase_Description text.</summary>
+        public static string SetIntroducedGameVersionsPlugInBase_Description => ResourceManager.GetString("SetIntroducedGameVersionsPlugInBase_Description", resourceCulture)!;
 
         /// <summary>Gets the localized FixDinorantOptionNumbersPlugIn_Name text.</summary>
         public static string FixDinorantOptionNumbersPlugIn_Name => ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Name", resourceCulture)!;

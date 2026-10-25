@@ -25,12 +25,12 @@ public class LoggingConfigurationService
     /// <summary>
     /// The level which is used when nothing else is configured.
     /// </summary>
-    public const string DefaultLevel = "Information";
+    public static readonly string DefaultLevel = "Information";
 
     /// <summary>
     /// The name of the section which holds the logging configuration.
     /// </summary>
-    public const string SectionName = "Serilog";
+    public static readonly string SectionName = "Serilog";
 
     private const string MinimumLevelKey = "MinimumLevel";
     private const string DefaultKey = "Default";
@@ -182,6 +182,7 @@ public class LoggingConfigurationService
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <exception cref="JsonException">When <paramref name="sectionJson"/> or the file don't contain a valid JSON object.</exception>
     /// <exception cref="IOException">When the file couldn't be read or written.</exception>
+    [MUnique.OpenMU.Web.AdminPanel.Operations.NotExposedToAgents("Full logging sink configuration can contain credentials; MCP exposes minimum levels only.")]
     public async ValueTask SaveSectionAsync(string sectionJson, CancellationToken cancellationToken = default)
     {
         var section = ParseObject(sectionJson);
@@ -189,6 +190,36 @@ public class LoggingConfigurationService
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
         var root = await this.ReadRootAsync(cancellationToken).ConfigureAwait(false);
         root[SectionName] = section;
+        await this.WriteRootAsync(root, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Changes only the default minimum level under the shared configuration lock.</summary>
+    /// <param name="level">The validated Serilog level.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    internal async ValueTask SaveDefaultLevelAsync(string level, CancellationToken cancellationToken)
+    {
+        if (!Levels.Contains(level))
+        {
+            throw new ArgumentException("Unknown logging level.", nameof(level));
+        }
+
+        using var scope = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
+        var root = await this.ReadRootAsync(cancellationToken).ConfigureAwait(false);
+        if (root[SectionName] is not JsonObject section)
+        {
+            section = new JsonObject();
+            root[SectionName] = section;
+        }
+
+        if (section[MinimumLevelKey] is JsonObject minimum)
+        {
+            minimum[DefaultKey] = level;
+        }
+        else
+        {
+            section[MinimumLevelKey] = level;
+        }
+
         await this.WriteRootAsync(root, cancellationToken).ConfigureAwait(false);
     }
 

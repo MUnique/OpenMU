@@ -52,6 +52,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     private readonly DiscordDirectMessages _directMessages;
     private readonly ILogger<DiscordBot> _logger;
     private readonly SemaphoreSlim _lifecycleLock = new(1, 1);
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<ulong, byte> _reportedMissingGuilds = new();
 
     private DiscordSocketClient? _client;
     private DiscordBackgroundQueue? _backgroundQueue;
@@ -135,6 +136,12 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     /// <remarks>The number of the Discord servers which the bot is in.</remarks>
     public int CurrentConnections => this._client?.Guilds.Count ?? 0;
+
+    /// <summary>
+    /// Gets the users whose role of linked players still has to be removed.
+    /// The <see cref="DiscordIntegration"/> keeps them when it creates the bot again with changed settings.
+    /// </summary>
+    internal DiscordPendingRoleRevocations PendingRoleRevocations { get; init; } = new();
 
     /// <inheritdoc />
     public async ValueTask StartAsync()
@@ -224,7 +231,8 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <remarks>
     /// Chat messages are mirrored to the bound channels.
     /// Linked users get direct messages, if they turned them on, and the next castle siege becomes a scheduled event.
-    /// When an account is unlinked in the game, the role of linked players is removed from its Discord user.
+    /// When an account is unlinked in the game or in the admin panel, the role of linked players is removed from its Discord user,
+    /// and the user loses access to the channels of guilds. If the bot isn't connected, it's retried later.
     /// </remarks>
     public async ValueTask OnGameEventAsync(GameEvent gameEvent)
     {
@@ -243,7 +251,8 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         else if (gameEvent is AccountUnlinkedEvent { Provider: AccountLinkService.DiscordProvider } unlinked
             && ulong.TryParse(unlinked.ExternalUserId, NumberStyles.None, CultureInfo.InvariantCulture, out var userId))
         {
-            await this.UpdateLinkedRoleAsync(new DiscordRoleChange(userId, false)).ConfigureAwait(false);
+            this.PendingRoleRevocations.Add(userId, this.GetRoleGuildId(), this.GetLinkedRoleName());
+            await this.ProcessPendingRoleRevocationsAsync(true).ConfigureAwait(false);
         }
     }
 
@@ -326,6 +335,8 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         await this.ReloadChatBindingsAsync().ConfigureAwait(false);
         this.ServerState = ServerState.Started;
         this._ready.TrySetResult();
+        await this.ProcessPendingRoleRevocationsAsync(true).ConfigureAwait(false);
+        await this.CreateMissingHostedChannelsAsync().ConfigureAwait(false);
 
         if (this._statusLoopCancellation is null)
         {
@@ -429,12 +440,23 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             var answer = await this._accountCommands.ExecuteAsync(command.Data.Name, argument, command.User.Id, command.User.Username).ConfigureAwait(false);
             foreach (var roleChange in answer.RoleChanges)
             {
-                await this.UpdateLinkedRoleAsync(roleChange).ConfigureAwait(false);
+                if (roleChange.IsLinked)
+                {
+                    await this.PendingRoleRevocations.LinkAsync(roleChange.UserId, () => this.UpdateLinkedRoleAsync(roleChange)).ConfigureAwait(false);
+                }
+                else
+                {
+                    this.PendingRoleRevocations.Add(roleChange.UserId, this.GetRoleGuildId(), this.GetLinkedRoleName());
+                }
             }
+
+            // The channels are synchronized below.
+            await this.ProcessPendingRoleRevocationsAsync(false).ConfigureAwait(false);
 
             if (answer.RoleChanges.Count > 0)
             {
-                // The user might get or lose access to channels of guilds.
+                // A linked guild master gets the channel of the guild, and the user might get or lose access to channels of guilds.
+                await this.CreateMissingHostedChannelsAsync().ConfigureAwait(false);
                 await this.SyncHostedChannelsAsync().ConfigureAwait(false);
             }
 
@@ -448,16 +470,87 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     }
 
     /// <summary>
-    /// Adds or removes the role of linked players of the layout, in the Discord server of the game server.
+    /// Removes the roles of the users, whose accounts were unlinked, and synchronizes the channels of the guilds with the linked members.
+    /// The users, for which it fails, are retried later, e.g. when the bot is connected again.
     /// </summary>
-    private async Task UpdateLinkedRoleAsync(DiscordRoleChange change)
+    /// <param name="syncChannels">
+    /// If set to <c>true</c>, the channels are synchronized even if removing a role failed, because the channels don't depend on the role.
+    /// Otherwise, e.g. for the retries, only after a role was removed.
+    /// </param>
+    private async Task ProcessPendingRoleRevocationsAsync(bool syncChannels)
     {
-        if (this._client is not { } client
-            || this.GetRoutingGuild(client) is not { } guild
-            || this._layout.Roles.FirstOrDefault(role => role.Key == DiscordServerLayout.LinkedRoleKey) is not { } roleLayout
-            || guild.Roles.FirstOrDefault(role => string.Equals(role.Name, roleLayout.Name, StringComparison.OrdinalIgnoreCase)) is not { } role)
+        if (this.PendingRoleRevocations.Count == 0 || this.ServerState != ServerState.Started)
         {
             return;
+        }
+
+        var revoked = await this.PendingRoleRevocations.ProcessAsync(this.IsLinkedAsync, entry => this.UpdateLinkedRoleAsync(new DiscordRoleChange(entry.UserId, false), entry.GuildId, entry.RoleName)).ConfigureAwait(false);
+        if (syncChannels || revoked > 0)
+        {
+            // The user might lose access to channels of guilds.
+            await this.SyncHostedChannelsAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the Discord user is linked.
+    /// </summary>
+    /// <returns><c>null</c>, if it's unknown, e.g. because the database isn't available.</returns>
+    private async Task<bool?> IsLinkedAsync(ulong userId)
+    {
+        try
+        {
+            return await this._accountCommands.IsLinkedAsync(userId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogWarning(ex, "The link of the Discord user {userId} couldn't be checked.", userId);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the Discord server, in which the roles are given: the configured one, otherwise the one which the bot is in.
+    /// </summary>
+    private ulong? GetRoleGuildId() => this._settings.GuildId ?? this.RoutingServerId;
+
+    /// <summary>
+    /// Gets the name of the role of linked players of the layout.
+    /// </summary>
+    private string? GetLinkedRoleName() => this._layout.Roles.FirstOrDefault(role => role.Key == DiscordServerLayout.LinkedRoleKey)?.Name;
+
+    /// <summary>
+    /// Adds or removes the role of linked players of the layout, in the Discord server of the game server.
+    /// </summary>
+    /// <param name="change">The change.</param>
+    /// <param name="guildId">The Discord server, e.g. of a pending removal from before the configured server changed; <c>null</c> for the current one.</param>
+    /// <param name="roleName">The name of the role, e.g. of a pending removal from before the layout changed; <c>null</c> for the one of the current layout.</param>
+    /// <returns><c>true</c>, if the role is updated or there is nothing to update; <c>false</c>, if it failed and should be retried.</returns>
+    private async Task<bool> UpdateLinkedRoleAsync(DiscordRoleChange change, ulong? guildId = null, string? roleName = null)
+    {
+        if (this._client is not { } client)
+        {
+            return false;
+        }
+
+        var guild = guildId is { } id ? client.GetGuild(id) : this.GetRoutingGuild(client);
+        if (guild is null)
+        {
+            if (guildId is { } missingId && this._reportedMissingGuilds.TryAdd(missingId, 0))
+            {
+                // It stays pending, e.g. until the bot is added to the server again. It's reported once, because it's retried often.
+                this._logger.LogWarning("The role of linked players can't be removed in the Discord server {guildId}, because the bot isn't in it. Add the bot to it again, or remove the role by hand.", missingId);
+            }
+
+            return false;
+        }
+
+        // The role is identified by its name, because the bot creates the roles of the layout by name.
+        if ((roleName ?? this.GetLinkedRoleName()) is not { } name
+            || guild.Roles.FirstOrDefault(role => string.Equals(role.Name, name, StringComparison.OrdinalIgnoreCase)) is not { } role)
+        {
+            // The role doesn't exist (anymore), so nobody has it.
+            return true;
         }
 
         try
@@ -465,7 +558,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             // The members aren't cached, because the bot doesn't use the privileged intent for them.
             if (await client.Rest.GetGuildUserAsync(guild.Id, change.UserId).ConfigureAwait(false) is not { } user)
             {
-                return;
+                return true;
             }
 
             if (change.IsLinked)
@@ -476,10 +569,13 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             {
                 await user.RemoveRoleAsync(role.Id).ConfigureAwait(false);
             }
+
+            return true;
         }
         catch (Exception ex)
         {
             this._logger.LogWarning(ex, "The role {role} of the Discord user {userId} couldn't be updated. Has the bot the permission to manage roles?", role.Name, change.UserId);
+            return false;
         }
     }
 
@@ -543,6 +639,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             {
                 await this.UpdateStatusAsync().ConfigureAwait(false);
                 await this.MaintainChatBridgeAsync().ConfigureAwait(false);
+                await this.ProcessPendingRoleRevocationsAsync(false).ConfigureAwait(false);
             }
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false));
         }

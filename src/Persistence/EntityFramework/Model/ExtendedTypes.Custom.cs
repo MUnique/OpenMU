@@ -50,7 +50,7 @@ internal partial class PowerUpDefinitionValue
 /// <summary>
 /// The Entity Framework Core implementation of <see cref="ConstValueAttribute"/>.
 /// </summary>
-internal partial class ConstValueAttribute
+internal partial class ConstValueAttribute : MUnique.OpenMU.DataModel.IAssignable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class
@@ -114,6 +114,21 @@ internal partial class ConstValueAttribute
     {
         get => base.AggregateType;
         set => base.AggregateType = value;
+    }
+
+    /// <inheritdoc />
+    public void AssignValuesOf(object other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        if (other is not MUnique.OpenMU.AttributeSystem.ConstValueAttribute value)
+        {
+            throw new ArgumentException("Expected a constant attribute.", nameof(other));
+        }
+
+        var definition = gameConfiguration.Attributes.SingleOrDefault(a => a.Id == value.Definition.Id)
+            ?? throw new ArgumentException("The attribute definition must belong to the target configuration.", nameof(gameConfiguration));
+        this.Definition = definition;
+        this.Value = value.Value;
+        this.AggregateType = value.AggregateType;
     }
 }
 

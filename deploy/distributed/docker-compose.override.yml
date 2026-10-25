@@ -32,4 +32,4 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "88:8080"
+      - "127.0.0.1:88:8080"

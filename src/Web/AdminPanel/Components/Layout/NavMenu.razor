@@ -34,6 +34,11 @@
                         <span class="oi oi-home" aria-hidden="true"></span> @Resources.Home
                     </NavLink>
                 </li>
+                <AuthorizeView Policy="@AdminPolicies.Administrator">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="audit">@Resources.ResourceManager.GetString("AuditHistory", Resources.Culture)</NavLink>
+                    </li>
+                </AuthorizeView>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="servers" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-project" aria-hidden="true"></span> @Resources.Servers
@@ -52,6 +57,11 @@
                 <li class="nav-item px-3">
                   <NavLink class="nav-link" href="guilds" @onclick="() => NavigationHistory.Clear()">
                     <span class="oi oi-flag" aria-hidden="true" /> @Resources.Guilds
+                  </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                  <NavLink class="nav-link" href="leaderboards" @onclick="() => NavigationHistory.Clear()">
+                    <span class="oi oi-badge" aria-hidden="true" /> @Resources.Leaderboards
                   </NavLink>
                 </li>
                 <AuthorizeView Policy="@AdminPolicies.Administrator">

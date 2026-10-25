@@ -1143,6 +1143,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("HomeMapId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsMasterClass")
                         .HasColumnType("boolean");
 
@@ -1857,6 +1863,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -2518,6 +2530,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("Height")
                         .HasColumnType("smallint");
+
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsAmmunition")
                         .HasColumnType("boolean");
@@ -3504,6 +3522,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("GameLevel")
                         .HasColumnType("smallint");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("MapCreationPolicy")
                         .HasColumnType("integer");
 
@@ -3744,6 +3768,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("IntelligenceTypeName")
                         .HasColumnType("text");
+
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("MerchantStoreId")
                         .HasColumnType("uuid");

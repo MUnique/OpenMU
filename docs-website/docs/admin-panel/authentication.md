@@ -181,7 +181,8 @@ application's configuration yet. **Delete** removes it for good.
 ### What a key may do
 
 A key has the same [roles](#roles) as a user, and defaults to **Viewer**. A key
-can also get the role **Cash shop coins only**, which allows nothing but the cash
+can also get the role **Cash shop coins only**, which allows nothing but the
+cash
 shop endpoints — that's the right one for a payment provider. Administrators
 have this role implicitly.
 
@@ -189,7 +190,7 @@ have this role implicitly.
 |---|---|
 | `GET /api/status` | Viewer |
 | `GET /api/is-online/{account}` | Viewer |
-| `GET /api/send/{server}?msg=` | Operator |
+| `POST /api/send/{server}?msg=` | Operator |
 | `POST /api/accounts` | Operator |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
@@ -258,10 +259,12 @@ grant the coins twice. The answer is:
 
 The game server applies the grant to the balance the next time the player opens
 the cash shop, even when the player is online at that moment.
-`GET /api/accounts/{account}/cash-shop` returns the saved balances and the latest
+`GET /api/accounts/{account}/cash-shop` returns the saved balances and the
+latest
 grants, where `appliedAt` is empty for the pending ones.
 
-Like the panel itself, the API is open as long as [no user exists at all](#the-first-user).
+Like the panel itself, the API is open as long as [no user exists at
+all](#the-first-user).
 
 ## Keeping the sessions alive across restarts
 
@@ -287,3 +290,44 @@ The location can be changed with `AdminPanel:Auth:DataProtectionKeyPath`.
   through a VPN or an SSH tunnel instead.
 * Remember that admin panel access means full access to your players' account
   data.
+
+## AI agents through MCP
+
+API keys with the Viewer role can also access the optional read-only
+[MCP endpoint](mcp.md). It is disabled by default and accepts API keys only.
+
+### Phase two MCP and API upgrade notes
+
+The panel still permits anonymous initial setup until the first admin user
+exists or a bootstrap user is configured. Setup operations are attributed to
+`setup`; when admin audit storage is unavailable they use sanitized log-only
+auditing.
+
+If the host restarts while the admin database is unreachable, it cannot
+distinguish a previous installation from initial setup and may allow anonymous
+setup actions with log-only auditing. Configure a bootstrap user with
+`OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` to prevent that fallback.
+
+Explicit `-demo` mode also uses log-only panel auditing. MCP and API
+writes always require authentication and durable admin audit storage.
+
+Outside demo mode and initial setup, panel operations including **Stop** require
+the admin audit database. An outage blocks the action and displays an error. Use
+the host's service manager or orchestrator for emergency shutdown during an
+audit outage.
+
+External applications must update announcement requests from GET to
+`POST /api/send/{id}?msg=...`. The identifier is now the actual game server ID,
+rather than its position in a list. Operational APIs no longer allow anonymous
+requests during initial setup. See [MCP](mcp.md#phase-two-upgrade-notes) for the
+operational HTTP error statuses and uncertain-outcome handling.
+
+### Restrict MCP tools per key
+
+The optional **Allowed MCP tools** field accepts comma-separated exact names
+or area wildcards, such as `accounts_search,players_*,server_overview`.
+Empty keeps the key's existing role-based access. The allowlist further limits
+MCP discovery and direct calls; it never grants a tool beyond the key's role
+and does not alter REST API permissions. See
+[MCP configuration changes](mcp.md#configuration-and-offline-character-changes)
+for the preview/apply workflow.

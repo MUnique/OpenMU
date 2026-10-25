@@ -1680,6 +1680,63 @@
   <data name="CaptionsLinkingElapsed" xml:space="preserve">
     <value>Verstrichene Zeit: {0}</value>
   </data>
+  <data name="ContentActivation" xml:space="preserve">
+    <value>Inhaltsaktivierung</value>
+  </data>
+  <data name="ContentActivationDescription" xml:space="preserve">
+    <value>Aktivieren oder deaktivieren Sie Karten, Charakterklassen, Monster, Gegenstände und Minispiele, z. B. um das Spiel auf die Inhalte einer bestimmten Season zu beschränken. Inaktive Einträge bleiben in der Konfiguration erhalten, sind im Spiel aber nicht verfügbar. Bereits gespawnte Monster bleiben bestehen, bis der Spielserver neu gestartet wird.</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>Inhalt</value>
+  </data>
+  <data name="ActivateAllShown" xml:space="preserve">
+    <value>Alle angezeigten aktivieren</value>
+  </data>
+  <data name="DeactivateAllShown" xml:space="preserve">
+    <value>Alle angezeigten deaktivieren</value>
+  </data>
+  <data name="ActiveCountFormat" xml:space="preserve">
+    <value>{0} von {1} aktiv</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="OnlyActive" xml:space="preserve">
+    <value>Nur aktive</value>
+  </data>
+  <data name="OnlyInactive" xml:space="preserve">
+    <value>Nur inaktive</value>
+  </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>Season {0}</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>Season {0} Episode {1}</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>Auf Spielversion beschränken</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>Aktiviert alle Inhalte, die bis zur ausgewählten Spielversion eingeführt wurden, und deaktiviert die später eingeführten Inhalte. Inhalte mit unbekannter Version werden nicht verändert. Die Änderungen werden erst nach dem Speichern übernommen.</value>
+  </data>
   <data name="CaptionsLinkableTitle" xml:space="preserve">
     <value>Neue integrierte Beschriftungen verknüpfen</value>
   </data>
@@ -2482,4 +2539,52 @@
   <data name="DiscordNotConfigured" xml:space="preserve"><value>Nicht konfiguriert</value></data>
   <data name="DiscordChooseServer" xml:space="preserve"><value>Discord-Server wählen</value></data>
   <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Einen privaten Teamkanal wählen. GM-Auditnachrichten können vertrauliche Informationen enthalten.</value></data>
+  <data name="Leaderboards" xml:space="preserve">
+    <value>Ranglisten</value>
+  </data>
+  <data name="LeaderboardsDescription" xml:space="preserve">
+    <value>Die besten Charaktere der Minispiele, welche ihre Ranglisten-Statistiken speichern, sortiert nach der Summe ihrer Punkte. Bots werden nicht berücksichtigt.</value>
+  </data>
+  <data name="LeaderboardsNoMiniGames" xml:space="preserve">
+    <value>Kein Minispiel speichert seine Ranglisten-Statistiken. Aktiviere "Save Ranking Statistics" bei einem Minispiel, um seine Rangliste zu sehen.</value>
+  </data>
+  <data name="LeaderboardNoEntries" xml:space="preserve">
+    <value>Noch keine beendeten Spiele.</value>
+  </data>
+  <data name="LeaderboardPeriod" xml:space="preserve">
+    <value>Zeitraum</value>
+  </data>
+  <data name="LeaderboardPeriodAllTime" xml:space="preserve">
+    <value>Gesamt</value>
+  </data>
+  <data name="LeaderboardPeriodLast30Days" xml:space="preserve">
+    <value>Letzte 30 Tage</value>
+  </data>
+  <data name="LeaderboardPeriodLast7Days" xml:space="preserve">
+    <value>Letzte 7 Tage</value>
+  </data>
+  <data name="LeaderboardTotalScore" xml:space="preserve">
+    <value>Gesamtpunkte</value>
+  </data>
+  <data name="LeaderboardBestScore" xml:space="preserve">
+    <value>Beste Punktzahl</value>
+  </data>
+  <data name="LeaderboardGames" xml:space="preserve">
+    <value>Spiele</value>
+  </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>Die Konfiguration wurde geändert, während dieser Editor geöffnet war. Kopieren Sie ungespeicherte Änderungen und laden Sie die aktuellen Daten mit Aktualisieren neu, bevor Sie speichern.</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>Gildenkanäle automatisch erstellen</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>Sobald ein Gildenmeister verknüpft ist, erstellt der Bot den Kanal der Gilde in der Kategorie GUILDS deines Discord-Servers und verbindet den Gildenchat damit. Nur verknüpfte Mitglieder der Gilde sehen ihn, und der Gildenmeister kann seine Nachrichten moderieren. Gilden, deren Chat bereits verbunden ist, behalten ihren Kanal. Neue Gilden und neue Gildenmeister werden innerhalb von etwa zehn Minuten berücksichtigt.</value>
+  </data>
+  <data name="ContentActivationConfirmFormat" xml:space="preserve">
+    <value>{0} Einträge werden aktiviert und {1} Einträge deaktiviert. Fortfahren?</value>
+  </data>
+  <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
+    <value>Speichere oder verwirf zuerst die ausstehenden Änderungen.</value>
+  </data>
 </root>

@@ -42,6 +42,13 @@ public interface IGuildServerContext : IContext
     ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId);
 
     /// <summary>
+    /// Gets the names of the guild masters of all guilds.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The names of the guild masters by the identifiers of their guilds.</returns>
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the guild membership of a character.
     /// </summary>
     /// <param name="characterName">The name of the character.</param>
@@ -81,6 +88,12 @@ public interface IGuildServerContext : IContext
     /// <param name="guildIds">The guild identifiers to check. Kept small (e.g. one page) to avoid a full table scan.</param>
     /// <returns>The subset of <paramref name="guildIds"/> which are alliance masters.</returns>
     ValueTask<IReadOnlyCollection<Guid>> GetAllianceMasterIdsAsync(IReadOnlyCollection<Guid> guildIds);
+
+    /// <summary>Counts guilds matching a case-insensitive name search.</summary>
+    /// <param name="text">The search term.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of matches.</returns>
+    ValueTask<int> CountGuildsAsync(string text, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets statistics about the guilds.
