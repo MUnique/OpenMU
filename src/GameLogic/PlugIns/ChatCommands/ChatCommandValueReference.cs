@@ -75,7 +75,8 @@ public enum ChatCommandValueReference : byte
     SkillNumber,
 
     /// <summary>
-    /// A two-letter ISO language code.
+    /// A language which the server supports, given by its culture name (e.g. <c>zh-CN</c>),
+    /// its two-letter (e.g. <c>de</c>) or its three-letter ISO code (e.g. <c>deu</c>).
     /// </summary>
-    LanguageIsoCode,
+    Language,
 }
