@@ -6125,7 +6125,7 @@
     <value>Stat Profile</value>
   </data>
   <data name="ItemDefinition_StatProfile_Description" xml:space="preserve">
-    <value>The item formulas of this item. Without one, the item has those of the built-in profile of its kind, e.g. 'weapon', 'armor' or 'secondTierWing': the profile which the item gets in a new configuration.</value>
+    <value>The item formulas of this item. Without one, the item has those of the profile 'default'. A new configuration gives each item the profile of its kind.</value>
   </data>
   <data name="ItemDefinition_ExcellentBonus_Caption" xml:space="preserve">
     <value>Fixed Excellent Bonus</value>

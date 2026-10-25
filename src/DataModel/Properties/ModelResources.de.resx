@@ -3244,7 +3244,7 @@
     <value>Werteprofil</value>
   </data>
   <data name="ItemDefinition_StatProfile_Description" xml:space="preserve">
-    <value>Die Gegenstandsformeln dieses Gegenstands. Ohne Profil gelten die des eingebauten Profils seiner Art, z. B. „weapon“, „armor“ oder „secondTierWing“: das Profil, das der Gegenstand in einer neuen Konfiguration bekommt.</value>
+    <value>Die Gegenstandsformeln dieses Gegenstands. Ohne Profil gelten die des Profils „default“. Eine neue Konfiguration gibt jedem Gegenstand das Profil seiner Art.</value>
   </data>
   <data name="ItemDefinition_ExcellentBonus_Caption" xml:space="preserve">
     <value>Fester Exzellent-Bonus</value>

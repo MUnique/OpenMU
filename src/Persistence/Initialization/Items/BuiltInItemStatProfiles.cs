@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.ItemFormulas;
+namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
@@ -17,7 +17,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// Only the profiles "armor", "book" and "shield" compute differently than the default; the others name the
 /// level bonus tables their items use, or keep stored requirements of items which have no slot anyway.
 /// </remarks>
-public static partial class BuiltInItemStatProfiles
+internal static class BuiltInItemStatProfiles
 {
     /// <summary>
     /// Gets the name of the profile of armor pieces (helms, armors, pants, gloves and boots).
@@ -97,10 +97,10 @@ public static partial class BuiltInItemStatProfiles
             ExcellentLevelAdd: 0,
             StrengthPerOptionLevel: 4,
             [
-                new(ItemStat.Damage, TablePart.Of(BuiltInLevelBonusTable.DamageIncreaseWeapons), TermPart.Values(25, 5, 0), TermPart.Values(0, 5, 40)),
+                new(ItemStat.Damage, TablePart.Of(nameof(LevelBonusNames.DamageIncreaseWeapons)), TermPart.Values(25, 5, 0), TermPart.Values(0, 5, 40)),
                 new(ItemStat.MagicPower, TablePart.None, TermPart.Values(25, 5, 0), TermPart.Values(0, 2, 60), PerLevelAfterHalving: 2),
-                new(ItemStat.BlockRate, TablePart.Of(BuiltInLevelBonusTable.DefenseRateIncreaseShields), TermPart.Values(25, 5, 0), TermPart.None),
-                new(ItemStat.Defense, TablePart.Of(BuiltInLevelBonusTable.DefenseIncreaseArmors), TermPart.Values(12, 4, 5), TermPart.Values(3, 2, 30)),
+                new(ItemStat.BlockRate, TablePart.Of(nameof(LevelBonusNames.DefenseRateIncreaseShields)), TermPart.Values(25, 5, 0), TermPart.None),
+                new(ItemStat.Defense, TablePart.Of(nameof(LevelBonusNames.DefenseIncreaseArmors)), TermPart.Values(12, 4, 5), TermPart.Values(3, 2, 30)),
                 new(ItemStat.MagicDefense, TablePart.None, TermPart.None, TermPart.None),
             ],
             [
@@ -112,16 +112,16 @@ public static partial class BuiltInItemStatProfiles
             ]),
         new(Armor, StrengthPerOptionLevel: 5),
         new(Book, Requirements: [FormulaDefinition.Grows(ItemRequirementStat.Energy, 20, 1, 3)]),
-        new(FirstTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, BuiltInLevelBonusTable.DefenseBonus1stAnd2ndWings)]),
+        new(FirstTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
         new(Helper),
         new(Orb, Requirements: KeptStatRequirements()),
         new(Sceptre, Stats: [new(ItemStat.MagicPower, perLevelAfterHalving: 0)]),
         new(Scroll, Requirements: KeptStatRequirements()),
-        new(SecondTierCape, Stats: [StatDefinition.WithTable(ItemStat.Defense, BuiltInLevelBonusTable.DefenseBonus1stAnd2ndWings)]),
-        new(SecondTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, BuiltInLevelBonusTable.DefenseBonus1stAnd2ndWings)]),
-        new(Shield, Stats: [new(ItemStat.Defense, TablePart.Of(BuiltInLevelBonusTable.DefenseIncreaseShields), TermPart.None, TermPart.Values(20, 2, 0, afterLevelBonus: true))]),
-        new(SmallWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, BuiltInLevelBonusTable.DefenseBonus1stAnd2ndWings)]),
-        new(ThirdTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, BuiltInLevelBonusTable.DefenseBonus3rdWings)]),
+        new(SecondTierCape, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(SecondTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(Shield, Stats: [new(ItemStat.Defense, TablePart.Of(nameof(LevelBonusNames.DefenseIncreaseShields)), TermPart.None, TermPart.Values(20, 2, 0, afterLevelBonus: true))]),
+        new(SmallWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(ThirdTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus3rdWings))]),
         new(Weapon),
     ];
 
@@ -131,13 +131,13 @@ public static partial class BuiltInItemStatProfiles
     /// <param name="profile">The profile, with the <see cref="ItemStatProfile.Name"/> of a built-in profile and no terms and formulas yet.</param>
     /// <param name="createTerms">Creates new stat terms.</param>
     /// <param name="createFormula">Creates a new requirement formula.</param>
-    /// <param name="findTable">Finds the level bonus table of the configuration, or <c>null</c> if it doesn't have it.</param>
+    /// <param name="findTable">Finds the level bonus table of the configuration by its key of the <see cref="LevelBonusNames"/>, or <c>null</c> if it doesn't have it.</param>
     /// <exception cref="ArgumentException">The profile has no name of a built-in profile.</exception>
     public static void Fill(
         ItemStatProfile profile,
         Func<ItemStatTerms> createTerms,
         Func<ItemRequirementFormula> createFormula,
-        Func<BuiltInLevelBonusTable, ItemLevelBonusTable?> findTable)
+        Func<string, ItemLevelBonusTable?> findTable)
     {
         var definition = Definitions.FirstOrDefault(d => d.Name == profile.Name)
                          ?? throw new ArgumentException($"There is no built-in item stat profile named '{profile.Name}'.", nameof(profile));
@@ -198,19 +198,19 @@ public static partial class BuiltInItemStatProfiles
         {
         }
 
-        public static StatDefinition WithTable(ItemStat stat, BuiltInLevelBonusTable table) => new(stat, TablePart.Of(table), TermPart.NotWritten, TermPart.NotWritten);
+        public static StatDefinition WithTable(ItemStat stat, string table) => new(stat, TablePart.Of(table), TermPart.NotWritten, TermPart.NotWritten);
     }
 
     /// <summary>
     /// The level bonus table part of a stat.
     /// </summary>
-    private sealed record TablePart(ItemStatTermState State, BuiltInLevelBonusTable? Table)
+    private sealed record TablePart(ItemStatTermState State, string? Table)
     {
         public static TablePart NotWritten { get; } = new(ItemStatTermState.NotWritten, null);
 
         public static TablePart None { get; } = new(ItemStatTermState.None, null);
 
-        public static TablePart Of(BuiltInLevelBonusTable table) => new(ItemStatTermState.Values, table);
+        public static TablePart Of(string table) => new(ItemStatTermState.Values, table);
     }
 
     /// <summary>

@@ -6266,7 +6266,7 @@
     <value>属性配置</value>
   </data>
   <data name="ItemDefinition_StatProfile_Description" xml:space="preserve">
-    <value>此物品的物品公式。未设置时，物品使用其类型的内置配置的公式，例如“weapon”、“armor”或“secondTierWing”：即该物品在新配置中获得的配置。</value>
+    <value>此物品的物品公式。未设置时，物品使用配置“default”的公式。新配置会为每个物品分配其类型的配置。</value>
   </data>
   <data name="ItemDefinition_ExcellentBonus_Caption" xml:space="preserve">
     <value>固定卓越加成</value>

@@ -26,8 +26,8 @@ public partial class ItemDefinition
 
     /// <summary>
     /// Gets or sets the stat profile: the item formulas of this item.
-    /// Without one, the item has the formulas of the built-in profile of its kind, e.g. "weapon", "armor" or "secondTierWing":
-    /// the profile which the item gets in a new configuration, by the same rule.
+    /// Without one, the item has the formulas of the profile "default". A new configuration and the update which adds
+    /// the profiles give each item the profile of its kind.
     /// </summary>
     public virtual ItemStatProfile? StatProfile { get; set; }
 

@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 
@@ -138,7 +137,7 @@ internal class ItemStatProfilesDataTest
                 profile,
                 () => new BasicModel.ItemStatTerms(),
                 () => new BasicModel.ItemRequirementFormula(),
-                table => new BasicModel.ItemLevelBonusTable { Name = table.ToString() });
+                table => new BasicModel.ItemLevelBonusTable { Name = table });
             return DescribeProfile(profile).ToList();
         }
 
@@ -276,7 +275,7 @@ internal class ItemStatProfilesDataTest
         };
 
         Assert.That(
-            cases.Where(c => BuiltInItemStatProfiles.GetProfileName(c.Item) != c.ExpectedProfile).Select(c => $"{c.Case}: {BuiltInItemStatProfiles.GetProfileName(c.Item)}"),
+            cases.Where(c => ItemStatProfiles.GetProfileName(c.Item) != c.ExpectedProfile).Select(c => $"{c.Case}: {ItemStatProfiles.GetProfileName(c.Item)}"),
             Is.Empty);
     }
 
