@@ -115,8 +115,11 @@ internal sealed class BasicModelConverter
             ItemOptionOfLevel value => this.Convert(value),
             ItemOptionType value => this.Convert(value),
             ItemPriceDefinition value => this.Convert(value),
+            ItemRequirementFormula value => this.Convert(value),
             ItemSetGroup value => this.Convert(value),
             ItemSlotType value => this.Convert(value),
+            ItemStatProfile value => this.Convert(value),
+            ItemStatTerms value => this.Convert(value),
             ItemStorage value => this.Convert(value),
             JewelMix value => this.Convert(value),
             LetterBody value => this.Convert(value),
@@ -1241,6 +1244,8 @@ internal sealed class BasicModelConverter
         target.MaximumVaultMoney = source.MaximumVaultMoney;
         target.ClampMoneyOnPickup = source.ClampMoneyOnPickup;
         target.ExcellentItemDropLevelDelta = source.ExcellentItemDropLevelDelta;
+        target.ExcellentDropLevelBonus = source.ExcellentDropLevelBonus;
+        target.AncientDropLevelBonus = source.AncientDropLevelBonus;
         target.ExperienceFormula = source.ExperienceFormula;
         target.MasterExperienceFormula = source.MasterExperienceFormula;
         target.RecoveryInterval = source.RecoveryInterval;
@@ -1310,6 +1315,14 @@ internal sealed class BasicModelConverter
             foreach (var item in itemLevelBonusTablesItems)
             {
                 target.ItemLevelBonusTables.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.ItemStatProfiles is { } itemStatProfilesItems)
+        {
+            foreach (var item in itemStatProfilesItems)
+            {
+                target.ItemStatProfiles.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile)this.ConvertObject(item)!);
             }
         }
 
@@ -1908,6 +1921,9 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.ItemSlot = (MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType)this.ConvertObject(source.ItemSlot)!;
+        target.StatProfile = (MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile)this.ConvertObject(source.StatProfile)!;
+        target.ExcellentBonus = source.ExcellentBonus;
+        target.ExcellentRaisesLevel = source.ExcellentRaisesLevel;
         target.Width = source.Width;
         target.Height = source.Height;
         target.DropsFromMonsters = source.DropsFromMonsters;
@@ -2218,6 +2234,25 @@ internal sealed class BasicModelConverter
         return target;
     }
 
+    private BasicModel.ItemRequirementFormula Convert(ItemRequirementFormula source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemRequirementFormula)converted;
+        }
+
+        var target = new BasicModel.ItemRequirementFormula();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
+        target.KeepBase = source.KeepBase;
+        target.Add = source.Add;
+        target.LevelWeight = source.LevelWeight;
+        target.Percent = source.Percent;
+        target.LevelRequirementBasis = source.LevelRequirementBasis;
+        return target;
+    }
+
     private BasicModel.ItemSetGroup Convert(ItemSetGroup source)
     {
         if (this._converted.TryGetValue(source, out var converted))
@@ -2264,6 +2299,65 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.ItemStatProfile Convert(ItemStatProfile source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemStatProfile)converted;
+        }
+
+        var target = new BasicModel.ItemStatProfile();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Name = source.Name;
+        target.LevelPerItemLevel = source.LevelPerItemLevel;
+        target.ExcellentLevelAdd = source.ExcellentLevelAdd;
+        target.StrengthPerOptionLevel = source.StrengthPerOptionLevel;
+        if (source.StatTerms is { } statTermsItems)
+        {
+            foreach (var item in statTermsItems)
+            {
+                target.StatTerms.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTerms)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.RequirementFormulas is { } requirementFormulasItems)
+        {
+            foreach (var item in requirementFormulasItems)
+            {
+                target.RequirementFormulas.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula)this.ConvertObject(item)!);
+            }
+        }
+
+        return target;
+    }
+
+    private BasicModel.ItemStatTerms Convert(ItemStatTerms source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemStatTerms)converted;
+        }
+
+        var target = new BasicModel.ItemStatTerms();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
+        target.TableState = source.TableState;
+        target.Table = (MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable)this.ConvertObject(source.Table)!;
+        target.ExcellentState = source.ExcellentState;
+        target.ExcellentTimes = source.ExcellentTimes;
+        target.ExcellentAdd = source.ExcellentAdd;
+        target.ExcellentDropLevelDivisor = source.ExcellentDropLevelDivisor;
+        target.AncientState = source.AncientState;
+        target.AncientTimes = source.AncientTimes;
+        target.AncientAdd = source.AncientAdd;
+        target.AncientDropLevelDivisor = source.AncientDropLevelDivisor;
+        target.AncientAfterLevelBonus = source.AncientAfterLevelBonus;
+        target.PerLevelAfterHalving = source.PerLevelAfterHalving;
         return target;
     }
 

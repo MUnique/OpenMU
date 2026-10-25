@@ -160,6 +160,9 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ItemOptionType>().Apply();
         modelBuilder.Entity<ItemSetGroup>().Apply();
         modelBuilder.Entity<ItemSlotType>().Apply();
+        modelBuilder.Entity<ItemStatProfile>().Apply();
+        modelBuilder.Entity<ItemStatTerms>().Apply();
+        modelBuilder.Entity<ItemRequirementFormula>().Apply();
         modelBuilder.Entity<ItemStorage>().Apply();
         modelBuilder.Entity<ItemBasePowerUpDefinition>();
         modelBuilder.Entity<LevelBonus>().Apply();

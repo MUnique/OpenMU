@@ -387,6 +387,12 @@
   </data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战守卫</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>攻城战地图桥边的守卫打开报名窗口，魔炼之地入口的守卫变为被动NPC，并打开魔炼之地对话框。</value></data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加物品属性配置</value>
+  </data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加以数据形式保存物品公式（需求如何增长、卓越和远古物品额外获得的值）的物品属性配置，并为每个物品指定其类型的配置。游戏计算的数值保持不变；已有的配置和已有配置的物品保持不变。</value>
+  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>添加合成成功率加成属性</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>添加用于定义物品合成成功率额外增加的百分点的属性。</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>

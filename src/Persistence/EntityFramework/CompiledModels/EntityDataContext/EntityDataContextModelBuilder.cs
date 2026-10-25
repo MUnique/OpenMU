@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("0d9c46ae-8fbb-4af3-912e-92a01fb36c25"), entityTypeCount: 125)
+            : base(skipDetectChanges: false, modelId: new Guid("5577b320-884d-448b-a346-3a37f266931a"), entityTypeCount: 128)
         {
         }
 
@@ -103,8 +103,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemOptionOfLevel = ItemOptionOfLevelEntityType.Create(this);
             var itemOptionType = ItemOptionTypeEntityType.Create(this);
             var itemPriceDefinition = ItemPriceDefinitionEntityType.Create(this);
+            var itemRequirementFormula = ItemRequirementFormulaEntityType.Create(this);
             var itemSetGroup = ItemSetGroupEntityType.Create(this);
             var itemSlotType = ItemSlotTypeEntityType.Create(this);
+            var itemStatProfile = ItemStatProfileEntityType.Create(this);
+            var itemStatTerms = ItemStatTermsEntityType.Create(this);
             var itemStorage = ItemStorageEntityType.Create(this);
             var jewelMix = JewelMixEntityType.Create(this);
             var letterBody = LetterBodyEntityType.Create(this);
@@ -278,6 +281,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemDefinitionEntityType.CreateForeignKey3(itemDefinition, itemSlotType);
             ItemDefinitionEntityType.CreateForeignKey4(itemDefinition, itemPriceDefinition);
             ItemDefinitionEntityType.CreateForeignKey5(itemDefinition, skill);
+            ItemDefinitionEntityType.CreateForeignKey6(itemDefinition, itemStatProfile);
             ItemDefinitionCharacterClassEntityType.CreateForeignKey1(itemDefinitionCharacterClass, characterClass);
             ItemDefinitionCharacterClassEntityType.CreateForeignKey2(itemDefinitionCharacterClass, itemDefinition);
             ItemDefinitionItemOptionDefinitionEntityType.CreateForeignKey1(itemDefinitionItemOptionDefinition, itemDefinition);
@@ -306,9 +310,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionOfLevelEntityType.CreateForeignKey2(itemOptionOfLevel, powerUpDefinition);
             ItemOptionTypeEntityType.CreateForeignKey1(itemOptionType, gameConfiguration);
             ItemPriceDefinitionEntityType.CreateForeignKey1(itemPriceDefinition, gameConfiguration);
+            ItemRequirementFormulaEntityType.CreateForeignKey1(itemRequirementFormula, attributeDefinition);
+            ItemRequirementFormulaEntityType.CreateForeignKey2(itemRequirementFormula, itemStatProfile);
             ItemSetGroupEntityType.CreateForeignKey1(itemSetGroup, gameConfiguration);
             ItemSetGroupEntityType.CreateForeignKey2(itemSetGroup, itemOptionDefinition);
             ItemSlotTypeEntityType.CreateForeignKey1(itemSlotType, gameConfiguration);
+            ItemStatProfileEntityType.CreateForeignKey1(itemStatProfile, gameConfiguration);
+            ItemStatTermsEntityType.CreateForeignKey1(itemStatTerms, attributeDefinition);
+            ItemStatTermsEntityType.CreateForeignKey2(itemStatTerms, itemStatProfile);
+            ItemStatTermsEntityType.CreateForeignKey3(itemStatTerms, itemLevelBonusTable);
             JewelMixEntityType.CreateForeignKey1(jewelMix, gameConfiguration);
             JewelMixEntityType.CreateForeignKey2(jewelMix, itemDefinition);
             JewelMixEntityType.CreateForeignKey3(jewelMix, itemDefinition);
@@ -474,8 +484,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionOfLevelEntityType.CreateAnnotations(itemOptionOfLevel);
             ItemOptionTypeEntityType.CreateAnnotations(itemOptionType);
             ItemPriceDefinitionEntityType.CreateAnnotations(itemPriceDefinition);
+            ItemRequirementFormulaEntityType.CreateAnnotations(itemRequirementFormula);
             ItemSetGroupEntityType.CreateAnnotations(itemSetGroup);
             ItemSlotTypeEntityType.CreateAnnotations(itemSlotType);
+            ItemStatProfileEntityType.CreateAnnotations(itemStatProfile);
+            ItemStatTermsEntityType.CreateAnnotations(itemStatTerms);
             ItemStorageEntityType.CreateAnnotations(itemStorage);
             JewelMixEntityType.CreateAnnotations(jewelMix);
             LetterBodyEntityType.CreateAnnotations(letterBody);

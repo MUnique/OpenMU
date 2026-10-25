@@ -96,6 +96,19 @@ public static class ConnectionConfigurator
     }
 
     /// <summary>
+    /// Uses the given provider instead of the current one, until the returned object is disposed.
+    /// Only meant for tests which work with a database of their own.
+    /// </summary>
+    /// <param name="provider">The provider to use meanwhile.</param>
+    /// <returns>The object which brings back the previous provider when it's disposed.</returns>
+    internal static IDisposable UseTemporarily(IDatabaseConnectionSettingProvider provider)
+    {
+        var previous = _provider;
+        _provider = provider;
+        return new Nito.Disposables.Disposable(() => _provider = previous);
+    }
+
+    /// <summary>
     /// Gets the configured connection string of the specified context type.
     /// </summary>
     /// <typeparam name="TContext">The type of the context.</typeparam>

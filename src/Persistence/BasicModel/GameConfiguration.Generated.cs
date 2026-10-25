@@ -173,6 +173,27 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="ItemStatProfiles" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("itemStatProfiles")]
+    public ICollection<ItemStatProfile> RawItemStatProfiles { get; } = new List<ItemStatProfile>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile> ItemStatProfiles
+    {
+        get => base.ItemStatProfiles ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile, ItemStatProfile>(this.RawItemStatProfiles);
+        protected set
+        {
+            this.ItemStatProfiles.Clear();
+            foreach (var item in value)
+            {
+                this.ItemStatProfiles.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemPriceDefinitions" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("itemPriceDefinitions")]

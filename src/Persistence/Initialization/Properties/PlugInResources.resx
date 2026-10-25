@@ -394,6 +394,12 @@
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add item stat profiles</value>
+  </data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Adds the item stat profiles, which hold the item formulas (how requirements grow, what excellent and ancient items get more) as data, and gives each item the profile of its kind. The values the game computes stay the same; profiles which exist and items which have a profile are kept.</value>
+  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>Add crafting bonus percentage attribute</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>Adds the attribute which defines the percentage points which are added to the success rate of item craftings.</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Fix maximum item level of seed spheres</value></data>

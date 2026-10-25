@@ -436,5 +436,14 @@ namespace MUnique.OpenMU.DataModel.Properties {
         /// <summary>Gets the localized ServerEndpointSummary text.</summary>
         public static string ServerEndpointSummary => ResourceManager.GetString("ServerEndpointSummary", resourceCulture)!;
 
+        /// <summary>Gets the localized ItemRequirementFormulaSummary text.</summary>
+        public static string ItemRequirementFormulaSummary => ResourceManager.GetString("ItemRequirementFormulaSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemRequirementFormulaKeptBaseSummary text.</summary>
+        public static string ItemRequirementFormulaKeptBaseSummary => ResourceManager.GetString("ItemRequirementFormulaKeptBaseSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemRequirementFormulaLevelBasisSummary text.</summary>
+        public static string ItemRequirementFormulaLevelBasisSummary => ResourceManager.GetString("ItemRequirementFormulaLevelBasisSummary", resourceCulture)!;
+
     }
 }

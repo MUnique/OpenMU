@@ -170,6 +170,24 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <summary>
+    /// Gets the raw object of <see cref="StatProfile" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("statProfile")]
+    public ItemStatProfile RawStatProfile
+    {
+        get => base.StatProfile as ItemStatProfile;
+        set => base.StatProfile = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile StatProfile
+    {
+        get => base.StatProfile;
+        set => base.StatProfile = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="PriceDefinition" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("priceDefinition")]
