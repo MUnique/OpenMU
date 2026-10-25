@@ -20,16 +20,6 @@ using MUnique.OpenMU.PlugIns;
 public class FixSeedSphereMaximumItemLevelUpdatePlugIn : UpdatePlugInBase
 {
     /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Fix maximum item level of seed spheres";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update sets the maximum item level of the seed spheres to the highest option number of their element. The item level of a seed sphere defines its option, so seed spheres with other options than the first one could not be created, e.g. with the item chat command.";
-
-    /// <summary>
     /// The item group of the seed spheres.
     /// </summary>
     private const byte SeedSphereGroup = 12;
@@ -48,10 +38,10 @@ public class FixSeedSphereMaximumItemLevelUpdatePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => Properties.PlugInResources.FixSeedSphereMaximumItemLevelUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => Properties.PlugInResources.FixSeedSphereMaximumItemLevelUpdatePlugIn_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
