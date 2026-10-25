@@ -8710,6 +8710,35 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>88</Code>
+      <Name>ItemCraftingPreviewExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the items of the crafting dialog changed, e.g. at the chaos machine.</SentWhen>
+      <CausedReaction>The game client shows the success rate and the price of the crafting which matches the items, as they are calculated by the server, instead of calculating them by itself.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>MixType</Name>
+          <Description>The number of the crafting which matches the items, which is also sent by the client to execute it. 0, if the items don't match any crafting.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>SuccessRate</Name>
+          <Description>The success rate in percent, including the crafting bonus of the character.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Price</Name>
+          <Description>The price in zen, without the tax of the chaos machine.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>A0</Code>
       <Name>LegacyQuestStateList</Name>
       <Direction>ServerToClient</Direction>

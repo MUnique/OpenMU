@@ -31,11 +31,7 @@ public class ItemCraftAction
             return;
         }
 
-        if (!this._craftingHandlerCache.TryGetValue(crafting, out var craftingHandler))
-        {
-            craftingHandler = this.CreateCraftingHandler(crafting);
-            this._craftingHandlerCache.Add(crafting, craftingHandler);
-        }
+        var craftingHandler = this.GetCraftingHandler(crafting);
 
         (CraftingResult, Item?) result;
         try
@@ -54,6 +50,7 @@ public class ItemCraftAction
                 itemList,
                 npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
             .ConfigureAwait(false);
+        await this.ShowCraftingPreviewAsync(player).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -69,13 +66,7 @@ public class ItemCraftAction
             // chaos weapon crafting, so we set a descending order so it gets checked first
             foreach (var itemCrafting in npc.ItemCraftings.OrderByDescending(c => c.Number))
             {
-                if (!this._craftingHandlerCache.TryGetValue(itemCrafting, out var craftingHandler))
-                {
-                    craftingHandler = this.CreateCraftingHandler(itemCrafting);
-                    this._craftingHandlerCache.Add(itemCrafting, craftingHandler);
-                }
-
-                if (craftingHandler.TryGetRequiredItems(player, out _, out _) is null)
+                if (this.GetCraftingHandler(itemCrafting).TryGetRequiredItems(player, out _, out _) is null)
                 {
                     return itemCrafting;
                 }
@@ -83,6 +74,40 @@ public class ItemCraftAction
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Shows the crafting which matches the items of the crafting dialog, with its success rate and price,
+    /// if the client of the player supports it.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public async ValueTask ShowCraftingPreviewAsync(Player player)
+    {
+        if (player.ViewPlugIns.GetPlugIn<IShowItemCraftingPreviewPlugIn>() is not { } previewPlugIn)
+        {
+            return;
+        }
+
+        if (this.FindAppropriateCraftingByItems(player) is { } crafting
+            && this.GetCraftingHandler(crafting) is BaseItemCraftingHandler craftingHandler
+            && craftingHandler.TryGetRequiredItems(player, out _, out var successRate, out var price) is null)
+        {
+            await previewPlugIn.ShowCraftingPreviewAsync(crafting, successRate, price).ConfigureAwait(false);
+            return;
+        }
+
+        await previewPlugIn.ShowCraftingPreviewAsync(null, 0, 0).ConfigureAwait(false);
+    }
+
+    private IItemCraftingHandler GetCraftingHandler(ItemCrafting crafting)
+    {
+        if (!this._craftingHandlerCache.TryGetValue(crafting, out var craftingHandler))
+        {
+            craftingHandler = this.CreateCraftingHandler(crafting);
+            this._craftingHandlerCache.Add(crafting, craftingHandler);
+        }
+
+        return craftingHandler;
     }
 
     private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)

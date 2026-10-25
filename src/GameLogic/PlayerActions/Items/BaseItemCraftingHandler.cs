@@ -28,14 +28,11 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (CraftingResult.Failed, null);
         }
 
-        if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
+        if (this.TryGetRequiredItems(player, out var items, out var successRate, out var price) is { } error)
         {
             return (error, null);
         }
 
-        // The price is based on the success rate of the items, so a bonus doesn't make the crafting more expensive.
-        var price = this.GetPrice(successRate, items);
-        successRate = ApplyCraftingBonus(successRate, player.Attributes?[Stats.CraftingBonusPercentage] ?? 0);
         player.Logger.LogInformation("Crafting success chance: {successRate} %", successRate);
 
         if (!await this._castleSiegeTaxProvider.TryPayChaosCostAsync(player, price).ConfigureAwait(false))
@@ -79,6 +76,29 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 
     /// <inheritdoc/>
     public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+
+    /// <summary>
+    /// Tries to get the required items, the success rate including the <see cref="Stats.CraftingBonusPercentage"/>
+    /// of the player, and the price of this crafting, without changing anything.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="items">The required items.</param>
+    /// <param name="successRate">The success rate, including the crafting bonus of the player.</param>
+    /// <param name="price">The price without taxes.</param>
+    /// <returns><c>null</c>, if the required items could be get; Otherwise, the corresponding error is returned.</returns>
+    public CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate, out int price)
+    {
+        if (this.TryGetRequiredItems(player, out items, out successRate) is { } error)
+        {
+            price = 0;
+            return error;
+        }
+
+        // The price is based on the success rate of the items, so a bonus doesn't make the crafting more expensive.
+        price = this.GetPrice(successRate, items);
+        successRate = ApplyCraftingBonus(successRate, player.Attributes?[Stats.CraftingBonusPercentage] ?? 0);
+        return null;
+    }
 
     /// <summary>
     /// Applies the <see cref="Stats.CraftingBonusPercentage"/> of the player to the success rate of a crafting.

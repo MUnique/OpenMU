@@ -6703,6 +6703,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowItemCraftingPreviewExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowItemCraftingPreviewExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Item Crafting Preview Extended.
+        /// </summary>
+        public static string ShowItemCraftingPreviewExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowItemCraftingPreviewExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ShowShopCurrenciesExtendedPlugIn_Description {

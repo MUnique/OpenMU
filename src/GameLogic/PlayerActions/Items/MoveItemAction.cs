@@ -18,6 +18,8 @@ using static MUnique.OpenMU.DataModel.InventoryConstants;
 /// </summary>
 public class MoveItemAction
 {
+    private readonly ItemCraftAction _craftAction = new();
+
     private enum Movement
     {
         None,
@@ -96,6 +98,14 @@ public class MoveItemAction
             default:
                 await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
                 break;
+        }
+
+        if (movement is not Movement.None
+            && player.PlayerState.CurrentState == PlayerState.NpcDialogOpened
+            && player.TemporaryStorage is { } craftingStorage
+            && (fromItemStorage == craftingStorage || toItemStorage == craftingStorage))
+        {
+            await this._craftAction.ShowCraftingPreviewAsync(player).ConfigureAwait(false);
         }
 
         if (movement is not Movement.None
