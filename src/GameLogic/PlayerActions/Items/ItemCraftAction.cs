@@ -90,7 +90,7 @@ public class ItemCraftAction
 
         if (this.FindAppropriateCraftingByItems(player) is { } crafting
             && this.GetCraftingHandler(crafting) is BaseItemCraftingHandler craftingHandler
-            && craftingHandler.TryGetRequiredItems(player, out _, out var successRate, out var price) is null)
+            && craftingHandler.GetRequiredItemsAndPrice(player) is (null, _, var successRate, var price))
         {
             await previewPlugIn.ShowCraftingPreviewAsync(crafting, successRate, price).ConfigureAwait(false);
             return;

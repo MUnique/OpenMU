@@ -126,10 +126,14 @@ public class ItemCraftingPreviewTests
         }
 
         /// <inheritdoc />
-        protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems) => Price;
+        protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
+        {
+            // The price must be based on the success rate of the items, not on the one including the crafting bonus.
+            return successRate == SuccessRate ? Price : 0;
+        }
 
         /// <inheritdoc />
         protected override ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
-            => ValueTask.FromResult(new List<Item>());
+            => ValueTask.FromResult(player.TemporaryStorage?.Items.ToList() ?? []);
     }
 }
