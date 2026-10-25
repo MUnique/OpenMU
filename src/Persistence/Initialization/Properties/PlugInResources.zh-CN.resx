@@ -393,6 +393,8 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>添加以数据形式保存物品公式（需求如何增长、卓越和远古物品额外获得的值）的物品属性配置，并为每个物品指定其类型的配置。游戏计算的数值保持不变；已有的配置和已有配置的物品保持不变。</value>
   </data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>添加合成成功率加成属性</value></data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>添加用于定义物品合成成功率额外增加的百分点的属性。</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>将种子球的最大物品等级设置为其元素的最高选项编号。种子球的物品等级决定其选项，因此此前无法创建第一个选项以外的种子球，例如通过物品聊天命令。</value></data>
 </root>

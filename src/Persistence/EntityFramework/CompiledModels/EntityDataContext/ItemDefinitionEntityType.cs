@@ -26,10 +26,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition),
                 baseEntityType,
-                propertyCount: 33,
-                navigationCount: 10,
-                foreignKeyCount: 5,
-                unnamedIndexCount: 5,
+                propertyCount: 34,
+                navigationCount: 11,
+                foreignKeyCount: 6,
+                unnamedIndexCount: 6,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -260,6 +260,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             petExperienceFormula.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var priceDefinitionId = runtimeEntityType.AddProperty(
+                "PriceDefinitionId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("PriceDefinitionId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetField("<PriceDefinitionId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            priceDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var skillId = runtimeEntityType.AddProperty(
                 "SkillId",
                 typeof(Guid?),
@@ -314,9 +322,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 new[] { itemSlotId });
 
             var index2 = runtimeEntityType.AddIndex(
-                new[] { skillId });
+                new[] { priceDefinitionId });
 
             var index3 = runtimeEntityType.AddIndex(
+                new[] { skillId });
+
+            var index4 = runtimeEntityType.AddIndex(
                 new[] { statProfileId });
 
             return runtimeEntityType;
@@ -371,6 +382,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
         public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("PriceDefinitionId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawPriceDefinition = declaringEntityType.AddNavigation("RawPriceDefinition",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("RawPriceDefinition", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("SkillId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
                 principalEntityType);
@@ -384,7 +410,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             return runtimeForeignKey;
         }
 
-        public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        public static RuntimeForeignKey CreateForeignKey6(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("StatProfileId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),

@@ -400,6 +400,10 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds the item stat profiles, which hold the item formulas (how requirements grow, what excellent and ancient items get more) as data, and gives each item the profile of its kind. The values the game computes stay the same; profiles which exist and items which have a profile are kept.</value>
   </data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>Add crafting bonus percentage attribute</value></data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>Adds the attribute which defines the percentage points which are added to the success rate of item craftings.</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Fix maximum item level of seed spheres</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>This update sets the maximum item level of the seed spheres to the highest option number of their element. The item level of a seed sphere defines its option, so seed spheres with other options than the first one could not be created, e.g. with the item chat command.</value></data>
+  <data name="AddItemPriceDefinitionsPlugIn_Name" xml:space="preserve"><value>Add item price definitions</value></data>
+  <data name="AddItemPriceDefinitionsPlugIn_Description" xml:space="preserve"><value>This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment.</value></data>
 </root>

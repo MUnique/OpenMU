@@ -106,6 +106,7 @@ internal sealed class BasicModelConverter
             ItemCraftingResultItem value => this.Convert(value),
             ItemDefinition value => this.Convert(value),
             ItemLevelBonusTable value => this.Convert(value),
+            ItemLevelPrice value => this.Convert(value),
             ItemOfItemSet value => this.Convert(value),
             ItemOption value => this.Convert(value),
             ItemOptionCombinationBonus value => this.Convert(value),
@@ -113,6 +114,7 @@ internal sealed class BasicModelConverter
             ItemOptionLink value => this.Convert(value),
             ItemOptionOfLevel value => this.Convert(value),
             ItemOptionType value => this.Convert(value),
+            ItemPriceDefinition value => this.Convert(value),
             ItemRequirementFormula value => this.Convert(value),
             ItemSetGroup value => this.Convert(value),
             ItemSlotType value => this.Convert(value),
@@ -1324,6 +1326,14 @@ internal sealed class BasicModelConverter
             }
         }
 
+        if (source.ItemPriceDefinitions is { } itemPriceDefinitionsItems)
+        {
+            foreach (var item in itemPriceDefinitionsItems)
+            {
+                target.ItemPriceDefinitions.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition)this.ConvertObject(item)!);
+            }
+        }
+
         if (source.ItemSlotTypes is { } itemSlotTypesItems)
         {
             foreach (var item in itemSlotTypesItems)
@@ -1936,6 +1946,7 @@ internal sealed class BasicModelConverter
         target.Durability = source.Durability;
         target.Group = source.Group;
         target.Value = source.Value;
+        target.PriceDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition)this.ConvertObject(source.PriceDefinition)!;
         target.PetExperienceFormula = source.PetExperienceFormula;
         target.ConsumeEffect = (MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition)this.ConvertObject(source.ConsumeEffect)!;
         target.MaximumSockets = source.MaximumSockets;
@@ -2045,6 +2056,21 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.ItemLevelPrice Convert(ItemLevelPrice source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemLevelPrice)converted;
+        }
+
+        var target = new BasicModel.ItemLevelPrice();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Level = source.Level;
+        target.Price = source.Price;
         return target;
     }
 
@@ -2178,6 +2204,33 @@ internal sealed class BasicModelConverter
         target.Name = source.Name;
         target.Description = source.Description;
         target.IsVisible = source.IsVisible;
+        return target;
+    }
+
+    private BasicModel.ItemPriceDefinition Convert(ItemPriceDefinition source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemPriceDefinition)converted;
+        }
+
+        var target = new BasicModel.ItemPriceDefinition();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Name = source.Name;
+        target.BasePriceFormula = source.BasePriceFormula;
+        if (source.PricePerLevel is { } pricePerLevelItems)
+        {
+            foreach (var item in pricePerLevelItems)
+            {
+                target.PricePerLevel.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelPrice)this.ConvertObject(item)!);
+            }
+        }
+
+        target.QuantityScaling = source.QuantityScaling;
+        target.Modifiers = source.Modifiers;
+        target.SellingPriceRounding = source.SellingPriceRounding;
+        target.CraftingReferencePrice = source.CraftingReferencePrice;
         return target;
     }
 

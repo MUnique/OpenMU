@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the crafting bonus percentage attribute for version season 6.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCraftingBonusPercentageAttributePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCraftingBonusPercentageAttributePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("65315056-6F68-487B-8FBC-0E65F96F30EE")]
 public class AddCraftingBonusPercentageAttributePlugInSeason6 : AddCraftingBonusPercentageAttributePlugInBase
 {

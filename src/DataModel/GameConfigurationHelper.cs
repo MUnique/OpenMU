@@ -42,6 +42,8 @@ public static class GameConfigurationHelper
         { typeof(ItemStatProfile), c => c.ItemStatProfiles },
         { typeof(ItemStatTerms), c => c.ItemStatProfiles.SelectMany(p => p.StatTerms) },
         { typeof(ItemRequirementFormula), c => c.ItemStatProfiles.SelectMany(p => p.RequirementFormulas) },
+        { typeof(ItemPriceDefinition), c => c.ItemPriceDefinitions },
+        { typeof(ItemLevelPrice), c => c.ItemPriceDefinitions.SelectMany(i => i.PricePerLevel) },
         { typeof(ItemOptionCombinationBonus), c => c.ItemOptionCombinationBonuses },
         { typeof(CombinationBonusRequirement), c => c.ItemOptionCombinationBonuses.SelectMany(b => b.Requirements) },
         {

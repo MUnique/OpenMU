@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration),
                 baseEntityType,
                 propertyCount: 33,
-                navigationCount: 25,
+                navigationCount: 26,
                 foreignKeyCount: 3,
                 unnamedIndexCount: 3,
                 keyCount: 1);

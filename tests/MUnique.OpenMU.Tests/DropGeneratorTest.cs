@@ -7,8 +7,10 @@ namespace MUnique.OpenMU.Tests;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
 /// Tests the drop generator.
@@ -133,6 +135,70 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that an excellent drop of a map drop group never selects a socket item,
+    /// because socket items can't be excellent.
+    /// </summary>
+    [Test]
+    public async ValueTask TestExcellentMapDropSkipsSocketItemsAsync()
+    {
+        var socketItem = this.CreateExcellentCapableItemDefinition(0, 28, 3);
+        var normalItem = this.CreateExcellentCapableItemDefinition(0, 19, 0);
+
+        var item = await this.GenerateExcellentMapDropAsync(socketItem, normalItem).ConfigureAwait(false);
+
+        AssertExcellentWithoutSockets(item, normalItem);
+    }
+
+    /// <summary>
+    /// Tests that an excellent drop of the generic monster drop (which selects the item by the monster level)
+    /// never selects a socket item.
+    /// </summary>
+    [Test]
+    public async ValueTask TestExcellentMonsterDropSkipsSocketItemsAsync()
+    {
+        var socketItem = this.CreateExcellentCapableItemDefinition(0, 28, 3);
+        var normalItem = this.CreateExcellentCapableItemDefinition(0, 19, 0);
+        var config = this.GetGameConfig(socketItem, normalItem);
+        var monster = this.GetMonster(1, 50);
+        monster.DropItemGroups.Add(10000, SpecialItemType.Excellent, false);
+
+        var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        AssertExcellentWithoutSockets(items.FirstOrDefault(), normalItem);
+    }
+
+    /// <summary>
+    /// Tests that an excellent item box (e.g. a box of kundun) with socket items and normal items
+    /// never selects a socket item.
+    /// </summary>
+    [Test]
+    public void TestExcellentItemBoxSkipsSocketItems()
+    {
+        var socketItem = this.CreateExcellentCapableItemDefinition(0, 28, 3);
+        var normalItem = this.CreateExcellentCapableItemDefinition(0, 19, 0);
+        var box = this.CreateExcellentDropGroup(socketItem, normalItem);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var item = generator.GenerateItemDrop(box);
+
+        AssertExcellentWithoutSockets(item, normalItem);
+    }
+
+    /// <summary>
+    /// Tests that an excellent drop with only socket items drops nothing instead of an excellent socket item.
+    /// </summary>
+    [Test]
+    public async ValueTask TestExcellentDropWithOnlySocketItemsAsync()
+    {
+        var socketItem = this.CreateExcellentCapableItemDefinition(0, 28, 3);
+
+        var item = await this.GenerateExcellentMapDropAsync(socketItem).ConfigureAwait(false);
+
+        Assert.That(item, Is.Null);
+    }
+
+    /// <summary>
     /// Tests that ExcellentItemDropLevelDelta property exists and has correct default.
     /// </summary>
     [Test]
@@ -148,6 +214,53 @@ public class DropGeneratorTest
 
         config.ExcellentItemDropLevelDelta = 50;
         Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(50));
+    }
+
+    private static void AssertExcellentWithoutSockets(Item? item, ItemDefinition expectedDefinition)
+    {
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.Definition, Is.EqualTo(expectedDefinition));
+        Assert.That(item.ItemOptions.Any(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.True);
+        Assert.That(item.SocketCount, Is.EqualTo(0));
+    }
+
+    private async ValueTask<Item?> GenerateExcellentMapDropAsync(params ItemDefinition[] possibleItems)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(this.CreateExcellentDropGroup(possibleItems));
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 50), 1, player).ConfigureAwait(false);
+        return items.FirstOrDefault();
+    }
+
+    private DropItemGroup CreateExcellentDropGroup(params ItemDefinition[] possibleItems)
+    {
+        var dropGroup = new Mock<DropItemGroup>();
+        dropGroup.SetupAllProperties();
+        dropGroup.Object.Chance = 1.0;
+        dropGroup.Object.ItemType = SpecialItemType.Excellent;
+        dropGroup.Setup(g => g.PossibleItems).Returns(possibleItems.ToList());
+        return dropGroup.Object;
+    }
+
+    private ItemDefinition CreateExcellentCapableItemDefinition(byte group, short number, int maximumSockets)
+    {
+        var excellentOption = new BasicModel.IncreasableItemOption { OptionType = ItemOptionTypes.Excellent };
+        var excellentOptions = new BasicModel.ItemOptionDefinition { MaximumOptionsPerItem = 1 };
+        excellentOptions.PossibleOptions.Add(excellentOption);
+
+        var itemDefinition = new Mock<ItemDefinition>();
+        itemDefinition.SetupAllProperties();
+        itemDefinition.Object.Group = group;
+        itemDefinition.Object.Number = number;
+        itemDefinition.Object.DropLevel = 40;
+        itemDefinition.Object.Durability = 1;
+        itemDefinition.Object.DropsFromMonsters = true;
+        itemDefinition.Object.MaximumSockets = maximumSockets;
+        itemDefinition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition> { excellentOptions });
+        itemDefinition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
+        return itemDefinition.Object;
     }
 
     private MonsterDefinition GetMonster(int numberOfDrops, byte level)
@@ -178,10 +291,10 @@ public class DropGeneratorTest
         return randomizer.Object;
     }
 
-    private GameConfiguration GetGameConfig()
+    private GameConfiguration GetGameConfig(params ItemDefinition[] items)
     {
         var gameConfiguration = new Mock<GameConfiguration>();
-        gameConfiguration.Setup(c => c.Items).Returns(new List<ItemDefinition>());
+        gameConfiguration.Setup(c => c.Items).Returns(items.ToList());
         return gameConfiguration.Object;
     }
 

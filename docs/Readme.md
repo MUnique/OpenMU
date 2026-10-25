@@ -52,6 +52,10 @@ can be searched and navigated.
 * [Cash shop](CashShop.md): the design and implementation of the in-game cash
   shop, the facts about the game client it's based on, and what's left to do
 
+* [Item price rules concept](ItemPriceRulesConcept.md): the concept for
+  data-driven item price rules
+  ([#75](https://github.com/MUnique/OpenMU/issues/75))
+
 * [architecture overview.png](architecture%20overview.png): the big picture,
   explained on the
   [architecture page](../docs-website/docs/development/architecture.md) of the
