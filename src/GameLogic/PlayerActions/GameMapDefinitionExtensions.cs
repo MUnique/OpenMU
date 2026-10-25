@@ -46,6 +46,23 @@ public static class GameMapDefinitionExtensions
     }
 
     /// <summary>
+    /// Gets the active map to which a character can be spawned: the first of the candidates which is
+    /// active and has a spawn gate. If none of them is suitable, e.g. because the home map of the
+    /// character class is inactive, it's the active map with the lowest number which has a spawn gate,
+    /// so that the character doesn't get stuck on content which isn't available in the game.
+    /// </summary>
+    /// <param name="configuration">The game configuration.</param>
+    /// <param name="candidates">The candidates, in the order of their preference.</param>
+    /// <returns>The active map, or <c>null</c> if no map is active and has a spawn gate.</returns>
+    public static GameMapDefinition? GetActiveSpawnMap(this GameConfiguration configuration, params GameMapDefinition?[] candidates)
+    {
+        return candidates.FirstOrDefault(IsActiveSpawnMap)
+               ?? configuration.Maps.Where(IsActiveSpawnMap).OrderBy(map => map.Number).ThenBy(map => map.Discriminator).FirstOrDefault();
+
+        static bool IsActiveSpawnMap(GameMapDefinition? map) => map is { IsActive: true } && map.ExitGates.Any(gate => gate.IsSpawnGate);
+    }
+
+    /// <summary>
     /// Gets the safezone gate of a map.
     /// </summary>
     /// <param name="gameMapDefinition">The game map definition.</param>

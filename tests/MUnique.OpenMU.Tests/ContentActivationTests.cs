@@ -8,16 +8,20 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.Pathfinding;
 using Character = MUnique.OpenMU.DataModel.Entities.Character;
 using CharacterClass = MUnique.OpenMU.Persistence.BasicModel.CharacterClass;
+using ExitGate = MUnique.OpenMU.Persistence.BasicModel.ExitGate;
 using Item = MUnique.OpenMU.Persistence.BasicModel.Item;
 using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 using ItemStorage = MUnique.OpenMU.Persistence.BasicModel.ItemStorage;
 using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
+using MiniGameDefinition = MUnique.OpenMU.Persistence.BasicModel.MiniGameDefinition;
 using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 using QuestDefinition = MUnique.OpenMU.Persistence.BasicModel.QuestDefinition;
 using QuestReward = MUnique.OpenMU.Persistence.BasicModel.QuestReward;
@@ -146,6 +150,161 @@ public class ContentActivationTests
 
         Assert.That(evolutionQuest.EvolvesIntoInactiveClass(player), Is.EqualTo(!isNextClassActive));
         Assert.That(otherQuest.EvolvesIntoInactiveClass(player), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that an inactive monster isn't spawned when a spawn is initialized directly,
+    /// like the mini games do it, e.g. Chaos Castle and the spawns of change events.
+    /// </summary>
+    [Test]
+    public async ValueTask InactiveMonsterIsNotSpawnedDirectlyAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var mapDefinition = gameContext.Configuration.Maps.Single();
+        var map = await gameContext.GetMapAsync((ushort)mapDefinition.Number).ConfigureAwait(false);
+        var mapInitializer = new MapInitializer(gameContext.Configuration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null)
+        {
+            PlugInManager = gameContext.PlugInManager,
+            PathFinderPool = gameContext.PathFinderPool,
+        };
+        var inactiveNpc = new MonsterDefinition { Id = Guid.NewGuid(), Number = 2, ObjectKind = NpcObjectKind.PassiveNpc, IsActive = false };
+
+        var npc = await mapInitializer.InitializeSpawnAsync(0, map!, CreateSpawnArea(mapDefinition, inactiveNpc)).ConfigureAwait(false);
+
+        Assert.That(npc, Is.Null);
+        Assert.That(map!.GetNpcsInRange(new Point(100, 100), 10), Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a mini game is only available when it's active, and its entrance map, too.
+    /// </summary>
+    [Test]
+    public void MiniGameIsOnlyAvailableWithActiveEntranceMap()
+    {
+        var entranceMap = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition { Number = 11 };
+        var miniGame = new MiniGameDefinition { Type = MiniGameType.BloodCastle, GameLevel = 1, Entrance = new ExitGate { Map = entranceMap } };
+
+        Assert.That(miniGame.IsAvailable(), Is.True);
+
+        entranceMap.IsActive = false;
+        Assert.That(miniGame.IsAvailable(), Is.False, "The mini game is still active, but its map is not.");
+
+        entranceMap.IsActive = true;
+        miniGame.IsActive = false;
+        Assert.That(miniGame.IsAvailable(), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the spawn map is the first active candidate with a spawn gate, or else the active map with the lowest number.
+    /// </summary>
+    [Test]
+    public void ActiveSpawnMapSkipsInactiveMaps()
+    {
+        var configuration = PlayerTestHelper.CreateGameConfiguration();
+        configuration.Maps.Clear();
+        var lorencia = AddMap(configuration, 0, isActive: true);
+        var inactive = AddMap(configuration, 1, isActive: false);
+        var withoutGate = AddMap(configuration, 2, isActive: true, hasSpawnGate: false);
+        var noria = AddMap(configuration, 3, isActive: true);
+
+        Assert.That(configuration.GetActiveSpawnMap(inactive, withoutGate, noria), Is.SameAs(noria));
+        Assert.That(configuration.GetActiveSpawnMap(inactive, withoutGate), Is.SameAs(lorencia), "Falls back to the active map with the lowest number.");
+
+        lorencia.IsActive = false;
+        noria.IsActive = false;
+        Assert.That(configuration.GetActiveSpawnMap(inactive, withoutGate), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that a player respawns on an active map, even if the current map and its safezone map are inactive.
+    /// </summary>
+    [Test]
+    public async ValueTask RespawnTargetsAnActiveMapAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = player.GameContext.Configuration;
+        var safezoneMap = AddMap(configuration, 2, isActive: false);
+        var currentMap = AddMap(configuration, 1, isActive: false);
+        currentMap.SafezoneMap = safezoneMap;
+        var homeMap = AddMap(configuration, 3, isActive: true);
+        Mock.Get(player.SelectedCharacter!.CharacterClass!).Setup(c => c.HomeMap).Returns(homeMap);
+        await player.CurrentMap!.RemoveAsync(player).ConfigureAwait(false);
+        player.SetCurrentMapSilently(null);
+        player.SelectedCharacter.CurrentMap = currentMap;
+
+        var gate = await player.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false);
+
+        Assert.That(gate.Map, Is.SameAs(homeMap));
+    }
+
+    /// <summary>
+    /// Tests that no character is created when the home map of its class is inactive,
+    /// because the character would start on content which isn't available.
+    /// </summary>
+    [Test]
+    public async ValueTask CharacterIsNotCreatedOnInactiveHomeMapAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        await player.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
+        Mock.Get(player.Account!).Setup(a => a.Characters).Returns(new List<Character>());
+        var characterClass = new CharacterClass
+        {
+            Number = 1,
+            CanGetCreated = true,
+            HomeMap = AddMap(player.GameContext.Configuration, 1, isActive: false),
+        };
+        player.GameContext.Configuration.CharacterClasses.Add(characterClass);
+        player.GameContext.Configuration.MaximumCharactersPerAccount = 5;
+
+        await new CreateCharacterAction().CreateCharacterAsync(player, "Tester", characterClass.Number).ConfigureAwait(false);
+
+        Assert.That(player.Account!.Characters, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that the drops of Chaos Castle are distributed when fewer monsters spawn than there
+    /// are drops, e.g. because most of its monsters are inactive. Before, it didn't terminate.
+    /// </summary>
+    [Test]
+    public async Task ChaosCastleDropsWithFewerMonstersThanDropsAsync()
+    {
+        var configuration = new Mock<GameConfiguration>();
+        configuration.Setup(c => c.Items).Returns(new List<DataModel.Configuration.Items.ItemDefinition>
+        {
+            new ItemDefinition { Group = 14, Number = 13 },
+            new ItemDefinition { Group = 14, Number = 14 },
+        });
+        var gameContext = new Mock<IGameContext>();
+        gameContext.SetupGet(c => c.Configuration).Returns(configuration.Object);
+        gameContext.SetupGet(c => c.LoggerFactory).Returns(NullLoggerFactory.Instance);
+        gameContext.SetupGet(c => c.DropGenerator).Returns(NullDropGenerator.Instance);
+        var mapInitializer = new Mock<IMapInitializer>();
+        mapInitializer.Setup(m => m.CreateGameMap(It.IsAny<GameMapDefinition>()))
+            .Returns<GameMapDefinition>(map => new GameMap(map, TimeSpan.FromMinutes(1), 16));
+        var definition = new Mock<DataModel.Configuration.MiniGameDefinition>();
+        definition.SetupGet(d => d.Rewards).Returns(new List<MiniGameReward>());
+        definition.SetupGet(d => d.SpawnWaves).Returns(new List<MiniGameSpawnWave>());
+        definition.SetupGet(d => d.Entrance).Returns(new ExitGate { Map = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition { Number = 18 } });
+        definition.Object.Type = MiniGameType.ChaosCastle;
+        definition.Object.GameLevel = 7; // Chaos Castle 7 drops five jewels.
+        await using var chaosCastle = new ChaosCastleContext(new MiniGameMapKey(18, 7, string.Empty), definition.Object, gameContext.Object, mapInitializer.Object);
+
+        var dropGenerator = await Task.Run(() => new ChaosCastleDropGenerator(gameContext.Object, chaosCastle, 2)).WaitAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+
+        Assert.That(dropGenerator, Is.Not.Null);
+    }
+
+    private static GameMapDefinition AddMap(GameConfiguration configuration, short number, bool isActive, bool hasSpawnGate = true)
+    {
+        var map = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition { Number = number, IsActive = isActive, TerrainData = new byte[ushort.MaxValue + 3] };
+        if (hasSpawnGate)
+        {
+            map.ExitGates.Add(new ExitGate { Map = map, IsSpawnGate = true, X1 = 10, Y1 = 10, X2 = 12, Y2 = 12 });
+        }
+
+        configuration.Maps.Add(map);
+        return map;
     }
 
     private static MonsterSpawnArea CreateSpawnArea(GameMapDefinition mapDefinition, DataModel.Configuration.MonsterDefinition monsterDefinition)

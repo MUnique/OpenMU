@@ -315,9 +315,12 @@ internal sealed class PlayerMapTransitions
             }
         }
 
-        var spawnTargetMapDefinition = currentMapDefinition.SafezoneMap is { IsActive: true } safezoneMap
-            ? safezoneMap
-            : currentMapDefinition;
+        // Usually the safezone map or the current map, but never an inactive map, as long as there is an active one.
+        var spawnTargetMapDefinition = player.GameContext.Configuration.GetActiveSpawnMap(
+                                           currentMapDefinition.SafezoneMap,
+                                           currentMapDefinition,
+                                           player.SelectedCharacter?.CharacterClass?.HomeMap)
+                                       ?? currentMapDefinition;
         var targetMap = await player.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false).ConfigureAwait(false);
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()
@@ -381,7 +384,7 @@ internal sealed class PlayerMapTransitions
     {
         var player = this._player;
         var unavailableMap = player.SelectedCharacter!.CurrentMap!;
-        if (player.SelectedCharacter.CharacterClass?.HomeMap is not { } homeMap
+        if (player.SelectedCharacter.CharacterClass?.HomeMap is not { IsActive: true } homeMap
             || homeMap == unavailableMap
             || homeMap.GetSafezoneGate() is not { } homeGate)
         {

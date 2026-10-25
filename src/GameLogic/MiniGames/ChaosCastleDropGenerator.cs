@@ -50,7 +50,8 @@ public class ChaosCastleDropGenerator : IDropGenerator
 
         void AddItems(int count, ItemDefinition definition)
         {
-            for (var i = 0; i < count; i++)
+            // Each monster drops one item at most, so there can't be more drops than monsters.
+            for (var i = 0; i < count && this._monsterDrops.Count < spawnedMonstersCount; i++)
             {
                 bool assigned;
                 do

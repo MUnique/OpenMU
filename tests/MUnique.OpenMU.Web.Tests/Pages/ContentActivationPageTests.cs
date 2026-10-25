@@ -44,6 +44,8 @@ public sealed class ContentActivationPageTests
     private TestModalService _modal = null!;
     private GameMapDefinition _lorencia = null!;
     private GameMapDefinition _karutan = null!;
+    private GameConfiguration _config = null!;
+    private Mock<IDataSource<GameConfiguration>> _source = null!;
 
     /// <summary>
     /// Sets up the page with a configuration of two maps.
@@ -56,7 +58,7 @@ public sealed class ContentActivationPageTests
 
         var persistence = new InMemoryPersistenceContextProvider();
         using var context = persistence.CreateNewContext();
-        var config = context.CreateNew<GameConfiguration>();
+        var config = this._config = context.CreateNew<GameConfiguration>();
         this._lorencia = context.CreateNew<GameMapDefinition>();
         this._lorencia.Number = 0;
         this._lorencia.Name = "Lorencia";
@@ -69,7 +71,7 @@ public sealed class ContentActivationPageTests
         config.Maps.Add(this._karutan);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var source = new Mock<IDataSource<GameConfiguration>>();
+        var source = this._source = new Mock<IDataSource<GameConfiguration>>();
         source.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
         this._audit = new InMemoryAdminAuditRepository();
         var operations = new ContentActivationOperations(persistence, source.Object, AdminOperationTestServices.CreateExecutor(audit: this._audit), new AdminChangeConfirmation(TimeProvider.System), new AdminWriteSettings { ReadOnly = false });
@@ -130,5 +132,23 @@ public sealed class ContentActivationPageTests
         cut.WaitForState(() => !this._karutan.IsActive, LoadTimeout);
         Assert.That(this._lorencia.IsActive, Is.True);
         Assert.That(this._audit.ReadAsync(0, 100).AsTask().Result.Items.Single().Operation, Is.EqualTo("content_restrict_to_version"));
+    }
+
+    /// <summary>
+    /// Setting the parameters again doesn't start another load, which could complete
+    /// out of order and replace the data with an older snapshot.
+    /// </summary>
+    [Test]
+    public void ParametersSetAgainDuringLoadDoesNotLoadAgain()
+    {
+        var owner = new TaskCompletionSource<GameConfiguration>(TaskCreationOptions.RunContinuationsAsynchronously);
+        this._source.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).Returns(() => new ValueTask<GameConfiguration>(owner.Task));
+        var cut = this._context.Render<ContentActivation>();
+
+        cut.Render();
+        owner.SetResult(this._config);
+
+        cut.WaitForState(() => cut.Markup.Contains("Karutan 1"), LoadTimeout);
+        this._source.Verify(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

@@ -193,7 +193,13 @@ public class MapInitializer : IMapInitializer
             return null;
         }
 
-        var monsterDef = spawnArea.MonsterDefinition!;
+        if (spawnArea.MonsterDefinition is not { IsActive: true } monsterDef)
+        {
+            // E.g. a spawn of a mini game, which doesn't filter its spawn areas before.
+            this._logger.LogDebug("Skipping spawn {spawn}, because its monster is not active.", spawnArea);
+            return null;
+        }
+
         NonPlayerCharacter npc;
 
         var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);

@@ -1508,6 +1508,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return this._observerToWorldViewAdapter.ClearObservingObjectsListAsync();
     }
 
+    /// <summary>
+    /// Gets the gate at which the player is spawned, e.g. after its death.
+    /// </summary>
+    /// <returns>The spawn gate.</returns>
+    internal ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
+    {
+        return this._mapTransitions.GetSpawnGateOfCurrentMapAsync();
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1892,7 +1901,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Moves the character to an active map, if its current map is inactive, so that
     /// it doesn't enter a map which is not available in the game anymore.
-    /// The target is the safezone map of the inactive map, or the home map of the character class.
+    /// The target is the safezone map of the inactive map, or the home map of the character class,
+    /// or any other active map, see <see cref="GameMapDefinitionExtensions.GetActiveSpawnMap"/>.
     /// </summary>
     /// <param name="character">The character.</param>
     private void MoveOutOfInactiveMap(Character character)
@@ -1902,8 +1912,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var targetMap = new[] { inactiveMap.SafezoneMap, character.CharacterClass?.HomeMap }
-            .FirstOrDefault(map => map is { IsActive: true });
+        var targetMap = this.GameContext.Configuration.GetActiveSpawnMap(inactiveMap.SafezoneMap, character.CharacterClass?.HomeMap);
         if (targetMap?.GetSafezoneGate() is not { } spawnGate)
         {
             this.Logger.LogWarning("Character {character} is on the inactive map {map}, but there is no active map to move it to.", character, inactiveMap);

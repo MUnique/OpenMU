@@ -34,6 +34,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     private Task? _loadTask;
     private CancellationTokenSource? _disposeCts;
     private IDisposable? _navigationLockDisposable;
+    private int _loadGeneration;
 
     private Dictionary<ContentActivationType, IReadOnlyList<ContentActivationEntry>>? _entries;
     private ContentActivationType _selectedContentType = ContentActivationType.Maps;
@@ -161,19 +162,16 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// The page has no parameters, so it loads its data only once, and not again when its parameters are set again.
+    /// </remarks>
     protected override Task OnInitializedAsync()
     {
         this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
-        return base.OnInitializedAsync();
-    }
-
-    /// <inheritdoc />
-    protected override async Task OnParametersSetAsync()
-    {
         var cts = new CancellationTokenSource();
         this._disposeCts = cts;
         this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token));
-        await base.OnParametersSetAsync().ConfigureAwait(true);
+        return base.OnInitializedAsync();
     }
 
     private static string GetCaption(ContentActivationType contentType)
@@ -348,12 +346,18 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        // A load which completes after a newer one started must not overwrite the newer data.
+        var generation = Interlocked.Increment(ref this._loadGeneration);
         using var loading = this.LoadingService.ShowLoadingIndicator();
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
             var entries = await this.Operations.GetEntriesAsync(cancellationToken).ConfigureAwait(true);
             cancellationToken.ThrowIfCancellationRequested();
+            if (generation != Volatile.Read(ref this._loadGeneration))
+            {
+                return;
+            }
 
             this._entries = entries
                 .GroupBy(entry => entry.Type)
