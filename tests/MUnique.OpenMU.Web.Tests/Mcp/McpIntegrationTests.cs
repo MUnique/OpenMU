@@ -198,7 +198,7 @@ public sealed class McpIntegrationTests : System.IDisposable
     {
         await using var client = await this.ConnectAsync().ConfigureAwait(false);
         var tools = await client.ListToolsAsync().ConfigureAwait(false);
-        Assert.That(tools.Count, Is.EqualTo(20));
+        Assert.That(tools.Count, Is.EqualTo(21));
         var arguments = new Dictionary<string, Dictionary<string, object?>>
         {
             ["drops_explain"] = new() { ["monsterNumber"] = 1, ["mapNumber"] = 0 },
