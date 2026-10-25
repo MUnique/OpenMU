@@ -53,8 +53,14 @@ public partial class ItemRequirementFormula
     /// <inheritdoc />
     public override string ToString()
     {
-        return this.KeepBase
-            ? string.Format(Properties.Resources.ItemRequirementFormulaKeptBaseSummary, this.Stat.GetEnumCaption())
-            : string.Format(Properties.Resources.ItemRequirementFormulaSummary, this.Stat.GetEnumCaption(), this.Add, this.LevelWeight, this.Percent);
+        if (this.KeepBase)
+        {
+            return string.Format(Properties.Resources.ItemRequirementFormulaKeptBaseSummary, this.Stat.GetEnumCaption());
+        }
+
+        var format = this.LevelRequirementBasis
+            ? Properties.Resources.ItemRequirementFormulaLevelBasisSummary
+            : Properties.Resources.ItemRequirementFormulaSummary;
+        return string.Format(format, this.Stat.GetEnumCaption(), this.Add, this.LevelWeight, this.Percent);
     }
 }

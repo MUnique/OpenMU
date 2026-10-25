@@ -250,4 +250,5 @@ or behind a firewall) and you want to use it within your computer or private net
   <data name="ServerEndpointSummary" xml:space="preserve"><value>Client: {0}; Port: {1}</value></data>
   <data name="ItemRequirementFormulaSummary" xml:space="preserve"><value>{0}: {1} + base × (drop level + level × {2}) × {3} / 100</value></data>
   <data name="ItemRequirementFormulaKeptBaseSummary" xml:space="preserve"><value>{0}: base value</value></data>
+  <data name="ItemRequirementFormulaLevelBasisSummary" xml:space="preserve"><value>{0}: {1} + base × (level requirement, or else drop level + level × {2}) × {3} / 100</value></data>
 </root>
