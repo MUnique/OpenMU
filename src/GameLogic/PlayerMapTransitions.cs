@@ -146,6 +146,15 @@ internal sealed class PlayerMapTransitions
     {
         var player = this._player;
         var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
+
+        // A common guard for all warps, because an instance of the map may still exist after the map got deactivated.
+        if (!isRespawnOnSameMap && gate.Map is { IsActive: false } inactiveMap)
+        {
+            player.Logger.LogWarning("Player {player} can't be warped to the inactive map {map}.", player, inactiveMap);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapIsNotActive)).ConfigureAwait(false);
+            return;
+        }
+
         if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;

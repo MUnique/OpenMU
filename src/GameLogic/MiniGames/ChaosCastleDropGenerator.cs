@@ -42,14 +42,20 @@ public class ChaosCastleDropGenerator : IDropGenerator
         this._gameContext = gameContext;
 
         // TODO: This should rather be configurable...
-        var blessDefinition = this._gameContext.Configuration.Items.First(item => item is { Group: 14, Number: 13 });
-        var soulDefinition = this._gameContext.Configuration.Items.First(item => item is { Group: 14, Number: 14 });
+        // Inactive jewels are not dropped.
+        var blessDefinition = this._gameContext.Configuration.Items.FirstOrDefault(item => item is { Group: 14, Number: 13, IsActive: true });
+        var soulDefinition = this._gameContext.Configuration.Items.FirstOrDefault(item => item is { Group: 14, Number: 14, IsActive: true });
         var drops = MonsterJewelDropsPerLevel[context.Definition.GameLevel];
         AddItems(drops.Blesses, blessDefinition);
         AddItems(drops.Souls, soulDefinition);
 
-        void AddItems(int count, ItemDefinition definition)
+        void AddItems(int count, ItemDefinition? definition)
         {
+            if (definition is null)
+            {
+                return;
+            }
+
             // Each monster drops one item at most, so there can't be more drops than monsters.
             for (var i = 0; i < count && this._monsterDrops.Count < spawnedMonstersCount; i++)
             {

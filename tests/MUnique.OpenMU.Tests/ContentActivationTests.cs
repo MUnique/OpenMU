@@ -9,6 +9,7 @@ using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
@@ -195,6 +196,16 @@ public class ContentActivationTests
     }
 
     /// <summary>
+    /// Tests that a mini game without an entrance map isn't available, because its map can't be created.
+    /// </summary>
+    [Test]
+    public void MiniGameWithoutEntranceMapIsNotAvailable()
+    {
+        Assert.That(new MiniGameDefinition { Type = MiniGameType.BloodCastle }.IsAvailable(), Is.False, "Without entrance");
+        Assert.That(new MiniGameDefinition { Type = MiniGameType.BloodCastle, Entrance = new ExitGate() }.IsAvailable(), Is.False, "Without entrance map");
+    }
+
+    /// <summary>
     /// Tests that the spawn map is the first active candidate with a spawn gate, or else the active map with the lowest number.
     /// </summary>
     [Test]
@@ -269,11 +280,81 @@ public class ContentActivationTests
     [Test]
     public async Task ChaosCastleDropsWithFewerMonstersThanDropsAsync()
     {
+        var (gameContext, chaosCastle) = CreateChaosCastle(isJewelActive: true);
+        await using var disposable = chaosCastle;
+
+        var dropGenerator = await Task.Run(() => new ChaosCastleDropGenerator(gameContext, chaosCastle, 2)).WaitAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+
+        Assert.That(await CountDropsAsync(dropGenerator, 2).ConfigureAwait(false), Is.EqualTo(2));
+    }
+
+    /// <summary>
+    /// Tests that the monsters of Chaos Castle don't drop inactive jewels, but the active ones.
+    /// </summary>
+    /// <param name="isJewelActive">If set to <c>true</c>, the jewels are active.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ChaosCastleDropsOnlyActiveJewelsAsync(bool isJewelActive)
+    {
+        var (gameContext, chaosCastle) = CreateChaosCastle(isJewelActive);
+        await using var disposable = chaosCastle;
+
+        var dropGenerator = new ChaosCastleDropGenerator(gameContext, chaosCastle, 50);
+
+        // Chaos Castle 7 drops two Jewels of Bless and three Jewels of Soul.
+        Assert.That(await CountDropsAsync(dropGenerator, 50).ConfigureAwait(false), Is.EqualTo(isJewelActive ? 5 : 0));
+    }
+
+    /// <summary>
+    /// Tests that the entrance to a quest map is rejected before the fee is charged, when the map got
+    /// deactivated, even though an instance of the map still exists.
+    /// </summary>
+    [Test]
+    public async ValueTask InactiveQuestMapIsNotEnteredAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var questMap = AddMap(player.GameContext.Configuration, 1, isActive: true);
+        _ = await player.GameContext.GetMapAsync((ushort)questMap.Number).ConfigureAwait(false);
+        questMap.IsActive = false;
+        var action = new TestEnterQuestMapAction(questMap.Number);
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { Number = TestEnterQuestMapAction.NpcNumber }, null!);
+        Mock.Get(player.SelectedCharacter!).Setup(c => c.QuestStates).Returns(new List<DataModel.Entities.CharacterQuestState>
+        {
+            new Persistence.BasicModel.CharacterQuestState { Group = TestEnterQuestMapAction.QuestGroup, ActiveQuest = new QuestDefinition { Number = TestEnterQuestMapAction.QuestNumber } },
+        });
+        player.Money = 1000;
+
+        await action.TryEnterQuestMapAsync(player).ConfigureAwait(false);
+
+        Assert.That(player.Money, Is.EqualTo(1000), "The fee isn't charged.");
+        Assert.That(player.SelectedCharacter!.CurrentMap, Is.Not.SameAs(questMap));
+    }
+
+    /// <summary>
+    /// Tests that a warp to an inactive map is refused, even though an instance of the map still exists.
+    /// </summary>
+    [Test]
+    public async ValueTask WarpToInactiveMapIsRefusedAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var currentMap = player.CurrentMap;
+        var targetMap = AddMap(player.GameContext.Configuration, 1, isActive: true);
+        _ = await player.GameContext.GetMapAsync((ushort)targetMap.Number).ConfigureAwait(false);
+        targetMap.IsActive = false;
+
+        await player.WarpToAsync(targetMap.ExitGates.Single()).ConfigureAwait(false);
+
+        Assert.That(player.CurrentMap, Is.SameAs(currentMap));
+        Assert.That(player.SelectedCharacter!.CurrentMap, Is.Not.SameAs(targetMap));
+    }
+
+    private static (IGameContext GameContext, ChaosCastleContext ChaosCastle) CreateChaosCastle(bool isJewelActive)
+    {
         var configuration = new Mock<GameConfiguration>();
         configuration.Setup(c => c.Items).Returns(new List<DataModel.Configuration.Items.ItemDefinition>
         {
-            new ItemDefinition { Group = 14, Number = 13 },
-            new ItemDefinition { Group = 14, Number = 14 },
+            new ItemDefinition { Group = 14, Number = 13, IsActive = isJewelActive },
+            new ItemDefinition { Group = 14, Number = 14, IsActive = isJewelActive },
         });
         var gameContext = new Mock<IGameContext>();
         gameContext.SetupGet(c => c.Configuration).Returns(configuration.Object);
@@ -288,11 +369,20 @@ public class ContentActivationTests
         definition.SetupGet(d => d.Entrance).Returns(new ExitGate { Map = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition { Number = 18 } });
         definition.Object.Type = MiniGameType.ChaosCastle;
         definition.Object.GameLevel = 7; // Chaos Castle 7 drops five jewels.
-        await using var chaosCastle = new ChaosCastleContext(new MiniGameMapKey(18, 7, string.Empty), definition.Object, gameContext.Object, mapInitializer.Object);
+        var chaosCastle = new ChaosCastleContext(new MiniGameMapKey(18, 7, string.Empty), definition.Object, gameContext.Object, mapInitializer.Object);
+        return (gameContext.Object, chaosCastle);
+    }
 
-        var dropGenerator = await Task.Run(() => new ChaosCastleDropGenerator(gameContext.Object, chaosCastle, 2)).WaitAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+    private static async ValueTask<int> CountDropsAsync(ChaosCastleDropGenerator dropGenerator, int killedMonsters)
+    {
+        var drops = 0;
+        for (var i = 0; i < killedMonsters; i++)
+        {
+            var (items, _) = await dropGenerator.GenerateItemDropsAsync(new MonsterDefinition(), 0, null!).ConfigureAwait(false);
+            drops += items.Count();
+        }
 
-        Assert.That(dropGenerator, Is.Not.Null);
+        return drops;
     }
 
     private static GameMapDefinition AddMap(GameConfiguration configuration, short number, bool isActive, bool hasSpawnGate = true)
@@ -320,5 +410,35 @@ public class ContentActivationTests
             Quantity = 1,
             SpawnTrigger = SpawnTrigger.Automatic,
         };
+    }
+
+    /// <summary>
+    /// An action which enters a quest map, like the ones of the original game.
+    /// </summary>
+    private sealed class TestEnterQuestMapAction : EnterQuestMapAction
+    {
+        /// <summary>
+        /// The number of the NPC which lets the player enter the quest map.
+        /// </summary>
+        public const short NpcNumber = 1;
+
+        /// <summary>
+        /// The group of the quest which qualifies to enter.
+        /// </summary>
+        public const byte QuestGroup = 1;
+
+        /// <summary>
+        /// The number of the quest which qualifies to enter.
+        /// </summary>
+        public const short QuestNumber = 1;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestEnterQuestMapAction"/> class.
+        /// </summary>
+        /// <param name="targetMapNumber">The number of the quest map.</param>
+        public TestEnterQuestMapAction(short targetMapNumber)
+            : base(NpcNumber, 100, targetMapNumber, QuestGroup, QuestNumber)
+        {
+        }
     }
 }

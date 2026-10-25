@@ -860,7 +860,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private async ValueTask DropRewardAsync(Player player)
     {
         if (player.CurrentMap is not { } map
-            || this._gameContext.Configuration.Items.FirstOrDefault(item => item.Group == this._definition.RewardItemGroup && item.Number == this._definition.RewardItemNumber) is not { } definition)
+            || this._gameContext.Configuration.Items.FirstOrDefault(item => item.IsActive && item.Group == this._definition.RewardItemGroup && item.Number == this._definition.RewardItemNumber) is not { } definition)
         {
             return;
         }
@@ -1217,7 +1217,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private IEnumerable<MonsterSpawnArea> GetWaveSpawns(byte waveNumber)
     {
         return this._map?.Definition.MonsterSpawns
-                   .Where(spawn => spawn.MonsterDefinition is not null
+                   .Where(spawn => spawn.MonsterDefinition is { IsActive: true }
                                    && spawn.SpawnTrigger == SpawnTrigger.OnceAtWaveStart
                                    && spawn.WaveNumber == waveNumber)
                ?? [];
@@ -1225,6 +1225,12 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
     private async ValueTask<Monster?> SpawnMonsterAsync(MonsterSpawnArea spawnArea, INpcIntelligence intelligence)
     {
+        if (spawnArea.MonsterDefinition is not { IsActive: true })
+        {
+            this._logger.LogDebug("Skipping the spawn of {monster} of the crywolf event, because it's not active.", spawnArea.MonsterDefinition);
+            return null;
+        }
+
         var map = this._map!;
         var monster = new Monster(spawnArea, spawnArea.MonsterDefinition!, map, this._gameContext.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
         try
