@@ -34,9 +34,7 @@ internal class MiniGameLeaderboardEfCoreTests
         JsonConverterRegistry.RegisterConverter(new BinaryAsHexJsonConverter());
 
         var contextProvider = new PersistenceContextProvider(new NullLoggerFactory(), null);
-        using (await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false))
-        {
-        }
+        (await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false)).Dispose();
 
         await new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory())
             .CreateInitialDataAsync(1, false).ConfigureAwait(false);
