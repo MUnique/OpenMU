@@ -29,7 +29,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
+public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 

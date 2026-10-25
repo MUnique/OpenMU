@@ -30,8 +30,10 @@ var plugInConfigurations = new List<PlugInConfiguration>();
 // Add services to the container.
 var services = builder.Services;
 services.AddSingleton<GameServer>()
+    .AddSingleton<DaprAppTokenAuthorizationFilter>()
+    .AddSingleton<AdministrationDeliveries>()
     .AddSingleton<IGameServer>(s => s.GetService<GameServer>()!)
-    .AddSingleton<IList<IManageableServer>>(s => new List<IManageableServer>() { s.GetService<GameServer>()! })
+    .AddSingleton<IList<IManageableServer>>(s => new List<IManageableServer> { s.GetService<GameServer>()! })
     .AddSingleton(s => s.GetService<GameServer>()!.Context)
     .AddSingleton<GameServerStatePublisher>()
     .AddSingleton<ConfigurationChangeMediator>()

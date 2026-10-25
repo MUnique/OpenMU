@@ -214,12 +214,10 @@ guessed.
 Account and character details are **saved snapshots**. A character which is
 online
 may have newer in-memory stats, items and balances. Online status comes from the
-login server. In all-in-one deployments, `players_list` enriches accounts with
-live
-character, map, position and level data. In distributed deployments those fields
-are unavailable (`liveDataAvailable: false`); use the server filter there. Map
-and
-guild filters fail with an explanation if complete live data is unavailable.
+login server. `players_list` enriches accounts with live character, map,
+position and level data through the owning server in either deployment.
+Map and guild filters fail with an explanation if complete live data is
+unavailable, for example during character selection or a server outage.
 The player history starts when the admin host starts.
 
 Configuration reads share the panel's current in-memory configuration. If a
@@ -240,7 +238,7 @@ Tools are filtered by role during discovery and checked again when called.
 The host limits requests per API client and returns HTTP 429 when the configured
 minute allowance is exhausted, or HTTP 413 for oversized request bodies.
 Configuration and offline character changes use preview/apply as described
-below. Live GM commands and OAuth remain planned for a later phase.
+below. Live GM tools are described below; OAuth remains a separate follow-up.
 
 ## Operational safety and audit history
 
@@ -273,7 +271,7 @@ so they do not overwrite live account balances.
 
 Castle siege actions reuse the existing state and battle-time restrictions.
 They require an in-process game server with Castle Siege enabled; distributed
-hosts return an explicit availability error until the live admin channel exists.
+hosts return an explicit availability error for Castle Siege management.
 
 `logs_search` is Administrator-only. Supply `since`/`until` (at most 30 days),
 optional exact `level`, and `text` such as a character or account name. Context
@@ -430,6 +428,110 @@ references again. It does not reverse character changes, announcements,
 disconnects or other operational actions. When an audit record remains pending,
 inspect the actual state before making a separate reviewed correction.
 
+## Live game master tools
+
+`players_get` returns live character state from the owning server. `players_list`
+can enrich and filter players in distributed deployments through the same
+channel. These reads require Viewer and never include IP addresses or secrets.
+A character at character selection or in a map transition may temporarily be
+unavailable; wait and refresh.
+
+Operator can use `players_teleport`, `players_give_item`, and `players_set_level`
+with writes enabled. They use the same preview/apply flow as offline character
+changes. Privileged accounts and GM characters require Administrator. Live
+changes run in the player's own persistence context, serialized with packet
+handlers and progress saves. They do not write a second offline copy.
+
+For example, preview a level change with:
+
+```json
+{ "characterName": "Hero", "level": 100, "master": false }
+```
+
+Approve the preview, then repeat the same arguments with `apply: true` and its
+`confirmationToken`. `master: true` sets master level. As with the GM chat
+commands, changing level does not adjust experience or level-up points.
+Teleportation requires a walkable destination on an already hosted map, and
+refuses dead, teleporting or mini game participants. A cross-map teleport waits
+for the normal client map-load acknowledgment before the character is available
+again.
+
+`players_give_item` accepts an `item` object: `group`, `number`, `level`, `skill`,
+`luck`, `optionLevel`, `excellentOptions` (bit mask), `ancientSet`, and
+`ancientBonusLevel`. Options must exist in the item definition. One persistent
+item is inserted into a free rectangle in the live bag; a full inventory is
+refused. It neither equips the item nor drops it on the ground.
+
+`events_schedule` reads periodic mini game schedules and live enabled/active
+state and active participant count for `serverId`. `events_start` takes that id
+and the invariant `eventType` from the schedule. It first returns a preview with
+enabled/active state and active participant count. After reviewing it, repeat
+the same arguments with `apply: true` and its caller-bound, single-use
+`confirmationToken`. The owning server rechecks the event state and count before
+requesting a start on the periodic task's next tick. A changed event requires a
+new preview. An existing event is refused unless `restart: true` explicitly
+permits removal of its participants and replacement with fresh instances.
+Disabled events are never force-started.
+
+In distributed deployments, each sidecar must use the unique app id
+`game-server-{GS_ID}`. The supplied Compose and Helm deployments configure this.
+The internal `/administration/*` routes also require the sidecar's
+`dapr-api-token` header. Configure the same `APP_API_TOKEN` on each game server
+and its sidecar; missing configuration disables these routes. Compose requires
+`OPENMU_GAME_SERVER_APP_TOKEN` and binds game server HTTP ports to loopback.
+Helm creates a reusable random token Secret, or accepts `gameServer.appTokenSecret`
+with key `token`. Never put this token in agent prompts or client requests.
+Calls return the actual owning server's response; live writes do not use
+pub/sub. The game-server process deduplicates transport deliveries for ten
+minutes, including failed responses. This cache is lost on process restart.
+A timeout or lost response leaves its audit entry pending: inspect the live
+state before making a new reviewed request, especially for item grants and
+event restarts.
+
+## Plugin-contributed operations
+
+Active plugins implementing `IAdminOperationPlugIn` contribute one operation
+each, with an input schema, minimum role and safety annotations. Their catalog
+is available through `plugin_operations_list`, and read-only operations can be
+called through `plugin_operations_read` without further opt-in. The catalog is
+filtered by role, API-key tool restrictions and owner permission. Deactivating a
+plugin removes its operations and prevents subsequent calls.
+
+Plugin writes require `plugin_operations_execute`, explicitly enabled MCP
+writes, the declared role, and owner permission for the exact plugin id and
+operation name. Configure that permission in the plugin's entry under
+`AdminPanel:Mcp:AllowedPluginWrites`, for example:
+
+```json
+{
+  "AdminPanel": {
+    "Mcp": {
+      "ReadOnly": false,
+      "AllowedPluginWrites": {
+        "00000000-0000-0000-0000-000000000001": ["reset_event"]
+      }
+    }
+  }
+}
+```
+
+Replace the example identifier and name with those from the catalog and restart
+the admin host. Activating a plugin alone never grants agent write access.
+Plugin writes use caller-bound, single-use previews and the same durable audit
+executor as built-in writes; role, metadata, permission and state changes can
+invalidate a preview. `audit_revert` does not revert live or plugin actions.
+
+Plugin authors must keep safety metadata stable while active, validate inputs
+against the declared schema, make previews and read-only calls free of side
+effects, and return safe projections without credentials. Inputs, previews and
+results are limited to 16 KiB, and input nesting is limited to 16 levels. Writes
+must compare the supplied `expectedPreview` with their current state and apply
+the mutation atomically under their gameplay lock. Read calls receive a null
+`expectedPreview`.
+The interface requires metadata, preview and execution together, so every
+contributed operation is reachable through the generic MCP adapters and their
+role checks. The built-in operation parity test also covers those adapters.
+
 ## Restrict an agent to selected tools
 
 On **API keys**, set **Allowed MCP tools** when creating or editing a key.
@@ -462,3 +564,8 @@ Verify the preview/apply flow with two agent clients. In the panel, also check
 “open a configuration editor without editing → apply an MCP change → edit and
 save”: Save must request a refresh, and Refresh must load the committed value.
 Copy the pending edit before refreshing, then reapply it and save normally.
+
+Player-list enrichment reads one best-effort scalar snapshot per owning server,
+then filters and pages the combined result. It does not wait for player progress
+saves; fields may change during a snapshot. Character writes still serialize
+with gameplay and persistence.
