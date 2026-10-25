@@ -86,6 +86,9 @@ public class BuyNpcItemActionTests
         {
             Group = 15,
             Value = StorePrice,
+
+            // Like the scrolls and orbs of the initialized data, which cost their value.
+            PriceDefinition = new MUnique.OpenMU.Persistence.BasicModel.ItemPriceDefinition { BasePriceFormula = "value" },
             Width = 1,
             Height = 1,
             Durability = 10,
