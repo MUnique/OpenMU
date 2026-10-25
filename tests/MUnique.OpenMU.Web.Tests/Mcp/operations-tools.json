@@ -1378,6 +1378,48 @@
     }
   },
   {
+    "Name": "minigames_leaderboard",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "miniGameType": {
+          "description": "Optional mini game type; empty for the first type which has a leaderboard.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Undefined",
+            "DevilSquare",
+            "BloodCastle",
+            "ChaosCastle",
+            "IllusionTemple",
+            "Doppelganger",
+            "Kanturu",
+            "ImperialGuardian",
+            null
+          ],
+          "default": null
+        },
+        "days": {
+          "description": "Optional number of past days (1 to 3650) of which finished games are counted; empty for all time.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "players_ban",
     "InputSchema": {
       "type": "object",

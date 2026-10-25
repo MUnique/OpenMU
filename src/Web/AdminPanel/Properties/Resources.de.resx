@@ -2539,6 +2539,39 @@
   <data name="DiscordNotConfigured" xml:space="preserve"><value>Nicht konfiguriert</value></data>
   <data name="DiscordChooseServer" xml:space="preserve"><value>Discord-Server wählen</value></data>
   <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Einen privaten Teamkanal wählen. GM-Auditnachrichten können vertrauliche Informationen enthalten.</value></data>
+  <data name="Leaderboards" xml:space="preserve">
+    <value>Ranglisten</value>
+  </data>
+  <data name="LeaderboardsDescription" xml:space="preserve">
+    <value>Die besten Charaktere der Minispiele, welche ihre Ranglisten-Statistiken speichern, sortiert nach der Summe ihrer Punkte. Bots werden nicht berücksichtigt.</value>
+  </data>
+  <data name="LeaderboardsNoMiniGames" xml:space="preserve">
+    <value>Kein Minispiel speichert seine Ranglisten-Statistiken. Aktiviere "Save Ranking Statistics" bei einem Minispiel, um seine Rangliste zu sehen.</value>
+  </data>
+  <data name="LeaderboardNoEntries" xml:space="preserve">
+    <value>Noch keine beendeten Spiele.</value>
+  </data>
+  <data name="LeaderboardPeriod" xml:space="preserve">
+    <value>Zeitraum</value>
+  </data>
+  <data name="LeaderboardPeriodAllTime" xml:space="preserve">
+    <value>Gesamt</value>
+  </data>
+  <data name="LeaderboardPeriodLast30Days" xml:space="preserve">
+    <value>Letzte 30 Tage</value>
+  </data>
+  <data name="LeaderboardPeriodLast7Days" xml:space="preserve">
+    <value>Letzte 7 Tage</value>
+  </data>
+  <data name="LeaderboardTotalScore" xml:space="preserve">
+    <value>Gesamtpunkte</value>
+  </data>
+  <data name="LeaderboardBestScore" xml:space="preserve">
+    <value>Beste Punktzahl</value>
+  </data>
+  <data name="LeaderboardGames" xml:space="preserve">
+    <value>Spiele</value>
+  </data>
   <data name="EditorContextChanged" xml:space="preserve">
     <value>Die Konfiguration wurde geändert, während dieser Editor geöffnet war. Kopieren Sie ungespeicherte Änderungen und laden Sie die aktuellen Daten mit Aktualisieren neu, bevor Sie speichern.</value>
   </data>

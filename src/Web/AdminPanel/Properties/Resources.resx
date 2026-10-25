@@ -2641,6 +2641,39 @@
   <data name="AuditOutcome" xml:space="preserve"><value>Outcome</value></data>
   <data name="AuditPrevious" xml:space="preserve"><value>Previous</value></data>
   <data name="AuditNext" xml:space="preserve"><value>Next</value></data>
+  <data name="Leaderboards" xml:space="preserve">
+    <value>Leaderboards</value>
+  </data>
+  <data name="LeaderboardsDescription" xml:space="preserve">
+    <value>The best characters of the mini games which save their ranking statistics, ranked by the sum of their scores. Bots are not included.</value>
+  </data>
+  <data name="LeaderboardsNoMiniGames" xml:space="preserve">
+    <value>No mini game saves its ranking statistics. Enable "Save Ranking Statistics" for a mini game to see its leaderboard.</value>
+  </data>
+  <data name="LeaderboardNoEntries" xml:space="preserve">
+    <value>No finished games yet.</value>
+  </data>
+  <data name="LeaderboardPeriod" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="LeaderboardPeriodAllTime" xml:space="preserve">
+    <value>All time</value>
+  </data>
+  <data name="LeaderboardPeriodLast30Days" xml:space="preserve">
+    <value>Last 30 days</value>
+  </data>
+  <data name="LeaderboardPeriodLast7Days" xml:space="preserve">
+    <value>Last 7 days</value>
+  </data>
+  <data name="LeaderboardTotalScore" xml:space="preserve">
+    <value>Total score</value>
+  </data>
+  <data name="LeaderboardBestScore" xml:space="preserve">
+    <value>Best score</value>
+  </data>
+  <data name="LeaderboardGames" xml:space="preserve">
+    <value>Games</value>
+  </data>
   <data name="AllowedMcpTools" xml:space="preserve">
     <value>Allowed MCP tools (comma separated; empty allows all tools for the role)</value>
   </data>
