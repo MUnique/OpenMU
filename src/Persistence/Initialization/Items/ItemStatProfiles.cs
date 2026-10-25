@@ -33,14 +33,11 @@ internal static class ItemStatProfiles
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    /// <exception cref="InvalidOperationException">
-    /// The items which get the level bonus table of a stat from the same added profile use different tables.
-    /// </exception>
     public static void Apply(IContext context, GameConfiguration gameConfiguration)
     {
         var addedProfiles = AddMissingProfiles(context, gameConfiguration);
-        AssignProfiles(gameConfiguration);
-        TakeTheTablesOfTheItems(gameConfiguration, addedProfiles);
+        var assignedItems = AssignProfiles(gameConfiguration);
+        TakeTheTablesOfTheItems(context, gameConfiguration, addedProfiles, assignedItems);
     }
 
     private static List<ItemStatProfile> AddMissingProfiles(IContext context, GameConfiguration gameConfiguration)
@@ -67,55 +64,131 @@ internal static class ItemStatProfiles
         return addedProfiles;
     }
 
-    private static void AssignProfiles(GameConfiguration gameConfiguration)
+    private static HashSet<ItemDefinition> AssignProfiles(GameConfiguration gameConfiguration)
     {
         var defaultProfile = gameConfiguration.ItemStatProfiles.First(profile => profile.Name == ItemStatProfile.DefaultName);
-        foreach (var item in gameConfiguration.Items.Where(item => item.StatProfile is null))
+        var assignedItems = gameConfiguration.Items.Where(item => item.StatProfile is null).ToHashSet();
+        foreach (var item in assignedItems)
         {
             var name = BuiltInItemStatProfiles.GetProfileName(item);
             item.StatProfile = gameConfiguration.ItemStatProfiles.FirstOrDefault(profile => profile.Name == name) ?? defaultProfile;
         }
+
+        return assignedItems;
     }
 
     /// <summary>
     /// Gives the stats of the added profiles the level bonus table which their items use. Unlike the name, the items'
-    /// reference to the table stays when an owner renames or replaces it. A table which no item gets from the profile
-    /// stays as found by its name, or empty when the configuration doesn't have it, e.g. the table of the third wings
-    /// in a version without third wings.
+    /// reference to the table stays when an owner renames or replaces it. When the items which get a table from a profile
+    /// use different tables, the profile takes the one most of them use. Each other item which got its profile in this
+    /// run gets a variant of it which names the item's table, e.g. "thirdTierWing2", so that no item's table changes and
+    /// each item's profile names its table. A table which no item gets from the profile stays as found by its name,
+    /// or empty when the configuration doesn't have it, e.g. the table of the third wings in a version without third wings.
     /// </summary>
-    private static void TakeTheTablesOfTheItems(GameConfiguration gameConfiguration, List<ItemStatProfile> addedProfiles)
+    private static void TakeTheTablesOfTheItems(IContext context, GameConfiguration gameConfiguration, List<ItemStatProfile> addedProfiles, HashSet<ItemDefinition> assignedItems)
     {
         var defaultProfile = gameConfiguration.ItemStatProfiles.First(profile => profile.Name == ItemStatProfile.DefaultName);
+        var variants = new Dictionary<(ItemStatProfile Profile, ItemStat Stat, ItemLevelBonusTable Table), ItemStatProfile>();
         foreach (var profile in addedProfiles)
         {
-            foreach (var terms in profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values))
+            foreach (var terms in profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values).ToList())
             {
                 if (!TableAttributes.TryGetValue(terms.Stat, out var attributes))
                 {
                     continue;
                 }
 
-                var tables = gameConfiguration.Items
+                var itemTables = gameConfiguration.Items
                     .Where(item => GetProfileOfTable(item.StatProfile!, terms.Stat, defaultProfile) == profile)
-                    .SelectMany(item => item.BasePowerUpAttributes)
-                    .Where(powerUp => powerUp.BonusPerLevelTable is not null && attributes.Any(attribute => attribute == powerUp.TargetAttribute))
-                    .Select(powerUp => powerUp.BonusPerLevelTable!)
-                    .Distinct()
+                    .Select(item => (Item: item, Table: GetTableOfItem(item, attributes)))
+                    .Where(itemTable => itemTable.Table is not null)
                     .ToList();
-                if (tables.Count > 1)
+                if (itemTables.Count == 0)
                 {
-                    var tableNames = string.Join(", ", tables.Select(table => $"'{table.Name.ValueInNeutralLanguage}'"));
-                    throw new InvalidOperationException(
-                        $"The items of the item stat profile '{profile.Name}' use different level bonus tables for the {terms.Stat}: {tableNames}. "
-                        + "Give them the same table, so that the profile can name it.");
+                    continue;
                 }
 
-                if (tables.Count == 1)
+                // On a tie, the table with the built-in name stays.
+                var table = itemTables
+                    .GroupBy(itemTable => itemTable.Table!)
+                    .OrderByDescending(group => group.Count())
+                    .ThenByDescending(group => group.Key == terms.Table)
+                    .ThenBy(group => group.Key.Name.ValueInNeutralLanguage, StringComparer.Ordinal)
+                    .First().Key;
+                terms.Table = table;
+                foreach (var (item, itemTable) in itemTables.Where(itemTable => itemTable.Table != table && assignedItems.Contains(itemTable.Item)))
                 {
-                    terms.Table = tables[0];
+                    var key = (item.StatProfile!, terms.Stat, itemTable!);
+                    if (!variants.TryGetValue(key, out var variant))
+                    {
+                        variant = CreateVariant(context, gameConfiguration, item.StatProfile!, terms.Stat, itemTable!);
+                        variants.Add(key, variant);
+                    }
+
+                    item.StatProfile = variant;
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the level bonus table of the item's power-ups of the given attributes, or <c>null</c> when they have none,
+    /// or several, which no profile can name; then the item keeps its profile.
+    /// </summary>
+    private static ItemLevelBonusTable? GetTableOfItem(ItemDefinition item, AttributeDefinition[] attributes)
+    {
+        var tables = item.BasePowerUpAttributes
+            .Where(powerUp => powerUp.BonusPerLevelTable is not null && attributes.Any(attribute => attribute == powerUp.TargetAttribute))
+            .Select(powerUp => powerUp.BonusPerLevelTable!)
+            .Distinct()
+            .Take(2)
+            .ToList();
+        return tables.Count == 1 ? tables[0] : null;
+    }
+
+    /// <summary>
+    /// Creates a copy of the profile with the next free name, e.g. "thirdTierWing2", which names the given table for the stat.
+    /// </summary>
+    private static ItemStatProfile CreateVariant(IContext context, GameConfiguration gameConfiguration, ItemStatProfile profile, ItemStat stat, ItemLevelBonusTable table)
+    {
+        var baseName = profile.Name.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+        var number = 2;
+        while (gameConfiguration.ItemStatProfiles.Any(p => p.Name == baseName + number))
+        {
+            number++;
+        }
+
+        var variant = context.CreateNew<ItemStatProfile>();
+        variant.Name = baseName + number;
+        variant.LevelPerItemLevel = profile.LevelPerItemLevel;
+        variant.ExcellentLevelAdd = profile.ExcellentLevelAdd;
+        variant.StrengthPerOptionLevel = profile.StrengthPerOptionLevel;
+        foreach (var terms in profile.StatTerms)
+        {
+            var copy = context.CreateNew<ItemStatTerms>();
+            copy.AssignValuesOf(terms, gameConfiguration);
+            variant.StatTerms.Add(copy);
+        }
+
+        foreach (var formula in profile.RequirementFormulas)
+        {
+            var copy = context.CreateNew<ItemRequirementFormula>();
+            copy.AssignValuesOf(formula, gameConfiguration);
+            variant.RequirementFormulas.Add(copy);
+        }
+
+        var statTerms = variant.StatTerms.FirstOrDefault(t => t.Stat == stat);
+        if (statTerms is null)
+        {
+            statTerms = context.CreateNew<ItemStatTerms>();
+            statTerms.Stat = stat;
+            variant.StatTerms.Add(statTerms);
+        }
+
+        statTerms.TableState = ItemStatTermState.Values;
+        statTerms.Table = table;
+        gameConfiguration.ItemStatProfiles.Add(variant);
+        return variant;
     }
 
     /// <summary>

@@ -107,28 +107,7 @@ internal class ItemStatProfilesDataTest
     {
         var gameConfiguration = this._readOnlyData[version].GameConfiguration;
 
-        var statsOfAttributes = new Dictionary<AttributeDefinition, ItemStat>
-        {
-            { Stats.MinimumPhysBaseDmgByWeapon, ItemStat.Damage },
-            { Stats.MaximumPhysBaseDmgByWeapon, ItemStat.Damage },
-            { Stats.DefenseRatePvm, ItemStat.BlockRate },
-            { Stats.DefenseBase, ItemStat.Defense },
-            { Stats.DefenseShield, ItemStat.Defense },
-        };
-        var wrongTables = new List<string>();
-        foreach (var item in gameConfiguration.Items)
-        {
-            foreach (var powerUp in item.BasePowerUpAttributes.Where(p => p.BonusPerLevelTable is not null && statsOfAttributes.ContainsKey(p.TargetAttribute!)))
-            {
-                var profileTable = GetTable(gameConfiguration, item.StatProfile!, statsOfAttributes[powerUp.TargetAttribute!]);
-                if (profileTable != powerUp.BonusPerLevelTable)
-                {
-                    wrongTables.Add($"{item} ({item.StatProfile}) {powerUp.TargetAttribute}: {powerUp.BonusPerLevelTable!.Name}, profile: {profileTable?.Name}");
-                }
-            }
-        }
-
-        Assert.That(wrongTables, Is.Empty);
+        Assert.That(GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
     }
 
     /// <summary>
@@ -398,7 +377,7 @@ internal class ItemStatProfilesDataTest
         var ownTable = AddTable(context, gameConfiguration, "Own defense bonus of the third wings");
         foreach (var item in thirdWings)
         {
-            GiveDefenseTable(item, ownTable);
+            GiveTable(item, ownTable, Stats.DefenseBase);
         }
 
         RemoveProfiles(gameConfiguration);
@@ -409,21 +388,74 @@ internal class ItemStatProfilesDataTest
     }
 
     /// <summary>
-    /// Tests that the update stops with a message which names the profile when the items which get a table from it use
-    /// different tables, because then the profile can't name one.
+    /// Tests that the update keeps a third wing which an owner gave another level bonus table than the other third wings:
+    /// it gets a variant of the profile which names its table, the profile keeps the table of the others,
+    /// and no item's table changes. A second run changes nothing.
     /// </summary>
     [Test]
-    public async Task UpdateRejectsItemsWithDifferentTablesAsync()
+    public async Task UpdateGivesAnItemWithAnotherTableAVariantOfItsProfileAsync()
     {
         var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
         using var _ = context;
-        var thirdWing = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing).First();
-        GiveDefenseTable(thirdWing, AddTable(context, gameConfiguration, "Own defense bonus of one third wing"));
+        var thirdWings = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing);
+        var builtInTable = GetProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing).StatTerms.Single(t => t.Stat == ItemStat.Defense).Table!;
+        var ownTable = AddTable(context, gameConfiguration, "Own defense bonus of one third wing");
+        GiveTable(thirdWings[0], ownTable, Stats.DefenseBase);
+        var powerUpTables = DescribePowerUpTables(gameConfiguration);
 
         RemoveProfiles(gameConfiguration);
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false));
+        var update = CreateUpdate(Season6);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var afterFirstUpdate = Describe(gameConfiguration);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(exception!.Message, Does.Contain($"'{BuiltInItemStatProfiles.ThirdTierWing}'").And.Contain("Own defense bonus of one third wing"));
+        var profile = GetProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing);
+        var variantName = BuiltInItemStatProfiles.ThirdTierWing + "2";
+        var expectedVariant = DescribeProfile(profile)
+            .Select(line => line.Replace($"{BuiltInItemStatProfiles.ThirdTierWing}:", $"{variantName}:", StringComparison.Ordinal)
+                .Replace(builtInTable.Name.ValueInNeutralLanguage, ownTable.Name.ValueInNeutralLanguage, StringComparison.Ordinal));
+        Assert.Multiple(() =>
+        {
+            Assert.That(profile.StatTerms.Single(t => t.Stat == ItemStat.Defense).Table, Is.SameAs(builtInTable));
+            Assert.That(thirdWings[0].StatProfile!.Name, Is.EqualTo(variantName));
+            Assert.That(DescribeProfile(thirdWings[0].StatProfile!), Is.EqualTo(expectedVariant));
+            Assert.That(thirdWings.Skip(1).Select(item => item.StatProfile), Is.All.SameAs(profile));
+            Assert.That(DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
+            Assert.That(GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
+            Assert.That(Describe(gameConfiguration), Is.EqualTo(afterFirstUpdate));
+        });
+    }
+
+    /// <summary>
+    /// Tests the same for a table which the items get from the default profile: a sword which an owner gave another
+    /// damage table gets a variant of the weapon profile which names it, and the default keeps its table.
+    /// </summary>
+    [Test]
+    public async Task UpdateGivesAWeaponWithAnotherDamageTableAVariantOfItsProfileAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
+        using var _ = context;
+        var sword = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.Weapon)
+            .First(item => item.Group == 0 && item.BasePowerUpAttributes.Any(p => p.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon && p.BonusPerLevelTable is not null));
+        var builtInTable = GetProfile(gameConfiguration, ItemStatProfile.DefaultName).StatTerms.Single(t => t.Stat == ItemStat.Damage).Table!;
+        var ownTable = AddTable(context, gameConfiguration, "Own damage increase of one sword");
+        GiveTable(sword, ownTable, Stats.MinimumPhysBaseDmgByWeapon, Stats.MaximumPhysBaseDmgByWeapon);
+        var powerUpTables = DescribePowerUpTables(gameConfiguration);
+
+        RemoveProfiles(gameConfiguration);
+        await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(GetProfile(gameConfiguration, ItemStatProfile.DefaultName).StatTerms.Single(t => t.Stat == ItemStat.Damage).Table, Is.SameAs(builtInTable));
+            Assert.That(DescribeProfile(sword.StatProfile!), Is.EqualTo(new[]
+            {
+                "weapon2: level per item level -, excellent level add -, strength per option level -",
+                "  Damage: table Own damage increase of one sword, excellent NotWritten, ancient NotWritten",
+            }));
+            Assert.That(DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
+            Assert.That(GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
+        });
     }
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateAsync(string version)
@@ -472,12 +504,63 @@ internal class ItemStatProfilesDataTest
         return table;
     }
 
-    private static void GiveDefenseTable(ItemDefinition item, ItemLevelBonusTable table)
+    private static void GiveTable(ItemDefinition item, ItemLevelBonusTable table, params AttributeDefinition[] attributes)
     {
-        foreach (var powerUp in item.BasePowerUpAttributes.Where(p => p.TargetAttribute == Stats.DefenseBase && p.BonusPerLevelTable is not null))
+        foreach (var powerUp in item.BasePowerUpAttributes.Where(p => attributes.Any(attribute => attribute == p.TargetAttribute) && p.BonusPerLevelTable is not null))
         {
             powerUp.BonusPerLevelTable = table;
         }
+    }
+
+    private static ItemStatProfile GetProfile(GameConfiguration gameConfiguration, string name)
+    {
+        return gameConfiguration.ItemStatProfiles.Single(p => p.Name == name);
+    }
+
+    /// <summary>
+    /// Describes the level bonus table of each power-up of each item, by the table's id, in an order which doesn't depend on the loading.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The description.</returns>
+    internal static List<string> DescribePowerUpTables(GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.Items
+            .OrderBy(item => item.Group).ThenBy(item => item.Number)
+            .SelectMany(item => item.BasePowerUpAttributes
+                .Select(p => $"{item.Group}/{item.Number} {p.TargetAttribute?.Designation}: {p.BonusPerLevelTable?.GetId()}")
+                .OrderBy(line => line, StringComparer.Ordinal))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Gets the damage, block rate and defense power-ups whose level bonus table isn't the table of the item's profile.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The power-ups, described.</returns>
+    internal static List<string> GetTablesWhichDifferFromTheProfile(GameConfiguration gameConfiguration)
+    {
+        var statsOfAttributes = new Dictionary<AttributeDefinition, ItemStat>
+        {
+            { Stats.MinimumPhysBaseDmgByWeapon, ItemStat.Damage },
+            { Stats.MaximumPhysBaseDmgByWeapon, ItemStat.Damage },
+            { Stats.DefenseRatePvm, ItemStat.BlockRate },
+            { Stats.DefenseBase, ItemStat.Defense },
+            { Stats.DefenseShield, ItemStat.Defense },
+        };
+        var wrongTables = new List<string>();
+        foreach (var item in gameConfiguration.Items)
+        {
+            foreach (var powerUp in item.BasePowerUpAttributes.Where(p => p.BonusPerLevelTable is not null && statsOfAttributes.ContainsKey(p.TargetAttribute!)))
+            {
+                var profileTable = GetTable(gameConfiguration, item.StatProfile!, statsOfAttributes[powerUp.TargetAttribute!]);
+                if (profileTable != powerUp.BonusPerLevelTable)
+                {
+                    wrongTables.Add($"{item} ({item.StatProfile}) {powerUp.TargetAttribute}: {powerUp.BonusPerLevelTable!.Name}, profile: {profileTable?.Name}");
+                }
+            }
+        }
+
+        return wrongTables;
     }
 
     /// <summary>

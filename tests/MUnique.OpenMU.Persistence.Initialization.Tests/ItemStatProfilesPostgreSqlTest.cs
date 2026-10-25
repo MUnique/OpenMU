@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
@@ -99,16 +101,7 @@ internal class ItemStatProfilesPostgreSqlTest
     {
         var expected = await this.DescribeAsync().ConfigureAwait(false);
 
-        // Bring the database back to the state before the migration; that removes the profiles with their tables and columns.
-        await using (var context = new EntityDataContext())
-        {
-            var migrations = context.Database.GetMigrations().ToList();
-            Assert.That(migrations, Does.Contain(MigrationName));
-            await context.GetService<IMigrator>().MigrateAsync(migrations[migrations.IndexOf(MigrationName) - 1]).ConfigureAwait(false);
-            Assert.That(await context.Database.GetAppliedMigrationsAsync().ConfigureAwait(false), Does.Not.Contain(MigrationName));
-        }
-
-        await this._contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
+        await this.MigrateBackAndUpAsync().ConfigureAwait(false);
 
         using (var context = this._contextProvider.CreateNewContext())
         {
@@ -128,6 +121,58 @@ internal class ItemStatProfilesPostgreSqlTest
         }
 
         Assert.That(await this.DescribeAsync().ConfigureAwait(false), Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests that the migration and the update keep an item which an owner gave another level bonus table than the other
+    /// items of its kind: the update completes, no item's table changes, and the item gets a variant of its profile
+    /// which names its table.
+    /// </summary>
+    [Test]
+    public async Task MigrationAndUpdateKeepAnItemWithAnotherTableAsync()
+    {
+        short swordNumber;
+        IReadOnlyList<string> powerUpTables;
+        using (var context = this._contextProvider.CreateNewContext())
+        {
+            var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+            var sword = gameConfiguration.Items
+                .Where(item => item.Group == 0 && item.BasePowerUpAttributes.Any(IsDamageWithTable))
+                .OrderBy(item => item.Number)
+                .First();
+            var table = context.CreateNew<ItemLevelBonusTable>();
+            table.Name = "Own damage increase of one sword";
+            gameConfiguration.ItemLevelBonusTables.Add(table);
+            foreach (var powerUp in sword.BasePowerUpAttributes.Where(IsDamageWithTable))
+            {
+                powerUp.BonusPerLevelTable = table;
+            }
+
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            swordNumber = sword.Number;
+            powerUpTables = ItemStatProfilesDataTest.DescribePowerUpTables(gameConfiguration);
+        }
+
+        await this.MigrateBackAndUpAsync().ConfigureAwait(false);
+        using (var context = this._contextProvider.CreateNewContext())
+        {
+            var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+            await new AddItemStatProfilesUpdatePlugIn075().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        using (var context = this._contextProvider.CreateNewContext())
+        {
+            var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+            var sword = gameConfiguration.Items.Single(item => item.Group == 0 && item.Number == swordNumber);
+            Assert.Multiple(() =>
+            {
+                Assert.That(sword.StatProfile?.Name, Is.EqualTo(BuiltInItemStatProfiles.Weapon + "2"));
+                Assert.That(sword.StatProfile?.StatTerms.Single(t => t.Stat == ItemStat.Damage).Table?.Name.ValueInNeutralLanguage, Is.EqualTo("Own damage increase of one sword"));
+                Assert.That(ItemStatProfilesDataTest.DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
+                Assert.That(ItemStatProfilesDataTest.GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
+            });
+        }
     }
 
     /// <summary>
@@ -166,6 +211,12 @@ internal class ItemStatProfilesPostgreSqlTest
         }).ConfigureAwait(false);
     }
 
+    private static bool IsDamageWithTable(ItemBasePowerUpDefinition powerUp)
+    {
+        return powerUp.BonusPerLevelTable is not null
+               && (powerUp.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon || powerUp.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon);
+    }
+
     private static ItemStatProfile AddProfile(IContext context, GameConfiguration gameConfiguration, string name)
     {
         var profile = context.CreateNew<ItemStatProfile>();
@@ -187,6 +238,23 @@ internal class ItemStatProfilesPostgreSqlTest
             .Select(terms => $"{terms.Stat}: {terms.Table!.Name}");
         Assert.That(foreignTables, Is.Empty);
         return ItemStatProfilesDataTest.Describe(gameConfiguration);
+    }
+
+    /// <summary>
+    /// Brings the database back to the state before the migration, which removes the profiles with their tables and
+    /// columns, and applies the migrations again.
+    /// </summary>
+    private async Task MigrateBackAndUpAsync()
+    {
+        await using (var context = new EntityDataContext())
+        {
+            var migrations = context.Database.GetMigrations().ToList();
+            Assert.That(migrations, Does.Contain(MigrationName));
+            await context.GetService<IMigrator>().MigrateAsync(migrations[migrations.IndexOf(MigrationName) - 1]).ConfigureAwait(false);
+            Assert.That(await context.Database.GetAppliedMigrationsAsync().ConfigureAwait(false), Does.Not.Contain(MigrationName));
+        }
+
+        await this._contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
     }
 
     private async Task AssertRejectedAsync(Action<IContext, GameConfiguration> addDuplicate)
