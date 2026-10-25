@@ -90,7 +90,7 @@ public class MapInitializer : IMapInitializer
 
         this._logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap.Definition.Name);
         var automaticSpawns = createdMap.Definition.MonsterSpawns
-            .Where(m => m.MonsterDefinition is not null)
+            .Where(m => m.MonsterDefinition is { IsActive: true })
             .Where(m => m.SpawnTrigger is SpawnTrigger.Automatic);
         foreach (var spawnArea in automaticSpawns)
         {
@@ -104,7 +104,8 @@ public class MapInitializer : IMapInitializer
 
         var newSpawnRegistration = this._configurationChangeMediator?.RegisterForNew<MonsterSpawnArea, GameMap>(createdMap, async (spawnArea, map) =>
         {
-            if (!Equals(spawnArea.GameMap, map.Definition))
+            if (!Equals(spawnArea.GameMap, map.Definition)
+                || spawnArea.MonsterDefinition is not { IsActive: true })
             {
                 return;
             }
@@ -137,7 +138,7 @@ public class MapInitializer : IMapInitializer
 
         this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap.Definition.Name);
         var eventSpawns = createdMap.Definition.MonsterSpawns
-            .Where(m => m.MonsterDefinition is not null)
+            .Where(m => m.MonsterDefinition is { IsActive: true })
             .Where(m => m.SpawnTrigger is SpawnTrigger.OnceAtEventStart or SpawnTrigger.AutomaticDuringEvent);
 
         foreach (var spawnArea in eventSpawns)
@@ -159,7 +160,7 @@ public class MapInitializer : IMapInitializer
 
         this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap.Definition.Name);
         var waveSpawns = createdMap.Definition.MonsterSpawns
-            .Where(m => m.MonsterDefinition is not null)
+            .Where(m => m.MonsterDefinition is { IsActive: true })
             .Where(m => m.SpawnTrigger is SpawnTrigger.AutomaticDuringWave or SpawnTrigger.OnceAtWaveStart)
             .Where(m => m.WaveNumber == waveNumber);
 
@@ -192,7 +193,13 @@ public class MapInitializer : IMapInitializer
             return null;
         }
 
-        var monsterDef = spawnArea.MonsterDefinition!;
+        if (spawnArea.MonsterDefinition is not { IsActive: true } monsterDef)
+        {
+            // E.g. a spawn of a mini game, which doesn't filter its spawn areas before.
+            this._logger.LogDebug("Skipping spawn {spawn}, because its monster is not active.", spawnArea);
+            return null;
+        }
+
         NonPlayerCharacter npc;
 
         var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);
@@ -264,12 +271,13 @@ public class MapInitializer : IMapInitializer
 
     /// <summary>
     /// Gets the map definition by searching for it at the <see cref="GameConfiguration"/>.
+    /// Inactive maps are not considered.
     /// </summary>
     /// <param name="mapNumber">The map number.</param>
     /// <returns>The game map definition.</returns>
     protected virtual GameMapDefinition? GetMapDefinition(ushort mapNumber)
     {
-        return this._configuration.Maps.FirstOrDefault(m => m.Number == mapNumber);
+        return this._configuration.Maps.FirstOrDefault(m => m.Number == mapNumber && m.IsActive);
     }
 
     /// <summary>
@@ -372,7 +380,7 @@ public class MapInitializer : IMapInitializer
                         if (player.OpenedNpc == o)
                         {
                             await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
-                                    plugin => plugin.ShowMerchantStoreItemListAsync(itemStorage.Items, StoreKind.Normal))
+                                    plugin => plugin.ShowMerchantStoreItemListAsync(itemStorage.GetOfferedItems(), StoreKind.Normal))
                                 .ConfigureAwait(false);
                         }
                     },

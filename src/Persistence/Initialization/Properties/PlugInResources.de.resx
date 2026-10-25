@@ -828,4 +828,10 @@
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>Dieses Update fügt die Ancient-Sets Vega und Chamer der Sacred-Gegenstände hinzu.</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Wachen von Castle Siege konfigurieren</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>Die Gardisten an der Brücke der Karte von Castle Siege öffnen das Anmeldefenster, und die Wache am Eingang zum Land der Prüfungen wird zu einem passiven NPC, der den Dialog des Landes der Prüfungen öffnet.</value></data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve">
+    <value>Spielversionen der Inhalte festlegen</value>
+  </data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Description" xml:space="preserve">
+    <value>Dieses Update legt fest, in welcher Version des Originalspiels die Karten, Charakterklassen, Monster, Gegenstände und Minispiele eingeführt wurden. Damit können die Inhalte bestimmter Spielversionen gesammelt aktiviert oder deaktiviert werden. Bereits festgelegte Versionen bleiben erhalten.</value>
+  </data>
 </root>

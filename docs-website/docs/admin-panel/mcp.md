@@ -306,9 +306,9 @@ before retrying.
 ## Configuration and offline character changes
 
 Configuration tools require Administrator and explicitly enabled MCP writes.
-The read-only catalog also includes `rates_get`, `drops_explain` and
-`spawns_list`. Every configuration write and offline character write uses two
-calls:
+The read-only catalog also includes `rates_get`, `drops_explain`,
+`spawns_list` and `content_list`. Every configuration write and offline
+character write uses two calls:
 
 1. Call the tool with its proposed arguments and `apply: false` (the default).
    Inspect `change`, `affectedObjects`, and the restart guidance.
@@ -342,6 +342,7 @@ it does not restart servers automatically.
 | `config_create`, `config_delete` | Create or delete a leaf aggregate child |
 | `plugins_set_active` | Enable or disable an installed plugin |
 | `plugins_update_configuration` | Patch non-secret scalar plugin settings |
+| `content_list`, `content_restrict_to_version`, `content_set_active` | Inspect/activate/deactivate maps, classes, monsters, items and mini games |
 | `rates_get`, `rates_set` | Inspect/set experience and money rates |
 | `drops_explain`, `drops_update` | Inspect groups/change chances or add items |
 | `spawns_list`, `spawns_update` | Inspect/change monster spawn rectangles |

@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass),
                 baseEntityType,
-                propertyCount: 13,
+                propertyCount: 15,
                 navigationCount: 6,
                 foreignKeyCount: 4,
                 unnamedIndexCount: 4,
@@ -87,6 +87,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass).GetField("<HomeMapId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             homeMapId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var introducedIn = runtimeEntityType.AddProperty(
+                "IntroducedIn",
+                typeof(MUnique.OpenMU.DataModel.Configuration.GameVersion),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CharacterClass).GetProperty("IntroducedIn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CharacterClass).GetField("<IntroducedIn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            introducedIn.SetSentinelFromProviderValue(0);
+            introducedIn.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var isActive = runtimeEntityType.AddProperty(
+                "IsActive",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CharacterClass).GetProperty("IsActive", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CharacterClass).GetField("<IsActive>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            isActive.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var isMasterClass = runtimeEntityType.AddProperty(
                 "IsMasterClass",
