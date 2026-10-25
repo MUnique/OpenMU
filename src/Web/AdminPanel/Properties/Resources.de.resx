@@ -2482,4 +2482,7 @@
   <data name="DiscordNotConfigured" xml:space="preserve"><value>Nicht konfiguriert</value></data>
   <data name="DiscordChooseServer" xml:space="preserve"><value>Discord-Server wählen</value></data>
   <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Einen privaten Teamkanal wählen. GM-Auditnachrichten können vertrauliche Informationen enthalten.</value></data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>Die Konfiguration wurde geändert, während dieser Editor geöffnet war. Kopieren Sie ungespeicherte Änderungen und laden Sie die aktuellen Daten mit Aktualisieren neu, bevor Sie speichern.</value>
+  </data>
 </root>

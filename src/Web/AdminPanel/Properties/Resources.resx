@@ -2587,4 +2587,7 @@
   <data name="AllowedMcpTools" xml:space="preserve">
     <value>Allowed MCP tools (comma separated; empty allows all tools for the role)</value>
   </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>The configuration changed while this editor was open. Copy any unsaved edits, then use Refresh to reload the current data before saving.</value>
+  </data>
 </root>
