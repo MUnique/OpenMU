@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.Discord;
 
 using System.ComponentModel;
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -298,6 +299,182 @@ public class DiscordChatBridgeTest
         Assert.That(allianceMembers, Is.EquivalentTo(new[] { GuildMasterUser, MemberUser, AllyUser }));
     }
 
+    /// <summary>
+    /// Tests that the guilds whose guild master is linked get a hosted channel, unless their chat is already bound,
+    /// and that a guild master who isn't linked doesn't get one.
+    /// </summary>
+    [Test]
+    public async Task GuildsOfLinkedGuildMastersGetHostedChannelsAsync()
+    {
+        var bridge = this.CreateBridge();
+        var targets = await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false);
+        Assert.That(targets.Select(t => t.CharacterName), Is.EquivalentTo(new[] { "Hero", "Ally" }));
+        Assert.That(targets.Single(t => t.CharacterName == "Hero"), Is.EqualTo(new GuildChatTarget(this._legendsId, "Legends", "Hero")));
+
+        // A bound chat, also on another Discord server, keeps its binding.
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
+        await this.CreateLinkService().UnlinkUserAsync(AccountLinkService.DiscordProvider, AllyUser.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false);
+        Assert.That(await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false), Is.Empty);
+
+        // Binding it to the created channel happens only once.
+        await this.LinkAgainAsync("ally", "Ally", AllyUser).ConfigureAwait(false);
+        var allies = (await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false)).Single();
+        Assert.That(await bridge.BindHostedAsync(allies, ServerId, ChannelId + 5).ConfigureAwait(false), Is.True);
+        Assert.That(bridge.Store.GetByChannel(ChannelId + 5), Is.Not.Null.And.Property(nameof(GuildChatBinding.IsHosted)).True);
+        Assert.That(await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false), Is.Empty);
+        Assert.That(await bridge.BindHostedAsync(allies, ServerId, ChannelId + 6).ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that an automatic binding doesn't replace a binding which the guild master made in the meantime,
+    /// e.g. while the bot created the channel.
+    /// </summary>
+    [Test]
+    public async Task AutomaticBindingDoesNotReplaceBindingOfGuildMasterAsync()
+    {
+        var bridge = this.CreateBridge();
+        var legends = (await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false)).Single(t => t.GuildId == this._legendsId);
+
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId + 1, ChannelId, false).ConfigureAwait(false);
+        Assert.That(await bridge.BindHostedAsync(legends, ServerId, ChannelId + 5).ConfigureAwait(false), Is.False);
+
+        var binding = bridge.Store.Get(this._legendsId, GuildChatScope.Guild);
+        Assert.That(binding?.ExternalChannelId, Is.EqualTo(ChannelId.ToString(CultureInfo.InvariantCulture)));
+        Assert.That(binding?.IsHosted, Is.False);
+        Assert.That(bridge.Store.GetByChannel(ChannelId + 5), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that the binding of a deleted hosted channel is only removed while it still references the channel,
+    /// also when it happens at the same time as a new binding.
+    /// </summary>
+    [Test]
+    public async Task StaleHostedBindingIsRemovedConditionallyAsync()
+    {
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
+        Assert.That(await bridge.RemoveHostedBindingAsync(ChannelId).ConfigureAwait(false), Is.False, "a binding on another Discord server isn't hosted");
+        Assert.That(bridge.Store.GetByChannel(ChannelId), Is.Not.Null);
+
+        await bridge.UnbindAsync(ChannelId, GuildMasterUser, false).ConfigureAwait(false);
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId + 1, true).ConfigureAwait(false);
+
+        // The old channel is gone, while the guild master binds the chat again.
+        var removal = bridge.RemoveHostedBindingAsync(ChannelId + 1).AsTask();
+        var rebinding = bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId + 2, true).AsTask();
+        await Task.WhenAll(removal, rebinding).ConfigureAwait(false);
+
+        // Either order ends with at most one binding, which isn't the deleted channel, or the rebinding was refused before the removal.
+        Assert.That(bridge.Store.GetByChannel(ChannelId + 1), Is.Null);
+        var binding = bridge.Store.Get(this._legendsId, GuildChatScope.Guild);
+        Assert.That(binding is null || binding.ExternalChannelId == (ChannelId + 2).ToString(CultureInfo.InvariantCulture), Is.True);
+        Assert.That(bridge.Store.Bindings.Count(b => b.GuildId == this._legendsId && b.Scope == GuildChatScope.Guild), Is.LessThanOrEqualTo(1));
+        Assert.That(await bridge.RemoveHostedBindingAsync(ChannelId + 1).ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the guild master rights need the guild master character to be selected for the link,
+    /// like <c>/guildchat</c>, and not just any character of the same account.
+    /// </summary>
+    [Test]
+    public async Task GuildMasterRightsNeedTheGuildMasterCharacterAsync()
+    {
+        using (var context = this._persistence.CreateNewPlayerContext(new GameConfiguration()))
+        {
+            var account = await context.GetAccountByLoginNameAsync("hero").ConfigureAwait(false);
+            var alt = context.CreateNew<Character>();
+            alt.Name = "HeroAlt";
+            account!.Characters.Add(alt);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var linkService = this.CreateLinkService();
+        var userText = GuildMasterUser.ToString(CultureInfo.InvariantCulture);
+        Assert.That(await linkService.SelectCharacterAsync(AccountLinkService.DiscordProvider, userText, "HeroAlt").ConfigureAwait(false), Is.EqualTo(CharacterSelectionResult.Selected));
+
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(AllyUser, GuildChatScope.Guild, ServerId, ChannelId + 1, true).ConfigureAwait(false);
+        Assert.That((await bridge.GetGuildsWithoutHostedChannelAsync().ConfigureAwait(false)).Select(t => t.GuildId), Does.Not.Contain(this._legendsId));
+        Assert.That((await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, true).ConfigureAwait(false)).Result, Is.EqualTo(DiscordChatBindResult.NotGuildMaster));
+
+        await linkService.SelectCharacterAsync(AccountLinkService.DiscordProvider, userText, "Hero").ConfigureAwait(false);
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, true).ConfigureAwait(false);
+        await linkService.SelectCharacterAsync(AccountLinkService.DiscordProvider, userText, "HeroAlt").ConfigureAwait(false);
+        Assert.That(await bridge.GetModeratorsAsync(bridge.Store.Bindings).ConfigureAwait(false), Does.Not.ContainKey(this._legendsId));
+    }
+
+    /// <summary>
+    /// Tests that the linked guild master moderates the channel, and that the moderation and the right to change
+    /// the binding follow a change of the guild master.
+    /// </summary>
+    [Test]
+    public async Task ModerationFollowsTheGuildMasterAsync()
+    {
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, true).ConfigureAwait(false);
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Alliance, ServerId, ChannelId + 1, true).ConfigureAwait(false);
+
+        var moderators = await bridge.GetModeratorsAsync(bridge.Store.Bindings).ConfigureAwait(false);
+        Assert.That(moderators, Is.EquivalentTo(new Dictionary<Guid, ulong> { [this._legendsId] = GuildMasterUser }));
+
+        await this.SetPositionAsync("Hero", GuildPosition.NormalMember).ConfigureAwait(false);
+        await this.SetPositionAsync("Elf", GuildPosition.GuildMaster).ConfigureAwait(false);
+
+        moderators = await bridge.GetModeratorsAsync(bridge.Store.Bindings).ConfigureAwait(false);
+        Assert.That(moderators, Is.EquivalentTo(new Dictionary<Guid, ulong> { [this._legendsId] = MemberUser }));
+        Assert.That(await bridge.GetLinkedMembersAsync(bridge.Store.GetByChannel(ChannelId)!).ConfigureAwait(false), Does.Contain(GuildMasterUser), "the former master stays a member");
+
+        // The binding stays, but only the new guild master can change it.
+        Assert.That(bridge.Store.GetByChannel(ChannelId), Is.Not.Null);
+        Assert.That(await bridge.UnbindAsync(ChannelId, GuildMasterUser, false).ConfigureAwait(false), Is.EqualTo(DiscordChatBindResult.NotGuildMaster));
+        Assert.That(await bridge.UnbindAsync(ChannelId, MemberUser, false).ConfigureAwait(false), Is.EqualTo(DiscordChatBindResult.Success));
+    }
+
+    /// <summary>
+    /// Tests that a bound chat isn't moved silently to another channel, but can be bound again after unbinding it.
+    /// </summary>
+    [Test]
+    public async Task BoundChatIsNotMovedSilentlyAsync()
+    {
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
+
+        var (otherServerResult, target) = await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId + 1, ChannelId + 2, false).ConfigureAwait(false);
+        Assert.That(otherServerResult, Is.EqualTo(DiscordChatBindResult.AlreadyBound));
+        Assert.That(target?.GuildId, Is.EqualTo(this._legendsId));
+        Assert.That(bridge.Store.Get(this._legendsId, GuildChatScope.Guild)?.ExternalChannelId, Is.EqualTo(ChannelId.ToString(CultureInfo.InvariantCulture)));
+
+        var (sameChannelResult, _) = await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
+        Assert.That(sameChannelResult, Is.EqualTo(DiscordChatBindResult.Success), "binding the same channel again changes nothing");
+
+        // A manager of the old channel, who isn't the guild master, can release it, e.g. the administrator of that Discord server.
+        Assert.That(await bridge.UnbindAsync(ChannelId, OutsiderUser, false).ConfigureAwait(false), Is.EqualTo(DiscordChatBindResult.NotGuildMaster));
+        Assert.That(await bridge.UnbindAsync(ChannelId, OutsiderUser, true).ConfigureAwait(false), Is.EqualTo(DiscordChatBindResult.Success));
+        var (movedResult, _) = await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId + 1, ChannelId + 2, false).ConfigureAwait(false);
+        Assert.That(movedResult, Is.EqualTo(DiscordChatBindResult.Success));
+    }
+
+    /// <summary>
+    /// Tests that the bindings of a Discord server are removed, e.g. when the bot is removed from it,
+    /// and that a kicked member can't write into the chat anymore.
+    /// </summary>
+    [Test]
+    public async Task LifecycleRemovesAccessAsync()
+    {
+        var bridge = this.CreateBridge();
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Guild, ServerId, ChannelId, false).ConfigureAwait(false);
+        await bridge.BindAsync(GuildMasterUser, GuildChatScope.Alliance, ServerId, ChannelId + 1, false).ConfigureAwait(false);
+
+        await this.KickAsync("Elf").ConfigureAwait(false);
+        var (kickedResult, _, _) = await bridge.PostToGameAsync(ChannelId, WorldChannelId, MemberUser, "Hi").ConfigureAwait(false);
+        Assert.That(kickedResult, Is.EqualTo(DiscordChatPostResult.NotMember));
+        Assert.That(await bridge.GetLinkedMembersAsync(bridge.Store.GetByChannel(ChannelId)!).ConfigureAwait(false), Does.Not.Contain(MemberUser));
+
+        Assert.That(await bridge.Store.RemoveAsync(null, ServerId).ConfigureAwait(false), Is.EqualTo(2));
+        var (removedResult, _, _) = await bridge.PostToGameAsync(ChannelId, WorldChannelId, GuildMasterUser, "Hi").ConfigureAwait(false);
+        Assert.That(removedResult, Is.EqualTo(DiscordChatPostResult.NotBridged));
+    }
+
     private static GuildMember CreateMember(IContext context, DataModel.Entities.Guild guild, Guid characterId, GuildPosition position)
     {
         var member = context.CreateNew<GuildMember>(characterId);
@@ -310,6 +487,33 @@ public class DiscordChatBridgeTest
     {
         var code = await linkService.CreateCodeAsync(accountId, AccountLinkService.DiscordProvider, characterName).ConfigureAwait(false);
         await linkService.LinkAsync(AccountLinkService.DiscordProvider, code, userId.ToString(), characterName).ConfigureAwait(false);
+    }
+
+    private async Task LinkAgainAsync(string loginName, string characterName, ulong userId)
+    {
+        using var context = this._persistence.CreateNewPlayerContext(new GameConfiguration());
+        var accountId = (await context.GetAccountByLoginNameAsync(loginName).ConfigureAwait(false))!.GetId();
+        await LinkAsync(this.CreateLinkService(), accountId, characterName, userId).ConfigureAwait(false);
+    }
+
+    private async Task SetPositionAsync(string characterName, GuildPosition position)
+    {
+        using var context = this._persistence.CreateNewGuildContext();
+        var membership = await context.GetGuildMembershipAsync(characterName).ConfigureAwait(false);
+        var member = (await context.GetAsync<GuildMember>().ConfigureAwait(false)).Single(m => m.Id == membership!.CharacterId);
+        member.Status = position;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private async Task KickAsync(string characterName)
+    {
+        using var context = this._persistence.CreateNewGuildContext();
+        var membership = await context.GetGuildMembershipAsync(characterName).ConfigureAwait(false);
+        var guild = (await context.GetAsync<DataModel.Entities.Guild>().ConfigureAwait(false)).Single(g => g.GetId() == membership!.GuildId);
+        var member = guild.Members.Single(m => m.Id == membership!.CharacterId);
+        guild.Members.Remove(member);
+        await context.DeleteAsync(member).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     private AccountLinkService CreateLinkService() => new(() => this._persistence.CreateNewPlayerContext(new GameConfiguration()));

@@ -181,7 +181,8 @@ application's configuration yet. **Delete** removes it for good.
 ### What a key may do
 
 A key has the same [roles](#roles) as a user, and defaults to **Viewer**. A key
-can also get the role **Cash shop coins only**, which allows nothing but the cash
+can also get the role **Cash shop coins only**, which allows nothing but the
+cash
 shop endpoints — that's the right one for a payment provider. Administrators
 have this role implicitly.
 
@@ -258,10 +259,12 @@ grant the coins twice. The answer is:
 
 The game server applies the grant to the balance the next time the player opens
 the cash shop, even when the player is online at that moment.
-`GET /api/accounts/{account}/cash-shop` returns the saved balances and the latest
+`GET /api/accounts/{account}/cash-shop` returns the saved balances and the
+latest
 grants, where `appliedAt` is empty for the pending ones.
 
-Like the panel itself, the API is open as long as [no user exists at all](#the-first-user).
+Like the panel itself, the API is open as long as [no user exists at
+all](#the-first-user).
 
 ## Keeping the sessions alive across restarts
 
@@ -318,3 +321,13 @@ External applications must update announcement requests from GET to
 rather than its position in a list. Operational APIs no longer allow anonymous
 requests during initial setup. See [MCP](mcp.md#phase-two-upgrade-notes) for the
 operational HTTP error statuses and uncertain-outcome handling.
+
+### Restrict MCP tools per key
+
+The optional **Allowed MCP tools** field accepts comma-separated exact names
+or area wildcards, such as `accounts_search,players_*,server_overview`.
+Empty keeps the key's existing role-based access. The allowlist further limits
+MCP discovery and direct calls; it never grants a tool beyond the key's role
+and does not alter REST API permissions. See
+[MCP configuration changes](mcp.md#configuration-and-offline-character-changes)
+for the preview/apply workflow.

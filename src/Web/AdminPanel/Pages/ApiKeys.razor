@@ -42,6 +42,7 @@ else
                 <th class="col-4">@Resources.ApiKeyName</th>
                 <th class="col-2">@Resources.ApiKeyPrefix</th>
                 <th class="col-2">@Resources.Role</th>
+                <th>@MUnique.OpenMU.Web.AdminPanel.Services.ApiKeyToolGroupResources.Caption</th>
                 <th class="col-4">@Resources.Actions</th>
             </tr>
             </thead>
@@ -52,6 +53,10 @@ else
                     <td>@apiKey.Name</td>
                     <td><code>@apiKey.KeyPrefix…</code></td>
                     <td>@MUnique.OpenMU.Web.AdminPanel.Auth.RoleCaption.Get(apiKey.Roles)</td>
+                    <td>
+                        <code>@apiKey.AllowedToolGroups</code>
+                        <button type="button" class="btn btn-sm btn-secondary" @onclick="@(() => this.OnEditToolGroupsAsync(apiKey))">@MUnique.OpenMU.Web.Shared.Properties.Resources.Change</button>
+                    </td>
                     <td>
                         @if (apiKey.IsDisabled)
                         {
@@ -68,7 +73,7 @@ else
             @if (this._apiKeys.Count == 0)
             {
                 <tr>
-                    <td colspan="4" class="text-muted">@Resources.NoApiKeys</td>
+                    <td colspan="5" class="text-muted">@Resources.NoApiKeys</td>
                 </tr>
             }
             </tbody>

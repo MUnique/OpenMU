@@ -2068,4 +2068,7 @@
   <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
     <value>商品 {0} 的数量不能小于 1。</value>
   </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>此编辑器打开期间配置已更改。请先复制未保存的修改，再使用刷新加载当前数据后保存。</value>
+  </data>
 </root>

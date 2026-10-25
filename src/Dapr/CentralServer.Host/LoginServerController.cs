@@ -31,6 +31,20 @@ public class LoginServerController : ControllerBase
         this._logger = logger;
     }
 
+    /// <summary>Reserves an offline account, excluding real logins while its data is changed.</summary>
+    /// <param name="data">The reservation owner.</param>
+    /// <returns>Whether it was reserved.</returns>
+    [HttpPost(nameof(ILoginServer.TryReserveAccountAsync))]
+    public ValueTask<bool> TryReserveAccountAsync([FromBody] AccountReservationArguments data)
+        => this._loginServer.TryReserveAccountAsync(data.AccountName, data.ReservationId);
+
+    /// <summary>Releases the request's offline account reservation.</summary>
+    /// <param name="data">The reservation owner.</param>
+    /// <returns>The asynchronous completion.</returns>
+    [HttpPost(nameof(ILoginServer.ReleaseAccountReservationAsync))]
+    public ValueTask ReleaseAccountReservationAsync([FromBody] AccountReservationArguments data)
+        => this._loginServer.ReleaseAccountReservationAsync(data.AccountName, data.ReservationId);
+
     /// <summary>
     /// Tries to login the account on the specified server.
     /// </summary>

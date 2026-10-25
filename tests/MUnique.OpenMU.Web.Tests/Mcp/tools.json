@@ -287,6 +287,43 @@
     }
   },
   {
+    "Name": "drops_explain",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "monsterNumber": {
+          "description": "Monster number.",
+          "type": "integer"
+        },
+        "mapNumber": {
+          "description": "Map number.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Number of groups to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum groups, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "monsterNumber",
+        "mapNumber"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "guilds_get",
     "InputSchema": {
       "type": "object",
@@ -418,6 +455,20 @@
     }
   },
   {
+    "Name": "rates_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "server_overview",
     "InputSchema": {
       "type": "object",
@@ -442,6 +493,38 @@
           "default": 7
         }
       }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "spawns_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "mapNumber": {
+          "description": "Map number.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Number of spawns to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum spawns, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "mapNumber"
+      ]
     },
     "Annotations": {
       "title": null,

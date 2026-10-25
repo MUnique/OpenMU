@@ -48,4 +48,9 @@ public enum DiscordChatBindResult
     /// The channel isn't bound.
     /// </summary>
     NotBound,
+
+    /// <summary>
+    /// The chat of the guild or alliance is already bound to another channel, which has to be unbound first.
+    /// </summary>
+    AlreadyBound,
 }
