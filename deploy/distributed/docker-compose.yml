@@ -7,9 +7,9 @@ volumes:
 # through the DAPR_HTTP_ENDPOINT and DAPR_GRPC_ENDPOINT, the sidecar reaches the service through
 # its -app-channel-address. This way, each of them can be restarted without breaking the other one,
 # e.g. when a game server process ends to apply a changed configuration.
-# The game servers share the app id "game-server": nothing addresses a game server by its app id,
-# the calls to game servers are published to all of them. The POD_NAME of a sidecar names its
-# queues in RabbitMQ (see dapr-components/pubsub.yaml), so it must be unique.
+# Each game server has app id "game-server-{id}" for confirmed live administration.
+# Existing notifications still use pub/sub. The POD_NAME of a sidecar names its queues
+# in RabbitMQ (see dapr-components/pubsub.yaml), so it must also be unique.
 x-dapr-sidecar: &dapr-sidecar
   image: "daprio/daprd:latest"
   restart: unless-stopped
@@ -298,7 +298,7 @@ services:
     container_name: gameserver0_dapr
     environment:
       POD_NAME: gameServer0
-    command: [ "./daprd", "-app-id", "game-server", "-app-port", "8080",
+    command: [ "./daprd", "-app-id", "game-server-0", "-app-port", "8080",
                 "-app-channel-address", "gameServer0",
                 "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
@@ -344,7 +344,7 @@ services:
     container_name: gameserver1_dapr
     environment:
       POD_NAME: gameServer1
-    command: [ "./daprd", "-app-id", "game-server", "-app-port", "8080",
+    command: [ "./daprd", "-app-id", "game-server-1", "-app-port", "8080",
                 "-app-channel-address", "gameServer1",
                 "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",

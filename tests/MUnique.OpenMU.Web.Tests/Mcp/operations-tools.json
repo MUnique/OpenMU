@@ -923,7 +923,7 @@
           "format": "uuid"
         },
         "patch": {
-          "description": "JSON merge patch of scalar fields and references as {\u0022$ref\u0022:\u0022id\u0022}; exact field names from config_describe.",
+          "description": "JSON merge patch of scalar fields and references as {\"$ref\":\"id\"}; exact field names from config_describe.",
           "type": "string"
         },
         "apply": {
@@ -1234,6 +1234,58 @@
     }
   },
   {
+    "Name": "events_schedule",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "events_start",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "eventType": {
+          "description": "Invariant type from events_schedule.",
+          "type": "string"
+        },
+        "restart": {
+          "description": "Explicitly allow removal of a running event before restarting it.",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "serverId",
+        "eventType"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
     "Name": "guilds_get",
     "InputSchema": {
       "type": "object",
@@ -1469,6 +1521,108 @@
     }
   },
   {
+    "Name": "players_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_give_item",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        },
+        "item": {
+          "description": "Item group, number, level and configured options.",
+          "type": "object",
+          "properties": {
+            "group": {
+              "type": "integer"
+            },
+            "number": {
+              "type": "integer"
+            },
+            "level": {
+              "type": "integer",
+              "default": 0
+            },
+            "skill": {
+              "type": "boolean",
+              "default": false
+            },
+            "luck": {
+              "type": "boolean",
+              "default": false
+            },
+            "optionLevel": {
+              "type": "integer",
+              "default": 0
+            },
+            "excellentOptions": {
+              "type": "integer",
+              "default": 0
+            },
+            "ancientSet": {
+              "type": "integer",
+              "default": 0
+            },
+            "ancientBonusLevel": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          "required": [
+            "group",
+            "number"
+          ]
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "item"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
     "Name": "players_list",
     "InputSchema": {
       "type": "object",
@@ -1508,6 +1662,210 @@
           "default": 50
         }
       }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_set_level",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        },
+        "level": {
+          "description": "Requested level within the configured maximum.",
+          "type": "integer"
+        },
+        "master": {
+          "description": "Set master level instead of regular level.",
+          "type": "boolean",
+          "default": false
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "level"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "players_teleport",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        },
+        "mapNumber": {
+          "description": "Hosted target map number.",
+          "type": "integer"
+        },
+        "x": {
+          "description": "Target horizontal coordinate.",
+          "type": "integer"
+        },
+        "y": {
+          "description": "Target vertical coordinate.",
+          "type": "integer"
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "mapNumber",
+        "x",
+        "y"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "plugin_operations_execute",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "plugInId": {
+          "description": "Plugin type identifier from plugin_operations_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Exact operation name from the catalog.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "JSON object matching the contributed input schema.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "serverId",
+        "plugInId",
+        "name",
+        "arguments"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "plugin_operations_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugin_operations_read",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "plugInId": {
+          "description": "Plugin type identifier from plugin_operations_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Exact operation name from the catalog.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "JSON object matching the contributed input schema.",
+          "type": "string",
+          "default": "{}"
+        }
+      },
+      "required": [
+        "serverId",
+        "plugInId",
+        "name"
+      ]
     },
     "Annotations": {
       "title": null,

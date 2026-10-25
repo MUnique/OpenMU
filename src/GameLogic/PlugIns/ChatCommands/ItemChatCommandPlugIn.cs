@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -38,7 +40,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
                 return;
             }
 
-            var item = CreateItem(itemDefinition!, arguments);
+            var item = GameMasterItemFactory.CreateItem(itemDefinition!, new ItemSpecification(arguments.Group, arguments.Number, arguments.Level, arguments.Skill, arguments.Luck, arguments.Opt, arguments.ExcellentNumber, arguments.Ancient, arguments.AncientBonusLevel));
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
             await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
@@ -63,97 +65,5 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
         }
 
         return (true, itemDefinition);
-    }
-
-    private static Item CreateItem(DataModel.Configuration.Items.ItemDefinition itemDefinition, ItemChatCommandArgs arguments)
-    {
-        var item = new TemporaryItem();
-        item.Definition = itemDefinition;
-        item.Durability = item.IsStackable() ? 1 : item.Definition.Durability;
-        item.HasSkill = item.Definition.Skill != null && arguments.Skill;
-        item.Level = arguments.Level;
-        item.SocketCount = item.Definition.MaximumSockets;
-
-        AddOption(item, arguments);
-        AddLuckOption(item, arguments);
-        AddExcellentOptions(item, arguments);
-        AddAncientBonusOption(item, arguments);
-
-        return item;
-    }
-
-    private static void AddOption(TemporaryItem item, ItemChatCommandArgs arguments)
-    {
-        if (item.Definition != null && arguments.Opt > 0)
-        {
-            var allOptions = item.Definition.PossibleItemOptions
-                .SelectMany(o => o.PossibleOptions)
-                .Where(o => o.OptionType == ItemOptionTypes.Option);
-
-            // Fixed options (e.g. of the Dinorant) are selected by their bits, which are their numbers.
-            var fixedOptions = allOptions.Where(o => o.IsFixedOption()).ToList();
-            if (fixedOptions.Count > 0)
-            {
-                foreach (var fixedOption in fixedOptions.Where(o => (arguments.Opt & o.Number) != 0))
-                {
-                    item.ItemOptions.Add(new ItemOptionLink { ItemOption = fixedOption });
-                }
-            }
-            else
-            {
-                var optionLink = new ItemOptionLink { ItemOption = allOptions.First(), Level = arguments.Opt };
-                item.ItemOptions.Add(optionLink);
-            }
-        }
-    }
-
-    private static void AddLuckOption(TemporaryItem item, ItemChatCommandArgs arguments)
-    {
-        if (item.Definition != null && arguments.Luck)
-        {
-            var optionLink = new ItemOptionLink
-            {
-                ItemOption = item.Definition.PossibleItemOptions
-                    .SelectMany(o => o.PossibleOptions)
-                    .First(o => o.OptionType == ItemOptionTypes.Luck),
-            };
-
-            item.ItemOptions.Add(optionLink);
-        }
-    }
-
-    private static void AddExcellentOptions(TemporaryItem item, ItemChatCommandArgs arguments)
-    {
-        if (item.Definition != null && arguments.ExcellentNumber > 0)
-        {
-            var excellentOptions = item.Definition.PossibleItemOptions
-                .SelectMany(o => o.PossibleOptions)
-                .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .Where(o => ((1 << (o.Number - 1)) & arguments.ExcellentNumber) > 0)
-                .ToList();
-
-            ushort appliedOptions = 0;
-            foreach (var excellentOption in excellentOptions)
-            {
-                var optionLink = new ItemOptionLink { ItemOption = excellentOption };
-                item.ItemOptions.Add(optionLink);
-                appliedOptions++;
-            }
-
-            // every excellent item has skill (if is in item definition)
-            item.HasSkill = appliedOptions > 0 && item.Definition.Skill != null;
-        }
-    }
-
-    private static void AddAncientBonusOption(TemporaryItem item, ItemChatCommandArgs arguments)
-    {
-        if (item.Definition != null && arguments.Ancient > 0
-                                    && item.Definition.PossibleItemSetGroups.FirstOrDefault(g => g.Items.Any(i => i.ItemDefinition == item.Definition && i.AncientSetDiscriminator == arguments.Ancient)) is { } ancientSet
-                                    && ancientSet.Items.FirstOrDefault(i => i.ItemDefinition == item.Definition) is { } itemOfItemSet)
-        {
-            var optionLink = new ItemOptionLink { ItemOption = itemOfItemSet.BonusOption, Level = arguments.AncientBonusLevel };
-            item.ItemOptions.Add(optionLink);
-            item.ItemSetGroups.Add(itemOfItemSet);
-        }
     }
 }
