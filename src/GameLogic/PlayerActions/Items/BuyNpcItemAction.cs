@@ -52,10 +52,26 @@ public class BuyNpcItemAction
             return;
         }
 
-        // Inventory Update:
-        if (storeItem.IsStackable() && player.Inventory!.Items.FirstOrDefault(item => storeItem.CanCompletelyStackOn(item)) is { } targetItem)
+        var merchant = player.OpenedNpc;
+        var purchase = new NpcItemPurchaseArgs(storeItem);
+        var purchasePlugIns = player.GameContext.PlugInManager.GetPlugInPoint<INpcItemPurchasePlugIn>();
+        if (purchasePlugIns is not null)
         {
-            if (!await this.CheckMoneyAsync(player, storeItem).ConfigureAwait(false))
+            await purchasePlugIns.BeforePurchaseAsync(player, merchant, purchase).ConfigureAwait(false);
+            if (purchase.Cancel)
+            {
+                await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
+                return;
+            }
+        }
+
+        var itemTemplate = purchase.ReplacementItem ?? storeItem;
+        var price = purchase.Price ?? this._priceCalculator.CalculateFinalBuyingPrice(storeItem);
+
+        // Inventory Update:
+        if (purchase.ReplacementItem is null && storeItem.IsStackable() && player.Inventory!.Items.FirstOrDefault(item => storeItem.CanCompletelyStackOn(item)) is { } targetItem)
+        {
+            if (!await this.TryPayAsync(player, price).ConfigureAwait(false))
             {
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoney)).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
@@ -72,7 +88,7 @@ public class BuyNpcItemAction
         }
         else
         {
-            var toSlot = player.Inventory!.CheckInvSpace(storeItem);
+            var toSlot = player.Inventory!.CheckInvSpace(itemTemplate);
             if (toSlot is null)
             {
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
@@ -80,7 +96,7 @@ public class BuyNpcItemAction
                 return;
             }
 
-            if (!await this.CheckMoneyAsync(player, storeItem).ConfigureAwait(false))
+            if (!await this.TryPayAsync(player, price).ConfigureAwait(false))
             {
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoney)).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
@@ -88,19 +104,22 @@ public class BuyNpcItemAction
             }
 
             var newItem = player.PersistenceContext.CreateNew<Item>();
-            newItem.AssignValues(storeItem);
+            newItem.AssignValues(itemTemplate);
             newItem.ItemSlot = (byte)toSlot;
             await player.InvokeViewPlugInAsync<INpcItemBoughtPlugIn>(p => p.NpcItemBoughtAsync(newItem)).ConfigureAwait(false);
             await player.Inventory.AddItemAsync(newItem).ConfigureAwait(false);
-            player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, player.OpenedNpc);
+            player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, merchant);
+            if (purchasePlugIns is not null)
+            {
+                await purchasePlugIns.AfterPurchaseAsync(player, merchant, purchase, newItem).ConfigureAwait(false);
+            }
         }
 
         await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
     }
 
-    private ValueTask<bool> CheckMoneyAsync(Player player, Item item)
+    private ValueTask<bool> TryPayAsync(Player player, long price)
     {
-        var price = this._priceCalculator.CalculateFinalBuyingPrice(item);
         return this._castleSiegeTaxProvider.TryPayStoreCostAsync(player, price);
     }
 }
