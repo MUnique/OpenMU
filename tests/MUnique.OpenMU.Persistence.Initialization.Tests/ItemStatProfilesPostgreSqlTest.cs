@@ -213,7 +213,8 @@ internal class ItemStatProfilesPostgreSqlTest
 
         public Task? Initialization => null;
 
-        public Task InitializeAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task InitializeAsync(CancellationToken cancellationToken)
+            => cancellationToken.IsCancellationRequested ? Task.FromCanceled(cancellationToken) : Task.CompletedTask;
 
         public ConnectionSetting GetConnectionSetting<TContextType>()
             where TContextType : DbContext
