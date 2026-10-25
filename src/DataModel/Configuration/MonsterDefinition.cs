@@ -237,6 +237,7 @@ public partial class MonsterDefinition
     /// <summary>
     /// Gets or sets the unique number of this monster.
     /// </summary>
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>
