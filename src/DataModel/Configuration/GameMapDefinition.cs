@@ -29,6 +29,7 @@ public partial class GameMapDefinition
     /// <remarks>
     /// This number is identifying the map on the client.
     /// </remarks>
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>

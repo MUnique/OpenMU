@@ -277,6 +277,9 @@ actions per row:
 A form with one input per property of the object, grouped by category. Referenced
 objects are shown as drop-downs, collections as editable sub-lists which lead
 deeper into the tree. The breadcrumb at the top is how you find your way back.
+The sub-lists of items, monsters, skills and maps additionally show their number
+(and the group of an item) next to the name, so that entries with similar
+names are easy to tell apart.
 
 Some types have a specialized editor instead of (or in addition to) the generic
 form — items, item storages and maps.

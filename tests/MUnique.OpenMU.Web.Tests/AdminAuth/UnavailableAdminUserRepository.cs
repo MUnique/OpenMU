@@ -48,5 +48,8 @@ internal class UnavailableAdminUserRepository : IAdminUserRepository
     public ValueTask UpdateAsync(AdminUser user, CancellationToken cancellationToken = default) => throw new InvalidOperationException();
 
     /// <inheritdoc />
+    public ValueTask<bool> TryAdvanceTotpStepAsync(Guid userId, long step, CancellationToken cancellationToken = default) => throw new InvalidOperationException();
+
+    /// <inheritdoc />
     public ValueTask DeleteAsync(AdminUser user, CancellationToken cancellationToken = default) => throw new InvalidOperationException();
 }

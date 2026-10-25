@@ -31,33 +31,7 @@ public class AdminAuthenticationTests
     [SetUp]
     public void SetUp()
     {
-        this._repository = new InMemoryAdminUserRepository();
-        var services = new ServiceCollection();
-        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Warning));
-        services.AddDataProtection();
-        services.AddSingleton<IAdminUserRepository>(this._repository);
-        services.AddSingleton(Options.Create(new AdminPanelAuthOptions()));
-        services.AddSingleton<AdminUserSecretProtector>();
-        services.AddSingleton<IPasswordHasher<AdminUser>, BCryptPasswordHasher>();
-        services.AddSingleton<BootstrapAdminUserProvider>();
-        services.AddSingleton<SignInTicketService>();
-        services.AddScoped<IUserStore<AdminUser>, AdminUserStore>();
-        services.AddScoped<AdminLoginService>();
-        services.AddScoped<AuthenticatorSetupService>();
-        services.AddIdentityCore<AdminUser>(options =>
-            {
-                options.Password.RequiredLength = 12;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Lockout.AllowedForNewUsers = true;
-                options.Lockout.MaxFailedAccessAttempts = 3;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            })
-            .AddDefaultTokenProviders();
-
-        this._serviceProvider = services.BuildServiceProvider();
+        this.BuildServices(new InMemoryAdminUserRepository());
     }
 
     /// <summary>
@@ -196,6 +170,80 @@ public class AdminAuthenticationTests
         var secondResult = await secondLogin.CheckTwoFactorAsync(code, false).ConfigureAwait(false);
 
         Assert.That(secondResult.Status, Is.EqualTo(AdminLoginStatus.Failed));
+    }
+
+    /// <summary>
+    /// Tests that a code of an older time step is rejected after a newer code was used, even though
+    /// it is still within the validation window.
+    /// </summary>
+    [Test]
+    public async Task OlderAuthenticatorCodeIsRejectedAfterNewerOneAsync()
+    {
+        var (_, key) = await this.CreateUserWithAuthenticatorAsync("tester").ConfigureAwait(false);
+
+        var firstResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key)).ConfigureAwait(false);
+        Assert.That(firstResult.Status, Is.EqualTo(AdminLoginStatus.Succeeded));
+
+        var secondResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key, -1)).ConfigureAwait(false);
+        Assert.That(secondResult.Status, Is.EqualTo(AdminLoginStatus.Failed));
+    }
+
+    /// <summary>
+    /// Tests that the time step of the used code is remembered, not the current one: a newer code
+    /// is accepted after an older code of the validation window was used.
+    /// </summary>
+    [Test]
+    public async Task NewerAuthenticatorCodeIsAcceptedAfterOlderOneAsync()
+    {
+        var (_, key) = await this.CreateUserWithAuthenticatorAsync("tester").ConfigureAwait(false);
+
+        var firstResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key, -1)).ConfigureAwait(false);
+        Assert.That(firstResult.Status, Is.EqualTo(AdminLoginStatus.Succeeded));
+
+        var secondResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key)).ConfigureAwait(false);
+        Assert.That(secondResult.Status, Is.EqualTo(AdminLoginStatus.Succeeded));
+    }
+
+    /// <summary>
+    /// Tests that of two concurrent logins with the same authenticator code, only one succeeds.
+    /// </summary>
+    /// <remarks>
+    /// The repository hands out separate copies of the user and yields on each call, like a database,
+    /// so both logins check the code before either of them stored its time step.
+    /// </remarks>
+    [Test]
+    public async Task ConcurrentLoginsCanUseAnAuthenticatorCodeOnlyOnceAsync()
+    {
+        this.UseDetachedRepository();
+        var (_, key) = await this.CreateUserWithAuthenticatorAsync("tester").ConfigureAwait(false);
+        var code = TestTotpGenerator.Generate(key);
+        var first = await this.BeginLoginAsync().ConfigureAwait(false);
+        var second = await this.BeginLoginAsync().ConfigureAwait(false);
+
+        var results = await Task.WhenAll(first.CheckTwoFactorAsync(code, false), second.CheckTwoFactorAsync(code, false)).ConfigureAwait(false);
+
+        Assert.That(results.Count(r => r.Status == AdminLoginStatus.Succeeded), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that concurrent logins with codes of different time steps never leave an older step
+    /// behind, so that neither code can be replayed afterwards.
+    /// </summary>
+    [Test]
+    public async Task ConcurrentLoginsWithDifferentStepsKeepTheNewestStepAsync()
+    {
+        this.UseDetachedRepository();
+        var (_, key) = await this.CreateUserWithAuthenticatorAsync("tester").ConfigureAwait(false);
+        var olderCode = TestTotpGenerator.Generate(key, -1);
+        var newerCode = TestTotpGenerator.Generate(key);
+        var older = await this.BeginLoginAsync().ConfigureAwait(false);
+        var newer = await this.BeginLoginAsync().ConfigureAwait(false);
+
+        var results = await Task.WhenAll(older.CheckTwoFactorAsync(olderCode, false), newer.CheckTwoFactorAsync(newerCode, false)).ConfigureAwait(false);
+
+        Assert.That(results[1].Status, Is.EqualTo(AdminLoginStatus.Succeeded), "The newest code must always be accepted once.");
+        Assert.That((await this.LoginWithCodeAsync(newerCode).ConfigureAwait(false)).Status, Is.Not.EqualTo(AdminLoginStatus.Succeeded));
+        Assert.That((await this.LoginWithCodeAsync(olderCode).ConfigureAwait(false)).Status, Is.Not.EqualTo(AdminLoginStatus.Succeeded));
     }
 
     /// <summary>
@@ -475,6 +523,38 @@ public class AdminAuthenticationTests
         return services.BuildServiceProvider();
     }
 
+    private void BuildServices(InMemoryAdminUserRepository repository)
+    {
+        this._repository = repository;
+        var services = new ServiceCollection();
+        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Warning));
+        services.AddDataProtection();
+        services.AddSingleton<IAdminUserRepository>(this._repository);
+        services.AddSingleton(Options.Create(new AdminPanelAuthOptions()));
+        services.AddSingleton<AdminUserSecretProtector>();
+        services.AddSingleton<IPasswordHasher<AdminUser>, BCryptPasswordHasher>();
+        services.AddSingleton<BootstrapAdminUserProvider>();
+        services.AddSingleton<SignInTicketService>();
+        services.AddScoped<AdminUserStore>();
+        services.AddScoped<IUserStore<AdminUser>>(provider => provider.GetRequiredService<AdminUserStore>());
+        services.AddScoped<AdminLoginService>();
+        services.AddScoped<AuthenticatorSetupService>();
+        services.AddIdentityCore<AdminUser>(options =>
+            {
+                options.Password.RequiredLength = 12;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            })
+            .AddDefaultTokenProviders();
+
+        this._serviceProvider = services.BuildServiceProvider();
+    }
+
     private AdminLoginService GetLoginService()
     {
         return this._serviceProvider.CreateScope().ServiceProvider.GetRequiredService<AdminLoginService>();
@@ -493,6 +573,26 @@ public class AdminAuthenticationTests
         var result = await userManager.CreateAsync(user, TestPassword).ConfigureAwait(false);
         Assert.That(result.Succeeded, Is.True, string.Join(' ', result.Errors.Select(e => e.Description)));
         return user;
+    }
+
+    private void UseDetachedRepository()
+    {
+        this._serviceProvider.Dispose();
+        this.BuildServices(new InMemoryAdminUserRepository(detached: true));
+    }
+
+    private async Task<AdminLoginService> BeginLoginAsync()
+    {
+        var loginService = this.GetLoginService();
+        var result = await loginService.CheckPasswordAsync("tester", TestPassword, false).ConfigureAwait(false);
+        Assert.That(result.Status, Is.EqualTo(AdminLoginStatus.TwoFactorRequired));
+        return loginService;
+    }
+
+    private async Task<AdminLoginResult> LoginWithCodeAsync(string code)
+    {
+        var loginService = await this.BeginLoginAsync().ConfigureAwait(false);
+        return await loginService.CheckTwoFactorAsync(code, false).ConfigureAwait(false);
     }
 
     private async Task<(AdminUser User, string Key)> CreateUserWithAuthenticatorAsync(string loginName)

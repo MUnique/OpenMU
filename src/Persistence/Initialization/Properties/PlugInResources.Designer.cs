@@ -953,5 +953,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddItemStatProfilesUpdatePlugIn_Description text.</summary>
         public static string AddItemStatProfilesUpdatePlugIn_Description => ResourceManager.GetString("AddItemStatProfilesUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixSeedSphereMaximumItemLevelUpdatePlugIn_Name text.</summary>
+        public static string FixSeedSphereMaximumItemLevelUpdatePlugIn_Name => ResourceManager.GetString("FixSeedSphereMaximumItemLevelUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSeedSphereMaximumItemLevelUpdatePlugIn_Description text.</summary>
+        public static string FixSeedSphereMaximumItemLevelUpdatePlugIn_Description => ResourceManager.GetString("FixSeedSphereMaximumItemLevelUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }
