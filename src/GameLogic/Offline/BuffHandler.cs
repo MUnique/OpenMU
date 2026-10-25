@@ -200,12 +200,22 @@ public sealed class BuffHandler
 
         if (skillEntry.Skill?.Target == SkillTarget.ImplicitParty)
         {
+            // The skill plugin refuses an unaffordable or forbidden cast silently. Reporting such a cast
+            // as applied would end every tick in the buff step, so the helper would never heal, pick up
+            // items or attack again. That's why the costs and the mini game are checked before, and the
+            // effect after the cast.
+            if (!this.IsAllowedInMiniGame(skillEntry.Skill, this._player)
+                || !this._player.HasEnoughResources(skillEntry))
+            {
+                return false;
+            }
+
             var strategy = this._player.GameContext.PlugInManager
-                               .GetStrategy<short, ITargetedSkillPlugin>(skillEntry.Skill!.Number)
+                               .GetStrategy<short, ITargetedSkillPlugin>(skillEntry.Skill.Number)
                            ?? DefaultPlugin;
 
             await strategy.PerformSkillAsync(this._player, this._player, (ushort)skillEntry.Skill.Number).ConfigureAwait(false);
-            return true;
+            return this.IsEffectActive(this._player, skillEntry);
         }
 
         // The effect is applied directly instead of through the skill plugin, so the restrictions
@@ -326,7 +336,10 @@ public sealed class BuffHandler
 
     private bool IsTargetReachable(IAttackable target)
     {
-        return target.IsActive() && this._player.IsInRange(target, this._config!.HuntingRange);
+        // The range only compares the coordinates, so a party member on another map could be in range, too.
+        return target.IsActive()
+               && target.CurrentMap == this._player.CurrentMap
+               && this._player.IsInRange(target, this._config!.HuntingRange);
     }
 
     private bool IsEffectActive(IAttackable target, SkillEntry skillEntry)

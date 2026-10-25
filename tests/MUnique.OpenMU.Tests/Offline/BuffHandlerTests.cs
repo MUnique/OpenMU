@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Tests for <see cref="BuffHandler"/>.
@@ -175,7 +176,75 @@ public class BuffHandlerTests
         }
     }
 
-    private static async ValueTask<Skill> AddSelfBuffSkillAsync(OfflinePlayer player, int manaCost)
+    /// <summary>
+    /// Tests that an unaffordable buff which targets the party is reported as not applied,
+    /// so that the helper continues with healing, picking up items and attacking.
+    /// </summary>
+    [Test]
+    public async ValueTask UnaffordablePartyBuffLetsTheLoopContinueAsync()
+    {
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var skill = await AddSelfBuffSkillAsync(player, manaCost: 20, SkillTarget.ImplicitParty).ConfigureAwait(false);
+        player.Attributes![Stats.CurrentHealth] = 100;
+        player.Attributes[Stats.CurrentMana] = 10;
+        var handler = new BuffHandler(player, new MuHelperSettings { BuffSkill0Id = skill.Number, HuntingRange = 5 });
+
+        var result = await handler.PerformBuffsAsync().ConfigureAwait(false);
+
+        Assert.That(result, Is.True);
+        Assert.That(player.MagicEffectList.HasEffect(skill.MagicEffectDef!), Is.False);
+        Assert.That(player.Attributes[Stats.CurrentMana], Is.EqualTo(10));
+    }
+
+    /// <summary>
+    /// Tests that a party member gets buffed when it's on the same map, and not when it's on another map
+    /// at the same coordinates.
+    /// </summary>
+    /// <param name="sameMap">Whether the party member is on the same map.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async ValueTask PartyMemberIsOnlyBuffedOnTheSameMapAsync(bool sameMap)
+    {
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var member = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var skill = await AddSelfBuffSkillAsync(player, manaCost: 20, SkillTarget.Explicit).ConfigureAwait(false);
+        player.Attributes![Stats.CurrentHealth] = 100;
+        player.Attributes[Stats.CurrentMana] = 50;
+        var map = CreateMap(1);
+        player.SetCurrentMapSilently(map);
+        member.SetCurrentMapSilently(sameMap ? map : CreateMap(2));
+        player.Position = new Point(100, 100);
+        member.Position = new Point(100, 100);
+        player.IsAlive = true;
+        member.IsAlive = true;
+        var party = this._gameContext.PartyManager.CreateParty();
+        await party.AddAsync(player).ConfigureAwait(false);
+        await party.AddAsync(member).ConfigureAwait(false);
+        var handler = new BuffHandler(player, new MuHelperSettings { BuffSkill0Id = skill.Number, HuntingRange = 5, SupportParty = true });
+
+        try
+        {
+            // The first cast buffs the player itself, the second one the party member.
+            Assert.That(await handler.PerformBuffsAsync().ConfigureAwait(false), Is.False);
+            var result = await handler.PerformBuffsAsync().ConfigureAwait(false);
+
+            Assert.That(result, Is.EqualTo(!sameMap));
+            Assert.That(member.MagicEffectList.HasEffect(skill.MagicEffectDef!), Is.EqualTo(sameMap));
+            Assert.That(player.Attributes[Stats.CurrentMana], Is.EqualTo(sameMap ? 10 : 30));
+        }
+        finally
+        {
+            await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+            await member.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+        }
+    }
+
+    private static GameMap CreateMap(short number)
+    {
+        return new GameMap(new Persistence.BasicModel.GameMapDefinition { Number = number }, TimeSpan.FromMinutes(1), 8);
+    }
+
+    private static async ValueTask<Skill> AddSelfBuffSkillAsync(OfflinePlayer player, int manaCost, SkillTarget target = SkillTarget.ImplicitPlayer)
     {
         var magicEffect = new Persistence.BasicModel.MagicEffectDefinition
         {
@@ -186,7 +255,8 @@ public class BuffHandlerTests
         {
             Number = 200,
             SkillType = SkillType.Buff,
-            Target = SkillTarget.ImplicitPlayer,
+            Target = target,
+            Range = 3,
             MagicEffectDef = magicEffect,
         };
         skill.ConsumeRequirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.CurrentMana, MinimumValue = manaCost });
