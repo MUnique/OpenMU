@@ -232,7 +232,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     {
         try
         {
-            if (!await this.HasCurrentContextAsync().ConfigureAwait(false))
+            if (!await this.HasCurrentContextAsync().ConfigureAwait(true))
             {
                 this.ShowContextChangedMessage();
                 return;
@@ -273,9 +273,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             return;
         }
 
-        if (await this.HasCurrentContextAsync().ConfigureAwait(false))
+        // StateHasChanged below requires the renderer context after asynchronous data-source waits.
+        if (await this.HasCurrentContextAsync().ConfigureAwait(true))
         {
-            await this.EditDataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
+            await this.EditDataSource.ForceDiscardChangesAsync().ConfigureAwait(true);
         }
 
         this._loadingState = DataLoadingState.LoadingStarted;
@@ -308,11 +309,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             || ReferenceEquals(this._persistenceContext, await this.EditDataSource.GetContextAsync().ConfigureAwait(false));
 
     private void ShowContextChangedMessage()
-        => this.ToastService.ShowError(Resources.ResourceManager.GetString("EditorContextChanged", Resources.Culture) ?? Resources.FailedByUninitializedContext);
+        => this.ToastService.ShowError(Resources.EditorContextChanged);
 
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
-        var stale = !await this.HasCurrentContextAsync().ConfigureAwait(false);
+        var stale = !await this.HasCurrentContextAsync().ConfigureAwait(true);
         var hasChanges = stale;
         if (!stale)
         {
@@ -345,7 +346,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             }
             else if (!stale)
             {
-                await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(false);
+                await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(true);
             }
             else
             {

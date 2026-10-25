@@ -38,18 +38,18 @@ public sealed class EditorInvalidationTests
         var toast = Configure(context, source, provider.Object);
         context.JSInterop.Setup<bool>("window.confirm", _ => true).SetResult(true);
         var editor = context.Render<EditConfig>(p => p.Add(e => e.TypeString, typeof(GameConfiguration).FullName!));
-        editor.WaitForAssertion(() => Assert.That(editor.Find("#ExperienceRate").GetAttribute("value"), Is.EqualTo("3")));
+        editor.WaitForState(() => editor.FindAll("#ExperienceRate").Any(input => input.GetAttribute("value") == "3"));
         await source.InvalidateAsync().ConfigureAwait(false);
         oldContext.Verify(c => c.Dispose(), Times.Once);
         await editor.Find("#ExperienceRate").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "7" }).ConfigureAwait(false);
         await editor.Find("form").SubmitAsync().ConfigureAwait(false);
-        var message = Resources.ResourceManager.GetString("EditorContextChanged", Resources.Culture)!;
+        var message = Resources.EditorContextChanged;
         toast.Verify(t => t.ShowError(message, null), Times.Once);
         oldContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         newContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         newContext.SetupGet(c => c.HasChanges).Returns(true);
         await editor.Find("button.btn-secondary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()).ConfigureAwait(false);
-        editor.WaitForAssertion(() => Assert.That(editor.Find("#ExperienceRate").GetAttribute("value"), Is.EqualTo("6")));
+        editor.WaitForState(() => editor.FindAll("#ExperienceRate").Any(input => input.GetAttribute("value") == "6"));
         newContext.Verify(c => c.Dispose(), Times.Never);
         await editor.Find("#ExperienceRate").ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = "7" }).ConfigureAwait(false);
         await editor.Find("form").SubmitAsync().ConfigureAwait(false);
@@ -71,7 +71,7 @@ public sealed class EditorInvalidationTests
         using IDataSource<GameConfiguration> source = new GameConfigurationDataSource(NullLogger<GameConfigurationDataSource>.Instance, provider.Object);
         Configure(context, source, provider.Object);
         var editor = context.Render<EditConfig>(p => p.Add(e => e.TypeString, typeof(GameConfiguration).FullName!));
-        editor.WaitForAssertion(() => Assert.That(editor.FindAll("form"), Has.Count.EqualTo(1)));
+        editor.WaitForState(() => editor.FindAll("form").Count == 1);
         await source.InvalidateAsync().ConfigureAwait(false);
         Assert.That(await source.GetOwnerAsync().ConfigureAwait(false), Is.SameAs(current));
         newContext.SetupGet(c => c.HasChanges).Returns(true);
@@ -94,7 +94,7 @@ public sealed class EditorInvalidationTests
         Configure(context, source, provider.Object);
         // Use the shared page base without a query-bound form, so a fake navigation cannot reload the page.
         var editor = context.Render<NavigationEditor>(p => p.Add(e => e.TypeString, typeof(GameConfiguration).FullName!));
-        editor.WaitForAssertion(() => Assert.That(editor.Markup, Is.EqualTo("ready")));
+        editor.WaitForState(() => editor.Markup == "ready");
         await source.InvalidateAsync().ConfigureAwait(false);
         Assert.That(await source.GetOwnerAsync().ConfigureAwait(false), Is.SameAs(current));
         newContext.SetupGet(c => c.HasChanges).Returns(true);
@@ -102,11 +102,78 @@ public sealed class EditorInvalidationTests
         confirmation.SetResult(true);
         var navigation = context.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>();
         navigation.NavigateTo("/other");
-        editor.WaitForAssertion(() => Assert.That(navigation.Uri, Does.EndWith("/other")));
+        editor.WaitForState(() => navigation.Uri.EndsWith("/other", StringComparison.Ordinal));
         Assert.That(confirmation.Invocations, Has.Count.EqualTo(1));
         await editor.Instance.DisposeAsync().ConfigureAwait(false);
         newContext.Verify(c => c.Dispose(), Times.Never);
         Assert.That(await source.GetOwnerAsync().ConfigureAwait(false), Is.SameAs(current));
+    }
+
+    /// <summary>Refresh stays on the renderer after genuinely asynchronous context checks or discards.</summary>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AsynchronousRefreshStaysOnDispatcherAsync(bool delayContextCheck)
+    {
+        using var context = new BunitContext();
+        var oldContext = CreateContext(new GameConfiguration { ExperienceRate = 3 });
+        var newContext = CreateContext(new GameConfiguration { ExperienceRate = 6 });
+        IContext currentContext = oldContext.Object;
+        var owner = new GameConfiguration { ExperienceRate = 3 };
+        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var suspend = false;
+        async ValueTask<IContext> GetContextAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (suspend && delayContextCheck)
+            {
+                entered.TrySetResult(true);
+                await resume.Task.ConfigureAwait(false);
+            }
+
+            return currentContext;
+        }
+
+        async ValueTask DiscardAsync()
+        {
+            if (suspend && !delayContextCheck)
+            {
+                entered.TrySetResult(true);
+                await resume.Task.ConfigureAwait(false);
+            }
+
+            currentContext = newContext.Object;
+            owner = new GameConfiguration { ExperienceRate = 6 };
+            suspend = false;
+        }
+
+        var source = new Mock<IDataSource<GameConfiguration>>();
+        source.Setup(s => s.IsSupporting(typeof(GameConfiguration))).Returns(true);
+        source.Setup(s => s.GetAll(typeof(GameConfiguration))).Returns(() => new[] { owner });
+        source.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).Returns(() => ValueTask.FromResult(owner));
+        source.As<IDataSource>().Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).Returns(() => ValueTask.FromResult<object>(owner));
+        source.Setup(s => s.GetContextAsync(It.IsAny<CancellationToken>())).Returns((CancellationToken token) => GetContextAsync(token));
+        source.Setup(s => s.ForceDiscardChangesAsync()).Returns(() => DiscardAsync());
+        Configure(context, source.Object, Mock.Of<IPersistenceContextProvider>());
+        context.JSInterop.Setup<bool>("window.confirm", _ => true).SetResult(true);
+        var editor = context.Render<EditConfig>(p => p.Add(e => e.TypeString, typeof(GameConfiguration).FullName!));
+        editor.WaitForState(() => editor.FindAll("#ExperienceRate").Any(input => input.GetAttribute("value") == "3"));
+        suspend = true;
+        var refresh = editor.Find("button.btn-secondary").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(refresh.IsCompleted, Is.False);
+        }
+        finally
+        {
+            // Release the asynchronous provider even when an assertion fails, so component disposal can finish.
+            resume.TrySetResult(true);
+        }
+
+        await refresh.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        editor.WaitForState(() => editor.FindAll("#ExperienceRate").Any(input => input.GetAttribute("value") == "6"));
+        Assert.That(editor.Find("#ExperienceRate").GetAttribute("value"), Is.EqualTo("6"));
     }
 
     private static Mock<IContext> CreateContext(GameConfiguration configuration)
