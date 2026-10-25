@@ -3601,7 +3601,7 @@
     <value>Attribut</value>
   </data>
   <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
-    <value>Das Attribut der Basis-Power-ups des Gegenstands, für das diese Terme gelten. Die Terme des minimalen physischen Schadens gelten auch für den maximalen physischen Schaden.</value>
+    <value>Das Attribut der Basis-Power-ups des Gegenstands, für das diese Terme gelten. Der exzellente und der antike Teil des minimalen physischen Schadens gelten auch für den maximalen physischen Schaden.</value>
   </data>
   <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
     <value>Attribut</value>

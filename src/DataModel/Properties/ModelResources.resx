@@ -6323,7 +6323,7 @@
     <value>Attribute</value>
   </data>
   <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
-    <value>The attribute of the item's base power-ups which these terms are for. The terms of the minimum physical damage also apply to the maximum physical damage.</value>
+    <value>The attribute of the item's base power-ups which these terms are for. The excellent and the ancient part of the minimum physical damage also apply to the maximum physical damage.</value>
   </data>
   <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
     <value>Attribute</value>

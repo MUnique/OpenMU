@@ -26,8 +26,8 @@ public partial class ItemStatTerms
     /// <summary>
     /// Gets or sets the attribute of the item's base power-ups which these terms are for: the excellent and the ancient
     /// part are computed from the item's base value of it and added to it, and the level bonus table is the one of its
-    /// power-ups. The terms of the minimum physical damage also apply to the maximum physical damage, as the item formulas
-    /// compute both from the minimum damage.
+    /// power-ups. The excellent and the ancient part of the minimum physical damage also apply to the maximum physical
+    /// damage, as the item formulas compute both from the minimum damage.
     /// </summary>
     public virtual AttributeDefinition? Attribute { get; set; }
 

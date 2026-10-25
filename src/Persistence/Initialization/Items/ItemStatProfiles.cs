@@ -151,79 +151,80 @@ internal static class ItemStatProfiles
     }
 
     /// <summary>
-    /// Gives the stats of the added profiles the level bonus table which their items use. Unlike the name, the items'
-    /// reference to the table stays when an owner renames or replaces it. When the items which get a table from a profile
-    /// use different tables, the profile takes the one most of them use. Each other item which got its profile in this
-    /// run gets a variant of it which names the item's table, e.g. "thirdTierWing2", so that no item's table changes and
-    /// each item's profile names its table. A table which no item gets from the profile stays as found by its name,
-    /// or empty when the configuration doesn't have it, e.g. the table of the third wings in a version without third wings.
+    /// Gives the terms of the added profiles the level bonus tables which their items use. Unlike the name, the items'
+    /// reference to a table stays when an owner renames or replaces it. First, each term takes the table which most of
+    /// the items use that get it from the profile. Then each item which got its profile in this run and uses other
+    /// tables than its profile names gets one variant of its profile which names all of the item's tables, e.g.
+    /// "shield2", so that no item's table changes and each item's profile names its tables. A table which no item gets
+    /// from the profile stays as found by its name, or empty when the configuration doesn't have it, e.g. the table of
+    /// the third wings in a version without third wings.
     /// </summary>
+    /// <remarks>
+    /// The table of an attribute is the one of the item's power-ups of that attribute. So for a weapon whose maximum
+    /// physical damage uses another table than its minimum physical damage, the profile names the table of the minimum
+    /// damage, which the item formulas read, and the maximum damage keeps its own table, which no profile names.
+    /// </remarks>
     private static void TakeTheTablesOfTheItems(IContext context, GameConfiguration gameConfiguration, List<ItemStatProfile> addedProfiles, HashSet<ItemDefinition> assignedItems)
     {
         var defaultProfile = gameConfiguration.ItemStatProfiles.First(profile => profile.Name == ItemStatProfile.DefaultName);
-        var variants = new Dictionary<(ItemStatProfile Profile, AttributeDefinition Attribute, ItemLevelBonusTable Table), ItemStatProfile>();
-        foreach (var profile in addedProfiles)
+        var tableTerms = addedProfiles
+            .SelectMany(profile => profile.StatTerms
+                .Where(terms => terms.TableState == ItemStatTermState.Values && terms.Attribute is not null)
+                .Select(terms => (Profile: profile, Terms: terms)))
+            .ToList();
+        foreach (var (profile, terms) in tableTerms)
         {
-            foreach (var terms in profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values).ToList())
+            var tables = gameConfiguration.Items
+                .Where(item => GetProfileOfTable(item.StatProfile!, terms.Attribute!, defaultProfile) == profile)
+                .Select(item => GetTableOfItem(item, terms.Attribute!))
+                .OfType<ItemLevelBonusTable>()
+                .ToList();
+            if (tables.Count > 0)
             {
-                if (terms.Attribute is not { } attribute)
-                {
-                    continue;
-                }
-
-                var attributes = GetPowerUpAttributes(attribute);
-                var itemTables = gameConfiguration.Items
-                    .Where(item => GetProfileOfTable(item.StatProfile!, attribute, defaultProfile) == profile)
-                    .Select(item => (Item: item, Table: GetTableOfItem(item, attributes)))
-                    .Where(itemTable => itemTable.Table is not null)
-                    .ToList();
-                if (itemTables.Count == 0)
-                {
-                    continue;
-                }
-
                 // On a tie, the table with the built-in name stays.
-                var table = itemTables
-                    .GroupBy(itemTable => itemTable.Table!)
+                terms.Table = tables
+                    .GroupBy(table => table)
                     .OrderByDescending(group => group.Count())
                     .ThenByDescending(group => group.Key == terms.Table)
                     .ThenBy(group => group.Key.Name.ValueInNeutralLanguage, StringComparer.Ordinal)
                     .First().Key;
-                terms.Table = table;
-                foreach (var (item, itemTable) in itemTables.Where(itemTable => itemTable.Table != table && assignedItems.Contains(itemTable.Item)))
-                {
-                    var key = (item.StatProfile!, attribute, itemTable!);
-                    if (!variants.TryGetValue(key, out var variant))
-                    {
-                        variant = CreateVariant(context, gameConfiguration, item.StatProfile!, attribute, itemTable!);
-                        variants.Add(key, variant);
-                    }
-
-                    item.StatProfile = variant;
-                }
             }
+        }
+
+        var attributes = tableTerms.Select(tableTerm => tableTerm.Terms.Attribute!).Distinct().ToList();
+        var variants = new List<(ItemStatProfile Profile, List<(AttributeDefinition Attribute, ItemLevelBonusTable Table)> Tables, ItemStatProfile Variant)>();
+        foreach (var item in assignedItems.OrderBy(item => item.Group).ThenBy(item => item.Number))
+        {
+            var profile = item.StatProfile!;
+            var ownTables = attributes
+                .Select(attribute => (Attribute: attribute, Table: GetTableOfItem(item, attribute)))
+                .Where(own => own.Table is not null && own.Table != GetTableOfProfile(profile, own.Attribute, defaultProfile))
+                .Select(own => (own.Attribute, Table: own.Table!))
+                .ToList();
+            if (ownTables.Count == 0)
+            {
+                continue;
+            }
+
+            var variant = variants.FirstOrDefault(v => v.Profile == profile && v.Tables.SequenceEqual(ownTables)).Variant;
+            if (variant is null)
+            {
+                variant = CreateVariant(context, gameConfiguration, profile, ownTables);
+                variants.Add((profile, ownTables, variant));
+            }
+
+            item.StatProfile = variant;
         }
     }
 
     /// <summary>
-    /// Gets the attributes of the item power-ups which get the level bonus table of the terms of the given attribute:
-    /// the attribute itself, and the maximum physical damage for the minimum physical damage.
+    /// Gets the level bonus table of the item's power-ups of the attribute, or <c>null</c> when they have none,
+    /// or several, which no profile can name; then the item keeps its profile for it.
     /// </summary>
-    private static AttributeDefinition[] GetPowerUpAttributes(AttributeDefinition attribute)
-    {
-        return attribute == Stats.MinimumPhysBaseDmgByWeapon
-            ? [Stats.MinimumPhysBaseDmgByWeapon, Stats.MaximumPhysBaseDmgByWeapon]
-            : [attribute];
-    }
-
-    /// <summary>
-    /// Gets the level bonus table of the item's power-ups of the given attributes, or <c>null</c> when they have none,
-    /// or several, which no profile can name; then the item keeps its profile.
-    /// </summary>
-    private static ItemLevelBonusTable? GetTableOfItem(ItemDefinition item, AttributeDefinition[] attributes)
+    private static ItemLevelBonusTable? GetTableOfItem(ItemDefinition item, AttributeDefinition attribute)
     {
         var tables = item.BasePowerUpAttributes
-            .Where(powerUp => powerUp.BonusPerLevelTable is not null && attributes.Any(attribute => attribute == powerUp.TargetAttribute))
+            .Where(powerUp => powerUp.TargetAttribute == attribute && powerUp.BonusPerLevelTable is not null)
             .Select(powerUp => powerUp.BonusPerLevelTable!)
             .Distinct()
             .Take(2)
@@ -232,9 +233,18 @@ internal static class ItemStatProfiles
     }
 
     /// <summary>
-    /// Creates a copy of the profile with the next free name, e.g. "thirdTierWing2", which names the given table for the attribute.
+    /// Gets the level bonus table which the profile names for the attribute, or the default when the profile doesn't write it.
     /// </summary>
-    private static ItemStatProfile CreateVariant(IContext context, GameConfiguration gameConfiguration, ItemStatProfile profile, AttributeDefinition attribute, ItemLevelBonusTable table)
+    private static ItemLevelBonusTable? GetTableOfProfile(ItemStatProfile profile, AttributeDefinition attribute, ItemStatProfile defaultProfile)
+    {
+        var terms = GetProfileOfTable(profile, attribute, defaultProfile).StatTerms.FirstOrDefault(t => t.Attribute == attribute);
+        return terms?.TableState == ItemStatTermState.Values ? terms.Table : null;
+    }
+
+    /// <summary>
+    /// Creates a copy of the profile with the next free name, e.g. "shield2", which names the given tables for their attributes.
+    /// </summary>
+    private static ItemStatProfile CreateVariant(IContext context, GameConfiguration gameConfiguration, ItemStatProfile profile, List<(AttributeDefinition Attribute, ItemLevelBonusTable Table)> tables)
     {
         var baseName = profile.Name.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
         var number = 2;
@@ -262,16 +272,20 @@ internal static class ItemStatProfiles
             variant.RequirementFormulas.Add(copy);
         }
 
-        var statTerms = variant.StatTerms.FirstOrDefault(t => t.Attribute == attribute);
-        if (statTerms is null)
+        foreach (var (attribute, table) in tables)
         {
-            statTerms = context.CreateNew<ItemStatTerms>();
-            statTerms.Attribute = attribute;
-            variant.StatTerms.Add(statTerms);
+            var terms = variant.StatTerms.FirstOrDefault(t => t.Attribute == attribute);
+            if (terms is null)
+            {
+                terms = context.CreateNew<ItemStatTerms>();
+                terms.Attribute = attribute;
+                variant.StatTerms.Add(terms);
+            }
+
+            terms.TableState = ItemStatTermState.Values;
+            terms.Table = table;
         }
 
-        statTerms.TableState = ItemStatTermState.Values;
-        statTerms.Table = table;
         gameConfiguration.ItemStatProfiles.Add(variant);
         return variant;
     }

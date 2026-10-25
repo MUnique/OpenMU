@@ -460,6 +460,75 @@ internal class ItemStatProfilesDataTest
         });
     }
 
+    /// <summary>
+    /// Tests that the update gives an item which has its own tables for two attributes, whose terms come from different
+    /// profiles, one variant which names both: a shield with its own defense rate table (of the default profile) and its
+    /// own shield defense table (of the shield profile). A second run changes nothing.
+    /// </summary>
+    [Test]
+    public async Task UpdateGivesAnItemWithTwoOwnTablesOneVariantAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
+        using var _ = context;
+        var shield = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.Shield)
+            .OrderBy(item => item.Number)
+            .First(item => HasTable(item, Stats.DefenseRatePvm) && HasTable(item, Stats.DefenseShield));
+        GiveTable(shield, AddTable(context, gameConfiguration, "Own defense rate increase of one shield"), Stats.DefenseRatePvm);
+        GiveTable(shield, AddTable(context, gameConfiguration, "Own defense increase of one shield"), Stats.DefenseShield);
+        var powerUpTables = DescribePowerUpTables(gameConfiguration);
+
+        RemoveProfiles(gameConfiguration);
+        var update = CreateUpdate(Season6);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var differentTablesAfterFirstUpdate = GetTablesWhichDifferFromTheProfile(gameConfiguration);
+        var afterFirstUpdate = Describe(gameConfiguration);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DescribeProfile(shield.StatProfile!), Is.EqualTo(new[]
+            {
+                "shield2: level per item level -, excellent level add -, strength per option level -",
+                "  Defense Rate (PvM): table Own defense rate increase of one shield, excellent NotWritten, ancient NotWritten",
+                "  Shield Defense (item): table Own defense increase of one shield, excellent None, ancient 20/2/0 after level bonus",
+            }));
+            Assert.That(differentTablesAfterFirstUpdate, Is.Empty);
+            Assert.That(GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
+            Assert.That(DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
+            Assert.That(Describe(gameConfiguration), Is.EqualTo(afterFirstUpdate));
+        });
+    }
+
+    /// <summary>
+    /// Tests what the update does with a weapon whose maximum damage uses another table than its minimum damage, which a
+    /// profile can't name: the weapon keeps its profile, which names the table of the minimum damage that the item
+    /// formulas read, the maximum damage keeps its own table, and only that power-up differs from the profile.
+    /// </summary>
+    [Test]
+    public async Task UpdateKeepsTheProfileOfAWeaponWithAnotherTableOfTheMaximumDamageAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
+        using var _ = context;
+        var sword = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.Weapon)
+            .Where(item => item.Group == 0 && HasTable(item, Stats.MinimumPhysBaseDmgByWeapon) && HasTable(item, Stats.MaximumPhysBaseDmgByWeapon))
+            .OrderBy(item => item.Number)
+            .First();
+        GiveTable(sword, AddTable(context, gameConfiguration, "Own maximum damage increase of one sword"), Stats.MaximumPhysBaseDmgByWeapon);
+        var powerUpTables = DescribePowerUpTables(gameConfiguration);
+
+        RemoveProfiles(gameConfiguration);
+        await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var differentTables = GetTablesWhichDifferFromTheProfile(gameConfiguration);
+        Assert.Multiple(() =>
+        {
+            Assert.That(sword.StatProfile!.Name, Is.EqualTo(BuiltInItemStatProfiles.Weapon));
+            Assert.That(differentTables, Has.Exactly(1).Items);
+            Assert.That(differentTables, Has.All.Contains("Own maximum damage increase of one sword"));
+            Assert.That(DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
+        });
+    }
+
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateAsync(string version)
     {
         return version switch
@@ -512,6 +581,11 @@ internal class ItemStatProfilesDataTest
         {
             powerUp.BonusPerLevelTable = table;
         }
+    }
+
+    private static bool HasTable(ItemDefinition item, AttributeDefinition attribute)
+    {
+        return item.BasePowerUpAttributes.Any(p => p.TargetAttribute == attribute && p.BonusPerLevelTable is not null);
     }
 
     private static ItemStatProfile GetProfile(GameConfiguration gameConfiguration, string name)

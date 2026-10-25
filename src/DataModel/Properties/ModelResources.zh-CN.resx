@@ -6446,7 +6446,7 @@
     <value>属性</value>
   </data>
   <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
-    <value>这些项适用的物品基础增益属性。最小物理伤害的项也适用于最大物理伤害。</value>
+    <value>这些项适用的物品基础增益属性。最小物理伤害的卓越和古代部分也适用于最大物理伤害。</value>
   </data>
   <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
     <value>属性</value>
