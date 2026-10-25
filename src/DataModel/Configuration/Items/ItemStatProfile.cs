@@ -19,9 +19,9 @@ using MUnique.OpenMU.Annotations;
 public partial class ItemStatProfile
 {
     /// <summary>
-    /// The name of the profile which writes every part, and whose parts the other profiles take when they don't write them.
+    /// Gets the name of the profile which writes every part, and whose parts the other profiles take when they don't write them.
     /// </summary>
-    public const string DefaultName = "default";
+    public static string DefaultName => "default";
 
     /// <summary>
     /// Gets or sets the name. It is unique within a configuration.

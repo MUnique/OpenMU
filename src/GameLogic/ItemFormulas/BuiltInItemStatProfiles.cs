@@ -20,71 +20,76 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 public static partial class BuiltInItemStatProfiles
 {
     /// <summary>
-    /// The profile of armor pieces (helms, armors, pants, gloves and boots).
+    /// Gets the name of the profile of armor pieces (helms, armors, pants, gloves and boots).
     /// </summary>
-    public const string Armor = "armor";
+    public static string Armor => "armor";
 
     /// <summary>
-    /// The profile of the summoner's books.
+    /// Gets the name of the profile of the summoner's books.
     /// </summary>
-    public const string Book = "book";
+    public static string Book => "book";
 
     /// <summary>
-    /// The profile of the first wings.
+    /// Gets the name of the profile of the first wings.
     /// </summary>
-    public const string FirstTierWing = "firstTierWing";
+    public static string FirstTierWing => "firstTierWing";
 
     /// <summary>
-    /// The profile of the helpers (pets, rings, pendants and other items of the groups 13 and 14 with a level requirement).
+    /// Gets the name of the profile of the helpers (pets, rings, pendants and other items of the groups 13 and 14 with a level requirement).
     /// </summary>
-    public const string Helper = "helper";
+    public static string Helper => "helper";
 
     /// <summary>
-    /// The profile of the orbs.
+    /// Gets the name of the profile of the orbs.
     /// </summary>
-    public const string Orb = "orb";
+    public static string Orb => "orb";
 
     /// <summary>
-    /// The profile of the dark lord's sceptres.
+    /// Gets the name of the profile of the dark lord's sceptres.
     /// </summary>
-    public const string Sceptre = "sceptre";
+    public static string Sceptre => "sceptre";
 
     /// <summary>
-    /// The profile of the scrolls.
+    /// Gets the name of the profile of the scrolls.
     /// </summary>
-    public const string Scroll = "scroll";
+    public static string Scroll => "scroll";
 
     /// <summary>
-    /// The profile of the second tier capes.
+    /// Gets the name of the profile of the second tier capes.
     /// </summary>
-    public const string SecondTierCape = "secondTierCape";
+    public static string SecondTierCape => "secondTierCape";
 
     /// <summary>
-    /// The profile of the second wings.
+    /// Gets the name of the profile of the second wings.
     /// </summary>
-    public const string SecondTierWing = "secondTierWing";
+    public static string SecondTierWing => "secondTierWing";
 
     /// <summary>
-    /// The profile of the shields.
+    /// Gets the name of the profile of the shields.
     /// </summary>
-    public const string Shield = "shield";
+    public static string Shield => "shield";
 
     /// <summary>
-    /// The profile of the small wings.
+    /// Gets the name of the profile of the small wings.
     /// </summary>
-    public const string SmallWing = "smallWing";
+    public static string SmallWing => "smallWing";
 
     /// <summary>
-    /// The profile of the third wings and capes.
+    /// Gets the name of the profile of the third wings and capes.
     /// </summary>
-    public const string ThirdTierWing = "thirdTierWing";
+    public static string ThirdTierWing => "thirdTierWing";
 
     /// <summary>
-    /// The profile of the weapons.
+    /// Gets the name of the profile of the weapons.
     /// </summary>
-    public const string Weapon = "weapon";
+    public static string Weapon => "weapon";
 
-    private static readonly IReadOnlyList<ProfileDefinition> Definitions =
+    /// <summary>
+    /// Gets the names of the built-in profiles, the default first.
+    /// </summary>
+    public static IEnumerable<string> Names => Definitions.Select(definition => definition.Name);
+
+    private static IReadOnlyList<ProfileDefinition> Definitions { get; } =
     [
         new(
             ItemStatProfile.DefaultName,
@@ -119,11 +124,6 @@ public static partial class BuiltInItemStatProfiles
         new(ThirdTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, BuiltInLevelBonusTable.DefenseBonus3rdWings)]),
         new(Weapon),
     ];
-
-    /// <summary>
-    /// Gets the names of the built-in profiles, the default first.
-    /// </summary>
-    public static IEnumerable<string> Names => Definitions.Select(definition => definition.Name);
 
     /// <summary>
     /// Writes the built-in values of the profile with the name of the given profile into it.
