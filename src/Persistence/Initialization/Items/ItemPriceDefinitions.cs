@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Creates the <see cref="ItemPriceDefinition"/>s and assigns them to the items which don't have one yet.
@@ -18,15 +19,15 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// </remarks>
 internal class ItemPriceDefinitions : InitializerBase
 {
-    private const string FixedValueName = "Fixed value";
-    private const string PotionsName = "Potions";
-    private const string ValueBasedName = "Value based";
-    private const string AccessoriesName = "Accessories";
-    private const string DarkRavenName = "Dark Raven";
-    private const string DarkHorseName = "Dark Horse";
-    private const string OneHandedName = "One-handed weapons and shields";
-    private const string OneHandedWithoutSkillValueName = "One-handed weapons with a skill without value";
-    private const string WithoutSkillValueName = "Equipment with a skill without value";
+    private const string FixedValueName = nameof(ItemPriceDefinitionNames.FixedValue);
+    private const string PotionsName = nameof(ItemPriceDefinitionNames.Potions);
+    private const string ValueBasedName = nameof(ItemPriceDefinitionNames.ValueBased);
+    private const string AccessoriesName = nameof(ItemPriceDefinitionNames.Accessories);
+    private const string DarkRavenName = nameof(ItemPriceDefinitionNames.DarkRaven);
+    private const string DarkHorseName = nameof(ItemPriceDefinitionNames.DarkHorse);
+    private const string OneHandedName = nameof(ItemPriceDefinitionNames.OneHandedWeaponsAndShields);
+    private const string OneHandedWithoutSkillValueName = nameof(ItemPriceDefinitionNames.OneHandedWeaponsWithSkillWithoutValue);
+    private const string WithoutSkillValueName = nameof(ItemPriceDefinitionNames.EquipmentWithSkillWithoutValue);
     private const string DiscountedFormula = "floor(automaticPrice * 80 / 100)";
 
     /// <summary>
@@ -36,62 +37,62 @@ internal class ItemPriceDefinitions : InitializerBase
 
     private static readonly IReadOnlyList<SpecialPrice> SpecialPrices =
     [
-        new("Arrows", "70", Scaling: ItemPriceQuantityScaling.ByFillRatio, Rows: [(1, 1200), (2, 2000), (3, 2800)], Items: [(4, 15)]),
-        new("Bolts", "100", Scaling: ItemPriceQuantityScaling.ByFillRatio, Rows: [(1, 1400), (2, 2200), (3, 3000)], Items: [(4, 7)]),
-        new("Jewel of Bless", "9000000", CraftingReferencePrice: 100_000, Items: [(14, 13)]),
-        new("Jewel of Soul", "6000000", CraftingReferencePrice: 70_000, Items: [(14, 14)]),
-        new("Jewel of Chaos", "810000", CraftingReferencePrice: 40_000, Items: [(12, 15)]),
-        new("Jewel of Life", "45000000", CraftingReferencePrice: 450_000, Items: [(14, 16)]),
-        new("Jewel of Creation", "36000000", CraftingReferencePrice: 450_000, Items: [(14, 22)]),
-        new("Jewel of Guardian", "60000000", Items: [(14, 31)]),
-        new("Gemstone, Jewel of Harmony and Refine Stones", "18600", Items: [(14, 41), (14, 42), (14, 43), (14, 44)]),
-        new("Packed Jewel of Bless", "(level + 1) * 9000000 * 10", Items: [(12, 30)]),
-        new("Packed Jewel of Soul", "(level + 1) * 6000000 * 10", Items: [(12, 31)]),
-        new("Packed Jewel of Chaos", "(level + 1) * 810000 * 10", Items: [(12, 141)]),
-        new("Packed Jewel of Life", "(level + 1) * 45000000 * 10", Items: [(12, 136)]),
-        new("Packed Jewel of Creation", "(level + 1) * 36000000 * 10", Items: [(12, 137)]),
-        new("Packed Jewel of Guardian", "(level + 1) * 60000000 * 10", Items: [(12, 138)]),
-        new("Packed Gemstone, Jewel of Harmony and Refine Stones", "(level + 1) * 18600 * 10", Items: [(12, 139), (12, 140), (12, 142), (12, 143)]),
-        new("Fruits", "33000000", Items: [(13, 15)]),
-        new("Loch's Feather", "180000", Rows: [(1, 7_500_000)], Items: [(13, 14)]),
-        new("Large Healing and Mana Potion", "1500 * (level + 1)", Scaling: ItemPriceQuantityScaling.PerPiece, Rounding: ItemPriceRounding.Tens, Items: [(14, 3), (14, 6)]),
-        new("Siege Potion", "450000", Scaling: ItemPriceQuantityScaling.PerPiece, Rounding: ItemPriceRounding.Tens, Rows: [(0, 900_000)], Items: [(14, 7)]),
-        new("Order (Guardian/Life Stone)", "1000000", Rows: [(1, 2_400_000)], Items: [(13, 11)]),
-        new("Contract (Summon)", "0", Rows: [(0, 1_500_000), (1, 1_200_000)], Items: [(13, 7)]),
-        new("Splinter of Armor", "150", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(13, 32)]),
-        new("Bless of Guardian", "300", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(13, 33)]),
-        new("Claw of Beast", "3000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(13, 34)]),
-        new("Fragment of Horn", "30000", Items: [(13, 35)]),
-        new("Broken Horn", "90000", Items: [(13, 36)]),
-        new("Horn of Fenrir", "150000", Items: [(13, 37)]),
-        new("Small Shield Potion", "2000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 35)]),
-        new("Shield Potion", "4000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 36)]),
-        new("Large Shield Potion", "6000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 37)]),
-        new("Small Complex Potion", "2500", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 38)]),
-        new("Complex Potion", "5000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 39)]),
-        new("Large Complex Potion", "7500", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 40)]),
-        new("Horn of Dinorant", "960000 + 300000 * optionCount", Items: [(13, 3)]),
-        new("Devil's Eye", "10000", Rows: [(1, 10_000), (2, 50_000), (3, 100_000), (4, 300_000), (5, 500_000), (6, 800_000), (7, 1_000_000)], Items: [(14, 17)]),
-        new("Devil's Key", "15000", Rows: [(1, 15_000), (2, 75_000), (3, 150_000), (4, 450_000), (5, 750_000), (6, 1_200_000), (7, 1_500_000)], Items: [(14, 18)]),
-        new("Devil's Invitation", "(level - 1) * 60000", Rows: [(1, 60_000), (2, 84_000)], Items: [(14, 19)]),
-        new("Remedy of Love", "900", Items: [(14, 20)]),
-        new("Rena", "if(level = 3, durability * 3900, 9000)", Items: [(14, 21)]),
-        new("Ale", "750", Items: [(14, 9)]),
-        new("Invisibility Cloak", "600000 + (level - 1) * 60000", Rows: [(1, 150_000)], Items: [(13, 18)]),
-        new("Scroll of Archangel", "10000", Rows: [(1, 10_000), (2, 50_000), (3, 100_000), (4, 300_000), (5, 500_000), (6, 800_000), (7, 1_000_000), (8, 1_200_000)], Items: [(13, 16)]),
-        new("Blood Bone", "10000", Rows: [(1, 10_000), (2, 50_000), (3, 100_000), (4, 300_000), (5, 500_000), (6, 800_000), (7, 1_000_000), (8, 1_200_000)], Items: [(13, 17)]),
-        new("Illusion Temple tickets", "(level + 1) * 200000", Rows: [(1, 500_000)], Items: [(13, 49), (13, 50), (13, 51)]),
-        new("Flame and Feather of Condor", "3000000", Items: [(13, 52), (13, 53)]),
-        new("Armor of Guardsman", "5000", Items: [(13, 29)]),
-        new("Wizard's Ring", "0", Rows: [(0, 30_000)], Items: [(13, 20)]),
-        new("Spirit", "0", Rows: [(0, 30_000_000), (1, 15_000_000)], Items: [(13, 31)]),
-        new("Lost Map", "600000", Items: [(14, 28)]),
-        new("Symbol of Kundun", "30000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 29)]),
-        new("Halloween items", "150", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 45), (14, 46), (14, 47), (14, 48), (14, 49), (14, 50)]),
-        new("Gem of Secret", "0", Rows: [(0, 60_000)], Items: [(12, 26)]),
-        new("Imperial Guardian items", "30000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 101), (14, 102), (14, 103), (14, 104), (14, 105), (14, 106), (14, 107), (14, 108), (14, 109)]),
-        new("Christmas Star and Firecracker", "200000", Items: [(14, 51), (14, 63)]),
-        new("Cherry Blossom items", "300", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 85), (14, 86), (14, 87), (14, 90)]),
+        new(nameof(ItemPriceDefinitionNames.Arrows), "70", Scaling: ItemPriceQuantityScaling.ByFillRatio, Rows: [(1, 1200), (2, 2000), (3, 2800)], Items: [(4, 15)]),
+        new(nameof(ItemPriceDefinitionNames.Bolts), "100", Scaling: ItemPriceQuantityScaling.ByFillRatio, Rows: [(1, 1400), (2, 2200), (3, 3000)], Items: [(4, 7)]),
+        new(nameof(ItemPriceDefinitionNames.JewelOfBless), "9000000", CraftingReferencePrice: 100_000, Items: [(14, 13)]),
+        new(nameof(ItemPriceDefinitionNames.JewelOfSoul), "6000000", CraftingReferencePrice: 70_000, Items: [(14, 14)]),
+        new(nameof(ItemPriceDefinitionNames.JewelOfChaos), "810000", CraftingReferencePrice: 40_000, Items: [(12, 15)]),
+        new(nameof(ItemPriceDefinitionNames.JewelOfLife), "45000000", CraftingReferencePrice: 450_000, Items: [(14, 16)]),
+        new(nameof(ItemPriceDefinitionNames.JewelOfCreation), "36000000", CraftingReferencePrice: 450_000, Items: [(14, 22)]),
+        new(nameof(ItemPriceDefinitionNames.JewelOfGuardian), "60000000", Items: [(14, 31)]),
+        new(nameof(ItemPriceDefinitionNames.GemstoneHarmonyAndRefineStones), "18600", Items: [(14, 41), (14, 42), (14, 43), (14, 44)]),
+        new(nameof(ItemPriceDefinitionNames.PackedJewelOfBless), "(level + 1) * 9000000 * 10", Items: [(12, 30)]),
+        new(nameof(ItemPriceDefinitionNames.PackedJewelOfSoul), "(level + 1) * 6000000 * 10", Items: [(12, 31)]),
+        new(nameof(ItemPriceDefinitionNames.PackedJewelOfChaos), "(level + 1) * 810000 * 10", Items: [(12, 141)]),
+        new(nameof(ItemPriceDefinitionNames.PackedJewelOfLife), "(level + 1) * 45000000 * 10", Items: [(12, 136)]),
+        new(nameof(ItemPriceDefinitionNames.PackedJewelOfCreation), "(level + 1) * 36000000 * 10", Items: [(12, 137)]),
+        new(nameof(ItemPriceDefinitionNames.PackedJewelOfGuardian), "(level + 1) * 60000000 * 10", Items: [(12, 138)]),
+        new(nameof(ItemPriceDefinitionNames.PackedGemstoneHarmonyAndRefineStones), "(level + 1) * 18600 * 10", Items: [(12, 139), (12, 140), (12, 142), (12, 143)]),
+        new(nameof(ItemPriceDefinitionNames.Fruits), "33000000", Items: [(13, 15)]),
+        new(nameof(ItemPriceDefinitionNames.LochsFeather), "180000", Rows: [(1, 7_500_000)], Items: [(13, 14)]),
+        new(nameof(ItemPriceDefinitionNames.LargeHealingAndManaPotion), "1500 * (level + 1)", Scaling: ItemPriceQuantityScaling.PerPiece, Rounding: ItemPriceRounding.Tens, Items: [(14, 3), (14, 6)]),
+        new(nameof(ItemPriceDefinitionNames.SiegePotion), "450000", Scaling: ItemPriceQuantityScaling.PerPiece, Rounding: ItemPriceRounding.Tens, Rows: [(0, 900_000)], Items: [(14, 7)]),
+        new(nameof(ItemPriceDefinitionNames.OrderGuardianLifeStone), "1000000", Rows: [(1, 2_400_000)], Items: [(13, 11)]),
+        new(nameof(ItemPriceDefinitionNames.ContractSummon), "0", Rows: [(0, 1_500_000), (1, 1_200_000)], Items: [(13, 7)]),
+        new(nameof(ItemPriceDefinitionNames.SplinterOfArmor), "150", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(13, 32)]),
+        new(nameof(ItemPriceDefinitionNames.BlessOfGuardian), "300", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(13, 33)]),
+        new(nameof(ItemPriceDefinitionNames.ClawOfBeast), "3000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(13, 34)]),
+        new(nameof(ItemPriceDefinitionNames.FragmentOfHorn), "30000", Items: [(13, 35)]),
+        new(nameof(ItemPriceDefinitionNames.BrokenHorn), "90000", Items: [(13, 36)]),
+        new(nameof(ItemPriceDefinitionNames.HornOfFenrir), "150000", Items: [(13, 37)]),
+        new(nameof(ItemPriceDefinitionNames.SmallShieldPotion), "2000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 35)]),
+        new(nameof(ItemPriceDefinitionNames.ShieldPotion), "4000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 36)]),
+        new(nameof(ItemPriceDefinitionNames.LargeShieldPotion), "6000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 37)]),
+        new(nameof(ItemPriceDefinitionNames.SmallComplexPotion), "2500", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 38)]),
+        new(nameof(ItemPriceDefinitionNames.ComplexPotion), "5000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 39)]),
+        new(nameof(ItemPriceDefinitionNames.LargeComplexPotion), "7500", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 40)]),
+        new(nameof(ItemPriceDefinitionNames.HornOfDinorant), "960000 + 300000 * optionCount", Items: [(13, 3)]),
+        new(nameof(ItemPriceDefinitionNames.DevilsEye), "10000", Rows: [(1, 10_000), (2, 50_000), (3, 100_000), (4, 300_000), (5, 500_000), (6, 800_000), (7, 1_000_000)], Items: [(14, 17)]),
+        new(nameof(ItemPriceDefinitionNames.DevilsKey), "15000", Rows: [(1, 15_000), (2, 75_000), (3, 150_000), (4, 450_000), (5, 750_000), (6, 1_200_000), (7, 1_500_000)], Items: [(14, 18)]),
+        new(nameof(ItemPriceDefinitionNames.DevilsInvitation), "(level - 1) * 60000", Rows: [(1, 60_000), (2, 84_000)], Items: [(14, 19)]),
+        new(nameof(ItemPriceDefinitionNames.RemedyOfLove), "900", Items: [(14, 20)]),
+        new(nameof(ItemPriceDefinitionNames.Rena), "if(level = 3, durability * 3900, 9000)", Items: [(14, 21)]),
+        new(nameof(ItemPriceDefinitionNames.Ale), "750", Items: [(14, 9)]),
+        new(nameof(ItemPriceDefinitionNames.InvisibilityCloak), "600000 + (level - 1) * 60000", Rows: [(1, 150_000)], Items: [(13, 18)]),
+        new(nameof(ItemPriceDefinitionNames.ScrollOfArchangel), "10000", Rows: [(1, 10_000), (2, 50_000), (3, 100_000), (4, 300_000), (5, 500_000), (6, 800_000), (7, 1_000_000), (8, 1_200_000)], Items: [(13, 16)]),
+        new(nameof(ItemPriceDefinitionNames.BloodBone), "10000", Rows: [(1, 10_000), (2, 50_000), (3, 100_000), (4, 300_000), (5, 500_000), (6, 800_000), (7, 1_000_000), (8, 1_200_000)], Items: [(13, 17)]),
+        new(nameof(ItemPriceDefinitionNames.IllusionTempleTickets), "(level + 1) * 200000", Rows: [(1, 500_000)], Items: [(13, 49), (13, 50), (13, 51)]),
+        new(nameof(ItemPriceDefinitionNames.FlameAndFeatherOfCondor), "3000000", Items: [(13, 52), (13, 53)]),
+        new(nameof(ItemPriceDefinitionNames.ArmorOfGuardsman), "5000", Items: [(13, 29)]),
+        new(nameof(ItemPriceDefinitionNames.WizardsRing), "0", Rows: [(0, 30_000)], Items: [(13, 20)]),
+        new(nameof(ItemPriceDefinitionNames.Spirit), "0", Rows: [(0, 30_000_000), (1, 15_000_000)], Items: [(13, 31)]),
+        new(nameof(ItemPriceDefinitionNames.LostMap), "600000", Items: [(14, 28)]),
+        new(nameof(ItemPriceDefinitionNames.SymbolOfKundun), "30000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 29)]),
+        new(nameof(ItemPriceDefinitionNames.HalloweenItems), "150", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 45), (14, 46), (14, 47), (14, 48), (14, 49), (14, 50)]),
+        new(nameof(ItemPriceDefinitionNames.GemOfSecret), "0", Rows: [(0, 60_000)], Items: [(12, 26)]),
+        new(nameof(ItemPriceDefinitionNames.ImperialGuardianItems), "30000", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 101), (14, 102), (14, 103), (14, 104), (14, 105), (14, 106), (14, 107), (14, 108), (14, 109)]),
+        new(nameof(ItemPriceDefinitionNames.ChristmasStarAndFirecracker), "200000", Items: [(14, 51), (14, 63)]),
+        new(nameof(ItemPriceDefinitionNames.CherryBlossomItems), "300", Scaling: ItemPriceQuantityScaling.PerPiece, Items: [(14, 85), (14, 86), (14, 87), (14, 90)]),
     ];
 
     private static readonly IReadOnlyList<SpecialPrice> GeneralPrices =
@@ -118,11 +119,20 @@ internal class ItemPriceDefinitions : InitializerBase
     }
 
     /// <summary>
-    /// Assigns the price definitions to all items which don't have one yet.
+    /// Creates all price definitions and assigns them to the items which don't have one yet.
     /// Existing price definitions with the same name are reused, so it can be applied more than once.
     /// </summary>
+    /// <remarks>
+    /// All definitions are created, even if no item of the version uses them, e.g. Remedy of Love.
+    /// They are ready to be assigned to items which a server owner adds.
+    /// </remarks>
     public override void Initialize()
     {
+        foreach (var price in SpecialPrices.Concat(GeneralPrices))
+        {
+            this.GetOrCreateDefinition(price);
+        }
+
         var specialPrices = SpecialPrices
             .SelectMany(price => price.Items.Select(item => (Key: GetKey(item.Group, item.Number), Price: price)))
             .ToDictionary(entry => entry.Key, entry => entry.Price);
@@ -145,6 +155,8 @@ internal class ItemPriceDefinitions : InitializerBase
                || item.Group == 13
                || item.Group == 15;
     }
+
+    private static SpecialPrice GetGeneralPrice(string name) => GeneralPrices.First(price => price.Name == name);
 
     private SpecialPrice? GetPrice(ItemDefinition item, Dictionary<int, SpecialPrice> specialPrices)
     {
@@ -184,11 +196,11 @@ internal class ItemPriceDefinitions : InitializerBase
         };
     }
 
-    private static SpecialPrice GetGeneralPrice(string name) => GeneralPrices.First(price => price.Name == name);
-
     private ItemPriceDefinition GetOrCreateDefinition(SpecialPrice price)
     {
-        if (this.GameConfiguration.ItemPriceDefinitions.FirstOrDefault(definition => definition.Name.ValueInNeutralLanguage == price.Name) is { } existingDefinition)
+        var name = ItemPriceDefinitionNames.ResourceManager.GetLocalizedString(price.Name);
+        if (this.GameConfiguration.ItemPriceDefinitions.FirstOrDefault(definition =>
+                definition.Name.SourceKey == name.SourceKey || definition.Name.ValueInNeutralLanguage == name.ValueInNeutralLanguage) is { } existingDefinition)
         {
             return existingDefinition;
         }
@@ -196,7 +208,7 @@ internal class ItemPriceDefinitions : InitializerBase
         var number = (short)(SpecialPrices.Concat(GeneralPrices).ToList().IndexOf(price) + 1);
         var definition = this.Context.CreateNew<ItemPriceDefinition>();
         definition.SetGuid(number);
-        definition.Name = price.Name;
+        definition.Name = name;
         definition.BasePriceFormula = price.Formula;
         definition.QuantityScaling = price.Scaling;
         definition.Modifiers = price.Modifiers;
@@ -218,7 +230,7 @@ internal class ItemPriceDefinitions : InitializerBase
     /// <summary>
     /// The price of an item, from which an <see cref="ItemPriceDefinition"/> is created.
     /// </summary>
-    /// <param name="Name">The name of the price definition.</param>
+    /// <param name="Name">The resource key of the name of the price definition, see <see cref="ItemPriceDefinitionNames"/>.</param>
     /// <param name="Formula">The base price formula.</param>
     /// <param name="Scaling">The quantity scaling.</param>
     /// <param name="Rounding">The selling price rounding.</param>
