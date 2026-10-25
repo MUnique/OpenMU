@@ -53,6 +53,7 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
     {
         byte aggregatedFlags = 0;
         var result = account.UnlockedCharacterClasses?
+            .Where(c => c.IsActive)
             .Select(c => c.CreationAllowedFlag)
             .Aggregate(aggregatedFlags, (current, flag) => (byte)(current | flag)) ?? 0;
         return (CharacterCreationUnlockFlags)result;

@@ -48,6 +48,13 @@ public class EnterMarketPlaceAction
             return;
         }
 
+        // The map instance may still exist, after the map got deactivated.
+        if (!targetMap.Definition.IsActive)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapIsNotActive)).ConfigureAwait(false);
+            return;
+        }
+
         player.OpenedNpc = null;
         await player.WarpToAsync(targetGate).ConfigureAwait(false);
     }

@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("3c3d6acf-c70b-44c8-b4f1-cf06d8de08b8"), entityTypeCount: 123)
+            : base(skipDetectChanges: false, modelId: new Guid("a8973c11-2353-465a-a680-458679d77069"), entityTypeCount: 123)
         {
         }
 

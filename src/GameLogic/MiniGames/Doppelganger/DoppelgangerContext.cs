@@ -712,6 +712,12 @@ public sealed class DoppelgangerContext : MiniGameContext
             return null;
         }
 
+        if (!monsterDefinition.IsActive)
+        {
+            this.Logger.LogDebug("{context}: Skipping the spawn of {monster}, because it's not active.", this, monsterDefinition);
+            return null;
+        }
+
         return new MonsterSpawnArea
         {
             GameMap = this.Map.Definition,

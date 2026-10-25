@@ -76,6 +76,32 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<MiniGameRankingSummary>> GetMiniGameLeaderboardAsync(IReadOnlyCollection<Guid> miniGameIds, DateTime? since, int count, CancellationToken cancellationToken = default)
+    {
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        var characters = allAccounts
+            .Where(a => !a.IsTemplate && !a.IsBot)
+            .SelectMany(a => a.Characters)
+            .ToDictionary(c => c.GetId());
+        var entries = await this.Provider.GetRepository<MiniGameRankingEntry>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return entries
+            .Where(e => e.MiniGame is { } miniGame && miniGameIds.Contains(miniGame.GetId()) && (since is null || e.Timestamp >= since))
+            .Where(e => e.Character is not null)
+            .GroupBy(e => e.Character!.GetId())
+            .Where(g => characters.ContainsKey(g.Key))
+            .Select(g =>
+            {
+                var character = characters[g.Key];
+                return new MiniGameRankingSummary(g.Key, character.Name, character.CharacterClass?.GetId(), g.Sum(e => (long)e.Score), g.Max(e => e.Score), g.Count());
+            })
+            .OrderByDescending(s => s.TotalScore)
+            .ThenByDescending(s => s.BestScore)
+            .ThenBy(s => s.CharacterName)
+            .Take(count)
+            .ToList();
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default)
     {
         var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
