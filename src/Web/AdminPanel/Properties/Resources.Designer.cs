@@ -1846,6 +1846,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create guild channels automatically.
+        /// </summary>
+        public static string DiscordAutoCreateHostedChannels {
+            get {
+                return ResourceManager.GetString("DiscordAutoCreateHostedChannels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to As soon as a guild master is linked, the bot creates the channel of the guild in the GUILDS category of your Discord server and binds the guild chat to it. Only linked members of the guild can see it, and the guild master can moderate its messages. Guilds whose chat is already bound keep their channel. New guilds and new guild masters are picked up within about ten minutes..
+        /// </summary>
+        public static string DiscordAutoCreateHostedChannelsHint {
+            get {
+                return ResourceManager.GetString("DiscordAutoCreateHostedChannelsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Where guilds can bind their chat.
         /// </summary>
         public static string DiscordBindingMode {

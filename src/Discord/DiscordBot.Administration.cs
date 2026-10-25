@@ -40,6 +40,9 @@ public sealed partial class DiscordBot
         GuildPermission.AddReactions,
         GuildPermission.ManageChannels,
         GuildPermission.ManageRoles,
+
+        // A bot can only give the permissions which it has, e.g. to the guild masters in their channels.
+        GuildPermission.ManageMessages,
     ];
 
     private DiscordBotProblem _problem;
