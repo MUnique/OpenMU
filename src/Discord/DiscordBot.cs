@@ -336,6 +336,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
         this.ServerState = ServerState.Started;
         this._ready.TrySetResult();
         await this.ProcessPendingRoleRevocationsAsync(true).ConfigureAwait(false);
+        await this.CreateMissingHostedChannelsAsync().ConfigureAwait(false);
 
         if (this._statusLoopCancellation is null)
         {
@@ -454,7 +455,8 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
 
             if (answer.RoleChanges.Count > 0)
             {
-                // The user might get or lose access to channels of guilds.
+                // A linked guild master gets the channel of the guild, and the user might get or lose access to channels of guilds.
+                await this.CreateMissingHostedChannelsAsync().ConfigureAwait(false);
                 await this.SyncHostedChannelsAsync().ConfigureAwait(false);
             }
 

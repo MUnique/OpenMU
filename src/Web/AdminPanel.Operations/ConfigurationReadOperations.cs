@@ -12,12 +12,13 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>Provides bounded, discoverable read access to the game configuration.</summary>
-public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> configurations, IAdminReadModel readModel)
+public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> configurations, IAdminReadModel readModel, IPersistenceContextProvider persistence)
 {
     private const int MaximumReadAttempts = 3;
 
@@ -43,7 +44,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         var modelType = ResolveType(type);
         return AdminReadResult.From(new
         {
-            summary = "Read-only schema. Restart requirements depend on the running server and are not inferred.",
+            summary = "Schema with patchable fields. Aggregate children use config_create/delete; reference collections accept arrays of $ref objects. Restart affected servers when settings are not reloaded.",
             name = modelType.Name,
             caption = modelType.GetTypeCaption(),
             description = modelType.GetTypeDescription(),
@@ -57,6 +58,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
             fields = Properties(modelType).Select(p => new
             {
                 name = p.Name,
+                writable = ConfigurationPatch.Fields(modelType).Any(w => w.Name == p.Name),
                 type = p.PropertyType.Name,
                 caption = modelType.GetPropertyCaption(p.Name),
                 description = modelType.GetPropertyDescription(p.Name),
@@ -102,7 +104,9 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         }
 
         var predicate = CreateFilter(modelType, field, op, value);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         return ReadConfiguration(cancellationToken, () =>
         {
             var matches = ReadCollection(GameConfigurationHelper.Enumerables[modelType](config)).Where(predicate).OrderBy(o => o.GetId()).ToList();
@@ -126,7 +130,9 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         }
 
         var modelType = ResolveType(type);
-        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var read = new ConfigurationReadScope();
+        await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var config = read.Configuration;
         return ReadConfiguration(cancellationToken, () =>
         {
             var item = ReadCollection(GameConfigurationHelper.Enumerables[modelType](config)).FirstOrDefault(o => o.GetId() == id);
@@ -193,7 +199,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
             return new Dictionary<string, object> { ["type"] = "string", ["enum"] = Enum.GetNames(type) };
         }
 
-        if (type == typeof(string) || type == typeof(Guid) || type == typeof(DateTime) || type == typeof(TimeSpan))
+        if (type == typeof(string) || type == typeof(Guid) || type == typeof(DateTime) || type == typeof(TimeSpan) || type == typeof(LocalizedString))
         {
             return new { type = "string" };
         }
@@ -217,7 +223,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         ?? throw new ArgumentException("Unknown or excluded configuration type. Use config_types to list supported types.", nameof(type));
 
     private static IEnumerable<PropertyInfo> Properties(Type type) => type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-        .Where(p => p.CanRead && p.GetIndexParameters().Length == 0 && p.PropertyType != typeof(byte[])
+        .Where(p => p.CanRead && !p.IsDefined(typeof(SecretAttribute)) && p.GetIndexParameters().Length == 0 && p.PropertyType != typeof(byte[])
             && p.PropertyType != typeof(PlugInConfiguration)
             && !(p.PropertyType.IsGenericType && p.PropertyType.GetGenericArguments().Contains(typeof(PlugInConfiguration))))
         .OrderBy(p => p.Name);
@@ -225,7 +231,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
     private static bool IsScalar(Type type)
     {
         type = Nullable.GetUnderlyingType(type) ?? type;
-        return type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(Guid) || type == typeof(decimal) || type == typeof(DateTime) || type == typeof(TimeSpan);
+        return type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(Guid) || type == typeof(decimal) || type == typeof(DateTime) || type == typeof(TimeSpan) || type == typeof(LocalizedString);
     }
 
     private static JsonObject Project(object item, Type type, int depth, string[]? selected, HashSet<object> visited, int[] budget)
@@ -246,7 +252,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
             else if (IsScalar(property.PropertyType))
             {
                 result[property.Name] = value is string text ? JsonValue.Create(text.Length > 4096 ? text[..4096] : text)
-                    : value.GetType().IsEnum ? JsonValue.Create(value.ToString()) : JsonSerializer.SerializeToNode(value);
+                    : value.GetType().IsEnum ? JsonValue.Create(value.ToString()) : JsonSerializer.SerializeToNode(value, ConfigurationPatch.Options);
             }
             else if (value is IEnumerable collection)
             {
@@ -280,7 +286,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
 
     private static string Caption(object item, Type type)
     {
-        var name = type.GetProperty("Name")?.GetValue(item)?.ToString() ?? type.GetProperty("Designation")?.GetValue(item)?.ToString() ?? type.GetTypeCaption();
+        var name = Properties(type).FirstOrDefault(p => p.Name == "Name")?.GetValue(item)?.ToString() ?? Properties(type).FirstOrDefault(p => p.Name == "Designation")?.GetValue(item)?.ToString() ?? type.GetTypeCaption();
         return name.Length > 256 ? name[..256] : name;
     }
 
@@ -299,7 +305,8 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         }
 
         var fieldType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-        if (op == "contains" && fieldType != typeof(string))
+        var isText = fieldType == typeof(string) || fieldType == typeof(LocalizedString);
+        if (op == "contains" && !isText)
         {
             throw new ArgumentException("Contains is only supported for string fields.", nameof(op));
         }
@@ -307,7 +314,7 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         object? expected;
         try
         {
-            expected = value is null ? null : fieldType.IsEnum ? Enum.Parse(fieldType, value) : fieldType == typeof(Guid) ? Guid.Parse(value)
+            expected = value is null ? null : isText ? value : fieldType.IsEnum ? Enum.Parse(fieldType, value) : fieldType == typeof(Guid) ? Guid.Parse(value)
                 : fieldType == typeof(TimeSpan) ? TimeSpan.Parse(value, CultureInfo.InvariantCulture) : Convert.ChangeType(value, fieldType, CultureInfo.InvariantCulture);
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException or OverflowException or InvalidCastException)
@@ -317,7 +324,8 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
 
         return item =>
         {
-            var actual = property.GetValue(item);
+            var raw = property.GetValue(item);
+            var actual = raw is LocalizedString localized ? localized.Value : raw;
             if (op == "contains")
             {
                 return actual is string text && value is not null && text.Contains(value, StringComparison.OrdinalIgnoreCase);

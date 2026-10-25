@@ -47,8 +47,8 @@ public static class DiscordBotToken
     public static string CreateInviteUrl(ulong applicationId)
     {
         // View Channels, Send Messages, Embed Links, Read Message History, Add Reactions,
-        // Manage Channels, Manage Roles and Manage Events.
-        const ulong permissions = (1UL << 10) | (1UL << 11) | (1UL << 14) | (1UL << 16) | (1UL << 6) | (1UL << 4) | (1UL << 28) | (1UL << 33);
+        // Manage Channels, Manage Roles, Manage Events and Manage Messages, which the bot gives the guild masters in their channels.
+        const ulong permissions = (1UL << 10) | (1UL << 11) | (1UL << 14) | (1UL << 16) | (1UL << 6) | (1UL << 4) | (1UL << 28) | (1UL << 33) | (1UL << 13);
         return $"https://discord.com/oauth2/authorize?client_id={applicationId}&scope=bot+applications.commands&permissions={permissions}";
     }
 }

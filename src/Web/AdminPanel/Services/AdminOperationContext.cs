@@ -65,6 +65,9 @@ public sealed class AdminOperationContext(IHttpContextAccessor http, Authenticat
             id,
             principal.Identity.Name ?? id,
             isMcp ? "mcp" : isApi ? "api" : "panel",
-            principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray());
+            principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray())
+        {
+            AllowedToolGroups = principal.FindFirst(AdminToolGroups.ClaimType)?.Value ?? string.Empty,
+        };
     }
 }

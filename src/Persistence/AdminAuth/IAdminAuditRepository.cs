@@ -21,6 +21,12 @@ public interface IAdminAuditRepository
     /// <param name="cancellationToken">The cancellation token.</param>
     ValueTask CompleteAsync(Guid id, string outcome, string resultJson, CancellationToken cancellationToken = default);
 
+    /// <summary>Reads one durable audit record by identifier.</summary>
+    /// <param name="id">The audit identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The record, or null when absent.</returns>
+    ValueTask<AdminAuditEntry?> GetAsync(Guid id, CancellationToken cancellationToken = default);
+
     /// <summary>Reads a bounded page ordered newest first.</summary>
     /// <param name="offset">The number of records to skip.</param>
     /// <param name="limit">The maximum number of records.</param>

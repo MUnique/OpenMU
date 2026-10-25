@@ -72,6 +72,7 @@ public class AdminPanelContext : DbContext
             entity.HasIndex(k => k.KeyHash).IsUnique();
             entity.Property(k => k.KeyPrefix).IsRequired().HasMaxLength(16);
             entity.Property(k => k.Roles).IsRequired().HasMaxLength(200);
+            entity.Property(k => k.AllowedToolGroups).IsRequired().HasMaxLength(1000).HasDefaultValue(string.Empty);
         });
 
         modelBuilder.Entity<AdminAuditEntry>(entity =>

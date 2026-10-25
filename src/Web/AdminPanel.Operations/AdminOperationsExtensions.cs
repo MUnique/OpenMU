@@ -18,6 +18,12 @@ public static class AdminOperationsExtensions
     /// <returns>The same collection for further registration.</returns>
     public static IServiceCollection AddAdminReadOperations(this IServiceCollection services)
     {
+        services.TryAddSingleton(TimeProvider.System);
+        services.TryAddSingleton<AdminChangeConfirmation>();
+        services.AddScoped<ConfigurationWriteOperations>();
+        services.AddScoped<PluginWriteOperations>();
+        services.AddScoped<ConfigurationTaskOperations>();
+        services.AddScoped<CharacterWriteOperations>();
         services.AddScoped<AccountReadOperations>();
         services.AddScoped<ServerReadOperations>();
         services.AddScoped<GuildReadOperations>();

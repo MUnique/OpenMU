@@ -1,11 +1,12 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.AttributeSystem
+@using MUnique.OpenMU.PlugIns
 @inherits NotifyableInputBase<string>
 
     <div class="mb-3">
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-        <input @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
+        <input type="@(this.IsSecret ? "password" : "text")" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
         @if (this.LocalizedAttributeText is { Length: > 0 } translated && translated != this.CurrentValue)
         {
             <div class="form-text">@translated</div>
@@ -21,6 +22,8 @@
     /// </summary>
     [Parameter]
     public string? Label { get; set; }
+
+    private bool IsSecret => this.FieldIdentifier.Model.GetType().GetProperty(this.FieldIdentifier.FieldName)?.IsDefined(typeof(SecretAttribute), true) is true;
 
     private string? LocalizedAttributeText => this.FieldIdentifier.Model is AttributeDefinition attribute
         ? this.FieldIdentifier.FieldName switch

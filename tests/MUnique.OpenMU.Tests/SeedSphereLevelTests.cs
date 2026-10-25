@@ -164,7 +164,7 @@ public class SeedSphereLevelTests
         await this.AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation")).ConfigureAwait(false);
     }
 
-    private static async ValueTask<Item> CraftAsync(SimpleItemCraftingHandler handler, Player player, Func<IList<CraftingRequiredItemLink>, ValueTask<List<Item>>> createResult)
+    private static async ValueTask<Item> CraftWithoutSuccessChanceAsync(SimpleItemCraftingHandler handler, Player player, Func<IList<CraftingRequiredItemLink>, ValueTask<List<Item>>> createResult)
     {
         Assert.That(handler.TryGetRequiredItems(player, out var requiredItems, out _), Is.Null, handler.GetType().Name);
         return (await createResult(requiredItems).ConfigureAwait(false)).Single();
@@ -175,7 +175,7 @@ public class SeedSphereLevelTests
     /// </summary>
     private sealed class TestSeedSphereCrafting(SimpleCraftingSettings settings) : SeedSphereCrafting(settings)
     {
-        public ValueTask<Item> CraftAsync(Player player) => SeedSphereLevelTests.CraftAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
+        public ValueTask<Item> CraftAsync(Player player) => CraftWithoutSuccessChanceAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
     }
 
     /// <summary>
@@ -183,6 +183,6 @@ public class SeedSphereLevelTests
     /// </summary>
     private sealed class TestMountSeedSphereCrafting(SimpleCraftingSettings settings) : MountSeedSphereCrafting(settings)
     {
-        public ValueTask<Item> CraftAsync(Player player) => SeedSphereLevelTests.CraftAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
+        public ValueTask<Item> CraftAsync(Player player) => CraftWithoutSuccessChanceAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
     }
 }
