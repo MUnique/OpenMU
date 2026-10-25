@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 
@@ -133,6 +134,37 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that an excellent drop never selects a socket item, because socket items can't be excellent.
+    /// </summary>
+    [Test]
+    public async ValueTask TestExcellentDropSkipsSocketItemsAsync()
+    {
+        var socketItem = this.CreateItemDefinition(0, 28, 0);
+        socketItem.MaximumSockets = 3;
+        var normalItem = this.CreateItemDefinition(0, 19, 0);
+
+        var item = await this.GenerateExcellentMapDropAsync(socketItem, normalItem).ConfigureAwait(false);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.Definition, Is.EqualTo(normalItem));
+        Assert.That(item.SocketCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that an excellent drop with only socket items drops nothing instead of an excellent socket item.
+    /// </summary>
+    [Test]
+    public async ValueTask TestExcellentDropWithOnlySocketItemsAsync()
+    {
+        var socketItem = this.CreateItemDefinition(0, 28, 0);
+        socketItem.MaximumSockets = 3;
+
+        var item = await this.GenerateExcellentMapDropAsync(socketItem).ConfigureAwait(false);
+
+        Assert.That(item, Is.Null);
+    }
+
+    /// <summary>
     /// Tests that ExcellentItemDropLevelDelta property exists and has correct default.
     /// </summary>
     [Test]
@@ -148,6 +180,22 @@ public class DropGeneratorTest
 
         config.ExcellentItemDropLevelDelta = 50;
         Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(50));
+    }
+
+    private async ValueTask<Item?> GenerateExcellentMapDropAsync(params ItemDefinition[] possibleItems)
+    {
+        var dropGroup = new Mock<DropItemGroup>();
+        dropGroup.SetupAllProperties();
+        dropGroup.Object.Chance = 1.0;
+        dropGroup.Object.ItemType = SpecialItemType.Excellent;
+        dropGroup.Setup(g => g.PossibleItems).Returns(possibleItems.ToList());
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup.Object);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 50), 1, player).ConfigureAwait(false);
+        return items.FirstOrDefault();
     }
 
     private MonsterDefinition GetMonster(int numberOfDrops, byte level)
