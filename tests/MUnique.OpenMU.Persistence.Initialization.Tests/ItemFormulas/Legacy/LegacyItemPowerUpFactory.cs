@@ -11,7 +11,6 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// A frozen copy of <c>src/GameLogic/ItemPowerUpFactory.cs</c> at commit 90a571100,
