@@ -330,11 +330,14 @@ an updated one end up with the same definitions.
 
 Configuration updates are applied by the server owner on the update page of the
 admin panel, and take effect after a restart. Until then, an existing database
-prices the special items like equipment. The draft proposed a warning for that
-case, but the calculator has no access to the configuration, and the old
-conditions would bring the item numbers back into the game logic. So the
-implementation relies on the update page, which shows pending updates with a
-badge. The release notes should mention the update.
+would price the special items like equipment. To prevent that, a game server
+doesn't start while its configuration has no item price definitions at all: it
+logs an error which names the reason and stays stopped, so it doesn't accept
+players. The admin panel keeps running, so the update can be applied there,
+and the game server can be started after the configuration was reloaded. A
+fresh database always has the definitions. The old conditions of the calculator
+aren't used as a fallback, because they would bring the item numbers back into
+the game logic.
 
 ## 7. Implementation plan
 
@@ -527,9 +530,19 @@ updated. In short:
   "Accessories", "Dark Raven", "Dark Horse", "One-handed weapons and shields",
   "One-handed weapons with a skill without value" and "Equipment with a skill
   without value".
+* **Missing update:** a game server doesn't start without item price
+  definitions (§6).
+* **Formula results:** a result which isn't a finite number in the range of a
+  `long`, e.g. of a division by zero, throws like a syntax error, instead of
+  becoming an arbitrary price.
 * **Initialization:** the decisions which used item numbers and groups moved
   to `Persistence/Initialization/Items/ItemPriceDefinitions.cs`, which follows
   the same order of checks as the old calculator. It's used by the
   initializers of all versions and by the update plugin. It reuses existing
   definitions by name and skips items which already have one, so applying it
-  twice doesn't add anything twice.
+  twice doesn't add anything twice. It creates all definitions, also the ones
+  which no item of a version uses (e.g. Remedy of Love), so they are ready for
+  items which a server owner adds.
+* **Captions:** the names of the definitions are resources
+  (`ItemPriceDefinitionNames`) with Chinese translations, like the other
+  configuration names.
