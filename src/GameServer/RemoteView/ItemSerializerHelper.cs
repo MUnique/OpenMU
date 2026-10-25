@@ -35,6 +35,12 @@ public static class ItemSerializerHelper
     internal const byte MaximumSocketOptions = 50;
 
     /// <summary>
+    /// The maximum sphere level index which the client supports, which is one less than the highest socket option level.
+    /// Above that, the encoded socket byte would point to an undefined option or overflow.
+    /// </summary>
+    internal const int MaximumSphereLevelIndex = 4;
+
+    /// <summary>
     /// The Black Fenrir flag.
     /// </summary>
     private const byte BlackFenrirFlag = 0x01;
@@ -138,7 +144,8 @@ public static class ItemSerializerHelper
                 return EmptySocket;
             }
 
-            var sphereLevel = optionLink.Level - 1;
+            // A level outside of the supported range would wrap around the byte and crash the client.
+            var sphereLevel = Math.Clamp(optionLink.Level - 1, 0, MaximumSphereLevelIndex);
             var elementType = optionLink.ItemOption!.SubOptionType;
             var elementOption = optionLink.ItemOption.Number;
             var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
