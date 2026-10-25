@@ -146,6 +146,15 @@ internal sealed class PlayerMapTransitions
     {
         var player = this._player;
         var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
+
+        // A common guard for all warps, because an instance of the map may still exist after the map got deactivated.
+        if (!isRespawnOnSameMap && gate.Map is { IsActive: false } inactiveMap)
+        {
+            player.Logger.LogWarning("Player {player} can't be warped to the inactive map {map}.", player, inactiveMap);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapIsNotActive)).ConfigureAwait(false);
+            return;
+        }
+
         if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;
@@ -315,7 +324,12 @@ internal sealed class PlayerMapTransitions
             }
         }
 
-        var spawnTargetMapDefinition = currentMapDefinition.SafezoneMap ?? currentMapDefinition;
+        // Usually the safezone map or the current map, but never an inactive map, as long as there is an active one.
+        var spawnTargetMapDefinition = player.GameContext.Configuration.GetActiveSpawnMap(
+                                           currentMapDefinition.SafezoneMap,
+                                           currentMapDefinition,
+                                           player.SelectedCharacter?.CharacterClass?.HomeMap)
+                                       ?? currentMapDefinition;
         var targetMap = await player.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false).ConfigureAwait(false);
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()
@@ -379,7 +393,7 @@ internal sealed class PlayerMapTransitions
     {
         var player = this._player;
         var unavailableMap = player.SelectedCharacter!.CurrentMap!;
-        if (player.SelectedCharacter.CharacterClass?.HomeMap is not { } homeMap
+        if (player.SelectedCharacter.CharacterClass?.HomeMap is not { IsActive: true } homeMap
             || homeMap == unavailableMap
             || homeMap.GetSafezoneGate() is not { } homeGate)
         {

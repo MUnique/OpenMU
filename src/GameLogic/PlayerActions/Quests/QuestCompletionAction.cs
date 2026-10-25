@@ -68,6 +68,12 @@ public class QuestCompletionAction
             return;
         }
 
+        if (activeQuest.EvolvesIntoInactiveClass(player))
+        {
+            player.Logger.LogDebug("Failed, the quest evolves into the inactive class {0}.", player.SelectedCharacter?.CharacterClass?.NextGenerationClass);
+            return;
+        }
+
         questState!.LastFinishedQuest = activeQuest;
         foreach (var requiredItem in activeQuest.RequiredItems)
         {

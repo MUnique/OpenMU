@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition),
                 baseEntityType,
-                propertyCount: 22,
+                propertyCount: 24,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -111,6 +111,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetField("<GameLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: (byte)0);
             gameLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var introducedIn = runtimeEntityType.AddProperty(
+                "IntroducedIn",
+                typeof(MUnique.OpenMU.DataModel.Configuration.GameVersion),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetProperty("IntroducedIn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetField("<IntroducedIn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            introducedIn.SetSentinelFromProviderValue(0);
+            introducedIn.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var isActive = runtimeEntityType.AddProperty(
+                "IsActive",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetProperty("IsActive", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetField("<IsActive>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            isActive.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var mapCreationPolicy = runtimeEntityType.AddProperty(
                 "MapCreationPolicy",

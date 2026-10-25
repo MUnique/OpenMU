@@ -22,6 +22,7 @@ public static class AdminOperationsExtensions
         services.TryAddSingleton<AdminChangeConfirmation>();
         services.AddScoped<ConfigurationWriteOperations>();
         services.AddScoped<PluginWriteOperations>();
+        services.AddScoped<ContentActivationOperations>();
         services.AddScoped<ConfigurationTaskOperations>();
         services.AddScoped<CharacterWriteOperations>();
         services.AddScoped<AccountReadOperations>();
@@ -29,6 +30,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<GuildReadOperations>();
         services.AddScoped<ConfigurationReadOperations>();
         services.AddScoped<PluginReadOperations>();
+        services.AddScoped<MiniGameReadOperations>();
         services.TryAddScoped<IAdminOperationContext, UnconfiguredAdminOperationContext>();
         services.TryAddSingleton<IAdminAuditRepository, UnconfiguredAdminAuditRepository>();
         services.TryAddSingleton<AdminWriteSettings>();

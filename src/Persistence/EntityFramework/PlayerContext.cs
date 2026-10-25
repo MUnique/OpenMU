@@ -214,6 +214,23 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<MiniGameRankingSummary>> GetMiniGameLeaderboardAsync(IReadOnlyCollection<Guid> miniGameIds, DateTime? since, int count, CancellationToken cancellationToken = default)
+    {
+        if (miniGameIds.Count == 0 || count <= 0)
+        {
+            return [];
+        }
+
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await CreateMiniGameLeaderboardQuery(this.Context, miniGameIds, since, count)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
@@ -393,6 +410,40 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         return context.Set<GuildChatBinding>()
             .Where(binding => (binding.GuildId == guildId && binding.Scope == DataModel.Entities.GuildChatScope.Guild)
                               || (binding.GuildId == allianceMasterGuildId && binding.Scope == DataModel.Entities.GuildChatScope.Alliance));
+    }
+
+    /// <summary>
+    /// Creates the query of <see cref="GetMiniGameLeaderboardAsync"/>.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="miniGameIds">The identifiers of the mini game definitions.</param>
+    /// <param name="since">The optional point in time (UTC) since which finished games are counted.</param>
+    /// <param name="count">The maximum number of characters.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<MiniGameRankingSummary> CreateMiniGameLeaderboardQuery(DbContext context, IReadOnlyCollection<Guid> miniGameIds, DateTime? since, int count)
+    {
+        var characters = context.Set<Account>()
+            .Where(account => !account.IsTemplate && !account.IsBot)
+            .SelectMany(account => account.RawCharacters);
+        var scores = context.Set<MiniGameRankingEntry>()
+            .Where(entry => entry.MiniGameId != null && miniGameIds.Contains(entry.MiniGameId.Value) && (since == null || entry.Timestamp >= since))
+            .GroupBy(entry => entry.CharacterId)
+            .Select(group => new
+            {
+                CharacterId = group.Key,
+                TotalScore = group.Sum(entry => (long)entry.Score),
+                BestScore = group.Max(entry => entry.Score),
+                GameCount = group.Count(),
+            });
+
+        // EF can't order by the members of the projected record, so the ordering happens before the projection.
+        return (from score in scores
+                join character in characters on score.CharacterId equals (Guid?)character.Id
+                orderby score.TotalScore descending, score.BestScore descending, character.Name
+                select new { score, character.Id, character.Name, character.CharacterClassId })
+            .Take(count)
+            .Select(row => new MiniGameRankingSummary(row.Id, row.Name, row.CharacterClassId, row.score.TotalScore, row.score.BestScore, row.score.GameCount))
+            .AsNoTracking();
     }
 
     /// <inheritdoc />
