@@ -123,7 +123,7 @@ public readonly ref struct PlayerShopItemExtendedRef
     }
 
     /// <summary>
-    /// Gets or sets the money price.
+    /// Gets or sets the price in zen, or in account coins when PriceItemType is one of the account coin values (see there). It's 0 when the price is defined in items.
     /// </summary>
     public uint MoneyPrice
     {
@@ -132,7 +132,7 @@ public readonly ref struct PlayerShopItemExtendedRef
     }
 
     /// <summary>
-    /// Gets or sets contains the item group in the highest 4 bits, and the item number in the remaining ones.
+    /// Gets or sets when RequiredItemAmount is greater than 0, it contains the item group in the highest 4 bits, and the item number in the remaining ones, of the item (e.g. a jewel) which is required to buy the item. When RequiredItemAmount is 0, the following reserved values define an account coin as currency, with the amount in MoneyPrice: 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points. Any other value means that MoneyPrice is the price in zen.
     /// </summary>
     public ushort PriceItemType
     {
@@ -141,7 +141,7 @@ public readonly ref struct PlayerShopItemExtendedRef
     }
 
     /// <summary>
-    /// Gets or sets the required item amount.
+    /// Gets or sets the number of pieces of the item which is defined by PriceItemType, which is required to buy the item. 0, if the price is not defined in items.
     /// </summary>
     public ushort RequiredItemAmount
     {
@@ -11489,6 +11489,131 @@ public readonly ref struct PlayerShopItemListExtendedRef
 
 
 /// <summary>
+/// Is sent by the server when: After entering the game world, and before the player shop of another player is shown, when the server allows prices in player shops which are not paid in zen.
+/// Causes reaction on client side: The client offers the allowed price types, in addition to zen, when the player sets an item price in his player shop. Without this message, only zen prices are possible.
+/// </summary>
+public readonly ref struct PlayerShopPriceTypesExtendedRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypesExtendedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopPriceTypesExtendedRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypesExtendedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private PlayerShopPriceTypesExtendedRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x3F;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0A;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="PlayerShopPriceTypeRef"/> of the specified index.
+    /// </summary>
+        public PlayerShopPriceTypeRef this[int index] => new (this._data[(5 + index * PlayerShopPriceTypeRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopPriceTypesExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator PlayerShopPriceTypesExtendedRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="PlayerShopPriceTypesExtended"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(PlayerShopPriceTypesExtendedRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="PlayerShopPriceTypeRef"/>.
+    /// </summary>
+    /// <param name="priceTypesCount">The count of <see cref="PlayerShopPriceTypeRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int priceTypesCount) => priceTypesCount * PlayerShopPriceTypeRef.Length + 5;
+
+
+/// <summary>
+/// A price type which is allowed for prices in player shops, in addition to zen..
+/// </summary>
+public readonly ref struct PlayerShopPriceTypeRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopPriceTypeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopPriceTypeRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the value of PriceItemType of a price of this type, like in PlayerShopItemExtended: the item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, or 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P), 0xFFF2 = Goblin Points.
+    /// </summary>
+    public ushort PriceItemType
+    {
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: After the player gets into scope of a player with an opened shop.
 /// Causes reaction on client side: The player shop title is shown at the specified players.
 /// </summary>
@@ -19250,6 +19375,139 @@ public readonly ref struct ServerMessageRef
 
 
 /// <summary>
+/// Is sent by the server when: A game master or the server sends a notice which should scroll across the top of the screen.
+/// Causes reaction on client side: The client scrolls the message through the band at the top of the screen, as often as the loop count says.
+/// </summary>
+public readonly ref struct SlideNoticeRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SlideNoticeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SlideNoticeRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SlideNoticeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private SlideNoticeRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            this.Type = 14;
+            this.LoopCount = 1;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x0D;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the band and queueing of the message. 10 to 12 use the help band, 13 to 15 the notice band. Within a band, the first value drops the message when it could not be shown within a minute, the second one queues it, and the third one puts it in front of the queue, ignoring the loop delay.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how often the message is shown. The client ignores messages with more than 30 loops.
+    /// </summary>
+    public byte LoopCount
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the delay between the loops, in seconds.
+    /// </summary>
+    public ushort LoopDelay
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the color of the text, as 0xAABBGGRR.
+    /// </summary>
+    public uint Color
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the scroll speed, multiplied by 10. 0 means the default speed.
+    /// </summary>
+    public byte Speed
+    {
+        get => this._data[12];
+        set => this._data[12] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the message.
+    /// </summary>
+    public string Message
+    {
+        get => this._data.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
+        set => this._data.Slice(13).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="SlideNotice"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator SlideNoticeRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="SlideNotice"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(SlideNoticeRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 13;
+}
+
+
+/// <summary>
 /// Is sent by the server when: A player requested to join a guild. This message is sent then to the guild master.
 /// Causes reaction on client side: The guild master gets a message box with the request popping up.
 /// </summary>
@@ -24377,6 +24635,981 @@ public readonly ref struct SkillStageUpdateRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(SkillStageUpdateRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The state of the crywolf event changed, or the player entered the crywolf map. It should only be sent to players on the crywolf map, because the client loads the terrain of the occupation state for its current map.
+/// Causes reaction on client side: The client shows the event window in the states Ready, Start and End, plays the intro in the state Notify2, shows the result in the state End, and loads the terrain and light of the occupation state.
+/// </summary>
+public readonly ref struct CrywolfInfoRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfInfoRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfInfoRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the occupation state. It must be Peace or Occupied in the state End, otherwise the client shows no result.
+    /// </summary>
+    public CrywolfInfo.OccupationState Occupation
+    {
+        get => (CrywolfInfo.OccupationState)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the event.
+    /// </summary>
+    public CrywolfInfo.CrywolfState State
+    {
+        get => (CrywolfInfo.CrywolfState)this._data[5];
+        set => this._data[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfInfoRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfInfo"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfInfoRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Every two seconds while the altars can be contracted and during the battle.
+/// Causes reaction on client side: The client shows the shield of the statue and the states of the altars.
+/// </summary>
+public readonly ref struct CrywolfStatueAndAltarInfoRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfStatueAndAltarInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfStatueAndAltarInfoRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfStatueAndAltarInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfStatueAndAltarInfoRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the shield of the statue in percent, from 0 to 100.
+    /// </summary>
+    public uint StatueHealthPercent
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the first altar (205). The high nibble is the altar state (1 = contracted), the low nibble the number of remaining contracts.
+    /// </summary>
+    public byte Altar1State
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the second altar (206), like Altar1State.
+    /// </summary>
+    public byte Altar2State
+    {
+        get => this._data[9];
+        set => this._data[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the third altar (207), like Altar1State.
+    /// </summary>
+    public byte Altar3State
+    {
+        get => this._data[10];
+        set => this._data[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the fourth altar (208), like Altar1State.
+    /// </summary>
+    public byte Altar4State
+    {
+        get => this._data[11];
+        set => this._data[11] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the fifth altar (209), like Altar1State.
+    /// </summary>
+    public byte Altar5State
+    {
+        get => this._data[12];
+        set => this._data[12] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfStatueAndAltarInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfStatueAndAltarInfoRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfStatueAndAltarInfo"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfStatueAndAltarInfoRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player requested to contract an altar.
+/// Causes reaction on client side: On success, the client shows that the player is a guardian of the altar, and lets the character pray. Otherwise, it shows why the contract failed.
+/// </summary>
+public readonly ref struct CrywolfContractResultRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfContractResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfContractResultRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfContractResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfContractResultRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the new state of the altar, like in the CrywolfStatueAndAltarInfo.
+    /// </summary>
+    public byte AltarState
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the key of the altar. The client uses the key minus 317 as index into its five altar states without checking the range, so it must be 317 plus the index of the altar (0 to 4).
+    /// </summary>
+    public ushort AltarKey
+    {
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfContractResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfContractResultRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfContractResult"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfContractResultRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Every 20 seconds during the battle.
+/// Causes reaction on client side: The client shows the remaining minutes and counts down the seconds by itself. It expects this packet every 20 seconds: when the minute is the same as before, it assumes that 40 or 20 seconds of the minute are left.
+/// </summary>
+public readonly ref struct CrywolfLeftTimeRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfLeftTimeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfLeftTimeRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfLeftTimeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfLeftTimeRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the remaining hours. The client doesn't show them.
+    /// </summary>
+    public byte Hours
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining minutes.
+    /// </summary>
+    public byte Minutes
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfLeftTime"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfLeftTimeRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfLeftTime"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfLeftTimeRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Every five seconds during the battle.
+/// Causes reaction on client side: The client shows the health of Balgass and the number of Dark Elves.
+/// </summary>
+public readonly ref struct CrywolfBossMonsterInfoRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBossMonsterInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfBossMonsterInfoRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBossMonsterInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfBossMonsterInfoRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the health of Balgass in percent, or -1, when Balgass is not alive.
+    /// </summary>
+    public uint BalgassHealthPercent
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of alive Dark Elves. The client shows it as count of 12.
+    /// </summary>
+    public byte DarkElfCount
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfBossMonsterInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfBossMonsterInfoRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfBossMonsterInfo"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfBossMonsterInfoRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The crywolf event ended, after the CrywolfInfo with the state End.
+/// Causes reaction on client side: The client shows the rank and the experience of the player in the result.
+/// </summary>
+public readonly ref struct CrywolfPersonalRankRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfPersonalRankRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfPersonalRankRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfPersonalRankRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfPersonalRankRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the rank of the player.
+    /// </summary>
+    public CrywolfPersonalRank.CrywolfRank Rank
+    {
+        get => (CrywolfPersonalRank.CrywolfRank)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rewarded experience. The field is aligned to 4 bytes, because the client structure is not packed.
+    /// </summary>
+    public uint Experience
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfPersonalRank"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfPersonalRankRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfPersonalRank"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfPersonalRankRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The crywolf event ended, after the CrywolfInfo with the state End.
+/// Causes reaction on client side: The client shows the heroes with the highest scores in the result.
+/// </summary>
+public readonly ref struct CrywolfHeroListRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfHeroListRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfHeroListRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfHeroListRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfHeroListRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x08;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of heroes, at most 5.
+    /// </summary>
+    public byte HeroCount
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="HeroRef"/> of the specified index.
+    /// </summary>
+        public HeroRef this[int index] => new (this._data[(5 + index * HeroRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfHeroList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfHeroListRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfHeroList"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfHeroListRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="HeroRef"/>.
+    /// </summary>
+    /// <param name="heroesCount">The count of <see cref="HeroRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int heroesCount) => heroesCount * HeroRef.Length + 5;
+
+
+/// <summary>
+/// Contains a hero of the crywolf event..
+/// </summary>
+public readonly ref struct HeroRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HeroRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public HeroRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 20;
+
+    /// <summary>
+    /// Gets or sets the place of the hero, from 0 (first) to 4. The client uses it as array index, so it must not be greater than 4.
+    /// </summary>
+    public byte Rank
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the hero.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.ExtractString(1, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(1, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the score of the hero. The field is aligned to 4 bytes, because the client structure is not packed.
+    /// </summary>
+    public uint Score
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of the character class.
+    /// </summary>
+    public byte CharacterClass
+    {
+        get => this._data[16];
+        set => this._data[16] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player opened a crafting dialog and requested the chaos rate benefit of the crywolf event.
+/// Causes reaction on client side: The client shows the additional success rate of the crafting.
+/// </summary>
+public readonly ref struct CrywolfBenefitPlusChaosRateRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBenefitPlusChaosRateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfBenefitPlusChaosRateRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBenefitPlusChaosRateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfBenefitPlusChaosRateRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x09;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the additional success rate in percent.
+    /// </summary>
+    public byte PlusChaosRate
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfBenefitPlusChaosRate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfBenefitPlusChaosRateRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfBenefitPlusChaosRate"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfBenefitPlusChaosRateRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A ballista of the crywolf event attacks an area.
+/// Causes reaction on client side: The client shows an arrow which hits the target point. The direction of the arrow depends on the x coordinate of the ballista.
+/// </summary>
+public readonly ref struct CrywolfRegionMonsterAttackRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfRegionMonsterAttackRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfRegionMonsterAttackRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfRegionMonsterAttackRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfRegionMonsterAttackRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0C;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of the monster. The client ignores it.
+    /// </summary>
+    public ushort MonsterNumber
+    {
+        get => ReadUInt16BigEndian(this._data[4..]);
+        set => WriteUInt16BigEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the x coordinate of the ballista.
+    /// </summary>
+    public byte SourceX
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the y coordinate of the ballista. The client ignores it.
+    /// </summary>
+    public byte SourceY
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the x coordinate of the target point.
+    /// </summary>
+    public byte TargetX
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the y coordinate of the target point.
+    /// </summary>
+    public byte TargetY
+    {
+        get => this._data[9];
+        set => this._data[9] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CrywolfRegionMonsterAttack"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfRegionMonsterAttackRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfRegionMonsterAttack"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CrywolfRegionMonsterAttackRef packet) => packet._data; 
 }
 
 
@@ -29855,7 +31088,7 @@ public readonly ref struct MiniGameScoreTableRef
     }
 
     /// <summary>
-    /// Gets or sets the result count.
+    /// Gets or sets the number of results. The client shares the code 0x93 with the BloodCastleScore (0xFF) and ChaosCastleScore (0xFE) at this index, so a score table must contain less than 200 results; the client holds up to 11.
     /// </summary>
     public byte ResultCount
     {
@@ -30015,7 +31248,7 @@ public readonly ref struct BloodCastleScoreRef
     }
 
     /// <summary>
-    /// Gets or sets the type.
+    /// Gets or sets identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.
     /// </summary>
     public byte Type
     {
@@ -30072,6 +31305,131 @@ public readonly ref struct BloodCastleScoreRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(BloodCastleScoreRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The chaos castle mini game ended and the score of the player is sent to the player.
+/// Causes reaction on client side: The client shows the experience and the killed monsters and players.
+/// </summary>
+public readonly ref struct ChaosCastleScoreRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleScoreRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChaosCastleScoreRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleScoreRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChaosCastleScoreRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            this.Type = 0xFE;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x93;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 29;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets if the player won the chaos castle.
+    /// </summary>
+    public bool Success
+    {
+        get => this._data[3..].GetBoolean();
+        set => this._data[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the player name.
+    /// </summary>
+    public string PlayerName
+    {
+        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the monster kill count.
+    /// </summary>
+    public uint MonsterKillCount
+    {
+        get => ReadUInt32LittleEndian(this._data[17..]);
+        set => WriteUInt32LittleEndian(this._data[17..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the bonus experience.
+    /// </summary>
+    public uint BonusExperience
+    {
+        get => ReadUInt32LittleEndian(this._data[21..]);
+        set => WriteUInt32LittleEndian(this._data[21..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player kill count.
+    /// </summary>
+    public uint PlayerKillCount
+    {
+        get => ReadUInt32LittleEndian(this._data[25..]);
+        set => WriteUInt32LittleEndian(this._data[25..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChaosCastleScore"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChaosCastleScoreRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChaosCastleScore"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChaosCastleScoreRef packet) => packet._data; 
 }
 
 
@@ -30664,6 +32022,388 @@ public readonly ref struct ChatCommandParameterRef
         set => this._data.Slice(54, 48).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the client requested the Discord integration info, and after the player unlinked the account.
+/// Causes reaction on client side: The client configures its Discord features with it: the Rich Presence, a button which opens the invite, the account link dialog and the notice that the chat is mirrored.
+/// </summary>
+public readonly ref struct DiscordIntegrationInfoRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DiscordIntegrationInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DiscordIntegrationInfoRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DiscordIntegrationInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DiscordIntegrationInfoRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 224;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets defines if the account is linked to a Discord user.
+    /// </summary>
+    public bool IsAccountLinked
+    {
+        get => this._data[4..].GetBoolean();
+        set => this._data[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets defines if the chat of the guild of the character is mirrored to a Discord channel.
+    /// </summary>
+    public bool IsGuildChatBridged
+    {
+        get => this._data[5..].GetBoolean();
+        set => this._data[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets defines if the chat of the alliance of the character is mirrored to a Discord channel.
+    /// </summary>
+    public bool IsAllianceChatBridged
+    {
+        get => this._data[6..].GetBoolean();
+        set => this._data[6..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.
+    /// </summary>
+    public bool IsWorldChatBridged
+    {
+        get => this._data[7..].GetBoolean();
+        set => this._data[7..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none.
+    /// </summary>
+    public string RichPresenceApplicationId
+    {
+        get => this._data.ExtractString(8, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(8, 20).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image.
+    /// </summary>
+    public string RichPresenceLargeImageKey
+    {
+        get => this._data.ExtractString(28, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(28, 32).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image.
+    /// </summary>
+    public string RichPresenceSmallImageKey
+    {
+        get => this._data.ExtractString(60, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(60, 32).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the invite link to the Discord server of the game server, e.g. 'https://discord.gg/abc123'. Empty, if the server has none.
+    /// </summary>
+    public string InviteUrl
+    {
+        get => this._data.ExtractString(92, 100, System.Text.Encoding.UTF8);
+        set => this._data.Slice(92, 100).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the Discord user which the account is linked to. Empty, if the account isn't linked.
+    /// </summary>
+    public string LinkedUserName
+    {
+        get => this._data.ExtractString(192, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(192, 32).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DiscordIntegrationInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DiscordIntegrationInfoRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DiscordIntegrationInfo"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DiscordIntegrationInfoRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the client requested a code to link the account to a Discord user.
+/// Causes reaction on client side: The client shows the code, so that the player can enter it in Discord.
+/// </summary>
+public readonly ref struct DiscordLinkCodeRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DiscordLinkCodeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DiscordLinkCodeRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DiscordLinkCodeRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DiscordLinkCodeRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public DiscordLinkCode.DiscordLinkCodeResult Result
+    {
+        get => (DiscordLinkCode.DiscordLinkCodeResult)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the one-time code, e.g. 'ABCD-EFGH'. The player enters it in Discord with '/link'.
+    /// </summary>
+    public string LinkCode
+    {
+        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of minutes the code is valid.
+    /// </summary>
+    public byte ValidMinutes
+    {
+        get => this._data[15];
+        set => this._data[15] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DiscordLinkCode"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DiscordLinkCodeRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DiscordLinkCode"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DiscordLinkCodeRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A message was written outside of the game, e.g. in a Discord channel which is bound to the chat of a guild, an alliance or the world chat. It's only sent to clients which requested the DiscordIntegrationInfo before; other clients get it as normal chat message, with a prefix in front of the sender.
+/// Causes reaction on client side: The client shows the message in the chat of its scope, marked with its source, so that it can't be mistaken for a message of a character.
+/// </summary>
+public readonly ref struct ExternalChatMessageRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalChatMessageRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ExternalChatMessageRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalChatMessageRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ExternalChatMessageRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the source.
+    /// </summary>
+    public ExternalChatMessage.ExternalChatSource Source
+    {
+        get => (ExternalChatMessage.ExternalChatSource)this._data[5];
+        set => this._data[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the scope.
+    /// </summary>
+    public ExternalChatMessage.ExternalChatScope Scope
+    {
+        get => (ExternalChatMessage.ExternalChatScope)this._data[6];
+        set => this._data[6] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the sender, without a prefix. It's not a character name, so it can't be whispered.
+    /// </summary>
+    public string SenderName
+    {
+        get => this._data.ExtractString(7, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(7, 48).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the message.
+    /// </summary>
+    public string Message
+    {
+        get => this._data.ExtractString(55, this._data.Length - 55, System.Text.Encoding.UTF8);
+        set => this._data.Slice(55).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ExternalChatMessage"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ExternalChatMessageRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ExternalChatMessage"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ExternalChatMessageRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 55;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 55;
 }
 
 
@@ -34066,7 +35806,7 @@ public readonly ref struct CastleSiegeGuildEntryRef
 
 
 /// <summary>
-/// Is sent by the server when: The server sends same-side player positions to a Castle Siege mini-map requester.
+/// Is sent by the server when: The server pushes same-side player positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.
 /// Causes reaction on client side: The client updates the mini map with the player positions.
 /// </summary>
 public readonly ref struct CastleSiegeMiniMapPlayerPositionsRef
@@ -34911,7 +36651,7 @@ public readonly ref struct CastleSiegeHuntingZoneEnterResponseRef
 
 
 /// <summary>
-/// Is sent by the server when: The server sends alive gate and Guardian Statue positions to a Castle Siege mini-map requester.
+/// Is sent by the server when: The server pushes alive gate and Guardian Statue positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.
 /// Causes reaction on client side: The client updates the mini map with the siege-NPC positions.
 /// </summary>
 public readonly ref struct CastleSiegeMiniMapNpcPositionsRef

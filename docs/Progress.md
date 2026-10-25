@@ -13,10 +13,10 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *Public chat*               | 0x00              | 100%     | 5          |                                               |
 | *Whisper chat*              | 0x02              | 100%     | 5          |                                               |
 | Client Checksum             | 0x03              | 0%       | 0          | Don't need - no security benefit              |
-| Ping                        | 0x0E              | 0%       | 0          | Don't need - no security benefit              |
+| *Ping*                      | 0x0E              | 100%     | 1          | Used to disconnect players whose connection got lost |
 | *Animation*                   | 0x18              | 100%     | 2          |                                               |
 | *SkillAttack*                | 0x19              | 100%     | 10         |                                               |
-| MagicCancel                 | 0x1B              | 0%       | 2          |                                               |
+| *MagicCancel*               | 0x1B              | 100%     | 2          |                                               |
 | *WarpGate*                    | 0x1C              | 100%     | 5          |                                               |
 | AreaSkill                   | 0x1E              | 100%      | 10         |                                               |
 | *PickupItem*                  | 0x22              | 100%     | 6          |                                               |
@@ -69,22 +69,24 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *SetQuestState*               | 0xA2              | 100%     | 2          |                                               |
 | PetItemCommand              | 0xA7              | 100%     | 5          |                                               |
 | RequestPetItemInfo          | 0xA9              | 100%     | 3          |                                               |
-| RequestDuelStart            | 0xAA              | 0%       | 4          |                                               |
-| RequestDuelEnd              | 0xAB              | 0%       | 2          |                                               |
-| RequestDuelOK               | 0xAC              | 0%       | 2          |                                               |
+| *DuelGroup*                 | 0xAA              | 100%     | 6          |                                               |
+|   - *Duel start request* | 0xAA01            |      |          |                                               |
+|   - *Duel start response* | 0xAA02            |      |          |                                               |
+|   - *Duel stop request* | 0xAA03            |      |          |                                               |
+|   - *Duel channel join request* | 0xAA07            |      |          |                                               |
+|   - *Duel channel quit request* | 0xAA09            |      |          |                                               |
 | RequestEnterChaosCastle     | 0xAF              | 100%     | 4          |                                               |
-| TargetTeleport              | 0xB0              | 0%       | 3          |                                               |
+| *TargetTeleport*            | 0xB0              | 100%     | 3          |                                               |
 | ChangeServerAuth            | 0xB1              | 0%       | 0          |                                               |
-| CastleSiegeGroup            | 0xB1              | 0%       | 10         |                                               |
-| CSRequest_NPC_DB_List       | 0xB3              | 0%       | 3          |                                               |
-| RequestCSRegGuildList       | 0xB4              | 0%       | 2          |                                               |
-| RequestCSAttGuildList       | 0xB5              | 0%       | 2          |                                               |
-| RequestCSWeaponUse          | 0xB7              | 0%       | 1          |                                               |
+| *CastleSiegeGroup*          | 0xB2              | 100%     | 10         |                                               |
+| *CSRequest_NPC_DB_List*     | 0xB3              | 100%     | 3          | Gate and statue list                          |
+| *RequestCSRegGuildList*     | 0xB4              | 100%     | 2          |                                               |
+| *RequestCSAttGuildList*     | 0xB5              | 100%     | 2          |                                               |
+| *RequestCSWeaponUse*        | 0xB7              | 100%     | 1          | The server applies the impact itself; the weapon explosion request (0xB704) is accepted without effect |
 | *LoggedIn*                    | 0xB8              | 100%     | 1          |                                               |
-| RequestGuildMarkCastleOwner | 0xB9              | 0%       | 1          |                                               |
+| *RequestGuildMarkCastleOwner* | 0xB902            | 100%     | 1          | Entering the hunting zone (0xB905) is implemented |
 | *JewelMix*                    | 0xBC              | 100%     | 4          |                                               |
-| CrywolfGroup                | 0xBD              | 0%       | 10         |                                               |
-| GuildAssignStatus           | 0xBE              | 0%       | 1          |                                               |
+| *CrywolfGroup*              | 0xBD              | 100%     | 10         |                                               |
 | FriendListRequest           | 0xC0              | 0%       | 0          | Not needed, friend list is sent automatically |
 | *FriendAdd*                   | 0xC1              | 100%     | 2          |                                               |
 | *WaitFriendAdd*               | 0xC2              | 100%     | 2          |                                               |
@@ -96,14 +98,15 @@ complexity and effort). Complexity 0 means we wont implement it.
 | FriendMemoListRequest       | 0xC9              | 0%       | 0          | Not needed, letter list is sent automatically |
 | *ChatRoomCreate*              | 0xCA              | 100%     | 2          |                                               |
 | *ChatRoomInvitationReq*       | 0xCB              | 100%     | 2          |                                               |
-| KanturuGroup                | 0xD1              | 0%       | 10         |                                               |
-| CashShopGroup               | 0xD2              | 90%      | 10         | Opening, points, the storage list, buying, gifting and using items. The event item list and items which expire are missing. |
+| *KanturuGroup*              | 0xD1              | 100%     | 10         |                                               |
+| CashShopGroup               | 0xD2              | 90%      | 10         | Opening, points, the storage list, buying, gifting and using items. The event item list, deleting storage items and items which expire are missing. |
 | *AreaSkillHit*                | 0xDB              | 100%     | 10         |                                               |
+| *GuildAssignStatus*         | 0xE1              | 100%     | 1          |                                               |
 | GuildAssignType             | 0xE2              | 0%       | 2          |                                               |
-| RequestAllyJoinLeave        | 0xE5              | 0%       | 3          |                                               |
-| AnswerAllyJoinLeave         | 0xE6              | 0%       | 3          |                                               |
-| RequestAllyList             | 0xE9              | 0%       | 3          |                                               |
-| RequestAllyKickGuild        | 0xEB              | 0%       | 3          |                                               |
+| *RequestAllyJoinLeave*      | 0xE5              | 100%     | 3          |                                               |
+| *AnswerAllyJoinLeave*       | 0xE6              | 100%     | 3          |                                               |
+| *RequestAllyList*           | 0xE9              | 100%     | 3          |                                               |
+| *RequestAllyKickGuild*      | 0xEB              | 100%     | 3          |                                               |
 | *LoginLogoutGroup*            | 0xF1              | 100%     | 10         |                                               |
 | *CharacterGroup*              | 0xF3              | 100%     | 10         |                                               |
 |   - *Character list* | 0xF300            |      |          |                                               |
@@ -114,10 +117,10 @@ complexity and effort). Complexity 0 means we wont implement it.
 |   - *Character focus request* | 0xF315            |      |          |                                               |
 |   - *Save key configuration* | 0xF330            |      |          |                                               |
 |   - *Master skill level increase request* | 0xF352            |      |          |                                               
-| GensGroup                   | 0xF8              | 70%      | 8          | Joining and leaving a gens, the battle zone, contribution and ranking. The party, guild and alliance rules, the chat and the rewards are missing. |
+| *GensGroup*                 | 0xF8              | 100%     | 8          |                                               |
 |   - *Join gens request* | 0xF801            |      |          |                                               |
 |   - *Leave gens request* | 0xF803            |      |          |                                               |
-|   - *Gens reward request* | 0xF809            |      |          | Answered, the rewards are not implemented yet |
+|   - *Gens reward request* | 0xF809            |      |          |                                               |
 |   - *Gens ranking request* | 0xF80B            |      |          | Answered with the gens info of the player (0xF807) |
 | *Hit*                         | 0x11      | 100%     | 10         |                                               |
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |

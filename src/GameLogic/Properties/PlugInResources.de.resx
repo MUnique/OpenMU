@@ -138,10 +138,10 @@
   <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
     <value>Liefert vorgemerkte Belohnungen für Teilnehmer von Castle Siege aus, wenn ein Charakter das Spiel betritt.</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
-    <value>Castle Siege: Gardist</value>
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Wache des Landes der Prüfungen</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Description" xml:space="preserve">
     <value>Zeigt die Verfügbarkeit des Landes der Prüfungen und die geltende Eintrittsgebühr an.</value>
   </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
@@ -1727,5 +1727,191 @@
   </data>
   <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
     <value>Die Zeit, nach der eine Verbindung als verloren gilt, wenn ihr Client nicht gemeldet hat, dass er aktiv ist. Der Spielclient meldet es alle 20 Sekunden. Null deaktiviert die Erkennung.</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>Veröffentlichung von Spielereignissen</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>Veröffentlicht Ereignisse des Spiels, wie Minispiele, Invasionen, Zustandsänderungen der Burgbelagerung und seltene Gegenstände, an den ganzen Server, z.B. für eine Discord-Integration.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>Minispiel-Ereignisse veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>Invasions-Ereignisse veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>Burgbelagerungs-Ereignisse veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>Globale Ankündigungen von Spielleitern veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>Exzellente Gegenstände veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>Antike Gegenstände veröffentlichen</value>
+  </data>
+  <data name="CastleSiegePlugIn_Name" xml:space="preserve">
+    <value>Burgbelagerung</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Animationszähler für Twister</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Beschreibt, wie der Spielclient die Animationen von Twister zählt: Jede Animation wird gezählt, und die Treffer enthalten keinen Animationszähler.</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Animationszähler für Evil Spirit</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Beschreibt, wie der Spielclient die Animationen von Evil Spirit zählt: Jede Animation wird gezählt.</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Animationszähler für Multi-Shot</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Beschreibt, wie der Spielclient die Animationen von Multi-Shot zählt: Die Treffer enthalten keinen Animationszähler.</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop-Version</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Description" xml:space="preserve">
+    <value>Sendet dem Spieler beim Betreten des Spiels die Versionen des Cash-Shop-Skripts und -Banners.</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Description" xml:space="preserve">
+    <value>Der Cash-Shop im Spiel. Ist er deaktiviert, kann der Cash-Shop nicht geöffnet werden. Seine Konfiguration enthält die Einstellungen, z. B. zu Geschenken und zur Lagergröße.</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Name" xml:space="preserve">
+    <value>Goblin-Punkte für Spielzeit</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Description" xml:space="preserve">
+    <value>Gibt Spielern Goblin-Punkte des Cash-Shops für ihre Spielzeit.</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Tresorerweiterungszertifikat</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Erweitert den Tresor des Kontos, wenn ein Spieler das Tresorerweiterungszertifikat aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Magischer Rucksack</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Fügt dem Charakter eine Inventarerweiterung hinzu, wenn ein Spieler den Magischen Rucksack aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Summoner-Charakterkarte</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Schaltet die Klasse Summoner für das Konto frei, wenn ein Spieler die Summoner-Charakterkarte aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash-Shop: Rage-Fighter-Charakterkarte</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Schaltet die Klasse Rage Fighter für das Konto frei, wenn ein Spieler die Rage-Fighter-Charakterkarte aus dem Cash-Shop-Lager verwendet.</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Währungen für persönliche Läden</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Description" xml:space="preserve">
+    <value>Erlaubt Spielern, die Preise der Gegenstände in ihrem persönlichen Laden auch in konfigurierten Gegenständen wie Juwelen oder in Konto-Münzen festzulegen. Nur der Open-Source-Client zeigt diese Preise an; bei anderen Clients können sie per Chat-Befehl festgelegt werden.</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Währungen für persönliche Läden nach dem Betreten des Spiels anzeigen</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Teilt dem Client beim Betreten des Spiels mit, welche Währungen für die Preise persönlicher Läden verwendet werden können.</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl Ladenpreis</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Legt den Preis eines Gegenstands des eigenen persönlichen Ladens in einer der aktivierten Währungen fest, z. B. '/shopprice 1 10 bless'. Ohne Argumente werden die Preise aufgelistet.</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Name" xml:space="preserve">
+    <value>Server-Ankündigungen</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Description" xml:space="preserve">
+    <value>Zeigt allen Spielern eines Spielservers eine konfigurierte Liste von Ankündigungen, eine nach der anderen in einem festen Intervall.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Name" xml:space="preserve">
+    <value>Intervall</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Description" xml:space="preserve">
+    <value>Die Zeit zwischen einer Ankündigung und der nächsten. Das Minimum sind 10 Sekunden.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Name" xml:space="preserve">
+    <value>Ankündigungen</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Description" xml:space="preserve">
+    <value>Die Ankündigungen in der Reihenfolge, in der sie gezeigt werden. Nach der letzten beginnt es wieder mit der ersten.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Text_Name" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Name" xml:space="preserve">
+    <value>Nachrichtentyp</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Description" xml:space="preserve">
+    <value>Wie die Ankündigung gezeigt wird, z. B. als goldene Nachricht in der Bildschirmmitte oder als blaue Systemnachricht.</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Gardist für die Anmeldung</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Öffnet das Anmeldefenster von Castle Siege mit dem aktuellen Status, wenn ein Spieler mit einem Gardisten auf der Karte von Castle Siege spricht.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Gardist</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Zeigt die Verfügbarkeit des Landes der Prüfungen und die geltende Eintrittsgebühr an.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Getötete Bossmonster veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Nummern der Bossmonster</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Erreichte Level-Meilensteine veröffentlichen</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level-Meilensteine</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Meisterlevel-Meilensteine</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Discord</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verknüpft das Konto mit einem Discord-Benutzer: '/discord link' erstellt einen Code, der in Discord eingegeben wird, '/discord unlink' entfernt die Verknüpfung, '/discord notify letter' schaltet Direktnachrichten über Briefe ein oder aus (auch 'login' und 'friend').</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Weltchat</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sendet eine Nachricht in den Weltchat, den alle Spieler aller Spielserver lesen, z.B. '/world Hallo!'. Er kann mit Discord verbunden werden.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>Gilden-, Allianz- und Weltchat veröffentlichen</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Name" xml:space="preserve">
+    <value>Hinweis auf die Chat-Brücke</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
+    <value>Teilt Spielern beim Betreten des Spiels mit, ob der Chat ihrer Gilde oder Allianz nach Discord gespiegelt wird.</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Name" xml:space="preserve">
+    <value>Discord-Integration des Clients</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
+    <value>Teilt Game-Clients, die danach fragen, mit, wie der Server mit Discord verbunden ist (Einladungslink, Rich-Presence-Anwendung, Kontoverknüpfung, gespiegelte Chats), lässt Spieler ihr Konto im Client verknüpfen und schickt ihnen in Discord geschriebene Nachrichten als solche.</value>
   </data>
 </root>

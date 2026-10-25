@@ -54,21 +54,23 @@ public static class PlayerMoneyExtensions
     /// <param name="player">The player.</param>
     /// <param name="value">The value that should be moved to the vault.</param>
     /// <returns><c>True</c>, if the player inventory had enough money to move; Otherwise, <c>false</c>.</returns>
-    public static bool TryDepositVaultMoney(this Player player, int value)
+    public static bool TryDepositVaultMoney(this Player player, uint value)
     {
         if (player.Vault is null)
         {
             return false;
         }
 
-        if (player.Vault.ItemStorage.Money + value > player.GameContext?.Configuration?.MaximumVaultMoney)
+        // The sum is calculated as long and limited to int.MaxValue, so it can't wrap and the value fits into an int.
+        var maximum = player.GameContext?.Configuration?.MaximumVaultMoney ?? int.MaxValue;
+        if ((long)player.Vault.ItemStorage.Money + value > maximum)
         {
             return false;
         }
 
-        if (player.TryRemoveMoney(value))
+        if (player.TryRemoveMoney((int)value))
         {
-            return player.Vault.TryAddMoney(value);
+            return player.Vault.TryAddMoney((int)value);
         }
 
         return false;
@@ -79,22 +81,24 @@ public static class PlayerMoneyExtensions
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="value">The value that should be retrieved from the vault.</param>
-    /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
-    public static bool TryTakeVaultMoney(this Player player, int value)
+    /// <returns><c>True</c>, if the vault is not locked, had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
+    public static bool TryTakeVaultMoney(this Player player, uint value)
     {
-        if (player.Vault is null)
+        if (player.Vault is null || player.IsVaultLocked)
         {
             return false;
         }
 
-        if (player.Money + value > player.GameContext?.Configuration?.MaximumInventoryMoney)
+        // The sum is calculated as long and limited to int.MaxValue, so it can't wrap and the value fits into an int.
+        var maximum = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
+        if ((long)player.Money + value > maximum)
         {
             return false;
         }
 
-        if (player.Vault.TryRemoveMoney(value))
+        if (player.Vault.TryRemoveMoney((int)value))
         {
-            return player.TryAddMoney(value);
+            return player.TryAddMoney((int)value);
         }
 
         return false;

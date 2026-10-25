@@ -962,6 +962,13 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     }
                     mesh.dispose();
                 };
+                World.prototype.clear = function () {
+                    this.hideLastLabel();
+                    for (var _i = 0, _a = Object.keys(this.objects); _i < _a.length; _i++) {
+                        var objectId = _a[_i];
+                        this.removeObject(Number(objectId));
+                    }
+                };
                 World.prototype.getObjectById = function (objectId) {
                     return this.objects[objectId];
                 };

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -302,8 +302,12 @@
   <data name="AddItemDropGroupForJewelsUpdate075_Description" xml:space="preserve"><value>This update creates a specific item drop group for jewels with a default chance of 5%.</value></data>
   <data name="FixCharStatsForceWavePlugInBase_Name" xml:space="preserve"><value>Fix DW Defense Multiplier</value></data>
   <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve"><value>This update fixes DW agility to defense multiplier stat.</value></data>
+  <data name="FixOrbRequirementsPlugInBase_Name" xml:space="preserve"><value>Fix Orb Requirements</value></data>
+  <data name="FixOrbRequirementsPlugInBase_Description" xml:space="preserve"><value>Fixes the energy, strength and agility requirements of orbs, crystals and scrolls which are used to learn skills. E.g. the Orbs of Healing, Greater Defense and Greater Damage required 100 energy instead of 52, 72 and 92.</value></data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Elf Master Tree PlugIn</value></data>
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.</value></data>
+  <data name="ScopeExtraProjectilesPlugIn_Name" xml:space="preserve"><value>Scope extra projectiles per skill</value></data>
+  <data name="ScopeExtraProjectilesPlugIn_Description" xml:space="preserve"><value>Makes the extra projectile of the triple shot mastery apply to the triple shot skill only, while equipping certain (cross)bows keeps boosting every multi-projectile skill.</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>Add Item Registration Attributes</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve"><value>This update adds data for the item registration attributes.</value></data>
   <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve"><value>Fix Wings Damage Rates</value></data>
@@ -324,6 +328,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Kanturu Refinery Tower event configuration.</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>Standardize event entrance duration</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>This update raises the entrance duration of the events with a shared entrance, like Blood Castle, Devil Square and Kanturu, to the five minutes which every event entrance announces.</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>Fix Drain Life Skill</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>Updates the attributes of the summoner's Drain Life skill to make it work properly.</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Rage Fighter Master Tree PlugIn</value></data>
@@ -360,8 +366,14 @@
   <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve"><value>This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter.</value></data>
   <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Name" xml:space="preserve"><value>Add Fenrir Material Drop Groups</value></data>
   <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve"><value>Adds the drops of Splinter of Armor (5 %), Bless of Guardian (2 %) and Claw of Beast (0.5 %) to all monsters of Crywolf. Materials which already drop on Crywolf by another group are skipped.</value></data>
+  <data name="AddGensRewardItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add the gens reward items</value></data>
+  <data name="AddGensRewardItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the jewellery cases (14/141 to 14/144), which the gens members get as monthly reward.</value></data>
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Name" xml:space="preserve"><value>Fix Vulcanus warp index</value></data>
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the index of the warp entry of Vulcanus to 42, which the season 6 game client requests.</value></data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Fire Scream requirements</value></data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the energy and leadership requirements of the fire scream skill to 150 and 70. They were swapped, so a dark lord with less than 150 leadership could learn the skill but not use it.</value></data>
+  <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve"><value>Add Crywolf event</value></data>
+  <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the monsters of the crywolf event and their spawns, lets the statue and the altars of the fortress always be on the map, adds the warp entry of the fortress and the terrains of the occupation states.</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve"><value>Add small wings and capes</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior's Cloak. Existing items with the same numbers are left unchanged.</value></data>
   <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve"><value>Set the game versions of the content</value></data>
@@ -370,4 +382,16 @@
   <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve"><value>This update gives each Dinorant option a distinct number, which is its bit in the option field the client expects.</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve"><value>Configure NPCs of talk plugins</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
+  <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve"><value>Let the Iron Knight use its stab</value></data>
+  <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve"><value>This update lets the Iron Knight of Raklion attack with its stab, which the client shows with a combo effect.</value></data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve"><value>Add Loren Market Jeweler Raul jewel bundles</value></data>
+  <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve"><value>This update lets Jeweler Raul (546) of the Loren Market open the jewel bundle window, to combine jewels into bundles and disband them, like Lahap.</value></data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>Move server ports out of the dynamic port range</value></data>
+  <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly.</value></data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve"><value>Fix transformation ring rules</value></data>
+  <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve"><value>Requires character level 50 for transformation ring levels 3 to 5 and adds the Death Cow ring's 20% maximum-health bonus.</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>Add Rage Fighter Ancient Sets</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
 </root>

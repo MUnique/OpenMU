@@ -377,6 +377,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for PlayerShopSetItemPriceExtended.
+    /// </summary>
+    [Test]
+    public void PlayerShopSetItemPriceExtended_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 13;
+        var actualLength = PlayerShopSetItemPriceExtendedRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'MoneyPrice' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MoneyPrice' exceeds packet boundary");
+        
+        // Validate field 'PriceItemType' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PriceItemType' exceeds packet boundary");
+        
+        // Validate field 'RequiredItemAmount' boundary
+        Assert.That(10 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequiredItemAmount' exceeds packet boundary");
+        
+        // Validate field 'ItemSlot' boundary
+        Assert.That(12 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ItemSlot' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for PickupItemRequest.
     /// </summary>
     [Test]
@@ -3915,6 +3945,48 @@ public class PacketStructureTests
         // Fixed-length packet validation
         const int expectedLength = 4;
         var actualLength = ChatCommandListRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DiscordIntegrationInfoRequest.
+    /// </summary>
+    [Test]
+    public void DiscordIntegrationInfoRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = DiscordIntegrationInfoRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DiscordLinkCodeRequest.
+    /// </summary>
+    [Test]
+    public void DiscordLinkCodeRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = DiscordLinkCodeRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for DiscordUnlinkRequest.
+    /// </summary>
+    [Test]
+    public void DiscordUnlinkRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = DiscordUnlinkRequestRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");

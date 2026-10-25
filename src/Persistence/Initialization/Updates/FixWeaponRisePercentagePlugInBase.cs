@@ -39,7 +39,7 @@ public abstract class FixWeaponRisePercentagePlugInBase : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var staffRiseBonusTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise");
+        var staffRiseBonusTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name.ValueInNeutralLanguage == "Staff Rise");
 
         // Modify existing table name and description
         staffRiseBonusTable.Name = "Staff Rise (even)";

@@ -5,45 +5,62 @@
 namespace MUnique.OpenMU.Web.Shared;
 
 using MUnique.OpenMU.GameLogic;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
 /// Extensions for the <see cref="GameMapTerrain"/>.
-/// TODO: It's duplicated. Move to a common project.
 /// </summary>
 public static class GameMapTerrainExtensions
 {
+    private const int SideLength = 0x100;
+
+    private static readonly (byte R, byte G, byte B) WalkableColor = (80, 200, 80);
+
+    private static readonly (byte R, byte G, byte B) SafezoneColor = (128, 128, 128);
+
     /// <summary>
-    /// Renders the terrain into an image.
+    /// Renders the terrain into a PNG image.
     /// </summary>
     /// <param name="terrain">The terrain.</param>
-    /// <returns>The rendered image.</returns>
-    public static Image<Rgba32> ToImage(this GameMapTerrain terrain)
+    /// <returns>The PNG encoded image.</returns>
+    public static byte[] ToPng(this GameMapTerrain terrain)
     {
-        var bitmap = new Image<Rgba32>(0x100, 0x100);
-        for (int y = 0; y < 0x100; y++)
+        var pixels = new byte[SideLength * SideLength * 3];
+        var index = 0;
+        for (int y = 0; y < SideLength; y++)
         {
-            for (int x = 0; x < 0x100; x++)
+            for (int x = 0; x < SideLength; x++)
             {
-                var color = Color.Black;
+                (byte r, byte g, byte b) = (0, 0, 0);
                 if (terrain.SafezoneMap[y, x])
                 {
-                    color = Color.Gray;
+                    (r, g, b) = SafezoneColor;
                 }
                 else if (terrain.WalkMap[y, x])
                 {
-                    color = Color.FromRgb(80, 200, 80);
+                    (r, g, b) = WalkableColor;
                 }
                 else
                 {
-                    // we use the default color.
+                    // we use the default color (black).
                 }
 
-                bitmap[x, y] = color;
+                pixels[index++] = r;
+                pixels[index++] = g;
+                pixels[index++] = b;
             }
         }
 
-        return bitmap;
+        return SimplePngEncoder.EncodeRgb(pixels, SideLength, SideLength);
+    }
+
+    /// <summary>
+    /// Renders the terrain into a PNG image and returns it as data url,
+    /// which can be directly used as source of an html img-element.
+    /// </summary>
+    /// <param name="terrain">The terrain.</param>
+    /// <returns>The data url of the PNG image.</returns>
+    public static string ToPngDataUrl(this GameMapTerrain terrain)
+    {
+        return "data:image/png;base64," + Convert.ToBase64String(terrain.ToPng());
     }
 }

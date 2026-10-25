@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -357,6 +359,9 @@ public class MiniGameStartPlugInTests
         contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<string>()))
             .Callback<string>(notifications.Add)
             .Returns(ValueTask.CompletedTask);
+        contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<LocalizedString>(), It.IsAny<object?[]>()))
+            .Callback<LocalizedString, object?[]>((message, arguments) => notifications.Add(string.Format(CultureInfo.InvariantCulture, message.ValueInNeutralLanguage, arguments)))
+            .Returns(ValueTask.CompletedTask);
         var configurationMock = new Mock<GameConfiguration>();
         configurationMock.SetupGet(c => c.MiniGameDefinitions).Returns(new List<MiniGameDefinition> { definition });
         contextMock.SetupGet(c => c.Configuration).Returns(configurationMock.Object);
@@ -551,6 +556,9 @@ public class MiniGameStartPlugInTests
 
         /// <inheritdoc />
         public IReadOnlyList<GameMap> Maps => this.Games.Select(game => game.Map).ToList();
+
+        /// <inheritdoc />
+        public ValueTask<bool> TryRejoinAsync(Player player) => ValueTask.FromResult(false);
 
         /// <inheritdoc />
         public ValueTask<MiniGameContext> GetOrCreateAsync(MiniGameDefinition miniGameDefinition, Player requester)

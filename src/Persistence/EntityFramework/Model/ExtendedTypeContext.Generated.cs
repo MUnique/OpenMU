@@ -26,6 +26,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     {
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AccountExternalLink>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CashShopCoinGrant>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CashShopStorageItem>();
@@ -36,9 +37,11 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CharacterQuestState>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CrywolfData>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensAbuse>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildChatBinding>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Item>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemAppearance>();
@@ -72,6 +75,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameClientDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameConfiguration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint>();
@@ -193,6 +197,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawMiniGameDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawCastleSiegeConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawCashShopConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawTerrainVariants).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawMonsterSpawns).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawEnterGates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasOne(entity => entity.RawBattleZone).WithOne().OnDelete(DeleteBehavior.Cascade);

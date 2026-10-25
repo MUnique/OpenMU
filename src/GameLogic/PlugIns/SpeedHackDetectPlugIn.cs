@@ -24,8 +24,25 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A95A8D2F-A0C3-442E-995C-005B5C1B42D2")]
 public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration<SpeedHackDetectConfiguration>, ISupportDefaultCustomConfiguration, ISpeedHackCheatCheckPlugIn
 {
-    private const int NormalStepDelayMs = 300;
     private readonly ConditionalWeakTable<Player, SpeedHackState> _playerStates = new();
+    private readonly TimeProvider _timeProvider;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpeedHackDetectPlugIn"/> class.
+    /// </summary>
+    public SpeedHackDetectPlugIn()
+        : this(TimeProvider.System)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpeedHackDetectPlugIn"/> class.
+    /// </summary>
+    /// <param name="timeProvider">The time provider.</param>
+    internal SpeedHackDetectPlugIn(TimeProvider timeProvider)
+    {
+        this._timeProvider = timeProvider;
+    }
 
     /// <inheritdoc/>
     public SpeedHackDetectConfiguration? Configuration { get; set; }
@@ -47,72 +64,24 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             return;
         }
 
-        bool isSafezone = player.IsAtSafezone();
-        bool shouldRecordViolation = false;
-        var startPoint = steps.Span[0].From;
         var state = this.GetState(player);
-
+        var violationSeverity = SpeedHackViolationSeverity.None;
         lock (state.Lock)
         {
-            if (isSafezone)
+            if (player.IsAtSafezone())
             {
                 state.ResetWalk();
             }
             else
             {
-                var now = DateTime.UtcNow;
-                double stepDelayMs = player.StepDelay.TotalMilliseconds;
-                double scalingFactor = stepDelayMs / NormalStepDelayMs;
-                double maxCreditMs = config.WalkSpeedToleranceMs * scalingFactor;
-
-                // The walk check works like a token bucket of walking time: passed time adds credit,
-                // walked tiles consume it. This way, only the average speed matters. When walk packets
-                // are delayed by the network and then arrive in a burst, the time of the delay is
-                // credited (up to the tolerance) and covers the tiles which arrive in the burst.
-                // A speed hack, however, consumes more than it earns and drains the credit over time.
-                var elapsed = now - (state.LastWalkTime ?? now);
-                state.WalkCreditMs = state.LastWalkTime is null
-                    ? maxCreditMs
-                    : Math.Min(maxCreditMs, state.WalkCreditMs + elapsed.TotalMilliseconds);
-
-                if (state.LastWalkStartPoint is { } lastStartPoint)
-                {
-                    var tiles = Math.Max(
-                        Math.Abs(startPoint.X - lastStartPoint.X),
-                        Math.Abs(startPoint.Y - lastStartPoint.Y));
-
-                    const double BaseStepDelayMarginMs = 50.0;
-                    const double MinStepDelayMs = 50.0;
-                    double stepDelayMarginMs = BaseStepDelayMarginMs * scalingFactor;
-                    double checkStepDelayMs = Math.Max(Math.Min(MinStepDelayMs, stepDelayMs), stepDelayMs - stepDelayMarginMs);
-                    var expectedTimeMs = tiles * checkStepDelayMs;
-
-                    state.WalkCreditMs -= expectedTimeMs;
-                    if (state.WalkCreditMs < 0)
-                    {
-                        player.Logger.LogWarning(
-                            "Speedhack detected on walk for player {0}: traveled {1} tiles in {2}ms (expected at least {3}ms), exceeding the tolerance of {4}ms.",
-                            player.Name,
-                            tiles,
-                            elapsed.TotalMilliseconds,
-                            expectedTimeMs,
-                            maxCreditMs);
-                        shouldRecordViolation = true;
-
-                        // The deficit is not carried over, so a single violation doesn't cause a chain of follow-up violations.
-                        state.WalkCreditMs = 0;
-                    }
-                }
-
-                state.LastWalkTime = now;
-                state.LastWalkStartPoint = startPoint;
+                violationSeverity = this.EvaluateWalkLocked(player, config, state, steps.Span[0].From, this._timeProvider.GetUtcNow().UtcDateTime);
             }
         }
 
-        if (shouldRecordViolation)
+        if (violationSeverity is not SpeedHackViolationSeverity.None)
         {
-            eventArgs.IsCheatDetected = true;
-            await this.RecordViolationAsync(player, state, config).ConfigureAwait(false);
+            eventArgs.Severity = violationSeverity;
+            await this.RecordViolationAsync(player, state, config, violationSeverity).ConfigureAwait(false);
         }
     }
 
@@ -131,7 +100,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         }
 
         var attackSpeed = attributes[Stats.AttackSpeed];
-        var now = DateTime.UtcNow;
+        var now = this._timeProvider.GetUtcNow().UtcDateTime;
 
         var minIntervalMs = Math.Max(config.AttackSpeedMinIntervalMs, config.AttackSpeedBaseDelayMs - (attackSpeed * config.AttackSpeedScalingFactor));
         var state = this.GetState(player);
@@ -158,13 +127,16 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
                 return;
             }
 
-            shouldRecordViolation = true;
+            shouldRecordViolation = !config.ObserveOnly;
         }
 
         if (shouldRecordViolation)
         {
-            eventArgs.IsCheatDetected = true;
-            await this.RecordViolationAsync(player, state, config).ConfigureAwait(false);
+            // The attack path has no resync response and no score model, so its violations
+            // stay soft and debounced, exactly as before: only sustained violations spread
+            // over time can accumulate toward a punishment, never a single burst.
+            eventArgs.Severity = SpeedHackViolationSeverity.Resync;
+            await this.RecordViolationAsync(player, state, config, eventArgs.Severity).ConfigureAwait(false);
         }
     }
 
@@ -223,21 +195,142 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// <returns><c>true</c> if the player is controlled by the server; otherwise, <c>false</c>.</returns>
     private static bool IsServerControlled(Player player) => player is Offline.OfflinePlayer;
 
+    /// <summary>
+    /// Determines whether the player is a game master. Game masters are trusted, so their
+    /// violations are still logged and answered, but never with a ban of their account.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c> if the player is a game master; otherwise, <c>false</c>.</returns>
+    private static bool IsGameMaster(Player player) =>
+        player.Account?.State is AccountState.GameMaster or AccountState.GameMasterInvisible
+        || player.SelectedCharacter?.CharacterStatus is CharacterStatus.GameMaster;
+
+    /// <summary>
+    /// Gets the maximum walk credit, which defines how far the walk start points
+    /// may run ahead of the time which actually passed.
+    /// </summary>
+    /// <remarks>
+    /// The game client reports the tile it's about to enter as its position, as soon as it starts
+    /// a step. When the player clicks new targets in quick succession, every click starts a new
+    /// step, so every walk request claims one more tile than the character actually walked yet.
+    /// This lead is legitimate and bounded: when it exceeds <see cref="SpeedHackDetectConfiguration.MaxAllowedWalkStartOffset"/>,
+    /// the walk is resynchronized anyway. So, the credit covers at least that many steps, even when the
+    /// configured tolerance is lower - especially with fast mounts (e.g. a horse), which scale the
+    /// tolerance down by their shorter step delay.
+    /// </remarks>
+    /// <param name="config">The configuration.</param>
+    /// <param name="stepDelayMs">The current step delay of the player.</param>
+    /// <returns>The maximum walk credit in milliseconds.</returns>
+    private static double GetMaxWalkCreditMs(SpeedHackDetectConfiguration config, double stepDelayMs)
+    {
+        double configuredCreditMs = config.WalkSpeedToleranceMs * (stepDelayMs / WalkSpeedValidator.NormalStepDelayMs);
+        double walkStartLeadCreditMs = Math.Max(0, config.MaxAllowedWalkStartOffset) * stepDelayMs;
+        return Math.Max(configuredCreditMs, walkStartLeadCreditMs);
+    }
+
+    /// <summary>
+    /// Evaluates one walk against the earned time budget and updates the player's walk state.
+    /// The caller must hold <see cref="SpeedHackState.Lock"/>.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="config">The configuration.</param>
+    /// <param name="state">The state of the player.</param>
+    /// <param name="startPoint">The start of the requested walk.</param>
+    /// <param name="now">The current time.</param>
+    /// <returns>The violation severity, or <see cref="SpeedHackViolationSeverity.None"/> when the walk is clean or only observed.</returns>
+    private SpeedHackViolationSeverity EvaluateWalkLocked(Player player, SpeedHackDetectConfiguration config, SpeedHackState state, Point startPoint, DateTime now)
+    {
+        double stepDelayMs = player.StepDelay.TotalMilliseconds;
+        double maxCreditMs = GetMaxWalkCreditMs(config, stepDelayMs);
+
+        // The walk check works like a token bucket of walking time: passed time adds credit,
+        // walked tiles consume it. This way, only the average speed matters. When walk packets
+        // are delayed by the network and then arrive in a burst, the time of the delay is
+        // credited (up to the tolerance) and covers the tiles which arrive in the burst.
+        // A speed hack, however, consumes more than it earns and drains the credit over time.
+        var elapsed = now - (state.LastWalkTime ?? now);
+        if (state.LastWalkTime is null)
+        {
+            state.WalkCreditMs = maxCreditMs;
+        }
+
+        double halfLifeMinutes = ViolationPolicy.ResolveHalfLifeMinutes(config.ViolationScoreHalfLifeMinutes);
+        state.ViolationScore = ViolationPolicy.DecayScore(state.ViolationScore, now - (state.LastScoreUpdateTime ?? now), halfLifeMinutes);
+        state.LastScoreUpdateTime = now;
+
+        if (state.LastWalkStartPoint is not { } lastStartPoint)
+        {
+            state.WalkCreditMs = Math.Min(maxCreditMs, state.WalkCreditMs + elapsed.TotalMilliseconds);
+            state.LastWalkTime = now;
+            state.LastWalkStartPoint = startPoint;
+            return SpeedHackViolationSeverity.None;
+        }
+
+        var tiles = Math.Max(
+            Math.Abs(startPoint.X - lastStartPoint.X),
+            Math.Abs(startPoint.Y - lastStartPoint.Y));
+
+        var verdict = WalkSpeedValidator.Evaluate(state.WalkCreditMs, maxCreditMs, elapsed.TotalMilliseconds, tiles, stepDelayMs);
+        state.WalkCreditMs = verdict.NewCreditMs;
+        state.LastWalkTime = now;
+        state.LastWalkStartPoint = startPoint;
+        if (!verdict.IsViolation)
+        {
+            return SpeedHackViolationSeverity.None;
+        }
+
+        return this.PenalizeWalkViolationLocked(player, config, state, new WalkViolation(tiles, elapsed, maxCreditMs, verdict));
+    }
+
+    /// <summary>
+    /// Scores a detected walk violation, logs it and decides its severity.
+    /// The caller must hold <see cref="SpeedHackState.Lock"/>.
+    /// Recording the warning and punishing stay in <see cref="RecordViolationAsync"/>.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="config">The configuration.</param>
+    /// <param name="state">The state of the player.</param>
+    /// <param name="violation">The detected violation.</param>
+    /// <returns>The violation severity, or <see cref="SpeedHackViolationSeverity.None"/> when only observed.</returns>
+    private SpeedHackViolationSeverity PenalizeWalkViolationLocked(Player player, SpeedHackDetectConfiguration config, SpeedHackState state, WalkViolation violation)
+    {
+        // Each violation adds to the score proportionally to its overshoot, so isolated
+        // blips stay soft while sustained cheating escalates to a hard rejection.
+        state.ViolationScore += ViolationPolicy.WeighViolation(violation.Verdict.DeficitMs, violation.Verdict.ExpectedTimeMs);
+        player.Logger.LogWarning(
+            "Speedhack detected on walk for player {0}: traveled {1} tiles in {2}ms (expected at least {3}ms), exceeding the tolerance of {4}ms. Score: {5:F2}, overshoot: {6:F0}ms.",
+            player.Name,
+            violation.Tiles,
+            violation.Elapsed.TotalMilliseconds,
+            violation.Verdict.ExpectedTimeMs,
+            violation.MaxCreditMs,
+            state.ViolationScore,
+            violation.Verdict.DeficitMs);
+        if (config.ObserveOnly)
+        {
+            return SpeedHackViolationSeverity.None;
+        }
+
+        double rejectThreshold = ViolationPolicy.ResolveRejectThreshold(config.ViolationScoreRejectThreshold);
+        return ViolationPolicy.ShouldEscalate(state.ViolationScore, rejectThreshold)
+            ? SpeedHackViolationSeverity.Reject
+            : SpeedHackViolationSeverity.Resync;
+    }
+
     private SpeedHackState GetState(Player player)
     {
         return this._playerStates.GetValue(player, p => new SpeedHackState(this.Configuration?.MaxAttackTokens ?? 5.0));
     }
 
-    private async ValueTask RecordViolationAsync(Player player, SpeedHackState state, SpeedHackDetectConfiguration config)
+    private async ValueTask RecordViolationAsync(Player player, SpeedHackState state, SpeedHackDetectConfiguration config, SpeedHackViolationSeverity severity)
     {
-        var now = DateTime.UtcNow;
-        bool shouldBan = false;
-        bool shouldWarn = false;
-        bool shouldDisconnect = false;
-
+        var now = this._timeProvider.GetUtcNow().UtcDateTime;
+        ViolationPolicy.Sanction sanction;
         lock (state.Lock)
         {
-            if (now - state.LastAlertTime < TimeSpan.FromSeconds(config.AlertDebounceSeconds))
+            // Sustained cheating escalates past the debounce: isolated blips within the
+            // debounce window are still dropped, but an escalated violation always counts.
+            if (severity is not SpeedHackViolationSeverity.Reject && now - state.LastAlertTime < TimeSpan.FromSeconds(config.AlertDebounceSeconds))
             {
                 return;
             }
@@ -251,45 +344,24 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             }
 
             player.Logger.LogWarning("Speedhack warning issued for player {0}. Total warnings in last hour: {1}", player.Name, state.AlertTimes.Count);
-
-            if (state.AlertTimes.Count > config.MaxWarnings)
+            sanction = ViolationPolicy.DecideSanction(config, state.AlertTimes.Count, player.Account is not null && !IsGameMaster(player));
+            if (sanction.BanAccount && player.Account is { } account)
             {
-                if (config.AutoBan)
-                {
-                    player.Logger.LogError("Player {0} exceeded speedhack warning limit. Banning account {1} and disconnecting.", player.Name, player.Account?.LoginName);
-                    if (player.Account is { } account)
-                    {
-                        account.State = AccountState.Banned;
-                        shouldBan = true;
-                    }
-                }
-
-                if (config.DisconnectOnViolation)
-                {
-                    shouldDisconnect = true;
-                }
-
-                if (!shouldBan && !shouldDisconnect)
-                {
-                    shouldWarn = true;
-                }
-            }
-            else
-            {
-                shouldWarn = true;
+                player.Logger.LogError("Player {0} exceeded speedhack warning limit. Banning account {1} and disconnecting.", player.Name, account.LoginName);
+                account.State = AccountState.Banned;
             }
         }
 
-        if (shouldBan)
+        if (sanction.BanAccount)
         {
             await player.SaveProgressAsync().ConfigureAwait(false);
         }
 
-        if (shouldBan || shouldDisconnect)
+        if (sanction.BanAccount || sanction.DisconnectPlayer)
         {
             await player.DisconnectAsync().ConfigureAwait(false);
         }
-        else if (shouldWarn)
+        else if (sanction.WarnPlayer)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SpeedHackWarning)).ConfigureAwait(false);
         }
@@ -298,6 +370,15 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             // Do nothing if no actions are required.
         }
     }
+
+    /// <summary>
+    /// A detected walk violation with everything needed to score and log it.
+    /// </summary>
+    /// <param name="Tiles">The tiles charged for the walk.</param>
+    /// <param name="Elapsed">The time passed since the previous walk.</param>
+    /// <param name="MaxCreditMs">The maximum credit the walk started with.</param>
+    /// <param name="Verdict">The time-budget verdict.</param>
+    private readonly record struct WalkViolation(int Tiles, TimeSpan Elapsed, double MaxCreditMs, WalkSpeedValidator.Verdict Verdict);
 
     private class SpeedHackState
     {
@@ -321,6 +402,10 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         public Point? LastWalkStartPoint { get; set; }
 
         public double WalkCreditMs { get; set; }
+
+        public double ViolationScore { get; set; }
+
+        public DateTime? LastScoreUpdateTime { get; set; }
 
         public void ResetWalk()
         {

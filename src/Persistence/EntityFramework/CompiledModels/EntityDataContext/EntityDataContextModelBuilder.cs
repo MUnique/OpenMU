@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("ffda8e85-f458-447f-9010-3020ec8dc488"), entityTypeCount: 119)
+            : base(skipDetectChanges: false, modelId: new Guid("a8973c11-2353-465a-a680-458679d77069"), entityTypeCount: 123)
         {
         }
 
@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
         {
             var account = AccountEntityType.Create(this);
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
+            var accountExternalLink = AccountExternalLinkEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var areaSkillSettings = AreaSkillSettingsEntityType.Create(this);
             var attributeDefinition = AttributeDefinitionEntityType.Create(this);
@@ -53,6 +54,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var configurationUpdateState = ConfigurationUpdateStateEntityType.Create(this);
             var connectServerDefinition = ConnectServerDefinitionEntityType.Create(this);
             var constValueAttribute = ConstValueAttributeEntityType.Create(this);
+            var crywolfData = CrywolfDataEntityType.Create(this);
             var dropItemGroup = DropItemGroupEntityType.Create(this);
             var dropItemGroupItemDefinition = DropItemGroupItemDefinitionEntityType.Create(this);
             var duelArea = DuelAreaEntityType.Create(this);
@@ -64,6 +66,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var gameConfiguration = GameConfigurationEntityType.Create(this);
             var gameMapDefinition = GameMapDefinitionEntityType.Create(this);
             var gameMapDefinitionDropItemGroup = GameMapDefinitionDropItemGroupEntityType.Create(this);
+            var gameMapTerrainVariant = GameMapTerrainVariantEntityType.Create(this);
             var gameServerConfiguration = GameServerConfigurationEntityType.Create(this);
             var gameServerConfigurationGameMapDefinition = GameServerConfigurationGameMapDefinitionEntityType.Create(this);
             var gameServerDefinition = GameServerDefinitionEntityType.Create(this);
@@ -71,6 +74,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var gensAbuse = GensAbuseEntityType.Create(this);
             var gensMember = GensMemberEntityType.Create(this);
             var guild = GuildEntityType.Create(this);
+            var guildChatBinding = GuildChatBindingEntityType.Create(this);
             var guildMember = GuildMemberEntityType.Create(this);
             var increasableItemOption = IncreasableItemOptionEntityType.Create(this);
             var item = ItemEntityType.Create(this);
@@ -141,6 +145,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AccountCharacterClassEntityType.CreateForeignKey2(accountCharacterClass, characterClass);
+            AccountExternalLinkEntityType.CreateForeignKey1(accountExternalLink, account);
             AppearanceDataEntityType.CreateForeignKey1(appearanceData, characterClass);
             AttributeDefinitionEntityType.CreateForeignKey1(attributeDefinition, gameConfiguration);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, characterClass);
@@ -229,6 +234,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GameMapDefinitionEntityType.CreateForeignKey3(gameMapDefinition, gameMapDefinition);
             GameMapDefinitionDropItemGroupEntityType.CreateForeignKey1(gameMapDefinitionDropItemGroup, dropItemGroup);
             GameMapDefinitionDropItemGroupEntityType.CreateForeignKey2(gameMapDefinitionDropItemGroup, gameMapDefinition);
+            GameMapTerrainVariantEntityType.CreateForeignKey1(gameMapTerrainVariant, gameMapDefinition);
             GameServerConfigurationGameMapDefinitionEntityType.CreateForeignKey1(gameServerConfigurationGameMapDefinition, gameMapDefinition);
             GameServerConfigurationGameMapDefinitionEntityType.CreateForeignKey2(gameServerConfigurationGameMapDefinition, gameServerConfiguration);
             GameServerDefinitionEntityType.CreateForeignKey1(gameServerDefinition, gameConfiguration);
@@ -240,6 +246,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensMemberEntityType.CreateForeignKey1(gensMember, character);
             GuildEntityType.CreateForeignKey1(guild, guild);
             GuildEntityType.CreateForeignKey2(guild, guild);
+            GuildChatBindingEntityType.CreateForeignKey1(guildChatBinding, guild);
             GuildMemberEntityType.CreateForeignKey1(guildMember, guild);
             GuildMemberEntityType.CreateForeignKey2(guildMember, character);
             IncreasableItemOptionEntityType.CreateForeignKey1(increasableItemOption, itemOptionDefinition);
@@ -247,6 +254,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             IncreasableItemOptionEntityType.CreateForeignKey3(increasableItemOption, powerUpDefinition);
             ItemEntityType.CreateForeignKey1(item, itemDefinition);
             ItemEntityType.CreateForeignKey2(item, itemStorage);
+            ItemEntityType.CreateForeignKey3(item, itemDefinition);
             ItemAppearanceEntityType.CreateForeignKey1(itemAppearance, appearanceData);
             ItemAppearanceEntityType.CreateForeignKey2(itemAppearance, itemDefinition);
             ItemAppearanceItemOptionTypeEntityType.CreateForeignKey1(itemAppearanceItemOptionType, itemAppearance);
@@ -378,6 +386,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             AccountEntityType.CreateAnnotations(account);
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
+            AccountExternalLinkEntityType.CreateAnnotations(accountExternalLink);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AreaSkillSettingsEntityType.CreateAnnotations(areaSkillSettings);
             AttributeDefinitionEntityType.CreateAnnotations(attributeDefinition);
@@ -411,6 +420,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ConfigurationUpdateStateEntityType.CreateAnnotations(configurationUpdateState);
             ConnectServerDefinitionEntityType.CreateAnnotations(connectServerDefinition);
             ConstValueAttributeEntityType.CreateAnnotations(constValueAttribute);
+            CrywolfDataEntityType.CreateAnnotations(crywolfData);
             DropItemGroupEntityType.CreateAnnotations(dropItemGroup);
             DropItemGroupItemDefinitionEntityType.CreateAnnotations(dropItemGroupItemDefinition);
             DuelAreaEntityType.CreateAnnotations(duelArea);
@@ -422,6 +432,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GameConfigurationEntityType.CreateAnnotations(gameConfiguration);
             GameMapDefinitionEntityType.CreateAnnotations(gameMapDefinition);
             GameMapDefinitionDropItemGroupEntityType.CreateAnnotations(gameMapDefinitionDropItemGroup);
+            GameMapTerrainVariantEntityType.CreateAnnotations(gameMapTerrainVariant);
             GameServerConfigurationEntityType.CreateAnnotations(gameServerConfiguration);
             GameServerConfigurationGameMapDefinitionEntityType.CreateAnnotations(gameServerConfigurationGameMapDefinition);
             GameServerDefinitionEntityType.CreateAnnotations(gameServerDefinition);
@@ -429,6 +440,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensAbuseEntityType.CreateAnnotations(gensAbuse);
             GensMemberEntityType.CreateAnnotations(gensMember);
             GuildEntityType.CreateAnnotations(guild);
+            GuildChatBindingEntityType.CreateAnnotations(guildChatBinding);
             GuildMemberEntityType.CreateAnnotations(guildMember);
             IncreasableItemOptionEntityType.CreateAnnotations(increasableItemOption);
             ItemEntityType.CreateAnnotations(item);

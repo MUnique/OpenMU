@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -51,7 +50,7 @@ internal class DoppelgangerMonsters : InitializerBase
         this.CreateMonster(530, LocalizedString.FromResource(() => MonsterNames.MadButcher), 18, 2300, 110, 120, 73, 1000, 1000, 3, 6, 7, 500, 1600, 0, null, 15, 254);
         this.CreateMonster(531, LocalizedString.FromResource(() => MonsterNames.IceWalker531), 19, 1500, 85, 90, 60, 800, 1000, 3, 8, 10, 400, 2000, 2, null, 15, 15);
         this.CreateMonster(532, LocalizedString.FromResource(() => MonsterNames.Larva532), 16, 1000, 75, 80, 55, 800, 900, 3, 2, 7, 400, 2000, 2, null, 15, 15);
-        this.CreateMonster(533, "Doppelganger", 15, 600, 80, 85, 45, 1000, 900, 3, 1, 3, 400, 1600, 2, SkillNumber.DoppelgangerSelfExplosion, 10, 10);
+        this.CreateMonster(533, LocalizedString.FromResource(() => MonsterNames.Doppelganger), 15, 600, 80, 85, 45, 1000, 900, 3, 1, 3, 400, 1600, 2, SkillNumber.DoppelgangerSelfExplosion, 10, 10);
         this.CreateMonster(534, LocalizedString.FromResource(() => MonsterNames.DoppelgangerElf), 14, 500, 65, 70, 30, 700, 500, 2, 5, 6, 400, 1400, 2, SkillNumber.MultiShot, 10, 10);
         this.CreateMonster(535, LocalizedString.FromResource(() => MonsterNames.DoppelgangerKnight), 14, 500, 65, 70, 30, 700, 500, 2, 1, 3, 400, 2200, 2, SkillNumber.TwistingSlash, 10, 10);
         this.CreateMonster(536, LocalizedString.FromResource(() => MonsterNames.DoppelgangerWizard), 14, 500, 65, 70, 30, 700, 500, 2, 5, 4, 400, 2200, 2, SkillNumber.IceStorm, 10, 10);
@@ -95,15 +94,15 @@ internal class DoppelgangerMonsters : InitializerBase
 
         var jewels = new[] { (12, 15), (14, 13), (14, 14), (14, 16), (14, 22) };
         this.AddDropGroup(chest, 1, "Jewel", isJewelGuaranteed ? 1.0 : 0.9, 0, jewels);
-        this.AddDropGroup(chest, 2, "Loch's Feather", 0.08, 0, (13, 14));
-        this.AddDropGroup(chest, 3, "Crest of Monarch", 0.02, 1, (13, 14));
+        this.AddDropGroup(chest, 2, "LochsFeather", 0.08, 0, (13, 14));
+        this.AddDropGroup(chest, 3, "CrestOfMonarch", 0.02, 1, (13, 14));
     }
 
-    private void AddDropGroup(MonsterDefinition chest, short index, string name, double chance, byte itemLevel, params (int Group, int Number)[] items)
+    private void AddDropGroup(MonsterDefinition chest, short index, string rewardKey, double chance, byte itemLevel, params (int Group, int Number)[] items)
     {
         var group = this.Context.CreateNew<DropItemGroup>();
         group.SetGuid(chest.Number, index);
-        group.Description = $"{chest.Designation}: {name}";
+        group.Description = DropGroupDescriptions.ResourceManager.GetLocalizedString($"{(chest.Number == FinalRewardChestNumber ? "GoldenCompensationBox" : "CompensationBox")}{rewardKey}");
         group.Chance = chance;
         group.ItemLevel = itemLevel;
         group.Monster = chest;

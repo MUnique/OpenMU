@@ -175,6 +175,11 @@ public enum NpcWindow
     /// The castle siege lever NPC interaction window.
     /// </summary>
     CastleSiegeLeverNpc,
+
+    /// <summary>
+    /// The castle siege guardsman window, which shows the castle siege status and the guild registration.
+    /// </summary>
+    CastleSiegeGuardsman,
 }
 
 /// <summary>

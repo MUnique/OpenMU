@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -17,6 +18,7 @@ using Microsoft.Win32;
 /// * adds parameters /u and /p (works in some other versions of the game client)
 /// before starting the main.exe.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public class Launcher : ILauncher
 {
     /// <summary>

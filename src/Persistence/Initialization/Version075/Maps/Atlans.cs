@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -568,7 +567,7 @@ internal class Atlans : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 50;
-            monster.Designation = "Sea Worm";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SeaWorm);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;

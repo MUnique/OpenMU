@@ -51,6 +51,14 @@ A temporary ban set from the live map changes the state of the account. Review
 and lift it on the [Accounts page](accounts.md).
 :::
 
+## Slow or lost connections
+
+The game never waits for the browser of an admin who watches the live map. While
+the connection to the browser is lost, or when the browser falls far behind, the
+updates are dropped, and the map is rebuilt with the current state as soon as the
+browser can keep up again. Watching a map from a slow connection therefore can't
+slow down the game for the players.
+
 ## Availability
 
 | Deployment | Live map |

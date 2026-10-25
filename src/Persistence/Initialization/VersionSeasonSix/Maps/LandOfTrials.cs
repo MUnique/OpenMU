@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -460,7 +459,7 @@ internal class LandOfTrials : BaseMapInitializer
         jewelsDropItemGroup.SetGuid(this.MapNumber, 1);
         jewelsDropItemGroup.Chance = 0.001;
         jewelsDropItemGroup.ItemType = SpecialItemType.Jewel;
-        jewelsDropItemGroup.Description = "Jewel of Guardian";
+        jewelsDropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.JewelOfGuardian);
 
         var jewelOfGuardian = this.GameConfiguration.Items.First(y => y.Group == 14 && y.Number == 31);
         jewelsDropItemGroup.PossibleItems.Add(jewelOfGuardian);

@@ -46,12 +46,12 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
                 addedPoints > 0,
                 attribute.GetStatType(),
                 attribute == Stats.BaseEnergy
-                    ? (ushort)this._player.Attributes![Stats.MaximumMana]
+                    ? this._player.Attributes![Stats.MaximumMana].ToUInt16Clamped()
                     : attribute == Stats.BaseVitality
-                        ? (ushort)this._player.Attributes![Stats.MaximumHealth]
+                        ? this._player.Attributes![Stats.MaximumHealth].ToUInt16Clamped()
                         : default,
-                (ushort)this._player.Attributes![Stats.MaximumShield],
-                (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
+                this._player.Attributes![Stats.MaximumShield].ToUInt16Clamped(),
+                this._player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
 #pragma warning restore SA1118 // Parameter should not span multiple lines
             return;
         }

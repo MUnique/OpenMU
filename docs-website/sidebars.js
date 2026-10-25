@@ -51,6 +51,7 @@ const sidebars = {
         'admin-panel/live-map',
         'admin-panel/logs-and-monitoring',
         'admin-panel/authentication',
+        "admin-panel/mcp",
         'admin-panel/users',
         'admin-panel/common-tasks',
       ],
@@ -59,10 +60,13 @@ const sidebars = {
       type: 'category',
       label: 'Server features',
       items: [
+        "server-features/castle-siege",
         'server-features/bots',
         'server-features/test-actors',
         'server-features/gens',
         'server-features/cash-shop',
+        'server-features/discord',
+        'server-features/player-shop-currencies',
       ],
     },
     {

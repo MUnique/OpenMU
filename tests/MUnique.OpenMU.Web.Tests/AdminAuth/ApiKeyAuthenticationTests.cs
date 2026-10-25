@@ -127,6 +127,8 @@ public class ApiKeyAuthenticationTests
         Assert.That(result.Succeeded, Is.True);
         Assert.That(result.Principal!.Identity!.IsAuthenticated, Is.True);
         Assert.That(result.Principal.FindFirstValue(ClaimTypes.Name), Is.EqualTo("launcher"));
+        var stored = (await this._repository.GetAllAsync().ConfigureAwait(false)).Single();
+        Assert.That(result.Principal.FindFirstValue(ApiKeyAuthenticationDefaults.ClientIdClaimType), Is.EqualTo(stored.Id.ToString()));
         Assert.That(result.Principal.IsInRole(AdminRoles.Viewer), Is.True);
     }
 

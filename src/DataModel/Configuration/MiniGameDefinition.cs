@@ -169,6 +169,6 @@ public partial class MiniGameDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return this.Name;
+        return this.Name.ToString() ?? string.Empty;
     }
 }

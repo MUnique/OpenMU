@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -57,7 +58,7 @@ public class Startup
 
         services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
 
-        services.AddControllers()
+        services.AddControllers(options => options.Filters.Add<MUnique.OpenMU.Web.AdminPanel.API.AdminOperationExceptionFilter>())
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
@@ -67,6 +68,8 @@ public class Startup
 
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
         services.AddSingleton<ConfigurationSearchIndexCache>();
+        services.AddScoped<IAdminReadModel, AdminReadModel>();
+        services.AddAdminReadOperations();
 
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);

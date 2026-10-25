@@ -59,6 +59,21 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
         return null;
     }
 
+    /// <summary>
+    /// Gets the level of the socket option for the specified seed sphere definition.
+    /// </summary>
+    /// <remarks>
+    /// The item level of a seed sphere defines the kind of option (see <see cref="SeedSphereCrafting"/>),
+    /// while the level of the option is defined by the sphere which was used to create the seed sphere.
+    /// The seed spheres are ordered by their sphere level, with one seed sphere per seed type.
+    /// </remarks>
+    /// <param name="seedSphereDefinition">The seed sphere definition.</param>
+    /// <returns>The level of the socket option, starting at 1.</returns>
+    internal static int GetSphereLevel(ItemDefinition seedSphereDefinition)
+    {
+        return ((seedSphereDefinition.Number - SeedSphereCrafting.SeedSphereNumberStart) / SeedSphereCrafting.SeedTypes) + 1;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
@@ -82,7 +97,7 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
             .SelectMany(o => o.PossibleOptions)
             .Single(o => o.OptionType == ItemOptionTypes.SocketOption
                          && o.Number == seedSphere.Level);
-        sphereOption.Level = seedSphere.Level;
+        sphereOption.Level = GetSphereLevel(seedSphere.Definition);
         sphereOption.Index = socketSlot;
         socketItem.ItemOptions.Add(sphereOption);
 

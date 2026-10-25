@@ -524,4 +524,118 @@
   <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
     <value>需要所需技能以及上一阶的一个技能至少达到 {0} 级。</value>
   </data>
+  <data name="CharacterCreationHint" xml:space="preserve">
+    <value>角色将获得其职业的属性及初始值，在其职业的主城地图出生，并获得空的背包和默认的按键设置。随后会像在游戏中一样运行已启用的“角色已创建”插件，例如为其添加初始物品和技能。</value>
+  </data>
+  <data name="CharacterNameRequired" xml:space="preserve">
+    <value>请输入名称。</value>
+  </data>
+  <data name="CharacterNameInvalid" xml:space="preserve">
+    <value>名称不符合配置的格式：{0}</value>
+  </data>
+  <data name="CharacterClassRequired" xml:space="preserve">
+    <value>请选择角色职业。</value>
+  </data>
+  <data name="CharacterClassWithoutHomeMap" xml:space="preserve">
+    <value>该角色职业没有主城地图，因此角色将没有出生位置。</value>
+  </data>
+  <data name="NoFreeCharacterSlot" xml:space="preserve">
+    <value>该账号没有空闲的角色栏位。每个账号最多可以拥有 {0} 个角色。</value>
+  </data>
+  <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
+    <value>角色已创建，但“角色已创建”插件执行失败，因此可能缺少初始物品或技能：{0}</value>
+  </data>
+  <data name="TerrainEditorTerrain" xml:space="preserve">
+    <value>地形</value>
+  </data>
+  <data name="DefaultTerrain" xml:space="preserve">
+    <value>默认地形</value>
+  </data>
+  <data name="TerrainTool" xml:space="preserve">
+    <value>工具</value>
+  </data>
+  <data name="TerrainToolBrush" xml:space="preserve">
+    <value>画笔</value>
+  </data>
+  <data name="TerrainToolRectangle" xml:space="preserve">
+    <value>矩形</value>
+  </data>
+  <data name="TerrainToolFill" xml:space="preserve">
+    <value>填充</value>
+  </data>
+  <data name="TerrainBrushSize" xml:space="preserve">
+    <value>画笔大小</value>
+  </data>
+  <data name="TerrainEditMode" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="TerrainEditModeAdd" xml:space="preserve">
+    <value>添加属性</value>
+  </data>
+  <data name="TerrainEditModeRemove" xml:space="preserve">
+    <value>移除属性</value>
+  </data>
+  <data name="TerrainEditModeReplace" xml:space="preserve">
+    <value>替换所有属性</value>
+  </data>
+  <data name="TerrainAttributes" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="TerrainWalkable" xml:space="preserve">
+    <value>可行走</value>
+  </data>
+  <data name="TerrainOtherAttributes" xml:space="preserve">
+    <value>其他属性</value>
+  </data>
+  <data name="TerrainLegend" xml:space="preserve">
+    <value>图例</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>重做</value>
+  </data>
+  <data name="ImportTerrain" xml:space="preserve">
+    <value>导入地形文件</value>
+  </data>
+  <data name="ImportTerrainHint" xml:space="preserve">
+    <value>支持服务器的 *.att 文件和客户端的 EncTerrain*.att 文件。</value>
+  </data>
+  <data name="DownloadServerTerrain" xml:space="preserve">
+    <value>服务器地形文件</value>
+  </data>
+  <data name="DownloadServerTerrainHint" xml:space="preserve">
+    <value>以原始服务器的 *.att 格式下载地形。</value>
+  </data>
+  <data name="DownloadClientTerrain" xml:space="preserve">
+    <value>客户端地形文件</value>
+  </data>
+  <data name="DownloadClientTerrainHint" xml:space="preserve">
+    <value>下载游戏客户端的加密地形文件。请将其放置到客户端的 Data\World{0}\EncTerrain{0}.att。</value>
+  </data>
+  <data name="InvalidTerrainFile" xml:space="preserve">
+    <value>该文件既不是服务器的地形文件，也不是客户端的地形文件。</value>
+  </data>
+  <data name="TerrainImported" xml:space="preserve">
+    <value>地形文件已导入。保存后生效。</value>
+  </data>
+  <data name="TerrainEditorShortcutPaint" xml:space="preserve">
+    <value>左键单击以使用所选工具编辑图块</value>
+  </data>
+  <data name="TerrainEditorShortcutPan" xml:space="preserve">
+    <value>右键单击并拖动以平移地形</value>
+  </data>
+  <data name="TerrainEditorShortcutZoom" xml:space="preserve">
+    <value>使用鼠标滚轮缩放</value>
+  </data>
+  <data name="TerrainEditorRestartHint" xml:space="preserve">
+    <value>修改后的地形在重启游戏服务器后生效。玩家也需要客户端地形文件才能看到变化。</value>
+  </data>
+  <data name="TerrainTransferFailed" xml:space="preserve">
+    <value>无法传输已编辑的地形：{0}</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>缩小</value>
+  </data>
 </root>

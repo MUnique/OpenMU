@@ -14,6 +14,7 @@ public sealed class JavascriptMapFactory : IMapFactory
 {
     private readonly IJSRuntime _jsRuntime;
     private readonly ILoggerFactory _loggerFactory;
+    private readonly CircuitConnectionState _circuitState;
 
     private int _mapCount;
 
@@ -22,10 +23,12 @@ public sealed class JavascriptMapFactory : IMapFactory
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public JavascriptMapFactory(IJSRuntime jsRuntime, ILoggerFactory loggerFactory)
+    /// <param name="circuitState">The connection state of the browser circuit.</param>
+    public JavascriptMapFactory(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, CircuitConnectionState circuitState)
     {
         this._jsRuntime = jsRuntime;
         this._loggerFactory = loggerFactory;
+        this._circuitState = circuitState;
     }
 
     /// <inheritdoc />
@@ -36,7 +39,7 @@ public sealed class JavascriptMapFactory : IMapFactory
         {
             var appId = this.GenerateMapAppIdentifier(gameServer.Id, mapId);
             await this._jsRuntime.InvokeVoidAsync("CreateMap", gameServer.Id, mapId, this.GetMapContainerIdentifier(gameServer.Id, mapId), appId).ConfigureAwait(false);
-            mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId);
+            mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId, this._circuitState);
             await gameServer.RegisterMapObserverAsync(mapId, mapController).ConfigureAwait(false);
         }
         catch

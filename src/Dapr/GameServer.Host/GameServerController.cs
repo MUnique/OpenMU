@@ -78,6 +78,17 @@ public class GameServerController : ControllerBase
     }
 
     /// <summary>
+    /// Sends a message of the world chat to all connected players.
+    /// </summary>
+    /// <param name="data">The message arguments.</param>
+    [HttpPost(nameof(IGameServer.WorldChatMessageAsync))]
+    [Topic("pubsub", nameof(IGameServer.WorldChatMessageAsync))]
+    public ValueTask WorldChatMessageAsync([FromBody] WorldChatMessageArguments data)
+    {
+        return this._gameServer.WorldChatMessageAsync(data.Sender, data.Message);
+    }
+
+    /// <summary>
     /// Notifies the game server that a guild got deleted.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>

@@ -32,8 +32,9 @@ public class AsyncDisposable : Disposable, IAsyncDisposable
             try
             {
                 await this.DisposeAsyncCore().ConfigureAwait(false);
-                this.Dispose(true);
-                GC.SuppressFinalize(this);
+
+                // Disposes the managed resources and marks this instance as disposed.
+                this.Dispose();
             }
             finally
             {

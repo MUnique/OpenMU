@@ -11,6 +11,15 @@ The admin panel authenticates its users itself. Earlier versions relied on the
 basic authentication of the reverse proxy against an `.htpasswd` file; that file
 is gone, and so are the proxy configurations which used it.
 
+:::warning[Requires OpenMU 0.9.12 or newer]
+The built-in login is part of OpenMU 0.9.12 and newer. The docker images up to
+0.9.10 still rely on the `.htpasswd` file of the reverse proxy. Don't combine
+such an image with the current deployment files, which no longer contain that
+file: the admin panel would then be reachable by anybody, without a login. Run
+`docker compose pull` to get the current image, or check out the git tag of the
+version you run (e.g. `v0.9.10`).
+:::
+
 What you get instead:
 
 * a real login page with a logout,
@@ -125,7 +134,7 @@ Each user has one role. They build up on each other:
 |---|---|
 | **Viewer** | See the servers, accounts and the configuration |
 | **Operator** | Everything above, plus operating the servers and editing accounts |
-| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files and the user management |
+| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files, the logging configuration and the user management |
 
 Give each administrator their own user, so you can remove one without changing
 everybody else's password.
@@ -180,7 +189,7 @@ have this role implicitly.
 |---|---|
 | `GET /api/status` | Viewer |
 | `GET /api/is-online/{account}` | Viewer |
-| `GET /api/send/{server}?msg=` | Operator |
+| `POST /api/send/{server}?msg=` | Operator |
 | `POST /api/accounts` | Operator |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
@@ -278,3 +287,34 @@ The location can be changed with `AdminPanel:Auth:DataProtectionKeyPath`.
   through a VPN or an SSH tunnel instead.
 * Remember that admin panel access means full access to your players' account
   data.
+
+## AI agents through MCP
+
+API keys with the Viewer role can also access the optional read-only
+[MCP endpoint](mcp.md). It is disabled by default and accepts API keys only.
+
+### Phase two MCP and API upgrade notes
+
+The panel still permits anonymous initial setup until the first admin user
+exists or a bootstrap user is configured. Setup operations are attributed to
+`setup`; when admin audit storage is unavailable they use sanitized log-only
+auditing.
+
+If the host restarts while the admin database is unreachable, it cannot
+distinguish a previous installation from initial setup and may allow anonymous
+setup actions with log-only auditing. Configure a bootstrap user with
+`OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` to prevent that fallback.
+
+Explicit `-demo` mode also uses log-only panel auditing. MCP and API
+writes always require authentication and durable admin audit storage.
+
+Outside demo mode and initial setup, panel operations including **Stop** require
+the admin audit database. An outage blocks the action and displays an error. Use
+the host's service manager or orchestrator for emergency shutdown during an
+audit outage.
+
+External applications must update announcement requests from GET to
+`POST /api/send/{id}?msg=...`. The identifier is now the actual game server ID,
+rather than its position in a list. Operational APIs no longer allow anonymous
+requests during initial setup. See [MCP](mcp.md#phase-two-upgrade-notes) for the
+operational HTTP error statuses and uncertain-outcome handling.

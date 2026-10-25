@@ -11,6 +11,7 @@ using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Telemetry;
 using ChatServer = MUnique.OpenMU.ChatServer.ChatServer;
 using FriendServer = MUnique.OpenMU.FriendServer.FriendServer;
 using GuildServer = MUnique.OpenMU.GuildServer.GuildServer;

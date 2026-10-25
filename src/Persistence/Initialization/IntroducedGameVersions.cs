@@ -244,6 +244,9 @@ public static class IntroducedGameVersions
         (304, 317, GameVersion.Season1), // Witch Queen - Soram
         (331, 337, GameVersion.Season1), // Aegis 7 - Schriker 7
         (338, 338, GameVersion.Version099GPlus), // Illusion of Kundun 6
+        (340, 341, GameVersion.Season1), // Dark Elf - Soram (Crywolf)
+        (344, 345, GameVersion.Season1), // Balram - Death Spirit (Crywolf)
+        (348, 349, GameVersion.Season1), // Tanker - Balgass (Crywolf)
         (350, 364, GameVersion.Season2), // Berserker - Maya
         (367, 368, GameVersion.Season2), // Gateway Machine - Elphis
         (369, 370, GameVersion.Season1), // Osbourne - Jerridon
@@ -488,6 +491,7 @@ public static class IntroducedGameVersions
         (14, 68, 68, GameVersion.Season3Episode1), // Eye of Abyssal
         (14, 91, 91, GameVersion.Season5Episode2), // Summoner Character Card
         (14, 101, 111, GameVersion.Season5Episode1), // Suspicious Scrap of Paper - Mirror of Dimensions
+        (14, 141, 144, GameVersion.Season5Episode2), // Shining Jewellery Case - Old Jewellery Case (Gens rewards)
         (14, 162, 163, GameVersion.Season6Episode2), // Magic Backpack - Vault Expansion Certificate
         (14, 169, 169, GameVersion.Season6Episode1), // Rage Fighter Character Card
         (15, 0, 8, GameVersion.Version075), // Scroll of Poison - Scroll of Evil Spirit
