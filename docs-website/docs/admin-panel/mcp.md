@@ -463,15 +463,15 @@ item is inserted into a free rectangle in the live bag; a full inventory is
 refused. It neither equips the item nor drops it on the ground.
 
 `events_schedule` reads periodic mini game schedules and live enabled/active
-state and active participant count for `serverId`. `events_start` takes that id and the invariant `eventType`
-from the schedule. It first returns a preview with enabled/active state and
-active participant count. After reviewing it, repeat the same arguments with
-`apply: true` and its caller-bound, single-use `confirmationToken`. The owning
-server rechecks the event state and count before requesting a start on the
-periodic task's next tick. A changed event requires a new preview. An
-existing event is refused unless `restart: true` explicitly permits removal of
-its participants and replacement with fresh instances. Disabled events are
-never force-started.
+state and active participant count for `serverId`. `events_start` takes that id
+and the invariant `eventType` from the schedule. It first returns a preview with
+enabled/active state and active participant count. After reviewing it, repeat
+the same arguments with `apply: true` and its caller-bound, single-use
+`confirmationToken`. The owning server rechecks the event state and count before
+requesting a start on the periodic task's next tick. A changed event requires a
+new preview. An existing event is refused unless `restart: true` explicitly
+permits removal of its participants and replacement with fresh instances.
+Disabled events are never force-started.
 
 In distributed deployments, each sidecar must use the unique app id
 `game-server-{GS_ID}`. The supplied Compose and Helm deployments configure this.

@@ -129,3 +129,8 @@ across upgrades. To manage rotation yourself, set `gameServer.appTokenSecret` to
 an existing Secret containing the `token` key. The application and its sidecar
 must receive the same token; restart both after rotating it. Unauthenticated
 requests to the pod's administration routes are rejected.
+
+The chart reuses its generated Secret through Helm's `lookup`, which returns
+nothing when a tool renders the chart with `helm template` (for example Argo CD).
+There, a new token would be generated on every sync. In such GitOps setups,
+create the Secret yourself and set `gameServer.appTokenSecret`.
