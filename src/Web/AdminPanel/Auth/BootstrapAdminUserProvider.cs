@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Auth;
 
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MUnique.OpenMU.Persistence.AdminAuth;
@@ -27,7 +26,7 @@ public class BootstrapAdminUserProvider
 
     private readonly ILogger<BootstrapAdminUserProvider> _logger;
 
-    private readonly Lock _totpStepLock = new();
+    private readonly System.Threading.Lock _totpStepLock = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BootstrapAdminUserProvider"/> class.

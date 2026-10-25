@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests.AdminAuth;
 
-using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
@@ -19,8 +19,6 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 /// </remarks>
 internal class InMemoryAdminUserRepository : IAdminUserRepository
 {
-    private static readonly MethodInfo MemberwiseCloneMethod = typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic)!;
-
     private readonly Dictionary<Guid, AdminUser> _users = new();
 
     private readonly Lock _lock = new();
@@ -125,8 +123,8 @@ internal class InMemoryAdminUserRepository : IAdminUserRepository
         return ValueTask.CompletedTask;
     }
 
-    // All members of a user are values or immutable, so a shallow copy is a complete one.
-    private AdminUser Detach(AdminUser user) => this._detached ? (AdminUser)MemberwiseCloneMethod.Invoke(user, null)! : user;
+    // All members of a user are public, settable values, so a serialization round trip copies it completely.
+    private AdminUser Detach(AdminUser user) => this._detached ? JsonSerializer.Deserialize<AdminUser>(JsonSerializer.Serialize(user))! : user;
 
     private async ValueTask YieldIfDetachedAsync()
     {
