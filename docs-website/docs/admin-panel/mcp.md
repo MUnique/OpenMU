@@ -307,8 +307,8 @@ before retrying.
 
 Configuration tools require Administrator and explicitly enabled MCP writes.
 The read-only catalog also includes `rates_get`, `drops_explain`,
-`spawns_list` and `content_list`. Every configuration write and offline character write uses two
-calls:
+`spawns_list` and `content_list`. Every configuration write and offline
+character write uses two calls:
 
 1. Call the tool with its proposed arguments and `apply: false` (the default).
    Inspect `change`, `affectedObjects`, and the restart guidance.

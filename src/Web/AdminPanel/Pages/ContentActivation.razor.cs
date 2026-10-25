@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Globalization;
 using System.Text.Json.Nodes;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
@@ -210,8 +211,8 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
             var season = value / 100000;
             var episode = (value % 100000) / 1000;
             return episode == 0
-                ? string.Format(Resources.SeasonFormat, season)
-                : string.Format(Resources.SeasonEpisodeFormat, season, episode);
+                ? string.Format(CultureInfo.CurrentCulture, Resources.SeasonFormat, season)
+                : string.Format(CultureInfo.CurrentCulture, Resources.SeasonEpisodeFormat, season, episode);
         }
 
         var patch = value % 100;
@@ -221,7 +222,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
             <= lettersInAlphabet => ((char)('a' + patch - 1)).ToString(),
             _ => $"{(char)('A' + patch - lettersInAlphabet - 1)}+",
         };
-        return string.Format(Resources.GameVersionFormat, $"{value / 10000}.{(value / 100) % 100:00}{suffix}");
+        return string.Format(CultureInfo.CurrentCulture, Resources.GameVersionFormat, string.Create(CultureInfo.InvariantCulture, $"{value / 10000}.{(value / 100) % 100:00}{suffix}"));
     }
 
     private bool IsActive(ContentActivationEntry entry)
@@ -299,7 +300,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
 
             var isConfirmed = await this.ModalService.ShowQuestionAsync(
                     Resources.ContentActivation,
-                    string.Format(Resources.ContentActivationConfirmFormat, activated, deactivated))
+                    string.Format(CultureInfo.CurrentCulture, Resources.ContentActivationConfirmFormat, activated, deactivated))
                 .ConfigureAwait(true);
             if (!isConfirmed)
             {
@@ -318,7 +319,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "An unexpected error occurred on save: {Message}", ex.Message);
-            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
+            this.ToastService.ShowError(string.Format(CultureInfo.CurrentCulture, Resources.UnexpectedErrorOccurred, ex.Message));
         }
     }
 

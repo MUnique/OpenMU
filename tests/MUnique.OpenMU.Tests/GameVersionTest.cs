@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Globalization;
 using System.Text.RegularExpressions;
 using MUnique.OpenMU.DataModel.Configuration;
 
@@ -42,8 +43,8 @@ public class GameVersionTest
     {
         if (Regex.Match(name, @"^Season(\d+)(?:Episode(\d+))?$") is { Success: true } season)
         {
-            var episode = season.Groups[2].Success ? int.Parse(season.Groups[2].Value) : 0;
-            return (int.Parse(season.Groups[1].Value) * 100000) + (episode * 1000);
+            var episode = season.Groups[2].Success ? int.Parse(season.Groups[2].Value, CultureInfo.InvariantCulture) : 0;
+            return (int.Parse(season.Groups[1].Value, CultureInfo.InvariantCulture) * 100000) + (episode * 1000);
         }
 
         var match = Regex.Match(name, @"^Version(\d)(\d\d)([a-z]|[A-Z]Plus)?$");
@@ -55,6 +56,6 @@ public class GameVersionTest
             var uppercase => uppercase[0] - 'A' + 27,
         };
 
-        return (int.Parse(match.Groups[1].Value) * 10000) + (int.Parse(match.Groups[2].Value) * 100) + patch;
+        return (int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture) * 10000) + (int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture) * 100) + patch;
     }
 }

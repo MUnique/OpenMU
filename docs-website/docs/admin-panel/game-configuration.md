@@ -203,13 +203,15 @@ correct the version of an entry with *Introduced In* on its edit page.
 :::
 
 Pick the kind of content in the second row. The list can be narrowed down
-by its active state and by a search text (which also matches the version), and **Activate all shown** /
-**Deactivate all shown** change all entries of the narrowed list at once — for
-example, search for `Kanturu` and deactivate all shown entries. The changes are
-only stored after **Save changes** and the confirmation; **Discard changes**
-drops them. Save or discard them before restricting to a game version.
+by its active state and by a search text (which also matches the version),
+and **Activate all shown** / **Deactivate all shown** change all entries of
+the narrowed list at once — for example, search for `Kanturu` and deactivate
+all shown entries. The changes are only stored after **Save changes** and the
+confirmation; **Discard changes** drops them. Save or discard them before
+restricting to a game version.
 
-Both actions are recorded in the [audit history](mcp.md#operational-safety-and-audit-history), and they are
+Both actions are recorded in the
+[audit history](mcp.md#operational-safety-and-audit-history), and they are
 the same operations which agents use through the
 [MCP tools](mcp.md#configuration-and-offline-character-changes)
 `content_restrict_to_version` and `content_set_active`. Like other configuration
