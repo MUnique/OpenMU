@@ -10,21 +10,30 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 public class ItemChatCommandArgs : ArgumentsBase
 {
     /// <summary>
+    /// The highest item level which the item data of the client can hold (4 bits).
+    /// The highest level of a specific item is defined by its <see cref="DataModel.Configuration.Items.ItemDefinition.MaximumItemLevel"/>.
+    /// </summary>
+    internal const int MaximumItemLevel = 15;
+
+    /// <summary>
     /// Gets or sets the group.
     /// </summary>
     [Argument("group")]
+    [ValueReference(ChatCommandValueReference.ItemGroup)]
     public byte Group { get; set; }
 
     /// <summary>
     /// Gets or sets the number.
     /// </summary>
     [Argument("number")]
+    [ValueReference(ChatCommandValueReference.ItemNumber, GroupWith = nameof(Group))]
     public short Number { get; set; }
 
     /// <summary>
     /// Gets or sets the level.
     /// </summary>
     [Argument("lvl", false)]
+    [Range(0, MaximumItemLevel)]
     public byte Level { get; set; }
 
     /// <summary>

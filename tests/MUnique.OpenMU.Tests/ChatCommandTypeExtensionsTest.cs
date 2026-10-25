@@ -82,6 +82,37 @@ public class ChatCommandTypeExtensionsTest
     }
 
     /// <summary>
+    /// Tests that the parameters of a command describe their value range and which kind of
+    /// value they refer to, so that a client can offer matching suggestions.
+    /// </summary>
+    [Test]
+    public void CommandInfoDescribesRangesAndValueReferences()
+    {
+        var info = ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(ItemChatCommandPlugIn), CultureInfo.InvariantCulture);
+        Assert.That(info, Is.Not.Null);
+
+        var group = info!.Parameters.First(parameter => parameter.Name == nameof(ItemChatCommandArgs.Group));
+        Assert.That(group.ValueReference, Is.EqualTo(ChatCommandValueReference.ItemGroup));
+        Assert.That(group.GroupWith, Is.Null);
+
+        var number = info.Parameters.First(parameter => parameter.Name == nameof(ItemChatCommandArgs.Number));
+        Assert.That(number.ValueReference, Is.EqualTo(ChatCommandValueReference.ItemNumber));
+        Assert.That(number.GroupWith, Is.EqualTo(nameof(ItemChatCommandArgs.Group)));
+
+        var level = info.Parameters.First(parameter => parameter.Name == nameof(ItemChatCommandArgs.Level));
+        Assert.That(level.Minimum, Is.EqualTo(0));
+        Assert.That(level.Maximum, Is.EqualTo(15));
+        Assert.That(level.ValueReference, Is.EqualTo(ChatCommandValueReference.None));
+
+        var trace = ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(TraceChatCommandPlugIn), CultureInfo.InvariantCulture);
+        Assert.That(trace, Is.Not.Null);
+        var characterName = trace!.Parameters.First(parameter => parameter.Name == nameof(TraceChatCommandArgs.CharacterName));
+        Assert.That(characterName.ValueReference, Is.EqualTo(ChatCommandValueReference.CharacterName));
+        Assert.That(characterName.Minimum, Is.Null);
+        Assert.That(characterName.Maximum, Is.Null);
+    }
+
+    /// <summary>
     /// Tests that name and description are resolved to their text, and not to the
     /// resource key which is defined by the display attribute.
     /// </summary>
