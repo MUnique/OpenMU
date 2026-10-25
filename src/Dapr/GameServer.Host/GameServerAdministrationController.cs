@@ -15,8 +15,17 @@ using MUnique.OpenMU.Interfaces;
 /// <param name="deliveries">The bounded duplicate-delivery guard.</param>
 [ApiController]
 [Route("administration")]
+[ServiceFilter(typeof(DaprAppTokenAuthorizationFilter))]
 public sealed class GameServerAdministrationController(IGameServer server, AdministrationDeliveries deliveries) : ControllerBase
 {
+    /// <summary>Reads one scalar snapshot for a complete player-list query.</summary>
+    /// <param name="request">The addressed server.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The live scalar snapshot.</returns>
+    [HttpPost(nameof(IGameServerAdministration.GetPlayerSnapshotAsync))]
+    public ValueTask<IReadOnlyList<LivePlayerInfo>> GetPlayerSnapshotAsync(GameServerAdministrationRequest request, CancellationToken cancellationToken)
+        => this.Resolve(request).GetPlayerSnapshotAsync(cancellationToken);
+
     /// <summary>Reads live characters with server-side filters and paging.</summary>
     /// <param name="request">The request arguments.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -67,7 +76,7 @@ public sealed class GameServerAdministrationController(IGameServer server, Admin
     /// <returns>The confirmed result.</returns>
     [HttpPost(nameof(IGameServerAdministration.StartEventAsync))]
     public ValueTask<GameServerAdminResult> StartEventAsync(GameServerAdministrationRequest request)
-        => deliveries.RunAsync(nameof(this.StartEventAsync), request, () => this.Resolve(request).StartEventAsync(request.EventType, request.Restart, CancellationToken.None));
+        => deliveries.RunAsync(nameof(this.StartEventAsync), request, () => this.Resolve(request).StartEventAsync(request.EventType, request.Restart, request.ExpectedEvent ?? throw new ArgumentException("An approved event preview is required."), CancellationToken.None));
 
     /// <summary>Lists operations contributed by active plugins.</summary>
     /// <param name="request">The request arguments.</param>

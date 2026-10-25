@@ -15,6 +15,10 @@ public sealed partial class GameServer : IGameServerAdministration
     private GameServerAdministration Administration => new(this._gameContext);
 
     /// <inheritdoc />
+    public ValueTask<IReadOnlyList<LivePlayerInfo>> GetPlayerSnapshotAsync(CancellationToken cancellationToken)
+        => this.Administration.GetPlayerSnapshotAsync(cancellationToken);
+
+    /// <inheritdoc />
     public ValueTask<LivePlayerPage> GetPlayersAsync(ushort? mapNumber, uint? guildId, int offset, int limit, CancellationToken cancellationToken)
         => this.Administration.GetPlayersAsync(mapNumber, guildId, offset, limit, cancellationToken);
 
@@ -39,8 +43,8 @@ public sealed partial class GameServer : IGameServerAdministration
         => this.Administration.GetEventsAsync(cancellationToken);
 
     /// <inheritdoc />
-    public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, CancellationToken cancellationToken)
-        => this.Administration.StartEventAsync(eventType, restart, cancellationToken);
+    public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)
+        => this.Administration.StartEventAsync(eventType, restart, expectedEvent, cancellationToken);
 
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<AdminPluginOperationInfo>> GetAdminOperationsAsync(CancellationToken cancellationToken)

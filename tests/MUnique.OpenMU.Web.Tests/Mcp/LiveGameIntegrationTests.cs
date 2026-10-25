@@ -49,13 +49,13 @@ public sealed class LiveGameIntegrationTests
         this._live = server.As<IGameServerAdministration>();
         this._player = new(Guid.NewGuid(), "tester", "Hero", 0, 100, 100, 10, 2, 42, false);
         this._live.Setup(s => s.GetPlayerAsync("Hero", It.IsAny<CancellationToken>())).ReturnsAsync(() => this._player);
-        this._live.Setup(s => s.GetPlayersAsync(null, null, It.IsAny<int>(), 100, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new LivePlayerPage([this._player], 1));
+        this._live.Setup(s => s.GetPlayerSnapshotAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { this._player });
         this._live.Setup(s => s.GetEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync([new("BloodCastle", "Blood Castle", true, false, TimeSpan.FromMinutes(5))]);
         this._live.Setup(s => s.SetLevelAsync("Hero", this._player.CharacterId, It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(GameServerAdminResult.Success);
         this._live.Setup(s => s.TeleportAsync("Hero", this._player.CharacterId, It.IsAny<ushort>(), It.IsAny<byte>(), It.IsAny<byte>(), It.IsAny<CancellationToken>())).ReturnsAsync(GameServerAdminResult.Success);
         this._live.Setup(s => s.GiveItemAsync("Hero", this._player.CharacterId, It.IsAny<ItemSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(GameServerAdminResult.Success);
-        this._live.Setup(s => s.StartEventAsync("BloodCastle", false, It.IsAny<CancellationToken>())).ReturnsAsync(GameServerAdminResult.Success);
+        this._live.Setup(s => s.StartEventAsync("BloodCastle", false, It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>())).ReturnsAsync(GameServerAdminResult.Success);
         this._read = new(Guid.NewGuid(), "read_state", "Read event state.", AdminRoles.Viewer, true, false, true, new JsonObject { ["type"] = "object" });
         this._write = new(Guid.NewGuid(), "reset_state", "Reset event state.", AdminRoles.Administrator, false, true, false, new JsonObject { ["type"] = "object" });
         this._live.Setup(s => s.GetAdminOperationsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(() => new[] { this._read, this._write });
@@ -180,19 +180,23 @@ public sealed class LiveGameIntegrationTests
     [Test]
     public async Task AuditFailurePreventsLiveWriteAsync()
     {
-        this._audit.RejectWrites = true;
         await using var client = await this.AdminAsync().ConfigureAwait(false);
-        Assert.That((await client.CallToolAsync("events_start", new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" }).ConfigureAwait(false)).IsError, Is.True);
-        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
+        var arguments = new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" };
+        Confirm(arguments, await client.CallToolAsync("events_start", arguments).ConfigureAwait(false));
+        this._audit.RejectWrites = true;
+        Assert.That((await client.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.True);
+        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     /// <summary>Transport failures preserve Pending rather than claiming that a live write failed or succeeded.</summary>
     [Test]
     public async Task LostResponseLeavesPendingAuditAsync()
     {
-        this._live.Setup(s => s.StartEventAsync("BloodCastle", false, It.IsAny<CancellationToken>())).ThrowsAsync(new TimeoutException());
+        this._live.Setup(s => s.StartEventAsync("BloodCastle", false, It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>())).ThrowsAsync(new TimeoutException());
         await using var client = await this.AdminAsync().ConfigureAwait(false);
-        var result = await client.CallToolAsync("events_start", new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" }).ConfigureAwait(false);
+        var arguments = new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" };
+        Confirm(arguments, await client.CallToolAsync("events_start", arguments).ConfigureAwait(false));
+        var result = await client.CallToolAsync("events_start", arguments).ConfigureAwait(false);
         Assert.That(result.IsError, Is.True);
         Assert.That(JsonSerializer.Serialize(result), Does.Contain("outcome is unknown"));
         Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Single().Outcome, Is.EqualTo("Pending"));
@@ -202,9 +206,11 @@ public sealed class LiveGameIntegrationTests
     [Test]
     public async Task EventRefusalIsAuditedAsync()
     {
-        this._live.Setup(s => s.StartEventAsync("BloodCastle", false, It.IsAny<CancellationToken>())).ReturnsAsync(new GameServerAdminResult(false, "Event disabled."));
+        this._live.Setup(s => s.StartEventAsync("BloodCastle", false, It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>())).ReturnsAsync(new GameServerAdminResult(false, "Event disabled."));
         await using var client = await this.AdminAsync().ConfigureAwait(false);
-        var result = await client.CallToolAsync("events_start", new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" }).ConfigureAwait(false);
+        var arguments = new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" };
+        Confirm(arguments, await client.CallToolAsync("events_start", arguments).ConfigureAwait(false));
+        var result = await client.CallToolAsync("events_start", arguments).ConfigureAwait(false);
         Assert.That(result.IsError, Is.True);
         Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Single().Outcome, Is.EqualTo("Failed"));
     }
@@ -230,7 +236,7 @@ public sealed class LiveGameIntegrationTests
         await using var client = await this.AdminAsync().ConfigureAwait(false);
         Assert.That((await client.CallToolAsync("players_set_level", new Dictionary<string, object?> { ["characterName"] = "Hero", ["level"] = 100 }).ConfigureAwait(false)).IsError, Is.True);
         Assert.That((await client.CallToolAsync("events_start", new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle" }).ConfigureAwait(false)).IsError, Is.True);
-        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
+        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>()), Times.Never);
         Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Total, Is.Zero);
     }
 
@@ -277,6 +283,69 @@ public sealed class LiveGameIntegrationTests
         this._host.App.Services.GetRequiredService<AdminWriteSettings>().AllowedPluginWrites.Clear();
         Assert.That((await client.CallToolAsync("plugin_operations_execute", args).ConfigureAwait(false)).IsError, Is.True);
         this._live.Verify(s => s.ExecuteAdminOperationAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonObject>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    /// <summary>Restart previews show impact, bind the caller and execute only once after confirmation.</summary>
+    [Test]
+    public async Task EventRestartRequiresBoundSingleUsePreviewAsync()
+    {
+        this._live.Setup(s => s.GetEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync([new("BloodCastle", "Blood Castle", true, true, null, 37)]);
+        this._live.Setup(s => s.StartEventAsync("BloodCastle", true, It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>())).ReturnsAsync(GameServerAdminResult.Success);
+        await using var client = await this.AdminAsync().ConfigureAwait(false);
+        var arguments = new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle", ["restart"] = true };
+        var preview = await client.CallToolAsync("events_start", arguments).ConfigureAwait(false);
+        Assert.That(JsonSerializer.Serialize(preview), Does.Contain("37").And.Contain("removesExistingParticipants"));
+        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>()), Times.Never);
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Total, Is.Zero);
+        arguments["apply"] = true;
+        Assert.That((await client.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.True);
+        Confirm(arguments, preview);
+        await using var other = await this._host.ConnectAsync("omu_live-operator").ConfigureAwait(false);
+        Assert.That((await other.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.True);
+        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>()), Times.Never);
+        arguments.Remove("apply");
+        arguments.Remove("confirmationToken");
+        Confirm(arguments, await client.CallToolAsync("events_start", arguments).ConfigureAwait(false));
+        Assert.That((await client.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.Not.True);
+        Assert.That((await client.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.True);
+        this._live.Verify(s => s.StartEventAsync("BloodCastle", true, It.Is<LiveEventInfo>(e => e.Active && e.Participants == 37), It.IsAny<CancellationToken>()), Times.Once);
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Single().Outcome, Is.EqualTo("Succeeded"));
+    }
+
+    /// <summary>Changed event state or arguments require a new preview before removing participants.</summary>
+    [Test]
+    public async Task EventChangesInvalidateConfirmationAsync()
+    {
+        await using var client = await this.AdminAsync().ConfigureAwait(false);
+        var arguments = new Dictionary<string, object?> { ["serverId"] = 4, ["eventType"] = "BloodCastle", ["restart"] = true };
+        Confirm(arguments, await client.CallToolAsync("events_start", arguments).ConfigureAwait(false));
+        this._live.Setup(s => s.GetEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync([new("BloodCastle", "Blood Castle", true, true, null, 5)]);
+        Assert.That((await client.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.True);
+        arguments.Remove("apply");
+        arguments.Remove("confirmationToken");
+        Confirm(arguments, await client.CallToolAsync("events_start", arguments).ConfigureAwait(false));
+        arguments["restart"] = false;
+        Assert.That((await client.CallToolAsync("events_start", arguments).ConfigureAwait(false)).IsError, Is.True);
+        this._live.Verify(s => s.StartEventAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<LiveEventInfo>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    /// <summary>One listing fetches a 5,000-player server snapshot once, then filters and pages locally.</summary>
+    [Test]
+    public async Task LargePopulationUsesOneSnapshotAsync()
+    {
+        var population = Enumerable.Range(0, 5000).Select(i => this._player with { Account = $"account{i:D4}", Character = $"Hero{i:D4}", Map = (ushort)(i % 2) }).ToArray();
+        Mock.Get(this._host.App.Services.GetRequiredService<ILoginServer>()).Setup(s => s.GetSnapshotAsync())
+            .ReturnsAsync(population.ToDictionary(p => p.Account, _ => (byte)4));
+        this._live.Setup(s => s.GetPlayerSnapshotAsync(It.IsAny<CancellationToken>())).ReturnsAsync(population);
+        await using var client = await this.AdminAsync().ConfigureAwait(false);
+        var result = await client.CallToolAsync("players_list", new Dictionary<string, object?> { ["serverId"] = 4, ["mapNumber"] = 1, ["offset"] = 2400, ["limit"] = 100 }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.Not.True, JsonSerializer.Serialize(result));
+        var content = JsonSerializer.SerializeToNode(result.StructuredContent)!;
+        Assert.That(content["total"]!.GetValue<int>(), Is.EqualTo(2500));
+        Assert.That(content["items"]!.AsArray(), Has.Count.EqualTo(100));
+        Assert.That(content["items"]![0]!["account"]!.GetValue<string>(), Is.EqualTo("account4801"));
+        this._live.Verify(s => s.GetPlayerSnapshotAsync(It.IsAny<CancellationToken>()), Times.Once);
+        this._live.Verify(s => s.GetPlayersAsync(It.IsAny<ushort?>(), It.IsAny<uint?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private static void Confirm(Dictionary<string, object?> arguments, CallToolResult preview)

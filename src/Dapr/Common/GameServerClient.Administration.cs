@@ -15,6 +15,10 @@ public sealed partial class GameServerClient : IGameServerAdministration
     public string AdministrationAppId => $"game-server-{this.Id}";
 
     /// <inheritdoc />
+    public ValueTask<IReadOnlyList<LivePlayerInfo>> GetPlayerSnapshotAsync(CancellationToken cancellationToken)
+        => this.InvokeAdministrationAsync<IReadOnlyList<LivePlayerInfo>>(nameof(this.GetPlayerSnapshotAsync), new(), cancellationToken);
+
+    /// <inheritdoc />
     public ValueTask<LivePlayerPage> GetPlayersAsync(ushort? mapNumber, uint? guildId, int offset, int limit, CancellationToken cancellationToken)
         => this.InvokeAdministrationAsync<LivePlayerPage>(nameof(this.GetPlayersAsync), new() { MapNumber = mapNumber, GuildId = guildId, Offset = offset, Limit = limit }, cancellationToken);
 
@@ -39,8 +43,8 @@ public sealed partial class GameServerClient : IGameServerAdministration
         => this.InvokeAdministrationAsync<IReadOnlyList<LiveEventInfo>>(nameof(this.GetEventsAsync), new(), cancellationToken);
 
     /// <inheritdoc />
-    public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, CancellationToken cancellationToken)
-        => this.InvokeAdministrationAsync<GameServerAdminResult>(nameof(this.StartEventAsync), new() { EventType = eventType, Restart = restart }, cancellationToken);
+    public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)
+        => this.InvokeAdministrationAsync<GameServerAdminResult>(nameof(this.StartEventAsync), new() { EventType = eventType, Restart = restart, ExpectedEvent = expectedEvent }, cancellationToken);
 
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<AdminPluginOperationInfo>> GetAdminOperationsAsync(CancellationToken cancellationToken)

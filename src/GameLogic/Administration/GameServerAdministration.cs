@@ -23,17 +23,25 @@ public sealed partial class GameServerAdministration(IGameContext context) : IGa
             throw new ArgumentOutOfRangeException(nameof(limit), "Use offset >= 0 and limit between 1 and 100.");
         }
 
-        var matches = new List<LivePlayerInfo>();
+        var snapshot = await this.GetPlayerSnapshotAsync(cancellationToken).ConfigureAwait(false);
+        var matches = snapshot.Where(p => (mapNumber is null || p.Map == mapNumber) && (guildId is null || p.GuildId == guildId)).ToList();
+        return new(matches.OrderBy(p => p.Character, StringComparer.OrdinalIgnoreCase).Skip(offset).Take(limit).ToArray(), matches.Count);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<LivePlayerInfo>> GetPlayerSnapshotAsync(CancellationToken cancellationToken)
+    {
+        var snapshot = new List<LivePlayerInfo>();
         foreach (var player in await context.GetPlayersAsync().ConfigureAwait(false))
         {
-            var info = await this.ReadPlayerAsync(player, cancellationToken).ConfigureAwait(false);
-            if (info is not null && (mapNumber is null || info.Map == mapNumber) && (guildId is null || info.GuildId == guildId))
+            cancellationToken.ThrowIfCancellationRequested();
+            if (ReadPlayer(player) is { } info)
             {
-                matches.Add(info);
+                snapshot.Add(info);
             }
         }
 
-        return new(matches.OrderBy(p => p.Character, StringComparer.OrdinalIgnoreCase).Skip(offset).Take(limit).ToArray(), matches.Count);
+        return snapshot;
     }
 
     /// <inheritdoc />
@@ -69,7 +77,7 @@ public sealed partial class GameServerAdministration(IGameContext context) : IGa
                     startsIn = scheduled.GetNextStartUtc(now, context.ServerTimeZone) - now;
                 }
 
-                events.Add(new(definition.Type.ToString(), definition.Name, starter.IsEnabledOn(context), starter.IsEventActive(context), startsIn));
+                events.Add(new(definition.Type.ToString(), definition.Name, starter.IsEnabledOn(context), starter.IsEventActive(context), startsIn, GameMasterEventActions.GetParticipantCount(context, definition.Type)));
             }
         }
 
@@ -77,26 +85,30 @@ public sealed partial class GameServerAdministration(IGameContext context) : IGa
     }
 
     /// <inheritdoc />
-    public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, CancellationToken cancellationToken)
+    public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)
         => Enum.TryParse<MiniGameType>(eventType, false, out var type) && Enum.IsDefined(type)
-            ? GameMasterEventActions.StartAsync(context, type, restart, cancellationToken)
+            ? GameMasterEventActions.StartAsync(context, type, restart, cancellationToken, expectedEvent)
             : ValueTask.FromResult(new GameServerAdminResult(false, "Unknown event type. Use events_schedule to find its invariant name."));
 
     private static bool IsAvailable(Player player) => player is not OfflinePlayer && player.IsConnected
         && player.PlayerState.CurrentState == PlayerState.EnteredWorld && player.SelectedCharacter is not null && player.Account is not null;
 
-    private async ValueTask<LivePlayerInfo?> ReadPlayerAsync(Player player, CancellationToken cancellationToken)
-        => await player.RunPersistenceExclusiveAsync<LivePlayerInfo?>(
-            () =>
-            {
-                if (!IsAvailable(player) || player.SelectedCharacter is not { } character || player.Account is not { } account)
-                {
-                    return ValueTask.FromResult<LivePlayerInfo?>(null);
-                }
+    private static LivePlayerInfo? ReadPlayer(Player player)
+    {
+        if (!IsAvailable(player) || player.SelectedCharacter is not { } character || player.Account is not { } account)
+        {
+            return null;
+        }
 
-                return ValueTask.FromResult<LivePlayerInfo?>(new(character.Id, account.LoginName, character.Name, player.CurrentMap?.MapId, player.Position.X, player.Position.Y, player.Level, (int)(player.Attributes?[Stats.MasterLevel] ?? 0), player.GuildStatus?.GuildId, character.CharacterStatus == CharacterStatus.GameMaster || account.State is not (AccountState.Normal or AccountState.Banned or AccountState.TemporarilyBanned)));
-            },
-            cancellationToken).ConfigureAwait(false);
+        // List projections are best-effort scalar snapshots. Saves must not stall population reads.
+        var position = player.Position;
+        var attributes = player.Attributes;
+        var info = new LivePlayerInfo(character.Id, account.LoginName, character.Name, player.CurrentMap?.MapId, position.X, position.Y, (int)(attributes?[Stats.Level] ?? 0), (int)(attributes?[Stats.MasterLevel] ?? 0), player.GuildStatus?.GuildId, character.CharacterStatus == CharacterStatus.GameMaster || account.State is not (AccountState.Normal or AccountState.Banned or AccountState.TemporarilyBanned));
+        return ReferenceEquals(player.SelectedCharacter, character) && ReferenceEquals(player.Account, account) && IsAvailable(player) ? info : null;
+    }
+
+    private async ValueTask<LivePlayerInfo?> ReadPlayerAsync(Player player, CancellationToken cancellationToken)
+        => await player.RunPersistenceExclusiveAsync<LivePlayerInfo?>(() => ValueTask.FromResult(ReadPlayer(player)), cancellationToken).ConfigureAwait(false);
 
     private async ValueTask<GameServerAdminResult> WithPlayerAsync(string name, Guid id, Func<Player, ValueTask<GameServerAdminResult>> action, CancellationToken cancellationToken)
     {

@@ -93,22 +93,13 @@ public sealed class ServerReadOperations(
 
             if (server is IGameServerAdministration administration)
             {
-                var pageOffset = 0;
-                LivePlayerPage page;
-                do
+                foreach (var player in await administration.GetPlayerSnapshotAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    page = await administration.GetPlayersAsync(null, null, pageOffset, AdminReadResult.MaximumRows, cancellationToken).ConfigureAwait(false);
-                    foreach (var player in page.Items)
+                    if (online.TryGetValue(player.Account, out var owner) && owner == server.Id)
                     {
-                        if (online.TryGetValue(player.Account, out var owner) && owner == server.Id)
-                        {
-                            live[player.Account] = player;
-                        }
+                        live[player.Account] = player;
                     }
-
-                    pageOffset += page.Items.Count;
                 }
-                while (page.Items.Count > 0 && pageOffset < page.Total);
             }
             else if (server is IGameServerContextProvider provider)
             {

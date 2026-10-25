@@ -47,6 +47,13 @@ For observability, all subsystems and their Dapr sidecars send logs, metrics and
 [OpenTelemetry](https://opentelemetry.io/) to the `otel-lgtm` container, which
 bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
 
+Before starting Compose, set `OPENMU_GAME_SERVER_APP_TOKEN` in your private `.env`
+file to a strong random value (for example, `openssl rand -hex 32`). The game
+servers and their Dapr sidecars receive this as `APP_API_TOKEN`. Internal live
+administration requests without a matching sidecar token are rejected, including
+when the server has no configured token. Game server HTTP ports bind to loopback;
+keep the existing nginx rule blocking public administration routes.
+
 ## Deployment with docker compose
 
 The docker compose file has the limitation that everything runs on the same

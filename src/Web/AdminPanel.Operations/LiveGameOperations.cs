@@ -114,25 +114,35 @@ public sealed class LiveGameOperations(IServerProvider servers, IPersistenceCont
         return AdminReadResult.From(new { serverId, events = events.Take(100) });
     }
 
-    /// <summary>Requests a forced start, or explicit restart, of an enabled periodic event.</summary>
+    /// <summary>Previews or confirms a forced start or restart of an enabled periodic event.</summary>
     /// <param name="serverId">The actual game server identifier.</param>
     /// <param name="eventType">The invariant type from events_schedule.</param>
-    /// <param name="restart">Whether to remove an active event's players before restarting it.</param>
+    /// <param name="restart">Whether to remove an active event's participants before restarting it.</param>
+    /// <param name="apply">Whether to apply an approved preview.</param>
+    /// <param name="confirmationToken">The caller-bound, single-use preview token.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The confirmed start request result.</returns>
+    /// <returns>The event preview or confirmed start result.</returns>
     [AdminOperation(AdminRole.Operator, ReadOnly = false)]
-    public ValueTask<JsonObject> StartEventAsync(int serverId, string eventType, bool restart, CancellationToken cancellationToken)
-        => executor.ExecuteAsync(
-            AdminRoles.Operator,
-            "events_start",
-            new { serverId, eventType, restart },
-            async _ =>
-            {
-                var server = this.ResolveServer(serverId);
-                await ExecuteLiveAsync(() => ((IGameServerAdministration)server).StartEventAsync(eventType, restart, cancellationToken)).ConfigureAwait(false);
-                return AdminReadResult.From(new { serverId, eventType, status = "start_requested", restart });
-            },
-            cancellationToken);
+    public async ValueTask<JsonObject> StartEventAsync(int serverId, string eventType, bool restart, bool apply, string? confirmationToken, CancellationToken cancellationToken)
+    {
+        var actor = await AdminChangeExecution.RequireAsync(executor, settings, AdminRoles.Operator, cancellationToken).ConfigureAwait(false);
+        var server = (IGameServerAdministration)this.ResolveServer(serverId);
+        var current = (await server.GetEventsAsync(cancellationToken).ConfigureAwait(false)).FirstOrDefault(e => e.Type == eventType);
+        if (current is null || !current.Enabled || (current.Active && !restart))
+        {
+            throw new ArgumentException("Select an enabled event from events_schedule; restarting an active event requires restart=true.", nameof(eventType));
+        }
+
+        // Countdown changes do not change the bulk effect. Bind active state and participant count instead.
+        var expected = current with { StartsIn = null };
+        var arguments = new { serverId, eventType, restart };
+        var change = new JsonObject
+        {
+            ["before"] = JsonSerializer.SerializeToNode(expected),
+            ["after"] = JsonSerializer.SerializeToNode(new { serverId, eventType, restart, removesExistingParticipants = restart }),
+        };
+        return await AdminChangeExecution.RunAsync(executor, confirmations, actor, AdminRoles.Operator, "events_start", arguments, change, apply, confirmationToken, () => ExecuteLiveAsync(() => server.StartEventAsync(eventType, restart, expected, cancellationToken)), cancellationToken).ConfigureAwait(false);
+    }
 
     private static async ValueTask ExecuteLiveAsync(Func<ValueTask<GameServerAdminResult>> action)
     {

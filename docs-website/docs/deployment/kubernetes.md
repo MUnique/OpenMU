@@ -122,3 +122,10 @@ for all settings.
 * **No live map** through the ingress: it's served by each game server under
   `/gameServer/<id>/`, which would need a route per pod.
 * Observability: set `otlpEndpoint` to the OTLP endpoint of your collector.
+
+The chart protects each game server's internal administration routes with Dapr's
+app API token (`dapr.io/app-token-secret`). It creates and reuses a random Secret
+across upgrades. To manage rotation yourself, set `gameServer.appTokenSecret` to
+an existing Secret containing the `token` key. The application and its sidecar
+must receive the same token; restart both after rotating it. Unauthenticated
+requests to the pod's administration routes are rejected.

@@ -38,6 +38,7 @@ public sealed class GameServerAdministrationTests
         context.Setup(c => c.GetPlayerByCharacterName("Hero")).Returns(this._player);
         context.Setup(c => c.GetPlayersAsync()).ReturnsAsync(new List<Player> { this._player });
         context.SetupGet(c => c.PlugInManager).Returns(this._player.GameContext.PlugInManager);
+        context.SetupGet(c => c.MiniGames).Returns(this._player.GameContext.MiniGames);
         context.SetupGet(c => c.Configuration).Returns(this._player.GameContext.Configuration);
         this._administration = new(context.Object);
     }
@@ -180,15 +181,55 @@ public sealed class GameServerAdministrationTests
     {
         var starter = new TestEventStarter();
         this._player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPeriodicMiniGameStartPlugIn>(starter);
-        Assert.That((await this._administration.StartEventAsync("BloodCastle", false, CancellationToken.None).ConfigureAwait(false)).Succeeded, Is.False);
+        Assert.That((await this._administration.StartEventAsync("BloodCastle", false, new("BloodCastle", "Blood Castle", true, true, null), CancellationToken.None).ConfigureAwait(false)).Succeeded, Is.False);
         Assert.That(starter.Disposals, Is.Zero);
         starter.Enabled = true;
         starter.Active = true;
-        Assert.That((await this._administration.StartEventAsync("BloodCastle", false, CancellationToken.None).ConfigureAwait(false)).Succeeded, Is.False);
+        Assert.That((await this._administration.StartEventAsync("BloodCastle", false, new("BloodCastle", "Blood Castle", true, true, null), CancellationToken.None).ConfigureAwait(false)).Succeeded, Is.False);
         Assert.That(starter.Disposals, Is.Zero);
-        Assert.That((await this._administration.StartEventAsync("BloodCastle", true, CancellationToken.None).ConfigureAwait(false)).Succeeded, Is.True);
+        Assert.That((await this._administration.StartEventAsync("BloodCastle", true, new("BloodCastle", "Blood Castle", true, true, null), CancellationToken.None).ConfigureAwait(false)).Succeeded, Is.True);
         Assert.That(starter.Disposals, Is.EqualTo(1));
         Assert.That(starter.Starts, Is.EqualTo(1));
+    }
+
+    /// <summary>A population read completes while progress persistence holds the player lock.</summary>
+    [Test]
+    public async Task SnapshotDoesNotWaitForPlayerPersistenceAsync()
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var holding = Task.Run(async () => await this._player.RunPersistenceExclusiveAsync(async () =>
+        {
+            entered.SetResult();
+            await release.Task.ConfigureAwait(false);
+        }).ConfigureAwait(false));
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        try
+        {
+            var snapshot = await this._administration.GetPlayerSnapshotAsync(CancellationToken.None).AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(snapshot.Single().Character, Is.EqualTo("Hero"));
+        }
+        finally
+        {
+            release.SetResult();
+            await holding.ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>The game-side event gate rejects stale impact state even after a front-end check.</summary>
+    [Test]
+    public async Task EventRejectsStalePreviewAsync()
+    {
+        var starter = new TestEventStarter { Enabled = true, Active = true };
+        this._player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPeriodicMiniGameStartPlugIn>(starter);
+        foreach (var expected in new[] { new LiveEventInfo("BloodCastle", "Blood Castle", true, false, null), new LiveEventInfo("BloodCastle", "Blood Castle", true, true, null, 3) })
+        {
+            var result = await this._administration.StartEventAsync("BloodCastle", true, expected, CancellationToken.None).ConfigureAwait(false);
+            Assert.That(result.Succeeded, Is.False);
+        }
+
+        Assert.That(starter.Disposals, Is.Zero);
+        Assert.That(starter.Starts, Is.Zero);
     }
 
     private ItemDefinition AddItemDefinition()

@@ -10,4 +10,5 @@ namespace MUnique.OpenMU.Interfaces;
 /// <param name="Enabled">Whether the event is enabled on this server.</param>
 /// <param name="Active">Whether an event is running.</param>
 /// <param name="StartsIn">The duration until the next start, when available.</param>
-public sealed record LiveEventInfo(string Type, string Name, bool Enabled, bool Active, TimeSpan? StartsIn);
+/// <param name="Participants">The current number of active participants.</param>
+public sealed record LiveEventInfo(string Type, string Name, bool Enabled, bool Active, TimeSpan? StartsIn, int Participants = 0);

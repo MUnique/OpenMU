@@ -10,6 +10,11 @@ using System.Threading;
 /// <remarks>Internal server channel. Public front ends must authorize and audit writes before calling it.</remarks>
 public interface IGameServerAdministration : IGameServerPluginOperations
 {
+    /// <summary>Reads one best-effort scalar snapshot without waiting for player persistence.</summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The connected characters, bounded by the server's player population.</returns>
+    ValueTask<IReadOnlyList<LivePlayerInfo>> GetPlayerSnapshotAsync(CancellationToken cancellationToken);
+
     /// <summary>Reads live characters without credentials or IP addresses.</summary>
     /// <param name="mapNumber">An optional map filter.</param>
     /// <param name="guildId">An optional live guild filter.</param>
@@ -60,7 +65,8 @@ public interface IGameServerAdministration : IGameServerPluginOperations
     /// <summary>Force-starts or restarts an enabled periodic mini game.</summary>
     /// <param name="eventType">The invariant mini game type.</param>
     /// <param name="restart">Whether an already running event may be removed first.</param>
+    /// <param name="expectedEvent">The event state approved in the preview.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The confirmed start request result; the periodic task starts the event on its next tick.</returns>
-    ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, CancellationToken cancellationToken);
+    ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken);
 }

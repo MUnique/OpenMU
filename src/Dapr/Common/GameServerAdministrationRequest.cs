@@ -49,6 +49,9 @@ public sealed class GameServerAdministrationRequest
     /// <summary>Gets or sets a value indicating whether an active event may be restarted.</summary>
     public bool Restart { get; set; }
 
+    /// <summary>Gets or sets the event state approved in the preview.</summary>
+    public LiveEventInfo? ExpectedEvent { get; set; }
+
     /// <summary>Gets or sets the number of matches to skip.</summary>
     public int Offset { get; set; }
 

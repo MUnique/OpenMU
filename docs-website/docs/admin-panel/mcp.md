@@ -463,14 +463,24 @@ item is inserted into a free rectangle in the live bag; a full inventory is
 refused. It neither equips the item nor drops it on the ground.
 
 `events_schedule` reads periodic mini game schedules and live enabled/active
-state for `serverId`. `events_start` takes that id and the invariant `eventType`
-from the schedule. It requests a start on the periodic task's next tick. An
+state and active participant count for `serverId`. `events_start` takes that id and the invariant `eventType`
+from the schedule. It first returns a preview with enabled/active state and
+active participant count. After reviewing it, repeat the same arguments with
+`apply: true` and its caller-bound, single-use `confirmationToken`. The owning
+server rechecks the event state and count before requesting a start on the
+periodic task's next tick. A changed event requires a new preview. An
 existing event is refused unless `restart: true` explicitly permits removal of
 its participants and replacement with fresh instances. Disabled events are
 never force-started.
 
 In distributed deployments, each sidecar must use the unique app id
 `game-server-{GS_ID}`. The supplied Compose and Helm deployments configure this.
+The internal `/administration/*` routes also require the sidecar's
+`dapr-api-token` header. Configure the same `APP_API_TOKEN` on each game server
+and its sidecar; missing configuration disables these routes. Compose requires
+`OPENMU_GAME_SERVER_APP_TOKEN` and binds game server HTTP ports to loopback.
+Helm creates a reusable random token Secret, or accepts `gameServer.appTokenSecret`
+with key `token`. Never put this token in agent prompts or client requests.
 Calls return the actual owning server's response; live writes do not use
 pub/sub. The game-server process deduplicates transport deliveries for ten
 minutes, including failed responses. This cache is lost on process restart.
@@ -554,3 +564,8 @@ Verify the preview/apply flow with two agent clients. In the panel, also check
 “open a configuration editor without editing → apply an MCP change → edit and
 save”: Save must request a refresh, and Refresh must load the committed value.
 Copy the pending edit before refreshing, then reapply it and save normally.
+
+Player-list enrichment reads one best-effort scalar snapshot per owning server,
+then filters and pages the combined result. It does not wait for player progress
+saves; fields may change during a snapshot. Character writes still serialize
+with gameplay and persistence.

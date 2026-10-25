@@ -20,14 +20,21 @@ public static class GameMasterEventActions
     /// <param name="type">The mini game type.</param>
     /// <param name="restart">Whether to dispose a running event first.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="expectedEvent">The approved event state, or null for the existing GM command.</param>
     /// <returns>The confirmed request result.</returns>
-    public static async ValueTask<GameServerAdminResult> StartAsync(IGameContext context, MiniGameType type, bool restart, CancellationToken cancellationToken)
+    public static async ValueTask<GameServerAdminResult> StartAsync(IGameContext context, MiniGameType type, bool restart, CancellationToken cancellationToken, LiveEventInfo? expectedEvent = null)
     {
         using var gate = await Gates.GetValue(context, _ => new AsyncLock()).LockAsync(cancellationToken).ConfigureAwait(false);
         var starter = context.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(type);
         if (!Enum.IsDefined(type) || starter is null || !starter.IsEnabledOn(context))
         {
             return new(false, "This event is not active or is disabled on this game server. Check events_schedule.");
+        }
+
+        if (expectedEvent is not null && (expectedEvent.Type != type.ToString() || !expectedEvent.Enabled
+            || expectedEvent.Active != starter.IsEventActive(context) || expectedEvent.Participants != GetParticipantCount(context, type)))
+        {
+            return new(false, "The event changed after the preview. Request and approve a new preview.");
         }
 
         if (starter.IsEventActive(context) && !restart)
@@ -40,4 +47,11 @@ public static class GameMasterEventActions
         starter.ForceStart();
         return GameServerAdminResult.Success;
     }
+
+    /// <summary>Counts active participants across the running instances of one event.</summary>
+    /// <param name="context">The owning context.</param>
+    /// <param name="type">The event type.</param>
+    /// <returns>The current active participant count.</returns>
+    internal static int GetParticipantCount(IGameContext context, MiniGameType type)
+        => context.MiniGames.GetRunningMiniGames(type).Sum(game => game.PlayerCount);
 }

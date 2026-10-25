@@ -270,10 +270,11 @@ services:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
       - "45901:45901"
       - "45902:45902"
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       GS_ID: 0
       DAPR_HTTP_ENDPOINT: http://gameServer0-dapr:3500
       DAPR_GRPC_ENDPOINT: http://gameServer0-dapr:50001
@@ -297,6 +298,7 @@ services:
     <<: *dapr-sidecar
     container_name: gameserver0_dapr
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       POD_NAME: gameServer0
     command: [ "./daprd", "-app-id", "game-server-0", "-app-port", "8080",
                 "-app-channel-address", "gameServer0",
@@ -316,10 +318,11 @@ services:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
       - "45903:45903"
       - "45904:45904"
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       GS_ID: 1
       DAPR_HTTP_ENDPOINT: http://gameServer1-dapr:3500
       DAPR_GRPC_ENDPOINT: http://gameServer1-dapr:50001
@@ -343,6 +346,7 @@ services:
     <<: *dapr-sidecar
     container_name: gameserver1_dapr
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       POD_NAME: gameServer1
     command: [ "./daprd", "-app-id", "game-server-1", "-app-port", "8080",
                 "-app-channel-address", "gameServer1",

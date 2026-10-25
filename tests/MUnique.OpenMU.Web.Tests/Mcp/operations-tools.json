@@ -1270,6 +1270,19 @@
           "description": "Explicitly allow removal of a running event before restarting it.",
           "type": "boolean",
           "default": false
+        },
+        "apply": {
+          "description": "Apply only after approving the event preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
         }
       },
       "required": [

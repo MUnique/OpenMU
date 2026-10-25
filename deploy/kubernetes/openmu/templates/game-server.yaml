@@ -44,6 +44,7 @@ spec:
         {{- include "openmu.selectorLabels" (dict "root" $root "component" $component) | nindent 8 }}
         openmu/game-server-id: {{ $id | quote }}
       annotations:
+        dapr.io/app-token-secret: {{ include "openmu.gameServerAppTokenSecret" $root | quote }}
         {{- /* The game server saves and disconnects its players on shutdown, and logs them off at the
                central server through its sidecar, so the sidecar has to stay up meanwhile. The game
                server keeps answering its health endpoint until it's done. */}}
@@ -61,6 +62,11 @@ spec:
           imagePullPolicy: {{ $root.Values.image.pullPolicy }}
           env:
             {{- include "openmu.commonEnv" $root | nindent 12 }}
+            - name: APP_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openmu.gameServerAppTokenSecret" $root }}
+                  key: token
             - name: GS_ID
               value: {{ $id | quote }}
             - name: GS_LISTENER_PORT

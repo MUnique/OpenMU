@@ -90,15 +90,17 @@ public sealed class LiveGameWriteTools
         [Description("Single-use token from the identical preview.")] string? confirmationToken = null)
         => AdminToolExecution.ExecuteAsync(() => operations.SetLevelAsync(characterName, level, master, apply, confirmationToken, cancellationToken));
 
-    /// <summary>Force-start an enabled periodic mini game on one server. restart=true removes existing participants and requests fresh instances. Completion means the start was requested; inspect events_schedule for progress.</summary>
+    /// <summary>Preview or confirm an enabled periodic event start. restart=true removes existing participants. Review the active state and participant count, then apply the caller-bound confirmation token. Completion means the start was requested; inspect events_schedule for progress.</summary>
     /// <param name="operations">The shared live operations.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <param name="serverId">Actual game server identifier.</param>
     /// <param name="eventType">Invariant type from events_schedule.</param>
     /// <param name="restart">Explicitly allow removal of a running event before restarting it.</param>
+    /// <param name="apply">Apply only after approving the event preview.</param>
+    /// <param name="confirmationToken">The single-use preview token.</param>
     /// <returns>The safe live result or preview.</returns>
     [McpServerTool(Name = "events_start", ReadOnly = false, Destructive = true, Idempotent = false, OpenWorld = false, UseStructuredContent = true)]
-    [Description("Force-start an enabled periodic mini game on one server. restart=true removes existing participants and requests fresh instances. Completion means the start was requested; inspect events_schedule for progress.")]
+    [Description("Preview or confirm an enabled periodic event start. restart=true removes existing participants. Review the active state and participant count, then apply the caller-bound confirmation token. Completion means the start was requested; inspect events_schedule for progress.")]
     [Authorize(Roles = "Operator")]
     [ExposesOperation(typeof(LiveGameOperations), nameof(LiveGameOperations.StartEventAsync))]
     public static ValueTask<JsonObject> EventsStartAsync(
@@ -106,6 +108,8 @@ public sealed class LiveGameWriteTools
         CancellationToken cancellationToken,
         [Description("Actual game server identifier.")] int serverId,
         [Description("Invariant type from events_schedule.")] string eventType,
-        [Description("Explicitly allow removal of a running event before restarting it.")] bool restart = false)
-        => AdminToolExecution.ExecuteAsync(() => operations.StartEventAsync(serverId, eventType, restart, cancellationToken));
+        [Description("Explicitly allow removal of a running event before restarting it.")] bool restart = false,
+        [Description("Apply only after approving the event preview.")] bool apply = false,
+        [Description("Single-use token from the identical preview.")] string? confirmationToken = null)
+        => AdminToolExecution.ExecuteAsync(() => operations.StartEventAsync(serverId, eventType, restart, apply, confirmationToken, cancellationToken));
 }
