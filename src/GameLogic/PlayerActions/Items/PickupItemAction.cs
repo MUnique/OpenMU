@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
@@ -34,6 +35,7 @@ public class PickupItemAction
             case DroppedMoney droppedMoney:
                 if (!await TryPickupMoneyAsync(player, droppedMoney).ConfigureAwait(false))
                 {
+                    LogRefusal(player, droppedMoney, CanPickup(player, droppedMoney) ? "nobody could take the money (maximum money or no eligible party member)" : GetDistanceOrDeathReason(player));
                     await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 }
 
@@ -62,13 +64,15 @@ public class PickupItemAction
                 }
 
             default:
+                player.Logger.Log(GetLogLevel(player), "Pickup refused: {Player} at {Map} ({Position}) requested drop {DropId}, which doesn't exist (anymore).", player, player.CurrentMap?.Definition.Name, player.Position, dropId);
                 await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 break;
         }
     }
 
-    private static async ValueTask<(bool Success, Item? StackTarget)> RejectAsync(Player player, string messageKey)
+    private static async ValueTask<(bool Success, Item? StackTarget)> RejectAsync(Player player, DroppedItem droppedItem, string messageKey)
     {
+        LogRefusal(player, droppedItem, messageKey);
         await player.ShowLocalizedBlueMessageAsync(messageKey).ConfigureAwait(false);
         return (false, null);
     }
@@ -87,6 +91,38 @@ public class PickupItemAction
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Logs why a pick up request was refused. The client only gets a generic failure, so this is the
+    /// only place where the actual reason can be seen - e.g. when the position of the player on the
+    /// server differs from the one the client shows.
+    /// </summary>
+    private static void LogRefusal(Player player, ILocateable drop, string reason)
+    {
+        player.Logger.Log(
+            GetLogLevel(player),
+            "Pickup refused: {Player} at {Map} ({Position}) could not pick up {Drop}, distance {Distance}: {Reason}",
+            player,
+            player.CurrentMap?.Definition.Name,
+            player.Position,
+            drop,
+            (int)player.GetDistanceTo(drop),
+            reason);
+    }
+
+    /// <summary>
+    /// Server-side bots and offline levelers retry far away drops several times per second, which
+    /// would flood the log; their refusals are only of interest when debugging them.
+    /// </summary>
+    private static LogLevel GetLogLevel(Player player)
+    {
+        return player is OfflinePlayer ? LogLevel.Debug : LogLevel.Information;
+    }
+
+    private static string GetDistanceOrDeathReason(Player player)
+    {
+        return player.IsAlive ? $"too far away (maximum {MaximumPickupDistance})" : "player is dead";
     }
 
     private static bool IsLimitReached(Player player, ItemDefinition? itemDefinition)
@@ -123,6 +159,7 @@ public class PickupItemAction
     {
         if (!CanPickup(player, droppedItem))
         {
+            LogRefusal(player, droppedItem, GetDistanceOrDeathReason(player));
             return (false, null);
         }
 
@@ -136,6 +173,7 @@ public class PickupItemAction
                     : droppedItem.Item.Definition?.Name.ToString();
             }
 
+            LogRefusal(player, droppedItem, nameof(PlayerMessage.PickupLimitReached));
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PickupLimitReached), itemName).ConfigureAwait(false);
             return (false, null);
         }
@@ -143,30 +181,35 @@ public class PickupItemAction
         var slot = player.Inventory?.CheckInvSpace(droppedItem.Item);
         if (slot < InventoryConstants.EquippableSlotsCount)
         {
+            LogRefusal(player, droppedItem, "no free inventory space");
             return (false, null);
         }
 
         if (droppedItem.Item.Definition?.IsQuestItem == true
             && !PlayerHasActiveQuestForItem(player, droppedItem.Item))
         {
-            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+            return await RejectAsync(player, droppedItem, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
         }
 
         if (droppedItem.Item.Definition?.IsBoundToCharacter == true
             && !droppedItem.IsPlayerAnOwner(player))
         {
-            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+            return await RejectAsync(player, droppedItem, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
         }
 
         if (!droppedItem.IsPlayerAnOwner(player) && droppedItem.IsOwnerPickupPriorityActive)
         {
-            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+            return await RejectAsync(player, droppedItem, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
         }
 
         var result = await droppedItem.TryPickUpByAsync(player).ConfigureAwait(false);
         if (result.Success)
         {
             await player.OnPickedUpItemAsync(droppedItem).ConfigureAwait(false);
+        }
+        else
+        {
+            LogRefusal(player, droppedItem, result.StackTarget is null ? "already picked up, not an owner yet or no free inventory space" : "could not be stacked");
         }
 
         return result;
