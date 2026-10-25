@@ -384,7 +384,7 @@ internal class ItemStatProfilesDataTest
         return version switch
         {
             Version075 => new AddItemStatProfilesUpdatePlugIn075(),
-            Version095d => new AddItemStatProfilesUpdatePlugIn095d(),
+            Version095d => new AddItemStatProfilesUpdatePlugIn095D(),
             _ => new AddItemStatProfilesUpdatePlugInSeasonSix(),
         };
     }
