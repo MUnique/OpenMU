@@ -4,15 +4,21 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
+using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
+using EntityFramework = MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
 /// Compares the prices of the <see cref="ItemPriceCalculator"/> with the ones of the <see cref="LegacyItemPriceCalculator"/>,
@@ -49,13 +55,69 @@ public class ItemPriceCalculatorGoldenMasterTest
         using var context = contextProvider.CreateNewContext();
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
 
+        AssertPricesAreUnchanged(gameConfiguration);
+    }
+
+    /// <summary>
+    /// Tests that all prices of all items of the season 6 configuration are the same as before, when the configuration is
+    /// loaded from a PostgreSQL database like the game servers load it. This covers the compiled model and the generated
+    /// game configuration loader. The prices are compared for a new database, and for an existing database which gets the
+    /// price definitions by the update plugin.
+    /// </summary>
+    /// <returns>The task.</returns>
+    /// <remarks>
+    /// The database is created again, see <see cref="EntityFramework.PersistenceContextProvider.ReCreateDatabaseAsync"/>.
+    /// </remarks>
+    [Test]
+    [Ignore("This is not a real test which should run automatically. It requires a database.")]
+    public async Task PricesAreUnchangedWhenLoadedFromDatabaseAsync()
+    {
+        // Like at the startup of the server.
+        JsonConverterRegistry.RegisterConverter(new LocalizedStringJsonConverter());
+        JsonConverterRegistry.RegisterConverter(new EntityFramework.Json.BinaryAsHexJsonConverter());
+        var contextProvider = new EntityFramework.PersistenceContextProvider(NullLoggerFactory.Instance, null);
+        using var databaseRecreation = await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+        await new MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.DataInitialization(contextProvider, NullLoggerFactory.Instance).CreateInitialDataAsync(1, false).ConfigureAwait(false);
+        AssertPricesAreUnchanged(await LoadConfigurationAsync().ConfigureAwait(false));
+
+        // Simulate a database which was created before the item price definitions existed.
+        await using (var entityContext = new EntityFramework.EntityDataContext())
+        {
+            await entityContext.Database.ExecuteSqlRawAsync("""
+                update config."ItemDefinition" set "PriceDefinitionId" = null;
+                delete from config."ItemLevelPrice";
+                delete from config."ItemPriceDefinition";
+                """).ConfigureAwait(false);
+        }
+
+        Assert.That((await LoadConfigurationAsync().ConfigureAwait(false)).ItemPriceDefinitions, Is.Empty);
+        using (var context = new EntityFramework.PersistenceContextProvider(NullLoggerFactory.Instance, null).CreateNewContext())
+        {
+            var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+            await new AddItemPriceDefinitionsPlugInSeason6().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        AssertPricesAreUnchanged(await LoadConfigurationAsync().ConfigureAwait(false));
+    }
+
+    private static async Task<GameConfiguration> LoadConfigurationAsync()
+    {
+        // A new provider, so that the configuration isn't taken from the cache of a previous load.
+        using var context = new EntityFramework.PersistenceContextProvider(NullLoggerFactory.Instance, null).CreateNewConfigurationContext();
+        return (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+    }
+
+    private static void AssertPricesAreUnchanged(GameConfiguration gameConfiguration)
+    {
+        Assert.That(gameConfiguration.ItemPriceDefinitions, Is.Not.Empty);
         var calculator = new ItemPriceCalculator();
         var legacyCalculator = new LegacyItemPriceCalculator();
         var differences = new List<string>();
         var comparedItems = 0;
         foreach (var definition in gameConfiguration.Items.OrderBy(d => d.Group).ThenBy(d => d.Number))
         {
-            foreach (var item in CreateItems(context, definition))
+            foreach (var item in CreateItems(definition))
             {
                 comparedItems++;
                 Compare(item, "unrounded buying", ItemPriceCalculator.CalculateBuyingPrice, LegacyItemPriceCalculator.CalculateBuyingPrice, differences);
@@ -81,7 +143,7 @@ public class ItemPriceCalculatorGoldenMasterTest
         }
     }
 
-    private static IEnumerable<Item> CreateItems(IContext context, ItemDefinition definition)
+    private static IEnumerable<Item> CreateItems(ItemDefinition definition)
     {
         var possibleOptions = definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions).ToList();
         var luck = possibleOptions.FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck);
@@ -150,11 +212,11 @@ public class ItemPriceCalculatorGoldenMasterTest
         {
             foreach (var (skill, options) in optionCombinations)
             {
-                var item = CreateItem(context, definition, level, skill, options);
+                var item = CreateItem(definition, level, skill, options);
                 var maximumDurability = Math.Max(item.GetMaximumDurabilityOfOnePiece(), definition.Durability);
                 foreach (var durability in new[] { maximumDurability, maximumDurability / 2, 1, 0 }.Distinct())
                 {
-                    var itemWithDurability = CreateItem(context, definition, level, skill, options);
+                    var itemWithDurability = CreateItem(definition, level, skill, options);
                     itemWithDurability.Durability = durability;
                     yield return itemWithDurability;
                 }
@@ -162,15 +224,15 @@ public class ItemPriceCalculatorGoldenMasterTest
         }
     }
 
-    private static Item CreateItem(IContext context, ItemDefinition definition, byte level, bool skill, List<(IncreasableItemOption Option, byte Level)> options)
+    private static Item CreateItem(ItemDefinition definition, byte level, bool skill, List<(IncreasableItemOption Option, byte Level)> options)
     {
-        var item = context.CreateNew<Item>();
+        var item = new BasicModel.Item();
         item.Definition = definition;
         item.Level = level;
         item.HasSkill = skill;
         foreach (var (option, optionLevel) in options)
         {
-            var link = context.CreateNew<ItemOptionLink>();
+            var link = new BasicModel.ItemOptionLink();
             link.ItemOption = option;
             link.Level = optionLevel;
             item.ItemOptions.Add(link);
