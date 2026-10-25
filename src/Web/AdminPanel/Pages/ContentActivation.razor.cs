@@ -4,14 +4,17 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Text.Json.Nodes;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -19,49 +22,23 @@ using MUnique.OpenMU.Web.Shared.Services;
 /// Page which allows to activate and deactivate the content of the game configuration in batches,
 /// e.g. to restrict the game to the content of a certain season.
 /// </summary>
+/// <remarks>
+/// The page only keeps the filters and the pending selection. Changes are previewed, confirmed,
+/// audited and saved by the shared <see cref="ContentActivationOperations"/>, which the agents use, too.
+/// </remarks>
 public partial class ContentActivation : ComponentBase, IAsyncDisposable
 {
+    private readonly Dictionary<Guid, bool> _pendingStates = new();
+
     private Task? _loadTask;
     private CancellationTokenSource? _disposeCts;
-    private IContext? _persistenceContext;
     private IDisposable? _navigationLockDisposable;
 
-    private Dictionary<ContentType, IReadOnlyList<ContentEntry>>? _entries;
-    private ContentType _selectedContentType = ContentType.Maps;
+    private Dictionary<ContentActivationType, IReadOnlyList<ContentActivationEntry>>? _entries;
+    private ContentActivationType _selectedContentType = ContentActivationType.Maps;
     private StateFilter _stateFilter = StateFilter.All;
     private GameVersion _targetVersion = GameVersion.Season6Episode3;
     private string _filter = string.Empty;
-
-    /// <summary>
-    /// The type of content which can be activated and deactivated.
-    /// </summary>
-    public enum ContentType
-    {
-        /// <summary>
-        /// The maps (<see cref="GameMapDefinition"/>).
-        /// </summary>
-        Maps,
-
-        /// <summary>
-        /// The character classes (<see cref="CharacterClass"/>).
-        /// </summary>
-        CharacterClasses,
-
-        /// <summary>
-        /// The monsters and NPCs (<see cref="MonsterDefinition"/>).
-        /// </summary>
-        Monsters,
-
-        /// <summary>
-        /// The items (<see cref="DataModel.Configuration.Items.ItemDefinition"/>).
-        /// </summary>
-        Items,
-
-        /// <summary>
-        /// The mini games (<see cref="MiniGameDefinition"/>).
-        /// </summary>
-        MiniGames,
-    }
 
     /// <summary>
     /// The filter for the active state of the shown entries.
@@ -85,10 +62,16 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets or sets the data source.
+    /// Gets or sets the shared operations which change the active state of the content.
     /// </summary>
     [Inject]
-    public IDataSource<GameConfiguration> DataSource { get; set; } = null!;
+    public ContentActivationOperations Operations { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the modal service.
+    /// </summary>
+    [Inject]
+    public IModalService ModalService { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the toast service.
@@ -120,7 +103,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     [Inject]
     public LoadingOverlayService LoadingService { get; set; } = null!;
 
-    private ContentType SelectedContentType
+    private ContentActivationType SelectedContentType
     {
         get => this._selectedContentType;
         set
@@ -130,23 +113,25 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         }
     }
 
-    private IReadOnlyList<ContentEntry> SelectedEntries =>
+    private bool HasPendingChanges => this._pendingStates.Count > 0;
+
+    private IReadOnlyList<ContentActivationEntry> SelectedEntries =>
         this._entries?.GetValueOrDefault(this._selectedContentType) ?? [];
 
-    private IEnumerable<ContentEntry> ShownEntries =>
+    private IEnumerable<ContentActivationEntry> ShownEntries =>
         this.SelectedEntries
             .Where(entry => this._stateFilter switch
             {
-                StateFilter.OnlyActive => entry.IsActive,
-                StateFilter.OnlyInactive => !entry.IsActive,
+                StateFilter.OnlyActive => this.IsActive(entry),
+                StateFilter.OnlyInactive => !this.IsActive(entry),
                 _ => true,
             })
             .Where(entry => string.IsNullOrWhiteSpace(this._filter)
                             || entry.Name.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase)
-                            || entry.Number.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase)
+                            || entry.Key.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase)
                             || GetCaption(entry.IntroducedIn).Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase));
 
-    private int ActiveCount => this.SelectedEntries.Count(entry => entry.IsActive);
+    private int ActiveCount => this.SelectedEntries.Count(this.IsActive);
 
     private int TotalCount => this.SelectedEntries.Count;
 
@@ -190,15 +175,15 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         await base.OnParametersSetAsync().ConfigureAwait(true);
     }
 
-    private static string GetCaption(ContentType contentType)
+    private static string GetCaption(ContentActivationType contentType)
     {
         return contentType switch
         {
-            ContentType.Maps => Resources.GameMaps,
-            ContentType.CharacterClasses => Resources.CharacterClasses,
-            ContentType.Monsters => Resources.Monsters,
-            ContentType.Items => Resources.Items,
-            ContentType.MiniGames => Resources.MiniGames,
+            ContentActivationType.Maps => Resources.GameMaps,
+            ContentActivationType.CharacterClasses => Resources.CharacterClasses,
+            ContentActivationType.Monsters => Resources.Monsters,
+            ContentActivationType.Items => Resources.Items,
+            ContentActivationType.MiniGames => Resources.MiniGames,
             _ => contentType.ToString(),
         };
     }
@@ -239,46 +224,20 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         return string.Format(Resources.GameVersionFormat, $"{value / 10000}.{(value / 100) % 100:00}{suffix}");
     }
 
-    private static Dictionary<ContentType, IReadOnlyList<ContentEntry>> CreateEntries(GameConfiguration configuration)
+    private bool IsActive(ContentActivationEntry entry)
     {
-        return new Dictionary<ContentType, IReadOnlyList<ContentEntry>>
-        {
-            [ContentType.Maps] = configuration.Maps
-                .OrderBy(map => map.Number)
-                .ThenBy(map => map.Discriminator)
-                .Select(map => new ContentEntry(map, map.Number.ToString(), map.Name.ToString() ?? string.Empty, map.IntroducedIn, () => map.IsActive, value => map.IsActive = value))
-                .ToList(),
-            [ContentType.CharacterClasses] = configuration.CharacterClasses
-                .OrderBy(characterClass => characterClass.Number)
-                .Select(characterClass => new ContentEntry(characterClass, characterClass.Number.ToString(), characterClass.Name.ToString() ?? string.Empty, characterClass.IntroducedIn, () => characterClass.IsActive, value => characterClass.IsActive = value))
-                .ToList(),
-            [ContentType.Monsters] = configuration.Monsters
-                .OrderBy(monster => monster.Number)
-                .Select(monster => new ContentEntry(monster, monster.Number.ToString(), monster.Designation.ToString() ?? string.Empty, monster.IntroducedIn, () => monster.IsActive, value => monster.IsActive = value))
-                .ToList(),
-            [ContentType.Items] = configuration.Items
-                .OrderBy(item => item.Group)
-                .ThenBy(item => item.Number)
-                .Select(item => new ContentEntry(item, $"{item.Group}/{item.Number}", item.Name.ToString() ?? string.Empty, item.IntroducedIn, () => item.IsActive, value => item.IsActive = value))
-                .ToList(),
-            [ContentType.MiniGames] = configuration.MiniGameDefinitions
-                .OrderBy(miniGame => miniGame.Type)
-                .ThenBy(miniGame => miniGame.GameLevel)
-                .Select(miniGame => new ContentEntry(miniGame, $"{miniGame.Type} {miniGame.GameLevel}", miniGame.Name.ToString() ?? string.Empty, miniGame.IntroducedIn, () => miniGame.IsActive, value => miniGame.IsActive = value))
-                .ToList(),
-        };
+        return this._pendingStates.TryGetValue(entry.Id, out var isActive) ? isActive : entry.IsActive;
     }
 
-    /// <summary>
-    /// Activates the content of all types which was introduced up to the target version, and
-    /// deactivates the content which was introduced later. Content of an unknown version is not changed.
-    /// </summary>
-    private void RestrictToTargetVersion()
+    private void SetActive(ContentActivationEntry entry, bool isActive)
     {
-        var entries = this._entries?.Values.SelectMany(e => e) ?? [];
-        foreach (var entry in entries.Where(e => e.IntroducedIn != GameVersion.Unknown))
+        if (isActive == entry.IsActive)
         {
-            entry.IsActive = entry.IntroducedIn <= this._targetVersion;
+            this._pendingStates.Remove(entry.Id);
+        }
+        else
+        {
+            this._pendingStates[entry.Id] = isActive;
         }
     }
 
@@ -286,13 +245,91 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     {
         foreach (var entry in this.ShownEntries.ToList())
         {
-            entry.IsActive = isActive;
+            this.SetActive(entry, isActive);
         }
+    }
+
+    /// <summary>
+    /// Activates the content of all types which was introduced up to the target version, and
+    /// deactivates the content which was introduced later. Content of an unknown version is not changed.
+    /// </summary>
+    private async Task OnRestrictToTargetVersionClickAsync()
+    {
+        if (this.HasPendingChanges)
+        {
+            this.ToastService.ShowError(Resources.SaveOrDiscardChangesFirst);
+            return;
+        }
+
+        var target = this._targetVersion;
+        await this.ChangeAsync((apply, token) => this.Operations.RestrictToGameVersionAsync(target, apply, token, default)).ConfigureAwait(true);
+    }
+
+    private async Task OnSaveButtonClickAsync()
+    {
+        if (!this.HasPendingChanges)
+        {
+            this.ToastService.ShowSuccess(Resources.NoChangesToSave);
+            return;
+        }
+
+        var activate = this._pendingStates.Where(p => p.Value).Select(p => p.Key).ToList();
+        var deactivate = this._pendingStates.Where(p => !p.Value).Select(p => p.Key).ToList();
+        await this.ChangeAsync((apply, token) => this.Operations.SetActiveAsync(activate, deactivate, apply, token, default)).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Previews the change, lets the user confirm it and applies exactly the previewed change.
+    /// </summary>
+    /// <param name="change">The change, which is previewed when its first argument is <c>false</c>,
+    /// and applied with the confirmation token of the preview when it's <c>true</c>.</param>
+    private async Task ChangeAsync(Func<bool, string?, ValueTask<JsonObject>> change)
+    {
+        try
+        {
+            var preview = await change(false, null).ConfigureAwait(true);
+            var activated = preview["change"]?["activated"]?.GetValue<int>() ?? 0;
+            var deactivated = preview["change"]?["deactivated"]?.GetValue<int>() ?? 0;
+            if (activated + deactivated == 0)
+            {
+                this._pendingStates.Clear();
+                this.ToastService.ShowSuccess(Resources.NoChangesToSave);
+                return;
+            }
+
+            var isConfirmed = await this.ModalService.ShowQuestionAsync(
+                    Resources.ContentActivation,
+                    string.Format(Resources.ContentActivationConfirmFormat, activated, deactivated))
+                .ConfigureAwait(true);
+            if (!isConfirmed)
+            {
+                return;
+            }
+
+            await change(true, preview["confirmationToken"]!.GetValue<string>()).ConfigureAwait(true);
+            this._pendingStates.Clear();
+            this.ToastService.ShowSuccess(Resources.SavedChanges);
+            await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
+        }
+        catch (AdminOperationException ex)
+        {
+            this.ToastService.ShowError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "An unexpected error occurred on save: {Message}", ex.Message);
+            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
+        }
+    }
+
+    private void OnCancelButtonClick()
+    {
+        this._pendingStates.Clear();
     }
 
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
-        if (this._persistenceContext?.HasChanges is not true)
+        if (!this.HasPendingChanges)
         {
             return;
         }
@@ -306,10 +343,6 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         {
             context.PreventNavigation();
         }
-        else
-        {
-            await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
-        }
     }
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
@@ -318,110 +351,25 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            this._persistenceContext = await this.DataSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
-            var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(true);
+            var entries = await this.Operations.GetEntriesAsync(cancellationToken).ConfigureAwait(true);
             cancellationToken.ThrowIfCancellationRequested();
 
-            this._entries = CreateEntries(gameConfiguration);
+            this._entries = entries
+                .GroupBy(entry => entry.Type)
+                .ToDictionary(group => group.Key, group => (IReadOnlyList<ContentActivationEntry>)group.ToList());
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
         }
         catch (OperationCanceledException)
         {
             // Expected when navigating away - ignore
         }
+        catch (AdminOperationException ex)
+        {
+            this.ToastService.ShowError(ex.Message);
+        }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Error loading the content activation data");
-        }
-    }
-
-    private async Task OnSaveButtonClickAsync()
-    {
-        try
-        {
-            if (this._persistenceContext is { } context)
-            {
-                var success = await context.SaveChangesAsync().ConfigureAwait(true);
-                var text = success ? Resources.SavedChanges : Resources.NoChangesToSave;
-                this.ToastService.ShowSuccess(text);
-            }
-            else
-            {
-                this.ToastService.ShowError(Resources.FailedByUninitializedContext);
-            }
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "An unexpected error occurred on save: {Message}", ex.Message);
-            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
-        }
-    }
-
-    private async Task OnCancelButtonClickAsync()
-    {
-        if (this._persistenceContext?.HasChanges is true)
-        {
-            await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
-            this._entries = null;
-            await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
-        }
-    }
-
-    /// <summary>
-    /// An entry of the configuration which can be activated and deactivated.
-    /// </summary>
-    private sealed class ContentEntry
-    {
-        private readonly Func<bool> _getIsActive;
-        private readonly Action<bool> _setIsActive;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContentEntry"/> class.
-        /// </summary>
-        /// <param name="entity">The entity of the configuration.</param>
-        /// <param name="number">The number which identifies the entity.</param>
-        /// <param name="name">The name of the entity.</param>
-        /// <param name="introducedIn">The game version which introduced the entity.</param>
-        /// <param name="getIsActive">The function which gets the active state of the entity.</param>
-        /// <param name="setIsActive">The action which sets the active state of the entity.</param>
-        public ContentEntry(object entity, string number, string name, GameVersion introducedIn, Func<bool> getIsActive, Action<bool> setIsActive)
-        {
-            this.Entity = entity;
-            this.Number = number;
-            this.Name = name;
-            this.IntroducedIn = introducedIn;
-            this._getIsActive = getIsActive;
-            this._setIsActive = setIsActive;
-        }
-
-        /// <summary>
-        /// Gets the entity of the configuration.
-        /// </summary>
-        public object Entity { get; }
-
-        /// <summary>
-        /// Gets the number which identifies the entity.
-        /// </summary>
-        public string Number { get; }
-
-        /// <summary>
-        /// Gets the name of the entity.
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Gets the game version which introduced the entity.
-        /// </summary>
-        public GameVersion IntroducedIn { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the entity is active.
-        /// </summary>
-        public bool IsActive
-        {
-            get => this._getIsActive();
-            set => this._setIsActive(value);
         }
     }
 }

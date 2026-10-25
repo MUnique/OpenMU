@@ -2548,4 +2548,10 @@
   <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
     <value>Sobald ein Gildenmeister verknüpft ist, erstellt der Bot den Kanal der Gilde in der Kategorie GUILDS deines Discord-Servers und verbindet den Gildenchat damit. Nur verknüpfte Mitglieder der Gilde sehen ihn, und der Gildenmeister kann seine Nachrichten moderieren. Gilden, deren Chat bereits verbunden ist, behalten ihren Kanal. Neue Gilden und neue Gildenmeister werden innerhalb von etwa zehn Minuten berücksichtigt.</value>
   </data>
+  <data name="ContentActivationConfirmFormat" xml:space="preserve">
+    <value>{0} Einträge werden aktiviert und {1} Einträge deaktiviert. Fortfahren?</value>
+  </data>
+  <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
+    <value>Speichere oder verwirf zuerst die ausstehenden Änderungen.</value>
+  </data>
 </root>

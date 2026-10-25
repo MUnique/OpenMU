@@ -193,6 +193,8 @@ all content up to this version and to deactivate everything which was
 introduced later — for example *Season 2* for a server without Summoners,
 Raklion, socket items and the other later content. Entries with an unknown
 version are left unchanged, so check them afterwards with the version column.
+The page shows how many entries will be activated and deactivated, and changes
+them after you confirm.
 
 :::note[The versions are best effort]
 The versions were compiled from the original patch notes and OpenMU's data of
@@ -204,7 +206,14 @@ Pick the kind of content in the second row. The list can be narrowed down
 by its active state and by a search text (which also matches the version), and **Activate all shown** /
 **Deactivate all shown** change all entries of the narrowed list at once — for
 example, search for `Kanturu` and deactivate all shown entries. The changes are
-only stored after **Save changes**.
+only stored after **Save changes** and the confirmation; **Discard changes**
+drops them. Save or discard them before restricting to a game version.
+
+Both actions are recorded in the [audit history](mcp.md#operational-safety-and-audit-history), and they are
+the same operations which agents use through the
+[MCP tools](mcp.md#configuration-and-offline-character-changes)
+`content_restrict_to_version` and `content_set_active`. Like other configuration
+changes, they require the *Administrator* role.
 
 What an inactive entry means in the game:
 

@@ -198,7 +198,7 @@ public sealed class McpIntegrationTests : System.IDisposable
     {
         await using var client = await this.ConnectAsync().ConfigureAwait(false);
         var tools = await client.ListToolsAsync().ConfigureAwait(false);
-        Assert.That(tools.Count, Is.EqualTo(19));
+        Assert.That(tools.Count, Is.EqualTo(20));
         var arguments = new Dictionary<string, Dictionary<string, object?>>
         {
             ["drops_explain"] = new() { ["monsterNumber"] = 1, ["mapNumber"] = 0 },
@@ -210,6 +210,7 @@ public sealed class McpIntegrationTests : System.IDisposable
             ["config_query"] = new() { ["type"] = "GameConfiguration" },
             ["config_get"] = new() { ["type"] = "GameConfiguration", ["id"] = this._configurationId, ["depth"] = 2 },
             ["config_search"] = new() { ["text"] = "experience" },
+            ["content_list"] = new() { ["type"] = "Maps" },
         };
         foreach (var tool in tools)
         {

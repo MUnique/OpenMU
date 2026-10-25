@@ -1,6 +1,7 @@
 ﻿@page "/content-activation"
 
 @using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Web.AdminPanel.Operations
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
 <PageTitle>OpenMU: @Resources.ContentActivation</PageTitle>
@@ -21,13 +22,13 @@
             <option value="@version">@GetCaption(version)</option>
         }
     </select>
-    <button type="button" class="btn btn-outline-primary" title="@Resources.RestrictToGameVersionHint" @onclick="this.RestrictToTargetVersion">@Resources.RestrictToGameVersion</button>
+    <button type="button" class="btn btn-outline-primary" title="@Resources.RestrictToGameVersionHint" @onclick="this.OnRestrictToTargetVersionClickAsync">@Resources.RestrictToGameVersion</button>
     <span class="text-muted small">@Resources.RestrictToGameVersionHint</span>
 </div>
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
     <select class="form-select w-auto" aria-label="@Resources.ContentType" @bind="this.SelectedContentType">
-        @foreach (var contentType in Enum.GetValues<ContentType>())
+        @foreach (var contentType in Enum.GetValues<ContentActivationType>())
         {
             <option value="@contentType">@GetCaption(contentType)</option>
         }
@@ -44,7 +45,7 @@
     <button type="button" class="btn btn-success" @onclick="() => this.SetActiveOfShownEntries(true)">@Resources.ActivateAllShown</button>
     <button type="button" class="btn btn-warning" @onclick="() => this.SetActiveOfShownEntries(false)">@Resources.DeactivateAllShown</button>
     <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
-    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
+    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClick">@Resources.DiscardChanges</button>
 </div>
 
 <p>@string.Format(Resources.ActiveCountFormat, this.ActiveCount, this.TotalCount)</p>
@@ -62,12 +63,12 @@
         <tbody>
         @foreach (var entry in this.ShownEntries)
         {
-            <tr @key="entry.Entity">
+            <tr @key="entry.Id">
                 <td>
                     <input type="checkbox" class="form-check-input" aria-label="@Resources.Active"
-                           @bind:get="entry.IsActive" @bind:set="value => entry.IsActive = value" />
+                           @bind:get="this.IsActive(entry)" @bind:set="value => this.SetActive(entry, value)" />
                 </td>
-                <td>@entry.Number</td>
+                <td>@entry.Key</td>
                 <td><MarkedText Marked="@this._filter" Text="@entry.Name" /></td>
                 <td>@GetCaption(entry.IntroducedIn)</td>
             </tr>

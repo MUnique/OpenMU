@@ -955,6 +955,184 @@
     }
   },
   {
+    "Name": "content_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Content type.",
+          "type": "string",
+          "enum": [
+            "Maps",
+            "CharacterClasses",
+            "Monsters",
+            "Items",
+            "MiniGames"
+          ]
+        },
+        "isActive": {
+          "description": "Optional active state to filter by.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "text": {
+          "description": "Case-insensitive text which the key, name or version must contain.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching entries to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum entries, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "content_restrict_to_version",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "description": "Target version of the original game.",
+          "type": "string",
+          "enum": [
+            "Unknown",
+            "Version029",
+            "Version034",
+            "Version043",
+            "Version045",
+            "Version048",
+            "Version060",
+            "Version064",
+            "Version066",
+            "Version068",
+            "Version075",
+            "Version084",
+            "Version089c",
+            "Version094b",
+            "Version095d",
+            "Version095k",
+            "Version096y",
+            "Version097d",
+            "Version097p",
+            "Version097r",
+            "Version098r",
+            "Version099",
+            "Version099GPlus",
+            "Version100s",
+            "Season1",
+            "Season2",
+            "Season3Episode1",
+            "Season3Episode2",
+            "Season4Episode1",
+            "Season4Episode2",
+            "Season5Episode1",
+            "Season5Episode2",
+            "Season5Episode3",
+            "Season5Episode4",
+            "Season6Episode1",
+            "Season6Episode2",
+            "Season6Episode3"
+          ]
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "target"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "content_set_active",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "activateIds": {
+          "description": "Identifiers from content_list to activate.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": null
+        },
+        "deactivateIds": {
+          "description": "Identifiers from content_list to deactivate.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": null
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
     "Name": "diagnostics_check",
     "InputSchema": {
       "type": "object",

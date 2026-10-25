@@ -2425,6 +2425,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to {0} entries will be activated and {1} entries deactivated. Continue?.
+        /// </summary>
+        public static string ContentActivationConfirmFormat {
+            get {
+                return ResourceManager.GetString("ContentActivationConfirmFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Activate or deactivate maps, character classes, monsters, items and mini games, e.g. to restrict the game to the content of a certain season. Inactive entries stay in the configuration, but are not available in the game. Monsters which are already spawned remain until the game server is restarted..
         /// </summary>
         public static string ContentActivationDescription {
@@ -7239,6 +7248,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string SavedChanges {
             get {
                 return ResourceManager.GetString("SavedChanges", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Save or discard the pending changes first..
+        /// </summary>
+        public static string SaveOrDiscardChangesFirst {
+            get {
+                return ResourceManager.GetString("SaveOrDiscardChangesFirst", resourceCulture);
             }
         }
 
