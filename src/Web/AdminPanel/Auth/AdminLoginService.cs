@@ -19,8 +19,6 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 /// </remarks>
 public class AdminLoginService
 {
-    private const int TotpTimeStepSeconds = 30;
-
     private readonly UserManager<AdminUser> _userManager;
     private readonly SignInTicketService _ticketService;
     private readonly ILogger<AdminLoginService> _logger;
@@ -146,7 +144,7 @@ public class AdminLoginService
             isValid = await this._userManager
                 .VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, normalizedCode)
                 .ConfigureAwait(false)
-                && await this.TryConsumeTimeStepAsync(user).ConfigureAwait(false);
+                && await this.TryConsumeTimeStepAsync(user, normalizedCode).ConfigureAwait(false);
         }
 
         if (!isValid)
@@ -204,23 +202,27 @@ public class AdminLoginService
     /// Makes sure that an observed authenticator code can't be used a second time within its validation window.
     /// </summary>
     /// <remarks>
-    /// The token provider of ASP.NET Core Identity accepts a code of the current and of the adjacent
-    /// time steps, but it doesn't tell which step matched and it doesn't remember used codes.
-    /// Remembering the time step of the last successful validation at least prevents that the same
-    /// code is accepted twice within the same time step.
+    /// The token provider of ASP.NET Core Identity accepts codes of several adjacent time steps, but it
+    /// doesn't tell which step matched and it doesn't remember used codes. Remembering the time step
+    /// of the accepted code itself - not the current one, which may change while the code is still
+    /// accepted - rejects a replayed code as well as any older code.
     /// </remarks>
-    private async Task<bool> TryConsumeTimeStepAsync(AdminUser user)
+    /// <param name="user">The user.</param>
+    /// <param name="code">The code which the token provider accepted.</param>
+    /// <returns><c>true</c>, if the code wasn't used before.</returns>
+    private async Task<bool> TryConsumeTimeStepAsync(AdminUser user, string code)
     {
-        var currentStep = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / TotpTimeStepSeconds;
-        if (currentStep <= user.LastAcceptedTotpStep)
+        var key = await this._userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
+        var codeStep = key is null ? null : AuthenticatorTimeStep.FindStep(key, code, AuthenticatorTimeStep.GetStep(DateTimeOffset.UtcNow));
+        if (codeStep is not { } step || step <= user.LastAcceptedTotpStep)
         {
             this._logger.LogWarning(
-                "Rejected an authenticator code of admin panel user '{LoginName}', because a code of the same time step was already used.",
+                "Rejected an authenticator code of admin panel user '{LoginName}', because it or a newer code was already used.",
                 user.LoginName);
             return false;
         }
 
-        user.LastAcceptedTotpStep = currentStep;
+        user.LastAcceptedTotpStep = step;
         await this._userManager.UpdateAsync(user).ConfigureAwait(false);
         return true;
     }

@@ -199,6 +199,38 @@ public class AdminAuthenticationTests
     }
 
     /// <summary>
+    /// Tests that a code of an older time step is rejected after a newer code was used, even though
+    /// it is still within the validation window.
+    /// </summary>
+    [Test]
+    public async Task OlderAuthenticatorCodeIsRejectedAfterNewerOneAsync()
+    {
+        var (_, key) = await this.CreateUserWithAuthenticatorAsync("tester").ConfigureAwait(false);
+
+        var firstResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key)).ConfigureAwait(false);
+        Assert.That(firstResult.Status, Is.EqualTo(AdminLoginStatus.Succeeded));
+
+        var secondResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key, -1)).ConfigureAwait(false);
+        Assert.That(secondResult.Status, Is.EqualTo(AdminLoginStatus.Failed));
+    }
+
+    /// <summary>
+    /// Tests that the time step of the used code is remembered, not the current one: a newer code
+    /// is accepted after an older code of the validation window was used.
+    /// </summary>
+    [Test]
+    public async Task NewerAuthenticatorCodeIsAcceptedAfterOlderOneAsync()
+    {
+        var (_, key) = await this.CreateUserWithAuthenticatorAsync("tester").ConfigureAwait(false);
+
+        var firstResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key, -1)).ConfigureAwait(false);
+        Assert.That(firstResult.Status, Is.EqualTo(AdminLoginStatus.Succeeded));
+
+        var secondResult = await this.LoginWithCodeAsync(TestTotpGenerator.Generate(key)).ConfigureAwait(false);
+        Assert.That(secondResult.Status, Is.EqualTo(AdminLoginStatus.Succeeded));
+    }
+
+    /// <summary>
     /// Tests that a recovery code works exactly once.
     /// </summary>
     [Test]
@@ -493,6 +525,13 @@ public class AdminAuthenticationTests
         var result = await userManager.CreateAsync(user, TestPassword).ConfigureAwait(false);
         Assert.That(result.Succeeded, Is.True, string.Join(' ', result.Errors.Select(e => e.Description)));
         return user;
+    }
+
+    private async Task<AdminLoginResult> LoginWithCodeAsync(string code)
+    {
+        var loginService = this.GetLoginService();
+        await loginService.CheckPasswordAsync("tester", TestPassword, false).ConfigureAwait(false);
+        return await loginService.CheckTwoFactorAsync(code, false).ConfigureAwait(false);
     }
 
     private async Task<(AdminUser User, string Key)> CreateUserWithAuthenticatorAsync(string loginName)
