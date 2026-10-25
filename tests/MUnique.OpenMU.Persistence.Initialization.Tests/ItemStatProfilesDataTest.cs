@@ -315,12 +315,7 @@ internal class ItemStatProfilesDataTest
         using var _ = context;
         var expected = Describe(gameConfiguration);
 
-        foreach (var item in gameConfiguration.Items)
-        {
-            item.StatProfile = null;
-        }
-
-        gameConfiguration.ItemStatProfiles.Clear();
+        RemoveProfiles(gameConfiguration);
         var update = CreateUpdate(version);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         var afterFirstUpdate = Describe(gameConfiguration);
@@ -369,6 +364,68 @@ internal class ItemStatProfilesDataTest
         Assert.That(Describe(gameConfiguration), Is.EqualTo(expected));
     }
 
+    /// <summary>
+    /// Tests that the update finds the level bonus tables of the profiles by the items which use them,
+    /// also when an owner renamed the tables in the admin panel.
+    /// </summary>
+    [Test]
+    public async Task UpdateFindsRenamedTablesAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
+        using var _ = context;
+        var expected = DescribeTables(gameConfiguration);
+        foreach (var table in gameConfiguration.ItemLevelBonusTables)
+        {
+            table.Name = $"Renamed {table.Name.ValueInNeutralLanguage}";
+        }
+
+        RemoveProfiles(gameConfiguration);
+        await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(DescribeTables(gameConfiguration), Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests that the update takes the level bonus table which the items use, when an owner gave them another table
+    /// than the one with the built-in name.
+    /// </summary>
+    [Test]
+    public async Task UpdateTakesTheTableWhichTheItemsUseAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
+        using var _ = context;
+        var thirdWings = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing);
+        var ownTable = AddTable(context, gameConfiguration, "Own defense bonus of the third wings");
+        foreach (var item in thirdWings)
+        {
+            GiveDefenseTable(item, ownTable);
+        }
+
+        RemoveProfiles(gameConfiguration);
+        await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var profile = gameConfiguration.ItemStatProfiles.Single(p => p.Name == BuiltInItemStatProfiles.ThirdTierWing);
+        Assert.That(profile.StatTerms.Single(t => t.Stat == ItemStat.Defense).Table, Is.SameAs(ownTable));
+    }
+
+    /// <summary>
+    /// Tests that the update stops with a message which names the profile when the items which get a table from it use
+    /// different tables, because then the profile can't name one.
+    /// </summary>
+    [Test]
+    public async Task UpdateRejectsItemsWithDifferentTablesAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
+        using var _ = context;
+        var thirdWing = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing).First();
+        GiveDefenseTable(thirdWing, AddTable(context, gameConfiguration, "Own defense bonus of one third wing"));
+
+        RemoveProfiles(gameConfiguration);
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false));
+
+        Assert.That(exception!.Message, Does.Contain($"'{BuiltInItemStatProfiles.ThirdTierWing}'").And.Contain("Own defense bonus of one third wing"));
+    }
+
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateAsync(string version)
     {
         return version switch
@@ -387,6 +444,51 @@ internal class ItemStatProfilesDataTest
             Version095d => new AddItemStatProfilesUpdatePlugIn095D(),
             _ => new AddItemStatProfilesUpdatePlugInSeasonSix(),
         };
+    }
+
+    /// <summary>
+    /// Brings the configuration to the state of a database which didn't have the profiles yet.
+    /// </summary>
+    private static void RemoveProfiles(GameConfiguration gameConfiguration)
+    {
+        foreach (var item in gameConfiguration.Items)
+        {
+            item.StatProfile = null;
+        }
+
+        gameConfiguration.ItemStatProfiles.Clear();
+    }
+
+    private static List<ItemDefinition> GetItemsOfProfile(GameConfiguration gameConfiguration, string profileName)
+    {
+        return gameConfiguration.Items.Where(item => item.StatProfile?.Name == profileName).ToList();
+    }
+
+    private static ItemLevelBonusTable AddTable(IContext context, GameConfiguration gameConfiguration, string name)
+    {
+        var table = context.CreateNew<ItemLevelBonusTable>();
+        table.Name = name;
+        gameConfiguration.ItemLevelBonusTables.Add(table);
+        return table;
+    }
+
+    private static void GiveDefenseTable(ItemDefinition item, ItemLevelBonusTable table)
+    {
+        foreach (var powerUp in item.BasePowerUpAttributes.Where(p => p.TargetAttribute == Stats.DefenseBase && p.BonusPerLevelTable is not null))
+        {
+            powerUp.BonusPerLevelTable = table;
+        }
+    }
+
+    /// <summary>
+    /// Describes the level bonus table of each stat of each profile by its id, so that a renamed table is the same.
+    /// </summary>
+    private static List<string> DescribeTables(GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.ItemStatProfiles
+            .OrderBy(p => p.Name, StringComparer.Ordinal)
+            .SelectMany(p => p.StatTerms.OrderBy(t => t.Stat).Select(t => $"{p.Name} {t.Stat}: {t.TableState} {t.Table?.GetId()}"))
+            .ToList();
     }
 
     private static bool IsArmorItem(ItemDefinition item)
