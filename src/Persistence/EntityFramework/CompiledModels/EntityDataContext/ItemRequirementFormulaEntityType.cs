@@ -98,7 +98,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             runtimeEntityType.SetPrimaryKey(key);
 
             var index = runtimeEntityType.AddIndex(
-                new[] { itemStatProfileId });
+                new[] { itemStatProfileId, stat },
+                unique: true);
 
             return runtimeEntityType;
         }

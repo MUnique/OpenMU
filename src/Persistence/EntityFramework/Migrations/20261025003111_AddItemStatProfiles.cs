@@ -150,22 +150,25 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "StatProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemRequirementFormula_ItemStatProfileId",
+                name: "IX_ItemRequirementFormula_ItemStatProfileId_Stat",
                 schema: "config",
                 table: "ItemRequirementFormula",
-                column: "ItemStatProfileId");
+                columns: new[] { "ItemStatProfileId", "Stat" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemStatProfile_GameConfigurationId",
+                name: "IX_ItemStatProfile_GameConfigurationId_Name",
                 schema: "config",
                 table: "ItemStatProfile",
-                column: "GameConfigurationId");
+                columns: new[] { "GameConfigurationId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemStatTerms_ItemStatProfileId",
+                name: "IX_ItemStatTerms_ItemStatProfileId_Stat",
                 schema: "config",
                 table: "ItemStatTerms",
-                column: "ItemStatProfileId");
+                columns: new[] { "ItemStatProfileId", "Stat" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemStatTerms_TableId",

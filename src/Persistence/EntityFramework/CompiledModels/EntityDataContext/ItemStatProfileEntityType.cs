@@ -82,7 +82,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             runtimeEntityType.SetPrimaryKey(key);
 
             var index = runtimeEntityType.AddIndex(
-                new[] { gameConfigurationId });
+                new[] { gameConfigurationId, name },
+                unique: true);
 
             return runtimeEntityType;
         }

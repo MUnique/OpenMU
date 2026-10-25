@@ -28,6 +28,36 @@ internal static class ItemExtensions
     }
 
     /// <summary>
+    /// Applies the settings for the <see cref="ItemStatProfile"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemStatProfile> builder)
+    {
+        // The items and the item formulas find a profile by its name, so it's unique within a configuration.
+        builder.HasIndex("GameConfigurationId", nameof(ItemStatProfile.Name)).IsUnique();
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemStatTerms"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemStatTerms> builder)
+    {
+        // A profile writes each stat at most once.
+        builder.HasIndex("ItemStatProfileId", nameof(ItemStatTerms.Stat)).IsUnique();
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemRequirementFormula"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemRequirementFormula> builder)
+    {
+        // A profile writes each stat requirement at most once.
+        builder.HasIndex("ItemStatProfileId", nameof(ItemRequirementFormula.Stat)).IsUnique();
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="ItemStorage"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>

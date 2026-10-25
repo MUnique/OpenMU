@@ -2984,7 +2984,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemStatProfileId");
+                    b.HasIndex("ItemStatProfileId", "Stat")
+                        .IsUnique();
 
                     b.ToTable("ItemRequirementFormula", "config");
                 });
@@ -3075,7 +3076,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                    b.HasIndex("GameConfigurationId", "Name")
+                        .IsUnique();
 
                     b.ToTable("ItemStatProfile", "config");
                 });
@@ -3130,9 +3132,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemStatProfileId");
-
                     b.HasIndex("TableId");
+
+                    b.HasIndex("ItemStatProfileId", "Stat")
+                        .IsUnique();
 
                     b.ToTable("ItemStatTerms", "config");
                 });
