@@ -253,6 +253,7 @@ public sealed class BuffHandler
 
             if (!this.NeedsPartyBuff(member, skillEntry)
                 || !this._player.IsInRange(member.Position, skillEntry.Skill!.Range + 2)
+                || !member.CheckSkillTargetRestrictions(this._player, skillEntry.Skill)
                 || !this.IsAllowedInMiniGame(skillEntry.Skill, member))
             {
                 continue;
