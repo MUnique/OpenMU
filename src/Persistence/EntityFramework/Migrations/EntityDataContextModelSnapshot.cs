@@ -2574,6 +2574,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("PetExperienceFormula")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("PriceDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("SkillId")
                         .HasColumnType("uuid");
 
@@ -2593,6 +2596,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameConfigurationId");
 
                     b.HasIndex("ItemSlotId");
+
+                    b.HasIndex("PriceDefinitionId");
 
                     b.HasIndex("SkillId");
 
@@ -2754,6 +2759,28 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameConfigurationId");
 
                     b.ToTable("ItemLevelBonusTable", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ItemPriceDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemPriceDefinitionId");
+
+                    b.ToTable("ItemLevelPrice", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", b =>
@@ -2954,6 +2981,41 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameConfigurationId");
 
                     b.ToTable("ItemOptionType", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BasePriceFormula")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("CraftingReferencePrice")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid?>("GameConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Modifiers")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("QuantityScaling")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SellingPriceRounding")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameConfigurationId");
+
+                    b.ToTable("ItemPriceDefinition", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
@@ -5371,6 +5433,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("ItemSlotId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition", "RawPriceDefinition")
+                        .WithMany()
+                        .HasForeignKey("PriceDefinitionId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawSkill")
                         .WithMany()
                         .HasForeignKey("SkillId");
@@ -5378,6 +5444,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawConsumeEffect");
 
                     b.Navigation("RawItemSlot");
+
+                    b.Navigation("RawPriceDefinition");
 
                     b.Navigation("RawSkill");
                 });
@@ -5499,6 +5567,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition", null)
+                        .WithMany("RawPricePerLevel")
+                        .HasForeignKey("ItemPriceDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", "RawBonusOption")
@@ -5593,6 +5669,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItemOptionTypes")
+                        .HasForeignKey("GameConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
+                        .WithMany("RawItemPriceDefinitions")
                         .HasForeignKey("GameConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -6304,6 +6388,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Navigation("RawItemOptions");
 
+                    b.Navigation("RawItemPriceDefinitions");
+
                     b.Navigation("RawItemSetGroups");
 
                     b.Navigation("RawItemSlotTypes");
@@ -6418,6 +6504,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", b =>
                 {
                     b.Navigation("RawPossibleOptions");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition", b =>
+                {
+                    b.Navigation("RawPricePerLevel");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>

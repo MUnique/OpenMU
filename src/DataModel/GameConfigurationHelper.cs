@@ -39,6 +39,8 @@ public static class GameConfigurationHelper
         { typeof(ItemOfItemSet), c => c.ItemSetGroups.SelectMany(o => o.Items) },
         { typeof(ItemLevelBonusTable), c => c.ItemLevelBonusTables },
         { typeof(LevelBonus), c => c.ItemLevelBonusTables.SelectMany(i => i.BonusPerLevel) },
+        { typeof(ItemPriceDefinition), c => c.ItemPriceDefinitions },
+        { typeof(ItemLevelPrice), c => c.ItemPriceDefinitions.SelectMany(i => i.PricePerLevel) },
         { typeof(ItemOptionCombinationBonus), c => c.ItemOptionCombinationBonuses },
         { typeof(CombinationBonusRequirement), c => c.ItemOptionCombinationBonuses.SelectMany(b => b.Requirements) },
         {

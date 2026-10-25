@@ -170,6 +170,24 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <summary>
+    /// Gets the raw object of <see cref="PriceDefinition" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("priceDefinition")]
+    public ItemPriceDefinition RawPriceDefinition
+    {
+        get => base.PriceDefinition as ItemPriceDefinition;
+        set => base.PriceDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition PriceDefinition
+    {
+        get => base.PriceDefinition;
+        set => base.PriceDefinition = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="ConsumeEffect" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("consumeEffect")]

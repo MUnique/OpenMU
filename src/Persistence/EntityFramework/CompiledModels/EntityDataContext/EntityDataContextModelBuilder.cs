@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("a8973c11-2353-465a-a680-458679d77069"), entityTypeCount: 123)
+            : base(skipDetectChanges: false, modelId: new Guid("0d9c46ae-8fbb-4af3-912e-92a01fb36c25"), entityTypeCount: 125)
         {
         }
 
@@ -94,6 +94,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemDropItemGroupItemDefinition = ItemDropItemGroupItemDefinitionEntityType.Create(this);
             var itemItemOfItemSet = ItemItemOfItemSetEntityType.Create(this);
             var itemLevelBonusTable = ItemLevelBonusTableEntityType.Create(this);
+            var itemLevelPrice = ItemLevelPriceEntityType.Create(this);
             var itemOfItemSet = ItemOfItemSetEntityType.Create(this);
             var itemOption = ItemOptionEntityType.Create(this);
             var itemOptionCombinationBonus = ItemOptionCombinationBonusEntityType.Create(this);
@@ -101,6 +102,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemOptionLink = ItemOptionLinkEntityType.Create(this);
             var itemOptionOfLevel = ItemOptionOfLevelEntityType.Create(this);
             var itemOptionType = ItemOptionTypeEntityType.Create(this);
+            var itemPriceDefinition = ItemPriceDefinitionEntityType.Create(this);
             var itemSetGroup = ItemSetGroupEntityType.Create(this);
             var itemSlotType = ItemSlotTypeEntityType.Create(this);
             var itemStorage = ItemStorageEntityType.Create(this);
@@ -274,7 +276,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemDefinitionEntityType.CreateForeignKey1(itemDefinition, magicEffectDefinition);
             ItemDefinitionEntityType.CreateForeignKey2(itemDefinition, gameConfiguration);
             ItemDefinitionEntityType.CreateForeignKey3(itemDefinition, itemSlotType);
-            ItemDefinitionEntityType.CreateForeignKey4(itemDefinition, skill);
+            ItemDefinitionEntityType.CreateForeignKey4(itemDefinition, itemPriceDefinition);
+            ItemDefinitionEntityType.CreateForeignKey5(itemDefinition, skill);
             ItemDefinitionCharacterClassEntityType.CreateForeignKey1(itemDefinitionCharacterClass, characterClass);
             ItemDefinitionCharacterClassEntityType.CreateForeignKey2(itemDefinitionCharacterClass, itemDefinition);
             ItemDefinitionItemOptionDefinitionEntityType.CreateForeignKey1(itemDefinitionItemOptionDefinition, itemDefinition);
@@ -288,6 +291,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemItemOfItemSetEntityType.CreateForeignKey1(itemItemOfItemSet, item);
             ItemItemOfItemSetEntityType.CreateForeignKey2(itemItemOfItemSet, itemOfItemSet);
             ItemLevelBonusTableEntityType.CreateForeignKey1(itemLevelBonusTable, gameConfiguration);
+            ItemLevelPriceEntityType.CreateForeignKey1(itemLevelPrice, itemPriceDefinition);
             ItemOfItemSetEntityType.CreateForeignKey1(itemOfItemSet, increasableItemOption);
             ItemOfItemSetEntityType.CreateForeignKey2(itemOfItemSet, itemDefinition);
             ItemOfItemSetEntityType.CreateForeignKey3(itemOfItemSet, itemSetGroup);
@@ -301,6 +305,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionOfLevelEntityType.CreateForeignKey1(itemOptionOfLevel, increasableItemOption);
             ItemOptionOfLevelEntityType.CreateForeignKey2(itemOptionOfLevel, powerUpDefinition);
             ItemOptionTypeEntityType.CreateForeignKey1(itemOptionType, gameConfiguration);
+            ItemPriceDefinitionEntityType.CreateForeignKey1(itemPriceDefinition, gameConfiguration);
             ItemSetGroupEntityType.CreateForeignKey1(itemSetGroup, gameConfiguration);
             ItemSetGroupEntityType.CreateForeignKey2(itemSetGroup, itemOptionDefinition);
             ItemSlotTypeEntityType.CreateForeignKey1(itemSlotType, gameConfiguration);
@@ -460,6 +465,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemDropItemGroupItemDefinitionEntityType.CreateAnnotations(itemDropItemGroupItemDefinition);
             ItemItemOfItemSetEntityType.CreateAnnotations(itemItemOfItemSet);
             ItemLevelBonusTableEntityType.CreateAnnotations(itemLevelBonusTable);
+            ItemLevelPriceEntityType.CreateAnnotations(itemLevelPrice);
             ItemOfItemSetEntityType.CreateAnnotations(itemOfItemSet);
             ItemOptionEntityType.CreateAnnotations(itemOption);
             ItemOptionCombinationBonusEntityType.CreateAnnotations(itemOptionCombinationBonus);
@@ -467,6 +473,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionLinkEntityType.CreateAnnotations(itemOptionLink);
             ItemOptionOfLevelEntityType.CreateAnnotations(itemOptionOfLevel);
             ItemOptionTypeEntityType.CreateAnnotations(itemOptionType);
+            ItemPriceDefinitionEntityType.CreateAnnotations(itemPriceDefinition);
             ItemSetGroupEntityType.CreateAnnotations(itemSetGroup);
             ItemSlotTypeEntityType.CreateAnnotations(itemSlotType);
             ItemStorageEntityType.CreateAnnotations(itemStorage);

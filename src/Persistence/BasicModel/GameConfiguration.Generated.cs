@@ -173,6 +173,27 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="ItemPriceDefinitions" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("itemPriceDefinitions")]
+    public ICollection<ItemPriceDefinition> RawItemPriceDefinitions { get; } = new List<ItemPriceDefinition>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition> ItemPriceDefinitions
+    {
+        get => base.ItemPriceDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition, ItemPriceDefinition>(this.RawItemPriceDefinitions);
+        protected set
+        {
+            this.ItemPriceDefinitions.Clear();
+            foreach (var item in value)
+            {
+                this.ItemPriceDefinitions.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemSlotTypes" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("itemSlotTypes")]

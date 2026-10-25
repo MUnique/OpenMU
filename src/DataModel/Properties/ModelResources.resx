@@ -1663,6 +1663,12 @@
   <data name="GameConfiguration_ItemLevelBonusTables_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="GameConfiguration_ItemPriceDefinitions_Caption" xml:space="preserve">
+    <value>Item Price Definitions</value>
+  </data>
+  <data name="GameConfiguration_ItemPriceDefinitions_Description" xml:space="preserve">
+    <value>The definitions of item prices, which are referenced by the item definitions.</value>
+  </data>
   <data name="GameConfiguration_ItemSlotTypes_Caption" xml:space="preserve">
     <value>Item Slot Types</value>
   </data>
@@ -2772,6 +2778,12 @@
   </data>
   <data name="ItemDefinition_PetExperienceFormula_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="ItemDefinition_PriceDefinition_Caption" xml:space="preserve">
+    <value>Price Definition</value>
+  </data>
+  <data name="ItemDefinition_PriceDefinition_Description" xml:space="preserve">
+    <value>Defines how the price of this item is calculated. Without it, the item gets the automatic price of equipment.</value>
   </data>
   <data name="ItemDefinition_ConsumeEffect_Caption" xml:space="preserve">
     <value>Consume Effect</value>
@@ -6102,5 +6114,167 @@
   </data>
   <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
     <value>The item level at which this requirement starts to apply. Leave unset to always apply the requirement.</value>
+  </data>
+  <data name="ItemPriceDefinition_TypeCaption" xml:space="preserve">
+    <value>Item Price Definition</value>
+  </data>
+  <data name="ItemPriceDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Price Definitions</value>
+  </data>
+  <data name="ItemPriceDefinition_TypeDescription" xml:space="preserve">
+    <value>Defines how the price of an item is calculated, if it differs from the automatic price of equipment.</value>
+  </data>
+  <data name="ItemPriceDefinition_Name_Caption" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ItemPriceDefinition_Name_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceDefinition_BasePriceFormula_Caption" xml:space="preserve">
+    <value>Base Price Formula</value>
+  </data>
+  <data name="ItemPriceDefinition_BasePriceFormula_Description" xml:space="preserve">
+    <value>The formula for the price of one unit, e.g. "(level + 1) * 200000". Variables: level, durability, maxDurability, value, dropLevel, optionLevel, optionCount, healthRecoveryOptionLevel and automaticPrice. Without a formula, the automatic price of equipment is used.</value>
+  </data>
+  <data name="ItemPriceDefinition_PricePerLevel_Caption" xml:space="preserve">
+    <value>Price Per Level</value>
+  </data>
+  <data name="ItemPriceDefinition_PricePerLevel_Description" xml:space="preserve">
+    <value>Fixed prices for specific item levels. They take precedence over the formula.</value>
+  </data>
+  <data name="ItemPriceDefinition_QuantityScaling_Caption" xml:space="preserve">
+    <value>Quantity Scaling</value>
+  </data>
+  <data name="ItemPriceDefinition_QuantityScaling_Description" xml:space="preserve">
+    <value>How the quantity (durability) of the item scales the price.</value>
+  </data>
+  <data name="ItemPriceDefinition_Modifiers_Caption" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="ItemPriceDefinition_Modifiers_Description" xml:space="preserve">
+    <value>The options which increase the price, like for equipment.</value>
+  </data>
+  <data name="ItemPriceDefinition_SellingPriceRounding_Caption" xml:space="preserve">
+    <value>Selling Price Rounding</value>
+  </data>
+  <data name="ItemPriceDefinition_SellingPriceRounding_Description" xml:space="preserve">
+    <value>How the selling price is rounded.</value>
+  </data>
+  <data name="ItemPriceDefinition_CraftingReferencePrice_Caption" xml:space="preserve">
+    <value>Crafting Reference Price</value>
+  </data>
+  <data name="ItemPriceDefinition_CraftingReferencePrice_Description" xml:space="preserve">
+    <value>The price which is used for the success rate of crafting instead of the buying price. Empty means that the buying price is used.</value>
+  </data>
+  <data name="ItemLevelPrice_TypeCaption" xml:space="preserve">
+    <value>Item Level Price</value>
+  </data>
+  <data name="ItemLevelPrice_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Level Prices</value>
+  </data>
+  <data name="ItemLevelPrice_TypeDescription" xml:space="preserve">
+    <value>A fixed price of an item at a specific item level.</value>
+  </data>
+  <data name="ItemLevelPrice_Level_Caption" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="ItemLevelPrice_Level_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemLevelPrice_Price_Caption" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="ItemLevelPrice_Price_Description" xml:space="preserve">
+    <value>The price of one unit at this level.</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_TypeCaption" xml:space="preserve">
+    <value>Item Price Quantity Scaling</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceQuantityScaling_None_Caption" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_None_Description" xml:space="preserve">
+    <value>The quantity doesn't affect the price.</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_PerPiece_Caption" xml:space="preserve">
+    <value>Per Piece</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_PerPiece_Description" xml:space="preserve">
+    <value>The price is multiplied by the number of pieces, e.g. for potions.</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_ByFillRatio_Caption" xml:space="preserve">
+    <value>By Fill Ratio</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_ByFillRatio_Description" xml:space="preserve">
+    <value>The price is multiplied by the durability and divided by the maximum durability, e.g. for arrows.</value>
+  </data>
+  <data name="ItemPriceModifiers_TypeCaption" xml:space="preserve">
+    <value>Item Price Modifiers</value>
+  </data>
+  <data name="ItemPriceModifiers_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceModifiers_None_Caption" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ItemPriceModifiers_None_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceModifiers_Skill_Caption" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="ItemPriceModifiers_Skill_Description" xml:space="preserve">
+    <value>The skill increases the price by 150 percent.</value>
+  </data>
+  <data name="ItemPriceModifiers_Luck_Caption" xml:space="preserve">
+    <value>Luck</value>
+  </data>
+  <data name="ItemPriceModifiers_Luck_Description" xml:space="preserve">
+    <value>The luck option increases the price by 25 percent.</value>
+  </data>
+  <data name="ItemPriceModifiers_Option_Caption" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="ItemPriceModifiers_Option_Description" xml:space="preserve">
+    <value>The normal option increases the price, depending on its level.</value>
+  </data>
+  <data name="ItemPriceModifiers_WingOption_Caption" xml:space="preserve">
+    <value>Wing Option</value>
+  </data>
+  <data name="ItemPriceModifiers_WingOption_Description" xml:space="preserve">
+    <value>Each wing option increases the price by 25 percent.</value>
+  </data>
+  <data name="ItemPriceModifiers_Excellent_Caption" xml:space="preserve">
+    <value>Excellent</value>
+  </data>
+  <data name="ItemPriceModifiers_Excellent_Description" xml:space="preserve">
+    <value>Each excellent option doubles the price.</value>
+  </data>
+  <data name="ItemPriceModifiers_All_Caption" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ItemPriceModifiers_All_Description" xml:space="preserve">
+    <value>All modifiers are applied, like for equipment.</value>
+  </data>
+  <data name="ItemPriceRounding_TypeCaption" xml:space="preserve">
+    <value>Item Price Rounding</value>
+  </data>
+  <data name="ItemPriceRounding_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceRounding_Default_Caption" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="ItemPriceRounding_Default_Description" xml:space="preserve">
+    <value>Rounded down to a multiple of 100 from 1,000, and to a multiple of 10 from 100. The durability reduces the price.</value>
+  </data>
+  <data name="ItemPriceRounding_Tens_Caption" xml:space="preserve">
+    <value>Tens</value>
+  </data>
+  <data name="ItemPriceRounding_Tens_Description" xml:space="preserve">
+    <value>Rounded down to a multiple of 10, and the durability doesn't reduce the price, e.g. for potions.</value>
   </data>
 </root>

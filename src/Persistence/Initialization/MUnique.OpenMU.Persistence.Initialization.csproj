@@ -373,6 +373,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LevelBonusDescriptions.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Update="Properties\ItemPriceDefinitionNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemPriceDefinitionNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemPriceDefinitionNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemPriceDefinitionNames.resx</DependentUpon>
+    </Compile>
     <EmbeddedResource Update="Properties\LevelBonusNames.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>LevelBonusNames.Designer.cs</LastGenOutput>
