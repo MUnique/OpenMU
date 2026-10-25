@@ -508,7 +508,12 @@ internal class ItemStatProfilesDataTest
         return terms.TableState == ItemStatTermState.Values ? terms.Table : null;
     }
 
-    private static string Describe(GameConfiguration gameConfiguration)
+    /// <summary>
+    /// Describes the profiles and the profile of each item, so that two configurations can be compared.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The description.</returns>
+    internal static string Describe(GameConfiguration gameConfiguration)
     {
         var profiles = gameConfiguration.ItemStatProfiles
             .OrderBy(p => p.Name, StringComparer.Ordinal)
