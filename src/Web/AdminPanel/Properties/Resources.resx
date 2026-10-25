@@ -2617,4 +2617,16 @@
   <data name="LeaderboardGames" xml:space="preserve">
     <value>Games</value>
   </data>
+  <data name="AllowedMcpTools" xml:space="preserve">
+    <value>Allowed MCP tools (comma separated; empty allows all tools for the role)</value>
+  </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>The configuration changed while this editor was open. Copy any unsaved edits, then use Refresh to reload the current data before saving.</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>Create guild channels automatically</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>As soon as a guild master is linked, the bot creates the channel of the guild in the GUILDS category of your Discord server and binds the guild chat to it. Only linked members of the guild can see it, and the guild master can moderate its messages. Guilds whose chat is already bound keep their channel. New guilds and new guild masters are picked up within about ten minutes.</value>
+  </data>
 </root>

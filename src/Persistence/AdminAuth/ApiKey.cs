@@ -46,6 +46,9 @@ public class ApiKey
     /// <seealso cref="AdminRoles"/>
     public string Roles { get; set; } = AdminRoles.Viewer;
 
+    /// <summary>Gets or sets the optional comma-separated MCP tool allowlist. Empty keeps role-only access.</summary>
+    public string AllowedToolGroups { get; set; } = string.Empty;
+
     /// <summary>
     /// Gets or sets a value indicating whether this key is disabled and therefore rejected.
     /// </summary>

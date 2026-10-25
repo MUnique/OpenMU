@@ -34,6 +34,14 @@ public sealed class AdminAuditRepository(IAdminUserRepository users) : IAdminAud
     }
 
     /// <inheritdoc />
+    public async ValueTask<AdminAuditEntry?> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        await this.EnsureStorageAsync(cancellationToken).ConfigureAwait(false);
+        await using var context = new AdminPanelContext();
+        return await context.AdminAuditEntries.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<(IReadOnlyList<AdminAuditEntry> Items, int Total)> ReadAsync(int offset, int limit, CancellationToken cancellationToken = default)
     {
         if (offset < 0 || limit is < 1 or > 100)

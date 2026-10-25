@@ -24,6 +24,12 @@ public class DiscordChatBridgeSettings
     public List<ulong> AllowedDiscordServerIds { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets a value indicating whether the bot creates a channel for a guild on the Discord server of the game server,
+    /// as soon as the guild master is linked to a Discord user. It requires that the binding mode allows hosted channels.
+    /// </summary>
+    public bool AutoCreateHostedChannels { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the bot reads the messages in the bound channels.
     /// It requires the privileged <i>Message Content</i> intent, which has to be enabled for the bot in the Discord developer portal.
     /// Without it, the messages are sent with the command <c>/say</c>.

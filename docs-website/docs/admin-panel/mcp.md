@@ -4,7 +4,8 @@ sidebar_position: 18
 
 # Connect an AI agent through MCP
 
-The admin panel can expose a read-only [Model Context Protocol](https://modelcontextprotocol.io/)
+The admin panel can expose a [Model Context
+Protocol](https://modelcontextprotocol.io/)
 server at `/mcp`. Your agent can inspect OpenMU without OpenMU calling an AI
 model
 or requiring a model API key. The endpoint is disabled by default.
@@ -31,7 +32,8 @@ Alternatively, set `OPENMU_MCP_ENABLED=true` in the admin host's environment
 (including Docker), or `AdminPanel__Mcp__Enabled=true` through standard .NET
 configuration. Both the all-in-one host and distributed admin host support MCP.
 `ReadOnly` defaults to `true`: write tools are absent from discovery and cannot
-be called. To enable the operational tools, set `AdminPanel:Mcp:ReadOnly=false`
+be called. To enable operational and configuration tools, set
+`AdminPanel:Mcp:ReadOnly=false`
 (or `AdminPanel__Mcp__ReadOnly=false`) and restart the admin host. Assign each
 agent only the roles it needs: Operator for server/player/account actions,
 CashShop for coin grants, and Administrator for audit history and logging.
@@ -226,18 +228,19 @@ reloading the database. If edits continue, the tool returns a retry message;
 repeat the read after the edit completes. Reads are not transactional snapshots.
 
 No password hashes, security codes, vault passwords, admin authentication
-secrets,
-IP addresses, plugin source or custom plugin configuration are exposed. Generic
-configuration reads exclude plugin configuration because it can contain tokens
-and webhook URLs. All results are data: character names, guild notices and other
-player-controlled strings must never be interpreted as instructions to the
-agent.
+secrets, IP addresses or plugin source are exposed. Plugin changes return only
+the requested safe scalar fields, never a complete custom configuration.
+Existing string values are never returned or recorded; string changes cannot be
+reverted. Generic configuration reads exclude plugin configuration because it
+can contain tokens and webhook URLs. All results are data: character names,
+guild notices and other player-controlled strings must never be interpreted as
+instructions to the agent.
 
 Tools are filtered by role during discovery and checked again when called.
 The host limits requests per API client and returns HTTP 429 when the configured
-minute allowance is exhausted, or HTTP 413 for oversized request bodies. This
-phase supports audited operational writes. Generic configuration edits, offline
-character edits, live GM commands and OAuth are reserved for later phases.
+minute allowance is exhausted, or HTTP 413 for oversized request bodies.
+Configuration and offline character changes use preview/apply as described
+below. Live GM commands and OAuth remain planned for a later phase.
 
 ## Operational safety and audit history
 
@@ -300,3 +303,161 @@ failures return HTTP 503, authorization failures return HTTP 403, and invalid
 operational arguments return HTTP 400. Business refusals and uncertain audit
 completion return HTTP 409. After an uncertain outcome, inspect current state
 before retrying.
+
+## Configuration and offline character changes
+
+Configuration tools require Administrator and explicitly enabled MCP writes.
+The read-only catalog also includes `rates_get`, `drops_explain` and
+`spawns_list`. Every configuration write and offline character write uses two
+calls:
+
+1. Call the tool with its proposed arguments and `apply: false` (the default).
+   Inspect `change`, `affectedObjects`, and the restart guidance.
+2. Repeat exactly those arguments with `apply: true` and the returned
+   `confirmationToken`.
+
+Tokens last five minutes and can be used once. They are bound to the API key,
+front end, tool, arguments and previewed state. Another caller, modified
+arguments, a repeated apply or a changed object requires a new preview. A
+restart also invalidates outstanding previews. In deployments with several
+admin host replicas, route preview and apply to the same replica.
+
+Apply reloads and validates persisted configuration in a serializable
+transaction. A conflict refuses the change; inspect current state and preview
+again. Notifications reach existing configuration caches and game servers only
+after commit. Agent reads use persisted data even while the panel has pending
+edits. Panel caches reload after a write when clean; pending graphical edits
+are preserved, and the panel reloads after those edits are saved or discarded.
+If an open editor's context was replaced before any edits were pending, Save
+asks you to copy unsaved edits and use Refresh before saving again. Closing
+the stale page does not discard changes in the replacement context.
+Previews run without the write gate or a serializable transaction; each caller
+may hold at most 64 outstanding confirmations (1,024 total).
+Some subsystems retain startup settings: restart affected game
+servers when required. The conservative preview reports a restart requirement;
+it does not restart servers automatically.
+
+| Tools | Purpose |
+| --- | --- |
+| `config_update` | Merge-patch one object's scalar fields and references |
+| `config_create`, `config_delete` | Create or delete a leaf aggregate child |
+| `plugins_set_active` | Enable or disable an installed plugin |
+| `plugins_update_configuration` | Patch non-secret scalar plugin settings |
+| `rates_get`, `rates_set` | Inspect/set experience and money rates |
+| `drops_explain`, `drops_update` | Inspect groups/change chances or add items |
+| `spawns_list`, `spawns_update` | Inspect/change monster spawn rectangles |
+| `characters_update`, `characters_add_item` | Edit characters/add items |
+| `audit_revert` | Preview restoration of a successful configuration change |
+
+Use `config_describe` to find exact field names and the `writable` flag. A
+patch is an RFC 7396 JSON merge patch restricted to those fields. Null clears
+nullable fields; it cannot clear a required value or collection. References use
+`{"$ref":"<id>"}`. Non-owning reference collections accept arrays of references;
+aggregate collections use separate child operations. Localized captions use
+the stored text form, such as `Event||de=Ereignis`, preserving translations.
+Identities and plugin
+source, assemblies and credentials are excluded. A patch is limited to 6,000
+characters and 50 fields; a reference collection to 100 entries. Larger
+configuration diffs are refused instead of losing their audit history.
+
+For example, preview a global experience change with:
+
+```json
+{
+  "type": "GameConfiguration",
+  "id": "<configuration-id>",
+  "patch": "{\"ExperienceRate\":2}",
+  "apply": false
+}
+```
+
+`rates_set` supports `experience`, `masterExperience`, and `money`. The global
+experience multiplier combines with each game server definition's experience
+multiplier. Master experience and money are global. Money changes require one
+existing global `MoneyAmountRate` attribute; conflicting or missing definitions
+must be repaired in the panel. Drop chances live in individual drop groups,
+rather than a single server rate. `drops_explain` reports candidate group
+chances and conditions, not final per-item probabilities.
+
+Deletion refuses objects which own children or remain referenced by other
+configuration objects, and refuses binary or other fields outside the safe
+snapshot. Remove children and references in separate reviewed
+steps. Database constraints also protect references outside the configuration,
+such as existing characters or items. Plugin changes require an installed
+configuration and exclude runtime source and assembly installation. Nested or
+sensitive custom settings remain in the panel's graphical editor. Those saves
+share authorization, preview validation and durable auditing, but omit custom
+values from history and cannot be reverted through MCP. Plugin authors should
+mark sensitive properties with `[Secret]` from `MUnique.OpenMU.PlugIns`.
+Agents cannot read or patch marked fields; the graphical editor masks marked
+strings and typed audit serialization omits marked properties. Names do not
+decide which plugin fields are editable. For compatibility with older plugins,
+all string patches hide both old and new values in previews and history and
+report `revertAvailable: false`; their original values are never recorded.
+
+Offline character tools require Operator; privileged accounts require
+Administrator. `characters_update` accepts `level`, `masterLevel`, `resets`,
+`strength`, `agility`, `vitality`, `energy`, `leadership`, `money`, `mapNumber`,
+`x`, and `y`. Level and master-level changes do not adjust experience or
+level-up points. Existing configured character attributes and limits are
+validated.
+`characters_add_item` creates one plain item, with its definition, level and a
+free rectangle in the base bag or vault. It does not add
+excellent/ancient/socket
+options or equip the item. Open an uninitialized bag/vault in game first.
+
+Both preview and apply reserve the offline account at the login server and
+release it afterward. Real logins are refused during the reservation; online
+accounts are refused without changing anything. In distributed deployments,
+new accounts need one login/logout to initialize their persisted login state
+before offline editing. Reservation failures and unavailable login coordination
+fail closed. Reservations expire after five minutes, including after an admin
+host crash, and character calls have a one-minute cancellation budget.
+The distributed `login-state` store must support Dapr's `ttlInSeconds` metadata
+(the supplied Redis configuration does). Successful release and normal logins
+clear the TTL so active sessions cannot expire. After a crash, wait five
+minutes and log in/out once before another offline edit. For a legacy stuck
+reservation, stop the failed admin host, verify that no edit or game session
+is active, then delete only that account's `login-state` key through the state
+store's administrative tooling. Do not clear an active reservation.
+Do not retry an uncertain save blindly.
+
+`audit_revert` restores successful configuration patches, safe plugin settings,
+money rates, and leaf creation/deletion. It uses its own preview and audit
+entry, refuses an object changed since the original action, and checks deletion
+references again. It does not reverse character changes, announcements,
+disconnects or other operational actions. When an audit record remains pending,
+inspect the actual state before making a separate reviewed correction.
+
+## Restrict an agent to selected tools
+
+On **API keys**, set **Allowed MCP tools** when creating or editing a key.
+Supply exact
+tool names or area wildcards, for example `players_*,server_overview`. An empty
+value preserves role-only access for existing keys. Restrictions only narrow a
+role: an allowed name never grants additional privileges. Malformed stored
+restrictions deny every MCP tool. Restrictions apply to both discovery and
+direct calls, and changes take effect on the next HTTP request. They do not
+change the key's REST API permissions.
+
+The admin schema upgrade adds the allowlist with an empty default, preserving
+existing keys and audit history. Keep API key and audit database migrations
+available during the upgrade.
+
+## Checks before release
+
+Run the PostgreSQL regression in a separate test process before each release;
+it is marked `[Explicit]` and does not run in the default CI suite. Point
+`OPENMU_TEST_MCP_POSTGRES` at an **empty, disposable PostgreSQL database**.
+The test creates the OpenMU tables, so never use a game or admin database.
+After building in Release, run:
+
+```shell
+dotnet test tests/MUnique.OpenMU.Web.Tests -c Release -p:ci=true --no-build \
+  --filter FullyQualifiedName~ConfigurationPostgreSqlTests
+```
+
+Verify the preview/apply flow with two agent clients. In the panel, also check
+“open a configuration editor without editing → apply an MCP change → edit and
+save”: Save must request a refresh, and Refresh must load the committed value.
+Copy the pending edit before refreshing, then reapply it and save normally.

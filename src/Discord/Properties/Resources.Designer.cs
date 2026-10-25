@@ -70,6 +70,15 @@ namespace MUnique.OpenMU.Discord.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chat of {0} is already bound to {1}. Use /guildchat unbind in that channel first..
+        /// </summary>
+        public static string Bind_AlreadyBound {
+            get {
+                return ResourceManager.GetString("Bind_AlreadyBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This channel is already bound to the chat of another guild or alliance..
         /// </summary>
         public static string Bind_ChannelInUse {

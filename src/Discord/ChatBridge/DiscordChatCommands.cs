@@ -136,6 +136,7 @@ public sealed class DiscordChatCommands
             DiscordChatBindResult.NotGuildMaster => nameof(Resources.Bind_NotGuildMaster),
             DiscordChatBindResult.NotAllianceMaster => nameof(Resources.Bind_NotAllianceMaster),
             DiscordChatBindResult.ChannelInUse => nameof(Resources.Bind_ChannelInUse),
+            DiscordChatBindResult.AlreadyBound => nameof(Resources.Bind_AlreadyBound),
             _ => nameof(Resources.Bind_NotBound),
         };
 

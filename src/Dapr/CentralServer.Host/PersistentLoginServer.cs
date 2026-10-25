@@ -17,6 +17,10 @@ public sealed class PersistentLoginServer : ILoginServer
 
     private const int OfflineServerId = -1;
 
+    // Applies only to reservations. Ordinary offline/login state must remain durable.
+    private static readonly IReadOnlyDictionary<string, string> ReservationMetadata = new Dictionary<string, string> { ["ttlInSeconds"] = "300" };
+    private static readonly IReadOnlyDictionary<string, string> DurableMetadata = new Dictionary<string, string> { ["ttlInSeconds"] = "-1" };
+
     private readonly ILogger<PersistentLoginServer> _logger;
 
     private readonly DaprClient _daprClient;
@@ -30,6 +34,42 @@ public sealed class PersistentLoginServer : ILoginServer
     {
         this._logger = logger;
         this._daprClient = daprClient;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(reservationId, byte.MaxValue);
+        var (current, etag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
+        if (current == reservationId)
+        {
+            return true;
+        }
+
+        if (current is >= 0)
+        {
+            return false;
+        }
+
+        // Accounts edited through the admin layer must have an initialized state entry.
+        // Failing closed avoids an unconditional first insert racing a real login.
+        if (string.IsNullOrEmpty(etag))
+        {
+            return false;
+        }
+
+        return await this._daprClient.TrySaveStateAsync(StoreName, accountName, reservationId, etag, metadata: ReservationMetadata).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(reservationId, byte.MaxValue);
+        var (current, etag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
+        if (current == reservationId && !await this._daprClient.TrySaveStateAsync(StoreName, accountName, OfflineServerId, etag, metadata: DurableMetadata).ConfigureAwait(false))
+        {
+            throw new InvalidOperationException("The offline account reservation could not be released.");
+        }
     }
 
     /// <summary>
@@ -74,11 +114,11 @@ public sealed class PersistentLoginServer : ILoginServer
             {
                 // Never logged in, so first insert a fresh state and try again.
                 // We never want to have the same account logged in twice, because that may lead to game mechanic exploits.
-                await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId, new StateOptions { Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong }).ConfigureAwait(false);
+                await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId, new StateOptions { Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong }, metadata: DurableMetadata).ConfigureAwait(false);
                 return await this.TryLoginAsync(accountName, serverId).ConfigureAwait(false);
             }
 
-            if (!await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag).ConfigureAwait(false))
+            if (!await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag, metadata: DurableMetadata).ConfigureAwait(false))
             {
                 // Another server changed the state of the account in the meantime.
                 return false;
@@ -185,7 +225,7 @@ public sealed class PersistentLoginServer : ILoginServer
                 return;
             }
 
-            await this._daprClient.TrySaveStateAsync<int?>(StoreName, accountName, OfflineServerId, eTag).ConfigureAwait(false);
+            await this._daprClient.TrySaveStateAsync<int?>(StoreName, accountName, OfflineServerId, eTag, metadata: DurableMetadata).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

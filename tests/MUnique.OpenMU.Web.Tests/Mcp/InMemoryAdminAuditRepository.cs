@@ -19,6 +19,15 @@ public sealed class InMemoryAdminAuditRepository : IAdminAuditRepository
     public bool RejectCompletion { get; set; }
 
     /// <inheritdoc />
+    public ValueTask<AdminAuditEntry?> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        lock (this._entries)
+        {
+            return ValueTask.FromResult(this._entries.FirstOrDefault(e => e.Id == id));
+        }
+    }
+
+    /// <inheritdoc />
     public ValueTask AddAsync(AdminAuditEntry entry, CancellationToken cancellationToken = default)
     {
         if (this.RejectWrites)

@@ -227,10 +227,38 @@ public class ActorRegistryTests
     private sealed class FakeLoginServer : ILoginServer
     {
         private readonly HashSet<string> _connected;
+        private readonly Dictionary<string, int> _reservations = new(StringComparer.OrdinalIgnoreCase);
 
         public FakeLoginServer(IEnumerable<string>? connectedAccounts)
         {
             this._connected = new HashSet<string>(connectedAccounts ?? [], StringComparer.OrdinalIgnoreCase);
+        }
+
+        public ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId)
+        {
+            lock (this._connected)
+            {
+                if (this._connected.Contains(accountName) || this._reservations.ContainsKey(accountName))
+                {
+                    return ValueTask.FromResult(false);
+                }
+
+                this._reservations.Add(accountName, reservationId);
+                return ValueTask.FromResult(true);
+            }
+        }
+
+        public ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId)
+        {
+            lock (this._connected)
+            {
+                if (this._reservations.TryGetValue(accountName, out var owner) && owner == reservationId)
+                {
+                    this._reservations.Remove(accountName);
+                }
+            }
+
+            return ValueTask.CompletedTask;
         }
 
         public Task<bool> TryLoginAsync(string accountName, byte serverId)

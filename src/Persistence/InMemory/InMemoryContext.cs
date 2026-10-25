@@ -136,6 +136,25 @@ public class InMemoryContext : IContext
         return newObject;
     }
 
+    /// <inheritdoc />
+    public object CreateNewWithId(Type type, Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException("A nonempty identity is required.", nameof(id));
+        }
+
+        var instance = typeof(Persistence.BasicModel.GameConfiguration).Assembly.CreateNew(type);
+        if (instance is not IIdentifiable identified || this.Provider.GetRepository(type) is not IMemoryRepository repository)
+        {
+            throw new ArgumentException($"The configuration {nameof(type)} must support persistent identities.", nameof(type));
+        }
+
+        identified.Id = id;
+        repository.Add(id, instance);
+        return instance;
+    }
+
     /// <inheritdoc/>
     public ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class
