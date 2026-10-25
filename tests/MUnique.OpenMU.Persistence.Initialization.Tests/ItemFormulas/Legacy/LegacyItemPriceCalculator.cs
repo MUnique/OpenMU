@@ -15,7 +15,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// Change it only together with an intentional change of the formula, see the remarks of the test.
 /// </summary>
 /// <remarks>
-/// Lines 19-581 are copied unchanged. The maximum durability comes from <see cref="LegacyItemExtensions"/>.
+/// The class body is copied unchanged, except the 64 bit calculation of the drop level based price (see there).
+/// The maximum durability comes from <see cref="LegacyItemExtensions"/>.
 /// </remarks>
 internal class LegacyItemPriceCalculator
 {
@@ -509,14 +510,16 @@ internal class LegacyItemPriceCalculator
             }
 
             // Wings
+            // Changed with the data-driven item prices (#75): calculated with 64 bit, because the price of wings with
+            // a high drop level overflowed 32 bit before, e.g. of +15 excellent wings, which resulted in negative prices.
             if (item.IsWing())
             {
                 // maybe we have to exclude small wings here
-                price = ((dropLevel + 40) * dropLevel * dropLevel * 11) + 40000000;
+                price = (((long)dropLevel + 40) * dropLevel * dropLevel * 11) + 40000000;
             }
             else
             {
-                price = ((dropLevel + 40) * dropLevel * dropLevel / 8) + 100;
+                price = (((long)dropLevel + 40) * dropLevel * dropLevel / 8) + 100;
             }
 
             var isOneHandedWeapon = item.Definition.Group < 6 && definition.Width < 2;

@@ -167,11 +167,37 @@ public class ItemPriceCalculator
 
         if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption))
         {
-            price += price * 16 / 100;
+            price = Limit(price + (price * 16 / 100));
         }
 
-        return Math.Min(price, MaximumPrice);
+        return price;
     }
+
+    /// <summary>
+    /// Limits a price to the range of -<see cref="MaximumPrice"/> to <see cref="MaximumPrice"/>.
+    /// </summary>
+    /// <remarks>
+    /// The steps after the quantity scaling only increase the magnitude of the price, so limiting every intermediate
+    /// result gives the same result as limiting only the final one, but no step can overflow. A configured price
+    /// formula can result in a price which overflows when it's multiplied, e.g. by the quantity.
+    /// </remarks>
+    /// <param name="price">The price.</param>
+    /// <returns>The limited price.</returns>
+    private static long Limit(long price) => Math.Clamp(price, -MaximumPrice, MaximumPrice);
+
+    /// <summary>
+    /// Limits a price to the range of -<see cref="MaximumPrice"/> to <see cref="MaximumPrice"/>, and truncates it to an integer.
+    /// </summary>
+    /// <param name="price">The price.</param>
+    /// <returns>The limited price.</returns>
+    private static long Limit(double price) => (long)Math.Clamp(price, -MaximumPrice, MaximumPrice);
+
+    /// <summary>
+    /// Limits a price to the range of -<see cref="MaximumPrice"/> to <see cref="MaximumPrice"/>.
+    /// </summary>
+    /// <param name="price">The price.</param>
+    /// <returns>The limited price.</returns>
+    private static long Limit(Int128 price) => (long)Int128.Clamp(price, -MaximumPrice, MaximumPrice);
 
     private static long RoundPrice(long price)
     {
@@ -228,8 +254,10 @@ public class ItemPriceCalculator
         return ItemPriceFormula.Get(priceDefinition.BasePriceFormula).Evaluate(variables);
     }
 
-    private static long CalculateAutomaticPrice(Item item, int dropLevel)
+    private static long CalculateAutomaticPrice(Item item, int itemDropLevel)
     {
+        // 64 bit, because the price of wings with a high drop level overflowed 32 bit, e.g. of +15 excellent wings.
+        long dropLevel = itemDropLevel;
         if (DropLevelIncreaseByLevel.TryGetValue(item.Level, out var dropLevelIncrease))
         {
             dropLevel += dropLevelIncrease;
@@ -247,9 +275,10 @@ public class ItemPriceCalculator
     {
         return scaling switch
         {
-            ItemPriceQuantityScaling.PerPiece => price * item.Durability(),
-            ItemPriceQuantityScaling.ByFillRatio when item.Definition!.Durability > 0 => price * item.Durability() / item.Definition.Durability,
-            _ => price,
+            // The fill ratio can reduce the price, so it's scaled with 128 bit, before it's limited.
+            ItemPriceQuantityScaling.PerPiece => Limit((Int128)price * item.Durability()),
+            ItemPriceQuantityScaling.ByFillRatio when item.Definition!.Durability > 0 => Limit((Int128)price * item.Durability() / item.Definition.Durability),
+            _ => Limit(price),
         };
     }
 
@@ -257,12 +286,12 @@ public class ItemPriceCalculator
     {
         if (modifiers.HasFlag(ItemPriceModifiers.Skill) && item.HasSkill)
         {
-            price += (long)(price * 1.5);
+            price = Limit(price + Limit(price * 1.5));
         }
 
         if (modifiers.HasFlag(ItemPriceModifiers.Luck) && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
         {
-            price += price * 25 / 100;
+            price = Limit(price + (price * 25 / 100));
         }
 
         if (modifiers.HasFlag(ItemPriceModifiers.Option))
@@ -273,10 +302,10 @@ public class ItemPriceCalculator
                 case 0:
                     break;
                 case 1:
-                    price += (long)(price * 0.6);
+                    price = Limit(price + Limit(price * 0.6));
                     break;
                 default:
-                    price += (long)(price * 0.7 * Math.Pow(2, optionLevel - 1));
+                    price = Limit(price + Limit(price * 0.7 * Math.Pow(2, optionLevel - 1)));
                     break;
             }
         }
@@ -286,7 +315,7 @@ public class ItemPriceCalculator
             var wingOptionCount = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Wing);
             for (int i = 0; i < wingOptionCount; i++)
             {
-                price += (long)(price * 0.25);
+                price = Limit(price + Limit(price * 0.25));
             }
         }
 
@@ -295,7 +324,7 @@ public class ItemPriceCalculator
             var excellentOptionCount = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
             for (int i = 0; i < excellentOptionCount; i++)
             {
-                price += price;
+                price = Limit(price + price);
             }
         }
 

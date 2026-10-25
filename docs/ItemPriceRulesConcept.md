@@ -532,6 +532,13 @@ updated. In short:
   without value".
 * **Missing update:** a game server doesn't start without item price
   definitions (§6).
+* **Overflows:** every step after the quantity scaling is limited to the
+  maximum price of 3,000,000,000, and the quantity scaling uses 128 bit, so a
+  very large configured price can't overflow, e.g. to 0. The automatic price is
+  calculated with 64 bit: the old 32 bit calculation overflowed for wings with a
+  high drop level, e.g. +15 excellent wings, which got negative prices. Such
+  wings don't exist in the shipped data; the frozen calculator of master's
+  `ItemFormulasEqualTodayTest` got the same change.
 * **Formula results:** a result which isn't a finite number in the range of a
   `long`, e.g. of a division by zero, throws like a syntax error, instead of
   becoming an arbitrary price.
