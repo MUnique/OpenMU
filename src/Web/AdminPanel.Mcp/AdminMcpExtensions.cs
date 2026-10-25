@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol;
+using ModelContextProtocol.Protocol;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
@@ -62,12 +64,32 @@ public static class AdminMcpExtensions
         var server = services.AddMcpServer()
             .WithHttpTransport(transport => transport.Stateless = true)
             .WithTools<AdminReadTools>()
-            .WithTools<AdminOperationReadTools>();
+            .WithTools<AdminOperationReadTools>()
+            .WithTools<ConfigurationReadTools>();
         if (!options.ReadOnly)
         {
-            server.WithTools<AdminWriteTools>();
+            server.WithTools<AdminWriteTools>().WithTools<ConfigurationWriteTools>();
         }
 
+        server.WithRequestFilters(filters =>
+        {
+            filters.AddListToolsFilter(next => async (context, cancellationToken) =>
+            {
+                var result = await next(context, cancellationToken).ConfigureAwait(false);
+                var groups = context.User?.FindFirst(AdminToolGroups.ClaimType)?.Value;
+                return new ListToolsResult { Tools = result.Tools.Where(t => AdminToolGroups.Allows(groups, t.Name)).ToArray(), NextCursor = result.NextCursor };
+            });
+            filters.AddCallToolFilter(next => (context, cancellationToken) =>
+            {
+                var groups = context.User?.FindFirst(AdminToolGroups.ClaimType)?.Value;
+                if (context.Params?.Name is not { } name || !AdminToolGroups.Allows(groups, name))
+                {
+                    throw new McpException("This tool is excluded by the API key's allowlist.");
+                }
+
+                return next(context, cancellationToken);
+            });
+        });
         server.AddAuthorizationFilters();
         return services;
     }

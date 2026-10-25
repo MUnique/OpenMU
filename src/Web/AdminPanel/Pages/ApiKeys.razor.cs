@@ -76,6 +76,14 @@ public partial class ApiKeys : IAsyncDisposable
         }
     }
 
+    private async Task OnEditToolGroupsAsync(ApiKey apiKey)
+    {
+        if (await this.ApiKeyManagementService.EditToolGroupsAsync(apiKey).ConfigureAwait(true))
+        {
+            await this.ReloadAsync().ConfigureAwait(true);
+        }
+    }
+
     private async Task OnCreateNewAsync()
     {
         var createdKey = await this.ApiKeyManagementService.CreateNewInModalDialogAsync().ConfigureAwait(true);

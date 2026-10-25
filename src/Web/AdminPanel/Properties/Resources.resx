@@ -2641,6 +2641,12 @@
   <data name="AuditOutcome" xml:space="preserve"><value>Outcome</value></data>
   <data name="AuditPrevious" xml:space="preserve"><value>Previous</value></data>
   <data name="AuditNext" xml:space="preserve"><value>Next</value></data>
+  <data name="AllowedMcpTools" xml:space="preserve">
+    <value>Allowed MCP tools (comma separated; empty allows all tools for the role)</value>
+  </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>The configuration changed while this editor was open. Copy any unsaved edits, then use Refresh to reload the current data before saving.</value>
+  </data>
   <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
     <value>Create guild channels automatically</value>
   </data>

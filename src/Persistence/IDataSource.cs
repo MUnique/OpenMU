@@ -56,6 +56,10 @@ public interface IDataSource : IDisposable
     /// </summary>
     ValueTask ForceDiscardChangesAsync();
 
+    /// <summary>Invalidates persisted data without discarding pending editor changes.</summary>
+    /// <remarks>A dirty context is retained until its edits are saved or discarded; subsequent owner access then reloads.</remarks>
+    ValueTask InvalidateAsync();
+
     /// <summary>
     /// Gets all objects of the given type.
     /// </summary>

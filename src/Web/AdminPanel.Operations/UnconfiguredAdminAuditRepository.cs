@@ -11,6 +11,10 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 internal sealed class UnconfiguredAdminAuditRepository : IAdminAuditRepository
 {
     /// <inheritdoc />
+    public ValueTask<AdminAuditEntry?> GetAsync(Guid id, CancellationToken cancellationToken = default)
+        => throw new InvalidOperationException("Audit storage is not configured.");
+
+    /// <inheritdoc />
     public ValueTask AddAsync(AdminAuditEntry entry, CancellationToken cancellationToken = default)
         => throw new AdminOperationException("Audit storage is not configured; no action was executed.", AdminOperationErrorKind.Unavailable);
 

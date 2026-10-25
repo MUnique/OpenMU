@@ -94,6 +94,12 @@ public sealed class McpIntegrationTests : System.IDisposable
         var item = context.CreateNew<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition>();
         item.Name = "Test Sword";
         config.Items.Add(item);
+        var map = context.CreateNew<GameMapDefinition>();
+        map.Number = 0;
+        config.Maps.Add(map);
+        var monster = context.CreateNew<MonsterDefinition>();
+        monster.Number = 1;
+        config.Monsters.Add(monster);
         var plugin = context.CreateNew<PlugInConfiguration>();
         plugin.CustomConfiguration = "secret-plugin-token";
         config.PlugInConfigurations.Add(plugin);
@@ -192,9 +198,11 @@ public sealed class McpIntegrationTests : System.IDisposable
     {
         await using var client = await this.ConnectAsync().ConfigureAwait(false);
         var tools = await client.ListToolsAsync().ConfigureAwait(false);
-        Assert.That(tools.Count, Is.EqualTo(16));
+        Assert.That(tools.Count, Is.EqualTo(19));
         var arguments = new Dictionary<string, Dictionary<string, object?>>
         {
+            ["drops_explain"] = new() { ["monsterNumber"] = 1, ["mapNumber"] = 0 },
+            ["spawns_list"] = new() { ["mapNumber"] = 0 },
             ["accounts_get"] = new() { ["loginName"] = "tester" },
             ["characters_get"] = new() { ["characterName"] = "Hero" },
             ["guilds_get"] = new() { ["name"] = "Knights" },
