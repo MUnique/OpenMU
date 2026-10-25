@@ -79,7 +79,8 @@ public static class AdminPanelAuthExtensions
         services.AddSingleton<AdminUserAvailabilityService>();
         services.AddSingleton<AdminPrincipalValidator>();
         services.AddSingleton<ReverseProxyAuthenticationService>();
-        services.AddScoped<IUserStore<AdminUser>, AdminUserStore>();
+        services.AddScoped<AdminUserStore>();
+        services.AddScoped<IUserStore<AdminUser>>(provider => provider.GetRequiredService<AdminUserStore>());
         services.AddScoped<AdminLoginService>();
         services.AddScoped<AuthenticatorSetupService>();
         services.AddScoped<CurrentAdminUserService>();

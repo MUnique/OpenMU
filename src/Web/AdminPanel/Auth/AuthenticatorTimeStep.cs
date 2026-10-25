@@ -92,7 +92,7 @@ internal static class AuthenticatorTimeStep
     /// <returns>The decoded key.</returns>
     internal static byte[] DecodeBase32(string input)
     {
-        var normalized = input.Replace(" ", string.Empty).TrimEnd('=').ToUpperInvariant();
+        var normalized = input.Replace(" ", string.Empty, StringComparison.Ordinal).TrimEnd('=').ToUpperInvariant();
         var result = new List<byte>(normalized.Length * 5 / 8);
         var bits = 0;
         var value = 0;

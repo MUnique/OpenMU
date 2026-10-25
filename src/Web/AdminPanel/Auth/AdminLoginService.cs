@@ -20,6 +20,7 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 public class AdminLoginService
 {
     private readonly UserManager<AdminUser> _userManager;
+    private readonly AdminUserStore _userStore;
     private readonly SignInTicketService _ticketService;
     private readonly ILogger<AdminLoginService> _logger;
 
@@ -30,11 +31,13 @@ public class AdminLoginService
     /// Initializes a new instance of the <see cref="AdminLoginService"/> class.
     /// </summary>
     /// <param name="userManager">The user manager.</param>
+    /// <param name="userStore">The user store, which consumes authenticator time steps atomically.</param>
     /// <param name="ticketService">The sign in ticket service.</param>
     /// <param name="logger">The logger.</param>
-    public AdminLoginService(UserManager<AdminUser> userManager, SignInTicketService ticketService, ILogger<AdminLoginService> logger)
+    public AdminLoginService(UserManager<AdminUser> userManager, AdminUserStore userStore, SignInTicketService ticketService, ILogger<AdminLoginService> logger)
     {
         this._userManager = userManager;
+        this._userStore = userStore;
         this._ticketService = ticketService;
         this._logger = logger;
     }
@@ -214,7 +217,9 @@ public class AdminLoginService
     {
         var key = await this._userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
         var codeStep = key is null ? null : AuthenticatorTimeStep.FindStep(key, code, AuthenticatorTimeStep.GetStep(DateTimeOffset.UtcNow));
-        if (codeStep is not { } step || step <= user.LastAcceptedTotpStep)
+
+        // The check and the update are one atomic operation, so concurrent logins can't both use the same code.
+        if (codeStep is not { } step || !await this._userStore.TryAdvanceTotpStepAsync(user, step, default).ConfigureAwait(false))
         {
             this._logger.LogWarning(
                 "Rejected an authenticator code of admin panel user '{LoginName}', because it or a newer code was already used.",
@@ -222,8 +227,6 @@ public class AdminLoginService
             return false;
         }
 
-        user.LastAcceptedTotpStep = step;
-        await this._userManager.UpdateAsync(user).ConfigureAwait(false);
         return true;
     }
 }
