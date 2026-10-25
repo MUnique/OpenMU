@@ -23,6 +23,33 @@ internal class ItemStatProfilesDataTest
     private const string Version095d = "0.95d";
     private const string Season6 = "Season 6";
 
+    private readonly Dictionary<string, (IContext Context, GameConfiguration GameConfiguration)> _readOnlyData = [];
+
+    /// <summary>
+    /// Creates the data of each version once for the tests which only read it.
+    /// The tests which change the data create their own.
+    /// </summary>
+    [OneTimeSetUp]
+    public async Task CreateReadOnlyDataAsync()
+    {
+        foreach (var version in new[] { Version075, Version095d, Season6 })
+        {
+            this._readOnlyData[version] = await CreateAsync(version).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Disposes the contexts of the data which the tests only read.
+    /// </summary>
+    [OneTimeTearDown]
+    public void DisposeReadOnlyData()
+    {
+        foreach (var (context, _) in this._readOnlyData.Values)
+        {
+            context.Dispose();
+        }
+    }
+
     /// <summary>
     /// Tests that a new database has the built-in profiles and the drop level bonuses, and that every item has a profile
     /// whose level bonus tables the configuration has (0.75 and 0.95d have no third wings and their table).
@@ -31,10 +58,9 @@ internal class ItemStatProfilesDataTest
     [TestCase(Version075)]
     [TestCase(Version095d)]
     [TestCase(Season6)]
-    public async Task NewDatabaseHasTheProfilesAsync(string version)
+    public void NewDatabaseHasTheProfiles(string version)
     {
-        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
-        using var _ = context;
+        var gameConfiguration = this._readOnlyData[version].GameConfiguration;
 
         var missingTables = gameConfiguration.ItemStatProfiles
             .SelectMany(profile => profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values && t.Table is null).Select(t => $"{profile.Name} {t.Stat}"))
@@ -57,10 +83,9 @@ internal class ItemStatProfilesDataTest
     [TestCase(Version075)]
     [TestCase(Version095d)]
     [TestCase(Season6)]
-    public async Task ProfilesWhichComputeDifferentlyFollowTodaysChecksAsync(string version)
+    public void ProfilesWhichComputeDifferentlyFollowTodaysChecks(string version)
     {
-        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
-        using var _ = context;
+        var gameConfiguration = this._readOnlyData[version].GameConfiguration;
 
         var wrongItems = gameConfiguration.Items
             .Where(item => (item.StatProfile!.Name == BuiltInItemStatProfiles.Armor) != IsArmorItem(item)
@@ -78,10 +103,9 @@ internal class ItemStatProfilesDataTest
     [TestCase(Version075)]
     [TestCase(Version095d)]
     [TestCase(Season6)]
-    public async Task PowerUpTablesAreTheProfileTablesAsync(string version)
+    public void PowerUpTablesAreTheProfileTables(string version)
     {
-        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
-        using var _ = context;
+        var gameConfiguration = this._readOnlyData[version].GameConfiguration;
 
         var statsOfAttributes = new Dictionary<AttributeDefinition, ItemStat>
         {
@@ -112,10 +136,9 @@ internal class ItemStatProfilesDataTest
     /// small or third wings).
     /// </summary>
     [Test]
-    public async Task EveryProfileIsUsedInSeason6Async()
+    public void EveryProfileIsUsedInSeason6()
     {
-        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
-        using var _ = context;
+        var gameConfiguration = this._readOnlyData[Season6].GameConfiguration;
 
         var unused = gameConfiguration.ItemStatProfiles.Where(profile => gameConfiguration.Items.All(item => item.StatProfile != profile)).Select(p => p.Name);
         Assert.That(unused, Is.Empty);
@@ -188,10 +211,9 @@ internal class ItemStatProfilesDataTest
     /// which compute alike (e.g. helper and default), which the other tests wouldn't notice.
     /// </summary>
     [Test]
-    public async Task Season6ItemCountsPerProfileAsync()
+    public void Season6ItemCountsPerProfile()
     {
-        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
-        using var _ = context;
+        var gameConfiguration = this._readOnlyData[Season6].GameConfiguration;
 
         var counts = gameConfiguration.Items
             .GroupBy(item => item.StatProfile!.Name)
@@ -220,10 +242,9 @@ internal class ItemStatProfilesDataTest
     /// Tests the profile which made-up items get, e.g. items which a server owner adds in the admin panel.
     /// </summary>
     [Test]
-    public async Task MadeUpItemsGetTheProfileOfTheirKindAsync()
+    public void MadeUpItemsGetTheProfileOfTheirKind()
     {
-        var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
-        using var _ = context;
+        var (context, gameConfiguration) = this._readOnlyData[Season6];
         var handSlots = gameConfiguration.Items.First(item => item.Group == 0).ItemSlot;
         var helmSlot = gameConfiguration.Items.First(item => item.Group == 7).ItemSlot;
         var wingsSlot = gameConfiguration.ItemSlotTypes.First(type => type.ItemSlots.Contains(InventoryConstants.WingsSlot));
