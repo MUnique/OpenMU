@@ -17,7 +17,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// Only the profiles "armor", "book" and "shield" compute differently than the default; the others name the
 /// level bonus tables their items use, or keep stored requirements of items which have no slot anyway.
 /// </remarks>
-public static class BuiltInItemStatProfiles
+public static partial class BuiltInItemStatProfiles
 {
     /// <summary>
     /// The profile of armor pieces (helms, armors, pants, gloves and boots).

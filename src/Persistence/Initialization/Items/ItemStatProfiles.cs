@@ -4,11 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
@@ -19,23 +16,10 @@ using MUnique.OpenMU.Persistence.Initialization.Properties;
 /// </summary>
 internal static class ItemStatProfiles
 {
-    private static readonly HashSet<AttributeDefinition> StatRequirements =
-    [
-        Stats.TotalStrength,
-        Stats.TotalAgility,
-        Stats.TotalEnergy,
-        Stats.TotalVitality,
-        Stats.TotalLeadership,
-        Stats.TotalStrengthRequirementValue,
-        Stats.TotalAgilityRequirementValue,
-        Stats.TotalEnergyRequirementValue,
-        Stats.TotalVitalityRequirementValue,
-        Stats.TotalLeadershipRequirementValue,
-    ];
-
     /// <summary>
     /// Adds the built-in item stat profiles which the configuration doesn't have yet (by name), and gives each item
-    /// without a profile the one of its kind. Profiles and items which already have a profile stay as they are.
+    /// without a profile the one of its kind (<see cref="BuiltInItemStatProfiles.GetProfileName"/>).
+    /// Profiles and items which already have a profile stay as they are.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
@@ -43,74 +27,6 @@ internal static class ItemStatProfiles
     {
         AddMissingProfiles(context, gameConfiguration);
         AssignProfiles(gameConfiguration);
-    }
-
-    /// <summary>
-    /// Gets the name of the built-in profile of the item, following the profile rules of the game client's item stat file
-    /// with what the item data of the server tells.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns>The name of the item's profile.</returns>
-    internal static string GetProfileName(ItemDefinition item)
-    {
-        var slots = item.ItemSlot?.ItemSlots ?? [];
-        if (item.IsAmmunition)
-        {
-            return ItemStatProfile.DefaultName;
-        }
-
-        if (HasPowerUp(item, Stats.ScepterRise))
-        {
-            return BuiltInItemStatProfiles.Sceptre;
-        }
-
-        if (HasPowerUp(item, Stats.BookRise))
-        {
-            return BuiltInItemStatProfiles.Book;
-        }
-
-        if (item.Group == (byte)ItemGroups.Shields)
-        {
-            return BuiltInItemStatProfiles.Shield;
-        }
-
-        if (item.Group <= (byte)ItemGroups.Staff && slots.Count > 0)
-        {
-            return BuiltInItemStatProfiles.Weapon;
-        }
-
-        if (slots.Any(slot => slot >= InventoryConstants.HelmSlot && slot <= InventoryConstants.BootsSlot))
-        {
-            return BuiltInItemStatProfiles.Armor;
-        }
-
-        if (slots.Contains(InventoryConstants.WingsSlot))
-        {
-            return GetWingProfileName(item);
-        }
-
-        if (item.Group == (byte)ItemGroups.Orbs && HasBaseRequirement(item, StatRequirements.Contains))
-        {
-            return BuiltInItemStatProfiles.Orb;
-        }
-
-        if (item.Group == (byte)ItemGroups.Scrolls && HasBaseRequirement(item, attribute => attribute == Stats.Level || StatRequirements.Contains(attribute)))
-        {
-            return BuiltInItemStatProfiles.Scroll;
-        }
-
-        if (item.Group == ItemConstants.Fenrir.Group && item.Number == ItemConstants.Fenrir.Number)
-        {
-            // The game client's item data gives the Horn of Fenrir the default, although the helper rule matches it.
-            return ItemStatProfile.DefaultName;
-        }
-
-        if (item.Group is (byte)ItemGroups.Misc1 or (byte)ItemGroups.Misc2 && HasBaseRequirement(item, attribute => attribute == Stats.Level))
-        {
-            return BuiltInItemStatProfiles.Helper;
-        }
-
-        return ItemStatProfile.DefaultName;
     }
 
     private static void AddMissingProfiles(IContext context, GameConfiguration gameConfiguration)
@@ -138,7 +54,7 @@ internal static class ItemStatProfiles
         var defaultProfile = gameConfiguration.ItemStatProfiles.First(profile => profile.Name == ItemStatProfile.DefaultName);
         foreach (var item in gameConfiguration.Items.Where(item => item.StatProfile is null))
         {
-            var name = GetProfileName(item);
+            var name = BuiltInItemStatProfiles.GetProfileName(item);
             item.StatProfile = gameConfiguration.ItemStatProfiles.FirstOrDefault(profile => profile.Name == name) ?? defaultProfile;
         }
     }
@@ -158,38 +74,5 @@ internal static class ItemStatProfiles
 
         var neutralName = name.ValueInNeutralLanguage;
         return gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name.ValueInNeutralLanguage == neutralName);
-    }
-
-    private static string GetWingProfileName(ItemDefinition item)
-    {
-        // The wings are in group 12, the Cape of Lord in group 13; their tier is the one of the game client's item data.
-        return (item.Group, item.Number) switch
-        {
-            ((byte)ItemGroups.Orbs, >= 130 and <= 135) => BuiltInItemStatProfiles.SmallWing,
-            ((byte)ItemGroups.Orbs, >= 0 and <= 2 or 41) => BuiltInItemStatProfiles.FirstTierWing,
-            ((byte)ItemGroups.Orbs, 49) or ((byte)ItemGroups.Misc1, 30) => BuiltInItemStatProfiles.SecondTierCape,
-            ((byte)ItemGroups.Orbs, >= 3 and <= 6 or 42) => BuiltInItemStatProfiles.SecondTierWing,
-            ((byte)ItemGroups.Orbs, >= 36 and <= 40 or 43 or 50) => BuiltInItemStatProfiles.ThirdTierWing,
-            _ => ItemStatProfile.DefaultName,
-        };
-    }
-
-    private static bool HasPowerUp(ItemDefinition item, AttributeDefinition attribute)
-    {
-        return item.BasePowerUpAttributes.Any(powerUp => powerUp.TargetAttribute == attribute);
-    }
-
-    /// <summary>
-    /// Determines whether the item has a base requirement above 0 of one of the wanted attributes.
-    /// A requirement which depends on the item level (one of its rows applies from an item level on) doesn't count,
-    /// as in the game client, where such a requirement is given by level.
-    /// </summary>
-    private static bool HasBaseRequirement(ItemDefinition item, Func<AttributeDefinition, bool> isWanted)
-    {
-        return item.Requirements.Any(requirement => requirement.Attribute is { } attribute
-                                                    && isWanted(attribute)
-                                                    && requirement.MinimumValue > 0
-                                                    && requirement.MinimumItemLevel is null
-                                                    && !item.Requirements.Any(other => other.Attribute == attribute && other.MinimumItemLevel is not null));
     }
 }

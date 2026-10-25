@@ -276,7 +276,7 @@ internal class ItemStatProfilesDataTest
         };
 
         Assert.That(
-            cases.Where(c => ItemStatProfiles.GetProfileName(c.Item) != c.ExpectedProfile).Select(c => $"{c.Case}: {ItemStatProfiles.GetProfileName(c.Item)}"),
+            cases.Where(c => BuiltInItemStatProfiles.GetProfileName(c.Item) != c.ExpectedProfile).Select(c => $"{c.Case}: {BuiltInItemStatProfiles.GetProfileName(c.Item)}"),
             Is.Empty);
     }
 
