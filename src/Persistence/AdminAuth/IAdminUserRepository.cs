@@ -67,7 +67,27 @@ public interface IAdminUserRepository
     /// </summary>
     /// <param name="user">The user.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
+    /// <remarks>
+    /// <see cref="AdminUser.LastAcceptedTotpStep"/> is not written here, because a concurrently loaded
+    /// user could set it back. Use <see cref="TryAdvanceTotpStepAsync"/> instead.
+    /// </remarks>
     ValueTask UpdateAsync(AdminUser user, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stores the time step of an accepted authenticator code, if it is newer than the last accepted one.
+    /// </summary>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="step">The time step of the accepted code.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// <c>true</c>, if the step was newer and is stored now;
+    /// <c>false</c>, if it or a newer step was accepted before, or the user doesn't exist.
+    /// </returns>
+    /// <remarks>
+    /// The comparison and the update have to be one atomic operation, so that concurrent logins can't
+    /// accept the same code twice.
+    /// </remarks>
+    ValueTask<bool> TryAdvanceTotpStepAsync(Guid userId, long step, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes the specified user.

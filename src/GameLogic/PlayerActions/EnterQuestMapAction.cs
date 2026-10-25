@@ -69,6 +69,13 @@ public abstract class EnterQuestMapAction
             return;
         }
 
+        // The map instance may still exist, after the map got deactivated.
+        if (!targetMap.IsActive)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapIsNotActive)).ConfigureAwait(false);
+            return;
+        }
+
         var targetGate = targetMap.ExitGates.FirstOrDefault();
         if (targetGate is null)
         {

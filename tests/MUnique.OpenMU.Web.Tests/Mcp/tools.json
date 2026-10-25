@@ -273,6 +273,58 @@
     }
   },
   {
+    "Name": "content_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Content type.",
+          "type": "string",
+          "enum": [
+            "Maps",
+            "CharacterClasses",
+            "Monsters",
+            "Items",
+            "MiniGames"
+          ]
+        },
+        "isActive": {
+          "description": "Optional active state to filter by.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "text": {
+          "description": "Case-insensitive text which the key, name or version must contain.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching entries to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum entries, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "diagnostics_check",
     "InputSchema": {
       "type": "object",
@@ -364,6 +416,48 @@
           "description": "Maximum rows (1 to 100).",
           "type": "integer",
           "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "minigames_leaderboard",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "miniGameType": {
+          "description": "Optional mini game type; empty for the first type which has a leaderboard.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Undefined",
+            "DevilSquare",
+            "BloodCastle",
+            "ChaosCastle",
+            "IllusionTemple",
+            "Doppelganger",
+            "Kanturu",
+            "ImperialGuardian",
+            null
+          ],
+          "default": null
+        },
+        "days": {
+          "description": "Optional number of past days (1 to 3650) of which finished games are counted; empty for all time.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
         }
       }
     },

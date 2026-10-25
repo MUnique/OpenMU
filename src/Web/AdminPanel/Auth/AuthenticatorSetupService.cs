@@ -88,7 +88,8 @@ public class AuthenticatorSetupService
         await this._userManager.SetTwoFactorEnabledAsync(user, false).ConfigureAwait(false);
         user.ProtectedAuthenticatorKey = null;
         user.RecoveryCodeHashes = null;
-        user.LastAcceptedTotpStep = 0;
+
+        // LastAcceptedTotpStep stays: time steps only grow, so it doesn't block the codes of a new authenticator.
         await this._userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
     }
 

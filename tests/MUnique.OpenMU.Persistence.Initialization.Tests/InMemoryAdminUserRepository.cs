@@ -47,6 +47,18 @@ internal class InMemoryAdminUserRepository : IAdminUserRepository
     }
 
     /// <inheritdoc />
+    public ValueTask<bool> TryAdvanceTotpStepAsync(Guid userId, long step, CancellationToken cancellationToken = default)
+    {
+        if (!this._users.TryGetValue(userId, out var user) || step <= user.LastAcceptedTotpStep)
+        {
+            return ValueTask.FromResult(false);
+        }
+
+        user.LastAcceptedTotpStep = step;
+        return ValueTask.FromResult(true);
+    }
+
+    /// <inheritdoc />
     public ValueTask DeleteAsync(AdminUser user, CancellationToken cancellationToken = default)
     {
         this._users.Remove(user.Id);
