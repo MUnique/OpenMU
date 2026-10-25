@@ -39,6 +39,15 @@ The updates take effect after a restart of the server process. Until then, the
 running server still works with the configuration it loaded at startup.
 :::
 
+Some updates are required before the game servers can run. For example, a game
+server doesn't start without the item price definitions, which the update *Add
+item price definitions* adds to databases from before they existed. Otherwise
+it would sell special items like jewels at the price of equipment. The game
+server logs the reason and stays stopped, while the admin panel keeps running,
+so you can apply the update here. Then use **Reload configuration and restart
+all game servers** on the [Servers page](servers.md), or restart the server
+process.
+
 ## On a new database
 
 A new database already contains the changes of OpenMU's own updates, because the
