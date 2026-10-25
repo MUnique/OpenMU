@@ -35,13 +35,13 @@ restarted without affecting the other. All containers have a restart policy,
 which starts them again when they crash, or when a game server ends itself to
 apply a changed configuration.
 
-Nothing addresses a game server by its Dapr app id: the calls to game servers,
-e.g. a friend request or a global message from the admin panel, are published to
-all game servers. The game server which hosts the affected player handles it, or
-the one whose id is in the message, and the others ignore it. So all game
-servers share the app id `game-server`. Each process still needs its own queues
-in RabbitMQ to receive every message; they are named after the `POD_NAME` of its
-sidecar, which therefore has to be unique.
+Each game server uses a unique Dapr app id, `game-server-{GS_ID}`. Live
+administration invokes the owning server directly and waits for its result.
+Existing notifications, such as friend requests and announcements, still use
+pub/sub. Each process needs its own RabbitMQ queues, named after its sidecar's
+unique `POD_NAME`. Update older sidecars which share `game-server` before using
+live MCP tools. Keep the internal `/administration` endpoints private; the
+provided nginx configurations refuse public access to that path.
 
 For observability, all subsystems and their Dapr sidecars send logs, metrics and traces with
 [OpenTelemetry](https://opentelemetry.io/) to the `otel-lgtm` container, which
@@ -214,10 +214,9 @@ specifies the id of a game server and is used to retrieve the
 `GameServerConfiguration` from the database.
 
 When it's not set, the id is the number at the end of the host name, e.g. `3` for
-`gameserver-3`. That's the name of a pod of a Kubernetes StatefulSet, so the game
-servers can be one StatefulSet with a number of replicas. To use a range which
-doesn't start at 0, add an offset with `GS_ID_OFFSET`. Without both, the id is
-`0`.
+`gameserver-3`. An offset can be added with `GS_ID_OFFSET`. The Helm chart
+sets `GS_ID` explicitly and gives each server its own Dapr app id. Without
+either an explicit id or a host-name ordinal, the id is `0`.
 
 ### `GS_LISTENER_PORT`
 
