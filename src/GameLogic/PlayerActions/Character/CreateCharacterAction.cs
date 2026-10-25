@@ -64,7 +64,8 @@ public class CreateCharacterAction
             return null;
         }
 
-        if (!characterClass.CanGetCreated || characterClass.HomeMap is null)
+        // The character starts on the home map, so it must be available in the game.
+        if (!characterClass.CanGetCreated || !characterClass.IsActive || characterClass.HomeMap is not { IsActive: true })
         {
             return null;
         }

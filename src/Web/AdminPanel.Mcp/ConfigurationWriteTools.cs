@@ -10,6 +10,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModelContextProtocol.Server;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>Configuration and offline character tools with shared authorization and preview safeguards.</summary>
@@ -266,4 +267,44 @@ public sealed class ConfigurationWriteTools
         [Description("False returns a preview; true applies exactly that preview.")] bool apply = false,
         [Description("Single-use token from the preview; expires after five minutes.")] string? confirmationToken = null)
         => AdminToolExecution.ExecuteAsync(() => operations.AddItemAsync(characterName, itemId, level, vault, apply, confirmationToken, cancellationToken));
+
+    /// <summary>Restrict the game to the content of a version of the original game after preview: maps, character classes, monsters, items and mini games introduced up to it are activated, later ones deactivated. Entries of an unknown version stay unchanged.</summary>
+    /// <param name="operations">The shared operations.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="target">Target version of the original game.</param>
+    /// <param name="apply">False returns a preview; true applies exactly that preview.</param>
+    /// <param name="confirmationToken">Single-use token from the preview; expires after five minutes.</param>
+    /// <returns>The safe operation result.</returns>
+    [McpServerTool(Name = "content_restrict_to_version", ReadOnly = false, Destructive = true, Idempotent = false, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Restrict the game to the content of a version of the original game after preview: maps, character classes, monsters, items and mini games introduced up to it are activated, later ones deactivated. Entries of an unknown version stay unchanged.")]
+    [Authorize(Roles = "Administrator")]
+    [ExposesOperation(typeof(ContentActivationOperations), nameof(ContentActivationOperations.RestrictToGameVersionAsync))]
+    public static ValueTask<JsonObject> ContentRestrictToVersionAsync(
+        [FromServices] ContentActivationOperations operations,
+        CancellationToken cancellationToken,
+        [Description("Target version of the original game.")] GameVersion target,
+        [Description("False returns a preview; true applies exactly that preview.")] bool apply = false,
+        [Description("Single-use token from the preview; expires after five minutes.")] string? confirmationToken = null)
+        => AdminToolExecution.ExecuteAsync(() => operations.RestrictToGameVersionAsync(target, apply, confirmationToken, cancellationToken));
+
+    /// <summary>Activate and deactivate maps, character classes, monsters, items or mini games after preview.</summary>
+    /// <param name="operations">The shared operations.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="activateIds">Identifiers from content_list to activate.</param>
+    /// <param name="deactivateIds">Identifiers from content_list to deactivate.</param>
+    /// <param name="apply">False returns a preview; true applies exactly that preview.</param>
+    /// <param name="confirmationToken">Single-use token from the preview; expires after five minutes.</param>
+    /// <returns>The safe operation result.</returns>
+    [McpServerTool(Name = "content_set_active", ReadOnly = false, Destructive = true, Idempotent = false, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Activate and deactivate maps, character classes, monsters, items or mini games after preview.")]
+    [Authorize(Roles = "Administrator")]
+    [ExposesOperation(typeof(ContentActivationOperations), nameof(ContentActivationOperations.SetActiveAsync))]
+    public static ValueTask<JsonObject> ContentSetActiveAsync(
+        [FromServices] ContentActivationOperations operations,
+        CancellationToken cancellationToken,
+        [Description("Identifiers from content_list to activate.")] Guid[]? activateIds = null,
+        [Description("Identifiers from content_list to deactivate.")] Guid[]? deactivateIds = null,
+        [Description("False returns a preview; true applies exactly that preview.")] bool apply = false,
+        [Description("Single-use token from the preview; expires after five minutes.")] string? confirmationToken = null)
+        => AdminToolExecution.ExecuteAsync(() => operations.SetActiveAsync(activateIds, deactivateIds, apply, confirmationToken, cancellationToken));
 }

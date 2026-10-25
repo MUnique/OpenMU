@@ -200,7 +200,7 @@ public class GensActions
             }
 
             if (configuration.Rewards.FirstOrDefault(reward => reward.Rank == member.Rank) is not { Count: > 0 } reward
-                || player.GameContext.Configuration.Items.FirstOrDefault(item => item.Group == reward.ItemGroup && item.Number == reward.ItemNumber) is not { } itemDefinition)
+                || player.GameContext.Configuration.Items.FirstOrDefault(item => item.IsActive && item.Group == reward.ItemGroup && item.Number == reward.ItemNumber) is not { } itemDefinition)
             {
                 return GensRewardResult.NotEligible;
             }

@@ -21,12 +21,23 @@ public static class MiniGameDefinitionExtensions
     public static MiniGameDefinition? GetSuitableMiniGameDefinition(this Player player, MiniGameType miniGameType, byte eventLevel)
     {
         var definitions = player.GameContext.Configuration.MiniGameDefinitions
-            .Where(def => def.Type == miniGameType)
+            .Where(def => def.Type == miniGameType && def.IsAvailable())
             .ToList();
         return definitions
                    .OrderByDescending(def => def.GameLevel)
                    .FirstOrDefault(def => def.IsInLevelRange(player))
                ?? definitions.FirstOrDefault(def => def.GameLevel == eventLevel);
+    }
+
+    /// <summary>
+    /// Determines whether the mini game is available in the game, which requires that
+    /// it's active, and that it has an entrance map which is active, too.
+    /// </summary>
+    /// <param name="definition">The definition of the mini game.</param>
+    /// <returns><c>true</c> if the mini game is available; otherwise, <c>false</c>.</returns>
+    public static bool IsAvailable(this MiniGameDefinition definition)
+    {
+        return definition.IsActive && definition.Entrance?.Map is { IsActive: true };
     }
 
     /// <summary>

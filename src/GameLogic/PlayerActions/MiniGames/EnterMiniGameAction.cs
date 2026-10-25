@@ -33,8 +33,10 @@ public class EnterMiniGameAction
             throw new InvalidOperationException("Character not selected or initialized.");
         }
 
+        // The availability includes the entrance map, independently of the map requirements
+        // below, which a running game may waive for rejoining players.
         var miniGameDefinition = player.GameContext.Configuration.MiniGameDefinitions
-            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel);
+            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel && def.IsAvailable());
         if (miniGameDefinition is null
             || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
             || player.CurrentMiniGame is not null)

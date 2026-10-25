@@ -830,4 +830,10 @@
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>Die Gardisten an der Brücke der Karte von Castle Siege öffnen das Anmeldefenster, und die Wache am Eingang zum Land der Prüfungen wird zu einem passiven NPC, der den Dialog des Landes der Prüfungen öffnet.</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Maximale Gegenstandsstufe der Seed Spheres korrigieren</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>Diese Aktualisierung setzt die maximale Gegenstandsstufe der Seed Spheres auf die höchste Optionsnummer ihres Elements. Die Gegenstandsstufe einer Seed Sphere bestimmt ihre Option, daher konnten Seed Spheres mit einer anderen als der ersten Option nicht erstellt werden, z. B. mit dem Item-Chatbefehl.</value></data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve">
+    <value>Spielversionen der Inhalte festlegen</value>
+  </data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Description" xml:space="preserve">
+    <value>Dieses Update legt fest, in welcher Version des Originalspiels die Karten, Charakterklassen, Monster, Gegenstände und Minispiele eingeführt wurden. Damit können die Inhalte bestimmter Spielversionen gesammelt aktiviert oder deaktiviert werden. Bereits festgelegte Versionen bleiben erhalten.</value>
+  </data>
 </root>
