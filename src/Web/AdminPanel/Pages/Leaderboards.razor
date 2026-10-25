@@ -1,0 +1,78 @@
+@page "/leaderboards"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Operations
+
+<PageTitle>OpenMU: @Resources.Leaderboards</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Leaderboards" />
+<h1>@Resources.Leaderboards</h1>
+
+<p class="text-muted">@Resources.LeaderboardsDescription</p>
+
+@if (this.IsLoading && this.MiniGameTypes.Count == 0)
+{
+    <p>@Resources.Loading</p>
+}
+else if (this.MiniGameTypes.Count == 0)
+{
+    <p>@Resources.LeaderboardsNoMiniGames</p>
+}
+else
+{
+    <div class="row g-2 align-items-end mb-3">
+        <div class="col-auto">
+            <ul class="nav nav-pills">
+                @foreach (var miniGameType in this.MiniGameTypes)
+                {
+                    <li class="nav-item">
+                        <button type="button" class="nav-link @(miniGameType == this._selectedType ? "active" : string.Empty)" @onclick="() => this.SelectTypeAsync(miniGameType)">
+                            @CaptionHelper.SeparateWords(miniGameType.ToString())
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-auto ms-md-auto">
+            <select class="form-select" aria-label="@Resources.LeaderboardPeriod" value="@this._period" @onchange="this.OnPeriodChangedAsync">
+                <option value="@LeaderboardPeriod.AllTime">@Resources.LeaderboardPeriodAllTime</option>
+                <option value="@LeaderboardPeriod.Last30Days">@Resources.LeaderboardPeriodLast30Days</option>
+                <option value="@LeaderboardPeriod.Last7Days">@Resources.LeaderboardPeriodLast7Days</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th class="text-end">#</th>
+            <th>@Resources.Character</th>
+            <th>@Resources.CharacterClass</th>
+            <th class="text-end">@Resources.LeaderboardTotalScore</th>
+            <th class="text-end">@Resources.LeaderboardBestScore</th>
+            <th class="text-end">@Resources.LeaderboardGames</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in this.Entries)
+        {
+            <tr>
+                <td class="text-end">@entry.Rank</td>
+                <td>@entry.CharacterName</td>
+                <td>@entry.ClassName</td>
+                <td class="text-end">@entry.TotalScore.ToString("N0")</td>
+                <td class="text-end">@entry.BestScore.ToString("N0")</td>
+                <td class="text-end">@entry.GameCount.ToString("N0")</td>
+            </tr>
+        }
+        @if (this.Entries.Count == 0)
+        {
+            <tr>
+                <td colspan="6" class="text-muted">@(this.IsLoading ? Resources.Loading : Resources.LeaderboardNoEntries)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+}

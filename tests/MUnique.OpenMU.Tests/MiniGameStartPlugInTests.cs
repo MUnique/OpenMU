@@ -326,6 +326,25 @@ public class MiniGameStartPlugInTests
     }
 
     /// <summary>
+    /// Tests that the start doesn't create a game whose entrance map is inactive,
+    /// even though the mini game itself is active.
+    /// </summary>
+    [Test]
+    public async Task InactiveEntranceMapCreatesNoGameAsync()
+    {
+        var definition = this.CreateDefinition(TimeSpan.FromMinutes(2));
+        definition.Entrance!.Map!.IsActive = false;
+        var (fakeContext, manager, notifications) = this.CreateAnnouncingContext(definition);
+        var state = new PeriodicTaskGameServerState(fakeContext.Object);
+
+        // The fake manager throws when asked to create a game.
+        await this._plugIn.StartForTestAsync(state).ConfigureAwait(false);
+
+        Assert.That(manager.Games, Is.Empty);
+        Assert.That(notifications, Is.Empty);
+    }
+
+    /// <summary>
     /// Tests that games with a non-shared map creation policy never drive the
     /// global entrance countdown.
     /// </summary>

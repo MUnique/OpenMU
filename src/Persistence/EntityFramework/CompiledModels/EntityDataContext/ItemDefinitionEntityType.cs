@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -25,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition),
                 baseEntityType,
-                propertyCount: 28,
+                propertyCount: 30,
                 navigationCount: 9,
                 foreignKeyCount: 4,
                 unnamedIndexCount: 4,
@@ -95,6 +96,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<Height>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: (byte)0);
             height.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var introducedIn = runtimeEntityType.AddProperty(
+                "IntroducedIn",
+                typeof(MUnique.OpenMU.DataModel.Configuration.GameVersion),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("IntroducedIn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<IntroducedIn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            introducedIn.SetSentinelFromProviderValue(0);
+            introducedIn.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var isActive = runtimeEntityType.AddProperty(
+                "IsActive",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("IsActive", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<IsActive>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            isActive.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var isAmmunition = runtimeEntityType.AddProperty(
                 "IsAmmunition",

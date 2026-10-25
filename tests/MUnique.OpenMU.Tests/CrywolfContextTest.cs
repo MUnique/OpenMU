@@ -297,6 +297,28 @@ public class CrywolfContextTest
         Assert.That(balgass, Is.Not.Null);
     }
 
+    /// <summary>
+    /// Tests that an inactive Balgass doesn't appear, because the event spawns its monsters itself.
+    /// </summary>
+    [Test]
+    public async Task InactiveBalgassDoesNotAppearAsync()
+    {
+        var (context, player, _) = await CreateContextAsync().ConfigureAwait(false);
+        context.Map!.Definition.MonsterSpawns.Single(spawn => spawn.MonsterDefinition?.Number == 349).MonsterDefinition!.IsActive = false;
+        var altar = context.Altars[0];
+
+        await ProceedToAsync(context, CrywolfState.Ready).ConfigureAwait(false);
+        await context.ContractAltarAsync(player, altar.Npc.Id).ConfigureAwait(false);
+        await context.TickAsync().ConfigureAwait(false);
+        await ProceedToAsync(context, CrywolfState.Start).ConfigureAwait(false);
+
+        context.SkipWaitingTime();
+        await context.TickAsync().ConfigureAwait(false);
+
+        var balgass = context.Map!.GetNpcsInRange(new Point(110, 79), 3).OfType<Monster>().FirstOrDefault(monster => monster.Definition.Number == 349);
+        Assert.That(balgass, Is.Null);
+    }
+
     private static async ValueTask ProceedToAsync(CrywolfContext context, CrywolfState state)
     {
         for (var i = 0; i < 10 && context.State != state; i++)

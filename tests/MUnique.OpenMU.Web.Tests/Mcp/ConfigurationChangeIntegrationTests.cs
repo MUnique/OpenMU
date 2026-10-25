@@ -341,6 +341,30 @@ public sealed class ConfigurationChangeIntegrationTests
         Assert.That(map.Name.Value, Is.Not.EqualTo("New name"));
     }
 
+    /// <summary>Content activation uses the shared preview, confirmation and audit, and agents read the result back.</summary>
+    [Test]
+    public async Task ContentActivationPreviewAndApplyAsync()
+    {
+        var map = this._config.Maps.Single();
+        map.IntroducedIn = GameVersion.Season6Episode1;
+        var args = new Dictionary<string, object?> { ["target"] = nameof(GameVersion.Season2) };
+        var preview = await this.CallAsync("content_restrict_to_version", args).ConfigureAwait(false);
+        Assert.That(map.IsActive, Is.True);
+        Assert.That(preview["affectedObjects"]!.GetValue<int>(), Is.EqualTo(1));
+        Confirm(args, preview);
+        await this.CallAsync("content_restrict_to_version", args).ConfigureAwait(false);
+        Assert.That(map.IsActive, Is.False);
+
+        var inactive = await this.CallAsync("content_list", new() { ["type"] = "Maps", ["isActive"] = false }).ConfigureAwait(false);
+        Assert.That(inactive["items"]!.AsArray().Single()!["id"]!.GetValue<Guid>(), Is.EqualTo(map.GetId()));
+
+        var activate = new Dictionary<string, object?> { ["activateIds"] = new[] { map.GetId() } };
+        Confirm(activate, await this.CallAsync("content_set_active", activate).ConfigureAwait(false));
+        await this.CallAsync("content_set_active", activate).ConfigureAwait(false);
+        Assert.That(map.IsActive, Is.True);
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Select(e => e.Operation), Is.EquivalentTo(new[] { "content_restrict_to_version", "content_set_active" }));
+    }
+
     private static void Confirm(Dictionary<string, object?> arguments, JsonObject preview)
     {
         arguments["apply"] = true;
