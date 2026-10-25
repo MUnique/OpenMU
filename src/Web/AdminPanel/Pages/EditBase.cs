@@ -157,7 +157,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._disposeCts = null;
 
         await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
-        await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(true);
+        if (await this.HasCurrentContextAsync().ConfigureAwait(false))
+        {
+            await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(false);
+        }
 
         if (this._isOwningContext)
         {
@@ -229,6 +232,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     {
         try
         {
+            if (!await this.HasCurrentContextAsync().ConfigureAwait(true))
+            {
+                this.ShowContextChangedMessage();
+                return;
+            }
+
             if (this._persistenceContext is { } context)
             {
                 var success = await context.SaveChangesAsync().ConfigureAwait(true);
@@ -239,6 +248,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 this.ToastService.ShowError(Resources.FailedByUninitializedContext);
             }
+        }
+        catch (ObjectDisposedException)
+        {
+            // Invalidation may also race the current-context check immediately before the save.
+            this.ShowContextChangedMessage();
         }
         catch (Exception ex)
         {
@@ -259,7 +273,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             return;
         }
 
-        await this.EditDataSource.ForceDiscardChangesAsync().ConfigureAwait(true);
+        // StateHasChanged below requires the renderer context after asynchronous data-source waits.
+        if (await this.HasCurrentContextAsync().ConfigureAwait(true))
+        {
+            await this.EditDataSource.ForceDiscardChangesAsync().ConfigureAwait(true);
+        }
+
         this._loadingState = DataLoadingState.LoadingStarted;
         var cts = new CancellationTokenSource();
         this._disposeCts = cts;
@@ -285,9 +304,31 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         await this.EditDataSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(true);
     }
 
+    private async ValueTask<bool> HasCurrentContextAsync()
+        => this._isOwningContext || this._persistenceContext is null
+            || ReferenceEquals(this._persistenceContext, await this.EditDataSource.GetContextAsync().ConfigureAwait(false));
+
+    private void ShowContextChangedMessage()
+        => this.ToastService.ShowError(Resources.EditorContextChanged);
+
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
-        if (this._persistenceContext?.HasChanges is true)
+        var stale = !await this.HasCurrentContextAsync().ConfigureAwait(true);
+        var hasChanges = stale;
+        if (!stale)
+        {
+            try
+            {
+                hasChanges = this._persistenceContext?.HasChanges is true;
+            }
+            catch (ObjectDisposedException)
+            {
+                stale = true;
+                hasChanges = true;
+            }
+        }
+
+        if (hasChanges)
         {
             var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
                 "window.confirm",
@@ -300,12 +341,16 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             }
             else if (this._isOwningContext)
             {
-                this._persistenceContext.Dispose();
+                this._persistenceContext?.Dispose();
                 this._persistenceContext = null;
+            }
+            else if (!stale)
+            {
+                await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(true);
             }
             else
             {
-                await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(true);
+                // The replacement context may contain another editor's pending changes.
             }
         }
     }

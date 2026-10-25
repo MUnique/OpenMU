@@ -11,6 +11,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 /// <param name="Roles">The effective roles.</param>
 public sealed record AdminActor(string Id, string Name, string Frontend, IReadOnlyList<string> Roles)
 {
+    /// <summary>Gets the optional tool allowlist of an API key.</summary>
+    public string AllowedToolGroups { get; init; } = string.Empty;
+
     /// <summary>Gets a value indicating whether the trusted panel admitted anonymous initial setup.</summary>
     public bool IsInitialSetup { get; init; }
 }

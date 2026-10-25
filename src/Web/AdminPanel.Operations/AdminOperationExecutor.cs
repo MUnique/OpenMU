@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>Enforces authorization and audits operations, with a log-only exception for setup/demo panel actions.</summary>
 /// <param name="caller">The current caller.</param>
@@ -44,6 +45,11 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
     public async ValueTask<T> ExecuteAsync<T>(string role, string operation, object arguments, Func<AdminActor, ValueTask<T>> action, CancellationToken cancellationToken, Func<T, bool>? succeeded = null)
     {
         var actor = await this.RequireAsync(role, cancellationToken).ConfigureAwait(false);
+        if (actor.Frontend == "mcp" && !AdminToolGroups.Allows(actor.AllowedToolGroups, operation))
+        {
+            throw new AdminOperationException("This tool is excluded by the API key's allowlist.", AdminOperationErrorKind.Forbidden);
+        }
+
         if (actor.Frontend == "mcp" && settings.ReadOnly)
         {
             throw new AdminOperationException("MCP writes are disabled. Enable AdminPanel:Mcp:ReadOnly=false explicitly.");
@@ -95,6 +101,11 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
         {
             cancellationToken.ThrowIfCancellationRequested();
             result = await action(actor).ConfigureAwait(false);
+        }
+        catch (AdminOperationException exception) when (exception.Kind == AdminOperationErrorKind.Uncertain)
+        {
+            // A transport/commit failure cannot prove rollback. Preserve Pending for operator reconciliation.
+            throw;
         }
         catch
         {
