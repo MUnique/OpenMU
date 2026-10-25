@@ -4,11 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
-using MUnique.OpenMU.DataModel.Configuration;
+using System.Globalization;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.ItemFormulas;
-using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Creates the item stat profiles of a configuration and gives its items their profile.
@@ -61,18 +59,9 @@ internal static class ItemStatProfiles
 
     private static ItemLevelBonusTable? FindTable(GameConfiguration gameConfiguration, BuiltInLevelBonusTable table)
     {
-        var name = table switch
-        {
-            BuiltInLevelBonusTable.DamageIncreaseWeapons => LocalizedString.FromResource(() => LevelBonusNames.DamageIncreaseWeapons),
-            BuiltInLevelBonusTable.DefenseRateIncreaseShields => LocalizedString.FromResource(() => LevelBonusNames.DefenseRateIncreaseShields),
-            BuiltInLevelBonusTable.DefenseIncreaseArmors => LocalizedString.FromResource(() => LevelBonusNames.DefenseIncreaseArmors),
-            BuiltInLevelBonusTable.DefenseIncreaseShields => LocalizedString.FromResource(() => LevelBonusNames.DefenseIncreaseShields),
-            BuiltInLevelBonusTable.DefenseBonus1stAnd2ndWings => LocalizedString.FromResource(() => LevelBonusNames.DefenseBonus1stAnd2ndWings),
-            BuiltInLevelBonusTable.DefenseBonus3rdWings => LocalizedString.FromResource(() => LevelBonusNames.DefenseBonus3rdWings),
-            _ => throw new ArgumentOutOfRangeException(nameof(table), table, null),
-        };
-
-        var neutralName = name.ValueInNeutralLanguage;
+        // The members of BuiltInLevelBonusTable are the keys of the level bonus names.
+        var neutralName = LevelBonusNames.ResourceManager.GetString(table.ToString(), CultureInfo.InvariantCulture)
+                          ?? throw new ArgumentOutOfRangeException(nameof(table), table, "The level bonus names have no such key.");
         return gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name.ValueInNeutralLanguage == neutralName);
     }
 }
