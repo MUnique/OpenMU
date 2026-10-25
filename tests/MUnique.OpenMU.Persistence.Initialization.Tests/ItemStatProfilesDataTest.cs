@@ -122,6 +122,68 @@ internal class ItemStatProfilesDataTest
     }
 
     /// <summary>
+    /// Tests that the default profile and the profiles which compute differently hold the numbers of today's item formulas,
+    /// so that a typo in them fails before the game logic reads them. The numbers are those of <c>ItemExtensions.GetRequirement</c>
+    /// and its requirement calculations, and of <c>ItemPowerUpFactory.CreateExcellentAndAncientBasePowerUpWrappers</c>.
+    /// </summary>
+    [Test]
+    public void BuiltInProfilesHoldTodaysNumbers()
+    {
+        static IEnumerable<string> DescribeBuiltIn(string name)
+        {
+            var profile = new BasicModel.ItemStatProfile { Name = name };
+            BuiltInItemStatProfiles.Fill(
+                profile,
+                () => new BasicModel.ItemStatTerms(),
+                () => new BasicModel.ItemRequirementFormula(),
+                table => new BasicModel.ItemLevelBonusTable { Name = table.ToString() });
+            return DescribeProfile(profile).ToList();
+        }
+
+        Assert.Multiple(() =>
+        {
+            // Requirements: 20 + multiplier * drop level * base / 100, with the multiplier 3 (energy 4), and 4 strength per
+            // option level. Excellent: damage base * 25 / drop level + 5, magic power (base * 2 * 25 / drop level + 5) / 2,
+            // block rate base * 25 / drop level + 5, defense base * 12 / drop level + drop level / 5 + 4.
+            // Ancient: damage 5 + d / 40, magic power (2 + d / 60) / 2, defense 2 + value * 3 / d + d / 30.
+            Assert.That(DescribeBuiltIn(ItemStatProfile.DefaultName), Is.EqualTo(new[]
+            {
+                "default: level per item level 0, excellent level add 0, strength per option level 4",
+                "  Damage: table DamageIncreaseWeapons, excellent 25/5/0, ancient 0/5/40",
+                "  MagicPower: table None, excellent 25/5/0, ancient 0/2/60, per level after halving 2",
+                "  BlockRate: table DefenseRateIncreaseShields, excellent 25/5/0, ancient None",
+                "  Defense: table DefenseIncreaseArmors, excellent 12/4/5, ancient 3/2/30",
+                "  MagicDefense: table None, excellent None, ancient None",
+                "  Strength: add 20, level weight 3, percent 3",
+                "  Agility: add 20, level weight 3, percent 3",
+                "  Energy: add 20, level weight 3, percent 4",
+                "  Vitality: add 20, level weight 3, percent 3",
+                "  Leadership: add 20, level weight 3, percent 3",
+            }));
+
+            // 5 strength per option level for armor pieces.
+            Assert.That(DescribeBuiltIn(BuiltInItemStatProfiles.Armor), Is.EqualTo(new[]
+            {
+                "armor: level per item level -, excellent level add -, strength per option level 5",
+            }));
+
+            // CalculateBookEnergyRequirement: 20 + base * (drop level + level) * 3 / 100.
+            Assert.That(DescribeBuiltIn(BuiltInItemStatProfiles.Book), Is.EqualTo(new[]
+            {
+                "book: level per item level -, excellent level add -, strength per option level -",
+                "  Energy: add 20, level weight 1, percent 3",
+            }));
+
+            // The shield's ancient defense: 2 + (base + level) * 20 / d, and no excellent defense.
+            Assert.That(DescribeBuiltIn(BuiltInItemStatProfiles.Shield), Is.EqualTo(new[]
+            {
+                "shield: level per item level -, excellent level add -, strength per option level -",
+                "  Defense: table DefenseIncreaseShields, excellent None, ancient 20/2/0 after level bonus",
+            }));
+        });
+    }
+
+    /// <summary>
     /// Tests how many items of the Season 6 data get each profile, so that an item doesn't move silently between profiles
     /// which compute alike (e.g. helper and default), which the other tests wouldn't notice.
     /// </summary>
@@ -327,16 +389,42 @@ internal class ItemStatProfilesDataTest
     {
         var profiles = gameConfiguration.ItemStatProfiles
             .OrderBy(p => p.Name, StringComparer.Ordinal)
-            .Select(p => $"{p.Name}: level {p.LevelPerItemLevel}, excellent level {p.ExcellentLevelAdd}, strength per option {p.StrengthPerOptionLevel}; "
-                         + string.Join("; ", p.StatTerms.OrderBy(t => t.Stat).Select(t =>
-                             $"{t.Stat} table {t.TableState} {t.Table?.Name}, excellent {t.ExcellentState} {t.ExcellentTimes} {t.ExcellentAdd} {t.ExcellentDropLevelDivisor}, "
-                             + $"ancient {t.AncientState} {t.AncientTimes} {t.AncientAdd} {t.AncientDropLevelDivisor} {t.AncientAfterLevelBonus}, per level {t.PerLevelAfterHalving}"))
-                         + "; "
-                         + string.Join("; ", p.RequirementFormulas.OrderBy(f => f.Stat).Select(f =>
-                             $"{f.Stat} {f.KeepBase} {f.Add} {f.LevelWeight} {f.Percent} {f.LevelRequirementBasis}")));
+            .SelectMany(DescribeProfile);
         var items = gameConfiguration.Items
             .OrderBy(item => item.Group).ThenBy(item => item.Number)
             .Select(item => $"{item.Group}/{item.Number}: {item.StatProfile?.Name}");
         return string.Join(Environment.NewLine, profiles.Concat(items));
+    }
+
+    /// <summary>
+    /// Describes a profile: a line with its own parts, then a line per stat and per requirement formula it writes.
+    /// A part which isn't written shows "-".
+    /// </summary>
+    private static IEnumerable<string> DescribeProfile(ItemStatProfile profile)
+    {
+        static string Part(ItemStatTermState state, int times, int add, int divisor) =>
+            state == ItemStatTermState.Values ? $"{times}/{add}/{divisor}" : state.ToString();
+
+        yield return $"{profile.Name}: level per item level {profile.LevelPerItemLevel?.ToString() ?? "-"}, "
+                     + $"excellent level add {profile.ExcellentLevelAdd?.ToString() ?? "-"}, "
+                     + $"strength per option level {profile.StrengthPerOptionLevel?.ToString() ?? "-"}";
+        foreach (var terms in profile.StatTerms.OrderBy(t => t.Stat))
+        {
+            var table = terms.TableState == ItemStatTermState.Values
+                ? terms.Table?.Name.ValueInNeutralLanguage ?? "missing"
+                : terms.TableState + (terms.Table is { } stray ? $" ({stray.Name.ValueInNeutralLanguage})" : string.Empty);
+            yield return $"  {terms.Stat}: table {table}, "
+                         + $"excellent {Part(terms.ExcellentState, terms.ExcellentTimes, terms.ExcellentAdd, terms.ExcellentDropLevelDivisor)}, "
+                         + $"ancient {Part(terms.AncientState, terms.AncientTimes, terms.AncientAdd, terms.AncientDropLevelDivisor)}"
+                         + (terms.AncientAfterLevelBonus ? " after level bonus" : string.Empty)
+                         + (terms.PerLevelAfterHalving is { } perLevel ? $", per level after halving {perLevel}" : string.Empty);
+        }
+
+        foreach (var formula in profile.RequirementFormulas.OrderBy(f => f.Stat))
+        {
+            yield return $"  {formula.Stat}: "
+                         + (formula.KeepBase ? "base" : $"add {formula.Add}, level weight {formula.LevelWeight}, percent {formula.Percent}")
+                         + (formula.LevelRequirementBasis ? ", level requirement basis" : string.Empty);
+        }
     }
 }
