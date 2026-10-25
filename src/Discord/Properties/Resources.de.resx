@@ -513,4 +513,7 @@
     <value>Testnachricht</value>
   </data>
   <data name="Setup_PrivateRolesMissing" xml:space="preserve"><value>Private Kanäle wurden übersprungen, weil die erforderlichen Rollen fehlen.</value></data>
+  <data name="Bind_AlreadyBound" xml:space="preserve">
+    <value>Der Chat von {0} ist bereits mit {1} verbunden. Verwende zuerst /guildchat unbind in diesem Kanal.</value>
+  </data>
 </root>

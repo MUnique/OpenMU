@@ -2485,4 +2485,10 @@
   <data name="EditorContextChanged" xml:space="preserve">
     <value>Die Konfiguration wurde geändert, während dieser Editor geöffnet war. Kopieren Sie ungespeicherte Änderungen und laden Sie die aktuellen Daten mit Aktualisieren neu, bevor Sie speichern.</value>
   </data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>Gildenkanäle automatisch erstellen</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>Sobald ein Gildenmeister verknüpft ist, erstellt der Bot den Kanal der Gilde in der Kategorie GUILDS deines Discord-Servers und verbindet den Gildenchat damit. Nur verknüpfte Mitglieder der Gilde sehen ihn, und der Gildenmeister kann seine Nachrichten moderieren. Gilden, deren Chat bereits verbunden ist, behalten ihren Kanal. Neue Gilden und neue Gildenmeister werden innerhalb von etwa zehn Minuten berücksichtigt.</value>
+  </data>
 </root>
