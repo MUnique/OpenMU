@@ -6193,12 +6193,6 @@
   <data name="ItemStatTerms_TypeDescription" xml:space="preserve">
     <value>The level bonus table of a stat, and what an excellent and an ancient item get more.</value>
   </data>
-  <data name="ItemStatTerms_Stat_Caption" xml:space="preserve">
-    <value>Stat</value>
-  </data>
-  <data name="ItemStatTerms_Stat_Description" xml:space="preserve">
-    <value></value>
-  </data>
   <data name="ItemStatTerms_TableState_Caption" xml:space="preserve">
     <value>Table</value>
   </data>
@@ -6280,12 +6274,6 @@
   <data name="ItemRequirementFormula_TypeDescription" xml:space="preserve">
     <value>How a stat requirement grows: add + base × (drop level + item level × level weight) × percent ÷ 100. A base value of 0 stays 0.</value>
   </data>
-  <data name="ItemRequirementFormula_Stat_Caption" xml:space="preserve">
-    <value>Stat Requirement</value>
-  </data>
-  <data name="ItemRequirementFormula_Stat_Description" xml:space="preserve">
-    <value></value>
-  </data>
   <data name="ItemRequirementFormula_KeepBase_Caption" xml:space="preserve">
     <value>Keep Base Value</value>
   </data>
@@ -6316,27 +6304,6 @@
   <data name="ItemRequirementFormula_LevelRequirementBasis_Description" xml:space="preserve">
     <value>Whether the formula takes the item's level requirement instead of the drop level (without the level weight), when the item has one.</value>
   </data>
-  <data name="ItemStat_TypeCaption" xml:space="preserve">
-    <value>Item Stat</value>
-  </data>
-  <data name="ItemStat_TypeDescription" xml:space="preserve">
-    <value></value>
-  </data>
-  <data name="ItemStat_Damage_Caption" xml:space="preserve">
-    <value>Damage</value>
-  </data>
-  <data name="ItemStat_MagicPower_Caption" xml:space="preserve">
-    <value>Magic Power</value>
-  </data>
-  <data name="ItemStat_BlockRate_Caption" xml:space="preserve">
-    <value>Block Rate</value>
-  </data>
-  <data name="ItemStat_Defense_Caption" xml:space="preserve">
-    <value>Defense</value>
-  </data>
-  <data name="ItemStat_MagicDefense_Caption" xml:space="preserve">
-    <value>Magic Defense</value>
-  </data>
   <data name="ItemStatTermState_TypeCaption" xml:space="preserve">
     <value>Item Stat Term State</value>
   </data>
@@ -6352,25 +6319,16 @@
   <data name="ItemStatTermState_Values_Caption" xml:space="preserve">
     <value>Values</value>
   </data>
-  <data name="ItemRequirementStat_TypeCaption" xml:space="preserve">
-    <value>Item Requirement Stat</value>
+  <data name="ItemStatTerms_Attribute_Caption" xml:space="preserve">
+    <value>Attribute</value>
   </data>
-  <data name="ItemRequirementStat_TypeDescription" xml:space="preserve">
-    <value></value>
+  <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
+    <value>The attribute of the item's base power-ups which these terms are for. The terms of the minimum physical damage also apply to the maximum physical damage.</value>
   </data>
-  <data name="ItemRequirementStat_Strength_Caption" xml:space="preserve">
-    <value>Strength</value>
+  <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
+    <value>Attribute</value>
   </data>
-  <data name="ItemRequirementStat_Agility_Caption" xml:space="preserve">
-    <value>Agility</value>
-  </data>
-  <data name="ItemRequirementStat_Energy_Caption" xml:space="preserve">
-    <value>Energy</value>
-  </data>
-  <data name="ItemRequirementStat_Vitality_Caption" xml:space="preserve">
-    <value>Vitality</value>
-  </data>
-  <data name="ItemRequirementStat_Leadership_Caption" xml:space="preserve">
-    <value>Leadership</value>
+  <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
+    <value>The attribute of the item requirements which this formula is for.</value>
   </data>
 </root>

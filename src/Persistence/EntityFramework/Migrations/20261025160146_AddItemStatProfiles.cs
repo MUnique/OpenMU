@@ -84,8 +84,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AttributeId = table.Column<Guid>(type: "uuid", nullable: true),
                     ItemStatProfileId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Stat = table.Column<int>(type: "integer", nullable: false),
                     KeepBase = table.Column<bool>(type: "boolean", nullable: false),
                     Add = table.Column<int>(type: "integer", nullable: false),
                     LevelWeight = table.Column<int>(type: "integer", nullable: false),
@@ -95,6 +95,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemRequirementFormula", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemRequirementFormula_AttributeDefinition_AttributeId",
+                        column: x => x.AttributeId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ItemRequirementFormula_ItemStatProfile_ItemStatProfileId",
                         column: x => x.ItemStatProfileId,
@@ -110,9 +116,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AttributeId = table.Column<Guid>(type: "uuid", nullable: true),
                     TableId = table.Column<Guid>(type: "uuid", nullable: true),
                     ItemStatProfileId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Stat = table.Column<int>(type: "integer", nullable: false),
                     TableState = table.Column<int>(type: "integer", nullable: false),
                     ExcellentState = table.Column<int>(type: "integer", nullable: false),
                     ExcellentTimes = table.Column<int>(type: "integer", nullable: false),
@@ -128,6 +134,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemStatTerms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemStatTerms_AttributeDefinition_AttributeId",
+                        column: x => x.AttributeId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ItemStatTerms_ItemLevelBonusTable_TableId",
                         column: x => x.TableId,
@@ -150,10 +162,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "StatProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemRequirementFormula_ItemStatProfileId_Stat",
+                name: "IX_ItemRequirementFormula_AttributeId",
                 schema: "config",
                 table: "ItemRequirementFormula",
-                columns: new[] { "ItemStatProfileId", "Stat" },
+                column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemRequirementFormula_ItemStatProfileId_AttributeId",
+                schema: "config",
+                table: "ItemRequirementFormula",
+                columns: new[] { "ItemStatProfileId", "AttributeId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -164,10 +182,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemStatTerms_ItemStatProfileId_Stat",
+                name: "IX_ItemStatTerms_AttributeId",
                 schema: "config",
                 table: "ItemStatTerms",
-                columns: new[] { "ItemStatProfileId", "Stat" },
+                column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemStatTerms_ItemStatProfileId_AttributeId",
+                schema: "config",
+                table: "ItemStatTerms",
+                columns: new[] { "ItemStatProfileId", "AttributeId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

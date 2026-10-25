@@ -44,7 +44,7 @@ internal static class ItemExtensions
     public static void Apply(this EntityTypeBuilder<ItemStatTerms> builder)
     {
         // A profile writes each stat at most once.
-        builder.HasIndex("ItemStatProfileId", nameof(ItemStatTerms.Stat)).IsUnique();
+        builder.HasIndex("ItemStatProfileId", "AttributeId").IsUnique();
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ internal static class ItemExtensions
     public static void Apply(this EntityTypeBuilder<ItemRequirementFormula> builder)
     {
         // A profile writes each stat requirement at most once.
-        builder.HasIndex("ItemStatProfileId", nameof(ItemRequirementFormula.Stat)).IsUnique();
+        builder.HasIndex("ItemStatProfileId", "AttributeId").IsUnique();
     }
 
     /// <summary>

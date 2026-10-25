@@ -24,8 +24,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula),
                 baseEntityType,
                 propertyCount: 8,
-                foreignKeyCount: 1,
-                unnamedIndexCount: 1,
+                navigationCount: 1,
+                foreignKeyCount: 2,
+                unnamedIndexCount: 2,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -46,6 +47,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula).GetField("<Add>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             add.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var attributeId = runtimeEntityType.AddProperty(
+                "AttributeId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula).GetProperty("AttributeId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula).GetField("<AttributeId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            attributeId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var itemStatProfileId = runtimeEntityType.AddProperty(
                 "ItemStatProfileId",
@@ -85,26 +94,36 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 sentinel: 0);
             percent.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
-            var stat = runtimeEntityType.AddProperty(
-                "Stat",
-                typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementStat),
-                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula).GetProperty("Stat", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula).GetField("<Stat>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            stat.SetSentinelFromProviderValue(0);
-            stat.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
-
             var key = runtimeEntityType.AddKey(
                 new[] { id });
             runtimeEntityType.SetPrimaryKey(key);
 
             var index = runtimeEntityType.AddIndex(
-                new[] { itemStatProfileId, stat },
+                new[] { attributeId });
+
+            var index0 = runtimeEntityType.AddIndex(
+                new[] { itemStatProfileId, attributeId },
                 unique: true);
 
             return runtimeEntityType;
         }
 
         public static RuntimeForeignKey CreateForeignKey1(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("AttributeId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawAttribute = declaringEntityType.AddNavigation("RawAttribute",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula).GetProperty("RawAttribute", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("ItemStatProfileId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),

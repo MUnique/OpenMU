@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// The built-in item stat profiles: the item formulas as the game logic computes them,
@@ -16,6 +18,10 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// than the client, the values are the server's, e.g. a leadership formula and 4 strength per option level.
 /// Only the profiles "armor", "book" and "shield" compute differently than the default; the others name the
 /// level bonus tables their items use, or keep stored requirements of items which have no slot anyway.
+/// The terms are for the attributes of the item power-ups which the item formulas compute today: the client's damage
+/// is the minimum physical damage (which the maximum damage follows), its magic power the staff, sceptre and book rise,
+/// its block rate the defense rate, and its defense the base defense, or the shield defense of the shields.
+/// The client's magic defense has no attribute on the server, so the profiles leave it out.
 /// </remarks>
 internal static class BuiltInItemStatProfiles
 {
@@ -97,31 +103,32 @@ internal static class BuiltInItemStatProfiles
             ExcellentLevelAdd: 0,
             StrengthPerOptionLevel: 4,
             [
-                new(ItemStat.Damage, TablePart.Of(nameof(LevelBonusNames.DamageIncreaseWeapons)), TermPart.Values(25, 5, 0), TermPart.Values(0, 5, 40)),
-                new(ItemStat.MagicPower, TablePart.None, TermPart.Values(25, 5, 0), TermPart.Values(0, 2, 60), PerLevelAfterHalving: 2),
-                new(ItemStat.BlockRate, TablePart.Of(nameof(LevelBonusNames.DefenseRateIncreaseShields)), TermPart.Values(25, 5, 0), TermPart.None),
-                new(ItemStat.Defense, TablePart.Of(nameof(LevelBonusNames.DefenseIncreaseArmors)), TermPart.Values(12, 4, 5), TermPart.Values(3, 2, 30)),
-                new(ItemStat.MagicDefense, TablePart.None, TermPart.None, TermPart.None),
+                new(Stats.MinimumPhysBaseDmgByWeapon, TablePart.Of(nameof(LevelBonusNames.DamageIncreaseWeapons)), TermPart.Values(25, 5, 0), TermPart.Values(0, 5, 40)),
+                MagicPower(Stats.StaffRise),
+                MagicPower(Stats.ScepterRise),
+                MagicPower(Stats.BookRise),
+                new(Stats.DefenseRatePvm, TablePart.Of(nameof(LevelBonusNames.DefenseRateIncreaseShields)), TermPart.Values(25, 5, 0), TermPart.None),
+                new(Stats.DefenseBase, TablePart.Of(nameof(LevelBonusNames.DefenseIncreaseArmors)), TermPart.Values(12, 4, 5), TermPart.Values(3, 2, 30)),
             ],
             [
-                FormulaDefinition.Grows(ItemRequirementStat.Strength, 20, 3, 3),
-                FormulaDefinition.Grows(ItemRequirementStat.Agility, 20, 3, 3),
-                FormulaDefinition.Grows(ItemRequirementStat.Energy, 20, 3, 4),
-                FormulaDefinition.Grows(ItemRequirementStat.Vitality, 20, 3, 3),
-                FormulaDefinition.Grows(ItemRequirementStat.Leadership, 20, 3, 3),
+                FormulaDefinition.Grows(Stats.TotalStrengthRequirementValue, 20, 3, 3),
+                FormulaDefinition.Grows(Stats.TotalAgilityRequirementValue, 20, 3, 3),
+                FormulaDefinition.Grows(Stats.TotalEnergyRequirementValue, 20, 3, 4),
+                FormulaDefinition.Grows(Stats.TotalVitalityRequirementValue, 20, 3, 3),
+                FormulaDefinition.Grows(Stats.TotalLeadershipRequirementValue, 20, 3, 3),
             ]),
         new(Armor, StrengthPerOptionLevel: 5),
-        new(Book, Requirements: [FormulaDefinition.Grows(ItemRequirementStat.Energy, 20, 1, 3)]),
-        new(FirstTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(Book, Requirements: [FormulaDefinition.Grows(Stats.TotalEnergyRequirementValue, 20, 1, 3)]),
+        new(FirstTierWing, Terms: [TermsDefinition.WithTable(Stats.DefenseBase, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
         new(Helper),
         new(Orb, Requirements: KeptStatRequirements()),
-        new(Sceptre, Stats: [new(ItemStat.MagicPower, perLevelAfterHalving: 0)]),
+        new(Sceptre, Terms: [new(Stats.ScepterRise, perLevelAfterHalving: 0)]),
         new(Scroll, Requirements: KeptStatRequirements()),
-        new(SecondTierCape, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
-        new(SecondTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
-        new(Shield, Stats: [new(ItemStat.Defense, TablePart.Of(nameof(LevelBonusNames.DefenseIncreaseShields)), TermPart.None, TermPart.Values(20, 2, 0, afterLevelBonus: true))]),
-        new(SmallWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
-        new(ThirdTierWing, Stats: [StatDefinition.WithTable(ItemStat.Defense, nameof(LevelBonusNames.DefenseBonus3rdWings))]),
+        new(SecondTierCape, Terms: [TermsDefinition.WithTable(Stats.DefenseBase, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(SecondTierWing, Terms: [TermsDefinition.WithTable(Stats.DefenseBase, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(Shield, Terms: [new(Stats.DefenseShield, TablePart.Of(nameof(LevelBonusNames.DefenseIncreaseShields)), TermPart.None, TermPart.Values(20, 2, 0, afterLevelBonus: true))]),
+        new(SmallWing, Terms: [TermsDefinition.WithTable(Stats.DefenseBase, nameof(LevelBonusNames.DefenseBonus1stAnd2ndWings))]),
+        new(ThirdTierWing, Terms: [TermsDefinition.WithTable(Stats.DefenseBase, nameof(LevelBonusNames.DefenseBonus3rdWings))]),
         new(Weapon),
     ];
 
@@ -132,12 +139,14 @@ internal static class BuiltInItemStatProfiles
     /// <param name="createTerms">Creates new stat terms.</param>
     /// <param name="createFormula">Creates a new requirement formula.</param>
     /// <param name="findTable">Finds the level bonus table of the configuration by its key of the <see cref="LevelBonusNames"/>, or <c>null</c> if it doesn't have it.</param>
+    /// <param name="findAttribute">Finds the attribute of the configuration.</param>
     /// <exception cref="ArgumentException">The profile has no name of a built-in profile.</exception>
     public static void Fill(
         ItemStatProfile profile,
         Func<ItemStatTerms> createTerms,
         Func<ItemRequirementFormula> createFormula,
-        Func<string, ItemLevelBonusTable?> findTable)
+        Func<string, ItemLevelBonusTable?> findTable,
+        Func<AttributeDefinition, AttributeDefinition> findAttribute)
     {
         var definition = Definitions.FirstOrDefault(d => d.Name == profile.Name)
                          ?? throw new ArgumentException($"There is no built-in item stat profile named '{profile.Name}'.", nameof(profile));
@@ -145,22 +154,22 @@ internal static class BuiltInItemStatProfiles
         profile.LevelPerItemLevel = definition.LevelPerItemLevel;
         profile.ExcellentLevelAdd = definition.ExcellentLevelAdd;
         profile.StrengthPerOptionLevel = definition.StrengthPerOptionLevel;
-        foreach (var stat in definition.Stats ?? [])
+        foreach (var termsDefinition in definition.Terms ?? [])
         {
             var terms = createTerms();
-            terms.Stat = stat.Stat;
-            terms.TableState = stat.Table.State;
-            terms.Table = stat.Table.Table is { } table ? findTable(table) : null;
-            stat.Excellent.WriteTo(terms, isAncient: false);
-            stat.Ancient.WriteTo(terms, isAncient: true);
-            terms.PerLevelAfterHalving = stat.PerLevelAfterHalving;
+            terms.Attribute = findAttribute(termsDefinition.Attribute);
+            terms.TableState = termsDefinition.Table.State;
+            terms.Table = termsDefinition.Table.Table is { } table ? findTable(table) : null;
+            termsDefinition.Excellent.WriteTo(terms, isAncient: false);
+            termsDefinition.Ancient.WriteTo(terms, isAncient: true);
+            terms.PerLevelAfterHalving = termsDefinition.PerLevelAfterHalving;
             profile.StatTerms.Add(terms);
         }
 
         foreach (var requirement in definition.Requirements ?? [])
         {
             var formula = createFormula();
-            formula.Stat = requirement.Stat;
+            formula.Attribute = findAttribute(requirement.Attribute);
             formula.KeepBase = requirement.KeepBase;
             formula.Add = requirement.Add;
             formula.LevelWeight = requirement.LevelWeight;
@@ -169,12 +178,18 @@ internal static class BuiltInItemStatProfiles
         }
     }
 
+    /// <summary>
+    /// The terms of a rise of the magic power, which the client computes for its one magic power.
+    /// </summary>
+    private static TermsDefinition MagicPower(AttributeDefinition rise) =>
+        new(rise, TablePart.None, TermPart.Values(25, 5, 0), TermPart.Values(0, 2, 60), PerLevelAfterHalving: 2);
+
     private static IReadOnlyList<FormulaDefinition> KeptStatRequirements() =>
     [
-        FormulaDefinition.KeptBase(ItemRequirementStat.Strength),
-        FormulaDefinition.KeptBase(ItemRequirementStat.Agility),
-        FormulaDefinition.KeptBase(ItemRequirementStat.Energy),
-        FormulaDefinition.KeptBase(ItemRequirementStat.Vitality),
+        FormulaDefinition.KeptBase(Stats.TotalStrengthRequirementValue),
+        FormulaDefinition.KeptBase(Stats.TotalAgilityRequirementValue),
+        FormulaDefinition.KeptBase(Stats.TotalEnergyRequirementValue),
+        FormulaDefinition.KeptBase(Stats.TotalVitalityRequirementValue),
     ];
 
     /// <summary>
@@ -185,24 +200,24 @@ internal static class BuiltInItemStatProfiles
         int? LevelPerItemLevel = null,
         int? ExcellentLevelAdd = null,
         int? StrengthPerOptionLevel = null,
-        IReadOnlyList<StatDefinition>? Stats = null,
+        IReadOnlyList<TermsDefinition>? Terms = null,
         IReadOnlyList<FormulaDefinition>? Requirements = null);
 
     /// <summary>
-    /// The terms of a stat of a built-in profile.
+    /// The terms of an attribute of a built-in profile.
     /// </summary>
-    private sealed record StatDefinition(ItemStat Stat, TablePart Table, TermPart Excellent, TermPart Ancient, int? PerLevelAfterHalving = null)
+    private sealed record TermsDefinition(AttributeDefinition Attribute, TablePart Table, TermPart Excellent, TermPart Ancient, int? PerLevelAfterHalving = null)
     {
-        public StatDefinition(ItemStat stat, int? perLevelAfterHalving)
-            : this(stat, TablePart.NotWritten, TermPart.NotWritten, TermPart.NotWritten, perLevelAfterHalving)
+        public TermsDefinition(AttributeDefinition attribute, int? perLevelAfterHalving)
+            : this(attribute, TablePart.NotWritten, TermPart.NotWritten, TermPart.NotWritten, perLevelAfterHalving)
         {
         }
 
-        public static StatDefinition WithTable(ItemStat stat, string table) => new(stat, TablePart.Of(table), TermPart.NotWritten, TermPart.NotWritten);
+        public static TermsDefinition WithTable(AttributeDefinition attribute, string table) => new(attribute, TablePart.Of(table), TermPart.NotWritten, TermPart.NotWritten);
     }
 
     /// <summary>
-    /// The level bonus table part of a stat.
+    /// The level bonus table part of an attribute.
     /// </summary>
     private sealed record TablePart(ItemStatTermState State, string? Table)
     {
@@ -214,7 +229,7 @@ internal static class BuiltInItemStatProfiles
     }
 
     /// <summary>
-    /// The excellent or ancient part of a stat.
+    /// The excellent or ancient part of an attribute.
     /// </summary>
     private sealed record TermPart(ItemStatTermState State, int Times, int Add, int DropLevelDivisor, bool AfterLevelBonus)
     {
@@ -247,10 +262,10 @@ internal static class BuiltInItemStatProfiles
     /// <summary>
     /// A requirement formula of a built-in profile.
     /// </summary>
-    private sealed record FormulaDefinition(ItemRequirementStat Stat, bool KeepBase, int Add, int LevelWeight, int Percent)
+    private sealed record FormulaDefinition(AttributeDefinition Attribute, bool KeepBase, int Add, int LevelWeight, int Percent)
     {
-        public static FormulaDefinition Grows(ItemRequirementStat stat, int add, int levelWeight, int percent) => new(stat, false, add, levelWeight, percent);
+        public static FormulaDefinition Grows(AttributeDefinition attribute, int add, int levelWeight, int percent) => new(attribute, false, add, levelWeight, percent);
 
-        public static FormulaDefinition KeptBase(ItemRequirementStat stat) => new(stat, true, 0, 0, 0);
+        public static FormulaDefinition KeptBase(AttributeDefinition attribute) => new(attribute, true, 0, 0, 0);
     }
 }

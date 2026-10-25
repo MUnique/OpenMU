@@ -31,16 +31,6 @@ internal static class ItemStatProfiles
     ];
 
     /// <summary>
-    /// The attributes of the item power-ups which get the level bonus table of a stat.
-    /// </summary>
-    private static readonly IReadOnlyDictionary<ItemStat, AttributeDefinition[]> TableAttributes = new Dictionary<ItemStat, AttributeDefinition[]>
-    {
-        { ItemStat.Damage, [Stats.MinimumPhysBaseDmgByWeapon, Stats.MaximumPhysBaseDmgByWeapon] },
-        { ItemStat.BlockRate, [Stats.DefenseRatePvm] },
-        { ItemStat.Defense, [Stats.DefenseBase, Stats.DefenseShield] },
-    };
-
-    /// <summary>
     /// Adds the built-in item stat profiles which the configuration doesn't have yet (by name), and gives each item
     /// without a profile the one of its kind (<see cref="GetProfileName"/>).
     /// Profiles and items which already have a profile stay as they are.
@@ -138,7 +128,8 @@ internal static class ItemStatProfiles
                 profile,
                 () => context.CreateNew<ItemStatTerms>(),
                 () => context.CreateNew<ItemRequirementFormula>(),
-                table => FindTable(gameConfiguration, table));
+                table => FindTable(gameConfiguration, table),
+                attribute => attribute.GetPersistent(gameConfiguration));
             gameConfiguration.ItemStatProfiles.Add(profile);
             addedProfiles.Add(profile);
         }
@@ -170,18 +161,19 @@ internal static class ItemStatProfiles
     private static void TakeTheTablesOfTheItems(IContext context, GameConfiguration gameConfiguration, List<ItemStatProfile> addedProfiles, HashSet<ItemDefinition> assignedItems)
     {
         var defaultProfile = gameConfiguration.ItemStatProfiles.First(profile => profile.Name == ItemStatProfile.DefaultName);
-        var variants = new Dictionary<(ItemStatProfile Profile, ItemStat Stat, ItemLevelBonusTable Table), ItemStatProfile>();
+        var variants = new Dictionary<(ItemStatProfile Profile, AttributeDefinition Attribute, ItemLevelBonusTable Table), ItemStatProfile>();
         foreach (var profile in addedProfiles)
         {
             foreach (var terms in profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values).ToList())
             {
-                if (!TableAttributes.TryGetValue(terms.Stat, out var attributes))
+                if (terms.Attribute is not { } attribute)
                 {
                     continue;
                 }
 
+                var attributes = GetPowerUpAttributes(attribute);
                 var itemTables = gameConfiguration.Items
-                    .Where(item => GetProfileOfTable(item.StatProfile!, terms.Stat, defaultProfile) == profile)
+                    .Where(item => GetProfileOfTable(item.StatProfile!, attribute, defaultProfile) == profile)
                     .Select(item => (Item: item, Table: GetTableOfItem(item, attributes)))
                     .Where(itemTable => itemTable.Table is not null)
                     .ToList();
@@ -200,10 +192,10 @@ internal static class ItemStatProfiles
                 terms.Table = table;
                 foreach (var (item, itemTable) in itemTables.Where(itemTable => itemTable.Table != table && assignedItems.Contains(itemTable.Item)))
                 {
-                    var key = (item.StatProfile!, terms.Stat, itemTable!);
+                    var key = (item.StatProfile!, attribute, itemTable!);
                     if (!variants.TryGetValue(key, out var variant))
                     {
-                        variant = CreateVariant(context, gameConfiguration, item.StatProfile!, terms.Stat, itemTable!);
+                        variant = CreateVariant(context, gameConfiguration, item.StatProfile!, attribute, itemTable!);
                         variants.Add(key, variant);
                     }
 
@@ -211,6 +203,17 @@ internal static class ItemStatProfiles
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the attributes of the item power-ups which get the level bonus table of the terms of the given attribute:
+    /// the attribute itself, and the maximum physical damage for the minimum physical damage.
+    /// </summary>
+    private static AttributeDefinition[] GetPowerUpAttributes(AttributeDefinition attribute)
+    {
+        return attribute == Stats.MinimumPhysBaseDmgByWeapon
+            ? [Stats.MinimumPhysBaseDmgByWeapon, Stats.MaximumPhysBaseDmgByWeapon]
+            : [attribute];
     }
 
     /// <summary>
@@ -229,9 +232,9 @@ internal static class ItemStatProfiles
     }
 
     /// <summary>
-    /// Creates a copy of the profile with the next free name, e.g. "thirdTierWing2", which names the given table for the stat.
+    /// Creates a copy of the profile with the next free name, e.g. "thirdTierWing2", which names the given table for the attribute.
     /// </summary>
-    private static ItemStatProfile CreateVariant(IContext context, GameConfiguration gameConfiguration, ItemStatProfile profile, ItemStat stat, ItemLevelBonusTable table)
+    private static ItemStatProfile CreateVariant(IContext context, GameConfiguration gameConfiguration, ItemStatProfile profile, AttributeDefinition attribute, ItemLevelBonusTable table)
     {
         var baseName = profile.Name.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
         var number = 2;
@@ -259,11 +262,11 @@ internal static class ItemStatProfiles
             variant.RequirementFormulas.Add(copy);
         }
 
-        var statTerms = variant.StatTerms.FirstOrDefault(t => t.Stat == stat);
+        var statTerms = variant.StatTerms.FirstOrDefault(t => t.Attribute == attribute);
         if (statTerms is null)
         {
             statTerms = context.CreateNew<ItemStatTerms>();
-            statTerms.Stat = stat;
+            statTerms.Attribute = attribute;
             variant.StatTerms.Add(statTerms);
         }
 
@@ -274,11 +277,11 @@ internal static class ItemStatProfiles
     }
 
     /// <summary>
-    /// Gets the profile whose level bonus table of the stat items of the given profile get: their own profile when it writes it, or else the default.
+    /// Gets the profile whose level bonus table of the attribute items of the given profile get: their own profile when it writes it, or else the default.
     /// </summary>
-    private static ItemStatProfile GetProfileOfTable(ItemStatProfile profile, ItemStat stat, ItemStatProfile defaultProfile)
+    private static ItemStatProfile GetProfileOfTable(ItemStatProfile profile, AttributeDefinition attribute, ItemStatProfile defaultProfile)
     {
-        return profile.StatTerms.Any(t => t.Stat == stat && t.TableState != ItemStatTermState.NotWritten) ? profile : defaultProfile;
+        return profile.StatTerms.Any(t => t.Attribute == attribute && t.TableState != ItemStatTermState.NotWritten) ? profile : defaultProfile;
     }
 
     private static ItemLevelBonusTable? FindTable(GameConfiguration gameConfiguration, string tableKey)

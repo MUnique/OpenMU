@@ -30,7 +30,7 @@ using MUnique.OpenMU.PlugIns;
 [NonParallelizable]
 internal class ItemStatProfilesPostgreSqlTest
 {
-    private const string MigrationName = "20261025003111_AddItemStatProfiles";
+    private const string MigrationName = "_AddItemStatProfiles";
 
     private readonly string _databaseName = "openmu_item_stat_profiles_" + Guid.NewGuid().ToString("N");
     private IDisposable? _connectionSettings;
@@ -168,7 +168,7 @@ internal class ItemStatProfilesPostgreSqlTest
             Assert.Multiple(() =>
             {
                 Assert.That(sword.StatProfile?.Name, Is.EqualTo(BuiltInItemStatProfiles.Weapon + "2"));
-                Assert.That(sword.StatProfile?.StatTerms.Single(t => t.Stat == ItemStat.Damage).Table?.Name.ValueInNeutralLanguage, Is.EqualTo("Own damage increase of one sword"));
+                Assert.That(sword.StatProfile?.StatTerms.Single(t => t.Attribute == Stats.MinimumPhysBaseDmgByWeapon).Table?.Name.ValueInNeutralLanguage, Is.EqualTo("Own damage increase of one sword"));
                 Assert.That(ItemStatProfilesDataTest.DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
                 Assert.That(ItemStatProfilesDataTest.GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
             });
@@ -194,7 +194,7 @@ internal class ItemStatProfilesPostgreSqlTest
             for (var i = 0; i < 2; i++)
             {
                 var terms = context.CreateNew<ItemStatTerms>();
-                terms.Stat = ItemStat.Damage;
+                terms.Attribute = Stats.MinimumPhysBaseDmgByWeapon.GetPersistent(gameConfiguration);
                 profile.StatTerms.Add(terms);
             }
         }).ConfigureAwait(false);
@@ -205,7 +205,7 @@ internal class ItemStatProfilesPostgreSqlTest
             for (var i = 0; i < 2; i++)
             {
                 var formula = context.CreateNew<ItemRequirementFormula>();
-                formula.Stat = ItemRequirementStat.Strength;
+                formula.Attribute = Stats.TotalStrengthRequirementValue.GetPersistent(gameConfiguration);
                 profile.RequirementFormulas.Add(formula);
             }
         }).ConfigureAwait(false);
@@ -235,7 +235,7 @@ internal class ItemStatProfilesPostgreSqlTest
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
         var foreignTables = gameConfiguration.ItemStatProfiles
             .SelectMany(profile => profile.StatTerms.Where(terms => terms.Table is not null && !gameConfiguration.ItemLevelBonusTables.Contains(terms.Table)))
-            .Select(terms => $"{terms.Stat}: {terms.Table!.Name}");
+            .Select(terms => $"{terms.Attribute}: {terms.Table!.Name}");
         Assert.That(foreignTables, Is.Empty);
         return ItemStatProfilesDataTest.Describe(gameConfiguration);
     }
@@ -249,9 +249,9 @@ internal class ItemStatProfilesPostgreSqlTest
         await using (var context = new EntityDataContext())
         {
             var migrations = context.Database.GetMigrations().ToList();
-            Assert.That(migrations, Does.Contain(MigrationName));
-            await context.GetService<IMigrator>().MigrateAsync(migrations[migrations.IndexOf(MigrationName) - 1]).ConfigureAwait(false);
-            Assert.That(await context.Database.GetAppliedMigrationsAsync().ConfigureAwait(false), Does.Not.Contain(MigrationName));
+            var migration = migrations.Single(m => m.EndsWith(MigrationName, StringComparison.Ordinal));
+            await context.GetService<IMigrator>().MigrateAsync(migrations[migrations.IndexOf(migration) - 1]).ConfigureAwait(false);
+            Assert.That(await context.Database.GetAppliedMigrationsAsync().ConfigureAwait(false), Does.Not.Contain(migration));
         }
 
         await this._contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);

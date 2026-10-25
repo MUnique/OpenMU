@@ -6334,9 +6334,6 @@
   <data name="ItemStatTerms_TypeDescription" xml:space="preserve">
     <value>属性的等级加成表，以及卓越和远古物品额外获得的值。</value>
   </data>
-  <data name="ItemStatTerms_Stat_Caption" xml:space="preserve">
-    <value>属性</value>
-  </data>
   <data name="ItemStatTerms_TableState_Caption" xml:space="preserve">
     <value>表</value>
   </data>
@@ -6406,9 +6403,6 @@
   <data name="ItemRequirementFormula_TypeDescription" xml:space="preserve">
     <value>属性需求的增长方式：增加 + 基础值 × (掉落等级 + 物品等级 × 等级权重) × 百分比 ÷ 100。基础值为 0 时保持 0。</value>
   </data>
-  <data name="ItemRequirementFormula_Stat_Caption" xml:space="preserve">
-    <value>属性需求</value>
-  </data>
   <data name="ItemRequirementFormula_KeepBase_Caption" xml:space="preserve">
     <value>保持基础值</value>
   </data>
@@ -6436,24 +6430,6 @@
   <data name="ItemRequirementFormula_LevelRequirementBasis_Description" xml:space="preserve">
     <value>物品有等级需求时，公式是否以其代替掉落等级（不含等级权重）。</value>
   </data>
-  <data name="ItemStat_TypeCaption" xml:space="preserve">
-    <value>物品属性</value>
-  </data>
-  <data name="ItemStat_Damage_Caption" xml:space="preserve">
-    <value>伤害</value>
-  </data>
-  <data name="ItemStat_MagicPower_Caption" xml:space="preserve">
-    <value>魔力</value>
-  </data>
-  <data name="ItemStat_BlockRate_Caption" xml:space="preserve">
-    <value>格挡率</value>
-  </data>
-  <data name="ItemStat_Defense_Caption" xml:space="preserve">
-    <value>防御</value>
-  </data>
-  <data name="ItemStat_MagicDefense_Caption" xml:space="preserve">
-    <value>魔法防御</value>
-  </data>
   <data name="ItemStatTermState_TypeCaption" xml:space="preserve">
     <value>物品属性项状态</value>
   </data>
@@ -6466,22 +6442,16 @@
   <data name="ItemStatTermState_Values_Caption" xml:space="preserve">
     <value>数值</value>
   </data>
-  <data name="ItemRequirementStat_TypeCaption" xml:space="preserve">
-    <value>物品属性需求</value>
+  <data name="ItemStatTerms_Attribute_Caption" xml:space="preserve">
+    <value>属性</value>
   </data>
-  <data name="ItemRequirementStat_Strength_Caption" xml:space="preserve">
-    <value>力量</value>
+  <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
+    <value>这些项适用的物品基础增益属性。最小物理伤害的项也适用于最大物理伤害。</value>
   </data>
-  <data name="ItemRequirementStat_Agility_Caption" xml:space="preserve">
-    <value>敏捷</value>
+  <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
+    <value>属性</value>
   </data>
-  <data name="ItemRequirementStat_Energy_Caption" xml:space="preserve">
-    <value>智力</value>
-  </data>
-  <data name="ItemRequirementStat_Vitality_Caption" xml:space="preserve">
-    <value>体力</value>
-  </data>
-  <data name="ItemRequirementStat_Leadership_Caption" xml:space="preserve">
-    <value>统率</value>
+  <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
+    <value>此公式适用的物品需求属性。</value>
   </data>
 </root>

@@ -3312,9 +3312,6 @@
   <data name="ItemStatTerms_TypeDescription" xml:space="preserve">
     <value>Die Level-Bonustabelle eines Werts, und was ein exzellenter und ein antiker Gegenstand mehr bekommen.</value>
   </data>
-  <data name="ItemStatTerms_Stat_Caption" xml:space="preserve">
-    <value>Wert</value>
-  </data>
   <data name="ItemStatTerms_TableState_Caption" xml:space="preserve">
     <value>Tabelle</value>
   </data>
@@ -3384,9 +3381,6 @@
   <data name="ItemRequirementFormula_TypeDescription" xml:space="preserve">
     <value>Wie eine Anforderung wächst: Zuschlag + Basis × (Drop-Level + Gegenstandslevel × Level-Gewicht) × Prozent ÷ 100. Ein Basiswert von 0 bleibt 0.</value>
   </data>
-  <data name="ItemRequirementFormula_Stat_Caption" xml:space="preserve">
-    <value>Anforderung</value>
-  </data>
   <data name="ItemRequirementFormula_KeepBase_Caption" xml:space="preserve">
     <value>Basiswert behalten</value>
   </data>
@@ -3414,24 +3408,6 @@
   <data name="ItemRequirementFormula_LevelRequirementBasis_Description" xml:space="preserve">
     <value>Ob die Formel die Level-Anforderung des Gegenstands statt des Drop-Levels nimmt (ohne das Level-Gewicht), wenn er eine hat.</value>
   </data>
-  <data name="ItemStat_TypeCaption" xml:space="preserve">
-    <value>Gegenstandswert</value>
-  </data>
-  <data name="ItemStat_Damage_Caption" xml:space="preserve">
-    <value>Schaden</value>
-  </data>
-  <data name="ItemStat_MagicPower_Caption" xml:space="preserve">
-    <value>Magiekraft</value>
-  </data>
-  <data name="ItemStat_BlockRate_Caption" xml:space="preserve">
-    <value>Blockrate</value>
-  </data>
-  <data name="ItemStat_Defense_Caption" xml:space="preserve">
-    <value>Verteidigung</value>
-  </data>
-  <data name="ItemStat_MagicDefense_Caption" xml:space="preserve">
-    <value>Magische Verteidigung</value>
-  </data>
   <data name="ItemStatTermState_TypeCaption" xml:space="preserve">
     <value>Status eines Werte-Terms</value>
   </data>
@@ -3443,24 +3419,6 @@
   </data>
   <data name="ItemStatTermState_Values_Caption" xml:space="preserve">
     <value>Werte</value>
-  </data>
-  <data name="ItemRequirementStat_TypeCaption" xml:space="preserve">
-    <value>Gegenstandsanforderung</value>
-  </data>
-  <data name="ItemRequirementStat_Strength_Caption" xml:space="preserve">
-    <value>Stärke</value>
-  </data>
-  <data name="ItemRequirementStat_Agility_Caption" xml:space="preserve">
-    <value>Beweglichkeit</value>
-  </data>
-  <data name="ItemRequirementStat_Energy_Caption" xml:space="preserve">
-    <value>Energie</value>
-  </data>
-  <data name="ItemRequirementStat_Vitality_Caption" xml:space="preserve">
-    <value>Vitalität</value>
-  </data>
-  <data name="ItemRequirementStat_Leadership_Caption" xml:space="preserve">
-    <value>Führung</value>
   </data>
   <data name="MonsterDefinition_IsActive_Caption" xml:space="preserve">
     <value>Aktiv</value>
@@ -3638,5 +3596,17 @@
   </data>
   <data name="GameVersion_Season6Episode3_Caption" xml:space="preserve">
     <value>Season 6 Episode 3</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
+    <value>Das Attribut der Basis-Power-ups des Gegenstands, für das diese Terme gelten. Die Terme des minimalen physischen Schadens gelten auch für den maximalen physischen Schaden.</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
+    <value>Das Attribut der Gegenstandsanforderungen, für das diese Formel gilt.</value>
   </data>
 </root>

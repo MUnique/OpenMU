@@ -26,6 +26,24 @@ public partial class ItemStatTerms : MUnique.OpenMU.DataModel.Configuration.Item
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw object of <see cref="Attribute" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("attribute")]
+    public AttributeDefinition RawAttribute
+    {
+        get => base.Attribute as AttributeDefinition;
+        set => base.Attribute = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
+    {
+        get => base.Attribute;
+        set => base.Attribute = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="Table" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("table")]

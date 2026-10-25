@@ -5,9 +5,10 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
-/// The terms of one stat in an <see cref="ItemStatProfile"/>: its level bonus table, and what an excellent and an
+/// The terms of one attribute in an <see cref="ItemStatProfile"/>: its level bonus table, and what an excellent and an
 /// ancient item get more. A part the profile doesn't write is taken from the profile named "default".
 /// </summary>
 /// <remarks>
@@ -23,9 +24,12 @@ using MUnique.OpenMU.Annotations;
 public partial class ItemStatTerms
 {
     /// <summary>
-    /// Gets or sets the stat these terms are for.
+    /// Gets or sets the attribute of the item's base power-ups which these terms are for: the excellent and the ancient
+    /// part are computed from the item's base value of it and added to it, and the level bonus table is the one of its
+    /// power-ups. The terms of the minimum physical damage also apply to the maximum physical damage, as the item formulas
+    /// compute both from the minimum damage.
     /// </summary>
-    public ItemStat Stat { get; set; }
+    public virtual AttributeDefinition? Attribute { get; set; }
 
     /// <summary>
     /// Gets or sets whether the profile writes the <see cref="Table"/>.
@@ -86,7 +90,7 @@ public partial class ItemStatTerms
     public bool AncientAfterLevelBonus { get; set; }
 
     /// <summary>
-    /// Gets or sets what each item level adds after the magic power is halved. Only for <see cref="ItemStat.MagicPower"/>;
+    /// Gets or sets what each item level adds after the magic power is halved. Only for the rises of the magic power;
     /// <c>null</c> means it isn't written by the profile.
     /// </summary>
     public int? PerLevelAfterHalving { get; set; }
@@ -94,6 +98,6 @@ public partial class ItemStatTerms
     /// <inheritdoc />
     public override string ToString()
     {
-        return this.Stat.GetEnumCaption();
+        return this.Attribute?.ToString() ?? string.Empty;
     }
 }

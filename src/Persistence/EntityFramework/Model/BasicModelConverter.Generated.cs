@@ -855,6 +855,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.CanGetCreated = source.CanGetCreated;
         target.LevelRequirementByCreation = source.LevelRequirementByCreation;
         target.CreationAllowedFlag = source.CreationAllowedFlag;
@@ -1451,6 +1453,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.TerrainData = source.TerrainData;
         if (source.TerrainVariants is { } terrainVariantsItems)
         {
@@ -1924,6 +1928,8 @@ internal sealed class BasicModelConverter
         target.IsPersonalStoreSellable = source.IsPersonalStoreSellable;
         target.IsRepairable = source.IsRepairable;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.DropLevel = source.DropLevel;
         target.MaximumDropLevel = source.MaximumDropLevel;
         target.MaximumItemLevel = source.MaximumItemLevel;
@@ -2185,7 +2191,7 @@ internal sealed class BasicModelConverter
         var target = new BasicModel.ItemRequirementFormula();
         this._converted.Add(source, target);
         target.Id = source.Id;
-        target.Stat = source.Stat;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
         target.KeepBase = source.KeepBase;
         target.Add = source.Add;
         target.LevelWeight = source.LevelWeight;
@@ -2286,7 +2292,7 @@ internal sealed class BasicModelConverter
         var target = new BasicModel.ItemStatTerms();
         this._converted.Add(source, target);
         target.Id = source.Id;
-        target.Stat = source.Stat;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
         target.TableState = source.TableState;
         target.Table = (MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable)this.ConvertObject(source.Table)!;
         target.ExcellentState = source.ExcellentState;
@@ -2543,6 +2549,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Type = source.Type;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.Description = source.Description;
         target.GameLevel = source.GameLevel;
         target.MapCreationPolicy = source.MapCreationPolicy;
@@ -2692,6 +2700,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.Designation = source.Designation;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.MoveRange = source.MoveRange;
         target.AttackRange = source.AttackRange;
         target.ViewRange = source.ViewRange;

@@ -2982,6 +2982,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Add")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("AttributeId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ItemStatProfileId")
                         .HasColumnType("uuid");
 
@@ -2997,12 +3000,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Percent")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Stat")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemStatProfileId", "Stat")
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("ItemStatProfileId", "AttributeId")
                         .IsUnique();
 
                     b.ToTable("ItemRequirementFormula", "config");
@@ -3121,6 +3123,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("AncientTimes")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("AttributeId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("ExcellentAdd")
                         .HasColumnType("integer");
 
@@ -3139,9 +3144,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int?>("PerLevelAfterHalving")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Stat")
-                        .HasColumnType("integer");
-
                     b.Property<Guid?>("TableId")
                         .HasColumnType("uuid");
 
@@ -3150,9 +3152,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AttributeId");
+
                     b.HasIndex("TableId");
 
-                    b.HasIndex("ItemStatProfileId", "Stat")
+                    b.HasIndex("ItemStatProfileId", "AttributeId")
                         .IsUnique();
 
                     b.ToTable("ItemStatTerms", "config");
@@ -5746,10 +5750,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile", null)
                         .WithMany("RawRequirementFormulas")
                         .HasForeignKey("ItemStatProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawAttribute");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
@@ -5784,6 +5794,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile", null)
                         .WithMany("RawStatTerms")
                         .HasForeignKey("ItemStatProfileId")
@@ -5792,6 +5806,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", "RawTable")
                         .WithMany()
                         .HasForeignKey("TableId");
+
+                    b.Navigation("RawAttribute");
 
                     b.Navigation("RawTable");
                 });

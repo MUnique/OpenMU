@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("fbe28208-6501-4bd7-90cd-96f8ed43725a"), entityTypeCount: 126)
+            : base(skipDetectChanges: false, modelId: new Guid("31f79046-d6a3-40a2-8613-8ac144f356a7"), entityTypeCount: 126)
         {
         }
 
@@ -305,13 +305,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionOfLevelEntityType.CreateForeignKey1(itemOptionOfLevel, increasableItemOption);
             ItemOptionOfLevelEntityType.CreateForeignKey2(itemOptionOfLevel, powerUpDefinition);
             ItemOptionTypeEntityType.CreateForeignKey1(itemOptionType, gameConfiguration);
-            ItemRequirementFormulaEntityType.CreateForeignKey1(itemRequirementFormula, itemStatProfile);
+            ItemRequirementFormulaEntityType.CreateForeignKey1(itemRequirementFormula, attributeDefinition);
+            ItemRequirementFormulaEntityType.CreateForeignKey2(itemRequirementFormula, itemStatProfile);
             ItemSetGroupEntityType.CreateForeignKey1(itemSetGroup, gameConfiguration);
             ItemSetGroupEntityType.CreateForeignKey2(itemSetGroup, itemOptionDefinition);
             ItemSlotTypeEntityType.CreateForeignKey1(itemSlotType, gameConfiguration);
             ItemStatProfileEntityType.CreateForeignKey1(itemStatProfile, gameConfiguration);
-            ItemStatTermsEntityType.CreateForeignKey1(itemStatTerms, itemStatProfile);
-            ItemStatTermsEntityType.CreateForeignKey2(itemStatTerms, itemLevelBonusTable);
+            ItemStatTermsEntityType.CreateForeignKey1(itemStatTerms, attributeDefinition);
+            ItemStatTermsEntityType.CreateForeignKey2(itemStatTerms, itemStatProfile);
+            ItemStatTermsEntityType.CreateForeignKey3(itemStatTerms, itemLevelBonusTable);
             JewelMixEntityType.CreateForeignKey1(jewelMix, gameConfiguration);
             JewelMixEntityType.CreateForeignKey2(jewelMix, itemDefinition);
             JewelMixEntityType.CreateForeignKey3(jewelMix, itemDefinition);

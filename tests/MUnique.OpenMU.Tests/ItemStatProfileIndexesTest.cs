@@ -9,7 +9,7 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
 /// Tests that the database keeps the item stat profiles unique where the item formulas look them up:
-/// a profile by its name within a configuration, and the terms and requirement formulas of a profile by their stat.
+/// a profile by its name within a configuration, and the terms and requirement formulas of a profile by their attribute.
 /// </summary>
 /// <remarks>
 /// The test doesn't require a database, the context is just created to get its model.
@@ -23,8 +23,8 @@ public class ItemStatProfileIndexesTest
     /// <param name="entityType">The entity type.</param>
     /// <param name="properties">The properties of the index, in their order.</param>
     [TestCase(typeof(Persistence.EntityFramework.Model.ItemStatProfile), "GameConfigurationId", "Name")]
-    [TestCase(typeof(Persistence.EntityFramework.Model.ItemStatTerms), "ItemStatProfileId", "Stat")]
-    [TestCase(typeof(Persistence.EntityFramework.Model.ItemRequirementFormula), "ItemStatProfileId", "Stat")]
+    [TestCase(typeof(Persistence.EntityFramework.Model.ItemStatTerms), "ItemStatProfileId", "AttributeId")]
+    [TestCase(typeof(Persistence.EntityFramework.Model.ItemRequirementFormula), "ItemStatProfileId", "AttributeId")]
     public void HasUniqueIndex(Type entityType, params string[] properties)
     {
         using var context = new EntityDataContext();

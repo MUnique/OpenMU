@@ -5,9 +5,10 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
-/// How a stat requirement of an item grows, in an <see cref="ItemStatProfile"/>:
+/// How a requirement of an item grows, in an <see cref="ItemStatProfile"/>:
 /// <c>Add + base * (drop level + item level * LevelWeight) * Percent / 100</c>, where the drop level includes the
 /// <see cref="GameConfiguration.AncientDropLevelBonus"/> of an ancient item, or else the
 /// <see cref="GameConfiguration.ExcellentDropLevelBonus"/> of an excellent item. A base value of 0 stays 0.
@@ -20,9 +21,9 @@ using MUnique.OpenMU.Annotations;
 public partial class ItemRequirementFormula
 {
     /// <summary>
-    /// Gets or sets the stat requirement this formula is for.
+    /// Gets or sets the attribute of the item requirements (<see cref="AttributeRequirement.Attribute"/>) this formula is for.
     /// </summary>
-    public ItemRequirementStat Stat { get; set; }
+    public virtual AttributeDefinition? Attribute { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the requirement keeps its base value, instead of growing by the formula.
@@ -55,12 +56,12 @@ public partial class ItemRequirementFormula
     {
         if (this.KeepBase)
         {
-            return string.Format(Properties.Resources.ItemRequirementFormulaKeptBaseSummary, this.Stat.GetEnumCaption());
+            return string.Format(Properties.Resources.ItemRequirementFormulaKeptBaseSummary, this.Attribute?.ToString());
         }
 
         var format = this.LevelRequirementBasis
             ? Properties.Resources.ItemRequirementFormulaLevelBasisSummary
             : Properties.Resources.ItemRequirementFormulaSummary;
-        return string.Format(format, this.Stat.GetEnumCaption(), this.Add, this.LevelWeight, this.Percent);
+        return string.Format(format, this.Attribute?.ToString(), this.Add, this.LevelWeight, this.Percent);
     }
 }

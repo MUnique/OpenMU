@@ -29,6 +29,32 @@ internal partial class ItemStatTerms : MUnique.OpenMU.DataModel.Configuration.It
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets or sets the identifier of <see cref="Attribute"/>.
+    /// </summary>
+    public Guid? AttributeId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Attribute" />.
+    /// </summary>
+    [ForeignKey(nameof(AttributeId))]
+    public AttributeDefinition RawAttribute
+    {
+        get => base.Attribute as AttributeDefinition;
+        set => base.Attribute = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
+    {
+        get => base.Attribute;set
+        {
+            base.Attribute = value;
+            this.AttributeId = this.RawAttribute?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Table"/>.
     /// </summary>
     public Guid? TableId { get; set; }

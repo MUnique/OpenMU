@@ -50,8 +50,8 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"AncientSetDiscriminator\", \"BonusOptionId\", \"ItemDefinitionId\", \"ItemSetGroupId\" from config.\"ItemOfItemSet\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"ItemSlots\" from config.\"ItemSlotType\"",
         "select \"Id\", \"ExcellentLevelAdd\", \"GameConfigurationId\", \"LevelPerItemLevel\", \"Name\", \"StrengthPerOptionLevel\" from config.\"ItemStatProfile\"",
-        "select \"Id\", \"Add\", \"ItemStatProfileId\", \"KeepBase\", \"LevelRequirementBasis\", \"LevelWeight\", \"Percent\", \"Stat\" from config.\"ItemRequirementFormula\"",
-        "select \"Id\", \"AncientAdd\", \"AncientAfterLevelBonus\", \"AncientDropLevelDivisor\", \"AncientState\", \"AncientTimes\", \"ExcellentAdd\", \"ExcellentDropLevelDivisor\", \"ExcellentState\", \"ExcellentTimes\", \"ItemStatProfileId\", \"PerLevelAfterHalving\", \"Stat\", \"TableId\", \"TableState\" from config.\"ItemStatTerms\"",
+        "select \"Id\", \"Add\", \"AttributeId\", \"ItemStatProfileId\", \"KeepBase\", \"LevelRequirementBasis\", \"LevelWeight\", \"Percent\" from config.\"ItemRequirementFormula\"",
+        "select \"Id\", \"AncientAdd\", \"AncientAfterLevelBonus\", \"AncientDropLevelDivisor\", \"AncientState\", \"AncientTimes\", \"AttributeId\", \"ExcellentAdd\", \"ExcellentDropLevelDivisor\", \"ExcellentState\", \"ExcellentTimes\", \"ItemStatProfileId\", \"PerLevelAfterHalving\", \"TableId\", \"TableState\" from config.\"ItemStatTerms\"",
         "select \"Id\", \"GameConfigurationId\", \"MixedJewelId\", \"Number\", \"SingleJewelId\" from config.\"JewelMix\"",
         "select \"Id\", \"ChanceId\", \"ChancePvpId\", \"DurationDependsOnTargetLevel\", \"DurationId\", \"DurationPvpId\", \"GameConfigurationId\", \"InformObservers\", \"MonsterTargetLevelDivisor\", \"Name\", \"Number\", \"PlayerTargetLevelDivisor\", \"SendDuration\", \"StopByDeath\", \"SubType\" from config.\"MagicEffectDefinition\"",
         "select \"Id\", \"BattleZoneId\", \"Discriminator\", \"ExpMultiplier\", \"GameConfigurationId\", \"IntroducedIn\", \"IsActive\", \"Name\", \"Number\", \"SafezoneMapId\", \"TerrainData\" from config.\"GameMapDefinition\"",
@@ -175,9 +175,9 @@ internal sealed partial class GameConfigurationLoader
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile> _ItemStatProfile = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile Entity, global::System.Guid? Key0)> _ItemStatProfileRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula> _ItemRequirementFormula = new();
-    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula Entity, global::System.Guid? Key0)> _ItemRequirementFormulaRows = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemRequirementFormulaRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms> _ItemStatTerms = new();
-    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemStatTermsRows = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _ItemStatTermsRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.JewelMix> _JewelMix = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.JewelMix Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _JewelMixRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition> _MagicEffectDefinition = new();
@@ -1007,13 +1007,13 @@ internal sealed partial class GameConfigurationLoader
             var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula();
             entity.Id = reader.GetGuid(0);
             entity.Add = reader.GetInt32(1);
-            entity.KeepBase = reader.GetBoolean(3);
-            entity.LevelRequirementBasis = reader.GetBoolean(4);
-            entity.LevelWeight = reader.GetInt32(5);
-            entity.Percent = reader.GetInt32(6);
-            entity.Stat = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementStat)reader.GetInt32(7);
+            if (!reader.IsDBNull(2)) { entity.AttributeId = reader.GetGuid(2); }
+            entity.KeepBase = reader.GetBoolean(4);
+            entity.LevelRequirementBasis = reader.GetBoolean(5);
+            entity.LevelWeight = reader.GetInt32(6);
+            entity.Percent = reader.GetInt32(7);
             this._ItemRequirementFormula[entity.Id] = entity;
-            this._ItemRequirementFormulaRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2)));
+            this._ItemRequirementFormulaRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(3) ? null : reader.GetGuid(3)));
         }
     }
 
@@ -1028,16 +1028,16 @@ internal sealed partial class GameConfigurationLoader
             entity.AncientDropLevelDivisor = reader.GetInt32(3);
             entity.AncientState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(4);
             entity.AncientTimes = reader.GetInt32(5);
-            entity.ExcellentAdd = reader.GetInt32(6);
-            entity.ExcellentDropLevelDivisor = reader.GetInt32(7);
-            entity.ExcellentState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(8);
-            entity.ExcellentTimes = reader.GetInt32(9);
-            if (!reader.IsDBNull(11)) { entity.PerLevelAfterHalving = reader.GetInt32(11); }
-            entity.Stat = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStat)reader.GetInt32(12);
+            if (!reader.IsDBNull(6)) { entity.AttributeId = reader.GetGuid(6); }
+            entity.ExcellentAdd = reader.GetInt32(7);
+            entity.ExcellentDropLevelDivisor = reader.GetInt32(8);
+            entity.ExcellentState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(9);
+            entity.ExcellentTimes = reader.GetInt32(10);
+            if (!reader.IsDBNull(12)) { entity.PerLevelAfterHalving = reader.GetInt32(12); }
             if (!reader.IsDBNull(13)) { entity.TableId = reader.GetGuid(13); }
             entity.TableState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(14);
             this._ItemStatTerms[entity.Id] = entity;
-            this._ItemStatTermsRows.Add((entity, reader.IsDBNull(13) ? null : reader.GetGuid(13), reader.IsDBNull(10) ? null : reader.GetGuid(10)));
+            this._ItemStatTermsRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(13) ? null : reader.GetGuid(13), reader.IsDBNull(11) ? null : reader.GetGuid(11)));
         }
     }
 
@@ -2048,9 +2048,25 @@ internal sealed partial class GameConfigurationLoader
             }
         }
 
+        foreach (var row in this._ItemRequirementFormulaRows)
+        {
+            if (row.Key0 is { } id)
+            {
+                row.Entity.RawAttribute = this.GetAttributeDefinition(id);
+            }
+        }
+
         foreach (var row in this._ItemStatTermsRows)
         {
             if (row.Key0 is { } id)
+            {
+                row.Entity.RawAttribute = this.GetAttributeDefinition(id);
+            }
+        }
+
+        foreach (var row in this._ItemStatTermsRows)
+        {
+            if (row.Key1 is { } id)
             {
                 row.Entity.RawTable = this.GetItemLevelBonusTable(id);
             }
@@ -2915,7 +2931,7 @@ internal sealed partial class GameConfigurationLoader
 
         foreach (var row in this._ItemRequirementFormulaRows)
         {
-            if (row.Key0 is { } id && this._ItemStatProfile.TryGetValue(id, out var parent))
+            if (row.Key1 is { } id && this._ItemStatProfile.TryGetValue(id, out var parent))
             {
                 var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula>)parent.RawRequirementFormulas;
                 var item = row.Entity;
@@ -2928,7 +2944,7 @@ internal sealed partial class GameConfigurationLoader
 
         foreach (var row in this._ItemStatTermsRows)
         {
-            if (row.Key1 is { } id && this._ItemStatProfile.TryGetValue(id, out var parent))
+            if (row.Key2 is { } id && this._ItemStatProfile.TryGetValue(id, out var parent))
             {
                 var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms>)parent.RawStatTerms;
                 var item = row.Entity;

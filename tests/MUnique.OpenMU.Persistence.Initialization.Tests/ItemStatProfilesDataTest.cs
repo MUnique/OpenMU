@@ -62,7 +62,7 @@ internal class ItemStatProfilesDataTest
         var gameConfiguration = this._readOnlyData[version].GameConfiguration;
 
         var missingTables = gameConfiguration.ItemStatProfiles
-            .SelectMany(profile => profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values && t.Table is null).Select(t => $"{profile.Name} {t.Stat}"))
+            .SelectMany(profile => profile.StatTerms.Where(t => t.TableState == ItemStatTermState.Values && t.Table is null).Select(t => $"{profile.Name} {t.Attribute?.Designation}"))
             .ToList();
         Assert.Multiple(() =>
         {
@@ -70,7 +70,7 @@ internal class ItemStatProfilesDataTest
             Assert.That(gameConfiguration.AncientDropLevelBonus, Is.EqualTo(30));
             Assert.That(gameConfiguration.ItemStatProfiles.Select(p => p.Name), Is.EquivalentTo(BuiltInItemStatProfiles.Names));
             Assert.That(gameConfiguration.Items.Where(item => item.StatProfile is null || !gameConfiguration.ItemStatProfiles.Contains(item.StatProfile)), Is.Empty);
-            Assert.That(missingTables, version == Season6 ? Is.Empty : Is.EquivalentTo(new[] { $"{BuiltInItemStatProfiles.ThirdTierWing} {ItemStat.Defense}" }));
+            Assert.That(missingTables, version == Season6 ? Is.Empty : Is.EquivalentTo(new[] { $"{BuiltInItemStatProfiles.ThirdTierWing} {Stats.DefenseBase.Designation}" }));
         });
     }
 
@@ -137,7 +137,8 @@ internal class ItemStatProfilesDataTest
                 profile,
                 () => new BasicModel.ItemStatTerms(),
                 () => new BasicModel.ItemRequirementFormula(),
-                table => new BasicModel.ItemLevelBonusTable { Name = table });
+                table => new BasicModel.ItemLevelBonusTable { Name = table },
+                attribute => attribute);
             return DescribeProfile(profile).ToList();
         }
 
@@ -147,19 +148,21 @@ internal class ItemStatProfilesDataTest
             // option level. Excellent: damage base * 25 / drop level + 5, magic power (base * 2 * 25 / drop level + 5) / 2,
             // block rate base * 25 / drop level + 5, defense base * 12 / drop level + drop level / 5 + 4.
             // Ancient: damage 5 + d / 40, magic power (2 + d / 60) / 2, defense 2 + value * 3 / d + d / 30.
+            // The damage is the minimum physical damage, the magic power the staff, sceptre and book rise.
             Assert.That(DescribeBuiltIn(ItemStatProfile.DefaultName), Is.EqualTo(new[]
             {
                 "default: level per item level 0, excellent level add 0, strength per option level 4",
-                "  Damage: table DamageIncreaseWeapons, excellent 25/5/0, ancient 0/5/40",
-                "  MagicPower: table None, excellent 25/5/0, ancient 0/2/60, per level after halving 2",
-                "  BlockRate: table DefenseRateIncreaseShields, excellent 25/5/0, ancient None",
-                "  Defense: table DefenseIncreaseArmors, excellent 12/4/5, ancient 3/2/30",
-                "  MagicDefense: table None, excellent None, ancient None",
-                "  Strength: add 20, level weight 3, percent 3",
-                "  Agility: add 20, level weight 3, percent 3",
-                "  Energy: add 20, level weight 3, percent 4",
-                "  Vitality: add 20, level weight 3, percent 3",
-                "  Leadership: add 20, level weight 3, percent 3",
+                "  Base Defense: table DefenseIncreaseArmors, excellent 12/4/5, ancient 3/2/30",
+                "  Book Rise Percentage: table None, excellent 25/5/0, ancient 0/2/60, per level after halving 2",
+                "  Defense Rate (PvM): table DefenseRateIncreaseShields, excellent 25/5/0, ancient None",
+                "  Minimum Physical Base Damage By Weapon: table DamageIncreaseWeapons, excellent 25/5/0, ancient 0/5/40",
+                "  Scepter Rise Percentage: table None, excellent 25/5/0, ancient 0/2/60, per level after halving 2",
+                "  Staff Rise Percentage: table None, excellent 25/5/0, ancient 0/2/60, per level after halving 2",
+                "  Total Agility Requirement Value: add 20, level weight 3, percent 3",
+                "  Total Energy Requirement Value: add 20, level weight 3, percent 4",
+                "  Total Leadership Requirement Value: add 20, level weight 3, percent 3",
+                "  Total Strength Requirement Value: add 20, level weight 3, percent 3",
+                "  Total Vitality Requirement Value: add 20, level weight 3, percent 3",
             }));
 
             // 5 strength per option level for armor pieces.
@@ -172,14 +175,14 @@ internal class ItemStatProfilesDataTest
             Assert.That(DescribeBuiltIn(BuiltInItemStatProfiles.Book), Is.EqualTo(new[]
             {
                 "book: level per item level -, excellent level add -, strength per option level -",
-                "  Energy: add 20, level weight 1, percent 3",
+                "  Total Energy Requirement Value: add 20, level weight 1, percent 3",
             }));
 
-            // The shield's ancient defense: 2 + (base + level) * 20 / d, and no excellent defense.
+            // The shield's ancient defense: 2 + (base + level) * 20 / d, and no excellent defense; on its shield defense.
             Assert.That(DescribeBuiltIn(BuiltInItemStatProfiles.Shield), Is.EqualTo(new[]
             {
                 "shield: level per item level -, excellent level add -, strength per option level -",
-                "  Defense: table DefenseIncreaseShields, excellent None, ancient 20/2/0 after level bonus",
+                "  Shield Defense (item): table DefenseIncreaseShields, excellent None, ancient 20/2/0 after level bonus",
             }));
         });
     }
@@ -383,7 +386,7 @@ internal class ItemStatProfilesDataTest
         await CreateUpdate(Season6).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var profile = gameConfiguration.ItemStatProfiles.Single(p => p.Name == BuiltInItemStatProfiles.ThirdTierWing);
-        Assert.That(profile.StatTerms.Single(t => t.Stat == ItemStat.Defense).Table, Is.SameAs(ownTable));
+        Assert.That(profile.StatTerms.Single(t => t.Attribute == Stats.DefenseBase).Table, Is.SameAs(ownTable));
     }
 
     /// <summary>
@@ -397,7 +400,7 @@ internal class ItemStatProfilesDataTest
         var (context, gameConfiguration) = await CreateAsync(Season6).ConfigureAwait(false);
         using var _ = context;
         var thirdWings = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing);
-        var builtInTable = GetProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing).StatTerms.Single(t => t.Stat == ItemStat.Defense).Table!;
+        var builtInTable = GetProfile(gameConfiguration, BuiltInItemStatProfiles.ThirdTierWing).StatTerms.Single(t => t.Attribute == Stats.DefenseBase).Table!;
         var ownTable = AddTable(context, gameConfiguration, "Own defense bonus of one third wing");
         GiveTable(thirdWings[0], ownTable, Stats.DefenseBase);
         var powerUpTables = DescribePowerUpTables(gameConfiguration);
@@ -415,7 +418,7 @@ internal class ItemStatProfilesDataTest
                 .Replace(builtInTable.Name.ValueInNeutralLanguage, ownTable.Name.ValueInNeutralLanguage, StringComparison.Ordinal));
         Assert.Multiple(() =>
         {
-            Assert.That(profile.StatTerms.Single(t => t.Stat == ItemStat.Defense).Table, Is.SameAs(builtInTable));
+            Assert.That(profile.StatTerms.Single(t => t.Attribute == Stats.DefenseBase).Table, Is.SameAs(builtInTable));
             Assert.That(thirdWings[0].StatProfile!.Name, Is.EqualTo(variantName));
             Assert.That(DescribeProfile(thirdWings[0].StatProfile!), Is.EqualTo(expectedVariant));
             Assert.That(thirdWings.Skip(1).Select(item => item.StatProfile), Is.All.SameAs(profile));
@@ -436,7 +439,7 @@ internal class ItemStatProfilesDataTest
         using var _ = context;
         var sword = GetItemsOfProfile(gameConfiguration, BuiltInItemStatProfiles.Weapon)
             .First(item => item.Group == 0 && item.BasePowerUpAttributes.Any(p => p.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon && p.BonusPerLevelTable is not null));
-        var builtInTable = GetProfile(gameConfiguration, ItemStatProfile.DefaultName).StatTerms.Single(t => t.Stat == ItemStat.Damage).Table!;
+        var builtInTable = GetProfile(gameConfiguration, ItemStatProfile.DefaultName).StatTerms.Single(t => t.Attribute == Stats.MinimumPhysBaseDmgByWeapon).Table!;
         var ownTable = AddTable(context, gameConfiguration, "Own damage increase of one sword");
         GiveTable(sword, ownTable, Stats.MinimumPhysBaseDmgByWeapon, Stats.MaximumPhysBaseDmgByWeapon);
         var powerUpTables = DescribePowerUpTables(gameConfiguration);
@@ -446,11 +449,11 @@ internal class ItemStatProfilesDataTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(GetProfile(gameConfiguration, ItemStatProfile.DefaultName).StatTerms.Single(t => t.Stat == ItemStat.Damage).Table, Is.SameAs(builtInTable));
+            Assert.That(GetProfile(gameConfiguration, ItemStatProfile.DefaultName).StatTerms.Single(t => t.Attribute == Stats.MinimumPhysBaseDmgByWeapon).Table, Is.SameAs(builtInTable));
             Assert.That(DescribeProfile(sword.StatProfile!), Is.EqualTo(new[]
             {
                 "weapon2: level per item level -, excellent level add -, strength per option level -",
-                "  Damage: table Own damage increase of one sword, excellent NotWritten, ancient NotWritten",
+                "  Minimum Physical Base Damage By Weapon: table Own damage increase of one sword, excellent NotWritten, ancient NotWritten",
             }));
             Assert.That(DescribePowerUpTables(gameConfiguration), Is.EqualTo(powerUpTables));
             Assert.That(GetTablesWhichDifferFromTheProfile(gameConfiguration), Is.Empty);
@@ -532,26 +535,27 @@ internal class ItemStatProfilesDataTest
     }
 
     /// <summary>
-    /// Gets the damage, block rate and defense power-ups whose level bonus table isn't the table of the item's profile.
+    /// Gets the damage, defense rate and defense power-ups whose level bonus table isn't the table of the item's profile.
     /// </summary>
     /// <param name="gameConfiguration">The game configuration.</param>
     /// <returns>The power-ups, described.</returns>
     internal static List<string> GetTablesWhichDifferFromTheProfile(GameConfiguration gameConfiguration)
     {
-        var statsOfAttributes = new Dictionary<AttributeDefinition, ItemStat>
+        // The maximum damage gets the table of the terms of the minimum damage.
+        var termAttributes = new Dictionary<AttributeDefinition, AttributeDefinition>
         {
-            { Stats.MinimumPhysBaseDmgByWeapon, ItemStat.Damage },
-            { Stats.MaximumPhysBaseDmgByWeapon, ItemStat.Damage },
-            { Stats.DefenseRatePvm, ItemStat.BlockRate },
-            { Stats.DefenseBase, ItemStat.Defense },
-            { Stats.DefenseShield, ItemStat.Defense },
+            { Stats.MinimumPhysBaseDmgByWeapon, Stats.MinimumPhysBaseDmgByWeapon },
+            { Stats.MaximumPhysBaseDmgByWeapon, Stats.MinimumPhysBaseDmgByWeapon },
+            { Stats.DefenseRatePvm, Stats.DefenseRatePvm },
+            { Stats.DefenseBase, Stats.DefenseBase },
+            { Stats.DefenseShield, Stats.DefenseShield },
         };
         var wrongTables = new List<string>();
         foreach (var item in gameConfiguration.Items)
         {
-            foreach (var powerUp in item.BasePowerUpAttributes.Where(p => p.BonusPerLevelTable is not null && statsOfAttributes.ContainsKey(p.TargetAttribute!)))
+            foreach (var powerUp in item.BasePowerUpAttributes.Where(p => p.BonusPerLevelTable is not null && termAttributes.ContainsKey(p.TargetAttribute!)))
             {
-                var profileTable = GetTable(gameConfiguration, item.StatProfile!, statsOfAttributes[powerUp.TargetAttribute!]);
+                var profileTable = GetTable(gameConfiguration, item.StatProfile!, termAttributes[powerUp.TargetAttribute!]);
                 if (profileTable != powerUp.BonusPerLevelTable)
                 {
                     wrongTables.Add($"{item} ({item.StatProfile}) {powerUp.TargetAttribute}: {powerUp.BonusPerLevelTable!.Name}, profile: {profileTable?.Name}");
@@ -569,7 +573,7 @@ internal class ItemStatProfilesDataTest
     {
         return gameConfiguration.ItemStatProfiles
             .OrderBy(p => p.Name, StringComparer.Ordinal)
-            .SelectMany(p => p.StatTerms.OrderBy(t => t.Stat).Select(t => $"{p.Name} {t.Stat}: {t.TableState} {t.Table?.GetId()}"))
+            .SelectMany(p => p.StatTerms.OrderBy(t => t.Attribute?.Designation, StringComparer.Ordinal).Select(t => $"{p.Name} {t.Attribute?.Designation}: {t.TableState} {t.Table?.GetId()}"))
             .ToList();
     }
 
@@ -583,11 +587,11 @@ internal class ItemStatProfilesDataTest
         return item.BasePowerUpAttributes.Any(powerUp => powerUp.TargetAttribute == attribute);
     }
 
-    private static ItemLevelBonusTable? GetTable(GameConfiguration gameConfiguration, ItemStatProfile profile, ItemStat stat)
+    private static ItemLevelBonusTable? GetTable(GameConfiguration gameConfiguration, ItemStatProfile profile, AttributeDefinition attribute)
     {
-        var terms = profile.StatTerms.FirstOrDefault(t => t.Stat == stat && t.TableState != ItemStatTermState.NotWritten)
-                    ?? gameConfiguration.ItemStatProfiles.Single(p => p.Name == ItemStatProfile.DefaultName).StatTerms.Single(t => t.Stat == stat);
-        return terms.TableState == ItemStatTermState.Values ? terms.Table : null;
+        var terms = profile.StatTerms.FirstOrDefault(t => t.Attribute == attribute && t.TableState != ItemStatTermState.NotWritten)
+                    ?? gameConfiguration.ItemStatProfiles.Single(p => p.Name == ItemStatProfile.DefaultName).StatTerms.SingleOrDefault(t => t.Attribute == attribute);
+        return terms?.TableState == ItemStatTermState.Values ? terms.Table : null;
     }
 
     /// <summary>
@@ -618,21 +622,21 @@ internal class ItemStatProfilesDataTest
         yield return $"{profile.Name}: level per item level {profile.LevelPerItemLevel?.ToString() ?? "-"}, "
                      + $"excellent level add {profile.ExcellentLevelAdd?.ToString() ?? "-"}, "
                      + $"strength per option level {profile.StrengthPerOptionLevel?.ToString() ?? "-"}";
-        foreach (var terms in profile.StatTerms.OrderBy(t => t.Stat))
+        foreach (var terms in profile.StatTerms.OrderBy(t => t.Attribute?.Designation, StringComparer.Ordinal))
         {
             var table = terms.TableState == ItemStatTermState.Values
                 ? terms.Table?.Name.ValueInNeutralLanguage ?? "missing"
                 : terms.TableState + (terms.Table is { } stray ? $" ({stray.Name.ValueInNeutralLanguage})" : string.Empty);
-            yield return $"  {terms.Stat}: table {table}, "
+            yield return $"  {terms.Attribute?.Designation}: table {table}, "
                          + $"excellent {Part(terms.ExcellentState, terms.ExcellentTimes, terms.ExcellentAdd, terms.ExcellentDropLevelDivisor)}, "
                          + $"ancient {Part(terms.AncientState, terms.AncientTimes, terms.AncientAdd, terms.AncientDropLevelDivisor)}"
                          + (terms.AncientAfterLevelBonus ? " after level bonus" : string.Empty)
                          + (terms.PerLevelAfterHalving is { } perLevel ? $", per level after halving {perLevel}" : string.Empty);
         }
 
-        foreach (var formula in profile.RequirementFormulas.OrderBy(f => f.Stat))
+        foreach (var formula in profile.RequirementFormulas.OrderBy(f => f.Attribute?.Designation, StringComparer.Ordinal))
         {
-            yield return $"  {formula.Stat}: "
+            yield return $"  {formula.Attribute?.Designation}: "
                          + (formula.KeepBase ? "base" : $"add {formula.Add}, level weight {formula.LevelWeight}, percent {formula.Percent}")
                          + (formula.LevelRequirementBasis ? ", level requirement basis" : string.Empty);
         }

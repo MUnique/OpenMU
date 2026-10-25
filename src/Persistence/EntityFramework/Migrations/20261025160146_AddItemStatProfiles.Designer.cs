@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20261025003111_AddItemStatProfiles")]
+    [Migration("20261025160146_AddItemStatProfiles")]
     partial class AddItemStatProfiles
     {
         /// <inheritdoc />
@@ -1146,6 +1146,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("HomeMapId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsMasterClass")
                         .HasColumnType("boolean");
 
@@ -1860,6 +1866,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -2522,6 +2534,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("Height")
                         .HasColumnType("smallint");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsAmmunition")
                         .HasColumnType("boolean");
 
@@ -2967,6 +2985,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Add")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("AttributeId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ItemStatProfileId")
                         .HasColumnType("uuid");
 
@@ -2982,12 +3003,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Percent")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Stat")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemStatProfileId", "Stat")
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("ItemStatProfileId", "AttributeId")
                         .IsUnique();
 
                     b.ToTable("ItemRequirementFormula", "config");
@@ -3106,6 +3126,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("AncientTimes")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("AttributeId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("ExcellentAdd")
                         .HasColumnType("integer");
 
@@ -3124,9 +3147,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int?>("PerLevelAfterHalving")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Stat")
-                        .HasColumnType("integer");
-
                     b.Property<Guid?>("TableId")
                         .HasColumnType("uuid");
 
@@ -3135,9 +3155,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AttributeId");
+
                     b.HasIndex("TableId");
 
-                    b.HasIndex("ItemStatProfileId", "Stat")
+                    b.HasIndex("ItemStatProfileId", "AttributeId")
                         .IsUnique();
 
                     b.ToTable("ItemStatTerms", "config");
@@ -3507,6 +3529,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("GameLevel")
                         .HasColumnType("smallint");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("MapCreationPolicy")
                         .HasColumnType("integer");
 
@@ -3747,6 +3775,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("IntelligenceTypeName")
                         .HasColumnType("text");
+
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("MerchantStoreId")
                         .HasColumnType("uuid");
@@ -5719,10 +5753,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile", null)
                         .WithMany("RawRequirementFormulas")
                         .HasForeignKey("ItemStatProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawAttribute");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
@@ -5757,6 +5797,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile", null)
                         .WithMany("RawStatTerms")
                         .HasForeignKey("ItemStatProfileId")
@@ -5765,6 +5809,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", "RawTable")
                         .WithMany()
                         .HasForeignKey("TableId");
+
+                    b.Navigation("RawAttribute");
 
                     b.Navigation("RawTable");
                 });
