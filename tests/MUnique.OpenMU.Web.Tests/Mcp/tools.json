@@ -324,6 +324,26 @@
     }
   },
   {
+    "Name": "events_schedule",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "guilds_get",
     "InputSchema": {
       "type": "object",
@@ -376,6 +396,28 @@
     }
   },
   {
+    "Name": "players_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "players_list",
     "InputSchema": {
       "type": "object",
@@ -415,6 +457,64 @@
           "default": 50
         }
       }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugin_operations_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugin_operations_read",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "plugInId": {
+          "description": "Plugin type identifier from plugin_operations_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Exact operation name from the catalog.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "JSON object matching the contributed input schema.",
+          "type": "string",
+          "default": "{}"
+        }
+      },
+      "required": [
+        "serverId",
+        "plugInId",
+        "name"
+      ]
     },
     "Annotations": {
       "title": null,

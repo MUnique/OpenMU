@@ -65,10 +65,12 @@ public static class AdminMcpExtensions
             .WithHttpTransport(transport => transport.Stateless = true)
             .WithTools<AdminReadTools>()
             .WithTools<AdminOperationReadTools>()
-            .WithTools<ConfigurationReadTools>();
+            .WithTools<ConfigurationReadTools>()
+            .WithTools<LiveGameReadTools>()
+            .WithTools<PluginOperationReadTools>();
         if (!options.ReadOnly)
         {
-            server.WithTools<AdminWriteTools>().WithTools<ConfigurationWriteTools>();
+            server.WithTools<AdminWriteTools>().WithTools<ConfigurationWriteTools>().WithTools<LiveGameWriteTools>().WithTools<PluginOperationWriteTools>();
         }
 
         server.WithRequestFilters(filters =>

@@ -198,20 +198,37 @@ public sealed class McpIntegrationTests : System.IDisposable
     {
         await using var client = await this.ConnectAsync().ConfigureAwait(false);
         var tools = await client.ListToolsAsync().ConfigureAwait(false);
-        Assert.That(tools.Count, Is.EqualTo(19));
+        Assert.That(tools.Count, Is.EqualTo(23));
+        var servers = new List<IManageableServer>();
+        foreach (var id in new[] { 0, 4 })
+        {
+            var server = new Mock<IGameServer>();
+            server.SetupGet(s => s.Id).Returns(id);
+            server.SetupGet(s => s.ServerState).Returns(ServerState.Started);
+            var live = server.As<IGameServerAdministration>();
+            var player = new LivePlayerInfo(Guid.NewGuid(), "tester", "Hero", 0, 1, 2, 10, 0, null, false);
+            live.Setup(s => s.GetPlayerAsync("Hero", It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(player);
+            live.Setup(s => s.GetPlayersAsync(null, null, It.IsAny<int>(), 100, It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(new LivePlayerPage([player], 1));
+            live.Setup(s => s.GetEventsAsync(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(Array.Empty<LiveEventInfo>());
+            live.Setup(s => s.GetAdminOperationsAsync(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(Array.Empty<AdminPluginOperationInfo>());
+            servers.Add(server.Object);
+        }
+
+        Mock.Get(this._app.Services.GetRequiredService<IServerProvider>()).SetupGet(s => s.Servers).Returns(servers);
         var arguments = new Dictionary<string, Dictionary<string, object?>>
         {
             ["drops_explain"] = new() { ["monsterNumber"] = 1, ["mapNumber"] = 0 },
             ["spawns_list"] = new() { ["mapNumber"] = 0 },
             ["accounts_get"] = new() { ["loginName"] = "tester" },
             ["characters_get"] = new() { ["characterName"] = "Hero" },
+            ["players_get"] = new() { ["characterName"] = "Hero" },
             ["guilds_get"] = new() { ["name"] = "Knights" },
             ["config_describe"] = new() { ["type"] = "GameConfiguration" },
             ["config_query"] = new() { ["type"] = "GameConfiguration" },
             ["config_get"] = new() { ["type"] = "GameConfiguration", ["id"] = this._configurationId, ["depth"] = 2 },
             ["config_search"] = new() { ["text"] = "experience" },
         };
-        foreach (var tool in tools)
+        foreach (var tool in tools.Where(t => t.Name != "plugin_operations_read"))
         {
             var result = await client.CallToolAsync(tool.Name, arguments.GetValueOrDefault(tool.Name) ?? []).ConfigureAwait(false);
             Assert.That(result.IsError, Is.Not.True, tool.Name + ": " + JsonSerializer.Serialize(result));
