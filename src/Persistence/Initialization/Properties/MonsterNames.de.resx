@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="DarkKnight" xml:space="preserve">
+    <value>Dunkler Ritter</value>
+  </data>
+  <data name="GateToKalima1OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 1 von {0}</value>
+  </data>
+  <data name="GateToKalima2OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 2 von {0}</value>
+  </data>
+  <data name="GateToKalima3OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 3 von {0}</value>
+  </data>
+  <data name="GateToKalima4OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 4 von {0}</value>
+  </data>
+  <data name="GateToKalima5OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 5 von {0}</value>
+  </data>
+  <data name="GateToKalima6OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 6 von {0}</value>
+  </data>
+  <data name="GateToKalima7OfPlayer" xml:space="preserve">
+    <value>Tor nach Kalima 7 von {0}</value>
+  </data>
+  <data name="WolfStatus" xml:space="preserve">
+    <value>Wolfsstatue</value>
+  </data>
+  <data name="WolfAltar1" xml:space="preserve">
+    <value>Wolfsaltar 1</value>
+  </data>
+  <data name="WolfAltar2" xml:space="preserve">
+    <value>Wolfsaltar 2</value>
+  </data>
+  <data name="WolfAltar3" xml:space="preserve">
+    <value>Wolfsaltar 3</value>
+  </data>
+  <data name="WolfAltar4" xml:space="preserve">
+    <value>Wolfsaltar 4</value>
+  </data>
+  <data name="WolfAltar5" xml:space="preserve">
+    <value>Wolfsaltar 5</value>
+  </data>
+  <data name="Senior" xml:space="preserve">
+    <value>Älterer</value>
+  </data>
+  <data name="Guardsman" xml:space="preserve">
+    <value>Gardist</value>
+  </data>
+  <data name="PetTrainer" xml:space="preserve">
+    <value>Haustiertrainer</value>
+  </data>
+  <data name="MessengerOfArch" xml:space="preserve">
+    <value>Gesandter des Erzengels</value>
+  </data>
+  <data name="SevinaThePriestess" xml:space="preserve">
+    <value>Priesterin Sevina</value>
+  </data>
+  <data name="ChaosGoblin" xml:space="preserve">
+    <value>Chaos-Goblin</value>
+  </data>
+  <data name="BazTheVaultKeeper" xml:space="preserve">
+    <value>Tresorverwalter Baz</value>
+  </data>
+  <data name="GuildMaster" xml:space="preserve">
+    <value>Gildenmeister</value>
+  </data>
+  <data name="ElfSoldier" xml:space="preserve">
+    <value>Elfensoldat</value>
+  </data>
+  <data name="CastleGate1" xml:space="preserve">
+    <value>Burgtor 1</value>
+  </data>
+  <data name="LifeStone" xml:space="preserve">
+    <value>Lebensstein</value>
+  </data>
+  <data name="GuardianStatue" xml:space="preserve">
+    <value>Wächterstatue</value>
+  </data>
+  <data name="CanonTower" xml:space="preserve">
+    <value>Kanonenturm</value>
+  </data>
+  <data name="ScoutHero" xml:space="preserve">
+    <value>Scout (Held)</value>
+  </data>
+  <data name="WerewolfHero" xml:space="preserve">
+    <value>Werwolf (Held)</value>
+  </data>
+  <data name="MayaHandLeft" xml:space="preserve">
+    <value>Maya (linke Hand)</value>
+  </data>
+  <data name="MayaHandRight" xml:space="preserve">
+    <value>Maya (rechte Hand)</value>
+  </data>
+  <data name="GatewayMachine" xml:space="preserve">
+    <value>Tormaschine</value>
+  </data>
+  <data name="PriestDevin" xml:space="preserve">
+    <value>Priester Devin</value>
+  </data>
+  <data name="BalramTraineeSoldier" xml:space="preserve">
+    <value>Balram (Rekrut)</value>
+  </data>
+  <data name="DeathSpiritTraineeSoldier" xml:space="preserve">
+    <value>Death Spirit (Rekrut)</value>
+  </data>
+  <data name="SoramTraineeSoldier" xml:space="preserve">
+    <value>Soram (Rekrut)</value>
+  </data>
+  <data name="DarkElfTraineeSoldier" xml:space="preserve">
+    <value>Dark Elf (Rekrut)</value>
+  </data>
+  <data name="BalramTrainee" xml:space="preserve">
+    <value>Balram (Rekrut)</value>
+  </data>
+  <data name="SoramTrainee" xml:space="preserve">
+    <value>Soram (Rekrut)</value>
+  </data>
+  <data name="SeedMaster" xml:space="preserve">
+    <value>Samenmeister</value>
+  </data>
+  <data name="SeedResearcher" xml:space="preserve">
+    <value>Samenforscher</value>
+  </data>
+  <data name="MossTheMerchant" xml:space="preserve">
+    <value>Händler Moss</value>
+  </data>
+  <data name="AdviserJerinteu" xml:space="preserve">
+    <value>Berater Jerinteu</value>
+  </data>
+  <data name="DoppelgangerElf" xml:space="preserve">
+    <value>Doppelgänger-Elfe</value>
+  </data>
+  <data name="DoppelgangerKnight" xml:space="preserve">
+    <value>Doppelgänger-Ritter</value>
+  </data>
+  <data name="DoppelgangerWizard" xml:space="preserve">
+    <value>Doppelgänger-Zauberer</value>
+  </data>
+  <data name="DoppelgangerMagicGladiator" xml:space="preserve">
+    <value>Doppelgänger-Gladiator</value>
+  </data>
+  <data name="DoppelgangerDarkLord" xml:space="preserve">
+    <value>Doppelgänger-Lord</value>
+  </data>
+  <data name="DoppelgangerSummoner" xml:space="preserve">
+    <value>Doppelgänger-Beschwörer</value>
+  </data>
+</root>

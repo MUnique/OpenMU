@@ -35,6 +35,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("GoblinPoints")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsBot")
                         .HasColumnType("boolean");
 
@@ -83,6 +86,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("WCoinC")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WCoinP")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LoginName")
@@ -107,6 +116,53 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("CharacterClassId");
 
                     b.ToTable("AccountCharacterClass", "data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountExternalLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CharacterName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CodeExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CodeHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalUserName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LinkedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Notifications")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CodeHash");
+
+                    b.HasIndex("AccountId", "Provider")
+                        .IsUnique();
+
+                    b.HasIndex("Provider", "ExternalUserId")
+                        .IsUnique();
+
+                    b.ToTable("AccountExternalLink", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
@@ -285,6 +341,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
 
+                    b.Property<byte?>("MinimumItemLevel")
+                        .HasColumnType("smallint");
+
                     b.Property<int>("MinimumValue")
                         .HasColumnType("integer");
 
@@ -379,6 +438,186 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MonsterDefinitionId");
 
                     b.ToTable("Buff", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopCoinGrant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("AppliedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CoinType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GrantedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Reference")
+                        .IsUnique();
+
+                    b.HasIndex("AccountId", "AppliedAt");
+
+                    b.ToTable("CashShopCoinGrant", "data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("BannerSaleZone")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("BannerYear")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("BannerYearId")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("ScriptSaleZone")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("ScriptYear")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("ScriptYearId")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CashShopConfiguration", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopPackage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CashShopConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CoinType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsBundle")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsForSale")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsGiftable")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PackageSequence")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CashShopConfigurationId");
+
+                    b.ToTable("CashShopPackage", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CashShopPackageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("interval");
+
+                    b.Property<Guid?>("ItemDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("ItemLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PriceSequence")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductSequence")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CashShopPackageId");
+
+                    b.HasIndex("ItemDefinitionId");
+
+                    b.ToTable("CashShopProduct", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopStorageItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GiftMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GiftSenderName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsGift")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("PriceSequence")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductSequence")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("CashShopStorageItem", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", b =>
@@ -904,6 +1143,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("HomeMapId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsMasterClass")
                         .HasColumnType("boolean");
 
@@ -1088,6 +1333,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("ConfigurationUpdate", "config");
@@ -1200,6 +1451,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameConfigurationId");
 
                     b.ToTable("ConstValueAttribute", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CrywolfData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsOccupied")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsWarRunning")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastBattleEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("WarStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CrywolfData", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", b =>
@@ -1456,6 +1730,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("AreaSkillHitsPlayer")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid?>("CashShopConfigurationId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("CastleSiegeConfigurationId")
                         .HasColumnType("uuid");
 
@@ -1550,6 +1827,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CashShopConfigurationId")
+                        .IsUnique();
+
                     b.HasIndex("CastleSiegeConfigurationId")
                         .IsUnique();
 
@@ -1576,6 +1856,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1615,6 +1901,32 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("DropItemGroupId");
 
                     b.ToTable("GameMapDefinitionDropItemGroup", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapTerrainVariant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("GameMapDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("Number")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte[]>("TerrainData")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameMapDefinitionId");
+
+                    b.ToTable("GameMapTerrainVariant", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
@@ -1764,6 +2076,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("RankingPosition")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("RewardClaimedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterId")
@@ -1808,6 +2123,50 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsUnique();
 
                     b.ToTable("Guild", "guild");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildChatBinding", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("BoundAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BoundBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalChannelId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalServerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("GuildId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsHosted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Provider", "ExternalChannelId")
+                        .IsUnique();
+
+                    b.HasIndex("GuildId", "Scope", "Provider")
+                        .IsUnique();
+
+                    b.ToTable("GuildChatBinding", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildMember", b =>
@@ -1900,11 +2259,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int?>("StorePrice")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("StorePriceCoinType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("StorePriceItemDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DefinitionId");
 
                     b.HasIndex("ItemStorageId");
+
+                    b.HasIndex("StorePriceItemDefinitionId");
 
                     b.ToTable("Item", "data");
                 });
@@ -2151,6 +2518,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("Height")
                         .HasColumnType("smallint");
+
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsAmmunition")
                         .HasColumnType("boolean");
@@ -3071,6 +3444,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("GameLevel")
                         .HasColumnType("smallint");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("MapCreationPolicy")
                         .HasColumnType("integer");
 
@@ -3312,6 +3691,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("IntelligenceTypeName")
                         .HasColumnType("text");
 
+                    b.Property<int>("IntroducedIn")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("MerchantStoreId")
                         .HasColumnType("uuid");
 
@@ -3463,6 +3848,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("MagicEffectDefinitionId1")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("MasterSkillDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
 
@@ -3476,6 +3864,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MagicEffectDefinitionId");
 
                     b.HasIndex("MagicEffectDefinitionId1");
+
+                    b.HasIndex("MasterSkillDefinitionId");
 
                     b.HasIndex("TargetAttributeId");
 
@@ -4081,6 +4471,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("CharacterClass");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountExternalLink", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "RawCharacterClass")
@@ -4205,6 +4604,46 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("RawMagicEffectDefinition");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopCoinGrant", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopPackage", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopConfiguration", null)
+                        .WithMany("RawPackages")
+                        .HasForeignKey("CashShopConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopProduct", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopPackage", null)
+                        .WithMany("RawProducts")
+                        .HasForeignKey("CashShopPackageId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawItemDefinition")
+                        .WithMany()
+                        .HasForeignKey("ItemDefinitionId");
+
+                    b.Navigation("RawItemDefinition");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopStorageItem", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", b =>
@@ -4625,6 +5064,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopConfiguration", "RawCashShopConfiguration")
+                        .WithOne()
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "CashShopConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", "RawCastleSiegeConfiguration")
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "CastleSiegeConfigurationId")
@@ -4634,6 +5078,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "DuelConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawCashShopConfiguration");
 
                     b.Navigation("RawCastleSiegeConfiguration");
 
@@ -4678,6 +5124,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("DropItemGroup");
 
                     b.Navigation("GameMapDefinition");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapTerrainVariant", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", null)
+                        .WithMany("RawTerrainVariants")
+                        .HasForeignKey("GameMapDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfigurationGameMapDefinition", b =>
@@ -4767,6 +5221,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawHostility");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildChatBinding", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GuildMember", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
@@ -4816,9 +5279,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("ItemStorageId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawStorePriceItemDefinition")
+                        .WithMany()
+                        .HasForeignKey("StorePriceItemDefinitionId");
+
                     b.Navigation("RawDefinition");
 
                     b.Navigation("RawItemStorage");
+
+                    b.Navigation("RawStorePriceItemDefinition");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemAppearance", b =>
@@ -5568,6 +6037,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", null)
+                        .WithMany("RawPassivePowerUps")
+                        .HasForeignKey("MasterSkillDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
@@ -5814,6 +6288,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawEquippedItems");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopConfiguration", b =>
+                {
+                    b.Navigation("RawPackages");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CashShopPackage", b =>
+                {
+                    b.Navigation("RawProducts");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", b =>
                 {
                     b.Navigation("RawAttackMachineZones");
@@ -5944,6 +6428,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawMapRequirements");
 
                     b.Navigation("RawMonsterSpawns");
+
+                    b.Navigation("RawTerrainVariants");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
@@ -6045,6 +6531,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
                     b.Navigation("JoinedRequiredMasterSkills");
+
+                    b.Navigation("RawPassivePowerUps");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>

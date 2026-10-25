@@ -6,11 +6,13 @@ namespace MUnique.OpenMU.Network.Analyzer;
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 /// <summary>
 /// A simple packet sender form which allows to send data packets to the client or the server.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public partial class PacketSenderForm : Form
 {
     private readonly LiveConnection _connection = null!;

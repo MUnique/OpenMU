@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
 /// A chat message processor which sends the message to the guild.
@@ -28,5 +29,6 @@ public class ChatMessageGuildProcessor : BannableChatMessageBaseProcessor
         }
 
         await publisher.GuildMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter!.Name, content.Message).ConfigureAwait(false);
+        await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Guild).ConfigureAwait(false);
     }
 }

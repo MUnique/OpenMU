@@ -50,7 +50,8 @@ public sealed class MapApp : IHostedService, IDisposable
         builder.Services
             .AddSingleton(this._gameServer)
                 .AddSingleton(this._loggerFactory)
-                .AddScoped<IMapFactory, JavascriptMapFactory>();
+                .AddScoped<IMapFactory, JavascriptMapFactory>()
+                .AddCircuitConnectionState();
 
         var app = builder.Build();
 

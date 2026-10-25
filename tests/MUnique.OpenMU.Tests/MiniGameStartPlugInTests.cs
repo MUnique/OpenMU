@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -282,8 +284,17 @@ public class MiniGameStartPlugInTests
         await this._plugIn.StartForTestAsync(state).ConfigureAwait(false);
         Assert.That(notifications, Is.EqualTo(new[] { "Open 2" }));
 
-        Assert.That(game.SkipCurrentWait(), Is.True);
+        // The game loop runs in the background, so the entering phase may not have started its wait yet.
+        // A skip only affects a running wait, so we retry until it hits it.
         var deadline = DateTime.UtcNow.AddSeconds(10);
+        var skipped = game.SkipCurrentWait();
+        while (!skipped && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(10).ConfigureAwait(false);
+            skipped = game.SkipCurrentWait();
+        }
+
+        Assert.That(skipped, Is.True);
         while (game.State == MiniGameState.Open && DateTime.UtcNow < deadline)
         {
             await Task.Delay(50).ConfigureAwait(false);
@@ -312,6 +323,25 @@ public class MiniGameStartPlugInTests
         var context = await this._plugIn.GetMiniGameContextAsync(fakeContext.Object, definition).ConfigureAwait(false);
         Assert.That(context, Is.Null);
         Assert.That(manager.Games, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that the start doesn't create a game whose entrance map is inactive,
+    /// even though the mini game itself is active.
+    /// </summary>
+    [Test]
+    public async Task InactiveEntranceMapCreatesNoGameAsync()
+    {
+        var definition = this.CreateDefinition(TimeSpan.FromMinutes(2));
+        definition.Entrance!.Map!.IsActive = false;
+        var (fakeContext, manager, notifications) = this.CreateAnnouncingContext(definition);
+        var state = new PeriodicTaskGameServerState(fakeContext.Object);
+
+        // The fake manager throws when asked to create a game.
+        await this._plugIn.StartForTestAsync(state).ConfigureAwait(false);
+
+        Assert.That(manager.Games, Is.Empty);
+        Assert.That(notifications, Is.Empty);
     }
 
     /// <summary>
@@ -347,6 +377,9 @@ public class MiniGameStartPlugInTests
         var notifications = new List<string>();
         contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<string>()))
             .Callback<string>(notifications.Add)
+            .Returns(ValueTask.CompletedTask);
+        contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<LocalizedString>(), It.IsAny<object?[]>()))
+            .Callback<LocalizedString, object?[]>((message, arguments) => notifications.Add(string.Format(CultureInfo.InvariantCulture, message.ValueInNeutralLanguage, arguments)))
             .Returns(ValueTask.CompletedTask);
         var configurationMock = new Mock<GameConfiguration>();
         configurationMock.SetupGet(c => c.MiniGameDefinitions).Returns(new List<MiniGameDefinition> { definition });
@@ -542,6 +575,9 @@ public class MiniGameStartPlugInTests
 
         /// <inheritdoc />
         public IReadOnlyList<GameMap> Maps => this.Games.Select(game => game.Map).ToList();
+
+        /// <inheritdoc />
+        public ValueTask<bool> TryRejoinAsync(Player player) => ValueTask.FromResult(false);
 
         /// <inheritdoc />
         public ValueTask<MiniGameContext> GetOrCreateAsync(MiniGameDefinition miniGameDefinition, Player requester)

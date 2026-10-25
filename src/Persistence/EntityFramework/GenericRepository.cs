@@ -38,6 +38,6 @@ internal class GenericRepository<T> : GenericRepositoryBase<T>
     protected override EntityFrameworkContextBase GetContext()
     {
         var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        return new EntityFrameworkContext(context?.Context ?? new TypedContext(typeof(T)), this._loggerFactory, this.RepositoryProvider, context is null, this._changeListener);
+        return new EntityFrameworkContext(context?.Context ?? TypedContext.Create(typeof(T)), this._loggerFactory, this.RepositoryProvider, context is null, this._changeListener);
     }
 }

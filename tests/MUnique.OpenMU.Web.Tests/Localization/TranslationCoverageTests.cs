@@ -22,9 +22,11 @@ using MUnique.OpenMU.Web.Shared.Services;
 [NonParallelizable]
 public class TranslationCoverageTests
 {
-    /// <summary>Checks format arguments of existing Chinese translations, allowing English fallback.</summary>
-    [Test]
-    public void ExistingChineseResourcesMatchNeutralPlaceholders()
+    /// <summary>Checks format arguments of existing translations, allowing English fallback.</summary>
+    /// <param name="culture">The culture of the translations.</param>
+    [TestCase("zh-CN")]
+    [TestCase("de")]
+    public void ExistingResourcesMatchNeutralPlaceholders(string culture)
     {
         var sets = new (Type Anchor, string Resource)[]
         {
@@ -47,10 +49,21 @@ public class TranslationCoverageTests
             var name = $"{assembly.GetName().Name}.Properties.{resource}";
             var manager = new ResourceManager(name, assembly);
             using var neutral = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
-            using var chinese = manager.GetResourceSet(CultureInfo.GetCultureInfo("zh-CN"), true, false)!;
-            Assert.That(chinese, Is.Not.Null, name);
-            AssertExistingTranslations(neutral, chinese, name);
+            using var translated = manager.GetResourceSet(CultureInfo.GetCultureInfo(culture), true, false)!;
+            Assert.That(translated, Is.Not.Null, name);
+            AssertExistingTranslations(neutral, translated, name);
         }
+    }
+
+    /// <summary>Checks format arguments of the German player messages, which are formatted with game data.</summary>
+    [Test]
+    public void GermanPlayerMessagesMatchNeutralPlaceholders()
+    {
+        var manager = MUnique.OpenMU.GameLogic.Properties.PlayerMessage.ResourceManager;
+        using var neutral = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
+        using var german = manager.GetResourceSet(CultureInfo.GetCultureInfo("de"), true, false)!;
+        Assert.That(german, Is.Not.Null, manager.BaseName);
+        AssertExistingTranslations(neutral, german, manager.BaseName);
     }
 
     /// <summary>A new English-only key remains usable without requiring a Chinese translation.</summary>
@@ -69,7 +82,7 @@ public class TranslationCoverageTests
 
     /// <summary>Ensures all built-in display attributes resolve valid resource properties.</summary>
     [Test]
-    public void BuiltInPluginDisplayResourcesResolveInBothLanguages()
+    public void BuiltInPluginDisplayResourcesResolveInAllLanguages()
     {
         var assemblies = new[]
         {
@@ -81,7 +94,7 @@ public class TranslationCoverageTests
         var previous = CultureInfo.CurrentUICulture;
         try
         {
-            foreach (var language in new[] { "en", "zh-CN" })
+            foreach (var language in new[] { "en", "zh-CN", "de" })
             {
                 CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(language);
                 foreach (var type in assemblies.SelectMany(assembly => assembly.GetTypes()))
@@ -162,14 +175,14 @@ public class TranslationCoverageTests
         }
     }
 
-    private static void AssertExistingTranslations(ResourceSet neutral, ResourceSet chinese, string name)
+    private static void AssertExistingTranslations(ResourceSet neutral, ResourceSet translations, string name)
     {
-        // Missing Chinese keys intentionally use ResourceManager's normal English fallback.
+        // Missing translated keys intentionally use ResourceManager's normal English fallback.
         foreach (DictionaryEntry entry in neutral)
         {
             var key = (string)entry.Key;
             var original = (string)entry.Value!;
-            var translated = chinese.GetString(key);
+            var translated = translations.GetString(key);
             if (translated is null)
             {
                 continue;

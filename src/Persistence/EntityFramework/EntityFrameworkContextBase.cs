@@ -6,11 +6,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Data;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -20,14 +22,17 @@ using Nito.Disposables;
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
 /// </summary>
-internal class EntityFrameworkContextBase : IContext
+internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 {
     private static readonly ConcurrentDictionary<IEntityType, IProperty?> PropertyToParentByEntityType = new();
+
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> AggregatePropertiesByType = new();
 
     private readonly bool _isOwner;
     private readonly IConfigurationChangeListener? _changeListener;
     private readonly AsyncLock _lock = new();
     private readonly ILogger _logger;
+    private IDbContextTransaction? _configurationEditTransaction;
     private bool _isDisposed;
     private int _notificationSuspensions;
 
@@ -51,11 +56,6 @@ internal class EntityFrameworkContextBase : IContext
         _ = context.Model;
     }
 
-    /// <summary>
-    /// Finalizes an instance of the <see cref="EntityFrameworkContextBase"/> class.
-    /// </summary>
-    ~EntityFrameworkContextBase() => this.Dispose(false);
-
     /// <inheritdoc />
     public bool HasChanges => this.Context.ChangeTracker.HasChanges();
 
@@ -68,6 +68,18 @@ internal class EntityFrameworkContextBase : IContext
     /// Gets the repository provider.
     /// </summary>
     protected IContextAwareRepositoryProvider RepositoryProvider { get; }
+
+    /// <inheritdoc />
+    public async ValueTask BeginConfigurationEditAsync(CancellationToken cancellationToken)
+    {
+        using var gate = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
+        if (!this._isOwner || this._configurationEditTransaction is not null || this.Context.Database.CurrentTransaction is not null)
+        {
+            throw new InvalidOperationException("Configuration editing requires an owned context without an existing transaction.");
+        }
+
+        this._configurationEditTransaction = await this.Context.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -87,7 +99,7 @@ internal class EntityFrameworkContextBase : IContext
             {
                 return await this.SaveChangesCoreAsync(cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception ex) when (attempt < maxAttempts && IsTransientConcurrencyConflict(ex))
+            catch (Exception ex) when (attempt < maxAttempts && this._configurationEditTransaction is null && IsTransientConcurrencyConflict(ex is PersistenceConflictException conflict ? conflict.InnerException! : ex))
             {
                 this._logger.LogWarning(ex, "Transient concurrency conflict while saving (attempt {Attempt}/{MaxAttempts}); retrying.", attempt, maxAttempts);
                 await Task.Delay(attempt * 10, cancellationToken).ConfigureAwait(false);
@@ -131,6 +143,27 @@ internal class EntityFrameworkContextBase : IContext
     {
         using var l = this._lock.Lock();
         var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew(type, args);
+        this.Context.Add(instance);
+        return instance;
+    }
+
+    /// <inheritdoc />
+    public object CreateNewWithId(Type type, Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException("A nonempty identity is required.", nameof(id));
+        }
+
+        using var gate = this._lock.Lock();
+        var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew(type);
+        if (instance is not IIdentifiable identified)
+        {
+            throw new ArgumentException($"The configuration {nameof(type)} must support persistent identities.", nameof(type));
+        }
+
+        // Set the key before tracking: detaching and reattaching would lose the Added state.
+        identified.Id = id;
         this.Context.Add(instance);
         return instance;
     }
@@ -250,31 +283,6 @@ internal class EntityFrameworkContextBase : IContext
         => entityType.GetSchema() == SchemaNames.Configuration;
 
     /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
-    /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    protected virtual void Dispose(bool dispose)
-    {
-        if (!dispose || !this._isOwner)
-        {
-            return;
-        }
-
-        try
-        {
-            this.Context.Dispose();
-        }
-        catch (Exception ex)
-        {
-            // Disposal must never throw - e.g. Npgsql throws InvalidOperationException when the
-            // underlying connection is still opening ("Can't close, connection is in state
-            // Connecting") while it is being closed during a shutdown race. The context is
-            // unusable afterwards either way, so logging is all there is to do.
-            this._logger.LogWarning(ex, "Error while disposing the entity framework context.");
-        }
-    }
-
-    /// <summary>
     /// Determines whether the exception is a transient conflict caused by a concurrent entity mutation
     /// racing this save, and is therefore worth retrying.
     /// </summary>
@@ -307,9 +315,68 @@ internal class EntityFrameworkContextBase : IContext
             or KeyNotFoundException;
     }
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool dispose)
+    {
+        if (!dispose || !this._isOwner)
+        {
+            return;
+        }
+
+        try
+        {
+            this.Context.Dispose();
+        }
+        catch (Exception ex)
+        {
+            // Disposal must never throw - e.g. Npgsql throws InvalidOperationException when the
+            // underlying connection is still opening ("Can't close, connection is in state
+            // Connecting") while it is being closed during a shutdown race. The context is
+            // unusable afterwards either way, so logging is all there is to do.
+            this._logger.LogWarning(ex, "Error while disposing the entity framework context.");
+        }
+    }
+
+    /// <summary>
+    /// Locks this context for an operation which uses the <see cref="Context"/> directly,
+    /// because a <see cref="DbContext"/> doesn't support concurrent operations.
+    /// </summary>
+    /// <remarks>
+    /// The lock is not reentrant, so the locked operation must not call other locking methods of this context.
+    /// </remarks>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The disposable which releases the lock.</returns>
+    protected AwaitableDisposable<IDisposable> LockAsync(CancellationToken cancellationToken)
+    {
+        return this._lock.LockAsync(cancellationToken);
+    }
+
+    private static bool IsRejectedSave(Exception exception)
+    {
+        // Npgsql may wrap server rejections in both an execution-strategy exception and a DbUpdateException.
+        for (Exception? error = exception; error is not null; error = error.InnerException)
+        {
+            if (error is DbUpdateConcurrencyException)
+            {
+                return true;
+            }
+
+            if (error is Npgsql.PostgresException databaseError)
+            {
+                return databaseError.SqlState.StartsWith("23", StringComparison.Ordinal)
+                    || databaseError.SqlState is "40001" or "40P01";
+            }
+        }
+
+        return false;
+    }
+
     private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
@@ -325,7 +392,22 @@ internal class EntityFrameworkContextBase : IContext
 
         try
         {
-            await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+                if (this._configurationEditTransaction is { } editTransaction)
+                {
+                    // Notify caches and game servers only after the serializable transaction commits.
+                    await editTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                    await editTransaction.DisposeAsync().ConfigureAwait(false);
+                    this._configurationEditTransaction = null;
+                }
+            }
+            catch (Exception exception) when (IsRejectedSave(exception))
+            {
+                // Classify only explicit server rejections, never a lost connection during commit.
+                throw new PersistenceConflictException(exception);
+            }
 
             if (args is not null)
             {
@@ -384,10 +466,13 @@ internal class EntityFrameworkContextBase : IContext
 
     private void ForEachAggregate(object obj, Action<object> action)
     {
-        var aggregateProperties = obj.GetType()
-            .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
-                        || p.Name.StartsWith("Joined"));
+        var aggregateProperties = AggregatePropertiesByType.GetOrAdd(
+            obj.GetType(),
+            static type => type
+                .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
+                            || p.Name.StartsWith("Joined"))
+                .ToArray());
         foreach (var propertyInfo in aggregateProperties)
         {
             var propertyValue = propertyInfo.GetMethod?.Invoke(obj, []);
@@ -499,6 +584,15 @@ internal class EntityFrameworkContextBase : IContext
                 .FirstOrDefault(c => c.Metadata.IsCollection
                                      && (c.Metadata as INavigation)?.ForeignKey == propertyToParent.Metadata.GetContainingForeignKeys().FirstOrDefault());
             parentCollectionNavigation = parentCollection?.Metadata;
+        }
+
+        if (parentCollectionNavigation is null && propertyToParent is not null)
+        {
+            // The parent isn't tracked, e.g. the game configuration when an object is added in a typed context.
+            // Its collection is still known by the relationship, so that the change can be applied to the cached parent.
+            parentCollectionNavigation = propertyToParent.Metadata.GetContainingForeignKeys()
+                .Select(foreignKey => foreignKey.PrincipalToDependent)
+                .FirstOrDefault(navigation => navigation?.IsCollection is true);
         }
 
         return (parent ?? parentId, parentCollectionNavigation);

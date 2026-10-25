@@ -70,7 +70,7 @@ public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
 
     private static void ChangeDiscriminator(GameConfiguration gameConfiguration, string setName, ItemGroups itemGroup, byte itemNumber, byte discriminator)
     {
-        var itemSetGroup = gameConfiguration.ItemSetGroups.First(set => set.Name == setName);
+        var itemSetGroup = gameConfiguration.ItemSetGroups.First(set => set.Name.ValueInNeutralLanguage == setName);
         var itemOfItemSet = itemSetGroup.Items.FirstOrDefault(item => item.ItemDefinition?.Group == (byte)itemGroup && item.ItemDefinition?.Number == itemNumber);
         if (itemOfItemSet != null)
         {

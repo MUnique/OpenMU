@@ -78,6 +78,12 @@ public interface IContext : IDisposable
     /// </returns>
     object CreateNew(Type type, params object?[] args);
 
+    /// <summary>Creates a new configuration object with a known identity when restoring an audited deletion.</summary>
+    /// <param name="type">The configuration model type.</param>
+    /// <param name="id">The original nonempty persistent identity.</param>
+    /// <returns>The new object, registered as newly created in this context.</returns>
+    object CreateNewWithId(Type type, Guid id) => throw new NotSupportedException("Restoring configuration identities is not supported by this provider.");
+
     /// <summary>
     /// Deletes the specified object.
     /// </summary>

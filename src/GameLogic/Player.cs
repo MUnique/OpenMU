@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
@@ -81,6 +82,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
+    private readonly MapPowerUps _mapPowerUps = new();
+
     private CancellationTokenSource? _respawnAfterDeathCts;
 
     private Character? _selectedCharacter;
@@ -100,6 +103,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private IDisposable? _accountLoggingScope;
 
     private Account? _account;
+
+    /// <summary>
+    /// The login name with which this player is registered at the login server, until it's released.
+    /// </summary>
+    private string? _loginServerRegistration;
+
+    /// <summary>
+    /// The UTC ticks of the last time the client reported that it's alive, or 0, if it didn't yet.
+    /// </summary>
+    private long _lastAliveReportTicks;
 
     private SkillHitValidator? _skillHitValidator;
 
@@ -206,7 +219,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
-    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger);
+    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger, this.GameContext.PlugInManager);
 
     /// <inheritdoc/>
     public int Money
@@ -242,6 +255,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets a custom login result to override the default when login fails.
     /// </summary>
     public Views.Login.LoginResult? LoginResultOverride { get; set; }
+
+    /// <summary>
+    /// Gets the point in time (UTC) when the client of this player reported the last time that it's alive,
+    /// e.g. by its periodic ping, while the player is in the world. It's <c>null</c>, if the client didn't report
+    /// it since the player entered the world, e.g. because it doesn't support it, or because this player has no
+    /// client at all.
+    /// </summary>
+    public DateTime? LastAliveReport => Interlocked.Read(ref this._lastAliveReportTicks) is var ticks and > 0
+        ? new DateTime(ticks, DateTimeKind.Utc)
+        : null;
 
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
@@ -486,6 +509,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool IsVaultLocked { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the cash shop is opened by the player.
+    /// </summary>
+    public bool IsCashShopOpen { get; set; }
+
+    /// <summary>
     /// Gets the shop storage.
     /// </summary>
     public IShopStorage? ShopStorage => this._storages.ShopStorage;
@@ -625,6 +653,48 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Remembers that the client of this player reported that it's alive, if the player is in the world.
+    /// </summary>
+    /// <remarks>
+    /// Outside of the world, it's not remembered, because not every client reports it there. E.g. the web client
+    /// only sends its ping while a character is in the world - a player which waits at the character selection
+    /// would otherwise be considered as lost.
+    /// </remarks>
+    public void ReportAlive()
+    {
+        if (this.SelectedCharacter is null)
+        {
+            return;
+        }
+
+        Interlocked.Exchange(ref this._lastAliveReportTicks, DateTime.UtcNow.Ticks);
+    }
+
+    /// <summary>
+    /// Remembers that the login server accepted the login of this player with the specified login name.
+    /// </summary>
+    /// <remarks>
+    /// It's remembered right when the login server accepted it, before the account is assigned, so that
+    /// the registration is released at the login server even when the player disconnects in between.
+    /// Otherwise, the account would stay registered as connected, and every further login would be rejected.
+    /// </remarks>
+    /// <param name="loginName">The login name.</param>
+    public void SetLoginServerRegistration(string loginName)
+    {
+        Volatile.Write(ref this._loginServerRegistration, loginName);
+    }
+
+    /// <summary>
+    /// Releases the registration of this player at the login server. The returned login name has to be logged off there.
+    /// </summary>
+    /// <returns>The login name with which this player was registered at the login server, or <c>null</c>, if it isn't registered (anymore).
+    /// Each registration is returned only once, so it's logged off only once.</returns>
+    public string? ReleaseLoginServerRegistration()
+    {
+        return Interlocked.Exchange(ref this._loginServerRegistration, null);
+    }
+
+    /// <summary>
     /// Sets the selected character.
     /// </summary>
     /// <param name="character">The character.</param>
@@ -650,8 +720,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
 
-            (this.SkillList as IDisposable)?.Dispose();
-            this.SkillList = null;
+            this.ReleaseSkillList();
 
             if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom)
             {
@@ -920,6 +989,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ValueTask StopWalkingAsync() => this._movement.StopWalkingAsync();
 
     /// <summary>
+    /// Ends a running walk early, at the position the game client reports it stopped at.
+    /// </summary>
+    /// <param name="stopPoint">The position the client reports it stopped the walk at.</param>
+    public ValueTask StopWalkAtAsync(Point stopPoint) => this._movement.StopWalkAtAsync(stopPoint);
+
+    /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
     /// </summary>
     public async Task RegenerateAsync()
@@ -1106,6 +1181,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Determines whether the player complies with the <see cref="Skill.Requirements"/> of a skill, so that it can use it.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if the player complies with the requirements; Otherwise, <c>false</c>.</returns>
+    public bool CompliesRequirements(Skill skill)
+    {
+        return !skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]);
+    }
+
+    /// <summary>
     /// Tries to consume the <see cref="Skill.ConsumeRequirements"/> of a skill.
     /// </summary>
     /// <param name="skillEntry">The skill entry of the skill which should get performed.</param>
@@ -1120,7 +1205,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
+        if (!this.CompliesRequirements(skill))
         {
             return false;
         }
@@ -1236,7 +1321,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (previousFactor != item.GetCurrentDurabilityFactor())
         {
-            await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+            await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true, true).ConfigureAwait(false);
         }
     }
 
@@ -1264,6 +1349,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.OpenedNpc = null;
 
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
+        Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
+
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
         try
@@ -1419,6 +1508,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return this._observerToWorldViewAdapter.ClearObservingObjectsListAsync();
     }
 
+    /// <summary>
+    /// Gets the gate at which the player is spawned, e.g. after its death.
+    /// </summary>
+    /// <returns>The spawn gate.</returns>
+    internal ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
+    {
+        return this._mapTransitions.GetSpawnGateOfCurrentMapAsync();
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1451,6 +1549,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._observerToWorldViewAdapter.Dispose();
         this._movement.Dispose();
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
+        this.ReleaseSkillList();
+        this.ReleaseAttributeSystem();
         this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
 
@@ -1492,8 +1592,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             moveToNextSafezone = true;
         }
 
-        if (this.CurrentMiniGame is { })
+        if (this.CurrentMiniGame is { } miniGame)
         {
+            if (this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                // The connection got lost, so the player may come back while the game is still running.
+                miniGame.RememberDisconnectedPlayer(this);
+            }
+
             moveToNextSafezone = true;
         }
 
@@ -1780,34 +1886,71 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void RaisePlayerEnteredMap(GameMap map)
     {
         this.PlayerEnteredMap?.Invoke(this, (this, map));
-        if (map.Definition.CharacterPowerUpDefinitions is { Count: > 0 } powerUpDefinitions
-            && this.Attributes is { } attributes)
+        if (this.Attributes is { } attributes)
         {
-            foreach (var powerUpDefinition in powerUpDefinitions)
-            {
-                if (powerUpDefinition.TargetAttribute is null)
-                {
-                    continue;
-                }
-
-                var powerUps = PowerUpWrapper.CreateByPowerUpDefinition(powerUpDefinition, attributes);
-                powerUps.ForEach(p =>
-                {
-                    this.PlayerLeftMap += OnPlayerLeftMap;
-
-                    void OnPlayerLeftMap(object? o, (Player, GameMap) args)
-                    {
-                        this.PlayerLeftMap -= OnPlayerLeftMap;
-                        p.Dispose();
-                    }
-                });
-            }
+            this._mapPowerUps.Apply(map.Definition, attributes);
         }
     }
 
     private void RaisePlayerLeftMap(GameMap map)
     {
+        this._mapPowerUps.Remove();
         this.PlayerLeftMap?.Invoke(this, (this, map));
+    }
+
+    /// <summary>
+    /// Moves the character to an active map, if its current map is inactive, so that
+    /// it doesn't enter a map which is not available in the game anymore.
+    /// The target is the safezone map of the inactive map, or the home map of the character class,
+    /// or any other active map, see <see cref="GameMapDefinitionExtensions.GetActiveSpawnMap"/>.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void MoveOutOfInactiveMap(Character character)
+    {
+        if (character.CurrentMap is not { IsActive: false } inactiveMap)
+        {
+            return;
+        }
+
+        var targetMap = this.GameContext.Configuration.GetActiveSpawnMap(inactiveMap.SafezoneMap, character.CharacterClass?.HomeMap);
+        if (targetMap?.GetSafezoneGate() is not { } spawnGate)
+        {
+            this.Logger.LogWarning("Character {character} is on the inactive map {map}, but there is no active map to move it to.", character, inactiveMap);
+            return;
+        }
+
+        this.Logger.LogInformation("Character {character} is on the inactive map {map}, moving it to {targetMap}.", character, inactiveMap, targetMap);
+        character.CurrentMap = targetMap;
+        character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2 + 1);
+        character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2 + 1);
+    }
+
+    /// <summary>
+    /// Releases the attribute system of the character which was in the game.
+    /// </summary>
+    /// <remarks>
+    /// Its power-ups wrap elements of the game configuration (item options, item base values, map
+    /// power-ups), which live as long as the server. Until they are disposed, the configuration keeps
+    /// the attribute system and, through its event handlers, this whole player alive.
+    /// </remarks>
+    private void ReleaseAttributeSystem()
+    {
+        this._mapPowerUps.Remove();
+        if (this.Attributes is { } attributes)
+        {
+            // The ammunition amount of some classes is a stat attribute, which belongs to the character.
+            attributes.GetOrCreateAttribute(Stats.AmmunitionAmount).ValueChanged -= this.OnAmmunitionAmountChanged;
+            attributes.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Releases the skill list of the character which was in the game, including the power-ups of its passive skills.
+    /// </summary>
+    private void ReleaseSkillList()
+    {
+        (this.SkillList as IDisposable)?.Dispose();
+        this.SkillList = null;
     }
 
     /// <summary>
@@ -1820,17 +1963,49 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character {this.SelectedCharacter} has no assigned character class.");
         }
 
+        this.RemoveStatAttributesWithoutDefinition(character);
         this.RemoveDuplicateStatAttributes(character);
+
+        // A class stat without an attribute would be saved as a stat without a definition. This happens
+        // when a running server applies a data update whose attribute isn't in its cached configuration yet.
+        if (characterClass.StatAttributes.Any(a => a.Attribute is null))
+        {
+            this.Logger.LogWarning(
+                "The character class '{CharacterClass}' has stat attributes without an attribute definition; they're not added to character '{Character}'. Restart the server after installing data updates.",
+                characterClass,
+                character.Name);
+        }
 
         // The character class itself may define a stat attribute more than once (a data update which
         // added an attribute the class already had), so the missing ones are taken distinctly - otherwise
         // we would create the duplicates we just removed all over again.
         var missingStats = characterClass.StatAttributes
+            .Where(a => a.Attribute is not null)
             .DistinctBy(a => a.Attribute)
             .Where(a => character.Attributes.All(c => c.Definition != a.Attribute));
 
-        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute!, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
+    }
+
+    /// <summary>
+    /// Removes stat attributes without a definition. They have no meaning, and an attribute system
+    /// can't hold them, so the character would be unable to enter the game at all.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void RemoveStatAttributesWithoutDefinition(Character character)
+    {
+        var invalid = character.Attributes.Where(a => a.Definition is null).ToList();
+        if (invalid.Count == 0)
+        {
+            return;
+        }
+
+        invalid.ForEach(attribute => character.Attributes.Remove(attribute));
+        this.Logger.LogWarning(
+            "Removed {Count} stat attribute(s) without a definition of character '{Character}'.",
+            invalid.Count,
+            character.Name);
     }
 
     /// <summary>
@@ -1872,24 +2047,29 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character '{selectedCharacter}' has no assigned character class.");
         }
 
-        // For characters which got created on the database or with the admin panel,
-        // it's possible that they're missing the inventory. In this case, we create it here
-        // and initialize with default items.
+        // For characters which got created on the database, it's possible that they're
+        // missing the inventory. In this case, we create it here and initialize it with
+        // default items, like for a newly created character.
         if (selectedCharacter!.Inventory is null)
         {
             selectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, selectedCharacter);
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this.Account!, selectedCharacter, this.PersistenceContext, this.GameContext.Configuration, this.Logger);
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
+        this.MoveOutOfInactiveMap(selectedCharacter);
+        await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
         this.AddMissingStatAttributes();
 
+        // The previous character of this connection may still hold its attribute system.
+        this.ReleaseAttributeSystem();
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
 
         this._storages.CreateForCharacter(selectedCharacter);
+        this.ReleaseSkillList();
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
         if (this.DetermineComboDefinition() is { } comboDefinition)
@@ -2102,9 +2282,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 itemDefenseFactor = 6;
             }
-            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0) // MG
+            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0)
             {
-                itemDefenseFactor = 7;
+                itemDefenseFactor = 7; // MG classes
             }
             else
             {

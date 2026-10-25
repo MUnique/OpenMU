@@ -127,6 +127,31 @@ public class GensConfiguration
     public TimeSpan RankingInterval { get; set; } = TimeSpan.FromHours(2);
 
     /// <summary>
+    /// Gets or sets the first day of a month, on which the members can claim their monthly reward (UTC).
+    /// </summary>
+    public int RewardStartDay { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the last day of a month, on which the members can claim their monthly reward (UTC).
+    /// </summary>
+    public int RewardEndDay { get; set; } = 7;
+
+    /// <summary>
+    /// Gets or sets the monthly rewards of the ranks. A member gets the reward of its rank at the time it claims it.
+    /// </summary>
+    public IList<GensRankReward> Rewards { get; set; } = new List<GensRankReward>
+    {
+        new() { Rank = 1, ItemGroup = 14, ItemNumber = 141, Count = 30 },
+        new() { Rank = 2, ItemGroup = 14, ItemNumber = 141, Count = 20 },
+        new() { Rank = 3, ItemGroup = 14, ItemNumber = 142, Count = 20 },
+        new() { Rank = 4, ItemGroup = 14, ItemNumber = 142, Count = 10 },
+        new() { Rank = 5, ItemGroup = 14, ItemNumber = 143, Count = 10 },
+        new() { Rank = 6, ItemGroup = 14, ItemNumber = 143, Count = 5 },
+        new() { Rank = 7, ItemGroup = 14, ItemNumber = 144, Count = 5 },
+        new() { Rank = 8, ItemGroup = 14, ItemNumber = 144, Count = 3 },
+    };
+
+    /// <summary>
     /// Gets or sets a value indicating whether members of different gens can form a party.
     /// </summary>
     public bool AllowPartyWithOtherGens { get; set; }

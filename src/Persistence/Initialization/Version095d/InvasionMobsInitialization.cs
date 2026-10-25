@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -42,7 +43,7 @@ internal class InvasionMobsInitialization : InitializerBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 43;
-            monster.Designation = "Golden Budge Dragon";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GoldenBudgeDragon);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -70,7 +71,7 @@ internal class InvasionMobsInitialization : InitializerBase
             var itemDrop = this.Context.CreateNew<DropItemGroup>();
 
             itemDrop.Chance = 1;
-            itemDrop.Description = "Box of Luck";
+            itemDrop.Description = LocalizedString.FromResource(() => DropGroupDescriptions.BoxOfLuck);
             itemDrop.Monster = monster;
             itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 11));
             monster.DropItemGroups.Add(itemDrop);
@@ -81,7 +82,7 @@ internal class InvasionMobsInitialization : InitializerBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 54;
-            monster.Designation = "Golden Soldier";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GoldenSoldier);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -112,7 +113,7 @@ internal class InvasionMobsInitialization : InitializerBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 53;
-            monster.Designation = "Golden Titan";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GoldenTitan);
             monster.MoveRange = 3;
             monster.AttackRange = 3;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
@@ -153,7 +154,7 @@ internal class InvasionMobsInitialization : InitializerBase
 
         itemDrop.Chance = 1;
         itemDrop.ItemLevel = (byte)(7 + lvl);
-        itemDrop.Description = $"Box of Kundun +{lvl}";
+        itemDrop.Description = DropGroupDescriptions.ResourceManager.GetLocalizedString($"BoxOfKundunPlus{lvl}");
         itemDrop.Monster = monster;
         itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 11));
         monster.DropItemGroups.Add(itemDrop);
@@ -166,7 +167,7 @@ internal class InvasionMobsInitialization : InitializerBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 44;
-            monster.Designation = "Red Dragon";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.RedDragon);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -194,7 +195,7 @@ internal class InvasionMobsInitialization : InitializerBase
             var itemDrop = this.Context.CreateNew<DropItemGroup>();
 
             itemDrop.Chance = 1;
-            itemDrop.Description = "Items from red dragon";
+            itemDrop.Description = LocalizedString.FromResource(() => DropGroupDescriptions.ItemsFromRedDragon);
             itemDrop.Monster = monster;
             itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 13)); // Jewel of Bless
             itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 14)); // Jewel of Soul

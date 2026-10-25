@@ -101,16 +101,19 @@ public class ModelLocalizationTests
     /// <param name="description">The expected description caption.</param>
     /// <param name="client">The expected client caption.</param>
     /// <param name="port">The expected port caption.</param>
-    [TestCase("zh-CN", "服务器 ID", "说明", "客户端", "监听端口")]
-    [TestCase("en", "Server ID", "Description", "Client", "Listening Port")]
-    public void ConnectServerCaptionsFollowCulture(string culture, string serverId, string description, string client, string port)
+    /// <param name="systemConfiguration">The expected system configuration caption.</param>
+    /// <param name="customIpResolver">The expected caption of the custom IP resolver.</param>
+    [TestCase("zh-CN", "服务器 ID", "说明", "客户端", "监听端口", "系统配置", "自定义")]
+    [TestCase("de", "Server-ID", "Beschreibung", "Client", "Lausch-Port", "Systemkonfiguration", "Benutzerdefiniert")]
+    [TestCase("en", "Server ID", "Description", "Client", "Listening Port", "System Configuration", "Custom")]
+    public void ConnectServerCaptionsFollowCulture(string culture, string serverId, string description, string client, string port, string systemConfiguration, string customIpResolver)
     {
         var previousCulture = CultureInfo.CurrentUICulture;
         try
         {
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
-            Assert.That(new MUnique.OpenMU.DataModel.Configuration.SystemConfiguration().ToString(), Is.EqualTo(culture == "zh-CN" ? "系统配置" : "System Configuration"));
-            Assert.That(typeof(MUnique.OpenMU.Network.IpResolverType).GetField("Custom")!.GetCustomAttribute<DisplayAttribute>()!.GetName(), Is.EqualTo(culture == "zh-CN" ? "自定义" : "Custom"));
+            Assert.That(new MUnique.OpenMU.DataModel.Configuration.SystemConfiguration().ToString(), Is.EqualTo(systemConfiguration));
+            Assert.That(typeof(MUnique.OpenMU.Network.IpResolverType).GetField("Custom")!.GetCustomAttribute<DisplayAttribute>()!.GetName(), Is.EqualTo(customIpResolver));
             var type = typeof(CreateConnectServerConfig.ConnectServerViewModel);
             var expected = new Dictionary<string, string>
             {
@@ -167,9 +170,11 @@ public class ModelLocalizationTests
     /// <param name="culture">The UI language.</param>
     /// <param name="scheduleText">The expected schedule text.</param>
     /// <param name="upgradeText">The expected upgrade text.</param>
-    [TestCase("zh-CN", "结束：星期六 22:05", "等级 2：属性值 300，升级所需守护宝石 3 颗、金币 1000")]
-    [TestCase("en", "End on Saturday at 22:05", "Level 2: Value=300, Jewels=3, Zen=1000")]
-    public void ModelSummariesFollowCulture(string culture, string scheduleText, string upgradeText)
+    /// <param name="storageText">The expected item storage text.</param>
+    [TestCase("zh-CN", "结束：星期六 22:05", "等级 2：属性值 300，升级所需守护宝石 3 颗、金币 1000", "0 件物品，100 金币")]
+    [TestCase("de", "Ende am Samstag um 22:05", "Level 2: Wert=300, Juwelen=3, Zen=1000", "0 Gegenstände, 100 Geld")]
+    [TestCase("en", "End on Saturday at 22:05", "Level 2: Value=300, Jewels=3, Zen=1000", "0 Items, 100 Money")]
+    public void ModelSummariesFollowCulture(string culture, string scheduleText, string upgradeText, string storageText)
     {
         var previousCulture = CultureInfo.CurrentUICulture;
         try
@@ -191,7 +196,7 @@ public class ModelLocalizationTests
             };
             Assert.That(schedule.ToString(), Is.EqualTo(scheduleText));
             Assert.That(upgrade.ToString(), Is.EqualTo(upgradeText));
-            Assert.That(new ItemStorage { Money = 100 }.ToString(), Is.EqualTo(culture == "zh-CN" ? "0 件物品，100 金币" : "0 Items, 100 Money"));
+            Assert.That(new ItemStorage { Money = 100 }.ToString(), Is.EqualTo(storageText));
         }
         finally
         {

@@ -1,4 +1,4 @@
-// <copyright file="PeriodicTaskConfiguration.cs" company="MUnique">
+﻿// <copyright file="PeriodicTaskConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,6 +9,11 @@ using MUnique.OpenMU.Interfaces;
 /// <summary>
 /// Configuration for the <see cref="PeriodicTaskBasePlugIn{TConfiguration,TState}"/>.
 /// </summary>
+/// <remarks>
+/// Display order values are spaced by inheritance level, so adding a property never
+/// requires renumbering another level: this class uses 1–99, direct subclasses
+/// 100–199, their subclasses 200–299, and so on.
+/// </remarks>
 public class PeriodicTaskConfiguration
 {
     /// <summary>
@@ -42,6 +47,13 @@ public class PeriodicTaskConfiguration
     public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
 
     /// <summary>
+    /// Gets or sets the identifiers of the game servers on which the event runs.
+    /// An empty list means the event runs on all game servers.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_AllowedServerIds_Name), Description = nameof(PlugInResources.PeriodicTaskConfiguration_AllowedServerIds_Description), Order = 6)]
+    public IList<byte> AllowedServerIds { get; set; } = new List<byte>();
+
+    /// <summary>
     /// Generate a sequence of time points like [00:00, 00:01, ...].
     /// </summary>
     /// <param name="duration">The duration.</param>
@@ -57,6 +69,17 @@ public class PeriodicTaskConfiguration
             yield return TimeOnly.FromTimeSpan(current);
             current = current.Add(duration);
         }
+    }
+
+    /// <summary>
+    /// Determines whether the event runs on the game server with the specified identifier.
+    /// A missing (<c>null</c>) or empty list means the event runs on all servers.
+    /// </summary>
+    /// <param name="serverId">The identifier of the game server.</param>
+    /// <returns><c>true</c> if the event runs on the server; otherwise, <c>false</c>.</returns>
+    public bool IsEnabledOnServer(byte serverId)
+    {
+        return this.AllowedServerIds is null or { Count: 0 } || this.AllowedServerIds.Contains(serverId);
     }
 
     /// <summary>
@@ -80,5 +103,32 @@ public class PeriodicTaskConfiguration
 
         // For example, p = 00:00. Check that time between 00:00:00 and 00:00:05
         return this.Timetable.Any(p => p.IsBetween(earlier, nowTime));
+    }
+
+    /// <summary>
+    /// Gets the next start time of the task, according to the <see cref="Timetable"/>.
+    /// </summary>
+    /// <param name="utcNow">The current time, in UTC.</param>
+    /// <param name="serverTimeZone">The time zone of the server, in which the times of the <see cref="Timetable"/> are defined.</param>
+    /// <returns>The next start time, in UTC; or <see langword="null"/>, if the timetable is empty.</returns>
+    public DateTime? GetNextStartUtc(DateTime utcNow, TimeZoneInfo serverTimeZone)
+    {
+        var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(utcNow, serverTimeZone));
+        DateTime? result = null;
+
+        // Today, the remaining times of the timetable can still come; otherwise the first one of tomorrow.
+        foreach (var date in new[] { today, today.AddDays(1) })
+        {
+            foreach (var time in this.Timetable)
+            {
+                var startUtc = TimeZoneInfo.ConvertTimeToUtc(date.ToDateTime(time, DateTimeKind.Unspecified), serverTimeZone);
+                if (startUtc > utcNow && (result is null || startUtc < result))
+                {
+                    result = startUtc;
+                }
+            }
+        }
+
+        return result;
     }
 }

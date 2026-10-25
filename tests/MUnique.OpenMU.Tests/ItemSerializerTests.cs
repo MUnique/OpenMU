@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Persistence;
@@ -236,6 +237,40 @@ public class ItemSerializerTests<T>
     }
 
     /// <summary>
+    /// Tests if a socket option with a level above the supported sphere levels is serialized
+    /// with the highest supported level, instead of wrapping around the socket byte.
+    /// </summary>
+    /// <param name="subOptionType">The element of the socket option.</param>
+    [TestCase(SocketSubOptionType.Water)]
+    [TestCase(SocketSubOptionType.Earth)]
+    [TestCase(SocketSubOptionType.Wind)]
+    public void SocketOptionLevelAboveMaximumIsClamped(SocketSubOptionType subOptionType)
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var item = context.CreateNew<Item>();
+        item.Definition = this._gameConfiguration.Items.First(i => i.Group == 7 && i.Number == 46);
+        item.Durability = 100;
+        item.SocketCount = 1;
+
+        var socketOption = context.CreateNew<ItemOptionLink>();
+        socketOption.ItemOption = item.Definition.PossibleItemOptions
+            .SelectMany(o => o.PossibleOptions)
+            .Where(o => o.OptionType == ItemOptionTypes.SocketOption && o.SubOptionType == (int)subOptionType)
+            .MaxBy(o => o.Number);
+        socketOption.Index = 0;
+        socketOption.Level = 6;
+        item.ItemOptions.Add(socketOption);
+
+        var array = new byte[this._itemSerializer.NeededSpace];
+        this._itemSerializer.SerializeItem(array, item);
+        var deserializedItem = this._itemSerializer.DeserializeItem(array, this._gameConfiguration, context);
+
+        var deserializedOptionLink = deserializedItem.ItemOptions.Single(link => link.ItemOption!.OptionType == ItemOptionTypes.SocketOption);
+        Assert.That(deserializedOptionLink.ItemOption, Is.SameAs(socketOption.ItemOption));
+        Assert.That(deserializedOptionLink.Level, Is.EqualTo(ItemSerializerHelper.MaximumSphereLevelIndex + 1));
+    }
+
+    /// <summary>
     /// Serializes a dinorant with the options of the specified bits.
     /// </summary>
     /// <param name="optionBits">The bits of the dinorant options, which are the numbers of the options.</param>
@@ -244,7 +279,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Horn of Dinorant");
         item.Durability = 255;
         foreach (var option in item.Definition.PossibleItemOptions
                      .SelectMany(def => def.PossibleOptions)
@@ -304,12 +339,12 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Lighting Sword");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Lighting Sword");
         item.Level = 15;
         item.Durability = 100;
         item.HasSkill = true;
 
-        var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name == "Hyon");
+        var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name.ValueInNeutralLanguage == "Hyon");
         var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
         var ancientBonus = context.CreateNew<ItemOptionLink>();
         ancientBonus.ItemOption = itemOfSet.BonusOption;
@@ -328,10 +363,10 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Pendant of Ability");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Pendant of Ability");
         item.Durability = 10;
 
-        var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name == "Gywen");
+        var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name.ValueInNeutralLanguage == "Gywen");
         var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
         item.ItemSetGroups.Add(itemOfSet);
 
@@ -346,7 +381,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Blade");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Blade");
         item.Level = 15;
         item.Durability = 23;
         item.HasSkill = hasSkill;

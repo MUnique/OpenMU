@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Captions;
 
+using System.Collections.Concurrent;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -16,6 +18,17 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class ConfigurationCaptionService
 {
+    /// <summary>
+    /// The references of the data initializations, by their key.
+    /// They only depend on the initialization code and the resources, so they're created once per process.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, CaptionLinkReference> References = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// The lock which ensures that a reference is created only once, even if it's requested concurrently.
+    /// </summary>
+    private static readonly SemaphoreSlim ReferenceCreationLock = new(1, 1);
+
     private readonly IPersistenceContextProvider _contextProvider;
     private readonly PlugInManager _plugInManager;
     private readonly ILoggerFactory _loggerFactory;
@@ -75,19 +88,34 @@ public class ConfigurationCaptionService
         var initializationKey = await DataUpdateService.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
         var gameConfiguration = await GetGameConfigurationAsync(context).ConfigureAwait(false);
 
-        // The initialization and the linking are mostly synchronous, CPU bound work.
-        // They're executed on the thread pool, so that the caller (e.g. a Blazor circuit) stays responsive.
         progress?.Report(CaptionLinkStep.CreatingReferenceConfiguration);
-        var referenceConfiguration = await Task.Run(() => this.CreateReferenceConfigurationAsync(initializationKey).AsTask()).ConfigureAwait(false);
+        var reference = await this.GetReferenceAsync(initializationKey).ConfigureAwait(false);
 
+        // The linking is synchronous, CPU bound work.
+        // It's executed on the thread pool, so that the caller (e.g. a Blazor circuit) stays responsive.
         progress?.Report(CaptionLinkStep.LinkingCaptions);
-        var result = await Task.Run(() => ConfigurationCaptions.LinkSourceKeys(gameConfiguration, referenceConfiguration)).ConfigureAwait(false);
+        var result = await Task.Run(() => ConfigurationCaptions.LinkSourceKeys(gameConfiguration, reference)).ConfigureAwait(false);
 
         progress?.Report(CaptionLinkStep.Saving);
         await SaveWithoutChangeNotificationsAsync(context).ConfigureAwait(false);
 
         progress?.Report(CaptionLinkStep.Completed);
         return result;
+    }
+
+    /// <summary>
+    /// Finds the built-in captions of the configuration which are not linked to their sources yet,
+    /// but would be linked by <see cref="LinkBuiltInCaptionsAsync"/>. That's the case for configurations which were
+    /// linked before an update of OpenMU added new sources, e.g. for item names. Nothing is changed.
+    /// </summary>
+    /// <returns>The number of linkable captions by the type name of their owner, e.g. "ItemDefinition".</returns>
+    public async ValueTask<IReadOnlyDictionary<string, int>> FindLinkableCaptionsAsync()
+    {
+        using var context = this._contextProvider.CreateNewContext();
+        var initializationKey = await DataUpdateService.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
+        var gameConfiguration = await GetGameConfigurationAsync(context).ConfigureAwait(false);
+        var reference = await this.GetReferenceAsync(initializationKey).ConfigureAwait(false);
+        return await Task.Run(() => ConfigurationCaptions.FindLinkableCaptions(gameConfiguration, reference)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -106,6 +134,39 @@ public class ConfigurationCaptionService
     {
         return (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault()
                ?? throw new InvalidOperationException("No game configuration installed.");
+    }
+
+    /// <summary>
+    /// Gets the reference of the data initialization. When it's created for the first time,
+    /// the data initialization is executed in memory, which takes a while.
+    /// </summary>
+    /// <param name="initializationKey">The key of the data initialization.</param>
+    /// <returns>The reference.</returns>
+    private async ValueTask<CaptionLinkReference> GetReferenceAsync(string initializationKey)
+    {
+        if (References.TryGetValue(initializationKey, out var reference))
+        {
+            return reference;
+        }
+
+        await ReferenceCreationLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if (!References.TryGetValue(initializationKey, out reference))
+            {
+                // The initialization is mostly synchronous, CPU bound work.
+                // It's executed on the thread pool, so that the caller (e.g. a Blazor circuit) stays responsive.
+                var referenceConfiguration = await Task.Run(() => this.CreateReferenceConfigurationAsync(initializationKey).AsTask()).ConfigureAwait(false);
+                reference = CaptionLinkReference.Create(referenceConfiguration);
+                References[initializationKey] = reference;
+            }
+
+            return reference;
+        }
+        finally
+        {
+            ReferenceCreationLock.Release();
+        }
     }
 
     private async ValueTask<GameConfiguration> CreateReferenceConfigurationAsync(string initializationKey)

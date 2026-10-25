@@ -40,6 +40,12 @@ public class PeriodicTaskGameServerState
     public PeriodicTaskState State { get; set; } = PeriodicTaskState.NotStarted;
 
     /// <summary>
+    /// Gets or sets the forced-start generation consumed by this context.
+    /// A context acts on generations newer than the consumed one.
+    /// </summary>
+    public long ConsumedForceGeneration { get; set; }
+
+    /// <summary>
     /// Gets the description about the state.
     /// </summary>
     public virtual string Description => string.Empty;

@@ -15,22 +15,6 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 /// </summary>
 public sealed class SkillList : ISkillList, IDisposable
 {
-    private const ushort DurabilityReduction1SkillId = 300;
-    private const ushort DurabilityReduction1FistMasterSkillId = 578;
-    private const short TwistingSlashMasterySkillId = 332;
-    private const short RagefulBlowMasterySkillId = 333;
-    private const short TripleShotMasterySkillId = 418;
-    private const short SleepStrengthenerSkillId = 454;
-    private const short DrainLifeStrengthenerSkillId = 458;
-
-    private readonly short[] _castedSkillsWithPassiveBoost = [
-        TwistingSlashMasterySkillId,
-        RagefulBlowMasterySkillId,
-        TripleShotMasterySkillId,
-        SleepStrengthenerSkillId,
-        DrainLifeStrengthenerSkillId
-    ];
-
     private readonly IDictionary<ushort, SkillEntry> _availableSkills;
 
     private readonly ICollection<SkillEntry> _learnedSkills;
@@ -38,6 +22,8 @@ public sealed class SkillList : ISkillList, IDisposable
     private readonly ICollection<SkillEntry> _itemSkills;
 
     private readonly Player _player;
+
+    private readonly IInventoryStorage _inventory;
 
     private List<IDisposable>? _passivePowerUps;
 
@@ -67,11 +53,11 @@ public sealed class SkillList : ISkillList, IDisposable
             .Where(item => item.HasSkill)
             .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
             .ForEach(item => this.TryAddItemSkill(item.Definition!.Skill!));
-        this._player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
-        foreach (var skill in this._learnedSkills
-            .Where(s => s.Skill!.SkillType == SkillType.PassiveBoost || this._castedSkillsWithPassiveBoost.Contains(s.Skill.Number)))
+        this._inventory = this._player.Inventory;
+        this._inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
+        foreach (var skill in this._learnedSkills)
         {
-            this.CreatePowerUpForPassiveSkill(skill);
+            this.CreatePassivePowerUps(skill);
         }
     }
 
@@ -84,10 +70,19 @@ public sealed class SkillList : ISkillList, IDisposable
     private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new();
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Also releases the attributes and cached power-ups of the skills, because they follow the attribute
+    /// system of the character, which is replaced when the character enters the game again.
+    /// </remarks>
     public void Dispose()
     {
+        this._inventory.EquippedItemsChanged -= this.Inventory_WearingItemsChangedAsync;
         this._passivePowerUps?.ForEach(p => p.Dispose());
         this._passivePowerUps = null;
+        foreach (var skillEntry in this._learnedSkills.Concat(this._itemSkills).Concat(this._availableSkills.Values).Distinct())
+        {
+            ReleaseCharacterDependentState(skillEntry);
+        }
     }
 
     /// <inheritdoc/>
@@ -125,6 +120,12 @@ public sealed class SkillList : ISkillList, IDisposable
         }
 
         this._itemSkills.Remove(skillEntry);
+        if (!this._availableSkills.Values.Contains(skillEntry))
+        {
+            // Every equip creates a new entry, so its attributes have to be released with it. The cached
+            // power-ups stay: a skill which is being used right now may still read them.
+            ReleaseSkillAttributes(skillEntry);
+        }
 
         // We need to take into account that there might be multiple items equipped with the same skill
         if (this._itemSkills.All(s => s.Skill!.Number.ToUnsigned() != skillId)
@@ -142,6 +143,57 @@ public sealed class SkillList : ISkillList, IDisposable
     public bool ContainsSkill(ushort skillId)
     {
         return this._availableSkills.ContainsKey(skillId);
+    }
+
+    /// <summary>
+    /// Releases what the skill entry derived from the attribute system of the character: its attributes and
+    /// the cached power-ups of its magic effect (e.g. a buff value which depends on the energy). They are
+    /// created again from the current attribute system when the skill is used the next time.
+    /// </summary>
+    /// <param name="skillEntry">The skill entry.</param>
+    private static void ReleaseCharacterDependentState(SkillEntry skillEntry)
+    {
+        ReleaseSkillAttributes(skillEntry);
+        skillEntry.PowerUps?.ForEach(p => ReleaseElement(p.BuffPowerUp));
+        skillEntry.PowerUpsPvp?.ForEach(p => ReleaseElement(p.BuffPowerUp));
+        ReleaseElement(skillEntry.PowerUpDuration);
+        ReleaseElement(skillEntry.PowerUpDurationPvp);
+        ReleaseElement(skillEntry.PowerUpChance);
+        ReleaseElement(skillEntry.PowerUpChancePvp);
+        skillEntry.PowerUps = null;
+        skillEntry.PowerUpsPvp = null;
+        skillEntry.PowerUpDuration = null;
+        skillEntry.PowerUpDurationPvp = null;
+        skillEntry.PowerUpChance = null;
+        skillEntry.PowerUpChancePvp = null;
+    }
+
+    /// <summary>
+    /// Releases the attributes of the skill, which follow the attribute system of the character.
+    /// </summary>
+    /// <param name="skillEntry">The skill entry.</param>
+    private static void ReleaseSkillAttributes(SkillEntry skillEntry)
+    {
+        (skillEntry.Attributes as IDisposable)?.Dispose();
+        skillEntry.Attributes = null;
+    }
+
+    /// <summary>
+    /// Releases an element which <c>AttributeSystemExtensions.CreateElement</c>
+    /// created for a cached power-up of a skill: a composable attribute with relationship elements which follow
+    /// the attributes of the character. Other elements, like constant values of the configuration, are left alone.
+    /// </summary>
+    /// <param name="element">The element.</param>
+    private static void ReleaseElement(IElement? element)
+    {
+        if (element is not ComposableAttribute composable)
+        {
+            return;
+        }
+
+        var relationshipElements = composable.Elements.OfType<AttributeRelationshipElement>().ToList();
+        composable.Dispose();
+        relationshipElements.ForEach(e => e.Dispose());
     }
 
     /// <summary>
@@ -230,10 +282,7 @@ public sealed class SkillList : ISkillList, IDisposable
         this._availableSkills[skill.Skill!.Number.ToUnsigned()] = skill;
         this._learnedSkills.Add(skill);
 
-        if (skill.Skill.SkillType == SkillType.PassiveBoost || this._castedSkillsWithPassiveBoost.Contains(skill.Skill.Number))
-        {
-            this.CreatePowerUpForPassiveSkill(skill);
-        }
+        this.CreatePassivePowerUps(skill);
 
         if (skill.Skill.SkillType != SkillType.PassiveBoost)
         {
@@ -241,34 +290,25 @@ public sealed class SkillList : ISkillList, IDisposable
         }
     }
 
-    private void CreatePowerUpForPassiveSkill(SkillEntry skillEntry)
+    private void CreatePassivePowerUps(SkillEntry skillEntry)
     {
-        this.CreatePowerUpWrappers(skillEntry);
-    }
-
-    private void CreatePowerUpWrappers(SkillEntry skillEntry)
-    {
-        var masterDefinition = skillEntry.Skill!.MasterDefinition;
-        if (masterDefinition is null)
+        if (skillEntry.Skill!.MasterDefinition is not { PassivePowerUps.Count: > 0 } masterDefinition)
         {
             return;
         }
 
-        if (masterDefinition.TargetAttribute is null)
+        var skillAttributes = new PassiveSkillAttributes(skillEntry);
+        this.PassivePowerUps.Add(skillAttributes);
+        foreach (var powerUpDefinition in masterDefinition.PassivePowerUps)
         {
-            // log?
-            return;
-        }
+            if (powerUpDefinition is not { TargetAttribute: { } targetAttribute, Boost: not null })
+            {
+                this._player.Logger.LogWarning("Passive power-up {PowerUp} of skill {Skill} is incomplete and is ignored.", powerUpDefinition, skillEntry.Skill);
+                continue;
+            }
 
-        var passiveBoost = new PassiveSkillBoostPowerUp(skillEntry);
-        this.PassivePowerUps.Add(passiveBoost);
-        this.PassivePowerUps.Add(new PowerUpWrapper(passiveBoost, masterDefinition.TargetAttribute, this._player.Attributes!));
-
-        if (skillEntry.Skill.Number == DurabilityReduction1SkillId || skillEntry.Skill.Number == DurabilityReduction1FistMasterSkillId)
-        {
-            var durabilityReductionFactorBoost = new PassiveSkillBoostPowerUp(skillEntry, true);
-            this.PassivePowerUps.Add(durabilityReductionFactorBoost);
-            this.PassivePowerUps.Add(new PowerUpWrapper(durabilityReductionFactorBoost, Stats.DurabilityReductionFactor, this._player.Attributes!));
+            var element = skillAttributes.Attributes.CreateElement(powerUpDefinition);
+            this.PassivePowerUps.Add(new PowerUpWrapper(element, targetAttribute, this._player.Attributes!));
         }
     }
 
@@ -280,73 +320,54 @@ public sealed class SkillList : ISkillList, IDisposable
             return;
         }
 
-        var inventory = this._player.Inventory;
-        if (inventory!.EquippedItems.Contains(item))
+        if (!eventArgs.IsEquipped || item.Durability == 0.0)
+        {
+            await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
+            return;
+        }
+
+        if (!eventArgs.HasDurabilityFactorChanged)
         {
             await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
         }
-        else
-        {
-            await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
-        }
     }
 
-    private sealed class PassiveSkillBoostPowerUp : IElement, IDisposable
+    /// <summary>
+    /// The attributes of a learned skill, which are the inputs of its <see cref="MasterSkillDefinition.PassivePowerUps"/>.
+    /// They follow the level of the skill.
+    /// </summary>
+    private sealed class PassiveSkillAttributes : IDisposable
     {
         private readonly SkillEntry _skillEntry;
+        private readonly SimpleElement _level;
+        private readonly SimpleElement _value;
 
-        public PassiveSkillBoostPowerUp(SkillEntry skillEntry, bool isDurabilityReductionFactor = false)
+        public PassiveSkillAttributes(SkillEntry skillEntry)
         {
             this._skillEntry = skillEntry;
-
-            if (isDurabilityReductionFactor)
-            {
-                this.Value = -this._skillEntry.Level / 500f;
-                this.AggregateType = AggregateType.AddRaw;
-                this._skillEntry.PropertyChanged += this.OnDurabilityReductionSkillEntryOnPropertyChanged;
-            }
-            else
-            {
-                this.Value = this._skillEntry.CalculateValue();
-                this.AggregateType = this._skillEntry.Skill!.MasterDefinition!.Aggregation;
-                this._skillEntry.PropertyChanged += this.OnSkillEntryOnPropertyChanged;
-            }
+            this._level = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
+            this._value = new SimpleElement(skillEntry.CalculateValue(), AggregateType.AddRaw);
+            this.Attributes.AddElement(this._level, Stats.SkillLevel);
+            this.Attributes.AddElement(this._value, Stats.MasterSkillValue);
+            this._skillEntry.PropertyChanged += this.OnSkillEntryPropertyChanged;
         }
 
-        public event EventHandler? ValueChanged;
-
-        public float Value { get; private set; }
-
-        public AggregateType AggregateType { get; }
+        public IAttributeSystem Attributes { get; } = new AttributeSystem([], [], []);
 
         public void Dispose()
         {
-            this._skillEntry.PropertyChanged -= this.OnSkillEntryOnPropertyChanged;
-            this._skillEntry.PropertyChanged -= this.OnDurabilityReductionSkillEntryOnPropertyChanged;
+            this._skillEntry.PropertyChanged -= this.OnSkillEntryPropertyChanged;
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        private void OnSkillEntryPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
         {
-            return $"{this.Value} ({this.AggregateType})";
-        }
-
-        private void OnSkillEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
-        {
-            if (eventArgs.PropertyName == nameof(SkillEntry.Level))
+            if (eventArgs.PropertyName != nameof(SkillEntry.Level))
             {
-                this.Value = this._skillEntry.CalculateValue();
-                this.ValueChanged?.Invoke(this, EventArgs.Empty);
+                return;
             }
-        }
 
-        private void OnDurabilityReductionSkillEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
-        {
-            if (eventArgs.PropertyName == nameof(SkillEntry.Level))
-            {
-                this.Value = -this._skillEntry.Level / 500f;
-                this.ValueChanged?.Invoke(this, EventArgs.Empty);
-            }
+            this._level.Value = this._skillEntry.Level;
+            this._value.Value = this._skillEntry.CalculateValue();
         }
     }
 }

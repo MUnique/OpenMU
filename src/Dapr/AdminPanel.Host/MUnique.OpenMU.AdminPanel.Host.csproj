@@ -12,6 +12,8 @@
     <UserSecretsId>c2dfacaa-6b66-4d66-9c79-de236b5c05b5</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <!-- The blazor framework scripts (_framework/blazor.web.js) are only included automatically, when the project contains .razor files itself. -->
+    <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Web\AdminPanel.Mcp\MUnique.OpenMU.Web.AdminPanel.Mcp.csproj" />
     <ProjectReference Include="..\..\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\Common\MUnique.OpenMU.Dapr.Common.csproj" />
   </ItemGroup>

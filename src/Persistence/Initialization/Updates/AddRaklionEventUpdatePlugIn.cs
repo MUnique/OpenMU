@@ -20,6 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// The spider eggs, Selupan and the monsters summoned by Selupan were spawned automatically.
 /// Now they're spawned by the raklion event, depending on its state.
 /// It also adds the attack skills of Selupan, which carry its damage multipliers.
+/// Version 2 additionally adds the skill of the fall of Selupan.
 /// </remarks>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -54,7 +55,36 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 09, 24, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 09, 30, 12, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    {
+        var hatchery = gameConfiguration.Maps.FirstOrDefault(map => map.Number == RaklionBoss.Number);
+        if (hatchery is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        foreach (var spawn in hatchery.MonsterSpawns.Where(spawn => spawn.SpawnTrigger == SpawnTrigger.Automatic))
+        {
+            if (GetWaveNumber(spawn.MonsterDefinition?.Number) is { } waveNumber)
+            {
+                spawn.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
+                spawn.WaveNumber = waveNumber;
+            }
+        }
+
+        AddSelupanSkills(context, gameConfiguration);
+
+        return ValueTask.CompletedTask;
+    }
 
     /// <summary>
     /// Creates an attack skill of Selupan with its damage multiplier, if it doesn't exist yet.
@@ -64,7 +94,7 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
     /// <param name="number">The number of the skill.</param>
     /// <param name="name">The name of the skill.</param>
     /// <param name="damageMultiplier">The damage multiplier of the skill.</param>
-    internal static void CreateSkill(IContext context, GameConfiguration gameConfiguration, SkillNumber number, string name, float damageMultiplier)
+    private static void CreateSkill(IContext context, GameConfiguration gameConfiguration, SkillNumber number, string name, float damageMultiplier)
     {
         if (gameConfiguration.Skills.Any(skill => skill.Number == (short)number))
         {
@@ -90,34 +120,12 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
             InputOperator.Maximum));
     }
 
-    /// <inheritdoc />
-    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-    {
-        var hatchery = gameConfiguration.Maps.FirstOrDefault(map => map.Number == RaklionBoss.Number);
-        if (hatchery is null)
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        foreach (var spawn in hatchery.MonsterSpawns.Where(spawn => spawn.SpawnTrigger == SpawnTrigger.Automatic))
-        {
-            if (GetWaveNumber(spawn.MonsterDefinition?.Number) is { } waveNumber)
-            {
-                spawn.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
-                spawn.WaveNumber = waveNumber;
-            }
-        }
-
-        AddSelupanSkills(context, gameConfiguration);
-
-        return ValueTask.CompletedTask;
-    }
-
     private static void AddSelupanSkills(IContext context, GameConfiguration gameConfiguration)
     {
         CreateSkill(context, gameConfiguration, SkillNumber.SelupanPoison, "Selupan Poison", 2.0f);
         CreateSkill(context, gameConfiguration, SkillNumber.SelupanIceStorm, "Selupan Ice Storm", 2.2f);
         CreateSkill(context, gameConfiguration, SkillNumber.SelupanIceStrike, "Selupan Ice Strike", 2.3f);
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanFall, "Selupan Fall", 2.5f);
     }
 
     private static byte? GetWaveNumber(short? monsterNumber)

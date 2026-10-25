@@ -7,7 +7,12 @@ namespace MUnique.OpenMU.AttributeSystem;
 /// <summary>
 /// An attribute which is a composition of elements.
 /// </summary>
-public class ComposableAttribute : BaseAttribute, IComposableAttribute
+/// <remarks>
+/// The attribute subscribes to its elements, which may live longer than the attribute itself, e.g. a
+/// configured base value of a character class. Dispose the attribute when it's no longer used, so that
+/// its elements don't keep it - and whatever observes it - alive.
+/// </remarks>
+public class ComposableAttribute : BaseAttribute, IComposableAttribute, IDisposable
 {
     /// <summary>
     /// Serializes the copy-on-write mutations of <see cref="_elements"/>, the element subscription
@@ -39,6 +44,8 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
     private float? _maximumValue;
 
     private float? _cachedValue;
+
+    private bool _isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ComposableAttribute" /> class.
@@ -73,12 +80,26 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
             // Subscribing inside the lock keeps a concurrent Add/Remove of the same element from
             // interleaving into a live subscription on an element that is no longer in the list. It does
             // not call into user code, so it is safe to hold the lock across it.
-            element.ValueChanged += this.ElementChanged;
+            if (!this._isDisposed)
+            {
+                element.ValueChanged += this.ElementChanged;
+            }
         }
 
         this.ElementChanged(element, EventArgs.Empty);
 
         return this;
+    }
+
+    /// <summary>
+    /// Unsubscribes from all elements. The elements stay part of the composition, so the last value can
+    /// still be read, but it no longer follows changes of the elements. The elements themselves are not
+    /// disposed, because the attribute doesn't own them.
+    /// </summary>
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc/>
@@ -102,6 +123,27 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         if (removed)
         {
             this.ElementChanged(element, EventArgs.Empty);
+        }
+    }
+
+    /// <summary>
+    /// Unsubscribes from all elements, see <see cref="Dispose()"/>.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        lock (this._elementLock)
+        {
+            this._isDisposed = true;
+            foreach (var element in this._elements)
+            {
+                element.ValueChanged -= this.ElementChanged;
+            }
         }
     }
 

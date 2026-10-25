@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -28,9 +29,9 @@ internal class KanturuInitializer : InitializerBase
         var kanturu = this.Context.CreateNew<MiniGameDefinition>();
         kanturu.SetGuid((short)MiniGameType.Kanturu, 1);
         this.GameConfiguration.MiniGameDefinitions.Add(kanturu);
-        kanturu.Name = "Kanturu Refinery Tower";
-        kanturu.Description = "Event definition for the Kanturu Refinery Tower event.";
-        kanturu.EnterDuration = TimeSpan.FromMinutes(3);
+        kanturu.Name = LocalizedString.FromResource(() => MiniGameNames.KanturuRefineryTower);
+        kanturu.Description = LocalizedString.FromResource(() => MiniGameDescriptions.EventDefinitionForTheKanturuRefineryTowerEvent);
+        kanturu.EnterDuration = MiniGameConstants.EnterDuration;
         kanturu.GameDuration = TimeSpan.FromMinutes(135);
         kanturu.ExitDuration = TimeSpan.FromMinutes(1);
         kanturu.MaximumPlayerCount = 15;

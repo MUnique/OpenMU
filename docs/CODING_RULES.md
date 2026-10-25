@@ -138,26 +138,48 @@ When writing the update plugin:
 
 * Derive from `UpdatePlugInBase` and give the class a fresh `[Guid]` — that
   GUID **is** the update's identity (`Key` resolves from it automatically);
-  just make sure the GUID is new (rule 5).
+  just make sure the GUID is new (rule 5). The GUID never changes afterwards.
 * If the update requires another update to be installed first, declare it
   with `DependsOn` (referencing the other plugin's GUID) instead of a
   runtime guard — dependencies are validated eagerly and applied in
-  dependency order.
-* **Never edit an update plugin that has already been released.** Its application
-  is recorded per database, so a change has no effect for anyone who already ran
-  it. Add a new update instead.
-* `CreatedAt` is **today's actual date**. Don't invent one. It also determines
-  the order in which independent pending updates are applied.
+  dependency order. If it requires a specific *version* of another update,
+  give the dependency a minimum version instead:
+  `DependsOn => [new UpdateDependency(otherUpdateKey, minVersion: 2)]`.
+* A released update is corrected by **versioning, not by cloning**:
+  1. Keep the class and its GUID. Increase `Version` and extend `ApplyAsync`,
+     so the fix stays self-contained in the original plugin. Never add a
+     second update plugin for the same data.
+  2. Set `UpdatedAt` to today's date; `CreatedAt` keeps the original date.
+     `UpdatedAt` decides the order in which independent pending updates run.
+  3. Handle every upgrade path: a database may jump from any previous version
+     straight to the current one. Write `ApplyAsync` cumulatively — ensure the
+     final state (set the values, add what's missing) instead of replaying
+     deltas.
+  4. Keep `ApplyAsync` idempotent: applying it twice must not duplicate
+     anything. Check for existing data first, update values in place, never
+     blind-append. `ApplyAsync` stays cumulative by default; only a large data
+     plugin whose re-run would clobber owner customizations may override the
+     `ApplyAsync` overload which additionally receives the installed version
+     (`null` when not installed) and apply just the delta from there.
+* `CreatedAt` is the date the update was first written — today's actual date
+  for a new update. Don't invent one.
 * Decide `IsMandatory` deliberately: mandatory updates cannot be deselected, so
-  they override the server owner's own customizations.
+  they override the server owner's own customizations. A correction to an
+  optional plugin inherits `false`, so owners can skip a fix to content they
+  already installed — that is intended, not a loophole.
 * Where the change differs per game version, write a shared `…Base` class and
   thin `075` / `095d` / `SeasonSix` subclasses. Don't copy the plugin per
   version.
 * Keep the `Name` and `Description` meaningful — server owners read them to
   decide whether an update would overwrite something they customized.
-* Test both paths. `DarkHorseCanFlyTest` is the pattern: one test checks a newly
-  initialized database, one removes the data again and checks that the update
-  plugin restores it (applying it twice, to show it doesn't duplicate anything).
+* Test three paths (tests live in `tests/MUnique.OpenMU.Persistence.Initialization.Tests`,
+  using an in-memory database — no database server needed):
+  1. a freshly initialized database already contains the fixed data;
+  2. an existing database which is missing the data is repaired by applying
+     the update;
+  3. applying the update a second time changes nothing.
+  For a `Version` bump, the repair test starts from the previous version's
+  state (data as the old version left it).
 
 Two related traps:
 
@@ -254,6 +276,21 @@ database. See [Architecture](../docs-website/docs/development/architecture.md).
   [`Interfaces`](../src/Interfaces) so the server also works when deployed as
   separate processes. When you change such an interface, update the
   [`Dapr`](../src/Dapr) glue with it.
+
+### Admin operations and agents
+
+Implement new admin functionality in the UI independent
+`MUnique.OpenMU.Web.AdminPanel.Operations` layer; Razor pages and REST controllers
+call that layer. Expose every operation through an MCP tool with a description,
+a minimum role and read-only, destructive and idempotent annotations. Link the
+tool with `[ExposesOperation(typeof(Service), nameof(Service.OperationAsync))]`,
+or mark the operation `[NotExposedToAgents("reason")]` when it has no useful agent
+equivalent, such as a graphical editor. Update the tool in the same change when
+an operation's parameters or meaning change. The parity and tool schema tests in
+`MUnique.OpenMU.Web.Tests/Mcp` enforce this for operations in the new layer.
+Existing UI-bound operations are migrated one area at a time; this rule does not
+require a retroactive rewrite. Phase one exposes only reads: adding write tools
+also requires the authorization, audit and preview safeguards of issue #1257.
 
 ## 8. Extend through the existing seam
 
@@ -380,7 +417,11 @@ pull request what you ran.
 
 * `dotnet test` for the affected projects under [`tests`](../tests). There is a
   project per area; find the existing tests that cover what you touched and run
-  them — they catch more than a fresh test written to pass.
+  them — they catch more than a fresh test written to pass. Build once, then
+  run the test projects with `--no-build` as long as the code didn't change in
+  between; every plain `dotnet test` repeats the build. Use the same
+  configuration for both, and build again after any code change (see
+  [`AGENTS.md`](../AGENTS.md#building-and-running-tests)).
 * Configuration data changes: `MUnique.OpenMU.Persistence.Initialization.Tests`,
   which runs the data initialization in memory — no database needed — and
   holds the per-feature data tests (see rule 4). The variant against a real

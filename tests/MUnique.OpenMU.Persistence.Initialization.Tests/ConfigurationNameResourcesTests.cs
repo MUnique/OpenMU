@@ -7,11 +7,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 using System.Collections;
 using System.Globalization;
 using System.Resources;
-using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.Persistence.Initialization.Captions;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
+using Microsoft.Extensions.Logging.Abstractions;
 
 /// <summary>Checks the configuration name resources and their usage by the initializations.</summary>
 [TestFixture]
@@ -21,9 +22,31 @@ internal class ConfigurationNameResourcesTests
     private static readonly (string Name, ResourceManager ResourceManager)[] Sources =
     [
         (nameof(CharacterClassNames), CharacterClassNames.ResourceManager),
+        (nameof(CashShopPackageNames), CashShopPackageNames.ResourceManager),
         (nameof(MapNames), MapNames.ResourceManager),
         (nameof(MerchantNames), MerchantNames.ResourceManager),
         (nameof(MonsterNames), MonsterNames.ResourceManager),
+        (nameof(MiniGameNames), MiniGameNames.ResourceManager),
+        (nameof(MiniGameDescriptions), MiniGameDescriptions.ResourceManager),
+        (nameof(SkillNames), SkillNames.ResourceManager),
+        (nameof(ItemOptionNames), ItemOptionNames.ResourceManager),
+        (nameof(ItemOptionTypeNames), ItemOptionTypeNames.ResourceManager),
+        (nameof(ItemOptionDescriptions), ItemOptionDescriptions.ResourceManager),
+        (nameof(ItemSetNames), ItemSetNames.ResourceManager),
+        (nameof(ArmorSetNames), ArmorSetNames.ResourceManager),
+        (nameof(CraftingNames), CraftingNames.ResourceManager),
+        (nameof(DropGroupDescriptions), DropGroupDescriptions.ResourceManager),
+        (nameof(ItemDropDescriptions), ItemDropDescriptions.ResourceManager),
+        (nameof(ItemSlotNames), ItemSlotNames.ResourceManager),
+        (nameof(LevelBonusDescriptions), LevelBonusDescriptions.ResourceManager),
+        (nameof(LevelBonusNames), LevelBonusNames.ResourceManager),
+        (nameof(MagicEffectNames), MagicEffectNames.ResourceManager),
+        (nameof(MasterSkillRootNames), MasterSkillRootNames.ResourceManager),
+        (nameof(MiniGameEventTexts), MiniGameEventTexts.ResourceManager),
+        (nameof(MiniGameWaveTexts), MiniGameWaveTexts.ResourceManager),
+        (nameof(QuestNames), QuestNames.ResourceManager),
+        (nameof(SkillComboNames), SkillComboNames.ResourceManager),
+        (nameof(WarpNames), WarpNames.ResourceManager),
     ];
 
     /// <summary>The resources are registered as sources, so source keys can be resolved without running an initialization.</summary>
@@ -38,6 +61,18 @@ internal class ConfigurationNameResourcesTests
         }
 
         Assert.That(new LocalizedString("Lorencia").WithSourceKey("MapNames/Lorencia").GetFromSource()?.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("勇者大陆"));
+    }
+
+    /// <summary>The German names use the same terms as the German game client.</summary>
+    [Test]
+    public void GermanNamesAreResolvedFromSources()
+    {
+        ConfigurationNameSources.Register();
+        var german = CultureInfo.GetCultureInfo("de");
+        Assert.That(new LocalizedString("Lost Tower").WithSourceKey("MapNames/LostTower").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Verlorener Turm"));
+        Assert.That(new LocalizedString("Dark Knight").WithSourceKey("CharacterClassNames/DarkKnight").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Dunkler Ritter"));
+        Assert.That(new LocalizedString("Lorencia").WithSourceKey("MapNames/Lorencia").GetFromSource()?.GetOwnTranslation(german), Is.Null, "names which are equal in German fall back to the neutral name");
+        Assert.That(string.Format(MonsterNames.ResourceManager.GetString(nameof(MonsterNames.GateToKalima1OfPlayer), german)!, "Tester"), Is.EqualTo("Tor nach Kalima 1 von Tester"));
     }
 
     /// <summary>Every key of a satellite resource exists in the neutral resource.</summary>
@@ -76,9 +111,8 @@ internal class ConfigurationNameResourcesTests
             await initializer.CreateInitialDataAsync(1, false).ConfigureAwait(false);
             using var context = provider.CreateNewContext();
             var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
-            var names = configuration.CharacterClasses.Select(c => c.Name)
-                .Concat(configuration.Maps.Select(m => m.Name))
-                .Concat(configuration.Monsters.Select(m => m.Designation));
+            var names = LocalizedCaption.FindAll(configuration).Select(caption => caption.Value)
+                .Where(name => name.SourceKey is not null && !name.SourceKey.StartsWith("ItemNames/", StringComparison.Ordinal));
             foreach (var name in names.Where(n => n.SourceKey is not null))
             {
                 usedSourceKeys.Add(name.SourceKey!);

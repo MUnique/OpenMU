@@ -12,6 +12,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// This updates adds the new <see cref="ItemDefinition.StorageLimitPerCharacter"/> for quest items.
+/// Version 2 additionally marks them as quest items (<see cref="ItemDefinition.IsQuestItem"/>).
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddQuestItemLimitPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddQuestItemLimitPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
@@ -41,7 +42,13 @@ public class AddQuestItemLimitPlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2023, 05, 04, 20, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 09, 30, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -61,6 +68,7 @@ public class AddQuestItemLimitPlugIn : UpdatePlugInBase
         foreach (var item in questItems)
         {
             item.StorageLimitPerCharacter = 1;
+            item.IsQuestItem = true;
         }
     }
 }

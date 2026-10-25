@@ -84,6 +84,7 @@ public class BotProgressionTests
     /// generation: the gate lives on the orb or scroll alone, so the loot path teaches them instead.
     /// </summary>
     /// <param name="skillNumber">The number of an orb-gated skill.</param>
+    /// <param name="name">The name of the skill.</param>
     [TestCase((short)41, "Twisting Slash")]
     [TestCase((short)51, "Ice Arrow")]
     [TestCase((short)55, "Fire Slash")]
@@ -175,6 +176,7 @@ public class BotProgressionTests
     /// player can do.
     /// </summary>
     /// <param name="skillNumber">The number of a siege-marked attack skill.</param>
+    /// <param name="name">The name of the skill.</param>
     [TestCase((short)44, "Crescent Moon Slash")]
     [TestCase((short)45, "Lance")]
     [TestCase((short)46, "Starfall")]
@@ -201,6 +203,7 @@ public class BotProgressionTests
     /// attacks at all.
     /// </summary>
     /// <param name="skillNumber">The number of a siege guild-role skill.</param>
+    /// <param name="name">The name of the skill.</param>
     [TestCase((short)67, "Stun")]
     [TestCase((short)68, "Cancel Stun")]
     [TestCase((short)69, "Swell Mana")]

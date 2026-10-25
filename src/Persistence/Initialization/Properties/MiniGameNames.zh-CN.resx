@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ImperialGuardianMonday" xml:space="preserve">
+    <value>帝国要塞（星期一）</value>
+  </data>
+  <data name="ImperialGuardianTuesday" xml:space="preserve">
+    <value>帝国要塞（星期二）</value>
+  </data>
+  <data name="ImperialGuardianWednesday" xml:space="preserve">
+    <value>帝国要塞（星期三）</value>
+  </data>
+  <data name="ImperialGuardianThursday" xml:space="preserve">
+    <value>帝国要塞（星期四）</value>
+  </data>
+  <data name="ImperialGuardianFriday" xml:space="preserve">
+    <value>帝国要塞（星期五）</value>
+  </data>
+  <data name="ImperialGuardianSaturday" xml:space="preserve">
+    <value>帝国要塞（星期六）</value>
+  </data>
+  <data name="ImperialGuardianSunday" xml:space="preserve">
+    <value>帝国要塞（星期日）</value>
+  </data>
+  <data name="DevilSquare4" xml:space="preserve">
+    <value>恶魔广场 4</value>
+  </data>
+  <data name="DevilSquare3" xml:space="preserve">
+    <value>恶魔广场 3</value>
+  </data>
+  <data name="DevilSquare2" xml:space="preserve">
+    <value>恶魔广场 2</value>
+  </data>
+  <data name="DevilSquare1" xml:space="preserve">
+    <value>恶魔广场 1</value>
+  </data>
+  <data name="Doppelganger4" xml:space="preserve">
+    <value>生魂广场4</value>
+  </data>
+  <data name="Doppelganger3" xml:space="preserve">
+    <value>生魂广场3</value>
+  </data>
+  <data name="Doppelganger2" xml:space="preserve">
+    <value>生魂广场2</value>
+  </data>
+  <data name="Doppelganger1" xml:space="preserve">
+    <value>生魂广场1</value>
+  </data>
+  <data name="KanturuRefineryTower" xml:space="preserve">
+    <value>提炼之塔</value>
+  </data>
+  <data name="ChaosCastle7" xml:space="preserve">
+    <value>赤色要塞 7</value>
+  </data>
+  <data name="ChaosCastle6" xml:space="preserve">
+    <value>赤色要塞 6</value>
+  </data>
+  <data name="ChaosCastle5" xml:space="preserve">
+    <value>赤色要塞 5</value>
+  </data>
+  <data name="ChaosCastle4" xml:space="preserve">
+    <value>赤色要塞 4</value>
+  </data>
+  <data name="ChaosCastle3" xml:space="preserve">
+    <value>赤色要塞 3</value>
+  </data>
+  <data name="ChaosCastle2" xml:space="preserve">
+    <value>赤色要塞 2</value>
+  </data>
+  <data name="ChaosCastle1" xml:space="preserve">
+    <value>赤色要塞 1</value>
+  </data>
+  <data name="BloodCastle8" xml:space="preserve">
+    <value>血色城堡 8</value>
+  </data>
+  <data name="BloodCastle7" xml:space="preserve">
+    <value>血色城堡 7</value>
+  </data>
+  <data name="BloodCastle6" xml:space="preserve">
+    <value>血色城堡 6</value>
+  </data>
+  <data name="BloodCastle5" xml:space="preserve">
+    <value>血色城堡 5</value>
+  </data>
+  <data name="BloodCastle4" xml:space="preserve">
+    <value>血色城堡 4</value>
+  </data>
+  <data name="BloodCastle3" xml:space="preserve">
+    <value>血色城堡 3</value>
+  </data>
+  <data name="BloodCastle2" xml:space="preserve">
+    <value>血色城堡 2</value>
+  </data>
+  <data name="BloodCastle1" xml:space="preserve">
+    <value>血色城堡 1</value>
+  </data>
+  <data name="DevilSquare7" xml:space="preserve">
+    <value>恶魔广场 7</value>
+  </data>
+  <data name="DevilSquare6" xml:space="preserve">
+    <value>恶魔广场 6</value>
+  </data>
+  <data name="DevilSquare5" xml:space="preserve">
+    <value>恶魔广场 5</value>
+  </data>
+</root>

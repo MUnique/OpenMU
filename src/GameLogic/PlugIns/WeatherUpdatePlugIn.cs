@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -18,7 +17,11 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3E702A15-653A-48EF-899C-4CDB2239A90C")]
 public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 {
-    private readonly IDictionary<GameMap, (byte, byte)> _weatherStates = new ConcurrentDictionary<GameMap, (byte, byte)>();
+    /// <summary>
+    /// The weather of the maps which existed at the last run. It's replaced as a whole on every run, so that
+    /// a map which is gone in the meantime (e.g. the map of a finished mini game) isn't kept alive by it.
+    /// </summary>
+    private IReadOnlyDictionary<GameMap, (byte, byte)> _weatherStates = new Dictionary<GameMap, (byte, byte)>();
 
     private DateTime _nextRunUtc = DateTime.UtcNow;
 
@@ -35,12 +38,15 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         this._isRunning = true;
         try
         {
+            var weatherStates = new Dictionary<GameMap, (byte, byte)>();
             foreach (var map in await gameContext.GetMapsAsync().ConfigureAwait(false))
             {
                 var weather = (byte)Rand.NextInt(0, 3);
                 var variation = (byte)Rand.NextInt(0, 10);
-                this._weatherStates[map] = (weather, variation);
+                weatherStates[map] = (weather, variation);
             }
+
+            this._weatherStates = weatherStates;
 
             await gameContext.ForEachPlayerAsync(this.TrySendPlayerUpdateAsync).ConfigureAwait(false);
         }

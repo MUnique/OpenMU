@@ -22,6 +22,13 @@ internal sealed class PlayerMovement : IDisposable
     /// </summary>
     private const double WalkMovementSpeed = 12.0;
 
+    /// <summary>
+    /// The distance a client-reported position may be away from the server's position when the
+    /// <see cref="SpeedHackDetectPlugIn"/> is not configured. It mirrors
+    /// <see cref="SpeedHackDetectConfiguration.MaxAllowedWalkStartOffset"/>'s own default.
+    /// </summary>
+    private const int DefaultMaxAllowedWalkStartOffset = 5;
+
     private readonly Player _player;
 
     private readonly AsyncLock _moveLock = new();
@@ -95,12 +102,12 @@ internal sealed class PlayerMovement : IDisposable
             return;
         }
 
-        await this._walker.StopAsync().ConfigureAwait(false);
-
         if (!await this.IsWalkRequestValidAsync(steps).ConfigureAwait(false))
         {
             return;
         }
+
+        await this._walker.StopAsync().ConfigureAwait(false);
 
         var requestedTarget = target;
         var walkableStepCount = GetWalkableStepCount(currentMap.Terrain, steps.Span);
@@ -138,9 +145,12 @@ internal sealed class PlayerMovement : IDisposable
     /// <param name="map">The map on which the player is moved.</param>
     /// <param name="target">The target coordinates.</param>
     /// <param name="moveType">Type of the move.</param>
-    public ValueTask MoveOnMapAsync(GameMap map, Point target, MoveType moveType)
+    /// <param name="notifyMovedObject">
+    /// If set to <c>true</c>, the player is notified about its own move as well.
+    /// </param>
+    public ValueTask MoveOnMapAsync(GameMap map, Point target, MoveType moveType, bool notifyMovedObject = true)
     {
-        return map.MoveAsync(this._player, target, this._moveLock, moveType);
+        return map.MoveAsync(this._player, target, this._moveLock, moveType, notifyMovedObject);
     }
 
     /// <summary>
@@ -161,6 +171,45 @@ internal sealed class PlayerMovement : IDisposable
     /// Stops the currently running walk.
     /// </summary>
     public ValueTask StopWalkingAsync() => this._walker.StopAsync();
+
+    /// <summary>
+    /// Ends a running walk early, at the position the game client reports it stopped at, and tells the
+    /// other players in view about it.
+    /// </summary>
+    /// <param name="stopPoint">The position the client reports it stopped the walk at.</param>
+    /// <remarks>
+    /// The client interrupts a walk between two tiles when the player attacks or casts a skill, and
+    /// reports that as a walk request without any steps. Without acting on it, our walker carries on to
+    /// the original target: the player ends up a few tiles from where its client has it, which in turn
+    /// makes the next walk request start too far away and rubberband the client, and everybody else in
+    /// view sees it walk on past the attack and then get pulled back.
+    /// The reported position is only taken when it belongs to the walk which is currently running and is
+    /// no further from our position than a walk may start away from it. Otherwise the walk is left alone,
+    /// so this cannot be used to travel the rest of the path for free.
+    /// The moving player is not notified: it told us where it stopped, and confirming it would make its
+    /// client pull the character onto the tile centre and drop the attack animation it just started.
+    /// </remarks>
+    public async ValueTask StopWalkAtAsync(Point stopPoint)
+    {
+        if (this._player.CurrentMap is not { } currentMap)
+        {
+            return;
+        }
+
+        if (!this.IsWalking)
+        {
+            return;
+        }
+
+        if (!await this.IsStopPointAcceptableAsync(stopPoint).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        this._player.Logger.LogDebug("StopWalkAtAsync: Player stopped its walk to {0} at {1}", this.WalkTarget, stopPoint);
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await this.MoveOnMapAsync(currentMap, stopPoint, MoveType.Instant, notifyMovedObject: false).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Resets the movement state of the anti-cheat plugins, e.g. after a teleport.
@@ -208,12 +257,21 @@ internal sealed class PlayerMovement : IDisposable
             await speedCheck.WalkCheatCheckAsync(this._player, steps, eventArgs).ConfigureAwait(false);
             if (eventArgs.IsCheatDetected)
             {
+                if (eventArgs.Severity is SpeedHackViolationSeverity.Resync)
+                {
+                    // A soft violation from a single packet, often a false positive (burst, fast clicks).
+                    // Don't perform the walk, but pull the client back to the server position and clear
+                    // the walk baseline, so it can't drift ahead and cascade into follow-up violations.
+                    // The running walk (if any) is left alone: the server stays authoritative.
+                    await speedCheck.ResetMovementStateAsync(this._player).ConfigureAwait(false);
+                    await this.ResynchronizeClientAsync().ConfigureAwait(false);
+                }
+
                 return false;
             }
         }
 
-        var config = this._player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
-        var maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 5;
+        var maxAllowedWalkStartOffset = this.GetMaxAllowedWalkStartOffset();
 
         var startPoint = steps.Span[0].From;
         var currentPosition = this._player.Position;
@@ -231,6 +289,49 @@ internal sealed class PlayerMovement : IDisposable
 
         await this.ResynchronizeClientAsync().ConfigureAwait(false);
         return false;
+    }
+
+    /// <summary>
+    /// Determines whether a walk may be ended at the position the client reports. It has to be a
+    /// position of the walk which is currently running, and as close to our position as the start of a
+    /// walk has to be.
+    /// </summary>
+    /// <param name="stopPoint">The position the client reports it stopped the walk at.</param>
+    /// <returns><c>True</c>, if the walk may be ended there; Otherwise, <c>false</c>.</returns>
+    private async ValueTask<bool> IsStopPointAcceptableAsync(Point stopPoint)
+    {
+        var currentPosition = this._player.Position;
+        if (stopPoint == currentPosition)
+        {
+            return true;
+        }
+
+        var maxAllowedWalkStartOffset = this.GetMaxAllowedWalkStartOffset();
+        var offset = stopPoint.EuclideanDistanceTo(currentPosition);
+        if (offset > maxAllowedWalkStartOffset)
+        {
+            this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, but it's currently at {1} (offset {2} > {3}). Keeping the walk.", stopPoint, currentPosition, offset, maxAllowedWalkStartOffset);
+            return false;
+        }
+
+        if (!await this._walker.IsPointOfCurrentWalkAsync(stopPoint).ConfigureAwait(false))
+        {
+            this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which is not a position of its current walk to {1}. Keeping the walk.", stopPoint, this.WalkTarget);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Gets the distance a client-reported position may be away from the server's position.
+    /// </summary>
+    /// <returns>The maximum allowed offset.</returns>
+    private int GetMaxAllowedWalkStartOffset()
+    {
+        var config = this._player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
+
+        return config?.MaxAllowedWalkStartOffset ?? DefaultMaxAllowedWalkStartOffset;
     }
 
     /// <summary>

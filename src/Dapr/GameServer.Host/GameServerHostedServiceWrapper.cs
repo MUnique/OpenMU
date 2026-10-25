@@ -67,13 +67,18 @@ public class GameServerHostedServiceWrapper : IHostedLifecycleService
     }
 
     /// <inheritdoc/>
-    public Task StoppingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-    /// <inheritdoc/>
-    public Task StopAsync(CancellationToken cancellationToken)
+    /// <remarks>
+    /// The game server saves and disconnects its players here, before any hosted service stops, e.g. the web server.
+    /// This way, the health endpoint keeps answering meanwhile, which tells the dapr sidecar to stay up,
+    /// so that the players can still be logged off at the central server.
+    /// </remarks>
+    public Task StoppingAsync(CancellationToken cancellationToken)
     {
         return this._gameServer?.StopAsync(cancellationToken) ?? Task.CompletedTask;
     }
+
+    /// <inheritdoc/>
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     /// <inheritdoc/>
     public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;

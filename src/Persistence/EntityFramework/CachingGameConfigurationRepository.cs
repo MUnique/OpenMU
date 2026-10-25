@@ -8,6 +8,7 @@ using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
+using MUnique.OpenMU.Persistence.EntityFramework.Loading;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -16,8 +17,6 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 internal class CachingGameConfigurationRepository : CachingGenericRepository<GameConfiguration>
 {
-    private readonly JsonObjectLoader _objectLoader;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
     /// </summary>
@@ -26,7 +25,6 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     public CachingGameConfigurationRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
         : base(repositoryProvider, loggerFactory)
     {
-        this._objectLoader = new GameConfigurationJsonObjectLoader();
     }
 
     /// <inheritdoc />
@@ -43,7 +41,13 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            return await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false);
+            if (GameConfigurationLoader.IsEnabled)
+            {
+                var configurations = await new GameConfigurationLoader().LoadAsync(database.GetDbConnection(), cancellationToken).ConfigureAwait(false);
+                return configurations.FirstOrDefault(configuration => configuration.Id == id);
+            }
+
+            return await CreateObjectLoader().LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -63,7 +67,9 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
+            var configs = GameConfigurationLoader.IsEnabled
+                ? (await new GameConfigurationLoader().LoadAsync(database.GetDbConnection(), cancellationToken).ConfigureAwait(false)).ToList()
+                : (await CreateObjectLoader().LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
 
             var oldConfig = ((EntityDataContext)currentContext.Context).CurrentGameConfiguration;
             try
@@ -86,4 +92,11 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
             await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
+
+    /// <summary>
+    /// Creates a new object loader for each load. Its reference handler keeps the loaded objects,
+    /// so a shared loader would return the instances of a previous load again and overwrite their values.
+    /// </summary>
+    /// <returns>The new object loader.</returns>
+    private static JsonObjectLoader CreateObjectLoader() => new GameConfigurationJsonObjectLoader();
 }

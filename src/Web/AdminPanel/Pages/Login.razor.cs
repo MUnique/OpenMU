@@ -198,7 +198,12 @@ public partial class Login : IAsyncDisposable
 
         // The cookie is set now, so the circuit can switch to the authenticated state without a reload.
         this.AuthenticationStateProvider.NotifySignedIn(claims);
-        this.NavigationManager.NavigateTo(this.GetSafeReturnUrl());
+
+        // The return url may belong to another application behind the same reverse proxy, e.g. Grafana.
+        // When the admin panel is hosted at the root path, the router would handle it as one of its own pages,
+        // so it has to be loaded from the server.
+        var returnUrl = this.GetSafeReturnUrl();
+        this.NavigationManager.NavigateTo(returnUrl, forceLoad: returnUrl.Length > 0);
     }
 
     /// <summary>

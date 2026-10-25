@@ -120,7 +120,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.SummonedMonsterStr2)?.MasterDefinition is { } summonedMonsterStr2)
         {
             summonedMonsterStr2.ValueFormula = SkillsInitializer.Formula6020Value;
-            summonedMonsterStr2.Root = gameConfiguration.MasterSkillRoots.First(s => s.Name == "Middle Root");
+            summonedMonsterStr2.Root = gameConfiguration.MasterSkillRoots.First(s => s.Name.ValueInNeutralLanguage == "Middle Root");
             summonedMonsterStr2.Rank = 3;
         }
 

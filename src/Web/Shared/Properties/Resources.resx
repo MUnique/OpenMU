@@ -312,6 +312,37 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
+  <data name="UnknownSkill" xml:space="preserve">
+    <value>Unknown skill</value>
+  </data>
+  <data name="AddSkill" xml:space="preserve">
+    <value>Add Skill</value>
+  </data>
+  <data name="MasterSkillTree" xml:space="preserve">
+    <value>Master Skill Tree</value>
+  </data>
+  <data name="SpentMasterPoints" xml:space="preserve">
+    <value>Spent points: {0}</value>
+  </data>
+  <data name="ResetMasterSkillTree" xml:space="preserve">
+    <value>Reset Master Skill Tree</value>
+  </data>
+  <data name="ResetMasterSkillTreeQuestion" xml:space="preserve">
+    <value>Do you really want to remove all master skills of the character?</value>
+  </data>
+  <data name="ResetMasterSkillTreeAndRefundQuestion" xml:space="preserve">
+    <value>Do you really want to remove all master skills of the character? The {0} spent points will be added to the master level up points.</value>
+  </data>
+  <data name="MasterSkillTooltip" xml:space="preserve">
+    <value>{0} (#{1})
+Level: {2} - {3}</value>
+  </data>
+  <data name="MasterSkillRequirementsNotFulfilled" xml:space="preserve">
+    <value>Warning: The requirements to learn this skill are not fulfilled. The required skills and a skill of the previous rank need a level of at least {0}.</value>
+  </data>
+  <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
+    <value>Requires the required skills and a skill of the previous rank with a level of at least {0}.</value>
+  </data>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
   </data>
@@ -493,4 +524,142 @@
   <data name="InvalidNumber" xml:space="preserve"><value>The {0} field must be a number.</value></data>
   <data name="MonsterLabel" xml:space="preserve"><value>Monster</value></data>
   <data name="MapsLabel" xml:space="preserve"><value>Maps</value></data>
+  <data name="CharacterCreationHint" xml:space="preserve">
+    <value>The character gets the stat attributes of its class with their start values, starts on the home map of its class and gets an empty inventory and the default key configuration. Then the active "Character created" plugins run, which give it e.g. its initial items and skills, like in the game.</value>
+  </data>
+  <data name="CharacterNameRequired" xml:space="preserve">
+    <value>Please enter a name.</value>
+  </data>
+  <data name="CharacterNameInvalid" xml:space="preserve">
+    <value>The name does not match the configured pattern: {0}</value>
+  </data>
+  <data name="CharacterClassRequired" xml:space="preserve">
+    <value>Please select a character class.</value>
+  </data>
+  <data name="CharacterClassWithoutHomeMap" xml:space="preserve">
+    <value>The character class has no home map, so the character would have no start position.</value>
+  </data>
+  <data name="NoFreeCharacterSlot" xml:space="preserve">
+    <value>The account has no free character slot. An account can have up to {0} characters.</value>
+  </data>
+  <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
+    <value>The character was created, but the "Character created" plugins failed, so it may be missing its initial items or skills: {0}</value>
+  </data>
+  <data name="GameServerSelection_AllServersHint" xml:space="preserve">
+    <value>No selection means the event runs on all game servers, including ones added later. Use Select all to pin the current servers instead.</value>
+  </data>
+  <data name="GameServerSelection_SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="GameServerSelection_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="GameServerSelection_NoServers" xml:space="preserve">
+    <value>No game servers found.</value>
+  </data>
+  <data name="GameServerSelection_PvpBadge" xml:space="preserve">
+    <value>PvP</value>
+  </data>
+  <data name="GameServerSelection_PveBadge" xml:space="preserve">
+    <value>PvE</value>
+  </data>
+  <data name="GameServerSelection_UnknownServer" xml:space="preserve">
+    <value>Server {0} (no longer available)</value>
+  </data>
+  <data name="GameServerSelection_LoadFailed" xml:space="preserve">
+    <value>Could not load the game servers. Close the dialog and try again.</value>
+  </data>
+  <data name="TerrainEditorTerrain" xml:space="preserve">
+    <value>Terrain</value>
+  </data>
+  <data name="DefaultTerrain" xml:space="preserve">
+    <value>Default terrain</value>
+  </data>
+  <data name="TerrainTool" xml:space="preserve">
+    <value>Tool</value>
+  </data>
+  <data name="TerrainToolBrush" xml:space="preserve">
+    <value>Brush</value>
+  </data>
+  <data name="TerrainToolRectangle" xml:space="preserve">
+    <value>Rectangle</value>
+  </data>
+  <data name="TerrainToolFill" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="TerrainBrushSize" xml:space="preserve">
+    <value>Brush size</value>
+  </data>
+  <data name="TerrainEditMode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="TerrainEditModeAdd" xml:space="preserve">
+    <value>Add attributes</value>
+  </data>
+  <data name="TerrainEditModeRemove" xml:space="preserve">
+    <value>Remove attributes</value>
+  </data>
+  <data name="TerrainEditModeReplace" xml:space="preserve">
+    <value>Replace all attributes</value>
+  </data>
+  <data name="TerrainAttributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="TerrainWalkable" xml:space="preserve">
+    <value>Walkable</value>
+  </data>
+  <data name="TerrainOtherAttributes" xml:space="preserve">
+    <value>Other attributes</value>
+  </data>
+  <data name="TerrainLegend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="ImportTerrain" xml:space="preserve">
+    <value>Import terrain file</value>
+  </data>
+  <data name="ImportTerrainHint" xml:space="preserve">
+    <value>Accepts the *.att file of the server and the EncTerrain*.att file of the client.</value>
+  </data>
+  <data name="DownloadServerTerrain" xml:space="preserve">
+    <value>Server terrain file</value>
+  </data>
+  <data name="DownloadServerTerrainHint" xml:space="preserve">
+    <value>Downloads the terrain in the *.att format of the original server.</value>
+  </data>
+  <data name="DownloadClientTerrain" xml:space="preserve">
+    <value>Client terrain file</value>
+  </data>
+  <data name="DownloadClientTerrainHint" xml:space="preserve">
+    <value>Downloads the encrypted terrain file of the game client. Place it as Data\World{0}\EncTerrain{0}.att in the client.</value>
+  </data>
+  <data name="InvalidTerrainFile" xml:space="preserve">
+    <value>The file is neither a terrain file of the server nor of the client.</value>
+  </data>
+  <data name="TerrainImported" xml:space="preserve">
+    <value>The terrain file was imported. Save to apply it.</value>
+  </data>
+  <data name="TerrainEditorShortcutPaint" xml:space="preserve">
+    <value>Left click to edit the tiles with the selected tool</value>
+  </data>
+  <data name="TerrainEditorShortcutPan" xml:space="preserve">
+    <value>Right click and drag to pan the terrain</value>
+  </data>
+  <data name="TerrainEditorShortcutZoom" xml:space="preserve">
+    <value>Mouse wheel to zoom</value>
+  </data>
+  <data name="TerrainEditorRestartHint" xml:space="preserve">
+    <value>Changed terrains are applied to the game after restarting the game servers. Players need the client terrain file, too, to see the change.</value>
+  </data>
+  <data name="TerrainTransferFailed" xml:space="preserve">
+    <value>The edited terrain could not be transferred: {0}</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>Zoom in</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>Zoom out</value>
+  </data>
 </root>

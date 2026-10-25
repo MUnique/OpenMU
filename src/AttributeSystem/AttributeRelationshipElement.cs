@@ -8,7 +8,12 @@ namespace MUnique.OpenMU.AttributeSystem;
 /// An attribute relationship element which takes several input elements which are summed up and multiplied.
 /// Calculated values are cached for a better performance.
 /// </summary>
-public class AttributeRelationshipElement : SimpleElement
+/// <remarks>
+/// The element subscribes to its inputs, which may live longer than the element itself, e.g. the stat
+/// attributes of a character which outlive the attribute system of one game session. Dispose the element
+/// when it's no longer used, so that its inputs don't keep it - and whatever observes it - alive.
+/// </remarks>
+public class AttributeRelationshipElement : SimpleElement, IDisposable
 {
     /// <summary>
     /// Serializes the <see cref="_version"/> bump with the guarded cache write, so a recalculation that
@@ -29,7 +34,9 @@ public class AttributeRelationshipElement : SimpleElement
     /// <param name="inputOperator">The input operator.</param>
     public AttributeRelationshipElement(IEnumerable<IElement> inputElements, IElement inputOperand, InputOperator inputOperator)
     {
-        this.InputElements = inputElements;
+        // A copy, so that Dispose unsubscribes from exactly the elements subscribed here, even if the
+        // passed sequence is evaluated lazily.
+        this.InputElements = inputElements.ToArray();
         this.InputOperand = inputOperand;
         this.InputOperator = inputOperator;
         foreach (var element in this.InputElements)
@@ -38,8 +45,6 @@ public class AttributeRelationshipElement : SimpleElement
         }
 
         inputOperand.ValueChanged += this.ElementChanged;
-
-        // TODO: Is Dispose required?
     }
 
     /// <summary>
@@ -61,6 +66,34 @@ public class AttributeRelationshipElement : SimpleElement
     /// Gets the calculated value.
     /// </summary>
     public override float Value => this._cachedValue ?? this.GetAndCacheValue();
+
+    /// <summary>
+    /// Unsubscribes from the input elements and the input operand.
+    /// </summary>
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Unsubscribes from the input elements and the input operand, see <see cref="Dispose()"/>.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        foreach (var element in this.InputElements)
+        {
+            element.ValueChanged -= this.ElementChanged;
+        }
+
+        this.InputOperand.ValueChanged -= this.ElementChanged;
+    }
 
     private void ElementChanged(object? sender, EventArgs eventArgs)
     {

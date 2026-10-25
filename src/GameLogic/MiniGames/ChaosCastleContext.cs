@@ -205,7 +205,7 @@ public sealed class ChaosCastleContext : MiniGameContext
         await this.UpdateStateForAllAsync().ConfigureAwait(false);
 
         var sortedFinishers = finishers
-            .Select(f => this._gameStates[f.Name])
+            .Select(this.GetGameStateOfFinisher)
             .WhereNotNull()
             .OrderByDescending(state => state.Score)
             .ToList();
@@ -236,11 +236,12 @@ public sealed class ChaosCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override async ValueTask ShowScoreAsync(Player player)
     {
-        if (this._highScoreTable is { } table)
+        if (this._highScoreTable is { } table
+            && this._gameStates.TryGetValue(player.Name, out var state))
         {
-            var isSuccessful = this._winner is not null;
-            var (name, score, bonusMoney, bonusExp) = table.First(t => t.Name == player.Name);
-            await player.InvokeViewPlugInAsync<IBloodCastleScoreTableViewPlugin>(p => p.ShowScoreTableAsync(isSuccessful, name, score, bonusExp, bonusMoney)).ConfigureAwait(false);
+            var isWinner = this._winner == player;
+            var (name, _, bonusExp, _) = table.First(t => t.Name == player.Name);
+            await player.InvokeViewPlugInAsync<IChaosCastleScoreTableViewPlugin>(p => p.ShowScoreTableAsync(isWinner, name, state.MonsterKillCount, state.PlayerKillCount, bonusExp)).ConfigureAwait(false);
         }
     }
 
@@ -251,7 +252,7 @@ public sealed class ChaosCastleContext : MiniGameContext
 
         if (this._gameStates.TryGetValue(e.KillerName, out var playerState))
         {
-            playerState.AddScore(PlayerKillPoints);
+            playerState.AddPlayerKill(PlayerKillPoints);
         }
     }
 
@@ -274,7 +275,7 @@ public sealed class ChaosCastleContext : MiniGameContext
 
             if (this._gameStates.TryGetValue(e.KillerName, out var playerState))
             {
-                playerState.AddScore(MonsterKillPoints);
+                playerState.AddMonsterKill(MonsterKillPoints);
             }
 
             // There is a 50 % chance, that a died monster explodes and moves players nearby(range 3) by one coordinate.
@@ -509,20 +510,24 @@ public sealed class ChaosCastleContext : MiniGameContext
         var requiredMonsters = MaxObjectsCount - this.PlayerCount;
 
         this.Logger.LogDebug("{0}: Spawning {1} monsters...", this.Definition.Description, requiredMonsters);
-        var spawnAreas = this.Map.Definition.MonsterSpawns.AsList();
-        this.DropGenerator = new ChaosCastleDropGenerator(this._gameContext, this, requiredMonsters);
+        var spawnAreas = this.Map.Definition.MonsterSpawns.Where(area => area.MonsterDefinition is { IsActive: true }).ToList();
+        var monsterCount = Math.Min(requiredMonsters, spawnAreas.Count);
+        this.DropGenerator = new ChaosCastleDropGenerator(this._gameContext, this, monsterCount);
 
-        for (var i = 0; i < requiredMonsters && i < spawnAreas.Count; i++)
+        var spawnedMonsters = 0;
+        for (var i = 0; i < monsterCount; i++)
         {
             var spawnArea = spawnAreas[i];
 
             if (await this._mapInitializer.InitializeSpawnAsync(i, this.Map, spawnArea, this, this.DropGenerator).ConfigureAwait(false) is Monster monster)
             {
                 this._monsters.TryAdd(monster, default);
+                spawnedMonsters++;
             }
         }
 
-        this._aliveMonstersCount = requiredMonsters;
+        // Only the spawned monsters count, e.g. inactive monsters are skipped.
+        this._aliveMonstersCount = spawnedMonsters;
         this.Logger.LogDebug("Monsters created.");
     }
 
@@ -630,9 +635,24 @@ public sealed class ChaosCastleContext : MiniGameContext
         }
     }
 
+    private PlayerGameState? GetGameStateOfFinisher(Player finisher)
+    {
+        if (!this._gameStates.TryGetValue(finisher.Name, out var state))
+        {
+            return null;
+        }
+
+        // The score is kept by the character name, so it's kept when the player rejoined the game
+        // after it lost its connection. The rewards must be given to its current player object, though.
+        state.Player = finisher;
+        return state;
+    }
+
     private sealed class PlayerGameState
     {
         private int _score;
+        private int _monsterKillCount;
+        private int _playerKillCount;
 
         public PlayerGameState(Player player)
         {
@@ -644,15 +664,35 @@ public sealed class ChaosCastleContext : MiniGameContext
             this.Player = player;
         }
 
-        public Player Player { get; }
+        /// <summary>
+        /// Gets or sets the player of the character. It's replaced by the new player
+        /// object of the same character, when it rejoined the game after it lost its connection.
+        /// </summary>
+        public Player Player { get; set; }
 
         public int Score => this._score;
+
+        public int MonsterKillCount => this._monsterKillCount;
+
+        public int PlayerKillCount => this._playerKillCount;
 
         public int Rank { get; set; }
 
         public void AddScore(int value)
         {
             Interlocked.Add(ref this._score, value);
+        }
+
+        public void AddMonsterKill(int points)
+        {
+            Interlocked.Increment(ref this._monsterKillCount);
+            this.AddScore(points);
+        }
+
+        public void AddPlayerKill(int points)
+        {
+            Interlocked.Increment(ref this._playerKillCount);
+            this.AddScore(points);
         }
     }
 }

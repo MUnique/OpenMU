@@ -110,8 +110,8 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
         var physAndWizItemOption = gameConfiguration.PhysicalAndWizardryDamageOption();
         var excWizAttackOption = gameConfiguration.ExcellentWizardryAttackOptions();
         var excPhysAttackOption = gameConfiguration.ExcellentPhysicalAttackOptions();
-        var harmonyWizAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.WizardryAttackOptionsName);
-        var harmonyPhysAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName);
+        var harmonyWizAttackOption = gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName);
+        var harmonyPhysAttackOption = gameConfiguration.ItemOptions.First(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.PhysicalAttackOptionsName);
         foreach (var magicSword in magicSwords)
         {
             magicSword.PossibleItemOptions.Remove(wizItemOption);

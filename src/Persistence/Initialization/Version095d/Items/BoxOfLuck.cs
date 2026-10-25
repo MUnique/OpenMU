@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
@@ -54,7 +55,7 @@ internal class BoxOfLuck : InitializerBase
     /// </remarks>
     private void CreateBoxOfLuck()
     {
-        var box = this.CreateBox("Box of Luck", 14, 11);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.BoxOfLuck), 14, 11);
         box.MaximumItemLevel = 1;
         var boxOfLuck = this.Context.CreateNew<ItemDropItemGroup>();
         boxOfLuck.ItemType = SpecialItemType.RandomItem;
@@ -62,7 +63,7 @@ internal class BoxOfLuck : InitializerBase
         boxOfLuck.Chance = 0.5;
         boxOfLuck.MinimumLevel = 6;
         boxOfLuck.MaximumLevel = 6;
-        boxOfLuck.Description = "Box of Luck";
+        boxOfLuck.Description = LocalizedString.FromResource(() => ItemNames.BoxOfLuck);
         box.DropItems.Add(boxOfLuck);
         this.AddDropItem(boxOfLuck, 0, 3); // Katana
         this.AddDropItem(boxOfLuck, 0, 5); // Blade
@@ -91,10 +92,10 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(boxOfLuck, 10); // Vine Set
         this.AddArmorSet(boxOfLuck, 11); // Silk Set
         this.AddArmorSet(boxOfLuck, 12); // Wind Set
-        this.AddMoneyDropFallback(box, 10000, boxOfLuck);
+        this.AddMoneyDropFallback(box, 10000, boxOfLuck, LocalizedString.FromResource(() => ItemDropDescriptions.BoxOfLuckMoney));
     }
 
-    private ItemDefinition CreateBox(string name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0)
+    private ItemDefinition CreateBox(LocalizedString name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
@@ -110,14 +111,14 @@ internal class BoxOfLuck : InitializerBase
         return item;
     }
 
-    private void AddMoneyDropFallback(ItemDefinition item, int moneyAmount, ItemDropItemGroup baseGroup, string itemName = "")
+    private void AddMoneyDropFallback(ItemDefinition item, int moneyAmount, ItemDropItemGroup baseGroup, LocalizedString description)
     {
         var zenDrop = this.Context.CreateNew<ItemDropItemGroup>();
         zenDrop.ItemType = SpecialItemType.Money;
         zenDrop.MoneyAmount = moneyAmount;
         zenDrop.SourceItemLevel = baseGroup.SourceItemLevel;
         zenDrop.Chance = 1.0;
-        zenDrop.Description = string.IsNullOrWhiteSpace(itemName) ? $"{baseGroup.Description} - Money" : $"{itemName} - Money";
+        zenDrop.Description = description;
         item.DropItems.Add(zenDrop);
     }
 

@@ -513,6 +513,40 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="PlayerShopSetItemPriceExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="moneyPrice">The price in zen, or in account coins when PriceItemType is one of the account coin values. Encoded like the price of PlayerShopItemExtended.</param>
+    /// <param name="priceItemType">The item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, when RequiredItemAmount is greater than 0. Otherwise, 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P) and 0xFFF2 = Goblin Points define an account coin price; any other value a zen price. Encoded like the price of PlayerShopItemExtended.</param>
+    /// <param name="requiredItemAmount">The number of pieces of the item which is defined by PriceItemType; 0, if the price is not paid with items. Encoded like the price of PlayerShopItemExtended.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop, in zen or in one of the price types which are allowed by the server (see PlayerShopPriceTypesExtended).
+    /// Causes reaction on server side: The price is set for the specified item, if its price type is allowed and the amount is within the configured limits. Works only if the shop is currently closed. The server responds with a PlayerShopSetItemPriceResponse.
+    /// </remarks>
+    public static async ValueTask SendPlayerShopSetItemPriceExtendedAsync(this IConnection? connection, uint @moneyPrice, ushort @priceItemType, ushort @requiredItemAmount, byte @itemSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlayerShopSetItemPriceExtendedRef.Length;
+            var packet = new PlayerShopSetItemPriceExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.MoneyPrice = @moneyPrice;
+            packet.PriceItemType = @priceItemType;
+            packet.RequiredItemAmount = @requiredItemAmount;
+            packet.ItemSlot = @itemSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="PickupItemRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -5568,6 +5602,81 @@ public static class ConnectionExtensions
         {
             var length = ChatCommandListRequestRef.Length;
             var packet = new ChatCommandListRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordIntegrationInfoRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A client which supports the Discord integration requests how the server is connected to Discord. It's usually sent after the character entered the game world, and again when the player opens a Discord dialog. By sending it, the client also announces that it understands the ExternalChatMessage.
+    /// Causes reaction on server side: The server sends a DiscordIntegrationInfo message, and from then on sends messages which were written in Discord as ExternalChatMessage.
+    /// </remarks>
+    public static async ValueTask SendDiscordIntegrationInfoRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordIntegrationInfoRequestRef.Length;
+            var packet = new DiscordIntegrationInfoRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordLinkCodeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to link the account to a Discord user, e.g. with a button of a Discord dialog.
+    /// Causes reaction on server side: The server creates a one-time code and sends it with a DiscordLinkCode message. The player enters the code in Discord to complete the link.
+    /// </remarks>
+    public static async ValueTask SendDiscordLinkCodeRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordLinkCodeRequestRef.Length;
+            var packet = new DiscordLinkCodeRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordUnlinkRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to remove the link of the account to a Discord user.
+    /// Causes reaction on server side: The server removes the link and sends an updated DiscordIntegrationInfo message.
+    /// </remarks>
+    public static async ValueTask SendDiscordUnlinkRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordUnlinkRequestRef.Length;
+            var packet = new DiscordUnlinkRequestRef(connection.Output.GetSpan(length)[..length]);
             return packet.Header.Length;
         }
 

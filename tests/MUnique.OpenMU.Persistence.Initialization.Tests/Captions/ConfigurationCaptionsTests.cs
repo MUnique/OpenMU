@@ -272,6 +272,30 @@ public class ConfigurationCaptionsTests
     }
 
     /// <summary>
+    /// Tests that the linkable captions are exactly the ones which are linked afterwards, and that finding them changes nothing.
+    /// </summary>
+    [Test]
+    public void FindLinkableCaptions_FindsTheCaptionsWhichWouldBeLinked()
+    {
+        var (referenceConfiguration, referenceMonsters) = CreateConfiguration(LorenciaFromSource, DeviasFromSource, LorenciaFromSource);
+        var (target, targetMonsters) = CreateConfiguration(
+            new LocalizedString("Lorencia"),
+            new LocalizedString("Devias City"),
+            LorenciaFromSource);
+        for (var i = 0; i < targetMonsters.Count; i++)
+        {
+            targetMonsters[i].SetId(referenceMonsters[i].GetId());
+        }
+
+        var reference = CaptionLinkReference.Create(referenceConfiguration);
+
+        Assert.That(ConfigurationCaptions.FindLinkableCaptions(target, reference), Is.EquivalentTo(new Dictionary<string, int> { { nameof(MonsterDefinition), 1 } }));
+        Assert.That(targetMonsters[0].Designation.SourceKey, Is.Null, "nothing is changed");
+        Assert.That(ConfigurationCaptions.LinkSourceKeys(target, reference), Is.EqualTo((1, 1)));
+        Assert.That(ConfigurationCaptions.FindLinkableCaptions(target, reference), Is.Empty);
+    }
+
+    /// <summary>
     /// Tests that a complete, freshly initialized configuration has all available localizations in place.
     /// </summary>
     /// <returns>The task.</returns>

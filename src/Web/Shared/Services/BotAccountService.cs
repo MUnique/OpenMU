@@ -17,9 +17,9 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class BotAccountService : IDataService<BotAccount>
 {
-    private static readonly TimeSpan ListCacheLifetime = TimeSpan.FromSeconds(5);
-
     private const string ListCacheKey = "BotAccountService.BotList";
+
+    private static readonly TimeSpan ListCacheLifetime = TimeSpan.FromSeconds(5);
 
     private readonly IServerProvider _serverProvider;
     private readonly IMemoryCache _cache;

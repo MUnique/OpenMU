@@ -26,15 +26,23 @@ public class LoginServer : ILoginServer
     {
         this._daprClient = daprClient;
         this._logger = logger;
-        this._targetAppId = "loginServer";
+        this._targetAppId = CentralServer.AppId;
     }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryReserveAccountAsync(string accountName, int reservationId)
+        => await this._daprClient.InvokeMethodAsync<AccountReservationArguments, bool>(this._targetAppId, GetMethodName(nameof(this.TryReserveAccountAsync)), new AccountReservationArguments(accountName, reservationId)).ConfigureAwait(false);
+
+    /// <inheritdoc />
+    public async ValueTask ReleaseAccountReservationAsync(string accountName, int reservationId)
+        => await this._daprClient.InvokeMethodAsync(this._targetAppId, GetMethodName(nameof(this.ReleaseAccountReservationAsync)), new AccountReservationArguments(accountName, reservationId)).ConfigureAwait(false);
 
     /// <inheritdoc />
     public async Task<bool> TryLoginAsync(string accountName, byte serverId)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<LoginArguments, bool>(this._targetAppId, nameof(this.TryLoginAsync), new LoginArguments(accountName, serverId)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<LoginArguments, bool>(this._targetAppId, GetMethodName(nameof(this.TryLoginAsync)), new LoginArguments(accountName, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -48,7 +56,7 @@ public class LoginServer : ILoginServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.LogOffAsync), new LoginArguments(accountName, serverId)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, GetMethodName(nameof(this.LogOffAsync)), new LoginArguments(accountName, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -61,7 +69,7 @@ public class LoginServer : ILoginServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<Dictionary<string, byte>>(this._targetAppId, nameof(this.GetSnapshotAsync)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<Dictionary<string, byte>>(this._targetAppId, GetMethodName(nameof(this.GetSnapshotAsync))).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -70,4 +78,6 @@ public class LoginServer : ILoginServer
 
         return [];
     }
+
+    private static string GetMethodName(string name) => $"{CentralServer.LoginServerRoute}/{name}";
 }

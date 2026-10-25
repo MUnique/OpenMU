@@ -412,9 +412,8 @@ internal class TestInitializationWithEfCore
         configuration.SignOfLordItemLevel = 0;
         signOfLord.MaximumItemLevel = 0;
 
-        var registrationUpdate = new ConfigureCastleSiegeRegistrationUpdatePlugIn();
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.Multiple(() =>
         {
@@ -426,7 +425,7 @@ internal class TestInitializationWithEfCore
         var customSignOfLord = gameConfiguration.Items.First(item => item != signOfLord);
         configuration.SignOfLordItemDefinition = customSignOfLord;
         configuration.SignOfLordItemLevel = 1;
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(configuration.SignOfLordItemDefinition, Is.SameAs(customSignOfLord));
@@ -436,7 +435,7 @@ internal class TestInitializationWithEfCore
         gameConfiguration.Items.Remove(signOfLord);
         configuration.SignOfLordItemDefinition = null;
         configuration.SignOfLordItemLevel = 0;
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(configuration.SignOfLordItemDefinition, Is.Null);
@@ -450,9 +449,8 @@ internal class TestInitializationWithEfCore
             gameConfiguration.MagicEffects.Remove(participantEffect);
         }
 
-        var participationUpdate = new ConfigureCastleSiegeParticipationUpdatePlugIn();
-        await participationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await participationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(
             gameConfiguration.MagicEffects
                 .Where(effect => Enum.IsDefined(typeof(CastleSiegeMagicEffectNumber), effect.Number))
@@ -462,9 +460,8 @@ internal class TestInitializationWithEfCore
         var senior = gameConfiguration.Monsters.Single(monster => monster.Number == 223);
         Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
         senior.NpcWindow = NpcWindow.Undefined;
-        var economyUpdate = new ConfigureCastleSiegeEconomyUpdatePlugIn();
-        await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
 
         var lifeStone = gameConfiguration.Monsters.Single(monster => monster.Number == 278);
@@ -472,9 +469,8 @@ internal class TestInitializationWithEfCore
         maximumHealth.Value = 12_345;
         var defense = lifeStone.Attributes.Single(attribute => attribute.AttributeDefinition?.Id == Stats.DefenseBase.Id);
         lifeStone.Attributes.Remove(defense);
-        var lifeStoneUpdate = new ConfigureCastleSiegeLifeStoneUpdatePlugIn();
-        await lifeStoneUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await lifeStoneUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(maximumHealth.Value, Is.EqualTo(12_345));

@@ -13,10 +13,11 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
 {
     /// <summary>
     /// Gets the default configuration for the Kanturu event.
-    /// The event runs every 6 hours: each tick opens a silent entry lobby while no
-    /// fight runs and the tower is closed. Entry is additionally always open on demand,
-    /// and the tower stays open for <see cref="TowerOpenDuration"/> after Nightmare dies,
-    /// during which scheduled starts are skipped.
+    /// The event runs three times a day, at 03:00, 11:00 and 19:00: each tick opens a
+    /// silent entry lobby while no fight runs and the tower is closed. Entry is
+    /// additionally always open on demand, and the tower stays open for
+    /// <see cref="TowerOpenDuration"/> after Nightmare dies, during which scheduled
+    /// starts are skipped.
     /// There are no entrance announcements; the gateway dialog shows the live state.
     /// </summary>
     public static KanturuStartConfiguration Default =>
@@ -26,7 +27,7 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             EntranceOpenedMessage = "Kanturu Refinery Tower entrance is open and closes in {0} minute(s).",
             EntranceClosedMessage = "Kanturu Refinery Tower entrance closed.",
             TaskDuration = TimeSpan.FromHours(6),
-            Timetable = GenerateTimeSequence(TimeSpan.FromHours(6)).ToList(),
+            Timetable = GenerateTimeSequence(TimeSpan.FromHours(8), startLimit: new TimeOnly(3, 0)).ToList(),
             TowerOpenDuration = TimeSpan.FromHours(23),
         };
 
@@ -42,7 +43,7 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// This takes precedence over <see cref="KanturuEventDefinition.TowerOfRefinementDuration"/>
     /// whenever the event runs through this plug-in.
     /// </remarks>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenDuration_Name), Description = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenDuration_Description), Order = 6)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenDuration_Name), Description = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenDuration_Description), Order = 200)]
     public TimeSpan TowerOpenDuration { get; set; } = TimeSpan.FromHours(23);
 
     /// <summary>
@@ -51,7 +52,7 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// or a new event run starts. Persisted with the configuration, so the open window
     /// survives server restarts.
     /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenUntilUtc_Name), Description = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenUntilUtc_Description), Order = 7)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenUntilUtc_Name), Description = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenUntilUtc_Description), Order = 201)]
     public DateTime? TowerOpenUntilUtc { get; set; }
 
     /// <summary>
@@ -64,6 +65,6 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// game configuration is known. The <see cref="MiniGames.Kanturu.KanturuContext"/> falls
     /// back to <see cref="KanturuEventDefinition.CreateDefault"/> in that case.
     /// </remarks>
-    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuStartConfiguration_EventDefinition_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuStartConfiguration_EventDefinition_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources), Order = 202)]
     public KanturuEventDefinition? EventDefinition { get; set; }
 }

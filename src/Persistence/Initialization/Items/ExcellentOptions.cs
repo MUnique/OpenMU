@@ -9,6 +9,8 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for excellent options.
@@ -80,7 +82,7 @@ public class ExcellentOptions : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.ExcellentWizardry);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = WizardryAttackOptionsName;
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.ExcellentWizardryAttackOptions);
         definition.AddChance = 0.001f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 2;
@@ -98,7 +100,7 @@ public class ExcellentOptions : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.ExcellentPhysical);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = PhysicalAttackOptionsName;
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.ExcellentPhysicalAttackOptions);
         definition.AddChance = 0.001f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 2;
@@ -116,7 +118,7 @@ public class ExcellentOptions : InitializerBase
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(ItemOptionDefinitionNumbers.ExcellentDefense);
         this.GameConfiguration.ItemOptions.Add(definition);
-        definition.Name = DefenseOptionsName;
+        definition.Name = LocalizedString.FromResource(() => ItemOptionNames.ExcellentDefenseOptions);
         definition.AddChance = 0.001f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 2;

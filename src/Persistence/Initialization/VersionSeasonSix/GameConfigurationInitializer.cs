@@ -75,6 +75,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new AncientSets(this.Context, this.GameConfiguration).Initialize();
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
+        new GensRewardItems(this.Context, this.GameConfiguration).Initialize();
         this.CreateJewelMixes();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
@@ -93,9 +94,12 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new KanturuInitializer(this.Context, this.GameConfiguration).Initialize();
         new DoppelgangerInitializer(this.Context, this.GameConfiguration).Initialize();
         new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CashShopItems(this.Context, this.GameConfiguration).Initialize();
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();
+        new CashShopInitializer(this.Context, this.GameConfiguration).Initialize();
         new ItemPriceDefinitions(this.Context, this.GameConfiguration).Initialize();
     }
 

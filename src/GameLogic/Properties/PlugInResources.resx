@@ -141,10 +141,10 @@
   <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
     <value>Delivers queued Castle Siege participant rewards when a character enters the game.</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
-    <value>Castle Siege Guardsman</value>
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Land of Trials guard</value>
   </data>
-  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+  <data name="CastleSiegeLandOfTrialsGuardTalkPlugIn_Description" xml:space="preserve">
     <value>Shows Land of Trials availability and its applicable entry fee.</value>
   </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
@@ -650,6 +650,12 @@
   </data>
   <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.</value>
+  </data>
+  <data name="SlideNoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Slide notice chat command</value>
+  </data>
+  <data name="SlideNoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/slidenotice message'. Sends a global notice to all players of the game which scrolls across the top of their screen.</value>
   </data>
   <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
     <value>NPC open merchant chat command</value>
@@ -1161,6 +1167,12 @@
   <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
     <value>Timetable</value>
   </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Name" xml:space="preserve">
+    <value>Active on servers</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_AllowedServerIds_Description" xml:space="preserve">
+    <value>Restricts the event to the selected game servers. An empty selection means the event runs on all servers.</value>
+  </data>
   <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
     <value>Pre-start message delay</value>
   </data>
@@ -1422,6 +1434,9 @@
   <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>Alert Debounce Seconds</value></data>
   <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve"><value>Max Warnings</value></data>
   <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve"><value>Disconnect On Violation</value></data>
+  <data name="SpeedHackDetectConfiguration_ObserveOnly_Caption" xml:space="preserve"><value>Observe Only</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption" xml:space="preserve"><value>Violation Score Reject Threshold</value></data>
+  <data name="SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption" xml:space="preserve"><value>Violation Score Half Life Minutes</value></data>
   <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>Auto Ban</value></data>
   <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y</value></data>
   <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X</value></data>
@@ -1438,6 +1453,18 @@
   </data>
   <data name="RaklionPlugIn_Description" xml:space="preserve">
     <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
+  </data>
+  <data name="CrywolfPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Event</value>
+  </data>
+  <data name="CrywolfPlugIn_Description" xml:space="preserve">
+    <value>The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event.</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /crywolf</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends.</value>
   </data>
   <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
     <value>Imperial Guardian event</value>
@@ -1498,5 +1525,200 @@
   </data>
   <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
     <value>The NPC which is handled by this plugin. If no NPC is set, the plugin doesn't handle any NPC.</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Twister animation counter</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Twister: every animation is counted, and the hits don't contain the animation counter.</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Evil Spirit animation counter</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Evil Spirit: every animation is counted.</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Multi-Shot animation counter</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Multi-Shot: the hits don't contain the animation counter.</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Name" xml:space="preserve">
+    <value>Lost connection detection</value>
+  </data>
+  <data name="LostConnectionDetectionPlugIn_Description" xml:space="preserve">
+    <value>Disconnects players whose client stopped to report that it's alive, because their connection got lost without being closed. Otherwise, they would stay connected, and further logins of their account would be rejected.</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Name" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="LostConnectionDetectionConfiguration_Timeout_Description" xml:space="preserve">
+    <value>The time after which a connection is considered lost, when its client didn't report that it's alive. The game client reports it every 20 seconds. Zero disables the detection.</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Name" xml:space="preserve">
+    <value>Cash shop version</value>
+  </data>
+  <data name="CashShopVersionPlugIn_Description" xml:space="preserve">
+    <value>Sends the versions of the cash shop script and banner to the player when it enters the game.</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Name" xml:space="preserve">
+    <value>Cash shop</value>
+  </data>
+  <data name="CashShopFeaturePlugIn_Description" xml:space="preserve">
+    <value>The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size.</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Name" xml:space="preserve">
+    <value>Goblin Points for play time</value>
+  </data>
+  <data name="GoblinPointsForPlayTimePlugIn_Description" xml:space="preserve">
+    <value>Gives players Goblin Points of the cash shop for their play time.</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Vault Expansion Certificate</value>
+  </data>
+  <data name="VaultExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Extends the vault of the account when a player uses the Vault Expansion Certificate from the cash shop storage.</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Magic Backpack</value>
+  </data>
+  <data name="InventoryExtensionDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Adds an inventory extension to the character when a player uses the Magic Backpack from the cash shop storage.</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Summoner Character Card</value>
+  </data>
+  <data name="SummonerCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage.</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Cash shop: Rage Fighter Character Card</value>
+  </data>
+  <data name="RageFighterCharacterCardDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage.</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>Game Event Publisher</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>Publish mini game events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>Publish invasion events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>Publish castle siege events</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>Publish global notices of game masters</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>Publish excellent item drops</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>Publish ancient item drops</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Player shop currencies</value>
+  </data>
+  <data name="PlayerShopCurrenciesFeaturePlugIn_Description" xml:space="preserve">
+    <value>Allows players to set the prices of the items in their personal store in configured items like jewels, or in account coins, too. Only the open source client shows these prices; with other clients, they can be set by chat command.</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Show player shop currencies after entering the game</value>
+  </data>
+  <data name="ShowShopCurrenciesAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Tells the client which currencies can be used for the prices of personal stores, when the player enters the game.</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Shop price chat command</value>
+  </data>
+  <data name="ShopPriceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets the price of an item of the own personal store in one of the enabled currencies, e.g. '/shopprice 1 10 bless'. Without arguments, it lists the prices.</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Name" xml:space="preserve">
+    <value>Server announcements</value>
+  </data>
+  <data name="ServerAnnouncementsPlugIn_Description" xml:space="preserve">
+    <value>Shows a configured list of announcements to all players of a game server, one after another in a fixed interval.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Name" xml:space="preserve">
+    <value>Interval</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Interval_Description" xml:space="preserve">
+    <value>The time between one announcement and the next. The minimum is 10 seconds.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Name" xml:space="preserve">
+    <value>Announcements</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Messages_Description" xml:space="preserve">
+    <value>The announcements, in the order in which they are shown. After the last one, it starts over with the first one.</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Text_Name" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Name" xml:space="preserve">
+    <value>Message Type</value>
+  </data>
+  <data name="ServerAnnouncementsConfiguration_Type_Description" xml:space="preserve">
+    <value>How the announcement is shown, e.g. as golden message in the center of the screen or as blue system message.</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege registration guardsman</value>
+  </data>
+  <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Opens the Castle Siege registration window, which shows the Castle Siege status, when a player talks to a guardsman on the Castle Siege map.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guardsman</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Shows Land of Trials availability and its applicable entry fee.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Publish boss kills</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Boss monster numbers</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Publish level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Master level milestones</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Discord command</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link, '/discord notify letter' turns direct messages about letters on or off (also 'login' and 'friend').</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>World chat command</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sends a message to the world chat, which all players of all game servers can read, e.g. '/world Hello!'. It can be bridged to Discord.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>Publish guild, alliance and world chat</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Name" xml:space="preserve">
+    <value>Notice about the chat bridge</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
+    <value>Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord.</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Name" xml:space="preserve">
+    <value>Discord integration of the client</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
+    <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
   </data>
 </root>

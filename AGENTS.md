@@ -48,6 +48,30 @@ here because they are easy to miss:
 
 Most projects under [`src`](src) have their own `Readme.md` next to the code.
 
+## Building and running tests
+
+A `dotnet test` call builds the project (and everything it references) before
+running, so several calls in a row repeat the same build. Don't do that:
+
+* Build **once**, then run the tests with `--no-build`, as long as no code
+  changed since that build:
+
+  ```bash
+  dotnet build src/MUnique.OpenMU.sln
+  dotnet test tests/MUnique.OpenMU.Tests --no-build
+  dotnet test tests/MUnique.OpenMU.Network.Tests --no-build
+  dotnet test tests/MUnique.OpenMU.Network.Tests --no-build --filter "FullyQualifiedName~Foo"
+  ```
+
+* Run the tests with the same `-c` / `-p:` options as the build — `--no-build`
+  looks for the output of that configuration (`Debug` by default).
+* Build again (or drop `--no-build` for one run) after **any** code, project or
+  package change, including changes to files that feed code generators.
+  `--no-build` against a stale build tests the old code.
+* Prefer one `dotnet test` call over several where possible, e.g.
+  `dotnet test src/MUnique.OpenMU.sln --no-build` for the whole solution, or
+  `--filter` to narrow a run instead of rebuilding for each test class.
+
 ## Branch and pull request conventions
 
 * The target branch for pull requests is `master`.

@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Jewels for MU Version 0.75.
@@ -37,7 +39,7 @@ public class Jewels : InitializerBase
     private ItemDefinition CreateJewelOfBless()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Jewel of Bless";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.JewelOfBless);
         itemDefinition.Number = 13;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -58,7 +60,7 @@ public class Jewels : InitializerBase
     private ItemDefinition CreateJewelOfSoul()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Jewel of Soul";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.JewelOfSoul);
         itemDefinition.Number = 14;
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
@@ -79,7 +81,7 @@ public class Jewels : InitializerBase
     private ItemDefinition CreateJewelOfChaos()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Jewel of Chaos";
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.JewelOfChaos);
         itemDefinition.Number = 15;
         itemDefinition.Group = 12;
         itemDefinition.DropsFromMonsters = false;

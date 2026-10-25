@@ -286,20 +286,56 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
+        ///   Looks up a localized string similar to The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size..
         /// </summary>
-        public static string CastleSiegeGuardsmanTalkPlugIn_Description {
+        public static string CashShopFeaturePlugIn_Description {
             get {
-                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("CashShopFeaturePlugIn_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Guardsman.
+        ///   Looks up a localized string similar to Cash shop.
         /// </summary>
-        public static string CastleSiegeGuardsmanTalkPlugIn_Name {
+        public static string CashShopFeaturePlugIn_Name {
             get {
-                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("CashShopFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the versions of the cash shop script and banner to the player when it enters the game..
+        /// </summary>
+        public static string CashShopVersionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CashShopVersionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop version.
+        /// </summary>
+        public static string CashShopVersionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CashShopVersionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
+        /// </summary>
+        public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Land of Trials guard.
+        /// </summary>
+        public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Name", resourceCulture);
             }
         }
         
@@ -372,6 +408,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CastleSiegePlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Castle Siege registration window, which shows the Castle Siege status, when a player talks to a guardsman on the Castle Siege map..
+        /// </summary>
+        public static string CastleSiegeRegistrationGuardsmanTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationGuardsmanTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege registration guardsman.
+        /// </summary>
+        public static string CastleSiegeRegistrationGuardsmanTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationGuardsmanTalkPlugIn_Name", resourceCulture);
             }
         }
         
@@ -592,6 +646,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends..
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /crywolf.
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event..
+        /// </summary>
+        public static string CrywolfPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Event.
+        /// </summary>
+        public static string CrywolfPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/disconnect &lt;char&gt;&apos;. Disconnects a player from the game server..
         /// </summary>
         public static string DisconnectChatCommandPlugIn_Description {
@@ -606,6 +696,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DisconnectChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("DisconnectChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Links the account to a Discord user: &apos;/discord link&apos; creates a code which is entered in Discord, &apos;/discord unlink&apos; removes the link, &apos;/discord notify letter&apos; turns direct messages about letters on or off (also &apos;login&apos; and &apos;friend&apos;)..
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord command.
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -804,6 +912,132 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string FruitConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("FruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boss monster numbers.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_BossMonsterNumbers_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_BossMonsterNumbers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_LevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_LevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_MasterLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_MasterLevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish ancient item drops.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishAncientItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishAncientItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish boss kills.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishBossKills_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishBossKills_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish castle siege events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish guild, alliance and world chat.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishChatMessages_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishChatMessages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish excellent item drops.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishExcellentItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishExcellentItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish global notices of game masters.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishGlobalNotices_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishGlobalNotices_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish invasion events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishInvasionEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishInvasionEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishLevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish mini game events.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishMiniGameEvents_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishMiniGameEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishes events of the game, like mini games, invasions, castle siege state changes and rare item drops, to the whole server, e.g. for a Discord integration..
+        /// </summary>
+        public static string GameEventPublisherPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GameEventPublisherPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game Event Publisher.
+        /// </summary>
+        public static string GameEventPublisherPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1042,6 +1276,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gives players Goblin Points of the cash shop for their play time..
+        /// </summary>
+        public static string GoblinPointsForPlayTimePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTimePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Goblin Points for play time.
+        /// </summary>
+        public static string GoblinPointsForPlayTimePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GoblinPointsForPlayTimePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Golden Invasion event.
         /// </summary>
         public static string GoldenInvasionPlugIn_Description {
@@ -1074,6 +1326,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GuildBattleSoccerChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("GuildBattleSoccerChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord..
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice about the chat bridge.
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Name", resourceCulture);
             }
         }
         
@@ -1263,6 +1533,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ImperialGuardianFeaturePlugIn_Name {
             get {
                 return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds an inventory extension to the character when a player uses the Magic Backpack from the cash shop storage..
+        /// </summary>
+        public static string InventoryExtensionDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryExtensionDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Magic Backpack.
+        /// </summary>
+        public static string InventoryExtensionDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryExtensionDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2032,6 +2320,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active on servers.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restricts the event to the selected game servers. An empty selection means the event runs on all servers..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
         /// </summary>
         public static string PhoenixShotSkillPlugIn_Description {
@@ -2221,6 +2527,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows players to set the prices of the items in their personal store in configured items like jewels, or in account coins, too. Only the open source client shows these prices; with other clients, they can be set by chat command..
+        /// </summary>
+        public static string PlayerShopCurrenciesFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrenciesFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player shop currencies.
+        /// </summary>
+        public static string PlayerShopCurrenciesFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrenciesFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker..
         /// </summary>
         public static string PollutionSkillPlugIn_Description {
@@ -2280,6 +2604,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string QuestMonsterKillCountPlugInConfiguration_Message_Name {
             get {
                 return ResourceManager.GetString("QuestMonsterKillCountPlugInConfiguration_Message_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlocks the Rage Fighter class for the account when a player uses the Rage Fighter Character Card from the cash shop storage..
+        /// </summary>
+        public static string RageFighterCharacterCardDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCardDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Rage Fighter Character Card.
+        /// </summary>
+        public static string RageFighterCharacterCardDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RageFighterCharacterCardDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2664,6 +3006,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The time between one announcement and the next. The minimum is 10 seconds..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interval.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The announcements, in the order in which they are shown. After the last one, it starts over with the first one..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Announcements.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Text_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Text_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How the announcement is shown, e.g. as golden message in the center of the screen or as blue system message..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message Type.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows a configured list of announcements to all players of a game server, one after another in a fixed interval..
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server announcements.
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets level of a player. Usage: /setlevel (level) (optional:character).
         /// </summary>
         public static string SetLevelChatCommandPlugIn_Description {
@@ -2808,6 +3231,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets the price of an item of the own personal store in one of the enabled currencies, e.g. &apos;/shopprice 1 10 bless&apos;. Without arguments, it lists the prices..
+        /// </summary>
+        public static string ShopPriceChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShopPriceChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shop price chat command.
+        /// </summary>
+        public static string ShopPriceChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShopPriceChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/fireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowFireworksEffectChatCommandPlugIn_Description {
@@ -2858,6 +3299,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name {
             get {
                 return ResourceManager.GetString("ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells the client which currencies can be used for the prices of personal stores, when the player enters the game..
+        /// </summary>
+        public static string ShowShopCurrenciesAfterEnterWorldPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesAfterEnterWorldPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show player shop currencies after entering the game.
+        /// </summary>
+        public static string ShowShopCurrenciesAfterEnterWorldPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowShopCurrenciesAfterEnterWorldPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2948,6 +3407,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SkipMiniGameWaitChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/slidenotice message&apos;. Sends a global notice to all players of the game which scrolls across the top of their screen..
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide notice chat command.
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3218,6 +3695,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StatResetFeaturePlugIn_Name {
             get {
                 return ResourceManager.GetString("StatResetFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage..
+        /// </summary>
+        public static string SummonerCharacterCardDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCardDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Summoner Character Card.
+        /// </summary>
+        public static string SummonerCharacterCardDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SummonerCharacterCardDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3708,6 +4203,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extends the vault of the account when a player uses the Vault Expansion Certificate from the cash shop storage..
+        /// </summary>
+        public static string VaultExtensionDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("VaultExtensionDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cash shop: Vault Expansion Certificate.
+        /// </summary>
+        public static string VaultExtensionDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("VaultExtensionDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {
@@ -3776,6 +4289,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string WeatherUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends a message to the world chat, which all players of all game servers can read, e.g. &apos;/world Hello!&apos;. It can be bridged to Discord..
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World chat command.
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
             }
         }
 
@@ -4120,6 +4651,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized SpeedHackDetectConfiguration_DisconnectOnViolation_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_DisconnectOnViolation_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_DisconnectOnViolation_Caption", resourceCulture)!;
 
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ObserveOnly_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ObserveOnly_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ObserveOnly_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption", resourceCulture)!;
+
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;
 
@@ -4171,5 +4711,52 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Description text.</summary>
         public static string NpcTalkPlugInConfiguration_Npc_Description => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Name text.</summary>
+        public static string TwisterAnimationCounterStrategy_Name => ResourceManager.GetString("TwisterAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Description text.</summary>
+        public static string TwisterAnimationCounterStrategy_Description => ResourceManager.GetString("TwisterAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Name text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Name => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Description text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Description => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Name text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Name => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Description text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Description => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Name text.</summary>
+        public static string LostConnectionDetectionPlugIn_Name => ResourceManager.GetString("LostConnectionDetectionPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Description text.</summary>
+        public static string LostConnectionDetectionPlugIn_Description => ResourceManager.GetString("LostConnectionDetectionPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Name text.</summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Name => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration of the client.
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such..
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -1,12 +1,17 @@
 # Distributed deployment
 
-*!!! CURRENTLY BROKEN AND UNSUPPORTED, DOCS ARE OUT OF DATE !!!*
+*Experimental:* it works, but it has known limitations, and there are no
+up-to-date images published yet, so they have to be built from the sources:
+
+```bash
+docker compose up -d --build
+```
 
 The compose files in this folder are documented on the documentation website:
 
 * [Distributed deployment](../../docs-website/docs/deployment/distributed.md) —
-  the compose setup, its environment variables, and how the admin panel behaves
-  differently in it
+  the compose setup, its known limitations, its environment variables, and how
+  the admin panel behaves differently in it
 * [Deployment overview](../../docs-website/docs/deployment/overview.md) — why
   you probably want the all-in-one deployment instead
 

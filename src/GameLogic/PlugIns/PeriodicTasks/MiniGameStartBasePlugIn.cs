@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -30,6 +31,9 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     {
         return gameContext.MiniGames.GetRunningMiniGames(this.Key).Any(IsActive);
     }
+
+    /// <inheritdoc />
+    public bool IsEnabledOn(IGameContext gameContext) => this.IsEnabledOnContext(gameContext);
 
     /// <inheritdoc />
     public virtual async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
@@ -67,6 +71,13 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         if (gameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null) is { State: MiniGameState.Open })
         {
             return ValueTask.FromResult<TimeSpan?>(TimeSpan.Zero);
+        }
+
+        // The scope comes last on purpose: an open or prepared run is reported even on
+        // excluded servers, so in-flight runs finish gracefully instead of going silent.
+        if (!this.IsEnabledOnContext(gameContext))
+        {
+            return ValueTask.FromResult<TimeSpan?>(null);
         }
 
         var timeNow = new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks);
@@ -114,7 +125,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
                 announcement.LastAnnouncedMinutes = minutesLeft;
                 if (this.Configuration?.EntranceOpenedMessage is { } openMessage)
                 {
-                    await gameContext.SendGlobalNotificationAsync(string.Format(openMessage, minutesLeft)).ConfigureAwait(false);
+                    await gameContext.SendGlobalNotificationAsync(openMessage, minutesLeft).ConfigureAwait(false);
                 }
             }
 
@@ -167,7 +178,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     protected override async ValueTask OnStartedAsync(TGameState state)
     {
         var miniGameDefinitions = state.Context.Configuration.MiniGameDefinitions
-            .Where(d => d.Type == this.Key && d.MapCreationPolicy == MiniGameMapCreationPolicy.Shared);
+            .Where(d => d.Type == this.Key && d.MapCreationPolicy == MiniGameMapCreationPolicy.Shared && d.IsAvailable());
 
         await this.DisposeStaleGamesAsync(state.Context).ConfigureAwait(false);
 
@@ -201,7 +212,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         Announcements[(this.GetType(), state.Context)] = new EntranceAnnouncement { LastAnnouncedMinutes = initialMinutes };
         if (initialMinutes >= 1 && this.Configuration?.EntranceOpenedMessage is { } openMessage)
         {
-            await state.Context.SendGlobalNotificationAsync(string.Format(openMessage, initialMinutes)).ConfigureAwait(false);
+            await state.Context.SendGlobalNotificationAsync(openMessage, initialMinutes).ConfigureAwait(false);
         }
     }
 

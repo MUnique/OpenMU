@@ -1,0 +1,88 @@
+@using System.Diagnostics
+@using System.Reflection
+@using System.Runtime.InteropServices
+@using System.Threading
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<section class="card h-100">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h2 class="h6 mb-0">@Resources.System</h2>
+        <span class="badge rounded-pill text-bg-light border">@Resources.DashboardAdministratorsOnly</span>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-5 fw-normal text-body-secondary">@Resources.DashboardUptime</dt>
+            <dd class="col-7 fw-semibold">@string.Format(Resources.DashboardUptimeValue, this._uptime.Days, this._uptime.Hours, this._uptime.Minutes)</dd>
+            <dt class="col-5 fw-normal text-body-secondary">@Resources.DashboardMemory</dt>
+            <dd class="col-7">@string.Format(Resources.DashboardMemoryValue, this._workingSetMegabytes)</dd>
+            <dt class="col-5 fw-normal text-body-secondary">@Resources.DashboardVersion</dt>
+            <dd class="col-7">@(string.IsNullOrEmpty(this._version) ? RuntimeInformation.FrameworkDescription : $"{this._version} · {RuntimeInformation.FrameworkDescription}")</dd>
+            <dt class="col-5 fw-normal text-body-secondary">@Resources.DashboardDatabase</dt>
+            <dd class="col-7 mb-0">
+                @switch (this._isDatabaseReachable)
+                {
+                    case null:
+                        @Resources.Loading
+                        break;
+                    case true:
+                        <span class="text-success fw-semibold">@Resources.DashboardDatabaseConnected</span>
+                        break;
+                    default:
+                        <span class="text-danger fw-semibold">@Resources.DashboardDatabaseNotReachable</span>
+                        break;
+                }
+            </dd>
+        </dl>
+    </div>
+</section>
+
+@code {
+    private TimeSpan _uptime;
+
+    private long _workingSetMegabytes;
+
+    private string _version = string.Empty;
+
+    private bool? _isDatabaseReachable;
+
+    /// <summary>
+    /// Gets or sets the persistence context provider.
+    /// </summary>
+    [Inject]
+    public IMigratableDatabaseContextProvider PersistenceContextProvider { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        using (var process = Process.GetCurrentProcess())
+        {
+            this._uptime = DateTime.Now - process.StartTime;
+            this._workingSetMegabytes = process.WorkingSet64 / 1024 / 1024;
+        }
+
+        this._version = GetVersion();
+
+        await base.OnInitializedAsync().ConfigureAwait(true);
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            this._isDatabaseReachable = await this.PersistenceContextProvider.CanConnectToDatabaseAsync(cts.Token).ConfigureAwait(true);
+        }
+        catch
+        {
+            this._isDatabaseReachable = false;
+        }
+    }
+
+    private static string GetVersion()
+    {
+        var version = typeof(SystemInfoCard).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
+
+        // The informational version may contain the full commit hash (e.g. "1.0.0+0123456789abcdef..."), which we shorten.
+        var metadataIndex = version.IndexOf('+');
+        return metadataIndex >= 0 && version.Length > metadataIndex + 8
+            ? version[..(metadataIndex + 8)]
+            : version;
+    }
+}

@@ -38,16 +38,43 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<Guid>
 
     /// <summary>
     /// Gets the creation date of the update (at development).
-    /// Also determines the order in which independent pending updates are applied.
+    /// This date never changes, not even when <see cref="Version"/> is increased.
     /// </summary>
     DateTime CreatedAt { get; }
 
     /// <summary>
-    /// Gets the keys of updates that must already be installed (or included in the
+    /// Gets the date of the last change of the update (at development).
+    /// Set it to today when <see cref="Version"/> is increased.
+    /// It determines the order in which independent pending updates are applied.
+    /// By default, it's the creation date.
+    /// </summary>
+    DateTime UpdatedAt => CreatedAt;
+
+    /// <summary>
+    /// Gets a value indicating whether the update is applied when a new database is initialized.
+    /// The data initialization of this version already contains the changes of the updates of OpenMU itself, so it
+    /// only marks them as installed. An update whose changes aren't part of it, e.g. one of a plugin which adds its
+    /// own items, returns <c>true</c>.
+    /// </summary>
+    bool RunsOnNewDatabase => false;
+
+    /// <summary>
+    /// Gets the version of the update. Increase it when an already released
+    /// update is changed, so that databases which installed a previous version
+    /// are offered the update again. The <see cref="Type.GUID"/> of the
+    /// implementation stays the same; it remains the identity of the update.
+    /// </summary>
+    int Version => 1;
+
+    /// <summary>
+    /// Gets the updates that must already be installed (or included in the
     /// same batch) before this update is applied. Empty for the common case of an
     /// update with no real dependency on another.
+    /// A dependency can require a specific minimum version of another update,
+    /// e.g. <c>DependsOn => [new UpdateDependency(otherUpdateKey, minVersion: 2)]</c>;
+    /// a plain key accepts any installed version.
     /// </summary>
-    IEnumerable<Guid> DependsOn => [];
+    IEnumerable<UpdateDependency> DependsOn => [];
 
     /// <summary>
     /// Applies this update on the given persistence context.

@@ -12,20 +12,21 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 /// <summary>
-/// The http endpoints which set and remove the authentication cookie.
+/// The http endpoints which set, remove and check the authentication cookie.
 /// </summary>
 /// <remarks>
 /// A cookie can only be set on a http response, which an interactive blazor component doesn't have.
 /// These endpoints are therefore called by the browser in the background, with a single use ticket
 /// the circuit issued after it validated the credentials.
+/// The check is called by a reverse proxy, see <see cref="ReverseProxyAuthenticationService"/>.
 /// </remarks>
 public static class AuthEndpoints
 {
     /// <summary>
-    /// Maps the endpoints which set and remove the authentication cookie.
+    /// Maps the endpoints which set, remove and check the authentication cookie.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <returns>The endpoint route builder.</returns>
+    /// <returns>The same endpoint route builder, to allow chaining of further calls.</returns>
     public static IEndpointRouteBuilder MapAdminPanelAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost(
@@ -66,6 +67,39 @@ public static class AuthEndpoints
                 })
             .AllowAnonymous()
             .DisableAntiforgery();
+
+        endpoints.MapGet(
+                AdminAuthenticationDefaults.ReverseProxyAuthenticationEndpointPath,
+                async (HttpContext httpContext, ReverseProxyAuthenticationService authenticationService) =>
+                {
+                    var result = await authenticationService.AuthenticateAsync(httpContext.User, httpContext.RequestAborted).ConfigureAwait(false);
+                    if (result is { UserName: { } userName, Role: { } role })
+                    {
+                        httpContext.Response.Headers[ReverseProxyAuthenticationService.UserHeaderName] = userName;
+                        httpContext.Response.Headers[ReverseProxyAuthenticationService.RoleHeaderName] = role;
+                        httpContext.Response.Headers[ReverseProxyAuthenticationService.GrafanaRoleHeaderName] = ReverseProxyAuthenticationService.GetGrafanaRole(role);
+                    }
+
+                    // A proxy which passes the answer to the browser, e.g. Traefik, can ask for a redirect to the login page.
+                    if (result.StatusCode == StatusCodes.Status401Unauthorized
+                        && httpContext.Request.Query.ContainsKey("loginRedirect"))
+                    {
+                        var headers = httpContext.Request.Headers;
+                        var loginUrl = ReverseProxyAuthenticationService.GetLoginUrl(httpContext.Request.PathBase, headers["X-Forwarded-Uri"].FirstOrDefault());
+
+                        // The proxy would resolve a relative url against its address of the admin panel, which isn't reachable for the browser.
+                        if (headers["X-Forwarded-Proto"].FirstOrDefault() is { Length: > 0 } scheme
+                            && headers["X-Forwarded-Host"].FirstOrDefault() is { Length: > 0 } host)
+                        {
+                            loginUrl = $"{scheme}://{host}{loginUrl}";
+                        }
+
+                        return Results.Redirect(loginUrl);
+                    }
+
+                    return Results.StatusCode(result.StatusCode);
+                })
+            .AllowAnonymous();
 
         return endpoints;
     }

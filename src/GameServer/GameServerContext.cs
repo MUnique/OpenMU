@@ -44,6 +44,7 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="dropGenerator">The drop generator.</param>
     /// <param name="changeMediator">The change mediator.</param>
+    /// <param name="mapHostLocator">The locator for the maps which are hosted by other game servers.</param>
     public GameServerContext(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -55,7 +56,8 @@ public class GameServerContext : GameContext, IGameServerContext
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
         IDropGenerator dropGenerator,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        IMapHostLocator? mapHostLocator = null)
         : base(
             gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"),
             persistenceContextProvider,
@@ -71,6 +73,7 @@ public class GameServerContext : GameContext, IGameServerContext
         this.EventPublisher = eventPublisher;
         this.LoginServer = loginServer;
         this.FriendServer = friendServer;
+        this.MapHostLocator = mapHostLocator;
         this.ServerConfiguration = gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration");
     }
 
@@ -101,6 +104,9 @@ public class GameServerContext : GameContext, IGameServerContext
 
     /// <inheritdoc/>
     public GameServerConfiguration ServerConfiguration { get; }
+
+    /// <inheritdoc/>
+    public IMapHostLocator? MapHostLocator { get; }
 
     /// <inheritdoc />
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
@@ -259,6 +265,9 @@ public class GameServerContext : GameContext, IGameServerContext
             }
 
             await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name).ConfigureAwait(false);
+
+            // E.g. the Discord bot can notify the friends of the player.
+            await this.EventPublisher.GameEventAsync(new PlayerEnteredGameEvent(this.Id, DateTime.UtcNow, selectedCharacter.Id, selectedCharacter.Name)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

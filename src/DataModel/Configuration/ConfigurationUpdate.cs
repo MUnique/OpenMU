@@ -21,6 +21,12 @@ public class ConfigurationUpdate
     public Guid Key { get; set; }
 
     /// <summary>
+    /// Gets or sets the version of the update plug-in which was installed.
+    /// If the plug-in code has a higher version, the update is offered again.
+    /// </summary>
+    public int Version { get; set; } = 1;
+
+    /// <summary>
     /// Gets or sets the name of the update.
     /// </summary>
     public LocalizedString Name { get; set; }
@@ -34,6 +40,12 @@ public class ConfigurationUpdate
     /// Gets or sets the release date.
     /// </summary>
     public DateTime? CreatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date of the last change of the update plug-in.
+    /// If it's <c>null</c>, the update was never changed since its creation.
+    /// </summary>
+    public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the installation timestamp. If it's <c>null</c>, the update wasn't installed yet.

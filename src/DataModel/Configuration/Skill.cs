@@ -34,19 +34,9 @@ public enum DamageType
     Curse = 2,
 
     /// <summary>
-    /// The summoned monster damage type.
-    /// </summary>
-    SummonedMonster = 3,
-
-    /// <summary>
     /// The damage of the fenrir pet.
     /// </summary>
     Fenrir = 4,
-
-    /// <summary>
-    /// All damage types.
-    /// </summary>
-    All = 5,
 }
 
 /// <summary>
@@ -194,6 +184,7 @@ public partial class Skill
     /// <remarks>
     /// The client is referencing skills by this number.
     /// </remarks>
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>

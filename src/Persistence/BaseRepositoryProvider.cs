@@ -4,17 +4,25 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Collections.Concurrent;
+using System.Threading;
+
 /// <summary>
 /// The base repository provider.
 /// </summary>
 public class BaseRepositoryProvider : IRepositoryProvider
 {
-    private bool _isInitialized;
+    private readonly Lock _initializationLock = new();
+
+    private volatile bool _isInitialized;
 
     /// <summary>
     /// Gets the repositories for each entity type.
     /// </summary>
-    protected IDictionary<Type, object> Repositories { get; } = new Dictionary<Type, object>();
+    /// <remarks>
+    /// Derived providers may register repositories on demand, while other contexts look them up concurrently.
+    /// </remarks>
+    protected IDictionary<Type, object> Repositories { get; } = new ConcurrentDictionary<Type, object>();
 
     /// <summary>
     /// Gets the repository of the specified generic type.
@@ -123,10 +131,20 @@ public class BaseRepositoryProvider : IRepositoryProvider
 
     private void EnsureInitialized()
     {
-        if (!this._isInitialized)
+        if (this._isInitialized)
         {
-            this.Initialize();
-            this._isInitialized = true;
+            return;
+        }
+
+        // A provider is shared by concurrent contexts, e.g. of players logging in at the same time,
+        // so the first accesses may happen concurrently.
+        lock (this._initializationLock)
+        {
+            if (!this._isInitialized)
+            {
+                this.Initialize();
+                this._isInitialized = true;
+            }
         }
     }
 }

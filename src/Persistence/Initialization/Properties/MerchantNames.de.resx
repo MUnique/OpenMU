@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="ThompsonTheMerchant" xml:space="preserve">
+    <value>Händler Thompson</value>
+  </data>
+  <data name="ElfLala" xml:space="preserve">
+    <value>Elfe Lala</value>
+  </data>
+  <data name="EoTheCraftsman" xml:space="preserve">
+    <value>Handwerker Eo</value>
+  </data>
+  <data name="CarenTheBarmaid" xml:space="preserve">
+    <value>Schankmädchen Caren</value>
+  </data>
+  <data name="IzabelTheWizard" xml:space="preserve">
+    <value>Zauberin Izabel</value>
+  </data>
+  <data name="ZiennaTheWeaponsMerchant" xml:space="preserve">
+    <value>Waffenhändlerin Zienna</value>
+  </data>
+  <data name="WanderingMerchantMartin" xml:space="preserve">
+    <value>Wanderhändler Martin</value>
+  </data>
+  <data name="WanderingMerchantHarold" xml:space="preserve">
+    <value>Wanderhändler Harold</value>
+  </data>
+  <data name="HanzoTheBlacksmith" xml:space="preserve">
+    <value>Schmied Hanzo</value>
+  </data>
+  <data name="PotionGirlAmy" xml:space="preserve">
+    <value>Trankmädchen Amy</value>
+  </data>
+  <data name="PasiTheMage" xml:space="preserve">
+    <value>Magier Pasi</value>
+  </data>
+  <data name="LumenTheBarmaid" xml:space="preserve">
+    <value>Schankmädchen Lumen</value>
+  </data>
+  <data name="OracleLayla" xml:space="preserve">
+    <value>Orakel Layla</value>
+  </data>
+  <data name="LeinaTheGeneralGoodsMerchant" xml:space="preserve">
+    <value>Gemischtwarenhändlerin Leina</value>
+  </data>
+  <data name="WeaponsMerchantBolo" xml:space="preserve">
+    <value>Waffenhändler Bolo</value>
+  </data>
+</root>

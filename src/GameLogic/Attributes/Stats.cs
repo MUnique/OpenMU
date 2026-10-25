@@ -537,8 +537,29 @@ public class Stats
     /// <summary>
     /// Gets the extra projectiles attribute definition.
     /// </summary>
-    /// <remarks>Can be increased by equipping certain (cross)bows and/or unlocking triple shot mastery.</remarks>
-    public static AttributeDefinition ExtraProjectiles { get; } = new(new Guid("B9E4F3C2-A1D5-4B8E-7F2C-6D3A9E1F5C8B"), "Extra Projectiles", "The number of extra projectiles shot with triple shot skill.");
+    /// <remarks>
+    /// A generic pool which is increased by equipping certain (cross)bows. It applies to
+    /// every multi-projectile skill which opts in through its <see cref="SkillExtraProjectiles"/>.
+    /// </remarks>
+    public static AttributeDefinition ExtraProjectiles { get; } = new(new Guid("B9E4F3C2-A1D5-4B8E-7F2C-6D3A9E1F5C8B"), "Extra Projectiles", "The number of extra projectiles which is added to every multi-projectile skill which uses them.");
+
+    /// <summary>
+    /// Gets the triple shot mastery's extra projectiles attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// A skill-exclusive source which is fed by the passive power-up of the triple shot mastery.
+    /// Only the triple shot skill uses it, so it doesn't leak into other multi-projectile skills.
+    /// </remarks>
+    public static AttributeDefinition TripleShotExtraProjectiles { get; } = new(new Guid("7F3B9C21-4A6E-4D8B-9F1C-2E5A7D9B3C64"), "Triple Shot Extra Projectiles", "The number of extra projectiles granted by the triple shot mastery.");
+
+    /// <summary>
+    /// Gets the extra projectiles attribute definition of a skill.
+    /// </summary>
+    /// <remarks>
+    /// The number of extra projectiles which a multi-projectile skill actually shoots.
+    /// It is composed per skill from the pools it uses, see <see cref="Skill.AttributeRelationships"/>.
+    /// </remarks>
+    public static AttributeDefinition SkillExtraProjectiles { get; } = new(new Guid("C4D8E2A6-1B5F-4E9C-8A3D-6F2B7C4E1A95"), "Skill Extra Projectiles", "The number of extra projectiles which a multi-projectile skill actually shoots.");
 
     /// <summary>
     /// Gets elf's melee attack mode attribute definition.
@@ -1513,6 +1534,15 @@ public class Stats
     public static AttributeDefinition NearbyPartyMemberCount { get; } = new(new Guid("585CB9C8-FA23-4995-ABA9-3327321A6F44"), "Nearby party member count", "Defines how many party members are currently nearby.");
 
     /// <summary>
+    /// Gets the <see cref="CraftingBonusPercentage"/> attribute which defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine.
+    /// </summary>
+    /// <remarks>
+    /// It can be defined globally (<see cref="GameConfiguration.GlobalBaseAttributeValues"/>), per map, per account or per character,
+    /// e.g. for an event or a premium subscription. A negative value decreases the success rate.
+    /// </remarks>
+    public static AttributeDefinition CraftingBonusPercentage { get; } = new(new Guid("A1B714D3-AF71-446A-8C8B-227FAB856D58"), "Crafting bonus percentage", "Defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine. A negative value decreases it.");
+
+    /// <summary>
     /// Gets the <see cref="SkillLevel"/> attribute which defines the level of a skill.
     /// </summary>
     public static AttributeDefinition SkillLevel { get; } = new(new Guid("BB84DC85-D153-4BDE-84D6-0B893D653810"), "Skill level", "Defines the level of a skill.");
@@ -1588,18 +1618,39 @@ public class Stats
     public static AttributeDefinition SkillFinalMultiplier { get; } = new(new Guid("AC72CAE4-973C-46BB-BE3B-F6260E8DDFA8"), "Skill Final Damage Multiplier (skill attribute)", string.Empty);
 
     /// <summary>
-    /// Gets the skill's final multiplier attribute definition against non-player targets (PvE).
+    /// Gets the skill's final multiplier attribute definition against non-player targets (PvM).
     /// </summary>
     /// <remarks>
     /// When it's set, it replaces <see cref="SkillFinalMultiplier"/> outside of PvP.
     /// E.g. Dragon Slasher deals three times its damage to monsters.
     /// </remarks>
-    public static AttributeDefinition SkillFinalMultiplierPve { get; } = new(new Guid("A7C24DFA-7F97-42A6-90C4-1F634C77AD71"), "Skill Final Damage Multiplier (PvE) (skill attribute)", string.Empty);
+    public static AttributeDefinition SkillFinalMultiplierPvm { get; } = new(new Guid("A7C24DFA-7F97-42A6-90C4-1F634C77AD71"), "Skill Final Damage Multiplier (PvM) (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the value of a master skill at its current level, as calculated by <see cref="MasterSkillDefinition.ValueFormula"/>.
+    /// </summary>
+    /// <remarks>
+    /// It's an input for the <see cref="MasterSkillDefinition.PassivePowerUps"/>, next to the <see cref="SkillLevel"/>.
+    /// </remarks>
+    public static AttributeDefinition MasterSkillValue { get; } = new(new Guid("24E5ED6D-EB97-41C1-B013-60B8D9EB8B9C"), "Master Skill Value (skill attribute)", string.Empty);
 
     /// <summary>
     /// Gets the skill's final damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the Dragon Slasher skill's shield damage chance.
+    /// </summary>
+    public static AttributeDefinition DragonSlasherShieldDamageChance { get; } = new(new Guid("F2A8D5C7-1E9B-43F6-A2D8-7C4E1B9A6F3D"), "Dragon Slasher Shield Damage Chance (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the Dragon Slasher skill's shield damage rate.
+    /// </summary>
+    public static AttributeDefinition DragonSlasherShieldDamageRate { get; } = new(new Guid("A4E2F8C1-9D6B-47A3-B5E2-1F8C6D3A9B4E"), "Dragon Slasher Shield Damage Rate (skill attribute)", string.Empty)
+    {
+        MaximumValue = 1,
+    };
 
     /// <summary>
     /// Gets the dictionary which relates the jewelry element resistance attribute to the correspondent DMG bonus attribute.
