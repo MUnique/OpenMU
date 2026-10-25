@@ -219,7 +219,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         var suffix = patch switch
         {
             0 => string.Empty,
-            <= lettersInAlphabet => ((char)('a' + patch - 1)).ToString(),
+            <= lettersInAlphabet => ((char)('a' + patch - 1)).ToString(CultureInfo.InvariantCulture),
             _ => $"{(char)('A' + patch - lettersInAlphabet - 1)}+",
         };
         return string.Format(CultureInfo.CurrentCulture, Resources.GameVersionFormat, string.Create(CultureInfo.InvariantCulture, $"{value / 10000}.{(value / 100) % 100:00}{suffix}"));
