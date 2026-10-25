@@ -941,5 +941,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description text.</summary>
         public static string ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description => ResourceManager.GetString("ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixSeedSphereMaximumItemLevelUpdatePlugIn_Name text.</summary>
+        public static string FixSeedSphereMaximumItemLevelUpdatePlugIn_Name => ResourceManager.GetString("FixSeedSphereMaximumItemLevelUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSeedSphereMaximumItemLevelUpdatePlugIn_Description text.</summary>
+        public static string FixSeedSphereMaximumItemLevelUpdatePlugIn_Description => ResourceManager.GetString("FixSeedSphereMaximumItemLevelUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }

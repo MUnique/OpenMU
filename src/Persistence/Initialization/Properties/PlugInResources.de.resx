@@ -828,4 +828,6 @@
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>Dieses Update fügt die Ancient-Sets Vega und Chamer der Sacred-Gegenstände hinzu.</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Wachen von Castle Siege konfigurieren</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>Die Gardisten an der Brücke der Karte von Castle Siege öffnen das Anmeldefenster, und die Wache am Eingang zum Land der Prüfungen wird zu einem passiven NPC, der den Dialog des Landes der Prüfungen öffnet.</value></data>
+  <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Maximale Gegenstandsstufe der Seed Spheres korrigieren</value></data>
+  <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>Diese Aktualisierung setzt die maximale Gegenstandsstufe der Seed Spheres auf die höchste Optionsnummer ihres Elements. Die Gegenstandsstufe einer Seed Sphere bestimmt ihre Option, daher konnten Seed Spheres mit einer anderen als der ersten Option nicht erstellt werden, z. B. mit dem Item-Chatbefehl.</value></data>
 </root>
