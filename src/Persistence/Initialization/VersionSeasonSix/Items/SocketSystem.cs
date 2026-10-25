@@ -568,6 +568,9 @@ public class SocketSystem : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.DropLevel = level;
+
+        // Like for the seed, the item level defines the kind of option of the seed sphere.
+        itemDefinition.MaximumItemLevel = (byte)options.PossibleOptions.Max(o => o.Number);
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         itemDefinition.PossibleItemOptions.Add(options);
         this.GameConfiguration.Items.Add(itemDefinition);

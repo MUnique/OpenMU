@@ -55,6 +55,9 @@ public class UnavailableAdminUserRepository : IAdminUserRepository
     public ValueTask UpdateAsync(AdminUser user, CancellationToken cancellationToken = default) => throw this.CreateException();
 
     /// <inheritdoc />
+    public ValueTask<bool> TryAdvanceTotpStepAsync(Guid userId, long step, CancellationToken cancellationToken = default) => throw this.CreateException();
+
+    /// <inheritdoc />
     public ValueTask DeleteAsync(AdminUser user, CancellationToken cancellationToken = default) => throw this.CreateException();
 
     private InvalidOperationException CreateException()

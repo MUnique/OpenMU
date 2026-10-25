@@ -190,7 +190,24 @@ public sealed class AdminUserRepository : IAdminUserRepository, IDisposable
 
         await using var context = new AdminPanelContext();
         context.AdminUsers.Update(user);
+
+        // Only TryAdvanceTotpStepAsync may change it, otherwise a stale user could set it back.
+        context.Entry(user).Property(u => u.LastAcceptedTotpStep).IsModified = false;
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryAdvanceTotpStepAsync(Guid userId, long step, CancellationToken cancellationToken = default)
+    {
+        await this.EnsureAvailableStorageAsync(cancellationToken).ConfigureAwait(false);
+
+        // A single conditional UPDATE: of concurrent attempts with the same step, the database lets only one through.
+        await using var context = new AdminPanelContext();
+        var updatedRows = await context.AdminUsers
+            .Where(u => u.Id == userId && u.LastAcceptedTotpStep < step)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.LastAcceptedTotpStep, step), cancellationToken)
+            .ConfigureAwait(false);
+        return updatedRows == 1;
     }
 
     /// <inheritdoc />

@@ -1012,4 +1012,7 @@ Inventarerweiterungen: {18}</value>
   <data name="DiscordNotifications" xml:space="preserve">
     <value>Direktnachrichten in Discord über: {0}. Mit /discord notify login, letter oder friend schaltest du sie ein oder aus.</value>
   </data>
+  <data name="MapIsNotActive" xml:space="preserve">
+    <value>Diese Karte ist nicht verfügbar.</value>
+  </data>
 </root>

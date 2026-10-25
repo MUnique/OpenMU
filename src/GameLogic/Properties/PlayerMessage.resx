@@ -1123,4 +1123,7 @@ Inventory Extensions: {18}</value>
   <data name="DiscordNotifications" xml:space="preserve">
     <value>Direct messages in Discord about: {0}. Turn them on or off with /discord notify login, letter or friend.</value>
   </data>
+  <data name="MapIsNotActive" xml:space="preserve">
+    <value>This map is not available.</value>
+  </data>
 </root>
