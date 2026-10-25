@@ -1,4 +1,4 @@
-// <copyright file="ItemPriceFormula.cs" company="MUnique">
+﻿// <copyright file="ItemPriceFormula.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -17,6 +17,12 @@ using org.mariuszgromada.math.mxparser;
 /// </remarks>
 internal sealed class ItemPriceFormula
 {
+    /// <summary>
+    /// The smallest double value which is too large for a <see cref="long"/>.
+    /// <c>(double)long.MaxValue</c> is rounded up to it, so it can't be used for the range check.
+    /// </summary>
+    private const double TooLargeForLong = 9223372036854775808.0;
+
     private static readonly ConcurrentDictionary<string, ItemPriceFormula> Cache = new();
 
     private readonly object _syncRoot = new();
@@ -60,7 +66,9 @@ internal sealed class ItemPriceFormula
     /// </summary>
     /// <param name="variables">The values of the variables.</param>
     /// <returns>The result, truncated to an integer.</returns>
-    /// <exception cref="InvalidOperationException">The formula can't be evaluated, e.g. because of a syntax error.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The formula can't be evaluated, e.g. because of a syntax error, or its result is not a finite number in the range of a <see cref="long"/>.
+    /// </exception>
     public long Evaluate(in Variables variables)
     {
         double result;
@@ -81,6 +89,12 @@ internal sealed class ItemPriceFormula
                 // A price of 0 would let players buy the item for free, so we better fail.
                 throw new InvalidOperationException($"The item price formula '{this._formula}' can't be evaluated: {this._expression.getErrorMessage()}");
             }
+        }
+
+        if (!double.IsFinite(result) || result >= TooLargeForLong || result < long.MinValue)
+        {
+            // Casting it to a long would result in an arbitrary price.
+            throw new InvalidOperationException($"The result {result} of the item price formula '{this._formula}' is not a valid price.");
         }
 
         return (long)result;
