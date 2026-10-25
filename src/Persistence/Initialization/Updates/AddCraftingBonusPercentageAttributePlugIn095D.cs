@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the crafting bonus percentage attribute for version 0.95d.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCraftingBonusPercentageAttributePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCraftingBonusPercentageAttributePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9C6D1732-EA73-497C-9CD1-029ECEC644F4")]
 public class AddCraftingBonusPercentageAttributePlugIn095D : AddCraftingBonusPercentageAttributePlugInBase
 {
