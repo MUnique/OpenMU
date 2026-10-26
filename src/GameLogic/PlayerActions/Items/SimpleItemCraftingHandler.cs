@@ -108,7 +108,9 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
 
         if (totalCraftingPrice > 0)
         {
-            rate = (byte)(totalCraftingPrice / this._settings.NpcPriceDivisor);
+            // The rate is a byte; an expensive item (e.g. an excellent weapon with options) can be worth more
+            // than 255 times the divisor, which wrapped the rate around to a small value instead of capping it.
+            rate = (byte)Math.Min(byte.MaxValue, totalCraftingPrice / this._settings.NpcPriceDivisor);
         }
 
         if (this._settings.MaximumSuccessPercent > 0)

@@ -29,6 +29,12 @@ internal sealed class PlayerMovement : IDisposable
     /// </summary>
     private const int DefaultMaxAllowedWalkStartOffset = 5;
 
+    /// <summary>
+    /// The distance of a diagonal neighbour tile. A reported position this close to ours is
+    /// the client rounding a position between two tiles.
+    /// </summary>
+    private const double NextTileDistance = 1.5;
+
     private readonly Player _player;
 
     private readonly AsyncLock _moveLock = new();
@@ -183,11 +189,18 @@ internal sealed class PlayerMovement : IDisposable
     /// the original target: the player ends up a few tiles from where its client has it, which in turn
     /// makes the next walk request start too far away and rubberband the client, and everybody else in
     /// view sees it walk on past the attack and then get pulled back.
-    /// The reported position is only taken when it belongs to the walk which is currently running and is
-    /// no further from our position than a walk may start away from it. Otherwise the walk is left alone,
-    /// so this cannot be used to travel the rest of the path for free.
-    /// The moving player is not notified: it told us where it stopped, and confirming it would make its
-    /// client pull the character onto the tile centre and drop the attack animation it just started.
+    /// The reported position is taken when it belongs to the walk which is currently running and is
+    /// no further from our position than a walk may start away from it.
+    /// a reported position which didn't pass these checks used to leave the walk running and
+    /// the client uninformed, so the difference grew silently until the next walk request was more than
+    /// 5 tiles off and the client got pulled across the map. Now the walk always ends: a position next to
+    /// ours (the client rounds a position between two tiles) is taken as it is, anything else ends the
+    /// walk where we are and tells everybody, the player included, so the difference is closed at once.
+    /// Neither can be used to travel: the player never gets further than one tile from our position.
+    /// The same correction is sent when we already stood still and the client reports another tile.
+    /// The moving player is not notified when its position is taken: it told us where it stopped, and
+    /// confirming it would make its client pull the character onto the tile centre and drop the attack
+    /// animation it just started.
     /// </remarks>
     public async ValueTask StopWalkAtAsync(Point stopPoint)
     {
@@ -198,17 +211,24 @@ internal sealed class PlayerMovement : IDisposable
 
         if (!this.IsWalking)
         {
+            await this.ResynchronizeIfApartAsync(currentMap, stopPoint).ConfigureAwait(false);
             return;
         }
 
-        if (!await this.IsStopPointAcceptableAsync(stopPoint).ConfigureAwait(false))
+        if (await this.IsStopPointAcceptableAsync(stopPoint).ConfigureAwait(false)
+            || this.IsNextToCurrentPosition(currentMap, stopPoint))
         {
+            this._player.Logger.LogDebug("StopWalkAtAsync: Player stopped its walk to {0} at {1}", this.WalkTarget, stopPoint);
+            await this._walker.StopAsync().ConfigureAwait(false);
+            await this.MoveOnMapAsync(currentMap, stopPoint, MoveType.Instant, notifyMovedObject: false).ConfigureAwait(false);
             return;
         }
 
-        this._player.Logger.LogDebug("StopWalkAtAsync: Player stopped its walk to {0} at {1}", this.WalkTarget, stopPoint);
+        var walkTarget = this.WalkTarget;
         await this._walker.StopAsync().ConfigureAwait(false);
-        await this.MoveOnMapAsync(currentMap, stopPoint, MoveType.Instant, notifyMovedObject: false).ConfigureAwait(false);
+        var position = this._player.Position;
+        this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which can't be taken (walk to {1}). Ended the walk at {2} and resynchronized the client.", stopPoint, walkTarget, position);
+        await this.MoveOnMapAsync(currentMap, position, MoveType.Instant).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -310,17 +330,48 @@ internal sealed class PlayerMovement : IDisposable
         var offset = stopPoint.EuclideanDistanceTo(currentPosition);
         if (offset > maxAllowedWalkStartOffset)
         {
-            this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, but it's currently at {1} (offset {2} > {3}). Keeping the walk.", stopPoint, currentPosition, offset, maxAllowedWalkStartOffset);
+            this._player.Logger.LogDebug("StopWalkAtAsync: Player reported it stopped walking at {0}, but it's currently at {1} (offset {2} > {3}). Not taken as it is.", stopPoint, currentPosition, offset, maxAllowedWalkStartOffset);
             return false;
         }
 
         if (!await this._walker.IsPointOfCurrentWalkAsync(stopPoint).ConfigureAwait(false))
         {
-            this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which is not a position of its current walk to {1}. Keeping the walk.", stopPoint, this.WalkTarget);
+            this._player.Logger.LogDebug("StopWalkAtAsync: Player reported it stopped walking at {0}, which is not a position of its current walk to {1}. Not taken as it is.", stopPoint, this.WalkTarget);
             return false;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Determines whether the reported position is one tile (or less) away from our position
+    /// and can be walked on, which is just the client rounding a position between two tiles.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="point">The reported position.</param>
+    /// <returns><c>True</c>, if the position may be taken as it is; Otherwise, <c>false</c>.</returns>
+    private bool IsNextToCurrentPosition(GameMap map, Point point)
+    {
+        return point.EuclideanDistanceTo(this._player.Position) <= NextTileDistance
+            && map.Terrain.WalkMap[point.X, point.Y];
+    }
+
+    /// <summary>
+    /// The player stood still and its client reports another position. If it's further than
+    /// the next tile, everybody (the player included) is told where we have it.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="reportedPoint">The position the client reports.</param>
+    private async ValueTask ResynchronizeIfApartAsync(GameMap map, Point reportedPoint)
+    {
+        var position = this._player.Position;
+        if (reportedPoint.EuclideanDistanceTo(position) <= NextTileDistance)
+        {
+            return;
+        }
+
+        this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped at {0}, but it's standing at {1}. Resynchronized the client.", reportedPoint, position);
+        await this.MoveOnMapAsync(map, position, MoveType.Instant).ConfigureAwait(false);
     }
 
     /// <summary>

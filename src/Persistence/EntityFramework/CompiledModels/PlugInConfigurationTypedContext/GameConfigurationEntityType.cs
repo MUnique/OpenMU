@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForPlugInCon
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration),
                 baseEntityType,
-                propertyCount: 31,
+                propertyCount: 33,
                 navigationCount: 1,
                 keyCount: 1);
 
@@ -35,6 +35,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForPlugInCon
                 valueGeneratorFactory: new MUnique.OpenMU.Persistence.EntityFramework.GuidV7ValueGeneratorFactory().Create,
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var ancientDropLevelBonus = runtimeEntityType.AddProperty(
+                "AncientDropLevelBonus",
+                typeof(byte),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration).GetProperty("AncientDropLevelBonus", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration).GetField("<AncientDropLevelBonus>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: (byte)0);
+            ancientDropLevelBonus.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var areaSkillHitsPlayer = runtimeEntityType.AddProperty(
                 "AreaSkillHitsPlayer",
@@ -99,6 +107,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForPlugInCon
                 fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetField("<DuelConfigurationId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             duelConfigurationId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentDropLevelBonus = runtimeEntityType.AddProperty(
+                "ExcellentDropLevelBonus",
+                typeof(byte),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration).GetProperty("ExcellentDropLevelBonus", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.GameConfiguration).GetField("<ExcellentDropLevelBonus>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: (byte)0);
+            excellentDropLevelBonus.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var excellentItemDropLevelDelta = runtimeEntityType.AddProperty(
                 "ExcellentItemDropLevelDelta",

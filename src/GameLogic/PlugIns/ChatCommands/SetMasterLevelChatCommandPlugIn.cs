@@ -5,8 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -53,9 +52,7 @@ public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLe
             return;
         }
 
-        targetPlayer.Attributes![Stats.MasterLevel] = checked(arguments.MasterLevel);
-        await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
-        await targetPlayer.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(targetPlayer, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
+        await GameMasterActions.SetLevelAsync(targetPlayer, arguments.MasterLevel, true).ConfigureAwait(false);
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetMasterLevelResult), arguments.MasterLevel).ConfigureAwait(false);
     }
 

@@ -29,7 +29,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
+public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 
@@ -163,6 +163,15 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     public async ValueTask StartAsync()
     {
         using var logScope = this._logger.BeginScope(("GameServer", this.Id));
+        if (this._gameContext.Configuration.ItemPriceDefinitions.Count == 0)
+        {
+            // Since the item prices are configured by item price definitions, a configuration without any is missing the
+            // mandatory update which adds them. The server would sell special items, e.g. jewels, at the price of equipment.
+            this._logger.LogError("The game server is not started, because the game configuration has no item price definitions. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.");
+            this.ServerState = ServerState.Stopped;
+            return;
+        }
+
         this.ServerState = ServerState.Starting;
         try
         {

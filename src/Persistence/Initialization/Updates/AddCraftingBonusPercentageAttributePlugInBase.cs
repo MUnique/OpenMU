@@ -14,21 +14,11 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// </summary>
 public abstract class AddCraftingBonusPercentageAttributePlugInBase : UpdatePlugInBase
 {
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add crafting bonus percentage attribute";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "Adds the attribute which defines the percentage points which are added to the success rate of item craftings.";
+    /// <inheritdoc />
+    public override string Name => Properties.PlugInResources.AddCraftingBonusPercentageAttributePlugInBase_Name;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
-
-    /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => Properties.PlugInResources.AddCraftingBonusPercentageAttributePlugInBase_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.MuHelper;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -23,6 +24,14 @@ public class MuHelperSettingsInitializationPlugIn : IPlayerStateChangedPlugIn
         if (currentState != PlayerState.EnteredWorld)
         {
             return default;
+        }
+
+        if (previousState == PlayerState.CharacterSelection && player is not OfflinePlayer)
+        {
+            // Another character may have been selected on the same connection;
+            // the previous character's settings must not carry over to it.
+            // Offline players and bots get their settings before entering the world.
+            player.MuHelperSettings = null;
         }
 
         if (player.MuHelperSettings is null && player.SelectedCharacter?.MuHelperConfiguration is { } configuration)

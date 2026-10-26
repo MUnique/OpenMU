@@ -6,6 +6,11 @@
 <PageTitle>OpenMU: @Resources.Setup</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Setup"/>
 
+@if (this._updateErrorMessage is { } updateErrorMessage)
+{
+    <div class="alert alert-danger" role="alert">@updateErrorMessage</div>
+}
+
 @if (this.ShowInstall)
 {
     <Install InstallationFinished="this.OnInstallationFinishedAsync" />
