@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
@@ -12,7 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// </summary>
 public class ItemCraftAction
 {
-    private readonly IDictionary<ItemCrafting, IItemCraftingHandler> _craftingHandlerCache = new Dictionary<ItemCrafting, IItemCraftingHandler>();
+    private readonly ConcurrentDictionary<ItemCrafting, IItemCraftingHandler> _craftingHandlerCache = new();
 
     /// <summary>
     /// Mixes the items at the currently opened crafting NPC.
@@ -101,13 +102,8 @@ public class ItemCraftAction
 
     private IItemCraftingHandler GetCraftingHandler(ItemCrafting crafting)
     {
-        if (!this._craftingHandlerCache.TryGetValue(crafting, out var craftingHandler))
-        {
-            craftingHandler = this.CreateCraftingHandler(crafting);
-            this._craftingHandlerCache.Add(crafting, craftingHandler);
-        }
-
-        return craftingHandler;
+        // This action may be shared between players, e.g. by the message handlers, so the cache must be thread-safe.
+        return this._craftingHandlerCache.GetOrAdd(crafting, this.CreateCraftingHandler);
     }
 
     private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
