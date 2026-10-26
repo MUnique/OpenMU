@@ -16,6 +16,11 @@ using MUnique.OpenMU.Interfaces;
 public class PickupItemAction
 {
     /// <summary>
+    /// The maximum distance in tiles between the player and a drop which can be picked up.
+    /// </summary>
+    internal const int MaximumPickupDistance = 3;
+
+    /// <summary>
     /// Pickups the item.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -76,7 +81,7 @@ public class PickupItemAction
         }
 
         var dist = (int)player.GetDistanceTo(droppedLocateable);
-        if (dist > 3)
+        if (dist > MaximumPickupDistance)
         {
             return false;
         }

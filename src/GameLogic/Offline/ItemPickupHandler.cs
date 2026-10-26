@@ -16,6 +16,16 @@ public sealed class ItemPickupHandler
 {
     private const byte MinPickupRange = 1;
 
+    /// <summary>
+    /// How often the player walks towards the same drop before giving up on it.
+    /// </summary>
+    private const int MaximumWalksPerDrop = 3;
+
+    /// <summary>
+    /// How long a drop is ignored after it could not be picked up or reached.
+    /// </summary>
+    private static readonly TimeSpan IgnoreDuration = TimeSpan.FromSeconds(30);
+
     private static readonly PickupItemAction PickupAction = new();
 
     private static readonly HashSet<ItemIdentifier> Jewels =
@@ -34,21 +44,37 @@ public sealed class ItemPickupHandler
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
+    private readonly MovementHandler? _movementHandler;
+    private readonly Dictionary<ushort, DateTime> _ignoredDrops = [];
+
+    private ushort? _walkTargetId;
+    private int _walksToTarget;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemPickupHandler"/> class.
     /// </summary>
     /// <param name="player">The offline player.</param>
     /// <param name="config">The MU Helper configuration.</param>
-    public ItemPickupHandler(OfflinePlayer player, IMuHelperSettings? config)
+    /// <param name="movementHandler">
+    /// The movement handler to walk to drops which are out of pickup reach. Without it, such drops are left alone.
+    /// </param>
+    public ItemPickupHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler? movementHandler = null)
     {
         this._player = player;
         this._config = config;
+        this._movementHandler = movementHandler;
     }
 
     /// <summary>
     /// Scans for and picks up items within a configurable range.
     /// </summary>
+    /// <remarks>
+    /// The obtain range may be larger than the distance at which the server accepts a pick up
+    /// (<see cref="PickupItemAction.MaximumPickupDistance"/>). Requesting such a drop from where the player
+    /// stands was refused on every tick, forever; instead the player walks to the nearest wanted drop
+    /// first, like the MU Helper of the client does. A drop which stays on the ground after a request
+    /// (e.g. no inventory space, not an owner yet) or which can't be reached is ignored for a while.
+    /// </remarks>
     public async ValueTask PickupItemsAsync()
     {
         if (this._config is null || this._player.CurrentMap is not { } map)
@@ -63,13 +89,37 @@ public sealed class ItemPickupHandler
 
         byte range = (byte)Math.Max(this._config.ObtainRange, MinPickupRange);
         var drops = map.GetDropsInRange(this._player.Position, range);
+        var now = DateTime.UtcNow;
+        this.ForgetExpiredIgnores(now);
 
+        ILocateable? nearestOutOfReach = null;
+        var nearestDistance = double.MaxValue;
         foreach (var drop in drops)
         {
-            if (this.ShouldPickUpDrop(drop))
+            if (this._ignoredDrops.ContainsKey(drop.Id) || !this.ShouldPickUpDrop(drop))
+            {
+                continue;
+            }
+
+            var distance = this._player.GetDistanceTo(drop);
+            if (distance <= PickupItemAction.MaximumPickupDistance)
             {
                 await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
+                if (ReferenceEquals(map.GetDrop(drop.Id), drop))
+                {
+                    this._ignoredDrops[drop.Id] = now + IgnoreDuration;
+                }
             }
+            else if (distance < nearestDistance)
+            {
+                nearestOutOfReach = drop;
+                nearestDistance = distance;
+            }
+        }
+
+        if (nearestOutOfReach is not null)
+        {
+            await this.WalkToDropAsync(nearestOutOfReach, now).ConfigureAwait(false);
         }
     }
 
@@ -158,5 +208,43 @@ public sealed class ItemPickupHandler
         }
 
         return false;
+    }
+
+    private async ValueTask WalkToDropAsync(ILocateable drop, DateTime now)
+    {
+        if (this._movementHandler is null || this._player.IsWalking)
+        {
+            return;
+        }
+
+        if (this._walkTargetId != drop.Id)
+        {
+            this._walkTargetId = drop.Id;
+            this._walksToTarget = 0;
+        }
+
+        this._walksToTarget++;
+        if (this._walksToTarget > MaximumWalksPerDrop
+            || !await this._movementHandler.WalkToPositionAsync(drop.Position).ConfigureAwait(false))
+        {
+            this._ignoredDrops[drop.Id] = now + IgnoreDuration;
+            this._walkTargetId = null;
+        }
+    }
+
+    private void ForgetExpiredIgnores(DateTime now)
+    {
+        if (this._ignoredDrops.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var (id, until) in this._ignoredDrops.ToList())
+        {
+            if (until <= now)
+            {
+                this._ignoredDrops.Remove(id);
+            }
+        }
     }
 }
