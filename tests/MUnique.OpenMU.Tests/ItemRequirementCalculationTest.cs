@@ -15,7 +15,7 @@ using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 using ItemSlotType = MUnique.OpenMU.Persistence.BasicModel.ItemSlotType;
 
 /// <summary>
-/// Unit tests for <see cref="ItemExtensions.GetRequirement"/>.
+/// Unit tests for <see cref="GameLogic.ItemExtensions.GetRequirement"/>.
 /// </summary>
 [TestFixture]
 public class ItemRequirementCalculationTest

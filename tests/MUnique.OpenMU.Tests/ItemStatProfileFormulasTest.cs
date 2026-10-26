@@ -113,6 +113,30 @@ public class ItemStatProfileFormulasTest
     }
 
     /// <summary>
+    /// Tests that the requirements of an ancient item follow the configured ancient drop level bonus, also when it's
+    /// excellent too.
+    /// </summary>
+    /// <param name="bonus">The ancient drop level bonus.</param>
+    /// <param name="alsoExcellent">If set to <c>true</c>, the item is excellent too.</param>
+    /// <param name="expected">The expected agility requirement.</param>
+    [TestCase((byte)30, false, 146)]
+    [TestCase((byte)50, false, 182)]
+    [TestCase((byte)50, true, 182)]
+    public void RequirementsFollowTheAncientDropLevelBonus(byte bonus, bool alsoExcellent, int expected)
+    {
+        var configuration = TestItemStatProfiles.Create();
+        configuration.AncientDropLevelBonus = bonus;
+        var item = MakeAncient(CreateArmor());
+        if (alsoExcellent)
+        {
+            MakeExcellent(item);
+        }
+
+        // 20 + 60 * (40 + bonus) * 3 / 100; the excellent bonus of 25 would give 137
+        Assert.That(item.GetRequirement(Requirement(Stats.TotalAgilityRequirementValue, 60), configuration).Value, Is.EqualTo(expected));
+    }
+
+    /// <summary>
     /// Tests that the item's profile is laid over the default: its own formula applies, the others come from the default.
     /// </summary>
     [Test]
@@ -184,6 +208,24 @@ public class ItemStatProfileFormulasTest
 
         // base 10 + level bonus 7, and the ancient part of the shield profile: 2 + (10 + 7) * 20 / (40 + 30)
         Assert.That(attributes[Stats.DefenseShield], Is.EqualTo(10 + 7 + 2 + (17 * 20 / 70)));
+    }
+
+    /// <summary>
+    /// Tests that the ancient part follows the configured ancient drop level bonus.
+    /// </summary>
+    /// <param name="bonus">The ancient drop level bonus.</param>
+    /// <param name="expected">The expected shield defense.</param>
+    [TestCase((byte)30, 35 + 2 + (35 * 20 / 70))]
+    [TestCase((byte)60, 35 + 2 + (35 * 20 / 100))]
+    public void AncientPartFollowsTheAncientDropLevelBonus(byte bonus, int expected)
+    {
+        var configuration = TestItemStatProfiles.Create();
+        configuration.AncientDropLevelBonus = bonus;
+        var shield = MakeAncient(CreateItem(group: 6, slot: InventoryConstants.RightHandSlot, (Stats.DefenseShield, 35)));
+        TestItemStatProfiles.ForItem(shield.Definition, configuration);
+
+        // base 35, and the ancient part of the shield profile: 2 + 35 * 20 / (40 + bonus)
+        Assert.That(GetPowerUps(shield, configuration)[Stats.DefenseShield], Is.EqualTo(expected));
     }
 
     /// <summary>
