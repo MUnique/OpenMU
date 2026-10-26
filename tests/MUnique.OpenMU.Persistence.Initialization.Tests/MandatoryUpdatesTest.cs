@@ -247,6 +247,8 @@ internal class MandatoryUpdatesTest
 
         public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
         {
+            // The update service hands over the configuration it loaded, as the real updates need it.
+            ArgumentNullException.ThrowIfNull(gameConfiguration);
             this._applied.Add(this.Name);
             var entry = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).FirstOrDefault(e => e.Key == this.Key)
                         ?? context.CreateNew<ConfigurationUpdate>();
