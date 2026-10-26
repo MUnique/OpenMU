@@ -31,7 +31,7 @@ the server process itself.
 | IP resolver | How the server determines the address it reports to the game client: `Auto`, `Public`, `Local`, `Loopback` or `Custom`. See [Connect a game client](../getting-started/game-client.md#disconnects-after-selecting-a-server). |
 | IP resolver parameter | The fixed IP or host name, when the resolver is `Custom` |
 | Auto start | Start the listeners of all servers when the process starts. Only applies to the all-in-one startup — distributed processes always start their listeners. |
-| Auto update schema | Update the database schema automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the update is started manually on the [Setup page](setup.md). |
+| Auto update schema | Update the database schema, and apply the mandatory [configuration updates](configuration-updates.md#at-startup), automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the updates are started manually on the [Setup page](setup.md) and the [Configuration updates page](configuration-updates.md). |
 | Read console input | Whether the all-in-one process reacts to commands typed in its console |
 | Time zone id | The time zone used to interpret the time-of-day entries of periodic event schedules (invasions, Blood Castle, Devil Square, …) and of the Castle Siege schedule. IANA ids such as `Europe/Warsaw` are recommended; when empty or unresolvable, UTC is used. |
 

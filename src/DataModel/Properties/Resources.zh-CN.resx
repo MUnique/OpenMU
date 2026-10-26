@@ -138,7 +138,7 @@
 		<value>自动更新数据库结构</value>
 	</data>
 	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
-		<value>一体化服务器（MUnique.OpenMU.Startup）启动时自动更新数据库结构。分布式部署需要通过管理后台手动执行更新。</value>
+		<value>一体化服务器（MUnique.OpenMU.Startup）启动时自动更新数据库结构，并应用必需的配置更新。分布式部署需要通过管理后台手动执行更新。</value>
 	</data>
     <data name="Slot" xml:space="preserve">
       <value>栏位</value>
