@@ -168,53 +168,20 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     }
 
     /// <summary>
+    /// Finds the level bonus of the level table of a base power-up at the level.
+    /// </summary>
+    private static LevelBonus? FindLevelBonus(ItemBasePowerUpDefinition? powerUp, int level)
+    {
+        return powerUp?.BonusPerLevelTable?.BonusPerLevel.FirstOrDefault(bonus => bonus.Level == level);
+    }
+
+    /// <summary>
     /// Gets the level bonus of the item's base power-up of the attribute at the item's level.
     /// </summary>
     private static int GetLevelBonus(Item item, AttributeDefinition attribute)
     {
-        var table = item.Definition!.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == attribute)?.BonusPerLevelTable;
-        return (int)(table?.BonusPerLevel.FirstOrDefault(bonus => bonus.Level == item.Level)?.AdditionalValue ?? 0);
-    }
-
-    /// <summary>
-    /// Computes the excellent part of the attribute, or the fixed excellent bonus when it's above 0, and for an ancient
-    /// item the ancient part, whose value is the base value plus the excellent part (and the level bonus, when the part
-    /// says so). A part which the terms don't give a value is <c>null</c>, and so is the excellent part of an item with a
-    /// drop level of 0, as in the game client.
-    /// </summary>
-    private static (int? Excellent, int? Ancient) ComputeParts(ResolvedItemStatProfile profile, AttributeDefinition attribute, int baseValue, int levelBonus, int baseDropLevel, int ancientDropLevel, bool isAncient, int fixedExcellentBonus = 0)
-    {
-        var excellentPart = profile.GetExcellentPart(attribute);
-        int? excellent = baseDropLevel <= 0 ? null
-            : fixedExcellentBonus > 0 ? fixedExcellentBonus
-            : excellentPart.HasValues ? excellentPart.Compute(baseValue, baseDropLevel)
-            : null;
-        int? ancient = null;
-        if (isAncient && profile.GetAncientPart(attribute) is { HasValues: true } ancientPart)
-        {
-            var value = baseValue + (excellent ?? 0) + (ancientPart.AfterLevelBonus ? levelBonus : 0);
-            ancient = ancientPart.Compute(value, ancientDropLevel);
-        }
-
-        return (excellent, ancient);
-    }
-
-    /// <summary>
-    /// Creates the excellent and ancient power-ups of a rise of the magic power. The terms are for the full magic power,
-    /// which is twice the rise, and the server halves each part (the client halves their sum).
-    /// </summary>
-    private static IEnumerable<PowerUpWrapper> CreateRisePowerUps(Item item, ResolvedItemStatProfile profile, AttributeDefinition rise, float riseValue, int baseDropLevel, int ancientDropLevel, bool isAncient, Func<int, AttributeDefinition, PowerUpWrapper> wrap)
-    {
-        var parts = ComputeParts(profile, rise, (int)riseValue * 2, GetLevelBonus(item, rise) * 2, baseDropLevel, ancientDropLevel, isAncient, item.Definition!.ExcellentBonus);
-        if (parts.Excellent is { } excellent)
-        {
-            yield return wrap(excellent / 2, rise);
-        }
-
-        if (parts.Ancient is { } ancient)
-        {
-            yield return wrap(ancient / 2, rise);
-        }
+        var powerUp = item.Definition!.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == attribute);
+        return (int)(FindLevelBonus(powerUp, item.Level)?.AdditionalValue ?? 0);
     }
 
     private IEnumerable<PowerUpDefinition> GetOptionCombinationBonus(IEnumerable<Item> activeItems, GameConfiguration gameConfiguration)
@@ -277,9 +244,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         var durabilityFactor = DurabilityAffectedItemAttributes.Contains(attribute.TargetAttribute) ? item.GetCurrentDurabilityFactor() : 1;
         var baseValueElmt = attribute.GetBaseValueElement(durabilityFactor);
 
-        var levelBonusElmt = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>())
-            .FirstOrDefault(bonus => bonus.Level == item.Level)?
-            .GetAdditionalValueElement(attribute.AggregateType, durabilityFactor);
+        var levelBonusElmt = FindLevelBonus(attribute, item.Level)?.GetAdditionalValueElement(attribute.AggregateType, durabilityFactor);
         if (levelBonusElmt is null)
         {
             yield return new PowerUpWrapper(baseValueElmt, targetAttribute ?? attribute.TargetAttribute, attributeHolder);
@@ -391,7 +356,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         if (!itemIsAncient && !itemIsExcellent)
         {
-            yield break;
+            return [];
         }
 
         var definition = item.Definition!;
@@ -399,22 +364,44 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         var baseDropLevel = definition.DropLevel;
         var ancientDropLevel = definition.CalculateDropLevel(true, false, this._gameConfiguration);
         var durabilityFactor = item.GetCurrentDurabilityFactor();
+        var powerUps = new List<PowerUpWrapper>();
 
         PowerUpWrapper Wrap(int value, AttributeDefinition target) => new(new SimpleElement(value * durabilityFactor, AggregateType.AddRaw), target, attributeHolder);
 
-        IEnumerable<PowerUpWrapper> WrapParts((int? Excellent, int? Ancient) parts, params AttributeDefinition[] targets)
+        void AddPart(int? part, int divisor, AttributeDefinition target, AttributeDefinition? secondTarget)
         {
-            foreach (var part in new[] { parts.Excellent, parts.Ancient })
+            if (part is not { } value)
             {
-                if (part is not { } value)
-                {
-                    continue;
-                }
+                return;
+            }
 
-                foreach (var target in targets)
-                {
-                    yield return Wrap(value, target);
-                }
+            powerUps.Add(Wrap(value / divisor, target));
+            if (secondTarget is not null)
+            {
+                powerUps.Add(Wrap(value / divisor, secondTarget));
+            }
+        }
+
+        // Adds the excellent part of the attribute, or the fixed excellent bonus when it's above 0, and for an ancient
+        // item the ancient part, whose value is the base value plus the excellent part (and the level bonus, when the
+        // part says so). An item with a drop level of 0 gets no excellent part, as in the game client. The terms of a
+        // rise of the magic power are for the full magic power, which is twice the rise, and each part is halved (the
+        // client halves their sum).
+        void AddParts(AttributeDefinition attribute, int baseValue, AttributeDefinition target, AttributeDefinition? secondTarget = null, int fixedExcellentBonus = 0, bool isRise = false)
+        {
+            var factor = isRise ? 2 : 1;
+            var value = baseValue * factor;
+            var excellentPart = profile.GetExcellentPart(attribute);
+            int? excellent = baseDropLevel <= 0 ? null
+                : fixedExcellentBonus > 0 ? fixedExcellentBonus
+                : excellentPart.HasValues ? excellentPart.Compute(value, baseDropLevel)
+                : null;
+            AddPart(excellent, factor, target, secondTarget);
+
+            if (itemIsAncient && profile.GetAncientPart(attribute) is { HasValues: true } ancientPart)
+            {
+                var levelBonus = ancientPart.AfterLevelBonus ? GetLevelBonus(item, attribute) * factor : 0;
+                AddPart(ancientPart.Compute(value + (excellent ?? 0) + levelBonus, ancientDropLevel), factor, target, secondTarget);
             }
         }
 
@@ -422,26 +409,13 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         if (item.IsArmorItem())
         {
-            var parts = ComputeParts(profile, Stats.DefenseBase, BaseValueOf(Stats.DefenseBase), GetLevelBonus(item, Stats.DefenseBase), baseDropLevel, ancientDropLevel, itemIsAncient);
-            foreach (var powerUp in WrapParts(parts, Stats.DefenseBase))
-            {
-                yield return powerUp;
-            }
+            AddParts(Stats.DefenseBase, BaseValueOf(Stats.DefenseBase), Stats.DefenseBase);
         }
 
         if (item.IsShield())
         {
-            var rateParts = ComputeParts(profile, Stats.DefenseRatePvm, BaseValueOf(Stats.DefenseRatePvm), GetLevelBonus(item, Stats.DefenseRatePvm), baseDropLevel, ancientDropLevel, itemIsAncient);
-            foreach (var powerUp in WrapParts(rateParts, Stats.DefenseRatePvm))
-            {
-                yield return powerUp;
-            }
-
-            var defenseParts = ComputeParts(profile, Stats.DefenseShield, BaseValueOf(Stats.DefenseShield), GetLevelBonus(item, Stats.DefenseShield), baseDropLevel, ancientDropLevel, itemIsAncient);
-            foreach (var powerUp in WrapParts(defenseParts, Stats.DefenseShield))
-            {
-                yield return powerUp;
-            }
+            AddParts(Stats.DefenseRatePvm, BaseValueOf(Stats.DefenseRatePvm), Stats.DefenseRatePvm);
+            AddParts(Stats.DefenseShield, BaseValueOf(Stats.DefenseShield), Stats.DefenseShield);
         }
 
         if (item.IsPhysicalWeapon(out var minPhysDmg))
@@ -456,42 +430,29 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             }
 
             // The terms of the minimum damage apply to the minimum and the maximum damage, computed from the minimum damage.
-            var parts = ComputeParts(profile, Stats.MinimumPhysBaseDmgByWeapon, (int)minPhysDmg, GetLevelBonus(item, Stats.MinimumPhysBaseDmgByWeapon), baseDropLevel, ancientDropLevel, itemIsAncient, definition.ExcellentBonus);
-            foreach (var powerUp in WrapParts(parts, minDmgAttribute, maxDmgAttribute))
-            {
-                yield return powerUp;
-            }
+            AddParts(Stats.MinimumPhysBaseDmgByWeapon, (int)minPhysDmg, minDmgAttribute, maxDmgAttribute, definition.ExcellentBonus);
 
             if (itemIsExcellent
                 && item.ItemOptions.Any(io => io.ItemOption?.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmgIncrease)
                 && definition.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.DoubleWieldWeaponCount))
             {
-                yield return new PowerUpWrapper(new SimpleElement(-1, AggregateType.AddRaw), Stats.PhysicalBaseDmgIncrease, attributeHolder);
+                powerUps.Add(new PowerUpWrapper(new SimpleElement(-1, AggregateType.AddRaw), Stats.PhysicalBaseDmgIncrease, attributeHolder));
             }
         }
 
         if (item.IsWizardryWeapon(out var staffRise) && item.ItemSlot == InventoryConstants.LeftHandSlot)
         {
-            foreach (var powerUp in CreateRisePowerUps(item, profile, Stats.StaffRise, staffRise.Value, baseDropLevel, ancientDropLevel, itemIsAncient, Wrap))
-            {
-                yield return powerUp;
-            }
+            AddParts(Stats.StaffRise, (int)staffRise.Value, Stats.StaffRise, fixedExcellentBonus: definition.ExcellentBonus, isRise: true);
         }
 
         if (item.IsScepter(out var scepterRise))
         {
-            foreach (var powerUp in CreateRisePowerUps(item, profile, Stats.ScepterRise, scepterRise.Value, baseDropLevel, ancientDropLevel, itemIsAncient, Wrap))
-            {
-                yield return powerUp;
-            }
+            AddParts(Stats.ScepterRise, (int)scepterRise.Value, Stats.ScepterRise, fixedExcellentBonus: definition.ExcellentBonus, isRise: true);
         }
 
         if (item.IsBook(out var curseRise))
         {
-            foreach (var powerUp in CreateRisePowerUps(item, profile, Stats.BookRise, curseRise.Value, baseDropLevel, ancientDropLevel, itemIsAncient, Wrap))
-            {
-                yield return powerUp;
-            }
+            AddParts(Stats.BookRise, (int)curseRise.Value, Stats.BookRise, fixedExcellentBonus: definition.ExcellentBonus, isRise: true);
         }
 
         if (itemIsAncient && item.IsJewelry())
@@ -500,10 +461,12 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             {
                 if (Stats.ElementResistanceToDamageBonus.Keys.FirstOrDefault(resistance => resistance == baseAttribute.TargetAttribute) is { } key)
                 {
-                    yield return new PowerUpWrapper(new SimpleElement(5 * durabilityFactor, AggregateType.AddRaw), Stats.ElementResistanceToDamageBonus[key], attributeHolder);
+                    powerUps.Add(Wrap(5, Stats.ElementResistanceToDamageBonus[key]));
                 }
             }
         }
+
+        return powerUps;
     }
 
     private PowerUpWrapper? GetPetLevel(Item item, AttributeSystem attributeHolder)
