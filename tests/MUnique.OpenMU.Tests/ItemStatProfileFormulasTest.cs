@@ -81,6 +81,34 @@ public class ItemStatProfileFormulasTest
     }
 
     /// <summary>
+    /// Tests that a formula which keeps the base value only keeps the growth: the option strength and a requirement
+    /// reduction still apply, as in the game client.
+    /// </summary>
+    [Test]
+    public void KeepBaseStillAddsTheOptionAndTheReduction()
+    {
+        var configuration = TestItemStatProfiles.Create();
+        GetFormula(GetDefault(configuration), Stats.TotalStrengthRequirementValue).KeepBase = true;
+        var item = CreateArmor(level: 9);
+        item.ItemOptions.Add(new BasicModel.ItemOptionLink { Level = 2, ItemOption = new BasicModel.IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
+        item.ItemOptions.Add(new BasicModel.ItemOptionLink
+        {
+            ItemOption = new BasicModel.IncreasableItemOption
+            {
+                OptionType = ItemOptionTypes.HarmonyOption,
+                PowerUpDefinition = new BasicModel.PowerUpDefinition
+                {
+                    TargetAttribute = Stats.RequiredStrengthReduction,
+                    Boost = new BasicModel.PowerUpDefinitionValue { ConstantValue = { Value = 10 } },
+                },
+            },
+        });
+
+        // the base 60, plus 2 option levels * 4 of the default, minus the reduction of 10
+        Assert.That(item.GetRequirement(Requirement(Stats.TotalStrengthRequirementValue, 60), configuration).Value, Is.EqualTo(58));
+    }
+
+    /// <summary>
     /// Tests that a formula with the level requirement basis takes the item's level requirement instead of the drop level.
     /// </summary>
     [Test]

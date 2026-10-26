@@ -396,20 +396,25 @@ public static class ItemExtensions
 
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
         var profile = ResolvedItemStatProfile.Of(item.Definition, gameConfiguration);
+        int value;
         if (profile.GetRequirementFormula(requirement.Attribute) is not { KeepBase: false } formula)
         {
-            return (totalAttribute, minimumValue);
+            // Without a formula, or with "keep base", the requirement doesn't grow; the option and the reduction still
+            // apply, as in the game client.
+            value = minimumValue;
         }
-
-        if (totalAttribute == Stats.TotalEnergy && item.IsBook(out _))
+        else if (totalAttribute == Stats.TotalEnergy && item.IsBook(out _))
         {
             // The energy requirement of the summoner's books, which increase the curse damage by their book rise, keeps
             // two quirks of the item formulas: a base value of 0 gives the formula's add, and options don't reduce it
             // (see MUnique/OpenMU#1301).
             return (totalAttribute, item.CalculateRequirement(formula, minimumValue, profile));
         }
+        else
+        {
+            value = minimumValue == 0 ? 0 : item.CalculateRequirement(formula, minimumValue, profile);
+        }
 
-        var value = minimumValue == 0 ? 0 : item.CalculateRequirement(formula, minimumValue, profile);
         if (value > 0 && totalAttribute == Stats.TotalStrength)
         {
             var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
