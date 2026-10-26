@@ -358,6 +358,7 @@ public class AreaSkillAttackAction
         {
             // The hit generated a different skill (e.g. ice) than the one originally casted.
             await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
+            return;
         }
 
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
