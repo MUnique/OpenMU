@@ -13,30 +13,19 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// sections of its item stat file. An item without a profile has the formulas of the default.
 /// </summary>
 /// <remarks>
-/// Nothing is cached, so that a change of a profile in the admin panel applies at once.
+/// A game server works with the configuration it loaded, so a change of a profile on the admin panel applies after
+/// the configuration is reloaded.
 /// </remarks>
 public sealed class ResolvedItemStatProfile
 {
     private readonly ItemStatProfile? _profile;
     private readonly ItemStatProfile _defaultProfile;
-    private readonly GameConfiguration _gameConfiguration;
 
-    private ResolvedItemStatProfile(ItemStatProfile? profile, ItemStatProfile defaultProfile, GameConfiguration gameConfiguration)
+    private ResolvedItemStatProfile(ItemStatProfile? profile, ItemStatProfile defaultProfile)
     {
         this._profile = profile;
         this._defaultProfile = defaultProfile;
-        this._gameConfiguration = gameConfiguration;
     }
-
-    /// <summary>
-    /// Gets what the item formulas add to the drop level of an excellent item.
-    /// </summary>
-    public int ExcellentDropLevelBonus => this._gameConfiguration.ExcellentDropLevelBonus;
-
-    /// <summary>
-    /// Gets what the item formulas add to the drop level of an ancient item.
-    /// </summary>
-    public int AncientDropLevelBonus => this._gameConfiguration.AncientDropLevelBonus;
 
     /// <summary>
     /// Gets what each item level adds to the level requirement.
@@ -65,7 +54,7 @@ public sealed class ResolvedItemStatProfile
         var defaultProfile = FindDefaultProfile(gameConfiguration)
                              ?? throw new InvalidOperationException($"The game configuration has no item stat profile named '{ItemStatProfile.DefaultName}'. Apply the pending configuration updates on the update page of the admin panel.");
         var profile = definition.StatProfile is { } own && own != defaultProfile ? own : null;
-        return new ResolvedItemStatProfile(profile, defaultProfile, gameConfiguration);
+        return new ResolvedItemStatProfile(profile, defaultProfile);
     }
 
     /// <summary>

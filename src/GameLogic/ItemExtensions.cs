@@ -373,73 +373,29 @@ public static class ItemExtensions
     /// </remarks>
     public static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement, GameConfiguration gameConfiguration)
     {
-        requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
+        ResolvedItemStatProfile? profile = null;
+        return item.GetRequirement(requirement, gameConfiguration, ref profile);
+    }
 
-        var minimumValue = requirement.MinimumItemLevel is { } minimumItemLevel && item.Level < minimumItemLevel
-            ? 0
-            : requirement.MinimumValue;
-
-        if (requirement.Attribute == Stats.Level)
-        {
-            return (requirement.Attribute, item.CalculateLevelRequirement(minimumValue, gameConfiguration));
-        }
-
-        if (!RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
-        {
-            return (requirement.Attribute, minimumValue);
-        }
-
-        if (!item.IsWearable())
-        {
-            return (totalAttribute, minimumValue);
-        }
-
+    /// <summary>
+    /// Gets the requirements of the item, each as a tuple of an attribute and the corresponding value (see
+    /// <see cref="GetRequirement(Item, AttributeRequirement, GameConfiguration)"/>).
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="gameConfiguration">The game configuration, whose item stat profiles hold the requirement formulas.</param>
+    /// <returns>The requirements of the item.</returns>
+    /// <remarks>The item stat profile of the item is resolved only once for all its requirements.</remarks>
+    public static IReadOnlyList<(AttributeDefinition Attr, int Value)> GetRequirements(this Item item, GameConfiguration gameConfiguration)
+    {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
-        var profile = ResolvedItemStatProfile.Of(item.Definition, gameConfiguration);
-        int value;
-        if (profile.GetRequirementFormula(requirement.Attribute) is not { KeepBase: false } formula)
+        ResolvedItemStatProfile? profile = null;
+        var requirements = new List<(AttributeDefinition Attr, int Value)>(item.Definition.Requirements.Count);
+        foreach (var requirement in item.Definition.Requirements)
         {
-            // Without a formula, or with "keep base", the requirement doesn't grow; the option and the reduction still
-            // apply, as in the game client.
-            value = minimumValue;
-        }
-        else if (totalAttribute == Stats.TotalEnergy && item.IsBook(out _))
-        {
-            // The energy requirement of the summoner's books, which increase the curse damage by their book rise, keeps
-            // two quirks of the item formulas: a base value of 0 gives the formula's add, and options don't reduce it
-            // (see MUnique/OpenMU#1301).
-            return (totalAttribute, item.CalculateRequirement(formula, minimumValue, profile));
-        }
-        else
-        {
-            value = minimumValue == 0 ? 0 : item.CalculateRequirement(formula, minimumValue, profile);
+            requirements.Add(item.GetRequirement(requirement, gameConfiguration, ref profile));
         }
 
-        if (value > 0 && totalAttribute == Stats.TotalStrength)
-        {
-            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
-            if (itemOption != null)
-            {
-                value = LimitToInt(value + ((long)itemOption.Level * profile.StrengthPerOptionLevel));
-            }
-        }
-
-        if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
-            && item.ItemOptions.FirstOrDefault(o =>
-                    o.ItemOption?.PowerUpDefinition?.TargetAttribute == reductionAttribute
-                    || (o.ItemOption?.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute) ?? false))
-                is { } reductionOption)
-        {
-            var optionOfLevelPowerUp = reductionOption.ItemOption!.LevelDependentOptions
-                                           .FirstOrDefault(o => o.Level == reductionOption.Level)?.PowerUpDefinition
-                                       ?? reductionOption.ItemOption.PowerUpDefinition;
-            if (optionOfLevelPowerUp?.Boost?.ConstantValue is { } reduction)
-            {
-                value -= (int)reduction.Value;
-            }
-        }
-
-        return (totalAttribute, value);
+        return requirements;
     }
 
     /// <summary>
@@ -541,11 +497,86 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Gets the requirement, and resolves the item stat profile of the item into <paramref name="profile"/> when it's
+    /// needed and not resolved yet.
+    /// </summary>
+    private static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement, GameConfiguration gameConfiguration, ref ResolvedItemStatProfile? profile)
+    {
+        requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
+
+        var minimumValue = requirement.MinimumItemLevel is { } minimumItemLevel && item.Level < minimumItemLevel
+            ? 0
+            : requirement.MinimumValue;
+
+        if (requirement.Attribute == Stats.Level)
+        {
+            return (requirement.Attribute, item.CalculateLevelRequirement(minimumValue, gameConfiguration, ref profile));
+        }
+
+        if (!RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
+        {
+            return (requirement.Attribute, minimumValue);
+        }
+
+        if (!item.IsWearable())
+        {
+            return (totalAttribute, minimumValue);
+        }
+
+        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+        profile ??= ResolvedItemStatProfile.Of(item.Definition, gameConfiguration);
+        int value;
+        if (profile.GetRequirementFormula(requirement.Attribute) is not { KeepBase: false } formula)
+        {
+            // Without a formula, or with "keep base", the requirement doesn't grow; the option and the reduction still
+            // apply, as in the game client.
+            value = minimumValue;
+        }
+        else if (totalAttribute == Stats.TotalEnergy && item.IsBook(out _))
+        {
+            // The energy requirement of the summoner's books, which increase the curse damage by their book rise, keeps
+            // two quirks of the item formulas: a base value of 0 gives the formula's add, and options don't reduce it
+            // (see MUnique/OpenMU#1301).
+            return (totalAttribute, item.CalculateRequirement(formula, minimumValue, gameConfiguration));
+        }
+        else
+        {
+            value = minimumValue == 0 ? 0 : item.CalculateRequirement(formula, minimumValue, gameConfiguration);
+        }
+
+        if (value > 0 && totalAttribute == Stats.TotalStrength)
+        {
+            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
+            if (itemOption != null)
+            {
+                value = LimitToInt(value + ((long)itemOption.Level * profile.StrengthPerOptionLevel));
+            }
+        }
+
+        if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
+            && item.ItemOptions.FirstOrDefault(o =>
+                    o.ItemOption?.PowerUpDefinition?.TargetAttribute == reductionAttribute
+                    || (o.ItemOption?.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute) ?? false))
+                is { } reductionOption)
+        {
+            var optionOfLevelPowerUp = reductionOption.ItemOption!.LevelDependentOptions
+                                           .FirstOrDefault(o => o.Level == reductionOption.Level)?.PowerUpDefinition
+                                       ?? reductionOption.ItemOption.PowerUpDefinition;
+            if (optionOfLevelPowerUp?.Boost?.ConstantValue is { } reduction)
+            {
+                value -= (int)reduction.Value;
+            }
+        }
+
+        return (totalAttribute, value);
+    }
+
+    /// <summary>
     /// Calculates a stat requirement by its formula: <c>Add + base × (drop level + item level × LevelWeight) × Percent ÷ 100</c>,
     /// or with <see cref="ItemRequirementFormula.LevelRequirementBasis"/> and a level requirement of the item
     /// <c>Add + base × level requirement × Percent ÷ 100</c>.
     /// </summary>
-    private static int CalculateRequirement(this Item item, ItemRequirementFormula formula, int baseValue, ResolvedItemStatProfile profile)
+    private static int CalculateRequirement(this Item item, ItemRequirementFormula formula, int baseValue, GameConfiguration gameConfiguration)
     {
         var definition = item.Definition!;
         if (formula.LevelRequirementBasis
@@ -554,21 +585,7 @@ public static class ItemExtensions
             return LimitToInt(formula.Add + ((Int128)baseValue * levelRequirement * formula.Percent / 100));
         }
 
-        Int128 dropLevel = definition.DropLevel;
-        if (item.IsAncient())
-        {
-            dropLevel += profile.AncientDropLevelBonus;
-        }
-        else if (item.IsExcellent())
-        {
-            dropLevel += profile.ExcellentDropLevelBonus;
-        }
-        else
-        {
-            // a normal item has no bonus
-        }
-
-        dropLevel += (Int128)item.Level * formula.LevelWeight;
+        var dropLevel = definition.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), gameConfiguration) + ((Int128)item.Level * formula.LevelWeight);
         return LimitToInt(formula.Add + (baseValue * dropLevel * formula.Percent / 100));
     }
 
@@ -577,14 +594,14 @@ public static class ItemExtensions
     /// trainable pet counts as level 0), and an excellent item with <see cref="ItemDefinition.ExcellentRaisesLevel"/>
     /// needs the profile's <see cref="ItemStatProfile.ExcellentLevelAdd"/> more.
     /// </summary>
-    private static int CalculateLevelRequirement(this Item item, int baseValue, GameConfiguration gameConfiguration)
+    private static int CalculateLevelRequirement(this Item item, int baseValue, GameConfiguration gameConfiguration, ref ResolvedItemStatProfile? profile)
     {
         if (baseValue == 0 || item.Definition is not { } definition)
         {
             return baseValue;
         }
 
-        var profile = ResolvedItemStatProfile.Of(definition, gameConfiguration);
+        profile ??= ResolvedItemStatProfile.Of(definition, gameConfiguration);
         var value = baseValue + ((long)profile.LevelPerItemLevel * (item.IsTrainablePet() ? 0 : item.Level));
         if (definition.ExcellentRaisesLevel && item.IsExcellent())
         {
