@@ -44,6 +44,7 @@ public class GameServerItemPriceDefinitionsTest
     {
         var gameConfiguration = new BasicModel.GameConfiguration();
         gameConfiguration.ItemPriceDefinitions.Add(new BasicModel.ItemPriceDefinition { Name = "Jewel of Bless", BasePriceFormula = "9000000" });
+        gameConfiguration.ItemStatProfiles.Add(new BasicModel.ItemStatProfile { Name = ItemStatProfile.DefaultName });
         var gameServer = CreateGameServer(gameConfiguration);
 
         await gameServer.StartAsync().ConfigureAwait(false);
