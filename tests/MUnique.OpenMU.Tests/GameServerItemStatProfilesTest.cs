@@ -4,15 +4,9 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.ItemFormulas;
-using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.InMemory;
-using MUnique.OpenMU.PlugIns;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -30,7 +24,9 @@ public class GameServerItemStatProfilesTest
     [Test]
     public async Task DoesNotStartWithoutItemStatProfilesAsync()
     {
-        var gameServer = CreateGameServer(CreateConfiguration());
+        var gameConfiguration = TestGameServers.CreateStartableConfiguration();
+        gameConfiguration.ItemStatProfiles.Clear();
+        await using var gameServer = TestGameServers.Create(gameConfiguration);
 
         await gameServer.StartAsync().ConfigureAwait(false);
 
@@ -44,9 +40,10 @@ public class GameServerItemStatProfilesTest
     [Test]
     public async Task DoesNotStartWithoutTheDefaultProfileAsync()
     {
-        var gameConfiguration = CreateConfiguration();
+        var gameConfiguration = TestGameServers.CreateStartableConfiguration();
+        gameConfiguration.ItemStatProfiles.Clear();
         gameConfiguration.ItemStatProfiles.Add(new BasicModel.ItemStatProfile { Name = "armor" });
-        var gameServer = CreateGameServer(gameConfiguration);
+        await using var gameServer = TestGameServers.Create(gameConfiguration);
 
         await gameServer.StartAsync().ConfigureAwait(false);
 
@@ -60,9 +57,7 @@ public class GameServerItemStatProfilesTest
     [Test]
     public async Task StartsWithTheDefaultProfileAsync()
     {
-        var gameConfiguration = CreateConfiguration();
-        gameConfiguration.ItemStatProfiles.Add(new BasicModel.ItemStatProfile { Name = ItemStatProfile.DefaultName });
-        var gameServer = CreateGameServer(gameConfiguration);
+        await using var gameServer = TestGameServers.Create(TestGameServers.CreateStartableConfiguration());
 
         await gameServer.StartAsync().ConfigureAwait(false);
 
@@ -77,14 +72,13 @@ public class GameServerItemStatProfilesTest
     [Test]
     public async Task StartsWithWearableItemsWithoutProfileAsync()
     {
-        var gameConfiguration = CreateConfiguration();
-        var defaultProfile = new BasicModel.ItemStatProfile { Name = ItemStatProfile.DefaultName };
-        gameConfiguration.ItemStatProfiles.Add(defaultProfile);
+        var gameConfiguration = TestGameServers.CreateStartableConfiguration();
+        var defaultProfile = gameConfiguration.ItemStatProfiles.Single();
         var withoutProfile = new BasicModel.ItemDefinition { Group = 6, Number = 99, ItemSlot = new BasicModel.ItemSlotType() };
         gameConfiguration.Items.Add(withoutProfile);
         gameConfiguration.Items.Add(new BasicModel.ItemDefinition { Group = 6, Number = 98, ItemSlot = new BasicModel.ItemSlotType(), StatProfile = defaultProfile });
         gameConfiguration.Items.Add(new BasicModel.ItemDefinition { Group = 14, Number = 13 });
-        await using var gameServer = CreateGameServer(gameConfiguration);
+        await using var gameServer = TestGameServers.Create(gameConfiguration);
 
         await gameServer.StartAsync().ConfigureAwait(false);
 
@@ -93,34 +87,5 @@ public class GameServerItemStatProfilesTest
             Assert.That(ResolvedItemStatProfile.GetWearableItemsWithoutProfile(gameConfiguration), Is.EqualTo(new[] { withoutProfile }));
             Assert.That(gameServer.ServerState, Is.EqualTo(ServerState.Started));
         });
-    }
-
-    /// <summary>
-    /// Creates a configuration which has what the game server checks before it starts, except the item stat profiles.
-    /// </summary>
-    private static BasicModel.GameConfiguration CreateConfiguration()
-    {
-        var gameConfiguration = new BasicModel.GameConfiguration();
-        gameConfiguration.ItemPriceDefinitions.Add(new BasicModel.ItemPriceDefinition { Name = "Jewel of Bless", BasePriceFormula = "9000000" });
-        return gameConfiguration;
-    }
-
-    private static GameServer CreateGameServer(BasicModel.GameConfiguration gameConfiguration)
-    {
-        return new GameServer(
-            new BasicModel.GameServerDefinition
-            {
-                ServerID = 1,
-                GameConfiguration = gameConfiguration,
-                ServerConfiguration = new BasicModel.GameServerConfiguration(),
-            },
-            new Mock<IGuildServer>().Object,
-            new Mock<IEventPublisher>().Object,
-            new Mock<ILoginServer>().Object,
-            new InMemoryPersistenceContextProvider(),
-            new Mock<IFriendServer>().Object,
-            NullLoggerFactory.Instance,
-            new PlugInManager([], NullLoggerFactory.Instance, null, null),
-            new ConfigurationChangeMediator());
     }
 }
