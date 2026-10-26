@@ -87,7 +87,12 @@ public class MoveItemAction
         switch (movement)
         {
             case Movement.Normal:
-                await this.MoveNormalAsync(player, fromStorage, fromSlot, toStorage, toSlot, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
+                if (!await this.MoveNormalAsync(player, fromStorage, fromSlot, toStorage, toSlot, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false))
+                {
+                    // The move was rolled back, so nothing changed.
+                    movement = Movement.None;
+                }
+
                 break;
             case Movement.PartiallyStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
                 await this.PartiallyStackAsync(player, item, targetItem).ConfigureAwait(false);
@@ -162,7 +167,7 @@ public class MoveItemAction
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
     }
 
-    private async ValueTask MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
+    private async ValueTask<bool> MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
         var wasEquipped = fromItemStorage == player.Inventory && fromSlot <= LastEquippableItemSlotIndex;
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
@@ -196,7 +201,7 @@ public class MoveItemAction
             }
 
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
-            return;
+            return false;
         }
 
         await player.InvokeViewPlugInAsync<Views.Inventory.IItemMovedPlugIn>(p => p.ItemMovedAsync(item, toSlot, toStorage)).ConfigureAwait(false);
@@ -216,6 +221,8 @@ public class MoveItemAction
                 await tradingPartner.InvokeViewPlugInAsync<ITradeItemAppearPlugIn>(p => p.TradeItemAppearAsync(toSlot, item)).ConfigureAwait(false);
             }
         }
+
+        return true;
     }
 
     private bool CompliesWithMapRequirements(Player player)

@@ -137,6 +137,9 @@ public class ItemCraftingPreviewTests
 
         /// <inheritdoc />
         protected override ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
-            => throw new NotSupportedException("The preview never crafts anything.");
+        {
+            Assert.Fail($"A preview must not craft, but {player.SelectedCharacter?.Name} crafted {requiredItems.Count} items into socket slot {socketSlot} with a success rate of {successRate} %.");
+            return ValueTask.FromResult(new List<Item>());
+        }
     }
 }
