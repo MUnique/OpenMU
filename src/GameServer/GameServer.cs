@@ -177,7 +177,8 @@ public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposa
         if (!ResolvedItemStatProfile.HasDefaultProfile(this._gameContext.Configuration))
         {
             // The item formulas read the item stat profiles, so a configuration without the profile "default" is missing
-            // the mandatory update which adds them. The items would have no requirements, excellent or ancient bonuses.
+            // the mandatory update which adds them. The item formulas would throw for every requirement and every
+            // excellent or ancient item.
             this._logger.LogError("The game server is not started, because the game configuration has no item stat profile '{profileName}'. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.", ItemStatProfile.DefaultName);
             this.ServerState = ServerState.Stopped;
             return;
