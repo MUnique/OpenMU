@@ -120,20 +120,23 @@ public class ItemCraftingPreviewTests
         /// <inheritdoc />
         public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
         {
-            items = new List<CraftingRequiredItemLink>();
+            var itemsInDialog = player.TemporaryStorage?.Items.ToList() ?? [];
+            items = itemsInDialog.Count > 0
+                ? [new CraftingRequiredItemLink(itemsInDialog, new ItemCraftingRequiredItem())]
+                : [];
             successRateByItems = SuccessRate;
-            return player.TemporaryStorage?.Items.Any() is true ? null : CraftingResult.IncorrectMixItems;
+            return items.Count > 0 ? null : CraftingResult.IncorrectMixItems;
         }
 
         /// <inheritdoc />
         protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
         {
             // The price must be based on the success rate of the items, not on the one including the crafting bonus.
-            return successRate == SuccessRate ? Price : 0;
+            return successRate == SuccessRate ? Price * requiredItems.Sum(link => link.Items.Count()) : 0;
         }
 
         /// <inheritdoc />
         protected override ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
-            => ValueTask.FromResult(player.TemporaryStorage?.Items.ToList() ?? []);
+            => throw new NotSupportedException("The preview never crafts anything.");
     }
 }
