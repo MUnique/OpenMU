@@ -179,12 +179,16 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     /// <summary>
     /// Computes the excellent part of the attribute, or the fixed excellent bonus when it's above 0, and for an ancient
     /// item the ancient part, whose value is the base value plus the excellent part (and the level bonus, when the part
-    /// says so). A part which the terms don't give a value is <c>null</c>.
+    /// says so). A part which the terms don't give a value is <c>null</c>, and so is the excellent part of an item with a
+    /// drop level of 0, as in the game client.
     /// </summary>
     private static (int? Excellent, int? Ancient) ComputeParts(ResolvedItemStatProfile profile, AttributeDefinition attribute, int baseValue, int levelBonus, int baseDropLevel, int ancientDropLevel, bool isAncient, int fixedExcellentBonus = 0)
     {
         var excellentPart = profile.GetExcellentPart(attribute);
-        int? excellent = fixedExcellentBonus > 0 ? fixedExcellentBonus : excellentPart.HasValues ? excellentPart.Compute(baseValue, baseDropLevel) : null;
+        int? excellent = baseDropLevel <= 0 ? null
+            : fixedExcellentBonus > 0 ? fixedExcellentBonus
+            : excellentPart.HasValues ? excellentPart.Compute(baseValue, baseDropLevel)
+            : null;
         int? ancient = null;
         if (isAncient && profile.GetAncientPart(attribute) is { HasValues: true } ancientPart)
         {

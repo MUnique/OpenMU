@@ -23,15 +23,15 @@ public readonly record struct ItemStatTermPart(ItemStatTermState State, int Time
     public bool HasValues => this.State == ItemStatTermState.Values;
 
     /// <summary>
-    /// Computes the part with integers, from left to right. A factor of 0 leaves out the value, so that it doesn't
-    /// divide by the drop level, and a divisor of 0 leaves out the drop level.
+    /// Computes the part with integers, from left to right. A factor of 0, or a drop level which isn't above 0, leaves
+    /// out the value, as in the game client, and a divisor of 0 leaves out the drop level.
     /// </summary>
     /// <param name="value">The value, e.g. the base value of the attribute.</param>
     /// <param name="dropLevel">The drop level.</param>
     /// <returns>The part.</returns>
     public int Compute(int value, int dropLevel)
     {
-        var result = this.Times == 0 ? 0 : value * this.Times / dropLevel;
+        var result = this.Times == 0 || dropLevel <= 0 ? 0 : value * this.Times / dropLevel;
         result += this.Add;
         if (this.DropLevelDivisor != 0)
         {

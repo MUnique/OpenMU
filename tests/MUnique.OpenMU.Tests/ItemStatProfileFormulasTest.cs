@@ -256,6 +256,34 @@ public class ItemStatProfileFormulasTest
     }
 
     /// <summary>
+    /// Tests that an ancient part with a drop level of 0 leaves out the value instead of dividing by 0, as in the game client.
+    /// </summary>
+    [Test]
+    public void AncientDropLevelOf0LeavesOutTheValue()
+    {
+        var configuration = TestItemStatProfiles.Create();
+        configuration.AncientDropLevelBonus = 0;
+        var armor = MakeAncient(CreateItem(group: 7, slot: InventoryConstants.HelmSlot, (Stats.DefenseBase, 30)));
+        armor.Definition!.DropLevel = 0;
+
+        // the ancient part of the default: 2 + 0 / 30, without the value * 3 / 0
+        Assert.That(GetPowerUps(armor, configuration)[Stats.DefenseBase], Is.EqualTo(30 + 2));
+    }
+
+    /// <summary>
+    /// Tests that an excellent item with a drop level of 0 gets no excellent part, as in the game client.
+    /// </summary>
+    [Test]
+    public void ExcellentItemWithDropLevel0GetsNoExcellentPart()
+    {
+        var configuration = TestItemStatProfiles.Create();
+        var armor = MakeExcellent(CreateItem(group: 7, slot: InventoryConstants.HelmSlot, (Stats.DefenseBase, 30)));
+        armor.Definition!.DropLevel = 0;
+
+        Assert.That(GetPowerUps(armor, configuration)[Stats.DefenseBase], Is.EqualTo(30));
+    }
+
+    /// <summary>
     /// Tests that terms of an attribute which the item formulas don't compute today are kept, but not used.
     /// </summary>
     [Test]
