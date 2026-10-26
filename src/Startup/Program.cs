@@ -133,7 +133,20 @@ internal sealed class Program : IDisposable
         };
 
         using var program = new Program();
-        await program.InitializeAsync(args).ConfigureAwait(false);
+        try
+        {
+            await program.InitializeAsync(args).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (FindStartupCancellation(ex) is { } cancellation)
+        {
+            Console.WriteLine(cancellation.Message);
+            Environment.ExitCode = 1;
+
+            // The exit handler above cancels the source unless it's cancelled already, but it's disposed when we return.
+            await exitCts.CancelAsync().ConfigureAwait(false);
+            return;
+        }
+
         while (!exitToken.IsCancellationRequested)
         {
             await Task.Delay(100).ConfigureAwait(false);
@@ -191,6 +204,23 @@ internal sealed class Program : IDisposable
     {
         this._serverHost?.StopAsync().WaitAndUnwrapException();
         this._serverHost?.Dispose();
+    }
+
+    /// <summary>
+    /// Finds the <see cref="StartupCancelledException"/> in the given exception, which can be wrapped, e.g. when the
+    /// context provider is created while the host resolves its services.
+    /// </summary>
+    /// <param name="exception">The exception.</param>
+    /// <returns>The found cancellation; <c>null</c>, if there is none.</returns>
+    private static StartupCancelledException? FindStartupCancellation(Exception exception)
+    {
+        return exception switch
+        {
+            StartupCancelledException cancellation => cancellation,
+            AggregateException aggregate => aggregate.InnerExceptions.Select(FindStartupCancellation).FirstOrDefault(found => found is not null),
+            { InnerException: { } inner } => FindStartupCancellation(inner),
+            _ => null,
+        };
     }
 
     private static void DisplayCommands()
@@ -747,17 +777,12 @@ internal sealed class Program : IDisposable
                 }
                 else
                 {
-                    Console.WriteLine("Cancelled the schema update process, can't start the server.");
-                    return null!;
+                    throw new StartupCancelledException("Cancelled the schema update process, can't start the server.");
                 }
             }
         }
 
-        if (!await this.ApplyMandatoryConfigurationUpdatesAsync(contextProvider, loggerFactory).ConfigureAwait(false))
-        {
-            return null!;
-        }
-
+        await this.ApplyMandatoryConfigurationUpdatesAsync(contextProvider, loggerFactory).ConfigureAwait(false);
         return contextProvider;
     }
 
@@ -768,13 +793,13 @@ internal sealed class Program : IDisposable
     /// </summary>
     /// <param name="contextProvider">The context provider of the server.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <returns><c>true</c>, if the server can be started; <c>false</c>, if the user cancelled the update.</returns>
-    private async Task<bool> ApplyMandatoryConfigurationUpdatesAsync(PersistenceContextProvider contextProvider, ILoggerFactory loggerFactory)
+    /// <exception cref="StartupCancelledException">The user declined the updates.</exception>
+    private async Task ApplyMandatoryConfigurationUpdatesAsync(PersistenceContextProvider contextProvider, ILoggerFactory loggerFactory)
     {
         if (!await contextProvider.ConfigurationExistsAsync().ConfigureAwait(false))
         {
             // Without data, there is nothing to update; the data initialization installs the updates itself.
-            return true;
+            return;
         }
 
         // The changes are not published: nothing listens to them yet, and the change listener
@@ -785,7 +810,7 @@ internal sealed class Program : IDisposable
         var updates = await updateService.DetermineMandatoryUpdatesAsync().ConfigureAwait(false);
         if (updates.Count == 0)
         {
-            return true;
+            return;
         }
 
         Console.WriteLine("The following mandatory configuration updates need to be applied before the server can be started:");
@@ -804,14 +829,12 @@ internal sealed class Program : IDisposable
             var key = Console.ReadLine()?.ToLowerInvariant();
             if (key != "y")
             {
-                Console.WriteLine("Cancelled the configuration update process, can't start the server.");
-                return false;
+                throw new StartupCancelledException("Cancelled the configuration update process, can't start the server.");
             }
         }
 
         await updateService.ApplyUpdatesAsync(updates, new Progress<(Guid CurrentUpdatingKey, bool IsCompleted)>()).ConfigureAwait(false);
         Console.WriteLine("The mandatory configuration updates have been successfully applied.");
-        return true;
     }
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)
