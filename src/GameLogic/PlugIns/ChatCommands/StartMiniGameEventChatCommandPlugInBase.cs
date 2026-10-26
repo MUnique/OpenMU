@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Threading;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 /// <summary>
@@ -51,11 +53,7 @@ public abstract class StartMiniGameEventChatCommandPlugInBase : IChatCommandPlug
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartInitiatedFormat), eventName).ConfigureAwait(false);
         }
 
-        // Always dispose first, even without a running game: it's a no-op then, but
-        // clears stale state which would block the forced start.
-        await gameStarter.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
-
-        gameStarter.ForceStart();
+        await GameMasterEventActions.StartAsync(player.GameContext, this.MiniGameType, true, CancellationToken.None).ConfigureAwait(false);
     }
 
     /// <summary>

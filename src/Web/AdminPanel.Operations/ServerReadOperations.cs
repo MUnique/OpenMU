@@ -9,6 +9,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
@@ -81,24 +82,45 @@ public sealed class ServerReadOperations(
     {
         AdminReadResult.ValidatePage(offset, limit);
         var online = await loginServer.GetSnapshotAsync().ConfigureAwait(false);
-        var live = new Dictionary<string, Player>(StringComparer.OrdinalIgnoreCase);
-        foreach (var server in servers.Servers.OfType<IGameServerContextProvider>())
+        var live = new Dictionary<string, LivePlayerInfo>(StringComparer.OrdinalIgnoreCase);
+        foreach (var server in servers.Servers.Where(s => s is IGameServerAdministration or IGameServerContextProvider))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            foreach (var player in await server.Context.GetPlayersAsync().ConfigureAwait(false))
+            if (serverId is not null && server.Id != serverId)
             {
-                if (player is not OfflinePlayer && player.Account?.LoginName is { } loginName)
+                continue;
+            }
+
+            if (server is IGameServerAdministration administration)
+            {
+                foreach (var player in await administration.GetPlayerSnapshotAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    live[loginName] = player;
+                    if (online.TryGetValue(player.Account, out var owner) && owner == server.Id)
+                    {
+                        live[player.Account] = player;
+                    }
                 }
+            }
+            else if (server is IGameServerContextProvider provider)
+            {
+                foreach (var player in await provider.Context.GetPlayersAsync().ConfigureAwait(false))
+                {
+                    if (player is not OfflinePlayer && player.Account?.LoginName is { } loginName)
+                    {
+                        live[loginName] = new(player.SelectedCharacter?.Id ?? Guid.Empty, loginName, player.Name, player.CurrentMap?.MapId, player.Position.X, player.Position.Y, player.Level, (int)(player.Attributes?[Stats.MasterLevel] ?? 0), player.GuildStatus?.GuildId, false);
+                    }
+                }
+            }
+            else
+            {
+                // Older servers retain account-only status; live filters fail closed below.
             }
         }
 
-        // No game server admin channel exists yet in distributed deployments. Do not substitute
-        // stale persisted positions for unavailable live data, or silently return false negatives.
-        if ((mapNumber is not null || !string.IsNullOrEmpty(guildName)) && live.Count < online.Count)
+        if ((mapNumber is not null || !string.IsNullOrEmpty(guildName))
+            && online.Where(e => serverId is null || e.Value == serverId).Any(e => !live.ContainsKey(e.Key)))
         {
-            throw new ArgumentException($"Map and guild filters require live game server data, available in all-in-one deployments. Query by {nameof(serverId)} in distributed deployments.", mapNumber is not null ? nameof(mapNumber) : nameof(guildName));
+            throw new ArgumentException("Map and guild filters require live game server data for every matching account. Wait for character selection or restore the owning server's administration channel.");
         }
 
         using var guildContext = persistence.CreateNewGuildContext();
@@ -110,8 +132,8 @@ public sealed class ServerReadOperations(
         }
 
         var matches = online.Where(e => serverId is null || e.Value == serverId)
-            .Where(e => mapNumber is null || (live.TryGetValue(e.Key, out var p) && p.CurrentMap?.MapId == mapNumber))
-            .Where(e => string.IsNullOrEmpty(guildName) || (liveGuildId is not null && live.TryGetValue(e.Key, out var p) && p.GuildStatus?.GuildId == liveGuildId))
+            .Where(e => mapNumber is null || (live.TryGetValue(e.Key, out var p) && p.Map == mapNumber))
+            .Where(e => string.IsNullOrEmpty(guildName) || (liveGuildId is not null && live.TryGetValue(e.Key, out var p) && p.GuildId == liveGuildId))
             .OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase).ToList();
         var rows = matches.Skip(offset).Take(limit).Select(e =>
         {
@@ -121,12 +143,12 @@ public sealed class ServerReadOperations(
                 account = e.Key,
                 serverId = e.Value,
                 liveDataAvailable = player is not null,
-                character = player?.SelectedCharacter?.Name,
-                map = player?.CurrentMap?.MapId,
-                x = player?.Position.X,
-                y = player?.Position.Y,
+                character = player?.Character,
+                map = player?.Map,
+                x = player?.X,
+                y = player?.Y,
                 level = player?.Level,
-                guildId = player?.GuildStatus?.GuildId,
+                guildId = player?.GuildId,
             };
         });
         return AdminReadResult.Page(rows, matches.Count, offset, limit);

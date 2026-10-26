@@ -84,6 +84,16 @@ public sealed class MovementHandler
     }
 
     /// <summary>
+    /// Walks towards a position, e.g. to a drop which is out of pickup reach.
+    /// </summary>
+    /// <param name="target">The position to walk to.</param>
+    /// <returns>True, if a walk was started; false, if no path exists or walking is not possible.</returns>
+    public ValueTask<bool> WalkToPositionAsync(Point target)
+    {
+        return this.WalkToAsync(target);
+    }
+
+    /// <summary>
     /// Picks the point to walk to when closing in on a target: straight along the line towards it,
     /// stopping at attack range. The previous behavior re-randomized a point around the target every
     /// tick, which made the character zig-zag visibly towards its prey and re-path constantly.

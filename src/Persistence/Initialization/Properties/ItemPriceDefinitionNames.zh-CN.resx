@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Arrows" xml:space="preserve">
+    <value>弓箭</value>
+  </data>
+  <data name="Bolts" xml:space="preserve">
+    <value>弩箭</value>
+  </data>
+  <data name="JewelOfBless" xml:space="preserve">
+    <value>祝福宝石</value>
+  </data>
+  <data name="JewelOfSoul" xml:space="preserve">
+    <value>灵魂宝石</value>
+  </data>
+  <data name="JewelOfChaos" xml:space="preserve">
+    <value>玛雅宝石</value>
+  </data>
+  <data name="JewelOfLife" xml:space="preserve">
+    <value>生命宝石</value>
+  </data>
+  <data name="JewelOfCreation" xml:space="preserve">
+    <value>创造宝石</value>
+  </data>
+  <data name="JewelOfGuardian" xml:space="preserve">
+    <value>守护宝石</value>
+  </data>
+  <data name="GemstoneHarmonyAndRefineStones" xml:space="preserve">
+    <value>再生原石、再生宝石和进化宝石</value>
+  </data>
+  <data name="PackedJewelOfBless" xml:space="preserve">
+    <value>祝福宝石组合</value>
+  </data>
+  <data name="PackedJewelOfSoul" xml:space="preserve">
+    <value>灵魂宝石组合</value>
+  </data>
+  <data name="PackedJewelOfChaos" xml:space="preserve">
+    <value>玛雅宝石组合</value>
+  </data>
+  <data name="PackedJewelOfLife" xml:space="preserve">
+    <value>生命宝石组合</value>
+  </data>
+  <data name="PackedJewelOfCreation" xml:space="preserve">
+    <value>创造宝石组合</value>
+  </data>
+  <data name="PackedJewelOfGuardian" xml:space="preserve">
+    <value>守护宝石组合</value>
+  </data>
+  <data name="PackedGemstoneHarmonyAndRefineStones" xml:space="preserve">
+    <value>再生原石、再生宝石和进化宝石组合</value>
+  </data>
+  <data name="Fruits" xml:space="preserve">
+    <value>果实</value>
+  </data>
+  <data name="LochsFeather" xml:space="preserve">
+    <value>洛克之羽</value>
+  </data>
+  <data name="LargeHealingAndManaPotion" xml:space="preserve">
+    <value>大瓶治疗药水和大瓶魔力药水</value>
+  </data>
+  <data name="SiegePotion" xml:space="preserve">
+    <value>攻城药水</value>
+  </data>
+  <data name="OrderGuardianLifeStone" xml:space="preserve">
+    <value>命令（守护/生命之石）</value>
+  </data>
+  <data name="ContractSummon" xml:space="preserve">
+    <value>契约（召唤）</value>
+  </data>
+  <data name="SplinterOfArmor" xml:space="preserve">
+    <value>破烂的铠甲片</value>
+  </data>
+  <data name="BlessOfGuardian" xml:space="preserve">
+    <value>女神的智慧</value>
+  </data>
+  <data name="ClawOfBeast" xml:space="preserve">
+    <value>猛兽的脚甲</value>
+  </data>
+  <data name="FragmentOfHorn" xml:space="preserve">
+    <value>碎角片</value>
+  </data>
+  <data name="BrokenHorn" xml:space="preserve">
+    <value>折断的角</value>
+  </data>
+  <data name="HornOfFenrir" xml:space="preserve">
+    <value>炎狼兽的角</value>
+  </data>
+  <data name="SmallShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（小）</value>
+  </data>
+  <data name="ShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（中）</value>
+  </data>
+  <data name="LargeShieldPotion" xml:space="preserve">
+    <value>SD恢复药水（大）</value>
+  </data>
+  <data name="SmallComplexPotion" xml:space="preserve">
+    <value>小瓶复合药水</value>
+  </data>
+  <data name="ComplexPotion" xml:space="preserve">
+    <value>中瓶复合药水</value>
+  </data>
+  <data name="LargeComplexPotion" xml:space="preserve">
+    <value>大瓶复合药水</value>
+  </data>
+  <data name="HornOfDinorant" xml:space="preserve">
+    <value>彩云兽</value>
+  </data>
+  <data name="DevilsEye" xml:space="preserve">
+    <value>恶魔之眼</value>
+  </data>
+  <data name="DevilsKey" xml:space="preserve">
+    <value>恶魔之钥</value>
+  </data>
+  <data name="DevilsInvitation" xml:space="preserve">
+    <value>恶魔广场入场券</value>
+  </data>
+  <data name="RemedyOfLove" xml:space="preserve">
+    <value>爱情灵药</value>
+  </data>
+  <data name="Rena" xml:space="preserve">
+    <value>蕾娜</value>
+  </data>
+  <data name="Ale" xml:space="preserve">
+    <value>酒</value>
+  </data>
+  <data name="InvisibilityCloak" xml:space="preserve">
+    <value>透明披风</value>
+  </data>
+  <data name="ScrollOfArchangel" xml:space="preserve">
+    <value>血灵之书</value>
+  </data>
+  <data name="BloodBone" xml:space="preserve">
+    <value>血灵之骷</value>
+  </data>
+  <data name="IllusionTempleTickets" xml:space="preserve">
+    <value>幻影寺院入场物品</value>
+  </data>
+  <data name="FlameAndFeatherOfCondor" xml:space="preserve">
+    <value>神鹰火种和神鹰之羽</value>
+  </data>
+  <data name="ArmorOfGuardsman" xml:space="preserve">
+    <value>卫兵铠甲</value>
+  </data>
+  <data name="WizardsRing" xml:space="preserve">
+    <value>法师指环</value>
+  </data>
+  <data name="Spirit" xml:space="preserve">
+    <value>宠物灵魂</value>
+  </data>
+  <data name="LostMap" xml:space="preserve">
+    <value>失落地图</value>
+  </data>
+  <data name="SymbolOfKundun" xml:space="preserve">
+    <value>昆顿印记</value>
+  </data>
+  <data name="HalloweenItems" xml:space="preserve">
+    <value>万圣节物品</value>
+  </data>
+  <data name="GemOfSecret" xml:space="preserve">
+    <value>秘密宝石</value>
+  </data>
+  <data name="ImperialGuardianItems" xml:space="preserve">
+    <value>帝国守护军物品</value>
+  </data>
+  <data name="ChristmasStarAndFirecracker" xml:space="preserve">
+    <value>圣诞之星和烟花</value>
+  </data>
+  <data name="CherryBlossomItems" xml:space="preserve">
+    <value>樱花物品</value>
+  </data>
+  <data name="FixedValue" xml:space="preserve">
+    <value>固定价值</value>
+  </data>
+  <data name="Potions" xml:space="preserve">
+    <value>药水</value>
+  </data>
+  <data name="ValueBased" xml:space="preserve">
+    <value>基于价值</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>饰品</value>
+  </data>
+  <data name="DarkRaven" xml:space="preserve">
+    <value>天鹰</value>
+  </data>
+  <data name="DarkHorse" xml:space="preserve">
+    <value>黑王马</value>
+  </data>
+  <data name="OneHandedWeaponsAndShields" xml:space="preserve">
+    <value>单手武器和盾牌</value>
+  </data>
+  <data name="OneHandedWeaponsWithSkillWithoutValue" xml:space="preserve">
+    <value>技能不增加价格的单手武器</value>
+  </data>
+  <data name="EquipmentWithSkillWithoutValue" xml:space="preserve">
+    <value>技能不增加价格的装备</value>
+  </data>
+</root>

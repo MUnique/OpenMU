@@ -104,6 +104,21 @@ public partial class GameConfiguration
     public byte ExcellentItemDropLevelDelta { get; set; }
 
     /// <summary>
+    /// Gets or sets what the item formulas add to the drop level of an excellent item:
+    /// for its requirements when it isn't ancient (see <see cref="ItemRequirementFormula"/>), and for its price.
+    /// It isn't about which items drop as excellent (see <see cref="ExcellentItemDropLevelDelta"/>).
+    /// </summary>
+    /// <remarks>Default value is 25, as in the game client.</remarks>
+    public byte ExcellentDropLevelBonus { get; set; } = 25;
+
+    /// <summary>
+    /// Gets or sets what the item formulas add to the drop level of an ancient item:
+    /// for its requirements (see <see cref="ItemRequirementFormula"/>), and for its ancient parts (see <see cref="ItemStatTerms"/>).
+    /// </summary>
+    /// <remarks>Default value is 30, as in the game client.</remarks>
+    public byte AncientDropLevelBonus { get; set; } = 30;
+
+    /// <summary>
     /// Gets or sets the experience formula per level. The variable name for the level is "level".
     /// </summary>
     /// <remarks>Default value is <c>if(level == 0, 0, if(level &lt; 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))</c>.</remarks>
@@ -243,6 +258,18 @@ public partial class GameConfiguration
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<ItemLevelBonusTable> ItemLevelBonusTables { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item stat profiles: the item formulas which the <see cref="Items"/> refer to.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemStatProfile> ItemStatProfiles { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item price definitions, which are referenced by <see cref="ItemDefinition.PriceDefinition"/>.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemPriceDefinition> ItemPriceDefinitions { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the item slot types.

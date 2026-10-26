@@ -6244,4 +6244,214 @@
   <data name="Account_GoblinPoints_Description" xml:space="preserve">
     <value>商城中可用的哥布林积分（Goblin Points）余额。</value>
   </data>
+  <data name="GameConfiguration_ExcellentDropLevelBonus_Caption" xml:space="preserve">
+    <value>卓越物品掉落等级加成</value>
+  </data>
+  <data name="GameConfiguration_ExcellentDropLevelBonus_Description" xml:space="preserve">
+    <value>物品公式为卓越物品的掉落等级增加的值：用于其需求（非远古时）和价格。与哪些物品以卓越掉落无关。默认值：25，与游戏客户端相同。</value>
+  </data>
+  <data name="GameConfiguration_AncientDropLevelBonus_Caption" xml:space="preserve">
+    <value>远古物品掉落等级加成</value>
+  </data>
+  <data name="GameConfiguration_AncientDropLevelBonus_Description" xml:space="preserve">
+    <value>物品公式为远古物品的掉落等级增加的值：用于其需求和远古加成值。默认值：30，与游戏客户端相同。</value>
+  </data>
+  <data name="GameConfiguration_ItemStatProfiles_Caption" xml:space="preserve">
+    <value>物品属性配置列表</value>
+  </data>
+  <data name="GameConfiguration_ItemStatProfiles_Description" xml:space="preserve">
+    <value>命名的物品公式：物品的等级、卓越选项、远古套装和选项等级为其属性和需求增加的值。配置“default”写入所有部分，其他配置只写入与其不同的部分。</value>
+  </data>
+  <data name="ItemDefinition_StatProfile_Caption" xml:space="preserve">
+    <value>属性配置</value>
+  </data>
+  <data name="ItemDefinition_StatProfile_Description" xml:space="preserve">
+    <value>此物品的物品公式。未设置时，物品使用配置“default”的公式。新配置会为每个物品分配其类型的配置。</value>
+  </data>
+  <data name="ItemDefinition_ExcellentBonus_Caption" xml:space="preserve">
+    <value>固定卓越加成</value>
+  </data>
+  <data name="ItemDefinition_ExcellentBonus_Description" xml:space="preserve">
+    <value>此类卓越物品在伤害和魔力上获得的固定加成，替代其属性配置的卓越部分。0：使用卓越部分。</value>
+  </data>
+  <data name="ItemDefinition_ExcellentRaisesLevel_Caption" xml:space="preserve">
+    <value>卓越提高等级需求</value>
+  </data>
+  <data name="ItemDefinition_ExcellentRaisesLevel_Description" xml:space="preserve">
+    <value>此类卓越物品是否需要更高等级，增加值为其属性配置的卓越等级增加。</value>
+  </data>
+  <data name="ItemStatProfile_TypeCaption" xml:space="preserve">
+    <value>物品属性配置</value>
+  </data>
+  <data name="ItemStatProfile_TypeCaptionPlural" xml:space="preserve">
+    <value>物品属性配置列表</value>
+  </data>
+  <data name="ItemStatProfile_TypeDescription" xml:space="preserve">
+    <value>命名的物品公式。配置“default”写入所有部分；其他配置只写入与其不同的部分。</value>
+  </data>
+  <data name="ItemStatProfile_Name_Caption" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="ItemStatProfile_Name_Description" xml:space="preserve">
+    <value>在配置中唯一。“default”是写入所有部分的配置。名称与游戏客户端的物品属性文件相同。</value>
+  </data>
+  <data name="ItemStatProfile_LevelPerItemLevel_Caption" xml:space="preserve">
+    <value>每物品等级的等级需求</value>
+  </data>
+  <data name="ItemStatProfile_LevelPerItemLevel_Description" xml:space="preserve">
+    <value>每个物品等级为等级需求增加的值。为空：与配置“default”相同。</value>
+  </data>
+  <data name="ItemStatProfile_ExcellentLevelAdd_Caption" xml:space="preserve">
+    <value>卓越等级增加</value>
+  </data>
+  <data name="ItemStatProfile_ExcellentLevelAdd_Description" xml:space="preserve">
+    <value>卓越物品额外需要的等级（如果卓越提高其等级需求）。为空：与配置“default”相同。</value>
+  </data>
+  <data name="ItemStatProfile_StrengthPerOptionLevel_Caption" xml:space="preserve">
+    <value>每选项等级的力量需求</value>
+  </data>
+  <data name="ItemStatProfile_StrengthPerOptionLevel_Description" xml:space="preserve">
+    <value>每个选项等级为力量需求增加的值。为空：与配置“default”相同。</value>
+  </data>
+  <data name="ItemStatProfile_StatTerms_Caption" xml:space="preserve">
+    <value>属性项</value>
+  </data>
+  <data name="ItemStatProfile_StatTerms_Description" xml:space="preserve">
+    <value>配置写入的每个属性一个条目。</value>
+  </data>
+  <data name="ItemStatProfile_RequirementFormulas_Caption" xml:space="preserve">
+    <value>需求公式</value>
+  </data>
+  <data name="ItemStatProfile_RequirementFormulas_Description" xml:space="preserve">
+    <value>配置写入的每个属性需求一个条目。</value>
+  </data>
+  <data name="ItemStatTerms_TypeCaption" xml:space="preserve">
+    <value>物品属性项</value>
+  </data>
+  <data name="ItemStatTerms_TypeCaptionPlural" xml:space="preserve">
+    <value>物品属性项列表</value>
+  </data>
+  <data name="ItemStatTerms_TypeDescription" xml:space="preserve">
+    <value>属性的等级加成表，以及卓越和远古物品额外获得的值。</value>
+  </data>
+  <data name="ItemStatTerms_TableState_Caption" xml:space="preserve">
+    <value>表</value>
+  </data>
+  <data name="ItemStatTerms_TableState_Description" xml:space="preserve">
+    <value>未写入：与配置“default”相同。无：该属性没有等级加成表。数值：下面的等级加成表。</value>
+  </data>
+  <data name="ItemStatTerms_Table_Caption" xml:space="preserve">
+    <value>等级加成表</value>
+  </data>
+  <data name="ItemStatTerms_Table_Description" xml:space="preserve">
+    <value>每个物品等级为该属性增加的值。</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentState_Caption" xml:space="preserve">
+    <value>卓越</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentState_Description" xml:space="preserve">
+    <value>未写入：与配置“default”相同。无：卓越物品不额外获得。数值：基础值 × 倍数 ÷ 掉落等级 + 增加 + 掉落等级 ÷ 除数。</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentTimes_Caption" xml:space="preserve">
+    <value>卓越倍数</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentAdd_Caption" xml:space="preserve">
+    <value>卓越增加</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentDropLevelDivisor_Caption" xml:space="preserve">
+    <value>卓越掉落等级除数</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentDropLevelDivisor_Description" xml:space="preserve">
+    <value>0 表示省略此部分。</value>
+  </data>
+  <data name="ItemStatTerms_AncientState_Caption" xml:space="preserve">
+    <value>远古</value>
+  </data>
+  <data name="ItemStatTerms_AncientState_Description" xml:space="preserve">
+    <value>未写入：与配置“default”相同。无：远古物品不额外获得。数值：值 × 倍数 ÷ d + 增加 + d ÷ 除数，d 为掉落等级加上远古物品掉落等级加成。</value>
+  </data>
+  <data name="ItemStatTerms_AncientTimes_Caption" xml:space="preserve">
+    <value>远古倍数</value>
+  </data>
+  <data name="ItemStatTerms_AncientAdd_Caption" xml:space="preserve">
+    <value>远古增加</value>
+  </data>
+  <data name="ItemStatTerms_AncientDropLevelDivisor_Caption" xml:space="preserve">
+    <value>远古掉落等级除数</value>
+  </data>
+  <data name="ItemStatTerms_AncientDropLevelDivisor_Description" xml:space="preserve">
+    <value>0 表示省略此部分。</value>
+  </data>
+  <data name="ItemStatTerms_AncientAfterLevelBonus_Caption" xml:space="preserve">
+    <value>远古计入等级加成</value>
+  </data>
+  <data name="ItemStatTerms_AncientAfterLevelBonus_Description" xml:space="preserve">
+    <value>远古部分的值是否包含等级加成。</value>
+  </data>
+  <data name="ItemStatTerms_PerLevelAfterHalving_Caption" xml:space="preserve">
+    <value>减半后每级增加</value>
+  </data>
+  <data name="ItemStatTerms_PerLevelAfterHalving_Description" xml:space="preserve">
+    <value>仅限魔力：魔力减半后每个物品等级增加的值。为空：与配置“default”相同。</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeCaption" xml:space="preserve">
+    <value>物品需求公式</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeCaptionPlural" xml:space="preserve">
+    <value>物品需求公式列表</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeDescription" xml:space="preserve">
+    <value>属性需求的增长方式：增加 + 基础值 × (掉落等级 + 物品等级 × 等级权重) × 百分比 ÷ 100。基础值为 0 时保持 0。</value>
+  </data>
+  <data name="ItemRequirementFormula_KeepBase_Caption" xml:space="preserve">
+    <value>保持基础值</value>
+  </data>
+  <data name="ItemRequirementFormula_KeepBase_Description" xml:space="preserve">
+    <value>需求是否保持其基础值，而不按公式增长。</value>
+  </data>
+  <data name="ItemRequirementFormula_Add_Caption" xml:space="preserve">
+    <value>增加</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelWeight_Caption" xml:space="preserve">
+    <value>等级权重</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelWeight_Description" xml:space="preserve">
+    <value>物品等级的系数，加到掉落等级上。</value>
+  </data>
+  <data name="ItemRequirementFormula_Percent_Caption" xml:space="preserve">
+    <value>百分比</value>
+  </data>
+  <data name="ItemRequirementFormula_Percent_Description" xml:space="preserve">
+    <value>每个掉落等级增加的基础值百分比。</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelRequirementBasis_Caption" xml:space="preserve">
+    <value>以等级需求为基础</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelRequirementBasis_Description" xml:space="preserve">
+    <value>物品有等级需求时，公式是否以其代替掉落等级（不含等级权重）。</value>
+  </data>
+  <data name="ItemStatTermState_TypeCaption" xml:space="preserve">
+    <value>物品属性项状态</value>
+  </data>
+  <data name="ItemStatTermState_NotWritten_Caption" xml:space="preserve">
+    <value>未写入</value>
+  </data>
+  <data name="ItemStatTermState_None_Caption" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="ItemStatTermState_Values_Caption" xml:space="preserve">
+    <value>数值</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Caption" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
+    <value>这些项适用的物品基础增益属性。最小物理伤害的卓越和古代部分也适用于最大物理伤害。</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
+    <value>此公式适用的物品需求属性。</value>
+  </data>
 </root>

@@ -64,9 +64,12 @@ adminPanel:
   affinity: {}
 
 gameServer:
+  # Optional existing Secret with key "token" for Dapr app-to-sidecar authentication.
+  # When empty, the chart creates and reuses a random secret across upgrades.
+  appTokenSecret: ""
   image: munique/openmu-game
-  # The number of game servers. Pod N runs the game server with the id idOffset + N, so for each of
-  # them, a game server definition has to exist (see the setup and the servers page of the admin panel).
+  # The number of game servers. Server N has id idOffset + N and its own single-replica StatefulSet
+  # and Dapr app id. A game server definition must exist for each id (see the admin panel setup).
   replicas: 2
   idOffset: 0
   # Every game server listens on this port for its first client version, on the next one for the

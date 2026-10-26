@@ -24,6 +24,12 @@ public class RageSkillAttackAction
     /// <param name="skillId">The skill identifier.</param>
     public async ValueTask AttackAsync(Player player, ushort explicitTargetId, ushort skillId)
     {
+        if (player.CurrentMap is not { } map)
+        {
+            // The player is changing the map, e.g. by a warp.
+            return;
+        }
+
         var explicitTarget = player.GetObject(explicitTargetId) as IAttackable;
         if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { } skill
                                      || (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, skill.Skill!.Range)))
@@ -38,7 +44,7 @@ public class RageSkillAttackAction
         }
 
         targets.AddRange(
-            player.CurrentMap!
+            map
                 .GetAttackablesInRange(player.Position, skill.Skill!.Range)
                 .Where(t => t != explicitTarget && t != player)
                 .Where(t => t is not Player)
