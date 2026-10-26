@@ -2735,4 +2735,10 @@
   <data name="CastleSiegeStatusPlugIn_Description" xml:space="preserve">
     <value>Sends the Castle Siege state, schedule and castle owner to the game client.</value>
   </data>
+  <data name="ShowItemCraftingPreviewExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Item Crafting Preview Extended</value>
+  </data>
+  <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
 </root>

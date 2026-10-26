@@ -4826,6 +4826,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ItemCraftingPreviewExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mixType">The number of the crafting which matches the items, which is also sent by the client to execute it. 0, if the items don't match any crafting.</param>
+    /// <param name="successRate">The success rate in percent, including the crafting bonus of the character.</param>
+    /// <param name="price">The price in zen, without the tax of the chaos machine.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the items of the crafting dialog changed, e.g. at the chaos machine.
+    /// Causes reaction on client side: The game client shows the success rate and the price of the crafting which matches the items, as they are calculated by the server, instead of calculating them by itself.
+    /// </remarks>
+    public static async ValueTask SendItemCraftingPreviewExtendedAsync(this IConnection? connection, byte @mixType, byte @successRate, uint @price)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCraftingPreviewExtendedRef.Length;
+            var packet = new ItemCraftingPreviewExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.MixType = @mixType;
+            packet.SuccessRate = @successRate;
+            packet.Price = @price;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="LegacyQuestStateDialog" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
