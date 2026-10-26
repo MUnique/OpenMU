@@ -77,6 +77,23 @@ public sealed class ResolvedItemStatProfile
     public static bool HasDefaultProfile(GameConfiguration gameConfiguration) => FindDefaultProfile(gameConfiguration) is not null;
 
     /// <summary>
+    /// Gets the item definitions which can be worn, but have no stat profile, so that they have the formulas of the
+    /// profile named <see cref="ItemStatProfile.DefaultName"/>.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The item definitions which can be worn and have no stat profile.</returns>
+    /// <remarks>
+    /// The formulas which only a kind of items has, e.g. the ancient defense of the shields or the strength per option
+    /// level of the armor, are in the profile of that kind, so such an item doesn't get them. The data initialization and
+    /// the update which adds the profiles give each item the profile of its kind, but an item which is added later, e.g.
+    /// on the admin panel, gets none by itself.
+    /// </remarks>
+    public static IReadOnlyList<ItemDefinition> GetWearableItemsWithoutProfile(GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.Items.Where(item => item.ItemSlot is not null && item.StatProfile is null).ToList();
+    }
+
+    /// <summary>
     /// Gets the requirement formula of the requirement attribute: the one of the item's profile, or else the one of the default.
     /// </summary>
     /// <param name="attribute">The attribute of the requirement.</param>

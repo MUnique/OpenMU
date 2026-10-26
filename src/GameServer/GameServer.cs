@@ -183,6 +183,18 @@ public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposa
             return;
         }
 
+        if (ResolvedItemStatProfile.GetWearableItemsWithoutProfile(this._gameContext.Configuration) is { Count: > 0 } itemsWithoutProfile)
+        {
+            const int maximumListedItems = 10;
+            var listedItems = string.Join(", ", itemsWithoutProfile.Take(maximumListedItems).Select(item => $"{item.Name} ({item.Group}, {item.Number})"));
+            if (itemsWithoutProfile.Count > maximumListedItems)
+            {
+                listedItems += ", ...";
+            }
+
+            this._logger.LogWarning("{count} items which can be worn have no item stat profile, so they have the formulas of the profile '{profileName}' and not the ones of their kind: {items}. Give them the profile of their kind on the admin panel, e.g. 'armor', 'shield' or 'book'.", itemsWithoutProfile.Count, ItemStatProfile.DefaultName, listedItems);
+        }
+
         this.ServerState = ServerState.Starting;
         try
         {

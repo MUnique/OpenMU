@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -66,6 +67,32 @@ public class GameServerItemStatProfilesTest
         await gameServer.StartAsync().ConfigureAwait(false);
 
         Assert.That(gameServer.ServerState, Is.EqualTo(ServerState.Started));
+    }
+
+    /// <summary>
+    /// Tests that the items which can be worn, but have no stat profile, are found for the warning at the start, and that
+    /// the server starts with them.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task StartsWithWearableItemsWithoutProfileAsync()
+    {
+        var gameConfiguration = CreateConfiguration();
+        var defaultProfile = new BasicModel.ItemStatProfile { Name = ItemStatProfile.DefaultName };
+        gameConfiguration.ItemStatProfiles.Add(defaultProfile);
+        var withoutProfile = new BasicModel.ItemDefinition { Group = 6, Number = 99, ItemSlot = new BasicModel.ItemSlotType() };
+        gameConfiguration.Items.Add(withoutProfile);
+        gameConfiguration.Items.Add(new BasicModel.ItemDefinition { Group = 6, Number = 98, ItemSlot = new BasicModel.ItemSlotType(), StatProfile = defaultProfile });
+        gameConfiguration.Items.Add(new BasicModel.ItemDefinition { Group = 14, Number = 13 });
+        await using var gameServer = CreateGameServer(gameConfiguration);
+
+        await gameServer.StartAsync().ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ResolvedItemStatProfile.GetWearableItemsWithoutProfile(gameConfiguration), Is.EqualTo(new[] { withoutProfile }));
+            Assert.That(gameServer.ServerState, Is.EqualTo(ServerState.Started));
+        });
     }
 
     /// <summary>

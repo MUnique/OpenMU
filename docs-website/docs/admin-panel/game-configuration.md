@@ -141,7 +141,11 @@ profile of its kind (the `StatProfile` of the item). The profile `default` holds
 every formula. Another profile only holds what differs and takes the rest from
 `default`: for example, `armor` only says that each option level adds 5 to the
 strength requirement instead of 4. An item without a profile has the formulas of
-`default`, and a change to a profile applies to every item which uses it.
+`default`, and a change to a profile applies to every item which uses it. A new
+item doesn't get a profile by itself: give it the profile of its kind, e.g.
+`armor`, `shield` or `book`, or it lacks the formulas of that kind, like the
+ancient defense of shields. A game server lists the items which can be worn but
+have no profile in a warning when it starts.
 
 | Setting | Meaning |
 |---|---|
