@@ -65,6 +65,10 @@ have game master rights and their password is identical to their user name.
 Then click **Install** and wait. When the installation is finished, the page says
 so.
 
+If installation fails, the page shows an error instead. Check the server logs,
+correct the problem, and retry; the selected version and test account option stay
+selected.
+
 :::warning[All players are disconnected]
 The installation button is disabled while players are connected — the page shows
 *"First close all connections to the server"*. An installation **drops the
@@ -91,6 +95,9 @@ PostgreSQL database first if you care about it.
 
 If the running OpenMU version needs a newer database schema, the page offers
 **Update**. This migrates the schema; it does not touch your accounts.
+
+If a schema update fails, the page shows an error. Check the server logs, restore
+the database connection if needed, reload the page, and retry **Update**.
 
 Schema updates are separate from **configuration** updates — new drop tables,
 fixed monster stats or new plugin configurations are applied on the
