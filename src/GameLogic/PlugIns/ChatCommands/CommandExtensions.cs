@@ -133,10 +133,6 @@ public static class CommandExtensions
             {
                 validValues = ["0", "1"];
             }
-            else if (property.PropertyType == typeof(byte) || property.PropertyType == typeof(ushort) || property.PropertyType == typeof(uint))
-            {
-                // todo: ranges in ParameterAttribute
-            }
 
             // A parameter without an ArgumentAttribute can't be required - the parser
             // only counts the required arguments of the attributed properties.
@@ -147,8 +143,17 @@ public static class CommandExtensions
                 argumentAttribute?.ShortName,
                 property.PropertyType.Name,
                 argumentAttribute?.IsRequired ?? false,
-                validValues);
+                validValues,
+                ToDouble(property.Range?.Minimum),
+                ToDouble(property.Range?.Maximum),
+                property.ValueReference?.Reference ?? ChatCommandValueReference.None,
+                property.ValueReference?.GroupWith);
         }
+    }
+
+    private static double? ToDouble(object? rangeValue)
+    {
+        return rangeValue is null ? null : Convert.ToDouble(rangeValue, CultureInfo.InvariantCulture);
     }
 
     private static async ValueTask<bool> ReadNamedArgumentsAsync(object instance, IReadOnlyList<ChatCommandArgumentProperty> properties, IList<string> arguments, Player? player)
