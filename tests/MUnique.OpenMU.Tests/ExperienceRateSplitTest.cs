@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Runtime.InteropServices;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -111,6 +113,49 @@ public class ExperienceRateSplitTest
         Assert.That(masterGained, Is.GreaterThan(0));
         Assert.That(normalGained, Is.GreaterThan(0));
         Assert.That(masterGained, Is.GreaterThan(normalGained * 3));
+    }
+
+    /// <summary>
+    /// Verifies that the <see cref="IExperienceCalculationPlugIn"/>s are applied to the experience of
+    /// each party member, as for a solo kill. Experience bonuses can be implemented as such a plugin.
+    /// </summary>
+    /// <param name="isMasterClass">Whether the members gain master experience.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async ValueTask PartyDistributionAppliesExperienceCalculationPlugInsPerMemberAsync(bool isMasterClass)
+    {
+        var (withoutBonus, otherWithoutBonus) = await DistributeAsync(registerPlugIn: false).ConfigureAwait(false);
+        var (withBonus, otherWithBonus) = await DistributeAsync(registerPlugIn: true).ConfigureAwait(false);
+
+        Assert.That(withoutBonus, Is.GreaterThan(0));
+        Assert.That(withBonus, Is.EqualTo(withoutBonus * 2).Within(1));
+        Assert.That(otherWithBonus, Is.EqualTo(otherWithoutBonus));
+
+        async ValueTask<(long BonusMember, long OtherMember)> DistributeAsync(bool registerPlugIn)
+        {
+            var context = this.CreateGameServerContext(
+                normalExperienceRate: 1.0f,
+                globalMasterExperienceRate: 1.0f,
+                maximumLevel: isMasterClass ? (short)3 : (short)400,
+                maximumMasterLevel: 200);
+            var bonusMember = await this.CreatePlayerAsync(context, level: 3, totalLevel: 3, isMasterClass).ConfigureAwait(false);
+            var otherMember = await this.CreatePlayerAsync(context, level: 3, totalLevel: 3, isMasterClass).ConfigureAwait(false);
+            if (registerPlugIn)
+            {
+                context.PlugInManager.RegisterPlugInAtPlugInPoint<IExperienceCalculationPlugIn>(new DoubleExperienceForPlayerPlugIn(bonusMember));
+            }
+
+            var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+            await party.AddAsync(bonusMember).ConfigureAwait(false);
+            await party.AddAsync(otherMember).ConfigureAwait(false);
+            await bonusMember.AddObserverAsync(otherMember).ConfigureAwait(false);
+
+            _ = await party.DistributeExperienceAfterKillAsync(CreateKilledObject(level: 5).Object, bonusMember).ConfigureAwait(false);
+
+            return isMasterClass
+                ? (bonusMember.SelectedCharacter!.MasterExperience, otherMember.SelectedCharacter!.MasterExperience)
+                : (bonusMember.SelectedCharacter!.Experience, otherMember.SelectedCharacter!.Experience);
+        }
     }
 
     /// <summary>
@@ -331,5 +376,26 @@ public class ExperienceRateSplitTest
         mapInitializer.PlugInManager = gameServerContext.PlugInManager;
         mapInitializer.PathFinderPool = gameServerContext.PathFinderPool;
         return gameServerContext;
+    }
+
+    [Guid("4E2B9C61-7A3D-4F05-8B1E-2C6D9A0F5E37")]
+    private sealed class DoubleExperienceForPlayerPlugIn : IExperienceCalculationPlugIn
+    {
+        private readonly Player _player;
+
+        public DoubleExperienceForPlayerPlugIn(Player player)
+        {
+            this._player = player;
+        }
+
+        public ValueTask CalculateExperienceAsync(Player player, ExperienceCalculationArgs args)
+        {
+            if (player == this._player)
+            {
+                args.Experience *= 2;
+            }
+
+            return ValueTask.CompletedTask;
+        }
     }
 }
