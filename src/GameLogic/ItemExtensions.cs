@@ -420,7 +420,7 @@ public static class ItemExtensions
             var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
             if (itemOption != null)
             {
-                value += itemOption.Level * profile.StrengthPerOptionLevel;
+                value = LimitToInt(value + ((long)itemOption.Level * profile.StrengthPerOptionLevel));
             }
         }
 
@@ -551,10 +551,10 @@ public static class ItemExtensions
         if (formula.LevelRequirementBasis
             && definition.Requirements.FirstOrDefault(r => r.Attribute == Stats.Level && r.MinimumItemLevel is null)?.MinimumValue is > 0 and var levelRequirement)
         {
-            return formula.Add + (baseValue * levelRequirement * formula.Percent / 100);
+            return LimitToInt(formula.Add + ((Int128)baseValue * levelRequirement * formula.Percent / 100));
         }
 
-        int dropLevel = definition.DropLevel;
+        Int128 dropLevel = definition.DropLevel;
         if (item.IsAncient())
         {
             dropLevel += profile.AncientDropLevelBonus;
@@ -568,8 +568,8 @@ public static class ItemExtensions
             // a normal item has no bonus
         }
 
-        dropLevel += item.Level * formula.LevelWeight;
-        return formula.Add + (baseValue * dropLevel * formula.Percent / 100);
+        dropLevel += (Int128)item.Level * formula.LevelWeight;
+        return LimitToInt(formula.Add + (baseValue * dropLevel * formula.Percent / 100));
     }
 
     /// <summary>
@@ -585,14 +585,21 @@ public static class ItemExtensions
         }
 
         var profile = ResolvedItemStatProfile.Of(definition, gameConfiguration);
-        var value = baseValue + (profile.LevelPerItemLevel * (item.IsTrainablePet() ? 0 : item.Level));
+        var value = baseValue + ((long)profile.LevelPerItemLevel * (item.IsTrainablePet() ? 0 : item.Level));
         if (definition.ExcellentRaisesLevel && item.IsExcellent())
         {
             value += profile.ExcellentLevelAdd;
         }
 
-        return value;
+        return LimitToInt(value);
     }
+
+    /// <summary>
+    /// Limits a value of the item formulas, which an owner can configure, to the range of <see cref="int"/>, so that a
+    /// large factor doesn't wrap to a negative requirement. <see cref="Int128"/> holds the product of three values of
+    /// <see cref="int"/>.
+    /// </summary>
+    private static int LimitToInt(Int128 value) => (int)Int128.Clamp(value, int.MinValue, int.MaxValue);
 
     private sealed class TemporaryItemAppearance : ItemAppearance
     {

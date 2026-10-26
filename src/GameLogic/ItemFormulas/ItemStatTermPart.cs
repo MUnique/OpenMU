@@ -31,13 +31,14 @@ public readonly record struct ItemStatTermPart(ItemStatTermState State, int Time
     /// <returns>The part.</returns>
     public int Compute(int value, int dropLevel)
     {
-        var result = this.Times == 0 || dropLevel <= 0 ? 0 : value * this.Times / dropLevel;
+        // With long, a large factor, which an owner can configure, doesn't wrap to a negative part.
+        var result = this.Times == 0 || dropLevel <= 0 ? 0 : (long)value * this.Times / dropLevel;
         result += this.Add;
         if (this.DropLevelDivisor != 0)
         {
             result += dropLevel / this.DropLevelDivisor;
         }
 
-        return result;
+        return (int)Math.Clamp(result, int.MinValue, int.MaxValue);
     }
 }

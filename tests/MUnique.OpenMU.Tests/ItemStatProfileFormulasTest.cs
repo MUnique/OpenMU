@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.ItemFormulas;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -162,6 +163,25 @@ public class ItemStatProfileFormulasTest
 
         // 20 + 60 * (40 + bonus) * 3 / 100; the excellent bonus of 25 would give 137
         Assert.That(item.GetRequirement(Requirement(Stats.TotalAgilityRequirementValue, 60), configuration).Value, Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests that a requirement formula and a part with large factors, which an owner can configure, are limited
+    /// instead of wrapping to a negative value.
+    /// </summary>
+    [Test]
+    public void LargeFactorsAreLimitedInsteadOfWrapping()
+    {
+        var configuration = TestItemStatProfiles.Create();
+        GetFormula(GetDefault(configuration), Stats.TotalAgilityRequirementValue).Percent = int.MaxValue;
+        var item = CreateArmor(level: 9);
+        var part = new ItemStatTermPart(ItemStatTermState.Values, int.MaxValue, 0, 0, false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(item.GetRequirement(Requirement(Stats.TotalAgilityRequirementValue, 60), configuration).Value, Is.EqualTo(int.MaxValue));
+            Assert.That(part.Compute(300, DropLevel), Is.EqualTo(int.MaxValue));
+        });
     }
 
     /// <summary>
