@@ -199,6 +199,40 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that the common random item drop never selects a socket item, because socket items have their own drop group.
+    /// </summary>
+    [Test]
+    public async ValueTask TestRandomItemDropSkipsSocketItemsAsync()
+    {
+        var socketItem = this.CreateItemDefinition(0, 28, 100);
+        socketItem.MaximumSockets = 3;
+        var normalItem = this.CreateItemDefinition(0, 19, 100);
+
+        var item = await this.GenerateSpecialMapDropAsync(SpecialItemType.RandomItem, socketItem, normalItem).ConfigureAwait(false);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.Definition, Is.EqualTo(normalItem));
+        Assert.That(item.SocketCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that the socket item drop group selects only socket items, which get at least one socket.
+    /// </summary>
+    [Test]
+    public async ValueTask TestSocketItemDropSelectsOnlySocketItemsAsync()
+    {
+        var normalItem = this.CreateItemDefinition(0, 19, 100);
+        var socketItem = this.CreateItemDefinition(0, 28, 100);
+        socketItem.MaximumSockets = 3;
+
+        var item = await this.GenerateSpecialMapDropAsync(SpecialItemType.SocketItem, normalItem, socketItem).ConfigureAwait(false);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.Definition, Is.EqualTo(socketItem));
+        Assert.That(item.SocketCount, Is.GreaterThan(0));
+    }
+
+    /// <summary>
     /// Tests that ExcellentItemDropLevelDelta property exists and has correct default.
     /// </summary>
     [Test]
@@ -263,6 +297,34 @@ public class DropGeneratorTest
         return itemDefinition.Object;
     }
 
+    private async ValueTask<Item?> GenerateSpecialMapDropAsync(SpecialItemType itemType, params ItemDefinition[] configuredItems)
+    {
+        var dropGroup = new Mock<DropItemGroup>();
+        dropGroup.SetupAllProperties();
+        dropGroup.Object.Chance = 1.0;
+        dropGroup.Object.ItemType = itemType;
+        dropGroup.Setup(g => g.PossibleItems).Returns(new List<ItemDefinition>());
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup.Object);
+
+        var config = this.GetGameConfig();
+        foreach (var definition in configuredItems)
+        {
+            definition.DropsFromMonsters = true;
+            config.Items.Add(definition);
+        }
+
+        // NextInt returns its minimum: the first possible item and one socket.
+        var randomizer = new Mock<IRandomizer>();
+        randomizer.Setup(r => r.NextInt(It.IsAny<int>(), It.IsAny<int>())).Returns((int min, int _) => min);
+        randomizer.Setup(r => r.NextDouble()).Returns(0);
+
+        var generator = new DefaultDropGenerator(config, randomizer.Object);
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 100), 1, player).ConfigureAwait(false);
+        return items.FirstOrDefault();
+    }
+
     private MonsterDefinition GetMonster(int numberOfDrops, byte level)
     {
         var monster = new Mock<MonsterDefinition>();
@@ -318,6 +380,7 @@ public class DropGeneratorTest
         itemDefinition.Object.MaximumDropLevel = maximumDropLevel;
         itemDefinition.Object.Durability = 1;
         itemDefinition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
+        itemDefinition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
         return itemDefinition.Object;
     }
 }
