@@ -146,7 +146,7 @@ Some parts of the panel depend on how the server is hosted:
 | Logs | [Log files page](logs-and-monitoring.md#log-files-all-in-one) inside the panel | Links to Grafana for logs, metrics and traces |
 | Live map | Rendered by the panel itself | Reverse-proxied from the game server container |
 | Dashboard | Shows the castle siege and the global message | Without the castle siege and the global message; uptime and memory are the ones of the admin panel container |
-| Auto start / auto schema update | Applies | Ignored — listeners always start, schema updates are started manually |
+| Auto start / auto schema update | Applies | Ignored — listeners always start, schema and mandatory configuration updates are started manually |
 | After an installation | Ready immediately | The connect server and game server containers have to be restarted |
 
 ## Planned

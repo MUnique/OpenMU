@@ -48,6 +48,23 @@ so you can apply the update here. Then use **Reload configuration and restart
 all game servers** on the [Servers page](servers.md), or restart the server
 process.
 
+## At startup
+
+The all-in-one server applies the pending mandatory updates itself when it
+starts, right after the database schema update, so the game servers don't start
+without the data they require. It lists the updates in the console and handles
+them like the schema update:
+
+* With *Auto update schema* enabled in the
+  [System configuration](game-configuration.md#system), it applies them
+  automatically.
+* Otherwise, it asks whether to apply them. If you decline, or the console can't
+  be read, the server doesn't start.
+
+Optional updates stay listed here for you to decide. So does a mandatory update
+which depends on an optional update you haven't applied. In a distributed
+deployment, the processes don't apply updates; apply them here.
+
 ## On a new database
 
 A new database already contains the changes of OpenMU's own updates, because the
