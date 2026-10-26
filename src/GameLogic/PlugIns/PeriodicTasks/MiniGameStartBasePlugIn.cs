@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -177,7 +178,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     protected override async ValueTask OnStartedAsync(TGameState state)
     {
         var miniGameDefinitions = state.Context.Configuration.MiniGameDefinitions
-            .Where(d => d.Type == this.Key && d.MapCreationPolicy == MiniGameMapCreationPolicy.Shared);
+            .Where(d => d.Type == this.Key && d.MapCreationPolicy == MiniGameMapCreationPolicy.Shared && d.IsAvailable());
 
         await this.DisposeStaleGamesAsync(state.Context).ConfigureAwait(false);
 

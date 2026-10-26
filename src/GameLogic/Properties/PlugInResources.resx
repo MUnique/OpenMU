@@ -1673,4 +1673,52 @@
   <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
     <value>Opens the Castle Siege registration window, which shows the Castle Siege status, when a player talks to a guardsman on the Castle Siege map.</value>
   </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guardsman</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Shows Land of Trials availability and its applicable entry fee.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>Publish boss kills</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Boss monster numbers</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>Publish level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>Level milestones</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>Master level milestones</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Discord command</value>
+  </data>
+  <data name="DiscordChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Links the account to a Discord user: '/discord link' creates a code which is entered in Discord, '/discord unlink' removes the link, '/discord notify letter' turns direct messages about letters on or off (also 'login' and 'friend').</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>World chat command</value>
+  </data>
+  <data name="WorldChatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sends a message to the world chat, which all players of all game servers can read, e.g. '/world Hello!'. It can be bridged to Discord.</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>Publish guild, alliance and world chat</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Name" xml:space="preserve">
+    <value>Notice about the chat bridge</value>
+  </data>
+  <data name="GuildChatBridgeNoticePlugIn_Description" xml:space="preserve">
+    <value>Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord.</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Name" xml:space="preserve">
+    <value>Discord integration of the client</value>
+  </data>
+  <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
+    <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
+  </data>
 </root>

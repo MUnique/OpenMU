@@ -87,6 +87,26 @@ public class AdminUserStore :
         return IdentityResult.Success;
     }
 
+    /// <summary>
+    /// Atomically stores the time step of an accepted authenticator code, if it is newer than the last accepted one.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="step">The time step of the accepted code.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the step was newer and is stored now.</returns>
+    public async Task<bool> TryAdvanceTotpStepAsync(AdminUser user, long step, CancellationToken cancellationToken)
+    {
+        var advanced = BootstrapAdminUserProvider.IsBootstrapUser(user)
+            ? this._bootstrapUserProvider.TryAdvanceTotpStep(step)
+            : await this._repository.TryAdvanceTotpStepAsync(user.Id, step, cancellationToken).ConfigureAwait(false);
+        if (advanced)
+        {
+            user.LastAcceptedTotpStep = step;
+        }
+
+        return advanced;
+    }
+
     /// <inheritdoc />
     public async Task<IdentityResult> UpdateAsync(AdminUser user, CancellationToken cancellationToken)
     {

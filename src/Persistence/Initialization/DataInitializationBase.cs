@@ -19,6 +19,7 @@ using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.PlugIns;
 
@@ -108,6 +109,10 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         this.CreateGameClientDefinition();
         await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
         this.GameConfigurationInitializer.Initialize();
+        IntroducedGameVersions.Apply(this.GameConfiguration);
+
+        // After all items exist, for every version.
+        ItemStatProfiles.Apply(this.Context, this.GameConfiguration);
 
         var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
         await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers).ConfigureAwait(false);
@@ -209,7 +214,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             }
         });
 
-        this.AddAllUpdateEntries(plugInManager);
+        await this.AddAllUpdateEntriesAsync(plugInManager).ConfigureAwait(false);
 
         await this.Context.SaveChangesAsync().ConfigureAwait(false);
     }
@@ -256,28 +261,20 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         }
     }
 
-    private void AddAllUpdateEntries(PlugInManager plugInManager)
+    /// <summary>
+    /// Installs the updates of this version on the new database (<see cref="NewDatabaseUpdates"/>).
+    /// </summary>
+    private async ValueTask AddAllUpdateEntriesAsync(PlugInManager plugInManager)
     {
         var updates = plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>()
                           ?.AvailableStrategies.Where(up => up.DataInitializationKey == this.Key)
-                          .OrderBy(up => up.UpdatedAt)
                           .ToList();
         if (updates is not { Count: > 0 })
         {
             return;
         }
 
-        foreach (var update in updates)
-        {
-            var entry = this.Context.CreateNew<ConfigurationUpdate>();
-            entry.Key = update.Key;
-            entry.Version = update.Version;
-            entry.Name = update.Name;
-            entry.Description = update.Description;
-            entry.CreatedAt = update.CreatedAt;
-            entry.UpdatedAt = update.UpdatedAt;
-            entry.InstalledAt = DateTime.UtcNow;
-        }
+        await NewDatabaseUpdates.InstallAsync(this.Context, this.GameConfiguration, updates).ConfigureAwait(false);
 
         var updateState = this.Context.CreateNew<ConfigurationUpdateState>();
         updateState.InitializationKey = this.Key;

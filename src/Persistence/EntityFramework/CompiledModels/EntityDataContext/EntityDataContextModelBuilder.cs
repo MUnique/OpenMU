@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("edc7bef9-dc99-4de0-a4d1-866509c3e38e"), entityTypeCount: 121)
+            : base(skipDetectChanges: false, modelId: new Guid("5577b320-884d-448b-a346-3a37f266931a"), entityTypeCount: 128)
         {
         }
 
@@ -20,6 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
         {
             var account = AccountEntityType.Create(this);
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
+            var accountExternalLink = AccountExternalLinkEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
             var areaSkillSettings = AreaSkillSettingsEntityType.Create(this);
             var attributeDefinition = AttributeDefinitionEntityType.Create(this);
@@ -73,6 +74,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var gensAbuse = GensAbuseEntityType.Create(this);
             var gensMember = GensMemberEntityType.Create(this);
             var guild = GuildEntityType.Create(this);
+            var guildChatBinding = GuildChatBindingEntityType.Create(this);
             var guildMember = GuildMemberEntityType.Create(this);
             var increasableItemOption = IncreasableItemOptionEntityType.Create(this);
             var item = ItemEntityType.Create(this);
@@ -92,6 +94,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemDropItemGroupItemDefinition = ItemDropItemGroupItemDefinitionEntityType.Create(this);
             var itemItemOfItemSet = ItemItemOfItemSetEntityType.Create(this);
             var itemLevelBonusTable = ItemLevelBonusTableEntityType.Create(this);
+            var itemLevelPrice = ItemLevelPriceEntityType.Create(this);
             var itemOfItemSet = ItemOfItemSetEntityType.Create(this);
             var itemOption = ItemOptionEntityType.Create(this);
             var itemOptionCombinationBonus = ItemOptionCombinationBonusEntityType.Create(this);
@@ -99,8 +102,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemOptionLink = ItemOptionLinkEntityType.Create(this);
             var itemOptionOfLevel = ItemOptionOfLevelEntityType.Create(this);
             var itemOptionType = ItemOptionTypeEntityType.Create(this);
+            var itemPriceDefinition = ItemPriceDefinitionEntityType.Create(this);
+            var itemRequirementFormula = ItemRequirementFormulaEntityType.Create(this);
             var itemSetGroup = ItemSetGroupEntityType.Create(this);
             var itemSlotType = ItemSlotTypeEntityType.Create(this);
+            var itemStatProfile = ItemStatProfileEntityType.Create(this);
+            var itemStatTerms = ItemStatTermsEntityType.Create(this);
             var itemStorage = ItemStorageEntityType.Create(this);
             var jewelMix = JewelMixEntityType.Create(this);
             var letterBody = LetterBodyEntityType.Create(this);
@@ -143,6 +150,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AccountCharacterClassEntityType.CreateForeignKey2(accountCharacterClass, characterClass);
+            AccountExternalLinkEntityType.CreateForeignKey1(accountExternalLink, account);
             AppearanceDataEntityType.CreateForeignKey1(appearanceData, characterClass);
             AttributeDefinitionEntityType.CreateForeignKey1(attributeDefinition, gameConfiguration);
             AttributeRelationshipEntityType.CreateForeignKey1(attributeRelationship, characterClass);
@@ -243,6 +251,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensMemberEntityType.CreateForeignKey1(gensMember, character);
             GuildEntityType.CreateForeignKey1(guild, guild);
             GuildEntityType.CreateForeignKey2(guild, guild);
+            GuildChatBindingEntityType.CreateForeignKey1(guildChatBinding, guild);
             GuildMemberEntityType.CreateForeignKey1(guildMember, guild);
             GuildMemberEntityType.CreateForeignKey2(guildMember, character);
             IncreasableItemOptionEntityType.CreateForeignKey1(increasableItemOption, itemOptionDefinition);
@@ -270,7 +279,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemDefinitionEntityType.CreateForeignKey1(itemDefinition, magicEffectDefinition);
             ItemDefinitionEntityType.CreateForeignKey2(itemDefinition, gameConfiguration);
             ItemDefinitionEntityType.CreateForeignKey3(itemDefinition, itemSlotType);
-            ItemDefinitionEntityType.CreateForeignKey4(itemDefinition, skill);
+            ItemDefinitionEntityType.CreateForeignKey4(itemDefinition, itemPriceDefinition);
+            ItemDefinitionEntityType.CreateForeignKey5(itemDefinition, skill);
+            ItemDefinitionEntityType.CreateForeignKey6(itemDefinition, itemStatProfile);
             ItemDefinitionCharacterClassEntityType.CreateForeignKey1(itemDefinitionCharacterClass, characterClass);
             ItemDefinitionCharacterClassEntityType.CreateForeignKey2(itemDefinitionCharacterClass, itemDefinition);
             ItemDefinitionItemOptionDefinitionEntityType.CreateForeignKey1(itemDefinitionItemOptionDefinition, itemDefinition);
@@ -284,6 +295,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemItemOfItemSetEntityType.CreateForeignKey1(itemItemOfItemSet, item);
             ItemItemOfItemSetEntityType.CreateForeignKey2(itemItemOfItemSet, itemOfItemSet);
             ItemLevelBonusTableEntityType.CreateForeignKey1(itemLevelBonusTable, gameConfiguration);
+            ItemLevelPriceEntityType.CreateForeignKey1(itemLevelPrice, itemPriceDefinition);
             ItemOfItemSetEntityType.CreateForeignKey1(itemOfItemSet, increasableItemOption);
             ItemOfItemSetEntityType.CreateForeignKey2(itemOfItemSet, itemDefinition);
             ItemOfItemSetEntityType.CreateForeignKey3(itemOfItemSet, itemSetGroup);
@@ -297,9 +309,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionOfLevelEntityType.CreateForeignKey1(itemOptionOfLevel, increasableItemOption);
             ItemOptionOfLevelEntityType.CreateForeignKey2(itemOptionOfLevel, powerUpDefinition);
             ItemOptionTypeEntityType.CreateForeignKey1(itemOptionType, gameConfiguration);
+            ItemPriceDefinitionEntityType.CreateForeignKey1(itemPriceDefinition, gameConfiguration);
+            ItemRequirementFormulaEntityType.CreateForeignKey1(itemRequirementFormula, attributeDefinition);
+            ItemRequirementFormulaEntityType.CreateForeignKey2(itemRequirementFormula, itemStatProfile);
             ItemSetGroupEntityType.CreateForeignKey1(itemSetGroup, gameConfiguration);
             ItemSetGroupEntityType.CreateForeignKey2(itemSetGroup, itemOptionDefinition);
             ItemSlotTypeEntityType.CreateForeignKey1(itemSlotType, gameConfiguration);
+            ItemStatProfileEntityType.CreateForeignKey1(itemStatProfile, gameConfiguration);
+            ItemStatTermsEntityType.CreateForeignKey1(itemStatTerms, attributeDefinition);
+            ItemStatTermsEntityType.CreateForeignKey2(itemStatTerms, itemStatProfile);
+            ItemStatTermsEntityType.CreateForeignKey3(itemStatTerms, itemLevelBonusTable);
             JewelMixEntityType.CreateForeignKey1(jewelMix, gameConfiguration);
             JewelMixEntityType.CreateForeignKey2(jewelMix, itemDefinition);
             JewelMixEntityType.CreateForeignKey3(jewelMix, itemDefinition);
@@ -382,6 +401,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             AccountEntityType.CreateAnnotations(account);
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
+            AccountExternalLinkEntityType.CreateAnnotations(accountExternalLink);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);
             AreaSkillSettingsEntityType.CreateAnnotations(areaSkillSettings);
             AttributeDefinitionEntityType.CreateAnnotations(attributeDefinition);
@@ -435,6 +455,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             GensAbuseEntityType.CreateAnnotations(gensAbuse);
             GensMemberEntityType.CreateAnnotations(gensMember);
             GuildEntityType.CreateAnnotations(guild);
+            GuildChatBindingEntityType.CreateAnnotations(guildChatBinding);
             GuildMemberEntityType.CreateAnnotations(guildMember);
             IncreasableItemOptionEntityType.CreateAnnotations(increasableItemOption);
             ItemEntityType.CreateAnnotations(item);
@@ -454,6 +475,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemDropItemGroupItemDefinitionEntityType.CreateAnnotations(itemDropItemGroupItemDefinition);
             ItemItemOfItemSetEntityType.CreateAnnotations(itemItemOfItemSet);
             ItemLevelBonusTableEntityType.CreateAnnotations(itemLevelBonusTable);
+            ItemLevelPriceEntityType.CreateAnnotations(itemLevelPrice);
             ItemOfItemSetEntityType.CreateAnnotations(itemOfItemSet);
             ItemOptionEntityType.CreateAnnotations(itemOption);
             ItemOptionCombinationBonusEntityType.CreateAnnotations(itemOptionCombinationBonus);
@@ -461,8 +483,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemOptionLinkEntityType.CreateAnnotations(itemOptionLink);
             ItemOptionOfLevelEntityType.CreateAnnotations(itemOptionOfLevel);
             ItemOptionTypeEntityType.CreateAnnotations(itemOptionType);
+            ItemPriceDefinitionEntityType.CreateAnnotations(itemPriceDefinition);
+            ItemRequirementFormulaEntityType.CreateAnnotations(itemRequirementFormula);
             ItemSetGroupEntityType.CreateAnnotations(itemSetGroup);
             ItemSlotTypeEntityType.CreateAnnotations(itemSlotType);
+            ItemStatProfileEntityType.CreateAnnotations(itemStatProfile);
+            ItemStatTermsEntityType.CreateAnnotations(itemStatTerms);
             ItemStorageEntityType.CreateAnnotations(itemStorage);
             JewelMixEntityType.CreateAnnotations(jewelMix);
             LetterBodyEntityType.CreateAnnotations(letterBody);

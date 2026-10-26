@@ -185,7 +185,10 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         var possible = possibleItems ?? this.GetPossibleList(monsterLevel - this._excellentItemDropLevelDelta);
-        var item = this.GenerateRandomItem(possible);
+
+        // Socket items can't be excellent, so they are never selected for an excellent drop.
+        var withoutSocketItems = possible?.Where(it => it.MaximumSockets == 0).ToList();
+        var item = this.GenerateRandomItem(withoutSocketItems);
         if (item is null)
         {
             return null;
@@ -424,6 +427,15 @@ public class DefaultDropGenerator : IDropGenerator
         if (possibleItems is null || possibleItems.Count == 0)
         {
             return null;
+        }
+
+        if (possibleItems.Any(definition => !definition.IsActive))
+        {
+            possibleItems = possibleItems.Where(definition => definition.IsActive).ToList();
+            if (possibleItems.Count == 0)
+            {
+                return null;
+            }
         }
 
         var item = new TemporaryItem

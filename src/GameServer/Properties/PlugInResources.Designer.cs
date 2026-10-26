@@ -2509,6 +2509,78 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Discord integration info (F5 02)..
+        /// </summary>
+        public static string DiscordIntegrationInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration info request handler.
+        /// </summary>
+        public static string DiscordIntegrationInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the Discord integration info, the link code and the messages written in Discord to the game client..
+        /// </summary>
+        public static string DiscordIntegrationViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration view.
+        /// </summary>
+        public static string DiscordIntegrationViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a code to link the account to a Discord user (F5 04)..
+        /// </summary>
+        public static string DiscordLinkCodeRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordLinkCodeRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord link code request handler.
+        /// </summary>
+        public static string DiscordLinkCodeRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordLinkCodeRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request to remove the link of the account to a Discord user (F5 06)..
+        /// </summary>
+        public static string DiscordUnlinkRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordUnlinkRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord unlink request handler.
+        /// </summary>
+        public static string DiscordUnlinkRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordUnlinkRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for drop item packets..
         /// </summary>
         public static string DropItemHandlerPlugIn_Description {

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -147,6 +148,91 @@ public class GuildActionTest : GuildTestBase
                 It.Is<IReadOnlyCollection<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name)),
                 It.Is<Interfaces.Guild>(g => g.Name == GuildName)), Times.Once());
         Assert.That(guildList.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name), Is.True);
+    }
+
+    /// <summary>
+    /// Verifies the configured limit before forwarding an alliance request and completing consent.
+    /// </summary>
+    /// <param name="maximumSize">The configured maximum; zero means unlimited.</param>
+    /// <param name="existingAlliance">Whether the requester already leads a two-guild alliance.</param>
+    /// <param name="allowed">Whether adding the target fits within the limit.</param>
+    [TestCase(0, false, true)]
+    [TestCase(1, false, false)]
+    [TestCase(2, false, true)]
+    [TestCase(0, true, true)]
+    [TestCase(2, true, false)]
+    [TestCase(3, true, true)]
+    public async ValueTask AllianceRequestHonorsConfiguredSizeAsync(int maximumSize, bool existingAlliance, bool allowed)
+    {
+        var memberGuildId = await this.CreateSecondGuildForPlayerAsync().ConfigureAwait(false);
+        var masterGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        this._guildMasterPlayer.GuildStatus = new GuildMemberStatus(masterGuildId, GuildPosition.GuildMaster);
+        this._player.GuildStatus = new GuildMemberStatus(memberGuildId, GuildPosition.GuildMaster);
+        this._player.Attributes!.AddElement(new SimpleElement(maximumSize, AggregateType.AddRaw), Stats.MaximumAllianceSize);
+        var expectedGuildIds = new List<uint> { memberGuildId };
+        if (existingAlliance)
+        {
+            using var context = this.PersistenceContextProvider.CreateNewContext();
+            var existingMaster = context.CreateNew<DataModel.Entities.Character>();
+            existingMaster.Name = "ExistingMaster";
+            await this.GuildServer.CreateGuildAsync("Existing", existingMaster.Name, existingMaster.Id, new byte[16], 0).ConfigureAwait(false);
+            var existingGuildId = await this.GuildServer.GetGuildIdByNameAsync("Existing").ConfigureAwait(false);
+            Assert.That(await this.GuildServer.CreateAllianceAsync(memberGuildId, existingGuildId).ConfigureAwait(false), Is.EqualTo(AllianceCreationResult.Success));
+            expectedGuildIds.Add(existingGuildId);
+        }
+
+        var action = new GuildRelationshipChangeAction();
+
+        await action.RequestAsync(this._player, this._guildMasterPlayer.Id, ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Join).ConfigureAwait(false);
+
+        Mock.Get(this._guildMasterPlayer.ViewPlugIns.GetPlugIn<IShowGuildRelationshipRequestPlugIn>()!)
+            .Verify(view => view.ShowRequestAsync(this._player, ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Join), allowed ? Times.Once() : Times.Never());
+        if (!allowed)
+        {
+            Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildRelationshipChangeResultPlugIn>()!)
+                .Verify(view => view.ShowResultAsync(ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Join, GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached, this._guildMasterPlayer.Id), Times.Once);
+            Assert.That(this._guildMasterPlayer.PendingAllianceRequest, Is.EqualTo(default((Player?, ViewGuildRelationshipType, ViewGuildRelationshipRequestType))));
+            var alliance = await this.GuildServer.GetAllianceGuildsAsync(memberGuildId).ConfigureAwait(false);
+            Assert.That(alliance.Select(guild => guild.Id), Is.EquivalentTo(existingAlliance ? expectedGuildIds : []));
+            return;
+        }
+
+        await action.ProcessResponseAsync(this._guildMasterPlayer, ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Join, true).ConfigureAwait(false);
+        expectedGuildIds.Add(masterGuildId);
+        Assert.That(
+            (await this.GuildServer.GetAllianceGuildsAsync(memberGuildId).ConfigureAwait(false)).Select(guild => guild.Id),
+            Is.EquivalentTo(expectedGuildIds));
+    }
+
+    /// <summary>
+    /// Verifies that a member-guild master cannot remove another guild from the alliance.
+    /// </summary>
+    [Test]
+    public async ValueTask NonAllianceMasterCannotRemoveAllianceGuildAsync()
+    {
+        var memberGuildId = await this.CreateSecondGuildForPlayerAsync().ConfigureAwait(false);
+        var masterGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        Assert.That(await this.GuildServer.CreateAllianceAsync(masterGuildId, memberGuildId).ConfigureAwait(false), Is.EqualTo(AllianceCreationResult.Success));
+        this._player.GuildStatus = new GuildMemberStatus(memberGuildId, GuildPosition.GuildMaster);
+
+        await new GuildRelationshipChangeAction().RequestLeaveAllianceAsync(this._player, GuildName).ConfigureAwait(false);
+
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildRelationshipChangeResultPlugIn>()!)
+            .Verify(view => view.ShowResultAsync(ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Leave, GuildRelationshipChangeResultType.NoAuthorization, null), Times.Once);
+        Assert.That(
+            (await this.GuildServer.GetAllianceGuildsAsync(masterGuildId).ConfigureAwait(false)).Select(guild => guild.Id),
+            Is.EquivalentTo(new[] { masterGuildId, memberGuildId }));
+    }
+
+    private async ValueTask<uint> CreateSecondGuildForPlayerAsync()
+    {
+        const string secondGuildName = "SecondGuild";
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var character = context.CreateNew<DataModel.Entities.Character>();
+        character.Name = this._player.Name;
+        this._player.SelectedCharacter!.Id = character.Id;
+        await this.GuildServer.CreateGuildAsync(secondGuildName, character.Name, character.Id, new byte[16], 0).ConfigureAwait(false);
+        return await this.GuildServer.GetGuildIdByNameAsync(secondGuildName).ConfigureAwait(false);
     }
 
     private async ValueTask RequestGuildAndRespondAsync(bool acceptRequest)

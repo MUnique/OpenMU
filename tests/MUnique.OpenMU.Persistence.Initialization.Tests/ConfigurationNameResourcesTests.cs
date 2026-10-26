@@ -37,6 +37,7 @@ internal class ConfigurationNameResourcesTests
         (nameof(CraftingNames), CraftingNames.ResourceManager),
         (nameof(DropGroupDescriptions), DropGroupDescriptions.ResourceManager),
         (nameof(ItemDropDescriptions), ItemDropDescriptions.ResourceManager),
+        (nameof(ItemPriceDefinitionNames), ItemPriceDefinitionNames.ResourceManager),
         (nameof(ItemSlotNames), ItemSlotNames.ResourceManager),
         (nameof(LevelBonusDescriptions), LevelBonusDescriptions.ResourceManager),
         (nameof(LevelBonusNames), LevelBonusNames.ResourceManager),

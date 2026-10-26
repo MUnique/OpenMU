@@ -17,12 +17,32 @@ public partial class ItemDefinition
     /// <summary>
     /// Gets or sets the (Sub-)Id of this item. Must be unique in an item group.
     /// </summary>
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>
     /// Gets or sets the item slot where it can get equipped.
     /// </summary>
     public virtual ItemSlotType? ItemSlot { get; set; }
+
+    /// <summary>
+    /// Gets or sets the stat profile: the item formulas of this item.
+    /// Without one, the item has the formulas of the profile "default". A new configuration and the update which adds
+    /// the profiles give each item the profile of its kind.
+    /// </summary>
+    public virtual ItemStatProfile? StatProfile { get; set; }
+
+    /// <summary>
+    /// Gets or sets a fixed bonus which an excellent item of this kind gets on its damage and magic power,
+    /// instead of the excellent part of its stat profile. 0 means the excellent part applies.
+    /// </summary>
+    public byte ExcellentBonus { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether an excellent item of this kind needs a higher level,
+    /// by the <see cref="ItemStatProfile.ExcellentLevelAdd"/> of its stat profile.
+    /// </summary>
+    public bool ExcellentRaisesLevel { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the width of the Item.
@@ -105,6 +125,26 @@ public partial class ItemDefinition
     public LocalizedString Name { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this item is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive items stay in the configuration, but are not available in the game,
+    /// e.g. they are not dropped by monsters and not sold by merchants.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the version of the original game which introduced this item.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped.
     /// </summary>
     public byte DropLevel { get; set; }
@@ -128,12 +168,19 @@ public partial class ItemDefinition
     /// <summary>
     /// Gets or sets the item Group (0-15). TODO: Might change item groups to classes, and replace this by it.
     /// </summary>
+    [Display(AutoGenerateField = true)]
     public byte Group { get; set; }
 
     /// <summary>
     /// Gets or sets the value which defines the worth of an item in zen currency.
     /// </summary>
     public int Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the definition of how the price of this item is calculated.
+    /// When it's <c>null</c>, the price is calculated automatically, like for usual equipment.
+    /// </summary>
+    public virtual ItemPriceDefinition? PriceDefinition { get; set; }
 
     /// <summary>
     /// Gets or sets the formula to calculate the required experience for a specific pet level.

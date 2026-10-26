@@ -7,9 +7,9 @@ volumes:
 # through the DAPR_HTTP_ENDPOINT and DAPR_GRPC_ENDPOINT, the sidecar reaches the service through
 # its -app-channel-address. This way, each of them can be restarted without breaking the other one,
 # e.g. when a game server process ends to apply a changed configuration.
-# The game servers share the app id "game-server": nothing addresses a game server by its app id,
-# the calls to game servers are published to all of them. The POD_NAME of a sidecar names its
-# queues in RabbitMQ (see dapr-components/pubsub.yaml), so it must be unique.
+# Each game server has app id "game-server-{id}" for confirmed live administration.
+# Existing notifications still use pub/sub. The POD_NAME of a sidecar names its queues
+# in RabbitMQ (see dapr-components/pubsub.yaml), so it must also be unique.
 x-dapr-sidecar: &dapr-sidecar
   image: "daprio/daprd:latest"
   restart: unless-stopped
@@ -182,7 +182,7 @@ services:
       database:
         condition: service_healthy
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
     environment:
       DAPR_HTTP_ENDPOINT: http://adminPanel-dapr:3500
       DAPR_GRPC_ENDPOINT: http://adminPanel-dapr:50001
@@ -214,6 +214,51 @@ services:
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
 
+  # The Discord bot and notifications. It's only started with the profile "discord",
+  # e.g. "docker compose --profile discord up -d". See the documentation for the
+  # further settings, like the webhooks and channels, which are added as environment variables.
+  discord:
+    image: munique/openmu-discord
+    container_name: discord
+    restart: unless-stopped
+    profiles: [ "discord" ]
+    healthcheck: *openmu-healthcheck
+    build:
+      context: ../../src
+      dockerfile: Dapr/Discord.Host/Dockerfile
+    depends_on:
+      discord-dapr:
+        condition: service_started
+      centralServer:
+        condition: service_started
+      database:
+        condition: service_healthy
+    ports:
+      - "8080"
+    environment:
+      DAPR_HTTP_ENDPOINT: http://discord-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://discord-dapr:50001
+      ASPNETCORE_URLS: http://+:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4317
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
+      Discord__Bot__Token: ${DISCORD_BOT_TOKEN:-}
+      Discord__Language: ${DISCORD_LANGUAGE:-en}
+
+  discord-dapr:
+    <<: *dapr-sidecar
+    container_name: discord_dapr
+    profiles: [ "discord" ]
+    environment:
+      POD_NAME: discord
+    command: [ "./daprd", "-app-id", "discord", "-app-port", "8080",
+                "-app-channel-address", "discord",
+                "-dapr-listen-addresses", "0.0.0.0",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+
   gameServer0:
     image: munique/openmu-game
     container_name: gameServer0
@@ -225,10 +270,11 @@ services:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
       - "45901:45901"
       - "45902:45902"
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       GS_ID: 0
       DAPR_HTTP_ENDPOINT: http://gameServer0-dapr:3500
       DAPR_GRPC_ENDPOINT: http://gameServer0-dapr:50001
@@ -252,8 +298,9 @@ services:
     <<: *dapr-sidecar
     container_name: gameserver0_dapr
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       POD_NAME: gameServer0
-    command: [ "./daprd", "-app-id", "game-server", "-app-port", "8080",
+    command: [ "./daprd", "-app-id", "game-server-0", "-app-port", "8080",
                 "-app-channel-address", "gameServer0",
                 "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",
@@ -271,10 +318,11 @@ services:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
       - "45903:45903"
       - "45904:45904"
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       GS_ID: 1
       DAPR_HTTP_ENDPOINT: http://gameServer1-dapr:3500
       DAPR_GRPC_ENDPOINT: http://gameServer1-dapr:50001
@@ -298,8 +346,9 @@ services:
     <<: *dapr-sidecar
     container_name: gameserver1_dapr
     environment:
+      APP_API_TOKEN: ${OPENMU_GAME_SERVER_APP_TOKEN:?Set OPENMU_GAME_SERVER_APP_TOKEN to a strong random token}
       POD_NAME: gameServer1
-    command: [ "./daprd", "-app-id", "game-server", "-app-port", "8080",
+    command: [ "./daprd", "-app-id", "game-server-1", "-app-port", "8080",
                 "-app-channel-address", "gameServer1",
                 "-dapr-listen-addresses", "0.0.0.0",
                 "-components-path", "/components",

@@ -39,6 +39,33 @@ The updates take effect after a restart of the server process. Until then, the
 running server still works with the configuration it loaded at startup.
 :::
 
+Some updates are required before the game servers can run. For example, a game
+server doesn't start without the item price definitions, which the update *Add
+item price definitions* adds to databases from before they existed. Otherwise
+it would sell special items like jewels at the price of equipment. The game
+server logs the reason and stays stopped, while the admin panel keeps running,
+so you can apply the update here. Then use **Reload configuration and restart
+all game servers** on the [Servers page](servers.md), or restart the server
+process.
+
+## On a new database
+
+A new database already contains the changes of OpenMU's own updates, because the
+initialization creates the current configuration. It therefore marks them as
+applied, and this page starts empty.
+
+Plugins can bring configuration updates too, for example one which adds the
+plugin's own item. Their changes are not part of OpenMU's initialization, so such
+an update declares `RunsOnNewDatabase`, and a new database applies it right away,
+after the updates it depends on. On an existing database it is listed here like
+any other update.
+
+An optional update of that kind is not applied on a new database: it is listed
+here as pending, as on an existing database, so you decide whether to apply it.
+The same goes for the updates which would be applied and depend on it. Their
+dependencies are checked when you apply them, so an optional plugin update with a
+missing dependency doesn't stop the creation of a new database.
+
 ## Preconditions
 
 If the database is not installed yet, or a schema update is pending, this page

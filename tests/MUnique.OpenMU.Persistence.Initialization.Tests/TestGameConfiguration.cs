@@ -35,6 +35,17 @@ internal static class TestGameConfiguration
         return await InitializeAsync(contextProvider, dataInitialization).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Creates a freshly initialized 0.75 game configuration.
+    /// </summary>
+    /// <returns>The persistence context and the game configuration.</returns>
+    public static async Task<(IContext Context, GameConfiguration GameConfiguration)> Create075Async()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new Version075.DataInitialization(contextProvider, new NullLoggerFactory());
+        return await InitializeAsync(contextProvider, dataInitialization).ConfigureAwait(false);
+    }
+
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> InitializeAsync(
         InMemoryPersistenceContextProvider contextProvider,
         DataInitializationBase dataInitialization)

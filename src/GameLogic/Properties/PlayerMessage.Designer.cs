@@ -115,6 +115,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chat of your alliance is mirrored to Discord. Members who linked their Discord user can read and write it there..
+        /// </summary>
+        public static string AllianceChatMirrored {
+            get {
+                return ResourceManager.GetString("AllianceChatMirrored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You are already in a duel..
         /// </summary>
         public static string AlreadyInDuel {
@@ -563,6 +572,51 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your code to link Discord is {0}. In Discord, choose the command /link of the bot from the list and enter the code within {1} minutes..
+        /// </summary>
+        public static string DiscordLinkCode {
+            get {
+                return ResourceManager.GetString("DiscordLinkCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account is linked to the Discord user {0}, who appears as {1}. Use /discord unlink to remove the link..
+        /// </summary>
+        public static string DiscordLinked {
+            get {
+                return ResourceManager.GetString("DiscordLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direct messages in Discord about: {0}. Turn them on or off with /discord notify login, letter or friend..
+        /// </summary>
+        public static string DiscordNotifications {
+            get {
+                return ResourceManager.GetString("DiscordNotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account isn&apos;t linked to Discord. Use /discord link to get a code for linking..
+        /// </summary>
+        public static string DiscordNotLinked {
+            get {
+                return ResourceManager.GetString("DiscordNotLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account isn&apos;t linked to Discord anymore..
+        /// </summary>
+        public static string DiscordUnlinked {
+            get {
+                return ResourceManager.GetString("DiscordUnlinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
         /// </summary>
         public static string DoppelgangerIceWalkerAppeared {
@@ -676,6 +730,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GoblinPointsForPlayTime {
             get {
                 return ResourceManager.GetString("GoblinPointsForPlayTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chat of your guild is mirrored to Discord. Members who linked their Discord user can read and write it there..
+        /// </summary>
+        public static string GuildChatMirrored {
+            get {
+                return ResourceManager.GetString("GuildChatMirrored", resourceCulture);
             }
         }
         
@@ -1495,6 +1558,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string LoginNameRequired {
             get {
                 return ResourceManager.GetString("LoginNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This map is not available..
+        /// </summary>
+        public static string MapIsNotActive {
+            get {
+                return ResourceManager.GetString("MapIsNotActive", resourceCulture);
             }
         }
         
@@ -2737,6 +2809,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string UsingThisItemNotImplemented {
             get {
                 return ResourceManager.GetString("UsingThisItemNotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [World] {0}: {1}.
+        /// </summary>
+        public static string WorldChatMessage {
+            get {
+                return ResourceManager.GetString("WorldChatMessage", resourceCulture);
             }
         }
         

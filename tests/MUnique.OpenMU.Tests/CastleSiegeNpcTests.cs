@@ -1313,6 +1313,38 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that a Crown capture removes Life Stones from both runtime tracking and the map.
+    /// </summary>
+    [Test]
+    public async ValueTask CrownCaptureDestroysLifeStonesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            Assert.That(await CastleSiegeSummonLifeStoneAction.SummonAsync(fixture.Player, fixture.Context).ConfigureAwait(false), Is.True);
+            var lifeStone = fixture.Context.LifeStones.Single();
+
+            await CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, fixture.Player, CastleSiegeJoinSide.Attack1).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(OwnerRuntimeGuildId));
+                Assert.That(fixture.Context.FinalGuildList[OwnerRuntimeGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+                Assert.That(fixture.Context.LifeStones, Is.Empty);
+                Assert.That(fixture.Map.GetObject(lifeStone.Id), Is.Null);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies machine-side authorization, exclusive operation, and stale-operator replacement.
     /// </summary>
     [Test]

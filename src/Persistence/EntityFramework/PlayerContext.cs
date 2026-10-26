@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -60,6 +61,48 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         // Just the foreign key is required to save the letter, so we don't load and track the whole receiver.
         persistentHeader.ReceiverId = id;
         return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<(Guid AccountId, string? CharacterName, string? PreviousUserId)?> TryLinkAccountAsync(
+        string provider,
+        string codeHash,
+        DateTime nowUtc,
+        string externalUserId,
+        string externalUserName,
+        CancellationToken cancellationToken)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        await using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+        var links = this.Context.Set<AccountExternalLink>();
+        var pending = await links.AsNoTracking()
+            .FirstOrDefaultAsync(link => link.Provider == provider && link.CodeHash == codeHash && link.CodeExpiresAt >= nowUtc, cancellationToken)
+            .ConfigureAwait(false);
+        if (pending is null)
+        {
+            return null;
+        }
+
+        // Deletion and consumption commit together. A losing redeemer rolls back the deletion, too.
+        await links.Where(link => link.Provider == provider && link.ExternalUserId == externalUserId && link.AccountId != pending.AccountId)
+            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+        var consumed = await links.Where(link => link.Id == pending.Id && link.CodeHash == codeHash && link.CodeExpiresAt >= nowUtc)
+            .ExecuteUpdateAsync(
+                setters => setters
+                .SetProperty(link => link.ExternalUserId, externalUserId)
+                .SetProperty(link => link.ExternalUserName, externalUserName)
+                .SetProperty(link => link.LinkedAt, nowUtc)
+                .SetProperty(link => link.CodeHash, (string?)null)
+                .SetProperty(link => link.CodeExpiresAt, (DateTime?)null),
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (consumed != 1)
+        {
+            return null;
+        }
+
+        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        return (pending.AccountId, pending.CharacterName, pending.ExternalUserId == externalUserId ? null : pending.ExternalUserId);
     }
 
     /// <inheritdoc />
@@ -139,6 +182,21 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<(IReadOnlyList<DataModel.Entities.Account> Accounts, int Total)> SearchAccountPageAsync(string text, DataModel.Entities.AccountState? state, int offset, int limit, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using var scope = this.RepositoryProvider.ContextStack.UseContext(this);
+        var term = text.ToLowerInvariant();
+        var query = this.Context.Set<Account>().AsNoTracking()
+            .Where(a => (state == null || a.State == state)
+                && (a.LoginName.ToLower().Contains(term) || a.EMail.ToLower().Contains(term)
+                    || a.RawCharacters.Any(c => c.Name.ToLower().Contains(term))));
+        var total = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+        var accounts = await query.OrderBy(a => a.LoginName).ThenBy(a => a.Id).Skip(offset).Take(limit).ToListAsync(cancellationToken).ConfigureAwait(false);
+        return (accounts, total);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<AccountStatistics> GetAccountStatisticsAsync(DateTime registeredSince, CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
@@ -152,6 +210,23 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
                 .ConfigureAwait(false);
             var characterCount = await accounts.SelectMany(a => a.RawCharacters).CountAsync(cancellationToken).ConfigureAwait(false);
             return new AccountStatistics(accountCount, newAccountCount, bannedAccountCount, characterCount);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<MiniGameRankingSummary>> GetMiniGameLeaderboardAsync(IReadOnlyCollection<Guid> miniGameIds, DateTime? since, int count, CancellationToken cancellationToken = default)
+    {
+        if (miniGameIds.Count == 0 || count <= 0)
+        {
+            return [];
+        }
+
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await CreateMiniGameLeaderboardQuery(this.Context, miniGameIds, since, count)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 
@@ -265,6 +340,219 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<Guid?> GetAccountIdByLoginNameAsync(string loginName, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<Account>()
+                .Where(account => account.LoginName == loginName)
+                .Select(account => (Guid?)account.Id)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.CharacterStatus?> GetCharacterStatusAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<Character>()
+                .Where(character => character.Name == characterName)
+                .Select(character => (DataModel.Entities.CharacterStatus?)character.CharacterStatus)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DateTime?> GetAccountChatBanUntilAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<Account>()
+                .Where(account => account.Id == accountId)
+                .Select(account => account.ChatBanUntil)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.GuildChatBinding>> GetGuildChatBindingsAsync(
+        Guid guildId,
+        Guid allianceMasterGuildId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await CreateGuildChatBindingsQuery(this.Context, guildId, allianceMasterGuildId)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Creates the query of <see cref="GetGuildChatBindingsAsync"/>.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="guildId">The persistent identifier of the guild.</param>
+    /// <param name="allianceMasterGuildId">The persistent identifier of the master guild of the alliance.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<GuildChatBinding> CreateGuildChatBindingsQuery(DbContext context, Guid guildId, Guid allianceMasterGuildId)
+    {
+        return context.Set<GuildChatBinding>()
+            .Where(binding => (binding.GuildId == guildId && binding.Scope == DataModel.Entities.GuildChatScope.Guild)
+                              || (binding.GuildId == allianceMasterGuildId && binding.Scope == DataModel.Entities.GuildChatScope.Alliance));
+    }
+
+    /// <summary>
+    /// Creates the query of <see cref="GetMiniGameLeaderboardAsync"/>.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="miniGameIds">The identifiers of the mini game definitions.</param>
+    /// <param name="since">The optional point in time (UTC) since which finished games are counted.</param>
+    /// <param name="count">The maximum number of characters.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<MiniGameRankingSummary> CreateMiniGameLeaderboardQuery(DbContext context, IReadOnlyCollection<Guid> miniGameIds, DateTime? since, int count)
+    {
+        var characters = context.Set<Account>()
+            .Where(account => !account.IsTemplate && !account.IsBot)
+            .SelectMany(account => account.RawCharacters);
+        var scores = context.Set<MiniGameRankingEntry>()
+            .Where(entry => entry.MiniGameId != null && miniGameIds.Contains(entry.MiniGameId.Value) && (since == null || entry.Timestamp >= since))
+            .GroupBy(entry => entry.CharacterId)
+            .Select(group => new
+            {
+                CharacterId = group.Key,
+                TotalScore = group.Sum(entry => (long)entry.Score),
+                BestScore = group.Max(entry => entry.Score),
+                GameCount = group.Count(),
+            });
+
+        // EF can't order by the members of the projected record, so the ordering happens before the projection.
+        return (from score in scores
+                join character in characters on score.CharacterId equals (Guid?)character.Id
+                orderby score.TotalScore descending, score.BestScore descending, character.Name
+                select new { score, character.Id, character.Name, character.CharacterClassId })
+            .Take(count)
+            .Select(row => new MiniGameRankingSummary(row.Id, row.Name, row.CharacterClassId, row.score.TotalScore, row.score.BestScore, row.score.GameCount))
+            .AsNoTracking();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkAsync(
+        Guid accountId,
+        string provider,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .FirstOrDefaultAsync(link => link.AccountId == accountId && link.Provider == provider, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkByUserAsync(
+        string provider,
+        string externalUserId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .FirstOrDefaultAsync(link => link.Provider == provider && link.ExternalUserId == externalUserId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountExternalLink?> GetAccountExternalLinkByCodeAsync(
+        string provider,
+        string codeHash,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .FirstOrDefaultAsync(link => link.Provider == provider && link.CodeHash == codeHash, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyDictionary<string, Guid>> GetAccountIdsByCharacterNamesAsync(
+        IReadOnlyCollection<string> characterNames,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var rows = await CreateAccountIdsByCharacterNamesQuery(this.Context.Set<Account>(), characterNames)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+            return rows.ToDictionary(row => row.Name, row => row.AccountId);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        string provider,
+        IReadOnlyCollection<Guid> accountIds,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .Where(link => link.Provider == provider && accountIds.Contains(link.AccountId))
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Creates the query of the identifiers of the accounts of characters.
+    /// </summary>
+    /// <param name="accounts">The accounts.</param>
+    /// <param name="characterNames">The names of the characters.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<CharacterAccountRow> CreateAccountIdsByCharacterNamesQuery(IQueryable<Account> accounts, IReadOnlyCollection<string> characterNames)
+    {
+        return from account in accounts
+               from character in account.RawCharacters
+               where characterNames.Contains(character.Name)
+               select new CharacterAccountRow(character.Name, account.Id);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.AccountExternalLink>> GetAccountExternalLinksAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<AccountExternalLink>()
+                .Where(link => link.AccountId == accountId)
+                .OrderBy(link => link.Provider)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)
@@ -275,6 +563,46 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
             return await this.Context.Set<GensMember>()
                 .FirstOrDefaultAsync(member => member.CharacterId == characterId, cancellationToken)
                 .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        int count,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var entries = await CreateCharacterRankingQuery(this.Context.Set<Account>(), levelAttributeId, masterLevelAttributeId, resetsAttributeId, count)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return entries
+                .Select(entry => new CharacterSummary(entry.Name, entry.ClassName, (int)entry.Level, (int)entry.MasterLevel, (int)entry.Resets))
+                .ToList();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<CharacterSummary?> GetCharacterSummaryAsync(
+        string characterName,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var entry = await CreateCharacterSummaryQuery(this.Context.Set<Character>().Where(character => character.Name == characterName), levelAttributeId, masterLevelAttributeId, resetsAttributeId)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return entry is null ? null : new CharacterSummary(entry.Name, entry.ClassName, (int)entry.Level, (int)entry.MasterLevel, (int)entry.Resets);
         }
     }
 
@@ -291,5 +619,58 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
                 .FirstOrDefaultAsync(abuse => abuse.KillerId == killerId && abuse.VictimId == victimId, cancellationToken)
                 .ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Creates the query of the character ranking.
+    /// </summary>
+    /// <param name="accounts">The accounts.</param>
+    /// <param name="levelAttributeId">The identifier of the attribute definition of the level.</param>
+    /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
+    /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
+    /// <param name="count">The maximum number of entries.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<CharacterRankingRow> CreateCharacterRankingQuery(
+        IQueryable<Account> accounts,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId,
+        int count)
+    {
+        // EF can't order by the members of the projected record, so the ordering happens before the projection.
+        var characters = accounts
+            .Where(account => !account.IsBot && !account.IsTemplate)
+            .SelectMany(account => account.RawCharacters)
+            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal)
+            .OrderByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == resetsAttributeId).Select(a => a.Value).FirstOrDefault())
+            .ThenByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == masterLevelAttributeId).Select(a => a.Value).FirstOrDefault())
+            .ThenByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == levelAttributeId).Select(a => a.Value).FirstOrDefault())
+            .ThenByDescending(character => character.MasterExperience)
+            .ThenByDescending(character => character.Experience)
+            .Take(count);
+
+        return CreateCharacterSummaryQuery(characters, levelAttributeId, masterLevelAttributeId, resetsAttributeId);
+    }
+
+    /// <summary>
+    /// Creates the query which projects the characters to their summary.
+    /// </summary>
+    /// <param name="characters">The characters.</param>
+    /// <param name="levelAttributeId">The identifier of the attribute definition of the level.</param>
+    /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
+    /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<CharacterRankingRow> CreateCharacterSummaryQuery(
+        IQueryable<Character> characters,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        Guid resetsAttributeId)
+    {
+        return characters.Select(character => new CharacterRankingRow(
+            character.Name,
+            character.RawCharacterClass!.Name,
+            character.RawAttributes.Where(a => a.DefinitionId == levelAttributeId).Select(a => a.Value).FirstOrDefault(),
+            character.RawAttributes.Where(a => a.DefinitionId == masterLevelAttributeId).Select(a => a.Value).FirstOrDefault(),
+            character.RawAttributes.Where(a => a.DefinitionId == resetsAttributeId).Select(a => a.Value).FirstOrDefault()));
     }
 }

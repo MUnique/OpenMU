@@ -34,6 +34,9 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     public virtual int Version => 1;
 
     /// <inheritdoc />
+    public virtual bool RunsOnNewDatabase => false;
+
+    /// <inheritdoc />
     public virtual DateTime UpdatedAt => this.CreatedAt;
 
     /// <inheritdoc />

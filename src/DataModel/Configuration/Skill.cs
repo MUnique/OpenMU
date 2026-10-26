@@ -184,6 +184,7 @@ public partial class Skill
     /// <remarks>
     /// The client is referencing skills by this number.
     /// </remarks>
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>

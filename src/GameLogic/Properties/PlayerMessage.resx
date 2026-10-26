@@ -1099,4 +1099,31 @@ Inventory Extensions: {18}</value>
   <data name="ItemBoxRequiresLevel" xml:space="preserve">
     <value>You need to be level {0} to open this box.</value>
   </data>
+  <data name="DiscordLinkCode" xml:space="preserve">
+    <value>Your code to link Discord is {0}. In Discord, choose the command /link of the bot from the list and enter the code within {1} minutes.</value>
+  </data>
+  <data name="DiscordLinked" xml:space="preserve">
+    <value>Your account is linked to the Discord user {0}, who appears as {1}. Use /discord unlink to remove the link.</value>
+  </data>
+  <data name="DiscordNotLinked" xml:space="preserve">
+    <value>Your account isn't linked to Discord. Use /discord link to get a code for linking.</value>
+  </data>
+  <data name="DiscordUnlinked" xml:space="preserve">
+    <value>Your account isn't linked to Discord anymore.</value>
+  </data>
+  <data name="WorldChatMessage" xml:space="preserve">
+    <value>[World] {0}: {1}</value>
+  </data>
+  <data name="GuildChatMirrored" xml:space="preserve">
+    <value>The chat of your guild is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
+  </data>
+  <data name="AllianceChatMirrored" xml:space="preserve">
+    <value>The chat of your alliance is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
+  </data>
+  <data name="DiscordNotifications" xml:space="preserve">
+    <value>Direct messages in Discord about: {0}. Turn them on or off with /discord notify login, letter or friend.</value>
+  </data>
+  <data name="MapIsNotActive" xml:space="preserve">
+    <value>This map is not available.</value>
+  </data>
 </root>

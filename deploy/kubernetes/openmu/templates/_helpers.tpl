@@ -84,3 +84,8 @@ readinessProbe:
   timeoutSeconds: 5
   failureThreshold: 3
 {{- end -}}
+
+{{/* The app token is shared only with game servers and their Dapr sidecars. */}}
+{{- define "openmu.gameServerAppTokenSecret" -}}
+{{- default (printf "%s-game-administration" (include "openmu.fullname" .)) .Values.gameServer.appTokenSecret -}}
+{{- end -}}

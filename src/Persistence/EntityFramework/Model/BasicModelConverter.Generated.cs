@@ -50,6 +50,7 @@ internal sealed class BasicModelConverter
             IncreasableItemOption value => this.Convert(value),
             ItemDropItemGroup value => this.Convert(value),
             Account value => this.Convert(value),
+            AccountExternalLink value => this.Convert(value),
             AppearanceData value => this.Convert(value),
             AreaSkillSettings value => this.Convert(value),
             AttributeDefinition value => this.Convert(value),
@@ -95,6 +96,7 @@ internal sealed class BasicModelConverter
             Gate value => this.Convert(value),
             GensAbuse value => this.Convert(value),
             GensMember value => this.Convert(value),
+            GuildChatBinding value => this.Convert(value),
             GuildMember value => this.Convert(value),
             Item value => this.Convert(value),
             ItemAppearance value => this.Convert(value),
@@ -104,6 +106,7 @@ internal sealed class BasicModelConverter
             ItemCraftingResultItem value => this.Convert(value),
             ItemDefinition value => this.Convert(value),
             ItemLevelBonusTable value => this.Convert(value),
+            ItemLevelPrice value => this.Convert(value),
             ItemOfItemSet value => this.Convert(value),
             ItemOption value => this.Convert(value),
             ItemOptionCombinationBonus value => this.Convert(value),
@@ -111,8 +114,12 @@ internal sealed class BasicModelConverter
             ItemOptionLink value => this.Convert(value),
             ItemOptionOfLevel value => this.Convert(value),
             ItemOptionType value => this.Convert(value),
+            ItemPriceDefinition value => this.Convert(value),
+            ItemRequirementFormula value => this.Convert(value),
             ItemSetGroup value => this.Convert(value),
             ItemSlotType value => this.Convert(value),
+            ItemStatProfile value => this.Convert(value),
+            ItemStatTerms value => this.Convert(value),
             ItemStorage value => this.Convert(value),
             JewelMix value => this.Convert(value),
             LetterBody value => this.Convert(value),
@@ -204,6 +211,28 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.AccountExternalLink Convert(AccountExternalLink source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.AccountExternalLink)converted;
+        }
+
+        var target = new BasicModel.AccountExternalLink();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.AccountId = source.AccountId;
+        target.Provider = source.Provider;
+        target.ExternalUserId = source.ExternalUserId;
+        target.ExternalUserName = source.ExternalUserName;
+        target.CharacterName = source.CharacterName;
+        target.LinkedAt = source.LinkedAt;
+        target.Notifications = source.Notifications;
+        target.CodeHash = source.CodeHash;
+        target.CodeExpiresAt = source.CodeExpiresAt;
         return target;
     }
 
@@ -828,6 +857,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.CanGetCreated = source.CanGetCreated;
         target.LevelRequirementByCreation = source.LevelRequirementByCreation;
         target.CreationAllowedFlag = source.CreationAllowedFlag;
@@ -1213,6 +1244,8 @@ internal sealed class BasicModelConverter
         target.MaximumVaultMoney = source.MaximumVaultMoney;
         target.ClampMoneyOnPickup = source.ClampMoneyOnPickup;
         target.ExcellentItemDropLevelDelta = source.ExcellentItemDropLevelDelta;
+        target.ExcellentDropLevelBonus = source.ExcellentDropLevelBonus;
+        target.AncientDropLevelBonus = source.AncientDropLevelBonus;
         target.ExperienceFormula = source.ExperienceFormula;
         target.MasterExperienceFormula = source.MasterExperienceFormula;
         target.RecoveryInterval = source.RecoveryInterval;
@@ -1282,6 +1315,22 @@ internal sealed class BasicModelConverter
             foreach (var item in itemLevelBonusTablesItems)
             {
                 target.ItemLevelBonusTables.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.ItemStatProfiles is { } itemStatProfilesItems)
+        {
+            foreach (var item in itemStatProfilesItems)
+            {
+                target.ItemStatProfiles.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.ItemPriceDefinitions is { } itemPriceDefinitionsItems)
+        {
+            foreach (var item in itemPriceDefinitionsItems)
+            {
+                target.ItemPriceDefinitions.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition)this.ConvertObject(item)!);
             }
         }
 
@@ -1414,6 +1463,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.TerrainData = source.TerrainData;
         if (source.TerrainVariants is { } terrainVariantsItems)
         {
@@ -1641,6 +1692,27 @@ internal sealed class BasicModelConverter
         return target;
     }
 
+    private BasicModel.GuildChatBinding Convert(GuildChatBinding source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.GuildChatBinding)converted;
+        }
+
+        var target = new BasicModel.GuildChatBinding();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.GuildId = source.GuildId;
+        target.Scope = source.Scope;
+        target.Provider = source.Provider;
+        target.ExternalServerId = source.ExternalServerId;
+        target.ExternalChannelId = source.ExternalChannelId;
+        target.IsHosted = source.IsHosted;
+        target.BoundBy = source.BoundBy;
+        target.BoundAt = source.BoundAt;
+        return target;
+    }
+
     private BasicModel.GuildMember Convert(GuildMember source)
     {
         if (this._converted.TryGetValue(source, out var converted))
@@ -1849,6 +1921,9 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.ItemSlot = (MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType)this.ConvertObject(source.ItemSlot)!;
+        target.StatProfile = (MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile)this.ConvertObject(source.StatProfile)!;
+        target.ExcellentBonus = source.ExcellentBonus;
+        target.ExcellentRaisesLevel = source.ExcellentRaisesLevel;
         target.Width = source.Width;
         target.Height = source.Height;
         target.DropsFromMonsters = source.DropsFromMonsters;
@@ -1863,12 +1938,15 @@ internal sealed class BasicModelConverter
         target.IsPersonalStoreSellable = source.IsPersonalStoreSellable;
         target.IsRepairable = source.IsRepairable;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.DropLevel = source.DropLevel;
         target.MaximumDropLevel = source.MaximumDropLevel;
         target.MaximumItemLevel = source.MaximumItemLevel;
         target.Durability = source.Durability;
         target.Group = source.Group;
         target.Value = source.Value;
+        target.PriceDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition)this.ConvertObject(source.PriceDefinition)!;
         target.PetExperienceFormula = source.PetExperienceFormula;
         target.ConsumeEffect = (MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition)this.ConvertObject(source.ConsumeEffect)!;
         target.MaximumSockets = source.MaximumSockets;
@@ -1978,6 +2056,21 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.ItemLevelPrice Convert(ItemLevelPrice source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemLevelPrice)converted;
+        }
+
+        var target = new BasicModel.ItemLevelPrice();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Level = source.Level;
+        target.Price = source.Price;
         return target;
     }
 
@@ -2114,6 +2207,52 @@ internal sealed class BasicModelConverter
         return target;
     }
 
+    private BasicModel.ItemPriceDefinition Convert(ItemPriceDefinition source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemPriceDefinition)converted;
+        }
+
+        var target = new BasicModel.ItemPriceDefinition();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Name = source.Name;
+        target.BasePriceFormula = source.BasePriceFormula;
+        if (source.PricePerLevel is { } pricePerLevelItems)
+        {
+            foreach (var item in pricePerLevelItems)
+            {
+                target.PricePerLevel.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelPrice)this.ConvertObject(item)!);
+            }
+        }
+
+        target.QuantityScaling = source.QuantityScaling;
+        target.Modifiers = source.Modifiers;
+        target.SellingPriceRounding = source.SellingPriceRounding;
+        target.CraftingReferencePrice = source.CraftingReferencePrice;
+        return target;
+    }
+
+    private BasicModel.ItemRequirementFormula Convert(ItemRequirementFormula source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemRequirementFormula)converted;
+        }
+
+        var target = new BasicModel.ItemRequirementFormula();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
+        target.KeepBase = source.KeepBase;
+        target.Add = source.Add;
+        target.LevelWeight = source.LevelWeight;
+        target.Percent = source.Percent;
+        target.LevelRequirementBasis = source.LevelRequirementBasis;
+        return target;
+    }
+
     private BasicModel.ItemSetGroup Convert(ItemSetGroup source)
     {
         if (this._converted.TryGetValue(source, out var converted))
@@ -2160,6 +2299,65 @@ internal sealed class BasicModelConverter
             }
         }
 
+        return target;
+    }
+
+    private BasicModel.ItemStatProfile Convert(ItemStatProfile source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemStatProfile)converted;
+        }
+
+        var target = new BasicModel.ItemStatProfile();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Name = source.Name;
+        target.LevelPerItemLevel = source.LevelPerItemLevel;
+        target.ExcellentLevelAdd = source.ExcellentLevelAdd;
+        target.StrengthPerOptionLevel = source.StrengthPerOptionLevel;
+        if (source.StatTerms is { } statTermsItems)
+        {
+            foreach (var item in statTermsItems)
+            {
+                target.StatTerms.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTerms)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.RequirementFormulas is { } requirementFormulasItems)
+        {
+            foreach (var item in requirementFormulasItems)
+            {
+                target.RequirementFormulas.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula)this.ConvertObject(item)!);
+            }
+        }
+
+        return target;
+    }
+
+    private BasicModel.ItemStatTerms Convert(ItemStatTerms source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemStatTerms)converted;
+        }
+
+        var target = new BasicModel.ItemStatTerms();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
+        target.TableState = source.TableState;
+        target.Table = (MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable)this.ConvertObject(source.Table)!;
+        target.ExcellentState = source.ExcellentState;
+        target.ExcellentTimes = source.ExcellentTimes;
+        target.ExcellentAdd = source.ExcellentAdd;
+        target.ExcellentDropLevelDivisor = source.ExcellentDropLevelDivisor;
+        target.AncientState = source.AncientState;
+        target.AncientTimes = source.AncientTimes;
+        target.AncientAdd = source.AncientAdd;
+        target.AncientDropLevelDivisor = source.AncientDropLevelDivisor;
+        target.AncientAfterLevelBonus = source.AncientAfterLevelBonus;
+        target.PerLevelAfterHalving = source.PerLevelAfterHalving;
         return target;
     }
 
@@ -2404,6 +2602,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Type = source.Type;
         target.Name = source.Name;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.Description = source.Description;
         target.GameLevel = source.GameLevel;
         target.MapCreationPolicy = source.MapCreationPolicy;
@@ -2553,6 +2753,8 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Number = source.Number;
         target.Designation = source.Designation;
+        target.IsActive = source.IsActive;
+        target.IntroducedIn = source.IntroducedIn;
         target.MoveRange = source.MoveRange;
         target.AttackRange = source.AttackRange;
         target.ViewRange = source.ViewRange;

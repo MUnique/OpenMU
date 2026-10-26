@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -32,6 +33,9 @@ public class GameEventPublisherPlugIn
     ICastleSiegeStateChangedPlugIn,
     IMonsterItemDroppedPlugIn,
     IChatMessageSentPlugIn,
+    IAttackableGotKilledPlugIn,
+    ICharacterLevelUpPlugIn,
+    ICharacterMasterLevelUpPlugIn,
     ISupportCustomConfiguration<GameEventPublisherConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -135,13 +139,17 @@ public class GameEventPublisherPlugIn
             return ValueTask.CompletedTask;
         }
 
+        var now = DateTime.UtcNow;
+        var nextBattle = castleSiege.Schedule.GetNextPeriod(CastleSiegeState.Start, now);
         return context.EventPublisher.GameEventAsync(new CastleSiegeStateChangedEvent(
             context.Id,
-            DateTime.UtcNow,
+            now,
             previousState.ToString(),
             castleSiege.CurrentState.ToString(),
             castleSiege.StateEndTimeUtc,
-            castleSiege.SiegeData?.OwnerGuildId));
+            castleSiege.SiegeData?.OwnerGuildId,
+            nextBattle?.StartUtc,
+            nextBattle?.EndUtc));
     }
 
     /// <inheritdoc />
@@ -178,14 +186,119 @@ public class GameEventPublisherPlugIn
     /// <inheritdoc />
     public ValueTask ChatMessageSentAsync(Player sender, string message, ChatMessageType messageType, Player? receiver)
     {
-        if (messageType != ChatMessageType.GlobalNotification
-            || this.Configuration?.PublishGlobalNotices is not true
-            || sender.GameContext is not IGameServerContext context)
+        if (sender.GameContext is not IGameServerContext context)
         {
             return ValueTask.CompletedTask;
         }
 
-        return context.EventPublisher.GameEventAsync(new GlobalNoticeEvent(context.Id, DateTime.UtcNow, sender.Name, message.TrimStart('!')));
+        if (messageType == ChatMessageType.GlobalNotification)
+        {
+            return this.Configuration?.PublishGlobalNotices is true
+                ? context.EventPublisher.GameEventAsync(new GlobalNoticeEvent(context.Id, DateTime.UtcNow, sender.Name, message.TrimStart('!')))
+                : ValueTask.CompletedTask;
+        }
+
+        GameChatChannel? channel = messageType switch
+        {
+            ChatMessageType.Guild => GameChatChannel.Guild,
+            ChatMessageType.Alliance => GameChatChannel.Alliance,
+            ChatMessageType.World => GameChatChannel.World,
+            _ => null,
+        };
+        if (channel is null || this.Configuration?.PublishChatMessages is not true)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // The guild and alliance messages still contain their prefix, @ or @@.
+        return context.EventPublisher.GameEventAsync(new ChatMessageEvent(
+            context.Id,
+            DateTime.UtcNow,
+            channel.Value,
+            sender.GuildStatus?.GuildId ?? 0,
+            sender.Name,
+            channel == GameChatChannel.World ? message : message.TrimStart('@')));
+    }
+
+    /// <inheritdoc />
+    public ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
+    {
+        if (killed is not Monster monster
+            || this.Configuration is not { PublishBossKills: true } configuration
+            || !configuration.BossMonsterNumbers.Contains(monster.Definition.Number))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // A summoned monster kills on behalf of its owner.
+        var player = killer as Player ?? (killer as Monster)?.SummonedBy;
+        if (player?.GameContext is not IGameServerContext context)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        return context.EventPublisher.GameEventAsync(new BossKilledEvent(
+            context.Id,
+            DateTime.UtcNow,
+            player.Name,
+            monster.Definition.Designation,
+            monster.CurrentMap.Definition.Name));
+    }
+
+    /// <inheritdoc />
+    public void CharacterLeveledUp(Player player)
+    {
+        if (this.Configuration is not { PublishLevelMilestones: true } configuration
+            || player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        var level = (int)attributes[Stats.Level];
+        if (configuration.LevelMilestones.Contains(level))
+        {
+            // The plugin point is synchronous, so the event is published in the background.
+            _ = PublishMilestoneAsync(player, level, false);
+        }
+    }
+
+    /// <inheritdoc />
+    public ValueTask CharacterMasterLeveledUpAsync(Player player)
+    {
+        if (this.Configuration is not { PublishLevelMilestones: true } configuration
+            || player.Attributes is not { } attributes)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        var level = (int)attributes[Stats.MasterLevel];
+        return configuration.MasterLevelMilestones.Contains(level)
+            ? new ValueTask(PublishMilestoneAsync(player, level, true))
+            : ValueTask.CompletedTask;
+    }
+
+    private static async Task PublishMilestoneAsync(Player player, int level, bool isMasterLevel)
+    {
+        if (player.GameContext is not IGameServerContext context
+            || player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        try
+        {
+            await context.EventPublisher.GameEventAsync(new CharacterLevelMilestoneEvent(
+                context.Id,
+                DateTime.UtcNow,
+                character.Name,
+                (string?)character.CharacterClass?.Name ?? string.Empty,
+                level,
+                isMasterLevel)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Error when publishing the level milestone of {character}", character.Name);
+        }
     }
 
     private static (Guid Id, string Name) GetInvasionIdentity(IPeriodicTaskPlugIn invasion)

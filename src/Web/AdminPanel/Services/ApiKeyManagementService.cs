@@ -64,6 +64,12 @@ public class ApiKeyManagementService
             return null;
         }
 
+        if (!AdminToolGroups.IsValid(input.AllowedToolGroups))
+        {
+            this._toastService.ShowError(ApiKeyToolGroupResources.Caption);
+            return null;
+        }
+
         var generatedKey = ApiKeyGenerator.GenerateKey();
         var apiKey = new ApiKey
         {
@@ -72,6 +78,7 @@ public class ApiKeyManagementService
             KeyHash = ApiKeyGenerator.Hash(generatedKey),
             KeyPrefix = ApiKeyGenerator.GetVisiblePrefix(generatedKey),
             Roles = input.Role.ToString(),
+            AllowedToolGroups = input.AllowedToolGroups.Trim(),
         };
 
         try
@@ -86,6 +93,42 @@ public class ApiKeyManagementService
 
         this._toastService.ShowSuccess(Resources.ApiKeyCreated);
         return generatedKey;
+    }
+
+    /// <summary>Edits an existing key's optional MCP allowlist without changing its secret or role.</summary>
+    /// <param name="apiKey">The stored key.</param>
+    /// <returns>Whether the restriction was saved.</returns>
+    public async ValueTask<bool> EditToolGroupsAsync(ApiKey apiKey)
+    {
+        var input = new ApiKeyToolGroupParameters { AllowedToolGroups = apiKey.AllowedToolGroups };
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<ApiKeyToolGroupParameters>.Item), input);
+        var modal = this._modalService.Show<ModalCreateNew<ApiKeyToolGroupParameters>>(Resources.ApiKeys, parameters, new ModalOptions { DisableBackgroundCancel = true });
+        var result = await modal.Result.ConfigureAwait(false);
+        if (result.Cancelled)
+        {
+            return false;
+        }
+
+        if (!AdminToolGroups.IsValid(input.AllowedToolGroups))
+        {
+            this._toastService.ShowError(ApiKeyToolGroupResources.Caption);
+            return false;
+        }
+
+        var previous = apiKey.AllowedToolGroups;
+        apiKey.AllowedToolGroups = input.AllowedToolGroups.Trim();
+        try
+        {
+            await this._repository.UpdateAsync(apiKey).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            apiKey.AllowedToolGroups = previous;
+            this._toastService.ShowError(exception.Message);
+            return false;
+        }
     }
 
     /// <summary>
@@ -136,6 +179,13 @@ public class ApiKeyManagementService
         return true;
     }
 
+    private sealed class ApiKeyToolGroupParameters
+    {
+        [Display(ResourceType = typeof(ApiKeyToolGroupResources), Name = nameof(ApiKeyToolGroupResources.Caption))]
+        [MaxLength(1000)]
+        public string AllowedToolGroups { get; set; } = string.Empty;
+    }
+
     /// <summary>
     /// The parameters to create a new API key.
     /// </summary>
@@ -147,6 +197,10 @@ public class ApiKeyManagementService
         [MinLength(3)]
         [Required]
         public string Name { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(ApiKeyToolGroupResources), Name = nameof(ApiKeyToolGroupResources.Caption))]
+        [MaxLength(1000)]
+        public string AllowedToolGroups { get; set; } = string.Empty;
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Role))]
         [Required]

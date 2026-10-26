@@ -243,4 +243,7 @@
   <data name="TerrainWithoutClientUpdate" xml:space="preserve"><value>不同步至客户端</value></data>
   <data name="ChatServerSummary" xml:space="preserve"><value>[聊天服务器 编号={0}，说明={1}]</value></data>
   <data name="ServerEndpointSummary" xml:space="preserve"><value>客户端：{0}；端口：{1}</value></data>
+  <data name="ItemRequirementFormulaSummary" xml:space="preserve"><value>{0}：{1} + 基础值 × (掉落等级 + 等级 × {2}) × {3} / 100</value></data>
+  <data name="ItemRequirementFormulaKeptBaseSummary" xml:space="preserve"><value>{0}：基础值</value></data>
+  <data name="ItemRequirementFormulaLevelBasisSummary" xml:space="preserve"><value>{0}：{1} + 基础值 × (等级需求，否则掉落等级 + 等级 × {2}) × {3} / 100</value></data>
 </root>

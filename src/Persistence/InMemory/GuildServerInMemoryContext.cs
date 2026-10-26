@@ -57,6 +57,39 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default)
+    {
+        var members = (await this.Provider.GetRepository<GuildMember>().GetAllAsync(cancellationToken).ConfigureAwait(false))
+            .Where(member => member.Status == MUnique.OpenMU.Interfaces.GuildPosition.GuildMaster);
+        var characters = await this.Provider.GetRepository<Character>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return members
+            .Select(m => (m.GuildId, Name: characters.FirstOrDefault(c => c.Id == m.Id)?.Name))
+            .Where(m => m.Name is not null)
+            .GroupBy(m => m.GuildId)
+            .ToDictionary(group => group.Key, group => group.First().Name!);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName)
+    {
+        var characters = await this.Provider.GetRepository<Character>().GetAllAsync().ConfigureAwait(false);
+        if (characters.FirstOrDefault(c => c.Name == characterName) is not { } character)
+        {
+            return null;
+        }
+
+        var members = await this.Provider.GetRepository<GuildMember>().GetAllAsync().ConfigureAwait(false);
+        if (members.FirstOrDefault(m => m.Id == character.Id) is not { } member)
+        {
+            return null;
+        }
+
+        var guilds = await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync().ConfigureAwait(false);
+        var allianceMaster = guilds.FirstOrDefault(g => g.GetId() == member.GuildId)?.AllianceGuild;
+        return new GuildMembership(member.Id, member.GuildId, member.Status, allianceMaster?.GetId());
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId)
     {
         return (await this.Provider.GetRepository<DataModel.Entities.Guild>()
@@ -83,6 +116,13 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
             .Skip(skip)
             .Take(count)
             .ToList();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<int> CountGuildsAsync(string text, CancellationToken cancellationToken = default)
+    {
+        var guilds = await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return guilds.Count(g => g.Name?.Contains(text, StringComparison.OrdinalIgnoreCase) == true);
     }
 
     /// <inheritdoc/>

@@ -3222,4 +3222,391 @@
   <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
     <value>Die Gegenstandsstufe, ab der diese Anforderung gilt. Nicht gesetzt: Die Anforderung gilt immer.</value>
   </data>
+  <data name="GameConfiguration_ExcellentDropLevelBonus_Caption" xml:space="preserve">
+    <value>Drop-Level-Bonus für Exzellente</value>
+  </data>
+  <data name="GameConfiguration_ExcellentDropLevelBonus_Description" xml:space="preserve">
+    <value>Was die Gegenstandsformeln zum Drop-Level eines exzellenten Gegenstands addieren: für seine Anforderungen, wenn er nicht antik ist, und für seinen Preis. Es geht nicht darum, welche Gegenstände exzellent fallen. Standard: 25, wie im Spielclient.</value>
+  </data>
+  <data name="GameConfiguration_AncientDropLevelBonus_Caption" xml:space="preserve">
+    <value>Drop-Level-Bonus für Antike</value>
+  </data>
+  <data name="GameConfiguration_AncientDropLevelBonus_Description" xml:space="preserve">
+    <value>Was die Gegenstandsformeln zum Drop-Level eines antiken Gegenstands addieren: für seine Anforderungen und für seine antiken Bonuswerte. Standard: 30, wie im Spielclient.</value>
+  </data>
+  <data name="GameConfiguration_ItemStatProfiles_Caption" xml:space="preserve">
+    <value>Gegenstands-Werteprofile</value>
+  </data>
+  <data name="GameConfiguration_ItemStatProfiles_Description" xml:space="preserve">
+    <value>Benannte Gegenstandsformeln: was Level, exzellente Optionen, antikes Set und Optionsstufe eines Gegenstands zu seinen Werten und Anforderungen addieren. Das Profil „default“ legt jeden Teil fest, die anderen nur, was davon abweicht.</value>
+  </data>
+  <data name="ItemDefinition_StatProfile_Caption" xml:space="preserve">
+    <value>Werteprofil</value>
+  </data>
+  <data name="ItemDefinition_StatProfile_Description" xml:space="preserve">
+    <value>Die Gegenstandsformeln dieses Gegenstands. Ohne Profil gelten die des Profils „default“. Eine neue Konfiguration gibt jedem Gegenstand das Profil seiner Art.</value>
+  </data>
+  <data name="ItemDefinition_ExcellentBonus_Caption" xml:space="preserve">
+    <value>Fester Exzellent-Bonus</value>
+  </data>
+  <data name="ItemDefinition_ExcellentBonus_Description" xml:space="preserve">
+    <value>Ein fester Bonus, den ein exzellenter Gegenstand dieser Art auf Schaden und Magiekraft bekommt, statt des exzellenten Teils seines Werteprofils. 0: Der exzellente Teil gilt.</value>
+  </data>
+  <data name="ItemDefinition_ExcellentRaisesLevel_Caption" xml:space="preserve">
+    <value>Exzellent erhöht Level-Anforderung</value>
+  </data>
+  <data name="ItemDefinition_ExcellentRaisesLevel_Description" xml:space="preserve">
+    <value>Ob ein exzellenter Gegenstand dieser Art ein höheres Level braucht, um den Exzellent-Level-Zuschlag seines Werteprofils.</value>
+  </data>
+  <data name="ItemStatProfile_TypeCaption" xml:space="preserve">
+    <value>Gegenstands-Werteprofil</value>
+  </data>
+  <data name="ItemStatProfile_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstands-Werteprofile</value>
+  </data>
+  <data name="ItemStatProfile_TypeDescription" xml:space="preserve">
+    <value>Benannte Gegenstandsformeln. Das Profil „default“ legt jeden Teil fest; ein anderes Profil nur, was davon abweicht.</value>
+  </data>
+  <data name="ItemStatProfile_Name_Caption" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ItemStatProfile_Name_Description" xml:space="preserve">
+    <value>Eindeutig in der Konfiguration. „default“ ist das Profil, das jeden Teil festlegt. Die Namen sind dieselben wie in der Werte-Datei des Spielclients.</value>
+  </data>
+  <data name="ItemStatProfile_LevelPerItemLevel_Caption" xml:space="preserve">
+    <value>Level-Anforderung pro Gegenstandslevel</value>
+  </data>
+  <data name="ItemStatProfile_LevelPerItemLevel_Description" xml:space="preserve">
+    <value>Was jedes Gegenstandslevel zur Level-Anforderung addiert. Leer: wie im Profil „default“.</value>
+  </data>
+  <data name="ItemStatProfile_ExcellentLevelAdd_Caption" xml:space="preserve">
+    <value>Exzellent-Level-Zuschlag</value>
+  </data>
+  <data name="ItemStatProfile_ExcellentLevelAdd_Description" xml:space="preserve">
+    <value>Was ein exzellenter Gegenstand mehr an Level braucht, wenn Exzellent seine Level-Anforderung erhöht. Leer: wie im Profil „default“.</value>
+  </data>
+  <data name="ItemStatProfile_StrengthPerOptionLevel_Caption" xml:space="preserve">
+    <value>Stärke-Anforderung pro Optionsstufe</value>
+  </data>
+  <data name="ItemStatProfile_StrengthPerOptionLevel_Description" xml:space="preserve">
+    <value>Was jede Optionsstufe zur Stärke-Anforderung addiert. Leer: wie im Profil „default“.</value>
+  </data>
+  <data name="ItemStatProfile_StatTerms_Caption" xml:space="preserve">
+    <value>Werte-Terme</value>
+  </data>
+  <data name="ItemStatProfile_StatTerms_Description" xml:space="preserve">
+    <value>Ein Eintrag für jeden Wert, den das Profil festlegt.</value>
+  </data>
+  <data name="ItemStatProfile_RequirementFormulas_Caption" xml:space="preserve">
+    <value>Anforderungsformeln</value>
+  </data>
+  <data name="ItemStatProfile_RequirementFormulas_Description" xml:space="preserve">
+    <value>Ein Eintrag für jede Anforderung, die das Profil festlegt.</value>
+  </data>
+  <data name="ItemStatTerms_TypeCaption" xml:space="preserve">
+    <value>Werte-Terme</value>
+  </data>
+  <data name="ItemStatTerms_TypeCaptionPlural" xml:space="preserve">
+    <value>Werte-Terme</value>
+  </data>
+  <data name="ItemStatTerms_TypeDescription" xml:space="preserve">
+    <value>Die Level-Bonustabelle eines Werts, und was ein exzellenter und ein antiker Gegenstand mehr bekommen.</value>
+  </data>
+  <data name="ItemStatTerms_TableState_Caption" xml:space="preserve">
+    <value>Tabelle</value>
+  </data>
+  <data name="ItemStatTerms_TableState_Description" xml:space="preserve">
+    <value>Nicht festgelegt: wie im Profil „default“. Keiner: Der Wert hat keine Level-Bonustabelle. Werte: die Level-Bonustabelle unten.</value>
+  </data>
+  <data name="ItemStatTerms_Table_Caption" xml:space="preserve">
+    <value>Level-Bonustabelle</value>
+  </data>
+  <data name="ItemStatTerms_Table_Description" xml:space="preserve">
+    <value>Was jedes Gegenstandslevel zum Wert addiert.</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentState_Caption" xml:space="preserve">
+    <value>Exzellent</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentState_Description" xml:space="preserve">
+    <value>Nicht festgelegt: wie im Profil „default“. Keiner: Exzellente Gegenstände bekommen nichts mehr. Werte: Basis × Faktor ÷ Drop-Level + Zuschlag + Drop-Level ÷ Teiler.</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentTimes_Caption" xml:space="preserve">
+    <value>Exzellent-Faktor</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentAdd_Caption" xml:space="preserve">
+    <value>Exzellent-Zuschlag</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentDropLevelDivisor_Caption" xml:space="preserve">
+    <value>Exzellent-Drop-Level-Teiler</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentDropLevelDivisor_Description" xml:space="preserve">
+    <value>0 lässt diesen Teil weg.</value>
+  </data>
+  <data name="ItemStatTerms_AncientState_Caption" xml:space="preserve">
+    <value>Antik</value>
+  </data>
+  <data name="ItemStatTerms_AncientState_Description" xml:space="preserve">
+    <value>Nicht festgelegt: wie im Profil „default“. Keiner: Antike Gegenstände bekommen nichts mehr. Werte: Wert × Faktor ÷ d + Zuschlag + d ÷ Teiler, wobei d das Drop-Level plus der Drop-Level-Bonus für Antike ist.</value>
+  </data>
+  <data name="ItemStatTerms_AncientTimes_Caption" xml:space="preserve">
+    <value>Antik-Faktor</value>
+  </data>
+  <data name="ItemStatTerms_AncientAdd_Caption" xml:space="preserve">
+    <value>Antik-Zuschlag</value>
+  </data>
+  <data name="ItemStatTerms_AncientDropLevelDivisor_Caption" xml:space="preserve">
+    <value>Antik-Drop-Level-Teiler</value>
+  </data>
+  <data name="ItemStatTerms_AncientDropLevelDivisor_Description" xml:space="preserve">
+    <value>0 lässt diesen Teil weg.</value>
+  </data>
+  <data name="ItemStatTerms_AncientAfterLevelBonus_Caption" xml:space="preserve">
+    <value>Antik nach Level-Bonus</value>
+  </data>
+  <data name="ItemStatTerms_AncientAfterLevelBonus_Description" xml:space="preserve">
+    <value>Ob der Wert des antiken Teils den Level-Bonus enthält.</value>
+  </data>
+  <data name="ItemStatTerms_PerLevelAfterHalving_Caption" xml:space="preserve">
+    <value>Pro Level nach Halbierung</value>
+  </data>
+  <data name="ItemStatTerms_PerLevelAfterHalving_Description" xml:space="preserve">
+    <value>Nur Magiekraft: was jedes Gegenstandslevel nach der Halbierung der Magiekraft addiert. Leer: wie im Profil „default“.</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeCaption" xml:space="preserve">
+    <value>Anforderungsformel</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeCaptionPlural" xml:space="preserve">
+    <value>Anforderungsformeln</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeDescription" xml:space="preserve">
+    <value>Wie eine Anforderung wächst: Zuschlag + Basis × (Drop-Level + Gegenstandslevel × Level-Gewicht) × Prozent ÷ 100. Ein Basiswert von 0 bleibt 0.</value>
+  </data>
+  <data name="ItemRequirementFormula_KeepBase_Caption" xml:space="preserve">
+    <value>Basiswert behalten</value>
+  </data>
+  <data name="ItemRequirementFormula_KeepBase_Description" xml:space="preserve">
+    <value>Ob die Anforderung ihren Basiswert behält, statt nach der Formel zu wachsen.</value>
+  </data>
+  <data name="ItemRequirementFormula_Add_Caption" xml:space="preserve">
+    <value>Zuschlag</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelWeight_Caption" xml:space="preserve">
+    <value>Level-Gewicht</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelWeight_Description" xml:space="preserve">
+    <value>Der Faktor des Gegenstandslevels, das zum Drop-Level addiert wird.</value>
+  </data>
+  <data name="ItemRequirementFormula_Percent_Caption" xml:space="preserve">
+    <value>Prozent</value>
+  </data>
+  <data name="ItemRequirementFormula_Percent_Description" xml:space="preserve">
+    <value>Der Prozentsatz des Basiswerts, den jedes Drop-Level addiert.</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelRequirementBasis_Caption" xml:space="preserve">
+    <value>Level-Anforderung als Basis</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelRequirementBasis_Description" xml:space="preserve">
+    <value>Ob die Formel die Level-Anforderung des Gegenstands statt des Drop-Levels nimmt (ohne das Level-Gewicht), wenn er eine hat.</value>
+  </data>
+  <data name="ItemStatTermState_TypeCaption" xml:space="preserve">
+    <value>Status eines Werte-Terms</value>
+  </data>
+  <data name="ItemStatTermState_NotWritten_Caption" xml:space="preserve">
+    <value>Nicht festgelegt</value>
+  </data>
+  <data name="ItemStatTermState_None_Caption" xml:space="preserve">
+    <value>Keiner</value>
+  </data>
+  <data name="ItemStatTermState_Values_Caption" xml:space="preserve">
+    <value>Werte</value>
+  </data>
+  <data name="MonsterDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="MonsterDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob dieses Monster im Spiel verfügbar ist. Inaktive Monster bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="MonsterDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="MonsterDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der dieses Monster eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="GameMapDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="GameMapDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob diese Karte im Spiel verfügbar ist. Inaktive Karten bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="GameMapDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="GameMapDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der diese Karte eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="CharacterClass_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="CharacterClass_IsActive_Description" xml:space="preserve">
+    <value>Ob diese Charakterklasse im Spiel verfügbar ist. Inaktive Charakterklassen bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="CharacterClass_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="CharacterClass_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der diese Charakterklasse eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="ItemDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="ItemDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob dieser Gegenstand im Spiel verfügbar ist. Inaktive Gegenstände bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="ItemDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="ItemDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der dieser Gegenstand eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="MiniGameDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="MiniGameDefinition_IsActive_Description" xml:space="preserve">
+    <value>Ob dieses Minispiel im Spiel verfügbar ist. Inaktive Minispiele bleiben in der Konfiguration erhalten, z. B. um das Spiel auf die Inhalte einer bestimmten Spielversion zu beschränken.</value>
+  </data>
+  <data name="MiniGameDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="MiniGameDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>Die Version des Originalspiels, in der dieses Minispiel eingeführt wurde. Sie dient der Information und ermöglicht es, die Inhalte einer Spielversion gesammelt zu aktivieren oder zu deaktivieren.</value>
+  </data>
+  <data name="GameVersion_TypeCaption" xml:space="preserve">
+    <value>Spielversion</value>
+  </data>
+  <data name="GameVersion_TypeDescription" xml:space="preserve">
+    <value>Eine Version des Originalspiels, z. B. eine Versionsnummer wie 0.97d oder eine Season mit ihrer Episode.</value>
+  </data>
+  <data name="GameVersion_Unknown_Caption" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="GameVersion_Version029_Caption" xml:space="preserve">
+    <value>0.29</value>
+  </data>
+  <data name="GameVersion_Version034_Caption" xml:space="preserve">
+    <value>0.34</value>
+  </data>
+  <data name="GameVersion_Version043_Caption" xml:space="preserve">
+    <value>0.43</value>
+  </data>
+  <data name="GameVersion_Version045_Caption" xml:space="preserve">
+    <value>0.45</value>
+  </data>
+  <data name="GameVersion_Version048_Caption" xml:space="preserve">
+    <value>0.48</value>
+  </data>
+  <data name="GameVersion_Version060_Caption" xml:space="preserve">
+    <value>0.60</value>
+  </data>
+  <data name="GameVersion_Version064_Caption" xml:space="preserve">
+    <value>0.64</value>
+  </data>
+  <data name="GameVersion_Version066_Caption" xml:space="preserve">
+    <value>0.66</value>
+  </data>
+  <data name="GameVersion_Version068_Caption" xml:space="preserve">
+    <value>0.68</value>
+  </data>
+  <data name="GameVersion_Version075_Caption" xml:space="preserve">
+    <value>0.75</value>
+  </data>
+  <data name="GameVersion_Version084_Caption" xml:space="preserve">
+    <value>0.84</value>
+  </data>
+  <data name="GameVersion_Version089c_Caption" xml:space="preserve">
+    <value>0.89c</value>
+  </data>
+  <data name="GameVersion_Version094b_Caption" xml:space="preserve">
+    <value>0.94b</value>
+  </data>
+  <data name="GameVersion_Version095d_Caption" xml:space="preserve">
+    <value>0.95d</value>
+  </data>
+  <data name="GameVersion_Version095k_Caption" xml:space="preserve">
+    <value>0.95k</value>
+  </data>
+  <data name="GameVersion_Version096y_Caption" xml:space="preserve">
+    <value>0.96y</value>
+  </data>
+  <data name="GameVersion_Version097d_Caption" xml:space="preserve">
+    <value>0.97d</value>
+  </data>
+  <data name="GameVersion_Version097p_Caption" xml:space="preserve">
+    <value>0.97p</value>
+  </data>
+  <data name="GameVersion_Version097r_Caption" xml:space="preserve">
+    <value>0.97r</value>
+  </data>
+  <data name="GameVersion_Version098r_Caption" xml:space="preserve">
+    <value>0.98r</value>
+  </data>
+  <data name="GameVersion_Version099_Caption" xml:space="preserve">
+    <value>0.99</value>
+  </data>
+  <data name="GameVersion_Version099GPlus_Caption" xml:space="preserve">
+    <value>0.99G+</value>
+  </data>
+  <data name="GameVersion_Version100s_Caption" xml:space="preserve">
+    <value>1.00s</value>
+  </data>
+  <data name="GameVersion_Season1_Caption" xml:space="preserve">
+    <value>Season 1</value>
+  </data>
+  <data name="GameVersion_Season2_Caption" xml:space="preserve">
+    <value>Season 2</value>
+  </data>
+  <data name="GameVersion_Season3Episode1_Caption" xml:space="preserve">
+    <value>Season 3 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season3Episode2_Caption" xml:space="preserve">
+    <value>Season 3 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season4Episode1_Caption" xml:space="preserve">
+    <value>Season 4 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season4Episode2_Caption" xml:space="preserve">
+    <value>Season 4 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season5Episode1_Caption" xml:space="preserve">
+    <value>Season 5 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season5Episode2_Caption" xml:space="preserve">
+    <value>Season 5 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season5Episode3_Caption" xml:space="preserve">
+    <value>Season 5 Episode 3</value>
+  </data>
+  <data name="GameVersion_Season5Episode4_Caption" xml:space="preserve">
+    <value>Season 5 Episode 4</value>
+  </data>
+  <data name="GameVersion_Season6Episode1_Caption" xml:space="preserve">
+    <value>Season 6 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season6Episode2_Caption" xml:space="preserve">
+    <value>Season 6 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season6Episode3_Caption" xml:space="preserve">
+    <value>Season 6 Episode 3</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
+    <value>Das Attribut der Basis-Power-ups des Gegenstands, für das diese Terme gelten. Der exzellente und der antike Teil des minimalen physischen Schadens gelten auch für den maximalen physischen Schaden.</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
+    <value>Das Attribut der Gegenstandsanforderungen, für das diese Formel gilt.</value>
+  </data>
 </root>

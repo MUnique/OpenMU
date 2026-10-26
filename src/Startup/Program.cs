@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Discord;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.TestActors;
@@ -39,6 +40,7 @@ using MUnique.OpenMU.Startup.TestActors;
 using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.API;
+using MUnique.OpenMU.Web.AdminPanel.Mcp;
 using MUnique.OpenMU.Web.Map;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
@@ -320,7 +322,9 @@ internal sealed class Program : IDisposable
                 builder.Services.AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
             }
 
+            builder.Services.AddSingleton(new MUnique.OpenMU.Web.AdminPanel.Operations.AdminAuditSettings { IsDemo = args.Contains("-demo") });
             builder.AddAdminPanel(includeMapApp: true);
+            builder.Services.AddAdminMcp(builder.Configuration);
         }
 
         builder.Services.AddSingleton(this._servers)
@@ -344,6 +348,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
+            .AddDiscordIntegration(builder.Configuration.GetSection(DiscordSettings.SectionName), () => ServerTimeZone)
             .AddSingleton<ChatServer>()
             .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
             .AddSingleton<ConnectServerFactory>()
@@ -351,6 +356,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<IConnectServerInstanceManager>(provider => provider.GetService<ConnectServerContainer>()!)
             .AddSingleton<GameServerContainer>()
             .AddSingleton<IGameServerInstanceManager>(provider => provider.GetService<GameServerContainer>()!)
+            .AddSingleton<IEventPublisher>(provider => provider.GetRequiredService<GameServerContainer>().EventPublisher)
             .AddScoped<IMapFactory, JavascriptMapFactory>()
             .AddCircuitConnectionState()
             .AddSingleton<SetupService>()
@@ -396,12 +402,17 @@ internal sealed class Program : IDisposable
 
         var host = builder.Build();
 
+        // The bot is listed with the other servers, e.g. in the admin panel.
+        this._servers.Add(host.Services.GetRequiredService<DiscordIntegration>());
+
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
         this._logger.Information("Host created");
 
         if (addAdminPanel)
         {
+            host.UseAdminMcpProtection();
             host.ConfigureAdminPanel();
+            host.MapAdminMcp();
         }
 
         // When the server is started with an uninitialized database, the plugin configurations

@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -28,7 +29,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
+public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 
@@ -162,6 +163,15 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     public async ValueTask StartAsync()
     {
         using var logScope = this._logger.BeginScope(("GameServer", this.Id));
+        if (this._gameContext.Configuration.ItemPriceDefinitions.Count == 0)
+        {
+            // Since the item prices are configured by item price definitions, a configuration without any is missing the
+            // mandatory update which adds them. The server would sell special items, e.g. jewels, at the price of equipment.
+            this._logger.LogError("The game server is not started, because the game configuration has no item price definitions. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.");
+            this.ServerState = ServerState.Stopped;
+            return;
+        }
+
         this.ServerState = ServerState.Starting;
         try
         {
@@ -243,6 +253,12 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         }
 
         await this._gameContext.ForEachAlliancePlayerAsync(guildId, player => player.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(messageSend, sender, ChatMessageType.Alliance)).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask WorldChatMessageAsync(string sender, string message)
+    {
+        await this._gameContext.ForEachPlayerAsync(player => ShowWorldChatMessageAsync(player, sender, message).AsTask()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -492,6 +508,22 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         {
             this.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Shows a message of the world chat. A message which was written in Discord is sent as external chat message
+    /// to the clients which support it.
+    /// </summary>
+    private static async ValueTask ShowWorldChatMessageAsync(Player player, string sender, string message)
+    {
+        if (BridgedChatSender.IsBridged(sender)
+            && player.ViewPlugIns.GetPlugIn<IDiscordIntegrationViewPlugIn>() is { } discordView
+            && await discordView.TryShowExternalChatMessageAsync(ExternalChatScope.World, BridgedChatSender.GetName(sender), message).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WorldChatMessage), sender, message).ConfigureAwait(false);
     }
 
     /// <summary>

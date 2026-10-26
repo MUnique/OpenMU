@@ -26,6 +26,8 @@ public class BootstrapAdminUserProvider
 
     private readonly ILogger<BootstrapAdminUserProvider> _logger;
 
+    private readonly System.Threading.Lock _totpStepLock = new();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BootstrapAdminUserProvider"/> class.
     /// </summary>
@@ -75,6 +77,32 @@ public class BootstrapAdminUserProvider
     /// Gets the bootstrap user, if one is configured.
     /// </summary>
     public AdminUser? User { get; }
+
+    /// <summary>
+    /// Stores the time step of an accepted authenticator code of the bootstrap user, if it is newer
+    /// than the last accepted one.
+    /// </summary>
+    /// <param name="step">The time step of the accepted code.</param>
+    /// <returns><c>true</c>, if the step was newer and is stored now.</returns>
+    /// <remarks>The bootstrap user only lives in memory, so a lock makes the comparison and update atomic.</remarks>
+    public bool TryAdvanceTotpStep(long step)
+    {
+        if (this.User is not { } user)
+        {
+            return false;
+        }
+
+        lock (this._totpStepLock)
+        {
+            if (step <= user.LastAcceptedTotpStep)
+            {
+                return false;
+            }
+
+            user.LastAcceptedTotpStep = step;
+            return true;
+        }
+    }
 
     /// <summary>
     /// Determines whether the specified user is the bootstrap user.

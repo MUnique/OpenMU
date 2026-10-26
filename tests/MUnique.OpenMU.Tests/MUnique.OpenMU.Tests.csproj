@@ -41,11 +41,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
     <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\..\src\Discord\MUnique.OpenMU.Discord.csproj" />
     <ProjectReference Include="..\..\src\FriendServer\MUnique.OpenMU.FriendServer.csproj" />
     <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\src\GameServer\MUnique.OpenMU.GameServer.csproj" />
     <ProjectReference Include="..\..\src\GuildServer\MUnique.OpenMU.GuildServer.csproj" />
     <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\..\src\Dapr\GameServer.Host\MUnique.OpenMU.GameServer.Host.csproj" />
+    <ProjectReference Include="..\..\src\Dapr\CentralServer.Host\MUnique.OpenMU.CentralServer.Host.csproj" />
     <ProjectReference Include="..\..\src\LoginServer\MUnique.OpenMU.LoginServer.csproj" />
     <ProjectReference Include="..\..\src\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
     <ProjectReference Include="..\..\src\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />

@@ -700,6 +700,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Links the account to a Discord user: &apos;/discord link&apos; creates a code which is entered in Discord, &apos;/discord unlink&apos; removes the link, &apos;/discord notify letter&apos; turns direct messages about letters on or off (also &apos;login&apos; and &apos;friend&apos;)..
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord command.
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers..
         /// </summary>
         public static string DoppelgangerFeaturePlugIn_Description {
@@ -898,6 +916,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Boss monster numbers.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_BossMonsterNumbers_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_BossMonsterNumbers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_LevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_LevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_MasterLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_MasterLevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish ancient item drops.
         /// </summary>
         public static string GameEventPublisherConfiguration_PublishAncientItemDrops_Name {
@@ -907,11 +952,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publish boss kills.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishBossKills_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishBossKills_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish castle siege events.
         /// </summary>
         public static string GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name {
             get {
                 return ResourceManager.GetString("GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish guild, alliance and world chat.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishChatMessages_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishChatMessages_Name", resourceCulture);
             }
         }
         
@@ -939,6 +1002,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GameEventPublisherConfiguration_PublishInvasionEvents_Name {
             get {
                 return ResourceManager.GetString("GameEventPublisherConfiguration_PublishInvasionEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishLevelMilestones_Name", resourceCulture);
             }
         }
         
@@ -1254,6 +1326,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GuildBattleSoccerChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("GuildBattleSoccerChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord..
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice about the chat bridge.
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Name", resourceCulture);
             }
         }
         
@@ -4201,6 +4291,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends a message to the world chat, which all players of all game servers can read, e.g. &apos;/world Hello!&apos;. It can be bridged to Discord..
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World chat command.
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
 
         /// <summary>
         ///   Looks up a localized string similar to Consumes Life Stones after they are successfully placed during Castle Siege.
@@ -4632,5 +4740,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
         public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration of the client.
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such..
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ internal sealed partial class GameConfigurationLoader
 {
     private static readonly string[] Statements =
     [
-        "select \"Id\", \"AreaSkillHitsPlayer\", \"CashShopConfigurationId\", \"CastleSiegeConfigurationId\", \"CharacterNameRegex\", \"ClampMoneyOnPickup\", \"DamagePerOneItemDurability\", \"DamagePerOnePetDurability\", \"DuelConfigurationId\", \"ExcellentItemDropLevelDelta\", \"ExperienceFormula\", \"ExperienceRate\", \"HitsPerOneItemDurability\", \"InfoRange\", \"ItemDropDuration\", \"LetterSendPrice\", \"MasterExperienceFormula\", \"MasterExperienceRate\", \"MaximumCharactersPerAccount\", \"MaximumInventoryMoney\", \"MaximumItemOptionLevelDrop\", \"MaximumLetters\", \"MaximumLevel\", \"MaximumMasterLevel\", \"MaximumPartySize\", \"MaximumPasswordLength\", \"MaximumVaultMoney\", \"MinimumMonsterLevelForMasterExperience\", \"PreventExperienceOverflow\", \"RecoveryInterval\", \"ShouldDropMoney\" from config.\"GameConfiguration\"",
+        "select \"Id\", \"AncientDropLevelBonus\", \"AreaSkillHitsPlayer\", \"CashShopConfigurationId\", \"CastleSiegeConfigurationId\", \"CharacterNameRegex\", \"ClampMoneyOnPickup\", \"DamagePerOneItemDurability\", \"DamagePerOnePetDurability\", \"DuelConfigurationId\", \"ExcellentDropLevelBonus\", \"ExcellentItemDropLevelDelta\", \"ExperienceFormula\", \"ExperienceRate\", \"HitsPerOneItemDurability\", \"InfoRange\", \"ItemDropDuration\", \"LetterSendPrice\", \"MasterExperienceFormula\", \"MasterExperienceRate\", \"MaximumCharactersPerAccount\", \"MaximumInventoryMoney\", \"MaximumItemOptionLevelDrop\", \"MaximumLetters\", \"MaximumLevel\", \"MaximumMasterLevel\", \"MaximumPartySize\", \"MaximumPasswordLength\", \"MaximumVaultMoney\", \"MinimumMonsterLevelForMasterExperience\", \"PreventExperienceOverflow\", \"RecoveryInterval\", \"ShouldDropMoney\" from config.\"GameConfiguration\"",
         "select \"Id\", \"Description\", \"Designation\", \"GameConfigurationId\", \"MaximumValue\" from config.\"AttributeDefinition\"",
         "select \"Id\", \"BannerSaleZone\", \"BannerYear\", \"BannerYearId\", \"ScriptSaleZone\", \"ScriptYear\", \"ScriptYearId\" from config.\"CashShopConfiguration\"",
         "select \"Id\", \"CashShopConfigurationId\", \"CoinType\", \"IsBundle\", \"IsForSale\", \"IsGiftable\", \"Name\", \"PackageSequence\", \"Price\" from config.\"CashShopPackage\"",
@@ -23,7 +23,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"CastleSiegeConfigurationId\", \"CastleSiegeConfigurationId1\", \"CastleSiegeConfigurationId2\", \"CastleSiegeConfigurationId3\", \"CastleSiegeConfigurationId4\", \"Level\", \"RequiredJewelOfGuardianCount\", \"RequiredZen\", \"Value\" from config.\"CastleSiegeUpgradeDefinition\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"DefaultSide\", \"Direction\", \"InstanceId\", \"IsPersistedToDatabase\", \"MonsterDefinitionId\", \"SpawnX\", \"SpawnY\" from config.\"CastleSiegeNpcDefinition\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"DayOfWeek\", \"Hour\", \"Minute\", \"State\" from config.\"CastleSiegeStateScheduleEntry\"",
-        "select \"Id\", \"CanGetCreated\", \"ComboDefinitionId\", \"CreationAllowedFlag\", \"FruitCalculation\", \"GameConfigurationId\", \"HomeMapId\", \"IsMasterClass\", \"LevelRequirementByCreation\", \"LevelWarpRequirementReductionPercent\", \"Name\", \"NextGenerationClassId\", \"Number\" from config.\"CharacterClass\"",
+        "select \"Id\", \"CanGetCreated\", \"ComboDefinitionId\", \"CreationAllowedFlag\", \"FruitCalculation\", \"GameConfigurationId\", \"HomeMapId\", \"IntroducedIn\", \"IsActive\", \"IsMasterClass\", \"LevelRequirementByCreation\", \"LevelWarpRequirementReductionPercent\", \"Name\", \"NextGenerationClassId\", \"Number\" from config.\"CharacterClass\"",
         "select \"Id\", \"AggregateType\", \"CharacterClassId\", \"GameConfigurationId\", \"InputAttributeId\", \"InputOperand\", \"InputOperator\", \"OperandAttributeId\", \"PowerUpDefinitionValueId\", \"SkillId\", \"TargetAttributeId\" from config.\"AttributeRelationship\"",
         "select \"Id\", \"AggregateType\", \"CharacterClassId\", \"DefinitionId\", \"GameConfigurationId\", \"Value\" from config.\"ConstValueAttribute\"",
         "select \"Id\", \"MaximumCompletionTime\", \"Name\" from config.\"SkillComboDefinition\"",
@@ -42,16 +42,21 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"ItemOptionDefinitionId\", \"LevelType\", \"Number\", \"OptionTypeId\", \"PowerUpDefinitionId\", \"SubOptionType\", \"Weight\" from config.\"IncreasableItemOption\"",
         "select \"Id\", \"IncreasableItemOptionId\", \"Level\", \"PowerUpDefinitionId\", \"RequiredItemLevel\" from config.\"ItemOptionOfLevel\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"IsVisible\", \"Name\" from config.\"ItemOptionType\"",
-        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"GameConfigurationId\", \"Group\", \"Height\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"SkillId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
+        "select \"Id\", \"BasePriceFormula\", \"CraftingReferencePrice\", \"GameConfigurationId\", \"Modifiers\", \"Name\", \"QuantityScaling\", \"SellingPriceRounding\" from config.\"ItemPriceDefinition\"",
+        "select \"Id\", \"ItemPriceDefinitionId\", \"Level\", \"Price\" from config.\"ItemLevelPrice\"",
+        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
         "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
         "select \"Id\", \"AlwaysApplies\", \"CountDistinct\", \"GameConfigurationId\", \"MinimumItemCount\", \"Name\", \"OptionsId\", \"SetLevel\" from config.\"ItemSetGroup\"",
         "select \"Id\", \"AncientSetDiscriminator\", \"BonusOptionId\", \"ItemDefinitionId\", \"ItemSetGroupId\" from config.\"ItemOfItemSet\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"ItemSlots\" from config.\"ItemSlotType\"",
+        "select \"Id\", \"ExcellentLevelAdd\", \"GameConfigurationId\", \"LevelPerItemLevel\", \"Name\", \"StrengthPerOptionLevel\" from config.\"ItemStatProfile\"",
+        "select \"Id\", \"Add\", \"AttributeId\", \"ItemStatProfileId\", \"KeepBase\", \"LevelRequirementBasis\", \"LevelWeight\", \"Percent\" from config.\"ItemRequirementFormula\"",
+        "select \"Id\", \"AncientAdd\", \"AncientAfterLevelBonus\", \"AncientDropLevelDivisor\", \"AncientState\", \"AncientTimes\", \"AttributeId\", \"ExcellentAdd\", \"ExcellentDropLevelDivisor\", \"ExcellentState\", \"ExcellentTimes\", \"ItemStatProfileId\", \"PerLevelAfterHalving\", \"TableId\", \"TableState\" from config.\"ItemStatTerms\"",
         "select \"Id\", \"GameConfigurationId\", \"MixedJewelId\", \"Number\", \"SingleJewelId\" from config.\"JewelMix\"",
         "select \"Id\", \"ChanceId\", \"ChancePvpId\", \"DurationDependsOnTargetLevel\", \"DurationId\", \"DurationPvpId\", \"GameConfigurationId\", \"InformObservers\", \"MonsterTargetLevelDivisor\", \"Name\", \"Number\", \"PlayerTargetLevelDivisor\", \"SendDuration\", \"StopByDeath\", \"SubType\" from config.\"MagicEffectDefinition\"",
-        "select \"Id\", \"BattleZoneId\", \"Discriminator\", \"ExpMultiplier\", \"GameConfigurationId\", \"Name\", \"Number\", \"SafezoneMapId\", \"TerrainData\" from config.\"GameMapDefinition\"",
+        "select \"Id\", \"BattleZoneId\", \"Discriminator\", \"ExpMultiplier\", \"GameConfigurationId\", \"IntroducedIn\", \"IsActive\", \"Name\", \"Number\", \"SafezoneMapId\", \"TerrainData\" from config.\"GameMapDefinition\"",
         "select \"Id\", \"GroundId\", \"LeftGoalId\", \"LeftTeamSpawnPointX\", \"LeftTeamSpawnPointY\", \"RightGoalId\", \"RightTeamSpawnPointX\", \"RightTeamSpawnPointY\", \"Type\" from config.\"BattleZoneDefinition\"",
         "select \"Id\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"Rectangle\"",
         "select \"Id\", \"GameMapDefinitionId\", \"LevelRequirement\", \"Number\", \"TargetGateId\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"EnterGate\"",
@@ -59,12 +64,12 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"Direction\", \"GameMapId\", \"MaximumHealthOverride\", \"MonsterDefinitionId\", \"Quantity\", \"SpawnTrigger\", \"WaveNumber\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"MonsterSpawnArea\"",
         "select \"Id\", \"Description\", \"GameMapDefinitionId\", \"Number\", \"TerrainData\" from config.\"GameMapTerrainVariant\"",
         "select \"Id\", \"GameConfigurationId\", \"Name\" from config.\"MasterSkillRoot\"",
-        "select \"Id\", \"AllowParty\", \"ArePlayerKillersAllowedToEnter\", \"Description\", \"EnterDuration\", \"EntranceFee\", \"EntranceId\", \"ExitDuration\", \"GameConfigurationId\", \"GameDuration\", \"GameLevel\", \"MapCreationPolicy\", \"MaximumCharacterLevel\", \"MaximumPlayerCount\", \"MaximumSpecialCharacterLevel\", \"MinimumCharacterLevel\", \"MinimumSpecialCharacterLevel\", \"Name\", \"RequiresMasterClass\", \"SaveRankingStatistics\", \"TicketItemId\", \"TicketItemLevel\", \"Type\" from config.\"MiniGameDefinition\"",
+        "select \"Id\", \"AllowParty\", \"ArePlayerKillersAllowedToEnter\", \"Description\", \"EnterDuration\", \"EntranceFee\", \"EntranceId\", \"ExitDuration\", \"GameConfigurationId\", \"GameDuration\", \"GameLevel\", \"IntroducedIn\", \"IsActive\", \"MapCreationPolicy\", \"MaximumCharacterLevel\", \"MaximumPlayerCount\", \"MaximumSpecialCharacterLevel\", \"MinimumCharacterLevel\", \"MinimumSpecialCharacterLevel\", \"Name\", \"RequiresMasterClass\", \"SaveRankingStatistics\", \"TicketItemId\", \"TicketItemLevel\", \"Type\" from config.\"MiniGameDefinition\"",
         "select \"Id\", \"Description\", \"Index\", \"Message\", \"MiniGameDefinitionId\", \"MinimumTargetLevel\", \"MultiplyKillsByPlayers\", \"NumberOfKills\", \"SpawnAreaId\", \"Target\", \"TargetDefinitionId\" from config.\"MiniGameChangeEvent\"",
         "select \"Id\", \"EndX\", \"EndY\", \"IsClientUpdateRequired\", \"MiniGameChangeEventId\", \"SetTerrainAttribute\", \"StartX\", \"StartY\", \"TerrainAttribute\" from config.\"MiniGameTerrainChange\"",
         "select \"Id\", \"ItemRewardId\", \"MiniGameDefinitionId\", \"Rank\", \"RequiredKillId\", \"RequiredSuccess\", \"RewardAmount\", \"RewardType\" from config.\"MiniGameReward\"",
         "select \"Id\", \"Description\", \"EndTime\", \"Message\", \"MiniGameDefinitionId\", \"StartTime\", \"WaveNumber\" from config.\"MiniGameSpawnWave\"",
-        "select \"Id\", \"AttackDelay\", \"AttackRange\", \"AttackSkillId\", \"Attribute\", \"Designation\", \"GameConfigurationId\", \"IntelligenceTypeName\", \"MerchantStoreId\", \"MoveDelay\", \"MoveRange\", \"NpcWindow\", \"Number\", \"NumberOfMaximumItemDrops\", \"ObjectKind\", \"RespawnDelay\", \"ViewRange\" from config.\"MonsterDefinition\"",
+        "select \"Id\", \"AttackDelay\", \"AttackRange\", \"AttackSkillId\", \"Attribute\", \"Designation\", \"GameConfigurationId\", \"IntelligenceTypeName\", \"IntroducedIn\", \"IsActive\", \"MerchantStoreId\", \"MoveDelay\", \"MoveRange\", \"NpcWindow\", \"Number\", \"NumberOfMaximumItemDrops\", \"ObjectKind\", \"RespawnDelay\", \"ViewRange\" from config.\"MonsterDefinition\"",
         "select \"Id\", \"AttributeDefinitionId\", \"MonsterDefinitionId\", \"Value\" from config.\"MonsterAttribute\"",
         "select \"Id\", \"MagicEffectDefinitionId\", \"MaximumLevel\", \"MinimumLevel\", \"MonsterDefinitionId\" from config.\"Buff\"",
         "select \"Id\", \"ItemCraftingHandlerClassName\", \"MonsterDefinitionId\", \"Name\", \"Number\", \"SimpleCraftingSettingsId\" from config.\"ItemCrafting\"",
@@ -155,8 +160,12 @@ internal sealed partial class GameConfigurationLoader
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionOfLevel Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemOptionOfLevelRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType> _ItemOptionType = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType Entity, global::System.Guid? Key0)> _ItemOptionTypeRows = new();
+    private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition> _ItemPriceDefinition = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition Entity, global::System.Guid? Key0)> _ItemPriceDefinitionRows = new();
+    private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice> _ItemLevelPrice = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice Entity, global::System.Guid? Key0)> _ItemLevelPriceRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition> _ItemDefinition = new();
-    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2, global::System.Guid? Key3)> _ItemDefinitionRows = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2, global::System.Guid? Key3, global::System.Guid? Key4, global::System.Guid? Key5)> _ItemDefinitionRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition> _ItemBasePowerUpDefinition = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _ItemBasePowerUpDefinitionRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup> _ItemDropItemGroup = new();
@@ -169,6 +178,12 @@ internal sealed partial class GameConfigurationLoader
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _ItemOfItemSetRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType> _ItemSlotType = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType Entity, global::System.Guid? Key0)> _ItemSlotTypeRows = new();
+    private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile> _ItemStatProfile = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile Entity, global::System.Guid? Key0)> _ItemStatProfileRows = new();
+    private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula> _ItemRequirementFormula = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemRequirementFormulaRows = new();
+    private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms> _ItemStatTerms = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _ItemStatTermsRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.JewelMix> _JewelMix = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.JewelMix Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _JewelMixRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition> _MagicEffectDefinition = new();
@@ -283,59 +298,64 @@ internal sealed partial class GameConfigurationLoader
             case 26: await this.ReadIncreasableItemOptionAsync(reader, cancellationToken).ConfigureAwait(false); break;
             case 27: await this.ReadItemOptionOfLevelAsync(reader, cancellationToken).ConfigureAwait(false); break;
             case 28: await this.ReadItemOptionTypeAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 29: await this.ReadItemDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 30: await this.ReadItemBasePowerUpDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 31: await this.ReadItemDropItemGroupAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 32: await this.ReadAttributeRequirementAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 33: await this.ReadItemSetGroupAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 34: await this.ReadItemOfItemSetAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 35: await this.ReadItemSlotTypeAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 36: await this.ReadJewelMixAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 37: await this.ReadMagicEffectDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 38: await this.ReadGameMapDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 39: await this.ReadBattleZoneDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 40: await this.ReadRectangleAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 41: await this.ReadEnterGateAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 42: await this.ReadExitGateAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 43: await this.ReadMonsterSpawnAreaAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 44: await this.ReadGameMapTerrainVariantAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 45: await this.ReadMasterSkillRootAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 46: await this.ReadMiniGameDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 47: await this.ReadMiniGameChangeEventAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 48: await this.ReadMiniGameTerrainChangeAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 49: await this.ReadMiniGameRewardAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 50: await this.ReadMiniGameSpawnWaveAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 51: await this.ReadMonsterDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 52: await this.ReadMonsterAttributeAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 53: await this.ReadBuffAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 54: await this.ReadItemCraftingAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 55: await this.ReadSimpleCraftingSettingsAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 56: await this.ReadItemCraftingRequiredItemAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 57: await this.ReadItemCraftingResultItemAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 58: await this.ReadItemStorageAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 59: await this.ReadItemAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 60: await this.ReadItemOptionLinkAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 61: await this.ReadQuestDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 62: await this.ReadQuestItemRequirementAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 63: await this.ReadQuestMonsterKillRequirementAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 64: await this.ReadQuestRewardAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 65: await this.ReadPlugInConfigurationAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 66: await this.ReadSkillAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 67: await this.ReadAreaSkillSettingsAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 68: await this.ReadMasterSkillDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 69: await this.ReadWarpInfoAsync(reader, cancellationToken).ConfigureAwait(false); break;
-            case 70: await ReadJoinAsync(reader, this._DropItemGroupItemDefinitionRows, cancellationToken).ConfigureAwait(false); break;
-            case 71: await ReadJoinAsync(reader, this._ItemDefinitionItemOptionDefinitionRows, cancellationToken).ConfigureAwait(false); break;
-            case 72: await ReadJoinAsync(reader, this._ItemDefinitionItemSetGroupRows, cancellationToken).ConfigureAwait(false); break;
-            case 73: await ReadJoinAsync(reader, this._ItemDefinitionCharacterClassRows, cancellationToken).ConfigureAwait(false); break;
-            case 74: await ReadJoinAsync(reader, this._ItemDropItemGroupItemDefinitionRows, cancellationToken).ConfigureAwait(false); break;
-            case 75: await ReadJoinAsync(reader, this._GameMapDefinitionDropItemGroupRows, cancellationToken).ConfigureAwait(false); break;
-            case 76: await ReadJoinAsync(reader, this._MonsterDefinitionDropItemGroupRows, cancellationToken).ConfigureAwait(false); break;
-            case 77: await ReadJoinAsync(reader, this._ItemCraftingRequiredItemItemDefinitionRows, cancellationToken).ConfigureAwait(false); break;
-            case 78: await ReadJoinAsync(reader, this._ItemCraftingRequiredItemItemOptionTypeRows, cancellationToken).ConfigureAwait(false); break;
-            case 79: await ReadJoinAsync(reader, this._ItemItemOfItemSetRows, cancellationToken).ConfigureAwait(false); break;
-            case 80: await ReadJoinAsync(reader, this._SkillCharacterClassRows, cancellationToken).ConfigureAwait(false); break;
-            case 81: await ReadJoinAsync(reader, this._MasterSkillDefinitionSkillRows, cancellationToken).ConfigureAwait(false); break;
+            case 29: await this.ReadItemPriceDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 30: await this.ReadItemLevelPriceAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 31: await this.ReadItemDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 32: await this.ReadItemBasePowerUpDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 33: await this.ReadItemDropItemGroupAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 34: await this.ReadAttributeRequirementAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 35: await this.ReadItemSetGroupAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 36: await this.ReadItemOfItemSetAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 37: await this.ReadItemSlotTypeAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 38: await this.ReadItemStatProfileAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 39: await this.ReadItemRequirementFormulaAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 40: await this.ReadItemStatTermsAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 41: await this.ReadJewelMixAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 42: await this.ReadMagicEffectDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 43: await this.ReadGameMapDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 44: await this.ReadBattleZoneDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 45: await this.ReadRectangleAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 46: await this.ReadEnterGateAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 47: await this.ReadExitGateAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 48: await this.ReadMonsterSpawnAreaAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 49: await this.ReadGameMapTerrainVariantAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 50: await this.ReadMasterSkillRootAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 51: await this.ReadMiniGameDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 52: await this.ReadMiniGameChangeEventAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 53: await this.ReadMiniGameTerrainChangeAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 54: await this.ReadMiniGameRewardAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 55: await this.ReadMiniGameSpawnWaveAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 56: await this.ReadMonsterDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 57: await this.ReadMonsterAttributeAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 58: await this.ReadBuffAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 59: await this.ReadItemCraftingAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 60: await this.ReadSimpleCraftingSettingsAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 61: await this.ReadItemCraftingRequiredItemAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 62: await this.ReadItemCraftingResultItemAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 63: await this.ReadItemStorageAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 64: await this.ReadItemAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 65: await this.ReadItemOptionLinkAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 66: await this.ReadQuestDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 67: await this.ReadQuestItemRequirementAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 68: await this.ReadQuestMonsterKillRequirementAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 69: await this.ReadQuestRewardAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 70: await this.ReadPlugInConfigurationAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 71: await this.ReadSkillAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 72: await this.ReadAreaSkillSettingsAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 73: await this.ReadMasterSkillDefinitionAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 74: await this.ReadWarpInfoAsync(reader, cancellationToken).ConfigureAwait(false); break;
+            case 75: await ReadJoinAsync(reader, this._DropItemGroupItemDefinitionRows, cancellationToken).ConfigureAwait(false); break;
+            case 76: await ReadJoinAsync(reader, this._ItemDefinitionItemOptionDefinitionRows, cancellationToken).ConfigureAwait(false); break;
+            case 77: await ReadJoinAsync(reader, this._ItemDefinitionItemSetGroupRows, cancellationToken).ConfigureAwait(false); break;
+            case 78: await ReadJoinAsync(reader, this._ItemDefinitionCharacterClassRows, cancellationToken).ConfigureAwait(false); break;
+            case 79: await ReadJoinAsync(reader, this._ItemDropItemGroupItemDefinitionRows, cancellationToken).ConfigureAwait(false); break;
+            case 80: await ReadJoinAsync(reader, this._GameMapDefinitionDropItemGroupRows, cancellationToken).ConfigureAwait(false); break;
+            case 81: await ReadJoinAsync(reader, this._MonsterDefinitionDropItemGroupRows, cancellationToken).ConfigureAwait(false); break;
+            case 82: await ReadJoinAsync(reader, this._ItemCraftingRequiredItemItemDefinitionRows, cancellationToken).ConfigureAwait(false); break;
+            case 83: await ReadJoinAsync(reader, this._ItemCraftingRequiredItemItemOptionTypeRows, cancellationToken).ConfigureAwait(false); break;
+            case 84: await ReadJoinAsync(reader, this._ItemItemOfItemSetRows, cancellationToken).ConfigureAwait(false); break;
+            case 85: await ReadJoinAsync(reader, this._SkillCharacterClassRows, cancellationToken).ConfigureAwait(false); break;
+            case 86: await ReadJoinAsync(reader, this._MasterSkillDefinitionSkillRows, cancellationToken).ConfigureAwait(false); break;
             default: throw new global::System.ArgumentOutOfRangeException(nameof(statementIndex));
         }
     }
@@ -346,38 +366,40 @@ internal sealed partial class GameConfigurationLoader
         {
             var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration();
             entity.Id = reader.GetGuid(0);
-            entity.AreaSkillHitsPlayer = reader.GetBoolean(1);
-            if (!reader.IsDBNull(2)) { entity.CashShopConfigurationId = reader.GetGuid(2); }
-            if (!reader.IsDBNull(3)) { entity.CastleSiegeConfigurationId = reader.GetGuid(3); }
-            if (!reader.IsDBNull(4)) { entity.CharacterNameRegex = reader.GetString(4); }
-            entity.ClampMoneyOnPickup = reader.GetBoolean(5);
-            entity.DamagePerOneItemDurability = reader.GetDouble(6);
-            entity.DamagePerOnePetDurability = reader.GetDouble(7);
-            if (!reader.IsDBNull(8)) { entity.DuelConfigurationId = reader.GetGuid(8); }
-            entity.ExcellentItemDropLevelDelta = (global::System.Byte)reader.GetInt16(9);
-            if (!reader.IsDBNull(10)) { entity.ExperienceFormula = reader.GetString(10); }
-            entity.ExperienceRate = reader.GetFloat(11);
-            entity.HitsPerOneItemDurability = reader.GetDouble(12);
-            entity.InfoRange = (global::System.Byte)reader.GetInt16(13);
-            entity.ItemDropDuration = reader.GetFieldValue<global::System.TimeSpan>(14);
-            entity.LetterSendPrice = reader.GetInt32(15);
-            if (!reader.IsDBNull(16)) { entity.MasterExperienceFormula = reader.GetString(16); }
-            entity.MasterExperienceRate = reader.GetFloat(17);
-            entity.MaximumCharactersPerAccount = (global::System.Byte)reader.GetInt16(18);
-            entity.MaximumInventoryMoney = reader.GetInt32(19);
-            entity.MaximumItemOptionLevelDrop = (global::System.Byte)reader.GetInt16(20);
-            entity.MaximumLetters = reader.GetInt32(21);
-            entity.MaximumLevel = reader.GetInt16(22);
-            entity.MaximumMasterLevel = reader.GetInt16(23);
-            entity.MaximumPartySize = (global::System.Byte)reader.GetInt16(24);
-            entity.MaximumPasswordLength = reader.GetInt32(25);
-            entity.MaximumVaultMoney = reader.GetInt32(26);
-            entity.MinimumMonsterLevelForMasterExperience = (global::System.Byte)reader.GetInt16(27);
-            entity.PreventExperienceOverflow = reader.GetBoolean(28);
-            entity.RecoveryInterval = reader.GetInt32(29);
-            entity.ShouldDropMoney = reader.GetBoolean(30);
+            entity.AncientDropLevelBonus = (global::System.Byte)reader.GetInt16(1);
+            entity.AreaSkillHitsPlayer = reader.GetBoolean(2);
+            if (!reader.IsDBNull(3)) { entity.CashShopConfigurationId = reader.GetGuid(3); }
+            if (!reader.IsDBNull(4)) { entity.CastleSiegeConfigurationId = reader.GetGuid(4); }
+            if (!reader.IsDBNull(5)) { entity.CharacterNameRegex = reader.GetString(5); }
+            entity.ClampMoneyOnPickup = reader.GetBoolean(6);
+            entity.DamagePerOneItemDurability = reader.GetDouble(7);
+            entity.DamagePerOnePetDurability = reader.GetDouble(8);
+            if (!reader.IsDBNull(9)) { entity.DuelConfigurationId = reader.GetGuid(9); }
+            entity.ExcellentDropLevelBonus = (global::System.Byte)reader.GetInt16(10);
+            entity.ExcellentItemDropLevelDelta = (global::System.Byte)reader.GetInt16(11);
+            if (!reader.IsDBNull(12)) { entity.ExperienceFormula = reader.GetString(12); }
+            entity.ExperienceRate = reader.GetFloat(13);
+            entity.HitsPerOneItemDurability = reader.GetDouble(14);
+            entity.InfoRange = (global::System.Byte)reader.GetInt16(15);
+            entity.ItemDropDuration = reader.GetFieldValue<global::System.TimeSpan>(16);
+            entity.LetterSendPrice = reader.GetInt32(17);
+            if (!reader.IsDBNull(18)) { entity.MasterExperienceFormula = reader.GetString(18); }
+            entity.MasterExperienceRate = reader.GetFloat(19);
+            entity.MaximumCharactersPerAccount = (global::System.Byte)reader.GetInt16(20);
+            entity.MaximumInventoryMoney = reader.GetInt32(21);
+            entity.MaximumItemOptionLevelDrop = (global::System.Byte)reader.GetInt16(22);
+            entity.MaximumLetters = reader.GetInt32(23);
+            entity.MaximumLevel = reader.GetInt16(24);
+            entity.MaximumMasterLevel = reader.GetInt16(25);
+            entity.MaximumPartySize = (global::System.Byte)reader.GetInt16(26);
+            entity.MaximumPasswordLength = reader.GetInt32(27);
+            entity.MaximumVaultMoney = reader.GetInt32(28);
+            entity.MinimumMonsterLevelForMasterExperience = (global::System.Byte)reader.GetInt16(29);
+            entity.PreventExperienceOverflow = reader.GetBoolean(30);
+            entity.RecoveryInterval = reader.GetInt32(31);
+            entity.ShouldDropMoney = reader.GetBoolean(32);
             this._GameConfiguration[entity.Id] = entity;
-            this._GameConfigurationRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
+            this._GameConfigurationRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(4) ? null : reader.GetGuid(4), reader.IsDBNull(9) ? null : reader.GetGuid(9)));
         }
     }
 
@@ -553,14 +575,16 @@ internal sealed partial class GameConfigurationLoader
             entity.CreationAllowedFlag = (global::System.Byte)reader.GetInt16(3);
             entity.FruitCalculation = (global::MUnique.OpenMU.DataModel.Configuration.FruitCalculationStrategy)reader.GetInt32(4);
             if (!reader.IsDBNull(6)) { entity.HomeMapId = reader.GetGuid(6); }
-            entity.IsMasterClass = reader.GetBoolean(7);
-            entity.LevelRequirementByCreation = reader.GetInt16(8);
-            entity.LevelWarpRequirementReductionPercent = reader.GetInt32(9);
-            entity.Name = reader.IsDBNull(10) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(10));
-            if (!reader.IsDBNull(11)) { entity.NextGenerationClassId = reader.GetGuid(11); }
-            entity.Number = (global::System.Byte)reader.GetInt16(12);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(7);
+            entity.IsActive = reader.GetBoolean(8);
+            entity.IsMasterClass = reader.GetBoolean(9);
+            entity.LevelRequirementByCreation = reader.GetInt16(10);
+            entity.LevelWarpRequirementReductionPercent = reader.GetInt32(11);
+            entity.Name = reader.IsDBNull(12) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(12));
+            if (!reader.IsDBNull(13)) { entity.NextGenerationClassId = reader.GetGuid(13); }
+            entity.Number = (global::System.Byte)reader.GetInt16(14);
             this._CharacterClass[entity.Id] = entity;
-            this._CharacterClassRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(11) ? null : reader.GetGuid(11), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
+            this._CharacterClassRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(13) ? null : reader.GetGuid(13), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
         }
     }
 
@@ -829,6 +853,36 @@ internal sealed partial class GameConfigurationLoader
         }
     }
 
+    private async global::System.Threading.Tasks.ValueTask ReadItemPriceDefinitionAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
+    {
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition();
+            entity.Id = reader.GetGuid(0);
+            if (!reader.IsDBNull(1)) { entity.BasePriceFormula = reader.GetString(1); }
+            if (!reader.IsDBNull(2)) { entity.CraftingReferencePrice = reader.GetInt64(2); }
+            entity.Modifiers = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceModifiers)reader.GetInt32(4);
+            entity.Name = reader.IsDBNull(5) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(5));
+            entity.QuantityScaling = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceQuantityScaling)reader.GetInt32(6);
+            entity.SellingPriceRounding = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceRounding)reader.GetInt32(7);
+            this._ItemPriceDefinition[entity.Id] = entity;
+            this._ItemPriceDefinitionRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3)));
+        }
+    }
+
+    private async global::System.Threading.Tasks.ValueTask ReadItemLevelPriceAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
+    {
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice();
+            entity.Id = reader.GetGuid(0);
+            entity.Level = reader.GetInt32(2);
+            entity.Price = reader.GetInt64(3);
+            this._ItemLevelPrice[entity.Id] = entity;
+            this._ItemLevelPriceRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1)));
+        }
+    }
+
     private async global::System.Threading.Tasks.ValueTask ReadItemDefinitionAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
     {
         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -839,30 +893,36 @@ internal sealed partial class GameConfigurationLoader
             entity.DropLevel = (global::System.Byte)reader.GetInt16(2);
             entity.DropsFromMonsters = reader.GetBoolean(3);
             entity.Durability = (global::System.Byte)reader.GetInt16(4);
-            entity.Group = (global::System.Byte)reader.GetInt16(6);
-            entity.Height = (global::System.Byte)reader.GetInt16(7);
-            entity.IsAmmunition = reader.GetBoolean(8);
-            entity.IsBoundToCharacter = reader.GetBoolean(9);
-            entity.IsDroppable = reader.GetBoolean(10);
-            entity.IsPersonalStoreSellable = reader.GetBoolean(11);
-            entity.IsQuestItem = reader.GetBoolean(12);
-            entity.IsRepairable = reader.GetBoolean(13);
-            entity.IsSellableToNpc = reader.GetBoolean(14);
-            entity.IsStorable = reader.GetBoolean(15);
-            entity.IsTradable = reader.GetBoolean(16);
-            if (!reader.IsDBNull(17)) { entity.ItemSlotId = reader.GetGuid(17); }
-            if (!reader.IsDBNull(18)) { entity.MaximumDropLevel = (global::System.Byte)reader.GetInt16(18); }
-            entity.MaximumItemLevel = (global::System.Byte)reader.GetInt16(19);
-            entity.MaximumSockets = reader.GetInt32(20);
-            entity.Name = reader.IsDBNull(21) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(21));
-            entity.Number = reader.GetInt16(22);
-            if (!reader.IsDBNull(23)) { entity.PetExperienceFormula = reader.GetString(23); }
-            if (!reader.IsDBNull(24)) { entity.SkillId = reader.GetGuid(24); }
-            entity.StorageLimitPerCharacter = reader.GetInt32(25);
-            entity.Value = reader.GetInt32(26);
-            entity.Width = (global::System.Byte)reader.GetInt16(27);
+            entity.ExcellentBonus = (global::System.Byte)reader.GetInt16(5);
+            entity.ExcellentRaisesLevel = reader.GetBoolean(6);
+            entity.Group = (global::System.Byte)reader.GetInt16(8);
+            entity.Height = (global::System.Byte)reader.GetInt16(9);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(10);
+            entity.IsActive = reader.GetBoolean(11);
+            entity.IsAmmunition = reader.GetBoolean(12);
+            entity.IsBoundToCharacter = reader.GetBoolean(13);
+            entity.IsDroppable = reader.GetBoolean(14);
+            entity.IsPersonalStoreSellable = reader.GetBoolean(15);
+            entity.IsQuestItem = reader.GetBoolean(16);
+            entity.IsRepairable = reader.GetBoolean(17);
+            entity.IsSellableToNpc = reader.GetBoolean(18);
+            entity.IsStorable = reader.GetBoolean(19);
+            entity.IsTradable = reader.GetBoolean(20);
+            if (!reader.IsDBNull(21)) { entity.ItemSlotId = reader.GetGuid(21); }
+            if (!reader.IsDBNull(22)) { entity.MaximumDropLevel = (global::System.Byte)reader.GetInt16(22); }
+            entity.MaximumItemLevel = (global::System.Byte)reader.GetInt16(23);
+            entity.MaximumSockets = reader.GetInt32(24);
+            entity.Name = reader.IsDBNull(25) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(25));
+            entity.Number = reader.GetInt16(26);
+            if (!reader.IsDBNull(27)) { entity.PetExperienceFormula = reader.GetString(27); }
+            if (!reader.IsDBNull(28)) { entity.PriceDefinitionId = reader.GetGuid(28); }
+            if (!reader.IsDBNull(29)) { entity.SkillId = reader.GetGuid(29); }
+            if (!reader.IsDBNull(30)) { entity.StatProfileId = reader.GetGuid(30); }
+            entity.StorageLimitPerCharacter = reader.GetInt32(31);
+            entity.Value = reader.GetInt32(32);
+            entity.Width = (global::System.Byte)reader.GetInt16(33);
             this._ItemDefinition[entity.Id] = entity;
-            this._ItemDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(17) ? null : reader.GetGuid(17), reader.IsDBNull(24) ? null : reader.GetGuid(24), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
+            this._ItemDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(21) ? null : reader.GetGuid(21), reader.IsDBNull(28) ? null : reader.GetGuid(28), reader.IsDBNull(29) ? null : reader.GetGuid(29), reader.IsDBNull(30) ? null : reader.GetGuid(30), reader.IsDBNull(7) ? null : reader.GetGuid(7)));
         }
     }
 
@@ -964,6 +1024,62 @@ internal sealed partial class GameConfigurationLoader
         }
     }
 
+    private async global::System.Threading.Tasks.ValueTask ReadItemStatProfileAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
+    {
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile();
+            entity.Id = reader.GetGuid(0);
+            if (!reader.IsDBNull(1)) { entity.ExcellentLevelAdd = reader.GetInt32(1); }
+            if (!reader.IsDBNull(3)) { entity.LevelPerItemLevel = reader.GetInt32(3); }
+            entity.Name = reader.GetString(4);
+            if (!reader.IsDBNull(5)) { entity.StrengthPerOptionLevel = reader.GetInt32(5); }
+            this._ItemStatProfile[entity.Id] = entity;
+            this._ItemStatProfileRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2)));
+        }
+    }
+
+    private async global::System.Threading.Tasks.ValueTask ReadItemRequirementFormulaAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
+    {
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula();
+            entity.Id = reader.GetGuid(0);
+            entity.Add = reader.GetInt32(1);
+            if (!reader.IsDBNull(2)) { entity.AttributeId = reader.GetGuid(2); }
+            entity.KeepBase = reader.GetBoolean(4);
+            entity.LevelRequirementBasis = reader.GetBoolean(5);
+            entity.LevelWeight = reader.GetInt32(6);
+            entity.Percent = reader.GetInt32(7);
+            this._ItemRequirementFormula[entity.Id] = entity;
+            this._ItemRequirementFormulaRows.Add((entity, reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(3) ? null : reader.GetGuid(3)));
+        }
+    }
+
+    private async global::System.Threading.Tasks.ValueTask ReadItemStatTermsAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
+    {
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms();
+            entity.Id = reader.GetGuid(0);
+            entity.AncientAdd = reader.GetInt32(1);
+            entity.AncientAfterLevelBonus = reader.GetBoolean(2);
+            entity.AncientDropLevelDivisor = reader.GetInt32(3);
+            entity.AncientState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(4);
+            entity.AncientTimes = reader.GetInt32(5);
+            if (!reader.IsDBNull(6)) { entity.AttributeId = reader.GetGuid(6); }
+            entity.ExcellentAdd = reader.GetInt32(7);
+            entity.ExcellentDropLevelDivisor = reader.GetInt32(8);
+            entity.ExcellentState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(9);
+            entity.ExcellentTimes = reader.GetInt32(10);
+            if (!reader.IsDBNull(12)) { entity.PerLevelAfterHalving = reader.GetInt32(12); }
+            if (!reader.IsDBNull(13)) { entity.TableId = reader.GetGuid(13); }
+            entity.TableState = (global::MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTermState)reader.GetInt32(14);
+            this._ItemStatTerms[entity.Id] = entity;
+            this._ItemStatTermsRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(13) ? null : reader.GetGuid(13), reader.IsDBNull(11) ? null : reader.GetGuid(11)));
+        }
+    }
+
     private async global::System.Threading.Tasks.ValueTask ReadJewelMixAsync(global::System.Data.Common.DbDataReader reader, global::System.Threading.CancellationToken cancellationToken)
     {
         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -1011,12 +1127,14 @@ internal sealed partial class GameConfigurationLoader
             if (!reader.IsDBNull(1)) { entity.BattleZoneId = reader.GetGuid(1); }
             entity.Discriminator = reader.GetInt32(2);
             entity.ExpMultiplier = reader.GetDouble(3);
-            entity.Name = reader.IsDBNull(5) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(5));
-            entity.Number = reader.GetInt16(6);
-            if (!reader.IsDBNull(7)) { entity.SafezoneMapId = reader.GetGuid(7); }
-            if (!reader.IsDBNull(8)) { entity.TerrainData = reader.GetFieldValue<byte[]>(8); }
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(5);
+            entity.IsActive = reader.GetBoolean(6);
+            entity.Name = reader.IsDBNull(7) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(7));
+            entity.Number = reader.GetInt16(8);
+            if (!reader.IsDBNull(9)) { entity.SafezoneMapId = reader.GetGuid(9); }
+            if (!reader.IsDBNull(10)) { entity.TerrainData = reader.GetFieldValue<byte[]>(10); }
             this._GameMapDefinition[entity.Id] = entity;
-            this._GameMapDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(7) ? null : reader.GetGuid(7), reader.IsDBNull(4) ? null : reader.GetGuid(4)));
+            this._GameMapDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(9) ? null : reader.GetGuid(9), reader.IsDBNull(4) ? null : reader.GetGuid(4)));
         }
     }
 
@@ -1153,20 +1271,22 @@ internal sealed partial class GameConfigurationLoader
             entity.ExitDuration = reader.GetFieldValue<global::System.TimeSpan>(7);
             entity.GameDuration = reader.GetFieldValue<global::System.TimeSpan>(9);
             entity.GameLevel = (global::System.Byte)reader.GetInt16(10);
-            entity.MapCreationPolicy = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameMapCreationPolicy)reader.GetInt32(11);
-            entity.MaximumCharacterLevel = reader.GetInt32(12);
-            entity.MaximumPlayerCount = reader.GetInt32(13);
-            entity.MaximumSpecialCharacterLevel = reader.GetInt32(14);
-            entity.MinimumCharacterLevel = reader.GetInt32(15);
-            entity.MinimumSpecialCharacterLevel = reader.GetInt32(16);
-            entity.Name = reader.IsDBNull(17) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(17));
-            entity.RequiresMasterClass = reader.GetBoolean(18);
-            entity.SaveRankingStatistics = reader.GetBoolean(19);
-            if (!reader.IsDBNull(20)) { entity.TicketItemId = reader.GetGuid(20); }
-            entity.TicketItemLevel = reader.GetInt32(21);
-            entity.Type = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameType)reader.GetInt32(22);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(11);
+            entity.IsActive = reader.GetBoolean(12);
+            entity.MapCreationPolicy = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameMapCreationPolicy)reader.GetInt32(13);
+            entity.MaximumCharacterLevel = reader.GetInt32(14);
+            entity.MaximumPlayerCount = reader.GetInt32(15);
+            entity.MaximumSpecialCharacterLevel = reader.GetInt32(16);
+            entity.MinimumCharacterLevel = reader.GetInt32(17);
+            entity.MinimumSpecialCharacterLevel = reader.GetInt32(18);
+            entity.Name = reader.IsDBNull(19) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(19));
+            entity.RequiresMasterClass = reader.GetBoolean(20);
+            entity.SaveRankingStatistics = reader.GetBoolean(21);
+            if (!reader.IsDBNull(22)) { entity.TicketItemId = reader.GetGuid(22); }
+            entity.TicketItemLevel = reader.GetInt32(23);
+            entity.Type = (global::MUnique.OpenMU.DataModel.Configuration.MiniGameType)reader.GetInt32(24);
             this._MiniGameDefinition[entity.Id] = entity;
-            this._MiniGameDefinitionRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(20) ? null : reader.GetGuid(20), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
+            this._MiniGameDefinitionRows.Add((entity, reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(22) ? null : reader.GetGuid(22), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
         }
     }
 
@@ -1253,17 +1373,19 @@ internal sealed partial class GameConfigurationLoader
             entity.Attribute = (global::System.Byte)reader.GetInt16(4);
             entity.Designation = reader.IsDBNull(5) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(5));
             if (!reader.IsDBNull(7)) { entity.IntelligenceTypeName = reader.GetString(7); }
-            if (!reader.IsDBNull(8)) { entity.MerchantStoreId = reader.GetGuid(8); }
-            entity.MoveDelay = reader.GetFieldValue<global::System.TimeSpan>(9);
-            entity.MoveRange = (global::System.Byte)reader.GetInt16(10);
-            entity.NpcWindow = (global::MUnique.OpenMU.DataModel.Configuration.NpcWindow)reader.GetInt32(11);
-            entity.Number = reader.GetInt16(12);
-            entity.NumberOfMaximumItemDrops = reader.GetInt32(13);
-            entity.ObjectKind = (global::MUnique.OpenMU.DataModel.Configuration.NpcObjectKind)reader.GetInt32(14);
-            entity.RespawnDelay = reader.GetFieldValue<global::System.TimeSpan>(15);
-            entity.ViewRange = reader.GetInt16(16);
+            entity.IntroducedIn = (global::MUnique.OpenMU.DataModel.Configuration.GameVersion)reader.GetInt32(8);
+            entity.IsActive = reader.GetBoolean(9);
+            if (!reader.IsDBNull(10)) { entity.MerchantStoreId = reader.GetGuid(10); }
+            entity.MoveDelay = reader.GetFieldValue<global::System.TimeSpan>(11);
+            entity.MoveRange = (global::System.Byte)reader.GetInt16(12);
+            entity.NpcWindow = (global::MUnique.OpenMU.DataModel.Configuration.NpcWindow)reader.GetInt32(13);
+            entity.Number = reader.GetInt16(14);
+            entity.NumberOfMaximumItemDrops = reader.GetInt32(15);
+            entity.ObjectKind = (global::MUnique.OpenMU.DataModel.Configuration.NpcObjectKind)reader.GetInt32(16);
+            entity.RespawnDelay = reader.GetFieldValue<global::System.TimeSpan>(17);
+            entity.ViewRange = reader.GetInt16(18);
             this._MonsterDefinition[entity.Id] = entity;
-            this._MonsterDefinitionRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(8) ? null : reader.GetGuid(8), reader.IsDBNull(6) ? null : reader.GetGuid(6)));
+            this._MonsterDefinitionRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(10) ? null : reader.GetGuid(10), reader.IsDBNull(6) ? null : reader.GetGuid(6)));
         }
     }
 
@@ -1909,6 +2031,14 @@ internal sealed partial class GameConfigurationLoader
             }
         }
 
+        foreach (var row in this._ItemDefinitionRows)
+        {
+            if (row.Key2 is { } id)
+            {
+                row.Entity.RawPriceDefinition = this.GetItemPriceDefinition(id);
+            }
+        }
+
         foreach (var row in this._AttributeRequirementRows)
         {
             if (row.Key0 is { } id)
@@ -1919,9 +2049,17 @@ internal sealed partial class GameConfigurationLoader
 
         foreach (var row in this._ItemDefinitionRows)
         {
-            if (row.Key2 is { } id)
+            if (row.Key3 is { } id)
             {
                 row.Entity.RawSkill = this.GetSkill(id);
+            }
+        }
+
+        foreach (var row in this._ItemDefinitionRows)
+        {
+            if (row.Key4 is { } id)
+            {
+                row.Entity.RawStatProfile = this.GetItemStatProfile(id);
             }
         }
 
@@ -1954,6 +2092,30 @@ internal sealed partial class GameConfigurationLoader
             if (row.Key0 is { } id)
             {
                 row.Entity.RawOptions = this.GetItemOptionDefinition(id);
+            }
+        }
+
+        foreach (var row in this._ItemRequirementFormulaRows)
+        {
+            if (row.Key0 is { } id)
+            {
+                row.Entity.RawAttribute = this.GetAttributeDefinition(id);
+            }
+        }
+
+        foreach (var row in this._ItemStatTermsRows)
+        {
+            if (row.Key0 is { } id)
+            {
+                row.Entity.RawAttribute = this.GetAttributeDefinition(id);
+            }
+        }
+
+        foreach (var row in this._ItemStatTermsRows)
+        {
+            if (row.Key1 is { } id)
+            {
+                row.Entity.RawTable = this.GetItemLevelBonusTable(id);
             }
         }
 
@@ -2723,6 +2885,32 @@ internal sealed partial class GameConfigurationLoader
             }
         }
 
+        foreach (var row in this._ItemLevelPriceRows)
+        {
+            if (row.Key0 is { } id && this._ItemPriceDefinition.TryGetValue(id, out var parent))
+            {
+                var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice>)parent.RawPricePerLevel;
+                var item = row.Entity;
+                if (!collection.Contains(item))
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
+        foreach (var row in this._ItemPriceDefinitionRows)
+        {
+            if (row.Key0 is { } id && this._GameConfiguration.TryGetValue(id, out var parent))
+            {
+                var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition>)parent.RawItemPriceDefinitions;
+                var item = row.Entity;
+                if (!collection.Contains(item))
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
         foreach (var row in this._ItemBasePowerUpDefinitionRows)
         {
             if (row.Key2 is { } id && this._ItemDefinition.TryGetValue(id, out var parent))
@@ -2764,7 +2952,7 @@ internal sealed partial class GameConfigurationLoader
 
         foreach (var row in this._ItemDefinitionRows)
         {
-            if (row.Key3 is { } id && this._GameConfiguration.TryGetValue(id, out var parent))
+            if (row.Key5 is { } id && this._GameConfiguration.TryGetValue(id, out var parent))
             {
                 var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition>)parent.RawItems;
                 var item = row.Entity;
@@ -2806,6 +2994,45 @@ internal sealed partial class GameConfigurationLoader
             if (row.Key0 is { } id && this._GameConfiguration.TryGetValue(id, out var parent))
             {
                 var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType>)parent.RawItemSlotTypes;
+                var item = row.Entity;
+                if (!collection.Contains(item))
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
+        foreach (var row in this._ItemRequirementFormulaRows)
+        {
+            if (row.Key1 is { } id && this._ItemStatProfile.TryGetValue(id, out var parent))
+            {
+                var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula>)parent.RawRequirementFormulas;
+                var item = row.Entity;
+                if (!collection.Contains(item))
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
+        foreach (var row in this._ItemStatTermsRows)
+        {
+            if (row.Key2 is { } id && this._ItemStatProfile.TryGetValue(id, out var parent))
+            {
+                var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms>)parent.RawStatTerms;
+                var item = row.Entity;
+                if (!collection.Contains(item))
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
+        foreach (var row in this._ItemStatProfileRows)
+        {
+            if (row.Key0 is { } id && this._GameConfiguration.TryGetValue(id, out var parent))
+            {
+                var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile>)parent.RawItemStatProfiles;
                 var item = row.Entity;
                 if (!collection.Contains(item))
                 {
@@ -3790,6 +4017,30 @@ internal sealed partial class GameConfigurationLoader
         return entity;
     }
 
+    private global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition GetItemPriceDefinition(global::System.Guid id)
+    {
+        if (!this._ItemPriceDefinition.TryGetValue(id, out var entity))
+        {
+            // A reference to an object which isn't loaded; the json deserializer creates a placeholder with the id.
+            entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition { Id = id };
+            this._ItemPriceDefinition.Add(id, entity);
+        }
+
+        return entity;
+    }
+
+    private global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice GetItemLevelPrice(global::System.Guid id)
+    {
+        if (!this._ItemLevelPrice.TryGetValue(id, out var entity))
+        {
+            // A reference to an object which isn't loaded; the json deserializer creates a placeholder with the id.
+            entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelPrice { Id = id };
+            this._ItemLevelPrice.Add(id, entity);
+        }
+
+        return entity;
+    }
+
     private global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition GetItemDefinition(global::System.Guid id)
     {
         if (!this._ItemDefinition.TryGetValue(id, out var entity))
@@ -3869,6 +4120,42 @@ internal sealed partial class GameConfigurationLoader
             // A reference to an object which isn't loaded; the json deserializer creates a placeholder with the id.
             entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType { Id = id };
             this._ItemSlotType.Add(id, entity);
+        }
+
+        return entity;
+    }
+
+    private global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile GetItemStatProfile(global::System.Guid id)
+    {
+        if (!this._ItemStatProfile.TryGetValue(id, out var entity))
+        {
+            // A reference to an object which isn't loaded; the json deserializer creates a placeholder with the id.
+            entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile { Id = id };
+            this._ItemStatProfile.Add(id, entity);
+        }
+
+        return entity;
+    }
+
+    private global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula GetItemRequirementFormula(global::System.Guid id)
+    {
+        if (!this._ItemRequirementFormula.TryGetValue(id, out var entity))
+        {
+            // A reference to an object which isn't loaded; the json deserializer creates a placeholder with the id.
+            entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemRequirementFormula { Id = id };
+            this._ItemRequirementFormula.Add(id, entity);
+        }
+
+        return entity;
+    }
+
+    private global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms GetItemStatTerms(global::System.Guid id)
+    {
+        if (!this._ItemStatTerms.TryGetValue(id, out var entity))
+        {
+            // A reference to an object which isn't loaded; the json deserializer creates a placeholder with the id.
+            entity = new global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatTerms { Id = id };
+            this._ItemStatTerms.Add(id, entity);
         }
 
         return entity;

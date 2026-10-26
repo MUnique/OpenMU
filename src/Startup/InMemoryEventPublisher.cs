@@ -73,6 +73,15 @@ public class InMemoryEventPublisher : IEventPublisher
     }
 
     /// <inheritdoc />
+    public async ValueTask WorldChatMessageAsync(string sender, string message)
+    {
+        foreach (var gameServer in this._gameServers)
+        {
+            await gameServer.Value.WorldChatMessageAsync(sender, message).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
     {
         foreach (var gameServer in this._gameServers)
