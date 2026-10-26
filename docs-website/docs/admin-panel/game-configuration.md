@@ -31,7 +31,7 @@ the server process itself.
 | IP resolver | How the server determines the address it reports to the game client: `Auto`, `Public`, `Local`, `Loopback` or `Custom`. See [Connect a game client](../getting-started/game-client.md#disconnects-after-selecting-a-server). |
 | IP resolver parameter | The fixed IP or host name, when the resolver is `Custom` |
 | Auto start | Start the listeners of all servers when the process starts. Only applies to the all-in-one startup — distributed processes always start their listeners. |
-| Auto update schema | Update the database schema automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the update is started manually on the [Setup page](setup.md). |
+| Auto update schema | Update the database schema, and apply the mandatory [configuration updates](configuration-updates.md#at-startup), automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the updates are started manually on the [Setup page](setup.md) and the [Configuration updates page](configuration-updates.md). |
 | Read console input | Whether the all-in-one process reacts to commands typed in its console |
 | Time zone id | The time zone used to interpret the time-of-day entries of periodic event schedules (invasions, Blood Castle, Devil Square, …) and of the Castle Siege schedule. IANA ids such as `Europe/Warsaw` are recommended; when empty or unresolvable, UTC is used. |
 
@@ -103,6 +103,31 @@ Route `edit-config-grid/…ItemDefinition/`
 Item definitions with their requirements, level tables, possible options, sockets
 and the classes which may equip them. Items use a dedicated editor with a
 graphical representation instead of the plain generic form.
+
+### Item prices
+
+The price of an item is used by the NPC merchants (buying, selling, repairing)
+and by the success rate of some crafting recipes. By default, an item gets the
+price of usual equipment: a base price from its drop level, increased by its
+skill and options. Items with a different price reference a *price definition*
+(the `PriceDefinition` of the item). The price definitions are in the full
+configuration tree (`ItemPriceDefinitions` of the game configuration), and one
+can be shared by several items.
+
+| Setting | Meaning |
+|---|---|
+| Base price formula | The price of one unit, for example `9000000`, or `(level + 1) * 200000`. Without a formula, the equipment price is used. |
+| Price per level | Fixed prices for specific item levels. They take precedence over the formula. |
+| Quantity scaling | `PerPiece` multiplies the price by the number of pieces (potions), `ByFillRatio` by the fill ratio (arrows). |
+| Modifiers | Which options increase the price, like for equipment: skill, luck, option, wing option, excellent. |
+| Selling price rounding | `Tens` rounds the selling price to tens and ignores the durability, like for potions. |
+| Crafting reference price | A different price for the success rate of crafting (e.g. the jewels). |
+
+The formula can use the variables `level`, `durability`, `maxDurability`,
+`value` (the value of the item), `dropLevel`, `optionLevel`, `optionCount`,
+`healthRecoveryOptionLevel` and `automaticPrice` (the equipment price). The game
+client calculates the prices it shows by itself, so changed prices only show up
+correctly in clients which calculate them the same way.
 
 ## Item options, option types and item sets
 

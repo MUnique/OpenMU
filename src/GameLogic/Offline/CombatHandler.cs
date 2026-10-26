@@ -732,7 +732,7 @@ public sealed class CombatHandler
         foreach (var slot in this._conditionalSkillSlots)
         {
             var skill = this.EvaluateConditionalSkill(slot);
-            if (skill is not null && this.HasEnoughResources(skill))
+            if (skill is not null && this._player.HasEnoughResources(skill))
             {
                 return skill;
             }
@@ -741,7 +741,7 @@ public sealed class CombatHandler
         if (this._config.BasicSkillId > 0)
         {
             var basicSkill = this._player.SkillList?.GetSkill((ushort)this._config.BasicSkillId);
-            if (basicSkill is not null && this.HasEnoughResources(basicSkill))
+            if (basicSkill is not null && this._player.HasEnoughResources(basicSkill))
             {
                 return basicSkill;
             }
@@ -799,7 +799,7 @@ public sealed class CombatHandler
                 // skill picked here would simply not go off - the basic attack only steps in when NO
                 // skill was selected, not when the selected one fails.
                 || !BotProgression.MeetsRequirements(skill, attribute => this._player.Attributes?[attribute])
-                || !this.HasEnoughResources(entry))
+                || !this._player.HasEnoughResources(entry))
             {
                 continue;
             }
@@ -925,29 +925,6 @@ public sealed class CombatHandler
     {
         return this.GetAttackableMonstersInHuntingRange()
             .Count(m => m.IsTargetingPlayer(this._player));
-    }
-
-    /// <summary>
-    /// Checks that the player has enough mana AND ability (AG) to cast the skill.
-    /// Both resources are consumed by skills via <see cref="Skill.ConsumeRequirements"/>.
-    /// </summary>
-    private bool HasEnoughResources(SkillEntry? skillEntry)
-    {
-        if (skillEntry?.Skill is not { } skill || this._player.Attributes is null)
-        {
-            return true;
-        }
-
-        foreach (var requirement in skill.ConsumeRequirements)
-        {
-            int required = this._player.GetRequiredValue(requirement, skillEntry);
-            if (this._player.Attributes[requirement.Attribute] < required)
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private async ValueTask ExecuteComboAttackAsync()

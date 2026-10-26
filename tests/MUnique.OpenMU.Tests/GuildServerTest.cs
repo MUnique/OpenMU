@@ -114,6 +114,23 @@ public class GuildServerTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that a member who enters the game with a new name (renamed while the guild stayed loaded)
+    /// shows up with the new name in the guild member list.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberEnterGameWithNewNameAsync()
+    {
+        const byte serverId = 1;
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, "Renamed", serverId).ConfigureAwait(false);
+        var guildMaster = (await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false)).First();
+
+        Assert.That(guildMaster.PlayerName, Is.EqualTo("Renamed"));
+    }
+
+    /// <summary>
     /// Tests if the exit of the last guild member removes (not deletes ;)) the guild from the guild server.
     /// </summary>
     [Test]

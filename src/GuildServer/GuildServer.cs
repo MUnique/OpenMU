@@ -296,7 +296,7 @@ public class GuildServer : IGuildServer
         var guildMember = await tempContext.GetByIdAsync<GuildMember>(characterId).ConfigureAwait(false); // we use the same id for Character.Id and GuildMemberInfo.Id
         if (guildMember is not null)
         {
-            var guildId = await this.GuildMemberEnterGameAsync(guildMember.GuildId, guildMember.Id, serverId).ConfigureAwait(false);
+            var guildId = await this.GuildMemberEnterGameAsync(guildMember.GuildId, guildMember.Id, characterName, serverId).ConfigureAwait(false);
             var status = new GuildMemberStatus(guildId, guildMember.Status);
             await this._changePublisher.AssignGuildToPlayerAsync(serverId, characterName, status).ConfigureAwait(false);
         }
@@ -764,7 +764,7 @@ public class GuildServer : IGuildServer
         // TODO: Inform game servers that a guild war ended.
     }
 
-    private async ValueTask<uint> GuildMemberEnterGameAsync(Guid guildId, Guid characterId, byte serverId)
+    private async ValueTask<uint> GuildMemberEnterGameAsync(Guid guildId, Guid characterId, string characterName, byte serverId)
     {
         using var relationshipLock = await this._relationshipChangeLock.LockAsync().ConfigureAwait(false);
         var guild = await this.GetOrCreateGuildContainerCoreAsync(guildId).ConfigureAwait(false);
@@ -774,6 +774,9 @@ public class GuildServer : IGuildServer
         }
 
         guild.SetServerId(characterId, serverId);
+
+        // The name may have changed while the guild stayed loaded (e.g. renamed by the admin panel).
+        guild.SetPlayerName(characterId, characterName);
         return guild.Id;
     }
 

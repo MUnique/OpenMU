@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 
@@ -28,6 +29,6 @@ public class TeleportChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesComman
     /// <inheritdoc/>
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CoordinatesCommandArgs arguments)
     {
-        await gameMaster.MoveAsync(arguments.Coordinates).ConfigureAwait(false);
+        await GameMasterActions.MoveAsync(gameMaster, arguments.Coordinates).ConfigureAwait(false);
     }
 }

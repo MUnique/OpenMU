@@ -131,7 +131,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// Gets a random item.
     /// </summary>
     /// <param name="monsterLevel">The monster level.</param>
-    /// <param name="isSocketItem">If set to <c>true</c>, it selects only socket items.</param>
+    /// <param name="isSocketItem">If set to <c>true</c>, it selects only socket items; otherwise, only items without sockets.</param>
     /// <returns>A random item.</returns>
     protected Item? GenerateRandomItem(int monsterLevel, bool isSocketItem)
     {
@@ -185,7 +185,10 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         var possible = possibleItems ?? this.GetPossibleList(monsterLevel - this._excellentItemDropLevelDelta);
-        var item = this.GenerateRandomItem(possible);
+
+        // Socket items can't be excellent, so they are never selected for an excellent drop.
+        var withoutSocketItems = possible?.Where(it => it.MaximumSockets == 0).ToList();
+        var item = this.GenerateRandomItem(withoutSocketItems);
         if (item is null)
         {
             return null;
@@ -596,7 +599,7 @@ public class DefaultDropGenerator : IDropGenerator
             ??= (from it in this._droppableItems
                  where CanDropAtMonsterLevel(it, monsterLevel)
                        && (it.DropLevel > monsterLevel - DropLevelMaxGap)
-                       && (!isSocketItem || it.MaximumSockets > 0)
+                       && (it.MaximumSockets > 0) == isSocketItem
                  select it).ToList();
     }
 }

@@ -117,6 +117,58 @@ public class PartyManagerTest
     }
 
     /// <summary>
+    /// Tests that a member who was renamed while offline (e.g. by the admin panel)
+    /// takes back the reserved slot with the new name, instead of staying out of the party.
+    /// </summary>
+    [Test]
+    public async ValueTask OnMemberReconnected_RenamedWhileOffline_RestoresLiveMember()
+    {
+        var (party, member1, member2) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
+        member1.SelectedCharacter!.Name = "Member";
+        member1.SelectedCharacter.Id = Guid.NewGuid();
+        member2.SelectedCharacter!.Name = "OtherMember";
+        member2.SelectedCharacter.Id = Guid.NewGuid();
+
+        await party.LeaveTemporarilyAsync(member1).ConfigureAwait(false);
+        member1.SelectedCharacter.Name = "RenamedMember";
+        await this._partyManager.OnMemberReconnectedAsync(member1).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(party.PartyList, Has.Count.EqualTo(2));
+            Assert.That(party.PartyList[0], Is.SameAs(member1));
+            Assert.That(party.PartyList[0].Name, Is.EqualTo("RenamedMember"));
+            Assert.That(party.PartyList.Any(m => m.Name == "Member"), Is.False);
+            Assert.That(member1.Party, Is.SameAs(party));
+        });
+    }
+
+    /// <summary>
+    /// Tests that another character which now has the old name of an offline member
+    /// does not take that member's reserved slot.
+    /// </summary>
+    [Test]
+    public async ValueTask OnMemberReconnected_OtherCharacterWithOldName_DoesNotTakeSlot()
+    {
+        var (party, member1, _) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
+        member1.SelectedCharacter!.Name = "Member";
+        member1.SelectedCharacter.Id = Guid.NewGuid();
+        await party.LeaveTemporarilyAsync(member1).ConfigureAwait(false);
+
+        var stranger = await this.CreatePartyMemberAsync().ConfigureAwait(false);
+        stranger.SelectedCharacter!.Name = "Member";
+        stranger.SelectedCharacter.Id = Guid.NewGuid();
+        await this._partyManager.OnMemberReconnectedAsync(stranger).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(party.PartyList, Is.Not.Contains(stranger));
+            Assert.That(party.PartyList[0].IsConnected, Is.False);
+            Assert.That(stranger.Party, Is.Null);
+        });
+    }
+
+    /// <summary>
     /// Tests that after reconnect, the live member's Party reference is restored.
     /// </summary>
     [Test]

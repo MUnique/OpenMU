@@ -87,6 +87,58 @@ internal partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.I
     }
 
     /// <summary>
+    /// Gets or sets the identifier of <see cref="StatProfile"/>.
+    /// </summary>
+    public Guid? StatProfileId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="StatProfile" />.
+    /// </summary>
+    [ForeignKey(nameof(StatProfileId))]
+    public ItemStatProfile RawStatProfile
+    {
+        get => base.StatProfile as ItemStatProfile;
+        set => base.StatProfile = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile StatProfile
+    {
+        get => base.StatProfile;set
+        {
+            base.StatProfile = value;
+            this.StatProfileId = this.RawStatProfile?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="PriceDefinition"/>.
+    /// </summary>
+    public Guid? PriceDefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="PriceDefinition" />.
+    /// </summary>
+    [ForeignKey(nameof(PriceDefinitionId))]
+    public ItemPriceDefinition RawPriceDefinition
+    {
+        get => base.PriceDefinition as ItemPriceDefinition;
+        set => base.PriceDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition PriceDefinition
+    {
+        get => base.PriceDefinition;set
+        {
+            base.PriceDefinition = value;
+            this.PriceDefinitionId = this.RawPriceDefinition?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="ConsumeEffect"/>.
     /// </summary>
     public Guid? ConsumeEffectId { get; set; }
