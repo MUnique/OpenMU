@@ -41,22 +41,38 @@ public class DataUpdateService
     {
         using var context = this._contextProvider.CreateNewContext();
         var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
+        return await this.DetermineAvailableUpdatesAsync(context, installedVersions).ConfigureAwait(false);
+    }
 
-        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
+    /// <summary>
+    /// Determines the available updates (see <see cref="DetermineAvailableUpdatesAsync()"/>) which are mandatory,
+    /// in the order in which they are applied.
+    /// </summary>
+    /// <remarks>
+    /// A mandatory update which depends on an available optional one is left out, so the operator decides about both
+    /// on the admin panel, as on a new database (see <see cref="NewDatabaseUpdates"/>).
+    /// </remarks>
+    /// <returns>The available mandatory updates.</returns>
+    /// <exception cref="System.InvalidOperationException">No data is installed.</exception>
+    public async ValueTask<IReadOnlyList<IConfigurationUpdatePlugIn>> DetermineMandatoryUpdatesAsync()
+    {
+        using var context = this._contextProvider.CreateNewContext();
+        var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
+        var available = await this.DetermineAvailableUpdatesAsync(context, installedVersions).ConfigureAwait(false);
 
-        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
-        if (updateStrategyProvider is null)
+        // The available updates are ordered by their dependencies, so the mandatory updates which an update depends on are added before it.
+        var mandatory = new List<IConfigurationUpdatePlugIn>();
+        var mandatoryByKey = new Dictionary<Guid, IConfigurationUpdatePlugIn>();
+        foreach (var update in available.Where(update => update.IsMandatory))
         {
-            // it's null when there are no plugins yet ...
-            return [];
+            if (update.DependsOn.All(dependency => IsDependencySatisfied(dependency, installedVersions, mandatoryByKey)))
+            {
+                mandatory.Add(update);
+                mandatoryByKey.Add(update.Key, update);
+            }
         }
 
-        var pending = updateStrategyProvider.AvailableStrategies
-            .Where(up => up.DataInitializationKey == initializationKey)
-            .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
-            .ToList();
-
-        return OrderByDependencies(pending, installedVersions);
+        return mandatory;
     }
 
     /// <summary>
@@ -212,5 +228,24 @@ public class DataUpdateService
             .Where(up => up.InstalledAt is not null)
             .GroupBy(up => up.Key)
             .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
+    }
+
+    private async ValueTask<IReadOnlyList<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync(IContext context, IReadOnlyDictionary<Guid, int> installedVersions)
+    {
+        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
+
+        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
+        if (updateStrategyProvider is null)
+        {
+            // it's null when there are no plugins yet ...
+            return [];
+        }
+
+        var pending = updateStrategyProvider.AvailableStrategies
+            .Where(up => up.DataInitializationKey == initializationKey)
+            .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
+            .ToList();
+
+        return OrderByDependencies(pending, installedVersions);
     }
 }

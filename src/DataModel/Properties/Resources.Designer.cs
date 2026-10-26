@@ -124,7 +124,7 @@ namespace MUnique.OpenMU.DataModel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema when the server process starts. In a distributed deployment, the user must start the update manually over the admin panel..
+        ///   Looks up a localized string similar to Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema and applies the mandatory configuration updates when the server process starts. In a distributed deployment, the user must start the updates manually over the admin panel..
         /// </summary>
         public static string SystemConfiguration_AutoUpdateSchema_Description {
             get {

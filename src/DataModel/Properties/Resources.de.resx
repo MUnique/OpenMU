@@ -143,7 +143,7 @@ oder hinter einer Firewall sind) und Sie ihn auf Ihrem Computer oder in Ihrem pr
 	  <value>Datenbankschema automatisch aktualisieren</value>
 	</data>
 	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
-	  <value>Legt fest, ob der All-in-one-Server (MUnique.OpenMU.Startup) das Datenbankschema beim Start des Serverprozesses automatisch aktualisiert. In einer verteilten Installation muss der Benutzer die Aktualisierung manuell über das Admin-Panel starten.</value>
+	  <value>Legt fest, ob der All-in-one-Server (MUnique.OpenMU.Startup) beim Start des Serverprozesses automatisch das Datenbankschema aktualisiert und die verpflichtenden Konfigurationsupdates anwendet. In einer verteilten Installation muss der Benutzer die Aktualisierungen manuell über das Admin-Panel starten.</value>
 	</data>
 	<data name="Excellent" xml:space="preserve">
 	  <value>Exzellent</value>

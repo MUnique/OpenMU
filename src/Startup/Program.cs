@@ -33,6 +33,7 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -245,6 +246,37 @@ internal sealed class Program : IDisposable
         return new PacketCaptureService(
             serverProvider,
             bufferSize > 0 ? bufferSize : LiveCapturedConnection.DefaultMaximumPacketCount);
+    }
+
+    /// <summary>
+    /// Determines whether the database schema and the mandatory configuration updates are applied
+    /// at start without asking the user.
+    /// </summary>
+    /// <param name="contextProvider">The context provider.</param>
+    /// <returns><c>true</c>, if <see cref="SystemConfiguration.AutoUpdateSchema"/> is set.</returns>
+    private static async Task<bool> ShouldUpdateAutomaticallyAsync(IMigratableDatabaseContextProvider contextProvider)
+    {
+        return _systemConfiguration?.AutoUpdateSchema is true
+               || await contextProvider.ShouldDoAutoSchemaUpdateAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a plugin manager with the configuration update plugins, which are active according to their plugin configurations.
+    /// </summary>
+    /// <param name="contextProvider">The context provider.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <returns>The plugin manager.</returns>
+    private static async Task<PlugInManager> CreateUpdatePlugInManagerAsync(IPersistenceContextProvider contextProvider, ILoggerFactory loggerFactory)
+    {
+        var plugInManager = new PlugInManager(null, loggerFactory, null, null);
+        plugInManager.DiscoverAndRegisterPlugInsOf<IConfigurationUpdatePlugIn>();
+
+        // An update which is deactivated in its plugin configuration isn't offered on the admin panel either.
+        var updateTypeIds = plugInManager.KnownPlugInTypes.Select(type => type.GUID).ToHashSet();
+        using var context = contextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
+        var configurations = await context.GetAsync<PlugInConfiguration>().ConfigureAwait(false);
+        plugInManager.ReadConfigurations(configurations.Where(configuration => updateTypeIds.Contains(configuration.TypeId)));
+        return plugInManager;
     }
 
     private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -691,10 +723,14 @@ internal sealed class Program : IDisposable
             using var update = await contextProvider.ReCreateDatabaseAsync(dropExistingDatabase: !assumeExternallyProvisioned).ConfigureAwait(false);
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
             this._logger.Information("...initialization finished.");
+
+            // The data initialization installs the configuration updates itself.
+            return contextProvider;
         }
-        else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
+
+        if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync().ConfigureAwait(false))
+            if (await ShouldUpdateAutomaticallyAsync(contextProvider).ConfigureAwait(false))
             {
                 Console.WriteLine("The database schema needs to be updated before the server can be started. Updating...");
                 await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
@@ -716,12 +752,66 @@ internal sealed class Program : IDisposable
                 }
             }
         }
-        else
+
+        if (!await this.ApplyMandatoryConfigurationUpdatesAsync(contextProvider, loggerFactory).ConfigureAwait(false))
         {
-            // everything is fine and ready
+            return null!;
         }
 
         return contextProvider;
+    }
+
+    /// <summary>
+    /// Applies the pending mandatory configuration updates of an existing database, in the same way as the schema update:
+    /// automatically under the same condition, otherwise after asking the user. The game servers may require their data,
+    /// and the owner might not apply them on the admin panel before the servers are started.
+    /// </summary>
+    /// <param name="contextProvider">The context provider of the server.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <returns><c>true</c>, if the server can be started; <c>false</c>, if the user cancelled the update.</returns>
+    private async Task<bool> ApplyMandatoryConfigurationUpdatesAsync(PersistenceContextProvider contextProvider, ILoggerFactory loggerFactory)
+    {
+        if (!await contextProvider.ConfigurationExistsAsync().ConfigureAwait(false))
+        {
+            // Without data, there is nothing to update; the data initialization installs the updates itself.
+            return true;
+        }
+
+        // The changes are not published: nothing listens to them yet, and the change listener
+        // would require the context provider which is created right now.
+        var updateContextProvider = new PersistenceContextProvider(loggerFactory, null);
+        var plugInManager = await CreateUpdatePlugInManagerAsync(updateContextProvider, loggerFactory).ConfigureAwait(false);
+        var updateService = new DataUpdateService(updateContextProvider, plugInManager);
+        var updates = await updateService.DetermineMandatoryUpdatesAsync().ConfigureAwait(false);
+        if (updates.Count == 0)
+        {
+            return true;
+        }
+
+        Console.WriteLine("The following mandatory configuration updates need to be applied before the server can be started:");
+        foreach (var update in updates)
+        {
+            Console.WriteLine($"  - {update.Name}");
+        }
+
+        if (await ShouldUpdateAutomaticallyAsync(contextProvider).ConfigureAwait(false))
+        {
+            Console.WriteLine("Updating...");
+        }
+        else
+        {
+            Console.WriteLine("Apply updates? (y/n)");
+            var key = Console.ReadLine()?.ToLowerInvariant();
+            if (key != "y")
+            {
+                Console.WriteLine("Cancelled the configuration update process, can't start the server.");
+                return false;
+            }
+        }
+
+        await updateService.ApplyUpdatesAsync(updates, new Progress<(Guid CurrentUpdatingKey, bool IsCompleted)>()).ConfigureAwait(false);
+        Console.WriteLine("The mandatory configuration updates have been successfully applied.");
+        return true;
     }
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)
