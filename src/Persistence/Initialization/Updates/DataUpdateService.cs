@@ -41,7 +41,8 @@ public class DataUpdateService
     {
         using var context = this._contextProvider.CreateNewContext();
         var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
-        return await this.DetermineAvailableUpdatesAsync(context, installedVersions).ConfigureAwait(false);
+        var pending = await this.DeterminePendingUpdatesAsync(context, installedVersions).ConfigureAwait(false);
+        return OrderByDependencies(pending, installedVersions);
     }
 
     /// <summary>
@@ -49,8 +50,9 @@ public class DataUpdateService
     /// in the order in which they are applied.
     /// </summary>
     /// <remarks>
-    /// A mandatory update which depends on an available optional one is left out, so the operator decides about both
-    /// on the admin panel, as on a new database (see <see cref="NewDatabaseUpdates"/>).
+    /// Only the dependencies of the mandatory updates are checked, so the optional updates can't prevent anything here.
+    /// A mandatory update which depends on an optional update, or on an update which isn't available (e.g. a disabled one),
+    /// is left out, so the operator decides about it on the admin panel, as on a new database (see <see cref="NewDatabaseUpdates"/>).
     /// </remarks>
     /// <returns>The available mandatory updates.</returns>
     /// <exception cref="System.InvalidOperationException">No data is installed.</exception>
@@ -58,21 +60,23 @@ public class DataUpdateService
     {
         using var context = this._contextProvider.CreateNewContext();
         var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
-        var available = await this.DetermineAvailableUpdatesAsync(context, installedVersions).ConfigureAwait(false);
+        var pending = await this.DeterminePendingUpdatesAsync(context, installedVersions).ConfigureAwait(false);
+        var mandatoryByKey = pending.Where(update => update.IsMandatory).ToDictionary(update => update.Key);
 
-        // The available updates are ordered by their dependencies, so the mandatory updates which an update depends on are added before it.
-        var mandatory = new List<IConfigurationUpdatePlugIn>();
-        var mandatoryByKey = new Dictionary<Guid, IConfigurationUpdatePlugIn>();
-        foreach (var update in available.Where(update => update.IsMandatory))
+        // Leaving out an update can leave out the updates which depend on it, so this repeats until nothing is left out.
+        bool leftOut;
+        do
         {
-            if (update.DependsOn.All(dependency => IsDependencySatisfied(dependency, installedVersions, mandatoryByKey)))
-            {
-                mandatory.Add(update);
-                mandatoryByKey.Add(update.Key, update);
-            }
+            var unsatisfied = mandatoryByKey.Values
+                .Where(update => !update.DependsOn.All(dependency => IsDependencySatisfied(dependency, installedVersions, mandatoryByKey)))
+                .Select(update => update.Key)
+                .ToList();
+            unsatisfied.ForEach(key => mandatoryByKey.Remove(key));
+            leftOut = unsatisfied.Count > 0;
         }
+        while (leftOut);
 
-        return mandatory;
+        return OrderByDependencies(mandatoryByKey.Values.ToList(), installedVersions);
     }
 
     /// <summary>
@@ -230,7 +234,7 @@ public class DataUpdateService
             .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
     }
 
-    private async ValueTask<IReadOnlyList<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync(IContext context, IReadOnlyDictionary<Guid, int> installedVersions)
+    private async ValueTask<IReadOnlyList<IConfigurationUpdatePlugIn>> DeterminePendingUpdatesAsync(IContext context, IReadOnlyDictionary<Guid, int> installedVersions)
     {
         var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
 
@@ -241,11 +245,9 @@ public class DataUpdateService
             return [];
         }
 
-        var pending = updateStrategyProvider.AvailableStrategies
+        return updateStrategyProvider.AvailableStrategies
             .Where(up => up.DataInitializationKey == initializationKey)
             .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
             .ToList();
-
-        return OrderByDependencies(pending, installedVersions);
     }
 }

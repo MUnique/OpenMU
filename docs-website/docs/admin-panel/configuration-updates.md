@@ -61,9 +61,11 @@ them like the schema update:
 * Otherwise, it asks whether to apply them. If you decline, or the console can't
   be read, the server doesn't start.
 
-Optional updates stay listed here for you to decide. So does a mandatory update
-which depends on an optional update you haven't applied. In a distributed
-deployment, the processes don't apply updates; apply them here.
+The start leaves out the optional updates, so they never prevent it; they stay
+listed here for you to decide. It also leaves out a mandatory update which
+depends on an optional update you haven't applied, or on an update which isn't
+available, e.g. a disabled one. In a distributed deployment, the processes don't
+apply updates; apply them here.
 
 ## On a new database
 

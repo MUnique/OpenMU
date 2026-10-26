@@ -135,6 +135,40 @@ internal class MandatoryUpdatesTest
     }
 
     /// <summary>
+    /// An optional update which depends on an update which isn't available (e.g. a disabled one) doesn't prevent
+    /// anything at start: without a mandatory update, nothing is determined, and a mandatory update is still determined.
+    /// The admin panel still reports the missing dependency.
+    /// </summary>
+    [Test]
+    public async Task OptionalUpdateWithAMissingDependencyDoesNotPreventAnythingAsync()
+    {
+        var optional = Update("optional", 1, isMandatory: false, dependsOn: [Guid.NewGuid()]);
+        var withoutMandatory = CreateService(new InMemoryPersistenceContextProvider(), optional);
+        var withMandatory = CreateService(new InMemoryPersistenceContextProvider(), optional, Update("mandatory", 2));
+
+        Assert.That(await withoutMandatory.DetermineMandatoryUpdatesAsync().ConfigureAwait(false), Is.Empty);
+        Assert.That((await withMandatory.DetermineMandatoryUpdatesAsync().ConfigureAwait(false)).Select(update => update.Name), Is.EqualTo(new[] { "mandatory" }));
+        Assert.That(async () => await withoutMandatory.DetermineAvailableUpdatesAsync().ConfigureAwait(false), Throws.TypeOf<MissingUpdateDependencyException>());
+    }
+
+    /// <summary>
+    /// A mandatory update which depends on an update which isn't available (e.g. a disabled one) is left out instead
+    /// of preventing the start; so is a mandatory update which depends on it.
+    /// </summary>
+    [Test]
+    public async Task UpdateWhichDependsOnAMissingOneIsLeftOutAsync()
+    {
+        var dependent = Update("dependent", 1, dependsOn: [Guid.NewGuid()]);
+        var indirectDependent = Update("indirect dependent", 2, dependsOn: [dependent.Key]);
+        var independent = Update("independent", 3);
+        var service = CreateService(new InMemoryPersistenceContextProvider(), dependent, indirectDependent, independent);
+
+        var updates = await service.DetermineMandatoryUpdatesAsync().ConfigureAwait(false);
+
+        Assert.That(updates.Select(update => update.Name), Is.EqualTo(new[] { "independent" }));
+    }
+
+    /// <summary>
     /// Applying the determined updates applies them in their order and marks them installed with their version, so
     /// no mandatory update is left afterwards, while the optional ones are still available for the admin panel.
     /// </summary>
