@@ -20,6 +20,7 @@ public class AreaSkillHitAction
     {
         if (skill.Skill is not { } usedSkill
             || usedSkill.SkillType != SkillType.AreaSkillExplicitHits
+            || player.IsAtSafezone()
             || !target.IsAlive
             || target.IsAtSafezone()
             || (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer))

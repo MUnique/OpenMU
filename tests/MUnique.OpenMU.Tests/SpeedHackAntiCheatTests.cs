@@ -38,6 +38,11 @@ public class SpeedHackAntiCheatTests
     /// </summary>
     private const int WalkPacketIntervalMs = 150;
 
+    /// <summary>
+    /// A violation weighs at least 1, so with this threshold the first walk violation is a rejection.
+    /// </summary>
+    private const double RejectOnFirstViolationThreshold = 0.5;
+
     private static readonly Point StartPoint = new(100, 100);
 
     /// <summary>
@@ -292,6 +297,49 @@ public class SpeedHackAntiCheatTests
 
         var handler = new AreaSkillHitHandlerPlugIn();
         Assert.DoesNotThrowAsync(async () => await handler.HandlePacketAsync(player, packet).ConfigureAwait(false));
+    }
+
+    /// <summary>
+    /// Tests that a delayed explicit area hit doesn't damage anything when the attacker entered a safezone
+    /// after casting outside of it. The recorded hit area alone must not be enough.
+    /// </summary>
+    [Test]
+    public async Task TestDelayedAreaSkillHitIsIgnoredAfterAttackerEntersSafezoneAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var skillMock = new Mock<Skill>();
+        skillMock.SetupAllProperties();
+        skillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
+        skillMock.Setup(s => s.ConsumeRequirements).Returns(new List<AttributeRequirement>());
+        var skill = skillMock.Object;
+        skill.Number = 1;
+        skill.SkillType = SkillType.AreaSkillExplicitHits;
+        skill.Range = 5;
+        await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        player.Position = StartPoint;
+
+        var targetPosition = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
+        var target = new Mock<IAttackable>();
+        target.SetupGet(t => t.IsAlive).Returns(true);
+        target.SetupGet(t => t.CurrentMap).Returns(player.CurrentMap);
+        target.SetupGet(t => t.Position).Returns(targetPosition);
+
+        // The cast happens outside of the safezone and records the hit area.
+        await new AreaSkillAttackAction().AttackAsync(player, 0, (ushort)skill.Number, player.Position, 0).ConfigureAwait(false);
+        Assert.That(player.SkillHitValidator.IsTargetInArea((ushort)skill.Number, targetPosition), Is.True, "The cast did not record its area.");
+
+        var skillEntry = player.SkillList.GetSkill((ushort)skill.Number)!;
+        var hitAction = new AreaSkillHitAction();
+        await hitAction.AttackTargetAsync(player, target.Object, skillEntry).ConfigureAwait(false);
+        target.Verify(t => t.AttackByAsync(It.IsAny<IAttacker>(), It.IsAny<SkillEntry?>(), It.IsAny<bool>(), It.IsAny<double>(), It.IsAny<bool?>()), Times.Once);
+
+        // The attacker enters the safezone, and the delayed hit arrives afterwards.
+        player.CurrentMap!.Terrain.SafezoneMap[StartPoint.X, StartPoint.Y] = true;
+        Assert.That(player.IsAtSafezone(), Is.True);
+        await hitAction.AttackTargetAsync(player, target.Object, skillEntry).ConfigureAwait(false);
+
+        target.Verify(t => t.AttackByAsync(It.IsAny<IAttacker>(), It.IsAny<SkillEntry?>(), It.IsAny<bool>(), It.IsAny<double>(), It.IsAny<bool?>()), Times.Once);
     }
 
     /// <summary>
@@ -968,6 +1016,7 @@ public class SpeedHackAntiCheatTests
         plugin.Configuration!.WalkSpeedToleranceMs = 0;
         plugin.Configuration.MaxAllowedWalkStartOffset = 0;
         plugin.Configuration.WalkSpeedWindowSeconds = 1;
+        plugin.Configuration.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
         player.Position = StartPoint;
 
         var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
@@ -1001,11 +1050,13 @@ public class SpeedHackAntiCheatTests
         Assert.That(plugin.GetWarningCount(player), Is.EqualTo(1));
         Assert.That(player.Position, Is.EqualTo(rejectedFrom));
         Assert.That(player.IsWalking, Is.False);
+        var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Once);
     }
 
     /// <summary>
-    /// Tests that a rejected walk leaves the server position alone: validation runs before
-    /// any client position is adopted.
+    /// Tests that a rejected walk leaves the server position alone and pulls the client back to it:
+    /// validation runs before any client position is adopted.
     /// </summary>
     [Test]
     public async Task TestRejectedWalkDoesNotAdoptClientPositionAsync()
@@ -1016,6 +1067,7 @@ public class SpeedHackAntiCheatTests
         speedHackDetectPlugIn.Configuration!.WalkSpeedToleranceMs = 0;
         speedHackDetectPlugIn.Configuration.MaxAllowedWalkStartOffset = 0;
         speedHackDetectPlugIn.Configuration.WalkSpeedWindowSeconds = 1;
+        speedHackDetectPlugIn.Configuration.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
         player.Position = StartPoint;
 
         var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
@@ -1045,7 +1097,7 @@ public class SpeedHackAntiCheatTests
 
         var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
         Assert.That(objectMovedPlugIn, Is.Not.Null);
-        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Once);
         Assert.That(player.Position, Is.EqualTo(rejectedFrom));
         Assert.That(player.IsWalking, Is.False);
     }
@@ -1064,6 +1116,7 @@ public class SpeedHackAntiCheatTests
         configuration.WalkSpeedToleranceMs = 0;
         configuration.WalkSpeedWindowSeconds = 1;
         configuration.MaxAllowedWalkStartOffset = 5;
+        configuration.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
         player.Position = StartPoint;
 
         // A jump of four tiles is more than the offset which is taken as rounding, and costs more walking
@@ -1239,6 +1292,119 @@ public class SpeedHackAntiCheatTests
             await WaitUntilAsync(() => player.Position == fastTarget, TimeSpan.FromSeconds(5)).ConfigureAwait(false),
             Is.True,
             "The client-authoritative walk was not performed.");
+    }
+
+    /// <summary>
+    /// Tests that a soft walk violation is only recorded, while the walk is still performed.
+    /// </summary>
+    [Test]
+    public async Task TestSoftWalkViolationIsRecordedButWalkIsPerformedAsync()
+    {
+        var (player, plugin, target) = await RequestWalkAfterViolationAsync(_ => { }).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(plugin.GetWarningCount(player), Is.EqualTo(1));
+            Assert.That(plugin.GetViolationScore(player), Is.GreaterThan(0));
+        });
+        Assert.That(
+            await WaitUntilAsync(() => player.Position == target, TimeSpan.FromSeconds(5)).ConfigureAwait(false),
+            Is.True,
+            "The walk of a soft violation was not performed.");
+        var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that a rejected walk violation blocks the walk and resynchronizes the client.
+    /// </summary>
+    [Test]
+    public async Task TestRejectWalkViolationBlocksWalkAndResynchronizesClientAsync()
+    {
+        var (player, plugin, target) = await RequestWalkAfterViolationAsync(c => c.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(plugin.GetWarningCount(player), Is.EqualTo(1));
+            Assert.That(player.Position, Is.Not.EqualTo(target));
+            Assert.That(player.IsWalking, Is.False);
+        });
+        var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that an observed-only walk violation is neither recorded nor blocked.
+    /// </summary>
+    [Test]
+    public async Task TestObserveOnlyWalkViolationIsNotRecordedAndWalkIsPerformedAsync()
+    {
+        var (player, plugin, target) = await RequestWalkAfterViolationAsync(c =>
+        {
+            c.ObserveOnly = true;
+            c.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
+        }).ConfigureAwait(false);
+
+        Assert.That(plugin.GetWarningCount(player), Is.EqualTo(0));
+        Assert.That(
+            await WaitUntilAsync(() => player.Position == target, TimeSpan.FromSeconds(5)).ConfigureAwait(false),
+            Is.True,
+            "The walk of an observed violation was not performed.");
+        var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that repeated small position corrections of the client can't stay free: after a bounded
+    /// total they are charged to the walk speed check like any other taken-over distance.
+    /// </summary>
+    [Test]
+    public async Task TestRepeatedSmallPositionCorrectionsAreChargedAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var recorder = new RecordingWalkStepPlugIn();
+        player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IWalkStepPlugIn>(recorder);
+        player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.Configuration!.EnforceWalkSpeed = false;
+        player.Position = StartPoint;
+
+        // Every request starts one tile ahead of the server, which is taken over as rounding.
+        const int requestCount = 10;
+        for (int i = 0; i < requestCount; i++)
+        {
+            var from = new Point((byte)(player.Position.X + 1), player.Position.Y);
+            var to = new Point((byte)(from.X + 1), from.Y);
+            WalkingStep[] steps = [new() { From = from, To = to, Direction = Direction.East }];
+            await player.WalkToAsync(to, steps).ConfigureAwait(false);
+            await player.StopWalkingAsync().ConfigureAwait(false);
+        }
+
+        Assert.That(recorder.TakenOverSteps, Is.InRange(1, requestCount - 1), "The first corrections should be free, the later ones charged.");
+    }
+
+    /// <summary>
+    /// Tests that a walk whose first path step is blocked doesn't move the player, even if the
+    /// reported start position is offset, and that the client is pulled back.
+    /// </summary>
+    [Test]
+    public async Task TestBlockedFirstPathStepWithOffsetStartDoesNotMovePlayerAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        player.Position = StartPoint;
+
+        var offsetStart = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
+        var blockedStep = new Point((byte)(offsetStart.X + 1), offsetStart.Y);
+        player.CurrentMap!.Terrain.WalkMap[blockedStep.X, blockedStep.Y] = false;
+        WalkingStep[] steps = [new() { From = offsetStart, To = blockedStep, Direction = Direction.East }];
+
+        await player.WalkToAsync(blockedStep, steps).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(player.Position, Is.EqualTo(StartPoint));
+            Assert.That(player.IsWalking, Is.False);
+        });
+        var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), Times.Once);
     }
 
     /// <summary>
@@ -1805,6 +1971,40 @@ public class SpeedHackAntiCheatTests
         return ring.ToArray();
     }
 
+    /// <summary>
+    /// Creates a player whose executed steps exceed the walk budget, and lets it request one more walk.
+    /// </summary>
+    /// <param name="configure">Adjusts the configuration, e.g. to select the severity of the violation.</param>
+    /// <returns>The player, the speed hack plugin and the target of the requested walk.</returns>
+    private static async ValueTask<(Player Player, SpeedHackDetectPlugIn PlugIn, Point Target)> RequestWalkAfterViolationAsync(Action<SpeedHackDetectConfiguration> configure)
+    {
+        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
+        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        plugin.Configuration!.WalkSpeedToleranceMs = 0;
+        plugin.Configuration.MaxAllowedWalkStartOffset = 0;
+        plugin.Configuration.WalkSpeedWindowSeconds = 1;
+        configure(plugin.Configuration);
+        player.Position = StartPoint;
+
+        // Executed steps which exceed the one second window, so the next walk request is a violation.
+        var recordedFrom = StartPoint;
+        for (int i = 0; i < 5; i++)
+        {
+            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
+            RecordStep(player, plugin, recordedFrom, recordedTo);
+            recordedFrom = recordedTo;
+        }
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+
+        var from = player.Position;
+        var target = new Point((byte)(from.X + 1), from.Y);
+        WalkingStep[] steps = [new() { From = from, To = target, Direction = Direction.East }];
+        await player.WalkToAsync(target, steps).ConfigureAwait(false);
+        return (player, plugin, target);
+    }
+
     private static async ValueTask<bool> WaitUntilAsync(Func<bool> condition, TimeSpan timeout)
     {
         var deadline = DateTime.UtcNow + timeout;
@@ -1819,6 +2019,25 @@ public class SpeedHackAntiCheatTests
         }
 
         return condition();
+    }
+
+    /// <summary>
+    /// Counts the walk steps which the server took over from the client, instead of executing them itself.
+    /// </summary>
+    [System.Runtime.InteropServices.Guid("5D1B3C7E-8F0A-4C52-9E4B-6A1F0C2D7B93")]
+    private sealed class RecordingWalkStepPlugIn : IWalkStepPlugIn
+    {
+        private int _takenOverSteps;
+
+        public int TakenOverSteps => System.Threading.Volatile.Read(ref this._takenOverSteps);
+
+        public void WalkStepPerformed(Player player, WalkingStep step, TimeSpan stepDelay)
+        {
+            if (step.Direction == Direction.Undefined)
+            {
+                System.Threading.Interlocked.Increment(ref this._takenOverSteps);
+            }
+        }
     }
 
     private class TestAccount : Account

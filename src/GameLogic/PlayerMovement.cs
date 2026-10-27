@@ -41,7 +41,21 @@ internal sealed class PlayerMovement : IDisposable
     /// </summary>
     private const double PositionLagSlack = 1.0;
 
+    /// <summary>
+    /// The total distance of small position corrections (up to <see cref="NextTileDistance"/> each)
+    /// which may stay uncharged to the walk speed check at a time.
+    /// </summary>
+    private const double MaxUnchargedCorrectionDistance = 3.0;
+
+    /// <summary>
+    /// The share of the walking speed at which uncharged corrections are forgiven over time.
+    /// It's well below 1, otherwise a client could gain a free tile with every step.
+    /// </summary>
+    private const double UnchargedCorrectionRecoveryFactor = 0.5;
+
     private readonly Player _player;
+
+    private readonly object _correctionLock = new();
 
     private readonly AsyncLock _moveLock = new();
 
@@ -53,6 +67,13 @@ internal sealed class PlayerMovement : IDisposable
     /// <see cref="GetTimeSincePositionChange"/>.
     /// </summary>
     private long _lastPositionChangeTimestamp = TimeProvider.System.GetTimestamp();
+
+    /// <summary>
+    /// The distance of small position corrections which was not charged to the walk speed check yet.
+    /// </summary>
+    private double _unchargedCorrectionDistance;
+
+    private long _lastCorrectionTimestamp = TimeProvider.System.GetTimestamp();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerMovement"/> class.
@@ -89,6 +110,7 @@ internal sealed class PlayerMovement : IDisposable
         this._player.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
         await this._walker.StopAsync().ConfigureAwait(false);
         await this.ResetMovementStateAsync().ConfigureAwait(false);
+        this.ResetUnchargedCorrections();
 
         await this.MoveOnMapAsync(this._player.CurrentMap!, target, MoveType.Instant).ConfigureAwait(false);
         this._player.Logger.LogDebug("MoveAsync: Observer Count: {0}", this._player.Observers.Count);
@@ -124,22 +146,19 @@ internal sealed class PlayerMovement : IDisposable
 
         if (!await this.IsWalkRequestValidAsync(steps).ConfigureAwait(false))
         {
-            return;
-        }
-
-        if (!await this.TrySynchronizeServerWithClientPositionAsync(steps.Span[0].From).ConfigureAwait(false))
-        {
             await this.RejectWalkAndResynchronizeClientAsync().ConfigureAwait(false);
             return;
         }
 
+        // The path is checked first, so a rejected path can't change the server position.
         var requestedTarget = target;
         var walkableStepCount = GetWalkableStepCount(currentMap.Terrain, steps.Span);
         if (walkableStepCount == 0)
         {
             this._player.Logger.LogDebug(
-                "WalkToAsync: Player requested to walk to {0}, but the first path step is blocked. Keeping the synchronized client position.",
+                "WalkToAsync: Player requested to walk to {0}, but the first path step is blocked. Keeping the server position.",
                 requestedTarget);
+            await this.RejectWalkAndResynchronizeClientAsync().ConfigureAwait(false);
             return;
         }
 
@@ -151,6 +170,12 @@ internal sealed class PlayerMovement : IDisposable
                 "WalkToAsync: Truncated path from {0} to the last reachable position {1} because a later step is blocked.",
                 requestedTarget,
                 target);
+        }
+
+        if (!await this.TrySynchronizeServerWithClientPositionAsync(steps.Span[0].From).ConfigureAwait(false))
+        {
+            await this.RejectWalkAndResynchronizeClientAsync().ConfigureAwait(false);
+            return;
         }
 
         this._player.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
@@ -301,19 +326,63 @@ internal sealed class PlayerMovement : IDisposable
     /// <param name="from">The position of the server before it took over the client position.</param>
     /// <param name="to">The position of the client which was taken over.</param>
     /// <remarks>
-    /// Differences up to <see cref="NextTileDistance"/> are not reported: the server executes a step at its
-    /// start, so it is regularly a tile ahead of or behind the client, and the client rounds between tiles.
+    /// Differences up to <see cref="NextTileDistance"/> are not reported right away: the server executes a step
+    /// at its start, so it is regularly a tile ahead of or behind the client, and the client rounds between tiles.
     /// Counting these would make legitimately frequent walk requests look like speed hacks.
+    /// But they can't stay free in sum either, so they are collected up to a bound
+    /// (see <see cref="TryAbsorbSmallCorrection"/>) and reported as soon as it is exceeded.
     /// </remarks>
     private void ReportTakenOverPosition(Point from, Point to)
     {
-        if (from.EuclideanDistanceTo(to) <= NextTileDistance)
+        var distance = from.EuclideanDistanceTo(to);
+        if (distance <= 0)
+        {
+            return;
+        }
+
+        if (distance <= NextTileDistance && this.TryAbsorbSmallCorrection(distance))
         {
             return;
         }
 
         var step = new WalkingStep(from, to, Direction.Undefined);
         this.NotifyWalkStepPerformed(step, this.GetStepDelay(step));
+    }
+
+    /// <summary>
+    /// Collects the distance of a small position correction, if the total of uncharged corrections
+    /// stays within <see cref="MaxUnchargedCorrectionDistance"/>. The total is forgiven over time, at a
+    /// fraction of the walking speed.
+    /// </summary>
+    /// <param name="distance">The distance of the correction.</param>
+    /// <returns><c>True</c>, if the correction may stay uncharged; Otherwise, <c>false</c>.</returns>
+    private bool TryAbsorbSmallCorrection(double distance)
+    {
+        var now = TimeProvider.System.GetTimestamp();
+        var stepDelayMs = Math.Max(1.0, this.StepDelay.TotalMilliseconds);
+        lock (this._correctionLock)
+        {
+            var elapsedMs = TimeProvider.System.GetElapsedTime(this._lastCorrectionTimestamp, now).TotalMilliseconds;
+            this._lastCorrectionTimestamp = now;
+            var recovered = elapsedMs / stepDelayMs * UnchargedCorrectionRecoveryFactor;
+            this._unchargedCorrectionDistance = Math.Max(0.0, this._unchargedCorrectionDistance - recovered);
+            if (this._unchargedCorrectionDistance + distance > MaxUnchargedCorrectionDistance)
+            {
+                return false;
+            }
+
+            this._unchargedCorrectionDistance += distance;
+            return true;
+        }
+    }
+
+    private void ResetUnchargedCorrections()
+    {
+        lock (this._correctionLock)
+        {
+            this._unchargedCorrectionDistance = 0.0;
+            this._lastCorrectionTimestamp = TimeProvider.System.GetTimestamp();
+        }
     }
 
     /// <summary>
@@ -463,8 +532,8 @@ internal sealed class PlayerMovement : IDisposable
     }
 
     /// <summary>
-    /// Rejects a walk whose start position can't be adopted, stops the running walk and pulls the
-    /// client back to the server position.
+    /// Rejects a walk (e.g. a rejected speed check, a blocked path or a start position which can't be
+    /// adopted), stops the running walk and pulls the client back to the server position.
     /// </summary>
     private async ValueTask RejectWalkAndResynchronizeClientAsync()
     {

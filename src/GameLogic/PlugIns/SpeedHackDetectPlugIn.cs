@@ -56,7 +56,9 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     {
         var speedHackArgs = new SpeedHackCheckEventArgs();
         await this.WalkCheatCheckAsync(player, steps, speedHackArgs).ConfigureAwait(false);
-        eventArgs.IsWalkAllowed = !speedHackArgs.IsCheatDetected;
+
+        // Soft violations are only recorded; just a Reject blocks the walk.
+        eventArgs.IsWalkAllowed = speedHackArgs.Severity is not SpeedHackViolationSeverity.Reject;
     }
 
     /// <inheritdoc/>
