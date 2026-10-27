@@ -316,10 +316,12 @@ public sealed class McpIntegrationTests : System.IDisposable
         using var second = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         using var limited = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         Assert.That(limited.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(limited.Headers.RetryAfter?.Delta, Is.GreaterThan(TimeSpan.Zero).And.LessThanOrEqualTo(TimeSpan.FromMinutes(1)));
         this._http.DefaultRequestHeaders.Remove("X-Api-Key");
         this._http.DefaultRequestHeaders.Add("X-Api-Key", "omu_mcp-admin-test");
         using var otherKey = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         Assert.That(otherKey.StatusCode, Is.Not.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(otherKey.Headers.RetryAfter, Is.Null);
         using var content = new StringContent(new string('x', 65537));
         using var oversized = await this._http.PostAsync("/mcp", content).ConfigureAwait(false);
         Assert.That(oversized.StatusCode, Is.EqualTo(HttpStatusCode.RequestEntityTooLarge));

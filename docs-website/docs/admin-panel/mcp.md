@@ -237,6 +237,8 @@ instructions to the agent.
 Tools are filtered by role during discovery and checked again when called.
 The host limits requests per API client and returns HTTP 429 when the configured
 minute allowance is exhausted, or HTTP 413 for oversized request bodies.
+The 429 response includes a `Retry-After` header in seconds; wait at least that
+long before sending another request with the same API key.
 Configuration and offline character changes use preview/apply as described
 below. Live GM tools are described below; OAuth remains a separate follow-up.
 
