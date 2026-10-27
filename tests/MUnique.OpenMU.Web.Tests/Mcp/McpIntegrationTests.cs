@@ -128,7 +128,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         servers.SetupGet(s => s.Servers).Returns(new List<IManageableServer>());
         builder.Services.AddSingleton(servers.Object);
         builder.Services.AddSingleton<IAdminReadModel, TestReadModel>();
-        builder.Services.AddSingleton(new PlugInManager([], Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, null, null));
+        builder.Services.AddSingleton(services => new PlugInManager([], Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, null, new ByDataSourceReferenceHandler(services.GetRequiredService<IDataSource<GameConfiguration>>())));
         this._app = builder.Build();
         this._app.UseRouting();
         // Model a container proxy with RFC 5737 documentation addresses; no traffic is sent to them.

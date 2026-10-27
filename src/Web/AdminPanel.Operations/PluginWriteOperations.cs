@@ -129,9 +129,11 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
             }
 
             JsonObject current;
+            object customConfiguration;
             try
             {
-                current = item.CustomConfiguration is null ? JsonSerializer.SerializeToNode(Activator.CreateInstance(type), type, ConfigurationPatch.Options) as JsonObject ?? new JsonObject()
+                customConfiguration = item.GetConfiguration(type, plugins.CustomConfigReferenceHandler) ?? Activator.CreateInstance(type)!;
+                current = item.CustomConfiguration is null ? JsonSerializer.SerializeToNode(customConfiguration, type, ConfigurationPatch.Options) as JsonObject ?? new JsonObject()
                     : JsonNode.Parse(item.CustomConfiguration) as JsonObject ?? throw new JsonException();
             }
             catch (JsonException)
@@ -154,7 +156,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
                 else
                 {
                     changedBefore[property.Name] = current.ContainsKey(property.Name) ? current[property.Name]?.DeepClone()
-                        : JsonSerializer.SerializeToNode(property.GetValue(current.Deserialize(type, ConfigurationPatch.Options)), property.PropertyType, ConfigurationPatch.Options);
+                        : JsonSerializer.SerializeToNode(property.GetValue(customConfiguration), property.PropertyType, ConfigurationPatch.Options);
                     changedAfter[property.Name] = JsonSerializer.SerializeToNode(value, property.PropertyType, ConfigurationPatch.Options);
                 }
 
@@ -163,7 +165,8 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
 
             try
             {
-                ConfigurationPatch.Validate(current.Deserialize(type, ConfigurationPatch.Options) ?? throw new JsonException());
+                var proposed = new PlugInConfiguration { CustomConfiguration = current.ToJsonString() };
+                ConfigurationPatch.Validate(proposed.GetConfiguration(type, plugins.CustomConfigReferenceHandler) ?? throw new JsonException());
             }
             catch (JsonException)
             {

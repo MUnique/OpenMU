@@ -14,8 +14,10 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
@@ -217,6 +219,46 @@ public sealed class ConfigurationChangeIntegrationTests
         Confirm(revert, await this.CallAsync("audit_revert", revert).ConfigureAwait(false));
         await this.CallAsync("audit_revert", revert).ConfigureAwait(false);
         Assert.That(plugin.CustomConfiguration, Does.Contain("00:01:00").And.Contain("never-return-this"));
+    }
+
+    /// <summary>Scalar reset settings preserve collection metadata, shared item references and unrecognized settings.</summary>
+    [Test]
+    public async Task PluginChangesPreserveCollectionsAndReferencesAsync()
+    {
+        var manager = this._host.App.Services.GetRequiredService<PlugInManager>();
+        manager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(new ResetFeaturePlugIn());
+        var requiredItem = this._config.Items.First();
+        Mock.Get(this._host.App.Services.GetRequiredService<IDataSource<GameConfiguration>>()).Setup(s => s.Get(requiredItem.GetId())).Returns((MUnique.OpenMU.Persistence.IIdentifiable)requiredItem);
+        using var context = this._persistence.CreateNewContext();
+        var plugin = context.CreateNew<PlugInConfiguration>();
+        plugin.TypeId = typeof(ResetFeaturePlugIn).GUID;
+        var configuration = new ResetConfiguration
+        {
+            RequiredResetItem = requiredItem,
+            ItemCostTiers = [new() { MinimumResetCount = 10, RequiredItemAmount = 2 }],
+            PointsTiers = [new() { MinimumResetCount = 10, PointsGranted = 2000 }],
+        };
+        plugin.SetConfiguration(configuration, manager.CustomConfigReferenceHandler);
+        var original = JsonNode.Parse(plugin.CustomConfiguration!)!.AsObject();
+        original["UnknownSetting"] = "never-return-this";
+        plugin.CustomConfiguration = original.ToJsonString();
+        this._config.PlugInConfigurations.Add(plugin);
+        var update = new Dictionary<string, object?> { ["pluginId"] = plugin.TypeId, ["patch"] = "{\"RequiredLevel\":380}" };
+        Confirm(update, await this.CallAsync("plugins_update_configuration", update).ConfigureAwait(false));
+        Assert.That(plugin.GetConfiguration<ResetConfiguration>(manager.CustomConfigReferenceHandler)!.RequiredLevel, Is.EqualTo(400));
+        await this.CallAsync("plugins_update_configuration", update).ConfigureAwait(false);
+        var changed = plugin.GetConfiguration<ResetConfiguration>(manager.CustomConfigReferenceHandler)!;
+        Assert.That(changed.RequiredLevel, Is.EqualTo(380));
+        Assert.That(changed.RequiredResetItem, Is.SameAs(configuration.RequiredResetItem));
+        var expected = original.DeepClone().AsObject();
+        expected["RequiredLevel"] = 380;
+        Assert.That(JsonNode.DeepEquals(expected, JsonNode.Parse(plugin.CustomConfiguration!)), Is.True);
+        var entry = (await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Single();
+        Assert.That(entry.ResultJson, Does.Not.Contain("never-return-this").And.Not.Contain("ItemCostTiers").And.Not.Contain("PointsTiers"));
+        var revert = new Dictionary<string, object?> { ["auditId"] = entry.Id };
+        Confirm(revert, await this.CallAsync("audit_revert", revert).ConfigureAwait(false));
+        await this.CallAsync("audit_revert", revert).ConfigureAwait(false);
+        Assert.That(JsonNode.DeepEquals(original, JsonNode.Parse(plugin.CustomConfiguration!)), Is.True);
     }
 
     /// <summary>Offline writes reserve through save and always release; an online account is refused.</summary>
