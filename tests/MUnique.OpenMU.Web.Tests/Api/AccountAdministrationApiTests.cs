@@ -19,7 +19,7 @@ using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>Exercises account REST routes with real authentication, persistence and auditing.</summary>
 [TestFixture]
-public sealed class AccountAdministrationApiTests : IDisposable
+public sealed class AccountAdministrationApiTests : System.IDisposable
 {
     private McpIntegrationTests _host = null!;
     private HttpClient _http = null!;
