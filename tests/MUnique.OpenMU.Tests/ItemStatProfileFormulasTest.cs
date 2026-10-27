@@ -202,6 +202,32 @@ public class ItemStatProfileFormulasTest
     }
 
     /// <summary>
+    /// Tests that a formula with the level requirement basis takes the stored level requirement of the item, without its
+    /// growth per item level and the excellent addition, as in the game client.
+    /// </summary>
+    [Test]
+    public void LevelRequirementBasisTakesTheStoredLevelRequirement()
+    {
+        var configuration = TestItemStatProfiles.Create();
+        var defaultProfile = GetDefault(configuration);
+        defaultProfile.LevelPerItemLevel = 4;
+        defaultProfile.ExcellentLevelAdd = 20;
+        GetFormula(defaultProfile, Stats.TotalAgilityRequirementValue).LevelRequirementBasis = true;
+        var item = MakeExcellent(CreateArmor(level: 5));
+        var levelRequirement = Requirement(Stats.Level, 100);
+        item.Definition!.Requirements.Add(levelRequirement);
+
+        Assert.Multiple(() =>
+        {
+            // the level requirement grows: 100 + 5 * 4 + 20
+            Assert.That(item.GetRequirement(levelRequirement, configuration).Value, Is.EqualTo(140));
+
+            // the formula takes the stored 100: 20 + 60 * 100 * 3 / 100
+            Assert.That(item.GetRequirement(Requirement(Stats.TotalAgilityRequirementValue, 60), configuration).Value, Is.EqualTo(200));
+        });
+    }
+
+    /// <summary>
     /// Tests that the item's profile is laid over the default: its own formula applies, the others come from the default.
     /// </summary>
     [Test]

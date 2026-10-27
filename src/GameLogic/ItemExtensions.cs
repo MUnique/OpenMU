@@ -574,7 +574,8 @@ public static class ItemExtensions
     /// <summary>
     /// Calculates a stat requirement by its formula: <c>Add + base × (drop level + item level × LevelWeight) × Percent ÷ 100</c>,
     /// or with <see cref="ItemRequirementFormula.LevelRequirementBasis"/> and a level requirement of the item
-    /// <c>Add + base × level requirement × Percent ÷ 100</c>.
+    /// <c>Add + base × level requirement × Percent ÷ 100</c>. That level requirement is the stored one of the item
+    /// definition, without its growth per item level and the excellent addition, as in the game client.
     /// </summary>
     private static int CalculateRequirement(this Item item, ItemRequirementFormula formula, int baseValue, GameConfiguration gameConfiguration)
     {

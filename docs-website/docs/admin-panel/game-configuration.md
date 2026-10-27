@@ -149,7 +149,7 @@ have no profile in a warning when it starts.
 
 | Setting | Meaning |
 |---|---|
-| Requirement formulas | One per stat requirement: `add + base × (drop level + item level × level weight) × percent ÷ 100`. A base of 0 stays 0. *Keep base* keeps the value of the item; *level requirement basis* takes the level requirement of the item instead of the drop level and the item level. |
+| Requirement formulas | One per stat requirement: `add + base × (drop level + item level × level weight) × percent ÷ 100`. A base of 0 stays 0. *Keep base* keeps the value of the item; *level requirement basis* takes the stored level requirement of the item (without its growth per item level and the excellent addition, as in the client) instead of the drop level and the item level. |
 | Level per item level | What each item level adds to the level requirement. |
 | Excellent level add | What an excellent item adds to the level requirement, unless *Excellent raises level* of the item is off. |
 | Strength per option level | What each option level adds to the strength requirement. |

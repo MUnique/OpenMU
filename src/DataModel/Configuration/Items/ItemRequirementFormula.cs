@@ -46,8 +46,9 @@ public partial class ItemRequirementFormula
     public int Percent { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the formula takes the item's level requirement instead of the drop level
-    /// (without the <see cref="LevelWeight"/>), when the item has one.
+    /// Gets or sets a value indicating whether the formula takes the item's stored level requirement instead of the drop
+    /// level (without the <see cref="LevelWeight"/>), when the item has one. As in the game client, it's the stored
+    /// value, without the growth per item level and the excellent addition of the item stat profile.
     /// </summary>
     public bool LevelRequirementBasis { get; set; }
 
