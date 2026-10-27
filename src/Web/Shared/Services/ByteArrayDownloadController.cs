@@ -5,12 +5,19 @@
 namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// API-Controller which returns data of a byte array of an object.
 /// </summary>
+/// <remarks>
+/// The attribute is required, because not every host requires an authorization for all of
+/// its controllers, e.g. the admin panel of the distributed deployment also offers endpoints
+/// which are called by dapr.
+/// </remarks>
+[Authorize]
 [Route("download/{typeString}/{id:guid}/{propertyName}")]
 public class ByteArrayDownloadController : Controller
 {
