@@ -35,6 +35,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Mcp;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
@@ -83,6 +84,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         builder.Services.AddSingleton(Mock.Of<IToastService>());
         builder.Services.AddAdminPanelAuth(builder.Configuration);
         builder.Services.AddAdminReadOperations();
+        builder.Services.AddControllers(options => options.Filters.Add<AdminOperationExceptionFilter>()).AddApplicationPart(typeof(AccountController).Assembly);
         builder.Services.AddSingleton<IAdminAuditRepository, InMemoryAdminAuditRepository>();
         builder.Services.AddAdminMcp(builder.Configuration);
         builder.Services.AddMcpServer().WithTools<RestrictedTestTools>();
@@ -147,6 +149,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         this._app.UseAdminMcpProtection();
         this._app.UseAdminPanelAuth();
         this._app.MapAdminMcp();
+        this._app.MapControllers();
         this._app.MapGet("/test-cookie", async (HttpContext http) =>
         {
             var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Viewer)], CookieAuthenticationDefaults.AuthenticationScheme);
