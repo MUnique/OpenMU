@@ -46,7 +46,7 @@ public sealed class AccountReadOperations(
         var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
         if (account is null)
         {
-            throw new ArgumentException("Account not found. Use accounts_search to find its exact login name.", nameof(loginName));
+            throw new AdminResourceNotFoundException("Account not found. Use accounts_search to find its exact login name.", nameof(loginName));
         }
 
         var online = await loginServer.GetSnapshotAsync().ConfigureAwait(false);
@@ -77,7 +77,7 @@ public sealed class AccountReadOperations(
         var character = account?.Characters.FirstOrDefault(c => c.Name == characterName);
         if (character is null || account is null)
         {
-            throw new ArgumentException("Character not found. Use accounts_search to find its exact name.", nameof(characterName));
+            throw new AdminResourceNotFoundException("Character not found. Use accounts_search to find its exact name.", nameof(characterName));
         }
 
         var online = (await loginServer.GetSnapshotAsync().ConfigureAwait(false)).ContainsKey(account.LoginName);

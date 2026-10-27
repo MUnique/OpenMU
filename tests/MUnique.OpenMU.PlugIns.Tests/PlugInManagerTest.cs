@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.PlugIns.Tests;
 
 using System.ComponentModel.Design;
+using System.IO;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.Tests;
@@ -172,6 +174,61 @@ public class PlugInManagerTest
     }
 
     /// <summary>
+    /// Tests if a plugin of an external assembly in the plugins directory of the application is loaded,
+    /// independent of the current directory and the directory separator of the operating system.
+    /// </summary>
+    [Test]
+    public void CustomPlugInByExternalAssemblyIsLoaded()
+    {
+        var typeId = new Guid("5D1D3F42-7C5A-4E0B-9A8F-4B7E3C2A1D90");
+        var assemblyName = $"ExternalTestPlugIn{Guid.NewGuid():N}";
+        var directory = Path.Combine(AppContext.BaseDirectory, "plugins");
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, assemblyName + ".dll");
+        CompileExternalPlugIn(assemblyName, typeId, path);
+        var previousDirectory = Directory.GetCurrentDirectory();
+        try
+        {
+            // The server may be started from another directory than its own.
+            Directory.SetCurrentDirectory(Path.GetTempPath());
+            var configuration = new PlugInConfiguration
+            {
+                TypeId = typeId,
+                IsActive = true,
+                ExternalAssemblyName = assemblyName + ".dll",
+            };
+            var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider(), null);
+
+            Assert.That(manager.KnownPlugInTypes.Select(t => t.GUID), Does.Contain(typeId));
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(previousDirectory);
+        }
+    }
+
+    /// <summary>
+    /// Tests if an external assembly name which points outside of the plugins directory is not loaded.
+    /// </summary>
+    [Test]
+    public void CustomPlugInByExternalAssemblyOutsideOfPlugInsDirectoryIsNotLoaded()
+    {
+        var typeId = new Guid("0E4C8C55-2B1F-4B8B-8D5E-3F1A9C6B7E21");
+        var assemblyName = $"ExternalTestPlugIn{Guid.NewGuid():N}";
+        var path = Path.Combine(AppContext.BaseDirectory, assemblyName + ".dll");
+        CompileExternalPlugIn(assemblyName, typeId, path);
+        var configuration = new PlugInConfiguration
+        {
+            TypeId = typeId,
+            IsActive = true,
+            ExternalAssemblyName = Path.Combine("..", assemblyName + ".dll"),
+        };
+        var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider(), null);
+
+        Assert.That(manager.KnownPlugInTypes.Select(t => t.GUID), Does.Not.Contain(typeId));
+    }
+
+    /// <summary>
     /// Tests if an unknown plugin in the configuration doesn't cause exceptions.
     /// </summary>
     [Test]
@@ -320,6 +377,30 @@ public class PlugInManagerTest
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider(), null);
         manager.RegisterPlugIn<IExampleStrategyPlugIn, ExampleStrategyPlugIn>();
         Assert.That(manager.GetPlugInPoint<IExampleStrategyPlugIn>(), Is.Null);
+    }
+
+    private static void CompileExternalPlugIn(string assemblyName, Guid typeId, string path)
+    {
+        var source = $$"""
+            namespace ExternalTestPlugIns;
+
+            [MUnique.OpenMU.PlugIns.PlugIn]
+            [System.Runtime.InteropServices.Guid("{{typeId}}")]
+            public class ExternalExamplePlugIn : MUnique.OpenMU.PlugIns.Tests.IExamplePlugIn
+            {
+                public void DoStuff(MUnique.OpenMU.GameLogic.Player player, string text, MUnique.OpenMU.PlugIns.Tests.MyEventArgs args)
+                {
+                }
+            }
+            """;
+        var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+            .Split(Path.PathSeparator)
+            .Append(typeof(IExamplePlugIn).Assembly.Location)
+            .Distinct()
+            .Select(p => Microsoft.CodeAnalysis.MetadataReference.CreateFromFile(p));
+        var compilation = CSharpCompilation.Create(assemblyName, [CSharpSyntaxTree.ParseText(source)], references, new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary));
+        var result = compilation.Emit(path);
+        Assert.That(result.Success, Is.True, string.Join(Environment.NewLine, result.Diagnostics));
     }
 
     private IServiceProvider CreateServiceProvider()

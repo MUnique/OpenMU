@@ -192,6 +192,11 @@ have this role implicitly.
 | `GET /api/is-online/{account}` | Viewer |
 | `POST /api/send/{server}?msg=` | Operator |
 | `POST /api/accounts` | Operator |
+| `GET /api/accounts/{account}` | Viewer |
+| `GET /api/characters/{name}` | Viewer |
+| `PUT /api/accounts/{account}/password` | Operator |
+| `PUT /api/accounts/{account}/state` | Operator |
+| `POST /api/players/{account}/disconnect` | Operator |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
 
@@ -232,6 +237,30 @@ client side code — a key in a launcher which ships to players is a key your
 players have. Requests without a valid key get `401`, and requests whose key
 lacks the role get `403`.
 :::
+
+### Reading and administering accounts
+
+`GET /api/accounts/{account}` and `GET /api/characters/{name}` return the same
+safe, saved snapshots as `accounts_get` and `characters_get` through MCP.
+They return `404` when the requested account or character does not exist.
+Live gameplay may have newer values. All five account administration routes
+require an authenticated caller, including during initial setup.
+The two read routes accept an API key or a panel cookie. The password, state and
+disconnect routes require an API key (`X-Api-Key` or `Authorization: Bearer`);
+a panel cookie alone cannot authorize these mutations.
+
+Change a password with `PUT /api/accounts/{account}/password` and a JSON body
+`{ "password": "secret2", "reason": "Player-requested recovery" }`.
+Change state with `PUT /api/accounts/{account}/state` and
+`{ "state": "Banned", "reason": "Confirmed abuse" }`.
+Both require an offline account and use the shared operations layer's validation
+and durable audit. Privileged accounts and states require Administrator.
+Passwords are never returned or recorded in the audit history.
+
+Use `POST /api/players/{account}/disconnect` without a body to disconnect a
+live session through its owning game server. Its response includes `disconnected`;
+poll the account snapshot before attempting an offline change. These routes use
+the operational error statuses described in [MCP](mcp.md#phase-two-upgrade-notes).
 
 ### Granting cash shop coins
 
