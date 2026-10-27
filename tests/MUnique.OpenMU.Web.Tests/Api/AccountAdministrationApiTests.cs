@@ -7,8 +7,12 @@ namespace MUnique.OpenMU.Web.Tests.Api;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -72,6 +76,70 @@ public sealed class AccountAdministrationApiTests : System.IDisposable
         this._http.DefaultRequestHeaders.Clear();
         using var response = await this._http.GetAsync(path).ConfigureAwait(false);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+    }
+
+    /// <summary>Only missing resources map to 404.</summary>
+    [TestCase("/api/accounts/missing")]
+    [TestCase("/api/characters/missing")]
+    public async Task MissingResourcesReturnNotFoundAsync(string path)
+    {
+        using var response = await this._http.GetAsync(path).ConfigureAwait(false);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
+    /// <summary>Unexpected argument failures must not be disguised as missing resources.</summary>
+    [TestCase("/api/accounts/tester")]
+    [TestCase("/api/characters/Hero")]
+    public async Task UnexpectedArgumentFailuresDoNotReturnNotFoundAsync(string path)
+    {
+        Mock.Get(this._host.App.Services.GetRequiredService<IDataSource<GameConfiguration>>())
+            .Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ThrowsAsync(new ArgumentException("Unexpected configuration failure."));
+        using var response = await this._http.GetAsync(path).ConfigureAwait(false);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
+    }
+
+    /// <summary>New mutations reject an authenticated operator cookie without a token but accept an API key.</summary>
+    [TestCase("disconnect", "POST")]
+    [TestCase("state", "PUT")]
+    [TestCase("password", "PUT")]
+    public async Task MutationsRequireApiKeyAsync(string operation, string method)
+    {
+        this._http.DefaultRequestHeaders.Clear();
+        this._http.DefaultRequestHeaders.Host = "admin.example.test";
+        var options = this._host.App.Services.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>().Get(CookieAuthenticationDefaults.AuthenticationScheme);
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "test-operator"), new Claim(ClaimTypes.Name, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Viewer), new Claim(ClaimTypes.Role, AdminRoles.Operator)], CookieAuthenticationDefaults.AuthenticationScheme);
+        var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), CookieAuthenticationDefaults.AuthenticationScheme);
+        this._http.DefaultRequestHeaders.Add("Cookie", $"{options.Cookie.Name}={options.TicketDataFormat.Protect(ticket)}");
+        using var read = await this._http.GetAsync("/api/accounts/tester").ConfigureAwait(false);
+        Assert.That(read.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        if (operation == "disconnect")
+        {
+            var server = new Mock<IGameServer>();
+            server.SetupGet(s => s.Id).Returns(4);
+            server.Setup(s => s.DisconnectAccountAsync("tester")).ReturnsAsync(true);
+            Mock.Get(this._host.App.Services.GetRequiredService<IServerProvider>()).SetupGet(s => s.Servers).Returns(new List<IManageableServer> { server.Object });
+            Mock.Get(this._host.App.Services.GetRequiredService<ILoginServer>()).Setup(l => l.GetSnapshotAsync()).ReturnsAsync(new Dictionary<string, byte> { ["tester"] = 4 });
+        }
+
+        var path = operation == "disconnect" ? "/api/players/tester/disconnect" : $"/api/accounts/tester/{operation}";
+        using var request = new HttpRequestMessage(new HttpMethod(method), path)
+        {
+            Content = operation == "disconnect" ? new FormUrlEncodedContent([]) : JsonContent.Create(new { password = "secret2", state = "Banned", reason = "Test" }),
+        };
+        request.Headers.Add("Origin", "https://community.example.test");
+        using var refused = await this._http.SendAsync(request).ConfigureAwait(false);
+        Assert.That(refused.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Total, Is.Zero);
+        this._http.DefaultRequestHeaders.Clear();
+        this._http.DefaultRequestHeaders.Add("X-Api-Key", "omu_mcp-admin-test");
+        using var acceptedRequest = new HttpRequestMessage(new HttpMethod(method), path)
+        {
+            Content = operation == "disconnect" ? new FormUrlEncodedContent([]) : JsonContent.Create(new { password = "secret2", state = "Banned", reason = "Test" }),
+        };
+        using var accepted = await this._http.SendAsync(acceptedRequest).ConfigureAwait(false);
+        Assert.That(accepted.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Single().Outcome, Is.EqualTo("Succeeded"));
     }
 
     /// <summary>Viewer keys cannot invoke writes or register an account.</summary>

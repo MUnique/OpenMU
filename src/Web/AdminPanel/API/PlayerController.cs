@@ -15,7 +15,7 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 /// <param name="operations">The shared player operations.</param>
 [ApiController]
 [Route("api/players")]
-[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.AuthenticatedOperator)]
+[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.AuthenticationScheme, Policy = AdminPolicies.AuthenticatedOperator)]
 public sealed class PlayerController(PlayerWriteOperations operations) : ControllerBase
 {
     /// <summary>Disconnects an account's live session.</summary>

@@ -29,7 +29,7 @@ public sealed class CharacterController(AccountReadOperations operations) : Cont
         {
             return this.Ok(await operations.GetCharacterAsync(name, cancellationToken).ConfigureAwait(false));
         }
-        catch (ArgumentException error)
+        catch (AdminResourceNotFoundException error)
         {
             return this.NotFound(new { error = error.Message });
         }

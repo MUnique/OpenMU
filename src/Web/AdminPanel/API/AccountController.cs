@@ -24,7 +24,6 @@ using MUnique.OpenMU.Web.AdminPanel.Operations;
 /// </remarks>
 [ApiController]
 [Route("api/accounts")]
-[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes)]
 public class AccountController : ControllerBase
 {
     private readonly MUnique.OpenMU.Web.AdminPanel.Operations.AccountWriteOperations _operations;
@@ -43,7 +42,7 @@ public class AccountController : ControllerBase
     /// registration is invalid, and <c>409</c> when the login name is already taken.
     /// </returns>
     [HttpPost]
-    [Authorize(Policy = AdminPolicies.AuthenticatedOperator)]
+    [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.AuthenticatedOperator)]
     public async Task<IActionResult> RegisterAsync([FromBody] AccountRegistration registration, CancellationToken cancellationToken)
     {
         var result = await this._operations.CreateAsync(registration.LoginName, registration.Password, registration.EMail, cancellationToken).ConfigureAwait(false);
@@ -56,14 +55,14 @@ public class AccountController : ControllerBase
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The safe snapshot, or 404 when the account does not exist.</returns>
     [HttpGet("{loginName}")]
-    [Authorize(Roles = nameof(AdminRole.Viewer))]
+    [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Roles = nameof(AdminRole.Viewer))]
     public async ValueTask<IActionResult> GetAsync(string loginName, [FromServices] AccountReadOperations operations, CancellationToken cancellationToken)
     {
         try
         {
             return this.Ok(await operations.GetAsync(loginName, cancellationToken).ConfigureAwait(false));
         }
-        catch (ArgumentException error)
+        catch (AdminResourceNotFoundException error)
         {
             return this.NotFound(new { error = error.Message });
         }
@@ -75,7 +74,7 @@ public class AccountController : ControllerBase
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The applied state.</returns>
     [HttpPut("{loginName}/state")]
-    [Authorize(Policy = AdminPolicies.AuthenticatedOperator)]
+    [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.AuthenticationScheme, Policy = AdminPolicies.AuthenticatedOperator)]
     public ValueTask<JsonObject> SetStateAsync(string loginName, [FromBody] AccountStateChange change, CancellationToken cancellationToken)
         => this._operations.SetStateAsync(loginName, change.State ?? throw new AdminOperationException("An account state is required.", AdminOperationErrorKind.InvalidInput), change.Reason, cancellationToken);
 
@@ -85,7 +84,7 @@ public class AccountController : ControllerBase
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The safe password-reset status.</returns>
     [HttpPut("{loginName}/password")]
-    [Authorize(Policy = AdminPolicies.AuthenticatedOperator)]
+    [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.AuthenticationScheme, Policy = AdminPolicies.AuthenticatedOperator)]
     public ValueTask<JsonObject> ResetPasswordAsync(string loginName, [FromBody] AccountPasswordChange change, CancellationToken cancellationToken)
         => this._operations.ResetPasswordAsync(loginName, change.Password, change.Reason, cancellationToken);
 }

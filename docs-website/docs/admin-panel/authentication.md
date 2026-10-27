@@ -245,6 +245,9 @@ safe, saved snapshots as `accounts_get` and `characters_get` through MCP.
 They return `404` when the requested account or character does not exist.
 Live gameplay may have newer values. All five account administration routes
 require an authenticated caller, including during initial setup.
+The two read routes accept an API key or a panel cookie. The password, state and
+disconnect routes require an API key (`X-Api-Key` or `Authorization: Bearer`);
+a panel cookie alone cannot authorize these mutations.
 
 Change a password with `PUT /api/accounts/{account}/password` and a JSON body
 `{ "password": "secret2", "reason": "Player-requested recovery" }`.
