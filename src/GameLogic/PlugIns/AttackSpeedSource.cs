@@ -23,4 +23,3 @@ public enum AttackSpeedSource
     [Display(Name = nameof(Properties.PlugInResources.AttackSpeedSource_MagicSpeed), ResourceType = typeof(Properties.PlugInResources))]
     MagicSpeed = 1,
 }
-
