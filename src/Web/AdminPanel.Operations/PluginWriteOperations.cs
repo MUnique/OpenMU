@@ -136,7 +136,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
                 current = item.CustomConfiguration is null ? JsonSerializer.SerializeToNode(customConfiguration, type, ConfigurationPatch.Options) as JsonObject ?? new JsonObject()
                     : JsonNode.Parse(item.CustomConfiguration) as JsonObject ?? throw new JsonException();
             }
-            catch (JsonException)
+            catch (Exception ex) when (ex is JsonException or FormatException or KeyNotFoundException)
             {
                 throw new AdminOperationException("The existing custom configuration is invalid. Repair it in the panel first.");
             }
@@ -168,7 +168,7 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
                 var proposed = new PlugInConfiguration { CustomConfiguration = current.ToJsonString() };
                 ConfigurationPatch.Validate(proposed.GetConfiguration(type, plugins.CustomConfigReferenceHandler) ?? throw new JsonException());
             }
-            catch (JsonException)
+            catch (Exception ex) when (ex is JsonException or FormatException or KeyNotFoundException)
             {
                 throw new AdminOperationException("The proposed custom configuration does not match the plugin's configuration type.", AdminOperationErrorKind.InvalidInput);
             }

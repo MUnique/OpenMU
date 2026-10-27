@@ -261,6 +261,67 @@ public sealed class ConfigurationChangeIntegrationTests
         Assert.That(JsonNode.DeepEquals(original, JsonNode.Parse(plugin.CustomConfiguration!)), Is.True);
     }
 
+    /// <summary>Invalid stored references fail safely before a scalar patch changes configuration or audit.</summary>
+    [TestCase("not-a-guid")]
+    [TestCase("705182ba-e658-45d4-b734-e335909fbb25")]
+    public async Task PluginChangesRejectInvalidStoredReferencesAsync(string reference)
+    {
+        var manager = this._host.App.Services.GetRequiredService<PlugInManager>();
+        manager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(new ResetFeaturePlugIn());
+        using var context = this._persistence.CreateNewContext();
+        var plugin = context.CreateNew<PlugInConfiguration>();
+        plugin.TypeId = typeof(ResetFeaturePlugIn).GUID;
+        var original = new JsonObject { ["RequiredLevel"] = 400, ["RequiredResetItem"] = new JsonObject { ["$ref"] = reference } }.ToJsonString();
+        plugin.CustomConfiguration = original;
+        this._config.PlugInConfigurations.Add(plugin);
+        var result = await this._client.CallToolAsync("plugins_update_configuration", new Dictionary<string, object?> { ["pluginId"] = plugin.TypeId, ["patch"] = "{\"RequiredLevel\":380}" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.True);
+        Assert.That(JsonSerializer.Serialize(result), Does.Contain("The existing custom configuration is invalid."));
+        Assert.That(plugin.CustomConfiguration, Is.EqualTo(original));
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Any(e => e.Outcome == "Succeeded"), Is.False);
+    }
+
+    /// <summary>A reference lost between the two typed reads refuses the proposed configuration safely.</summary>
+    [Test]
+    public async Task PluginChangesRejectReferenceLostDuringValidationAsync()
+    {
+        var manager = this._host.App.Services.GetRequiredService<PlugInManager>();
+        manager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(new ResetFeaturePlugIn());
+        var item = this._config.Items.First();
+        Mock.Get(this._host.App.Services.GetRequiredService<IDataSource<GameConfiguration>>()).SetupSequence(s => s.Get(item.GetId()))
+            .Returns((MUnique.OpenMU.Persistence.IIdentifiable)item).Returns((MUnique.OpenMU.Persistence.IIdentifiable?)null);
+        using var context = this._persistence.CreateNewContext();
+        var plugin = context.CreateNew<PlugInConfiguration>();
+        plugin.TypeId = typeof(ResetFeaturePlugIn).GUID;
+        var original = new JsonObject { ["RequiredLevel"] = 400, ["RequiredResetItem"] = new JsonObject { ["$ref"] = item.GetId().ToString() } }.ToJsonString();
+        plugin.CustomConfiguration = original;
+        this._config.PlugInConfigurations.Add(plugin);
+        var result = await this._client.CallToolAsync("plugins_update_configuration", new Dictionary<string, object?> { ["pluginId"] = plugin.TypeId, ["patch"] = "{\"RequiredLevel\":380}" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.True);
+        Assert.That(JsonSerializer.Serialize(result), Does.Contain("The proposed custom configuration does not match the plugin"));
+        Assert.That(plugin.CustomConfiguration, Is.EqualTo(original));
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Any(e => e.Outcome == "Succeeded"), Is.False);
+    }
+
+    /// <summary>A scalar of the wrong type leaves the stored JSON and successful audit history untouched.</summary>
+    [Test]
+    public async Task PluginChangesRejectInvalidScalarAsync()
+    {
+        var manager = this._host.App.Services.GetRequiredService<PlugInManager>();
+        manager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(new ResetFeaturePlugIn());
+        using var context = this._persistence.CreateNewContext();
+        var plugin = context.CreateNew<PlugInConfiguration>();
+        plugin.TypeId = typeof(ResetFeaturePlugIn).GUID;
+        plugin.SetConfiguration(new ResetConfiguration(), manager.CustomConfigReferenceHandler);
+        var original = plugin.CustomConfiguration;
+        this._config.PlugInConfigurations.Add(plugin);
+        var result = await this._client.CallToolAsync("plugins_update_configuration", new Dictionary<string, object?> { ["pluginId"] = plugin.TypeId, ["patch"] = "{\"RequiredLevel\":\"invalid\"}" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.True);
+        Assert.That(JsonSerializer.Serialize(result), Does.Contain("A field value does not match its type."));
+        Assert.That(plugin.CustomConfiguration, Is.EqualTo(original));
+        Assert.That((await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Any(e => e.Outcome == "Succeeded"), Is.False);
+    }
+
     /// <summary>Offline writes reserve through save and always release; an online account is refused.</summary>
     [Test]
     public async Task OfflineCharacterReservationAndItemPlacementAsync()
