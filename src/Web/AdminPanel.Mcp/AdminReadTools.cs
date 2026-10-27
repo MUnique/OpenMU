@@ -345,7 +345,7 @@ public sealed class AdminReadTools
         {
             // Only validation and configuration-conflict messages are sent to the client.
             // The SDK hides unexpected exceptions, including database and host details.
-            throw new McpException(ex.Message);
+            throw new McpException(ex.Message, ex);
         }
     }
 }
