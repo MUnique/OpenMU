@@ -19,7 +19,7 @@ using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>Exercises account REST routes with real authentication, persistence and auditing.</summary>
 [TestFixture]
-public sealed class AccountAdministrationApiTests
+public sealed class AccountAdministrationApiTests : IDisposable
 {
     private McpIntegrationTests _host = null!;
     private HttpClient _http = null!;
@@ -41,8 +41,15 @@ public sealed class AccountAdministrationApiTests
     [TearDown]
     public async Task TearDownAsync()
     {
-        this._http.Dispose();
+        this.Dispose();
         await this._host.TearDownAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>Disposes the HTTP client owned by this fixture.</summary>
+    public void Dispose()
+    {
+        this._http?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>Viewer reads use the existing safe snapshots and hide credentials.</summary>
