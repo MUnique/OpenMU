@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -22,37 +22,9 @@ public class HitAction
     /// <param name="lookingDirection">The looking direction.</param>
     public async ValueTask HitAsync(Player player, IAttackable target, byte attackAnimation, Direction lookingDirection)
     {
-        if (player.Attributes is not { } attributes)
+        if (!await AttackActionValidator.CanAttackAsync(player, null).ConfigureAwait(false))
         {
             return;
-        }
-
-        if (attributes[Stats.IsStunned] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in stunned state", player);
-            return;
-        }
-
-        if (attributes[Stats.IsAsleep] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in asleep state", player);
-            return;
-        }
-
-        if (player.IsAtSafezone())
-        {
-            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking from safezone", player);
-            return;
-        }
-
-        if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
-        {
-            var eventArgs = new SpeedHackCheckEventArgs();
-            await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
-            if (eventArgs.IsCheatDetected)
-            {
-                return;
-            }
         }
 
         if (target.IsAtSafezone())
