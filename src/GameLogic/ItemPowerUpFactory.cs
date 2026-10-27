@@ -390,7 +390,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         void AddParts(AttributeDefinition attribute, int baseValue, AttributeDefinition target, AttributeDefinition? secondTarget = null, int fixedExcellentBonus = 0, bool isRise = false)
         {
             var factor = isRise ? 2 : 1;
-            var value = baseValue * factor;
+
+            // The sums are long, so that parts which are limited to the range of int don't wrap when they're added up.
+            var value = (long)baseValue * factor;
             var excellentPart = profile.GetExcellentPart(attribute);
             int? excellent = baseDropLevel <= 0 ? null
                 : fixedExcellentBonus > 0 ? fixedExcellentBonus
@@ -400,7 +402,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
             if (itemIsAncient && profile.GetAncientPart(attribute) is { HasValues: true } ancientPart)
             {
-                var levelBonus = ancientPart.AfterLevelBonus ? GetLevelBonus(item, attribute) * factor : 0;
+                var levelBonus = ancientPart.AfterLevelBonus ? (long)GetLevelBonus(item, attribute) * factor : 0;
                 AddPart(ancientPart.Compute(value + (excellent ?? 0) + levelBonus, ancientDropLevel), factor, target, secondTarget);
             }
         }

@@ -26,19 +26,21 @@ public readonly record struct ItemStatTermPart(ItemStatTermState State, int Time
     /// Computes the part with integers, from left to right. A factor of 0, or a drop level which isn't above 0, leaves
     /// out the value, as in the game client, and a divisor of 0 leaves out the drop level.
     /// </summary>
-    /// <param name="value">The value, e.g. the base value of the attribute.</param>
+    /// <param name="value">The value, e.g. the base value of the attribute; a <see cref="long"/>, because it can be a sum of
+    /// parts which are each limited to the range of <see cref="int"/>.</param>
     /// <param name="dropLevel">The drop level.</param>
     /// <returns>The part.</returns>
-    public int Compute(int value, int dropLevel)
+    public int Compute(long value, int dropLevel)
     {
-        // With long, a large factor, which an owner can configure, doesn't wrap to a negative part.
-        var result = this.Times == 0 || dropLevel <= 0 ? 0 : (long)value * this.Times / dropLevel;
+        // Int128 holds the product of the value and a large factor, which an owner can configure, so it doesn't wrap
+        // to a negative part.
+        var result = this.Times == 0 || dropLevel <= 0 ? 0 : (Int128)value * this.Times / dropLevel;
         result += this.Add;
         if (this.DropLevelDivisor != 0)
         {
             result += dropLevel / this.DropLevelDivisor;
         }
 
-        return (int)Math.Clamp(result, int.MinValue, int.MaxValue);
+        return (int)Int128.Clamp(result, int.MinValue, int.MaxValue);
     }
 }

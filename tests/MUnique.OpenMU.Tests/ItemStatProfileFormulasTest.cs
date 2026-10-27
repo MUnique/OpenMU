@@ -185,6 +185,23 @@ public class ItemStatProfileFormulasTest
     }
 
     /// <summary>
+    /// Tests that an excellent part which is limited to <see cref="int.MaxValue"/> and the base value are added up
+    /// without wrapping before the ancient part is computed from them.
+    /// </summary>
+    [Test]
+    public void LimitedExcellentPartDoesNotWrapTheAncientPart()
+    {
+        var configuration = TestItemStatProfiles.Create();
+        GetTerms(GetDefault(configuration), Stats.DefenseBase).ExcellentAdd = int.MaxValue;
+        var armor = MakeAncient(MakeExcellent(CreateItem(group: 7, slot: InventoryConstants.HelmSlot, (Stats.DefenseBase, 30))));
+
+        // The excellent part (30 * 12 / 40 + int.MaxValue + 40 / 5) is limited to int.MaxValue; the ancient part of
+        // the default is 2 + (30 + int.MaxValue) * 3 / (40 + 30) + 70 / 30. The attribute system adds them as float.
+        var ancient = 2 + ((30L + int.MaxValue) * 3 / 70) + 2;
+        Assert.That(GetPowerUps(armor, configuration)[Stats.DefenseBase], Is.EqualTo(30d + int.MaxValue + ancient).Within(256));
+    }
+
+    /// <summary>
     /// Tests that the item's profile is laid over the default: its own formula applies, the others come from the default.
     /// </summary>
     [Test]
