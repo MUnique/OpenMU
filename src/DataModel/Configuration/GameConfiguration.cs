@@ -105,8 +105,8 @@ public partial class GameConfiguration
 
     /// <summary>
     /// Gets or sets what the item formulas add to the drop level of an excellent item:
-    /// for its requirements when it isn't ancient (see <see cref="ItemRequirementFormula"/>), and for its price.
-    /// It isn't about which items drop as excellent (see <see cref="ExcellentItemDropLevelDelta"/>).
+    /// for its requirements when it isn't ancient (see <see cref="ItemRequirementFormula"/>). The price doesn't use it,
+    /// it keeps its own increase of 25. It isn't about which items drop as excellent (see <see cref="ExcellentItemDropLevelDelta"/>).
     /// </summary>
     /// <remarks>Default value is 25, as in the game client.</remarks>
     public byte ExcellentDropLevelBonus { get; set; } = 25;

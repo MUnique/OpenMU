@@ -291,7 +291,7 @@ public class PowerUpFactoryTest
 
     private IItemPowerUpFactory GetPowerUpFactory()
     {
-        return new ItemPowerUpFactory(new NullLogger<ItemPowerUpFactory>());
+        return new ItemPowerUpFactory(new NullLogger<ItemPowerUpFactory>(), TestItemStatProfiles.Configuration);
     }
 
     private ItemDefinition GetItemDefinition()

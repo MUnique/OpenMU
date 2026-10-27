@@ -10,9 +10,11 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Discord;
+using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -170,6 +172,28 @@ public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposa
             this._logger.LogError("The game server is not started, because the game configuration has no item price definitions. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.");
             this.ServerState = ServerState.Stopped;
             return;
+        }
+
+        if (!ResolvedItemStatProfile.HasDefaultProfile(this._gameContext.Configuration))
+        {
+            // The item formulas read the item stat profiles, so a configuration without the profile "default" is missing
+            // the mandatory update which adds them. The item formulas would throw for every requirement and every
+            // excellent or ancient item.
+            this._logger.LogError("The game server is not started, because the game configuration has no item stat profile '{profileName}'. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.", ItemStatProfile.DefaultName);
+            this.ServerState = ServerState.Stopped;
+            return;
+        }
+
+        if (ResolvedItemStatProfile.GetWearableItemsWithoutProfile(this._gameContext.Configuration) is { Count: > 0 } itemsWithoutProfile)
+        {
+            const int maximumListedItems = 10;
+            var listedItems = string.Join(", ", itemsWithoutProfile.Take(maximumListedItems).Select(item => $"{item.Name} ({item.Group}, {item.Number})"));
+            if (itemsWithoutProfile.Count > maximumListedItems)
+            {
+                listedItems += ", ...";
+            }
+
+            this._logger.LogWarning("{count} items which can be worn have no item stat profile, so they have the formulas of the profile '{profileName}' and not the ones of their kind: {items}. Give them the profile of their kind on the admin panel, e.g. 'armor', 'shield' or 'book'.", itemsWithoutProfile.Count, ItemStatProfile.DefaultName, listedItems);
         }
 
         this.ServerState = ServerState.Starting;
