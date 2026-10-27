@@ -301,6 +301,12 @@ failures return HTTP 503, authorization failures return HTTP 403, and invalid
 operational arguments return HTTP 400. Business refusals and uncertain audit
 completion return HTTP 409. After an uncertain outcome, inspect current state
 before retrying.
+Operational error bodies retain `error` and include `kind`: `Conflict`,
+`Forbidden`, `InvalidInput`, `Unavailable`, or `Uncertain`. MCP tool errors
+retain their text and `isError: true`, and expose the same invariant value in
+`_meta["openmu/errorKind"]`. Validation errors use `InvalidInput`; configuration
+read conflicts use `Conflict`. Unexpected errors remain generic and do not
+expose host details. A missing kind is not evidence that retrying is safe.
 
 ## Configuration and offline character changes
 

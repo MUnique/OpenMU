@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Mcp;
 
 using System.Net;
+using System.Text.Json.Nodes;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -81,7 +82,7 @@ public static class AdminMcpExtensions
                 var groups = context.User?.FindFirst(AdminToolGroups.ClaimType)?.Value;
                 return new ListToolsResult { Tools = result.Tools.Where(t => AdminToolGroups.Allows(groups, t.Name)).ToArray(), NextCursor = result.NextCursor };
             });
-            filters.AddCallToolFilter(next => (context, cancellationToken) =>
+            filters.AddCallToolFilter(next => async (context, cancellationToken) =>
             {
                 var groups = context.User?.FindFirst(AdminToolGroups.ClaimType)?.Value;
                 if (context.Params?.Name is not { } name || !AdminToolGroups.Allows(groups, name))
@@ -89,7 +90,21 @@ public static class AdminMcpExtensions
                     throw new McpException("This tool is excluded by the API key's allowlist.");
                 }
 
-                return next(context, cancellationToken);
+                try
+                {
+                    return await next(context, cancellationToken).ConfigureAwait(false);
+                }
+                catch (McpException ex) when (ex.InnerException is AdminOperationException or ArgumentException or ConfigurationReadConflictException)
+                {
+                    var kind = ex.InnerException is AdminOperationException operationError ? operationError.Kind
+                        : ex.InnerException is ConfigurationReadConflictException ? AdminOperationErrorKind.Conflict : AdminOperationErrorKind.InvalidInput;
+                    return new CallToolResult
+                    {
+                        IsError = true,
+                        Content = [new TextContentBlock { Text = $"An error occurred invoking '{name}': {ex.Message}" }],
+                        Meta = new JsonObject { ["openmu/errorKind"] = kind.ToString() },
+                    };
+                }
             });
         });
         server.AddAuthorizationFilters();
