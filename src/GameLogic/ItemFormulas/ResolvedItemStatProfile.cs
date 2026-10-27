@@ -21,7 +21,13 @@ public sealed class ResolvedItemStatProfile
     private readonly ItemStatProfile? _profile;
     private readonly ItemStatProfile _defaultProfile;
 
-    private ResolvedItemStatProfile(ItemStatProfile? profile, ItemStatProfile defaultProfile)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ResolvedItemStatProfile"/> class. Use <see cref="Of"/>, which
+    /// finds the profiles in the game configuration.
+    /// </summary>
+    /// <param name="profile">The item's own profile, or <c>null</c> when it has none or the default.</param>
+    /// <param name="defaultProfile">The profile named <see cref="ItemStatProfile.DefaultName"/>.</param>
+    internal ResolvedItemStatProfile(ItemStatProfile? profile, ItemStatProfile defaultProfile)
     {
         this._profile = profile;
         this._defaultProfile = defaultProfile;

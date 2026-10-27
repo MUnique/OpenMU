@@ -44,10 +44,10 @@ server doesn't start without the item price definitions, which the update *Add
 item price definitions* adds to databases from before they existed. Otherwise
 it would sell special items like jewels at the price of equipment. The same goes
 for the item stat profiles with the item formulas, which the update *Add item
-stat profiles* adds. The game server logs the reason and stays stopped, while the admin panel keeps running,
-so you can apply the update here. Then use **Reload configuration and restart
-all game servers** on the [Servers page](servers.md), or restart the server
-process.
+stat profiles* adds. The game server logs the reason and stays stopped, while
+the admin panel keeps running, so you can apply the update here. Then use
+**Reload configuration and restart all game servers** on the
+[Servers page](servers.md), or restart the server process.
 
 ## At startup
 
