@@ -28,7 +28,7 @@ internal static class PingClockValidator
     internal static Result Evaluate(uint previousTickCount, uint currentTickCount, double serverElapsedMs, double toleranceMs)
     {
         // Unsigned subtraction makes the comparison safe across the 32-bit tick count wrap.
-        double clientElapsedMs = unchecked((uint)(currentTickCount - previousTickCount));
+        double clientElapsedMs = unchecked(currentTickCount - previousTickCount);
         if (clientElapsedMs > MaxPlausibleTickDeltaMs)
         {
             return new Result(clientElapsedMs, IsClientAhead: false, IsClockReset: true);

@@ -994,7 +994,7 @@ public class SpeedHackAntiCheatTests
 
         var rejectedFrom = new Point((byte)(StartPoint.X + 9), StartPoint.Y);
         player.Position = rejectedFrom;
-        var validator = player.GameContext.PlugInManager.GetPlugInPoint<IWalkRequestValidationPlugIn>();
+
         WalkingStep[] rejectedSteps = [new() { From = rejectedFrom, To = new Point((byte)(rejectedFrom.X + 1), rejectedFrom.Y), Direction = Direction.East }];
         await player.WalkToAsync(rejectedSteps[^1].To, rejectedSteps).ConfigureAwait(false);
 
