@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.PlugIns.Tests;
 
 using System.ComponentModel.Design;
 using System.IO;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -398,8 +397,8 @@ public class PlugInManagerTest
             .Split(Path.PathSeparator)
             .Append(typeof(IExamplePlugIn).Assembly.Location)
             .Distinct()
-            .Select(p => MetadataReference.CreateFromFile(p));
-        var compilation = CSharpCompilation.Create(assemblyName, [CSharpSyntaxTree.ParseText(source)], references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            .Select(p => Microsoft.CodeAnalysis.MetadataReference.CreateFromFile(p));
+        var compilation = CSharpCompilation.Create(assemblyName, [CSharpSyntaxTree.ParseText(source)], references, new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary));
         var result = compilation.Emit(path);
         Assert.That(result.Success, Is.True, string.Join(Environment.NewLine, result.Diagnostics));
     }

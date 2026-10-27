@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInManager.cs" company="MUnique">
+// <copyright file="PlugInManager.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -30,7 +30,7 @@ public class PlugInManager
     /// The name of the directory below the application directory, from which external plugin assemblies
     /// (<see cref="PlugInConfiguration.ExternalAssemblyName"/>) are loaded.
     /// </summary>
-    public const string ExternalPlugInsDirectoryName = "plugins";
+    private const string ExternalPlugInsDirectoryName = "plugins";
 
     private readonly ILogger<PlugInManager> _logger;
     private readonly ServiceContainer _serviceContainer;
