@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using System.Runtime.CompilerServices;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Offline;
@@ -20,6 +21,10 @@ public class PickupItemAction
     /// The maximum distance in tiles between the player and a drop which can be picked up.
     /// </summary>
     internal const int MaximumPickupDistance = 3;
+
+    private static readonly TimeSpan RefusalLogInterval = TimeSpan.FromSeconds(10);
+
+    private static readonly ConditionalWeakTable<Player, StrongBox<long>> LastRefusalLogs = new();
 
     /// <summary>
     /// Pickups the item.
@@ -114,10 +119,29 @@ public class PickupItemAction
     /// <summary>
     /// Server-side bots and offline levelers retry far away drops several times per second, which
     /// would flood the log; their refusals are only of interest when debugging them.
+    /// A connected client can also send an unlimited amount of pick up requests, e.g. with ids of
+    /// drops which don't exist, so a player gets at most one refusal per <see cref="RefusalLogInterval"/>
+    /// logged as information; the others are logged for debugging.
     /// </summary>
-    private static LogLevel GetLogLevel(Player player)
+    internal static LogLevel GetLogLevel(Player player)
     {
-        return player is OfflinePlayer ? LogLevel.Debug : LogLevel.Information;
+        if (player is OfflinePlayer)
+        {
+            return LogLevel.Debug;
+        }
+
+        var now = Environment.TickCount64;
+        var lastLogged = LastRefusalLogs.GetValue(player, _ => new StrongBox<long>(now - (long)RefusalLogInterval.TotalMilliseconds));
+        lock (lastLogged)
+        {
+            if (now - lastLogged.Value < RefusalLogInterval.TotalMilliseconds)
+            {
+                return LogLevel.Debug;
+            }
+
+            lastLogged.Value = now;
+            return LogLevel.Information;
+        }
     }
 
     private static string GetDistanceOrDeathReason(Player player)
