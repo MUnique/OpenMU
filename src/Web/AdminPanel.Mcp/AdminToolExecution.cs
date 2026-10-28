@@ -22,7 +22,7 @@ internal static class AdminToolExecution
         }
         catch (Exception ex) when (ex is ArgumentException or AdminOperationException)
         {
-            throw new McpException(ex.Message);
+            throw new McpException(ex.Message, ex);
         }
     }
 }

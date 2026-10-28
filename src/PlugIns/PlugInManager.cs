@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInManager.cs" company="MUnique">
+// <copyright file="PlugInManager.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns;
 
 using System.Collections.Concurrent;
 using System.ComponentModel.Design;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
@@ -24,6 +25,12 @@ public class PlugInManager
     /// When it's set, the plugins are discovered by searching the types of the assemblies.
     /// </summary>
     public const string DisableGeneratedRegistriesSwitch = "MUnique.OpenMU.PlugIns.DisableGeneratedRegistries";
+
+    /// <summary>
+    /// The name of the directory below the application directory, from which external plugin assemblies
+    /// (<see cref="PlugInConfiguration.ExternalAssemblyName"/>) are loaded.
+    /// </summary>
+    private const string ExternalPlugInsDirectoryName = "plugins";
 
     private readonly ILogger<PlugInManager> _logger;
     private readonly ServiceContainer _serviceContainer;
@@ -424,6 +431,24 @@ public class PlugInManager
         });
     }
 
+    /// <summary>
+    /// Gets the absolute path of an external plugin assembly, which has to be located in the
+    /// <see cref="ExternalPlugInsDirectoryName"/> directory of the application.
+    /// </summary>
+    /// <param name="assemblyName">The file name of the assembly.</param>
+    /// <returns>The absolute path.</returns>
+    /// <exception cref="ArgumentException">The name is not a plain file name.</exception>
+    private static string GetExternalAssemblyPath(string assemblyName)
+    {
+        // Assembly.LoadFile requires an absolute path, and the path must not depend on the current directory.
+        if (Path.GetFileName(assemblyName) != assemblyName)
+        {
+            throw new ArgumentException($"The external assembly name '{assemblyName}' must be a file name without directories.", nameof(assemblyName));
+        }
+
+        return Path.Combine(AppContext.BaseDirectory, ExternalPlugInsDirectoryName, assemblyName);
+    }
+
     private void ValidateNoDuplicateGuids(IEnumerable<PlugInRegistration> plugIns)
     {
         var allPlugIns = plugIns.Select(plugIn => plugIn.Type).Concat(this._knownPlugIns.Values).Distinct();
@@ -496,7 +521,7 @@ public class PlugInManager
 
                 try
                 {
-                    var assembly = Assembly.LoadFile("plugins\\" + configuration.ExternalAssemblyName);
+                    var assembly = Assembly.LoadFile(GetExternalAssemblyPath(configuration.ExternalAssemblyName));
                     this.DiscoverAndRegisterPlugIns(assembly);
                 }
                 catch (Exception e)
