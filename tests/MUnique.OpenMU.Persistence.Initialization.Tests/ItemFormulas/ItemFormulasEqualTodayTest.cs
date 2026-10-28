@@ -75,9 +75,84 @@ internal class ItemFormulasEqualTodayTest
         AssertFormulasEqualToday(context, gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests the formulas with the profiles which the configuration update gives a Season 6 database without them,
+    /// instead of the ones of the initialization.
+    /// </summary>
+    [Test]
+    public async Task Season6AfterTheUpdateAsync()
+    {
+        var (context, gameConfiguration) = await TestGameConfiguration.CreateSeason6Async().ConfigureAwait(false);
+        using var _ = context;
+        await ApplyTheUpdateAgainAsync(context, gameConfiguration).ConfigureAwait(false);
+        AssertFormulasEqualToday(context, gameConfiguration);
+    }
+
+    /// <summary>
+    /// Tests the formulas with the profiles which the configuration update gives a Season 6 database whose level bonus
+    /// tables an owner renamed, and in which some items have their own tables, so that they get variants of their profile:
+    /// a third wing, a shield (defense rate and shield defense) and a sword.
+    /// </summary>
+    [Test]
+    public async Task Season6WithRenamedTablesAndOwnTablesAsync()
+    {
+        var (context, gameConfiguration) = await TestGameConfiguration.CreateSeason6Async().ConfigureAwait(false);
+        using var _ = context;
+        foreach (var table in gameConfiguration.ItemLevelBonusTables)
+        {
+            table.Name = $"Renamed {table.Name.ValueInNeutralLanguage}";
+        }
+
+        GiveOwnTable(context, gameConfiguration, gameConfiguration.Items.First(item => item.StatProfile?.Name == "thirdTierWing"), Stats.DefenseBase);
+        var shield = gameConfiguration.Items.First(item => item.Group == 6 && HasTable(item, Stats.DefenseRatePvm) && HasTable(item, Stats.DefenseShield));
+        GiveOwnTable(context, gameConfiguration, shield, Stats.DefenseRatePvm);
+        GiveOwnTable(context, gameConfiguration, shield, Stats.DefenseShield);
+        GiveOwnTable(context, gameConfiguration, gameConfiguration.Items.First(item => item.Group == 0 && HasTable(item, Stats.MinimumPhysBaseDmgByWeapon)), Stats.MinimumPhysBaseDmgByWeapon, Stats.MaximumPhysBaseDmgByWeapon);
+        await ApplyTheUpdateAgainAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(gameConfiguration.ItemStatProfiles.Select(profile => profile.Name), Is.SupersetOf(new[] { "thirdTierWing2", "shield2", "weapon2" }));
+        AssertFormulasEqualToday(context, gameConfiguration);
+    }
+
+    private static async ValueTask ApplyTheUpdateAgainAsync(IContext context, GameConfiguration gameConfiguration)
+    {
+        foreach (var item in gameConfiguration.Items)
+        {
+            item.StatProfile = null;
+        }
+
+        gameConfiguration.ItemStatProfiles.Clear();
+        await new Updates.AddItemStatProfilesUpdatePlugInSeasonSix().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+    }
+
+    private static bool HasTable(ItemDefinition item, AttributeDefinition attribute)
+    {
+        return item.BasePowerUpAttributes.Any(powerUp => powerUp.TargetAttribute == attribute && powerUp.BonusPerLevelTable is not null);
+    }
+
+    /// <summary>
+    /// Gives the power-ups of the attributes of the item a copy of their table, so that the item computes as before but
+    /// uses its own table.
+    /// </summary>
+    private static void GiveOwnTable(IContext context, GameConfiguration gameConfiguration, ItemDefinition item, params AttributeDefinition[] attributes)
+    {
+        var powerUps = item.BasePowerUpAttributes.Where(powerUp => attributes.Any(attribute => attribute == powerUp.TargetAttribute) && powerUp.BonusPerLevelTable is not null).ToList();
+        var table = context.CreateNew<ItemLevelBonusTable>();
+        table.Name = $"Own table of {item.Name.ValueInNeutralLanguage} for {string.Join(", ", attributes.Select(attribute => attribute.Designation))}";
+        foreach (var bonus in powerUps[0].BonusPerLevelTable!.BonusPerLevel)
+        {
+            var copy = context.CreateNew<LevelBonus>();
+            copy.Level = bonus.Level;
+            copy.AdditionalValue = bonus.AdditionalValue;
+            table.BonusPerLevel.Add(copy);
+        }
+
+        gameConfiguration.ItemLevelBonusTables.Add(table);
+        powerUps.ForEach(powerUp => powerUp.BonusPerLevelTable = table);
+    }
+
     private static void AssertFormulasEqualToday(IContext context, GameConfiguration gameConfiguration)
     {
-        var comparison = new FormulaComparison(context);
+        var comparison = new FormulaComparison(context, gameConfiguration);
         foreach (var definition in gameConfiguration.Items.OrderBy(d => d.Group).ThenBy(d => d.Number))
         {
             comparison.CompareItem(definition);
@@ -147,7 +222,9 @@ internal class ItemFormulasEqualTodayTest
 
         private readonly Legacy.LegacyItemPowerUpFactory _legacyPowerUps = new(NullLogger<Legacy.LegacyItemPowerUpFactory>.Instance);
 
-        private readonly ItemPowerUpFactory _powerUps = new(NullLogger<ItemPowerUpFactory>.Instance);
+        private readonly ItemPowerUpFactory _powerUps;
+
+        private readonly GameConfiguration _gameConfiguration;
 
         private readonly Legacy.LegacyItemPriceCalculator _legacyPrices = new();
 
@@ -167,8 +244,11 @@ internal class ItemFormulasEqualTodayTest
         /// Initializes a new instance of the <see cref="FormulaComparison"/> class.
         /// </summary>
         /// <param name="context">The context which creates the made-up options, sets and requirements. They aren't saved.</param>
-        public FormulaComparison(IContext context)
+        /// <param name="gameConfiguration">The game configuration, whose item stat profiles the new code reads.</param>
+        public FormulaComparison(IContext context, GameConfiguration gameConfiguration)
         {
+            this._gameConfiguration = gameConfiguration;
+            this._powerUps = new ItemPowerUpFactory(NullLogger<ItemPowerUpFactory>.Instance, gameConfiguration);
             this._madeUpExcellentOption = context.CreateNew<IncreasableItemOption>();
             this._madeUpExcellentOption.OptionType = ItemOptionTypes.Excellent;
 
@@ -525,7 +605,7 @@ internal class ItemFormulasEqualTodayTest
                 itemCase,
                 "requirements",
                 Capture(() => DescribeRequirements(item, madeUpRequirements, Legacy.LegacyItemExtensions.GetRequirement)),
-                Capture(() => DescribeRequirements(item, madeUpRequirements, (i, r) => i.GetRequirement(r))));
+                Capture(() => DescribeRequirements(item, madeUpRequirements, (i, r) => i.GetRequirement(r, this._gameConfiguration))));
         }
 
         private void ComparePowerUps(Item item, byte fullDurability, bool allDurabilities, string itemCase)

@@ -23617,6 +23617,103 @@ public readonly struct CraftingDialogClosed075
 
 
 /// <summary>
+/// Is sent by the server when: After the items of the crafting dialog changed, e.g. at the chaos machine.
+/// Causes reaction on client side: The game client shows the success rate and the price of the crafting which matches the items, as they are calculated by the server, instead of calculating them by itself.
+/// </summary>
+public readonly struct ItemCraftingPreviewExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCraftingPreviewExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCraftingPreviewExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCraftingPreviewExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ItemCraftingPreviewExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x88;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of the crafting which matches the items, which is also sent by the client to execute it. 0, if the items don't match any crafting.
+    /// </summary>
+    public byte MixType
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the success rate in percent, including the crafting bonus of the character.
+    /// </summary>
+    public byte SuccessRate
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the price in zen, without the tax of the chaos machine.
+    /// </summary>
+    public uint Price
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ItemCraftingPreviewExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ItemCraftingPreviewExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ItemCraftingPreviewExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ItemCraftingPreviewExtended packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: After the player entered the game with his character.
 /// Causes reaction on client side: The game client updates the quest state for the quest dialog accordingly.
 /// </summary>

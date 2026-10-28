@@ -123,6 +123,7 @@
   * [C1 83 - VaultProtectionInformation (by server)](C1-83-VaultProtectionInformation_by-server.md)
   * [C1 86 - ItemCraftingResult (by server)](C1-86-ItemCraftingResult_by-server.md)
   * [C1 87 - CraftingDialogClosed075 (by server)](C1-87-CraftingDialogClosed075_by-server.md)
+  * [C1 88 - ItemCraftingPreviewExtended (by server)](C1-88-ItemCraftingPreviewExtended_by-server.md)
   * [C1 90 - DevilSquareEnterResult (by server)](C1-90-DevilSquareEnterResult_by-server.md)
   * [C1 91 - MiniGameOpeningState (by server)](C1-91-MiniGameOpeningState_by-server.md)
   * [C1 92 - UpdateMiniGameState (by server)](C1-92-UpdateMiniGameState_by-server.md)

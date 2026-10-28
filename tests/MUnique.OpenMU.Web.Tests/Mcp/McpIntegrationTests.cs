@@ -35,6 +35,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Mcp;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
@@ -83,6 +84,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         builder.Services.AddSingleton(Mock.Of<IToastService>());
         builder.Services.AddAdminPanelAuth(builder.Configuration);
         builder.Services.AddAdminReadOperations();
+        builder.Services.AddControllers(options => options.Filters.Add<AdminOperationExceptionFilter>()).AddApplicationPart(typeof(AccountController).Assembly);
         builder.Services.AddSingleton<IAdminAuditRepository, InMemoryAdminAuditRepository>();
         builder.Services.AddAdminMcp(builder.Configuration);
         builder.Services.AddMcpServer().WithTools<RestrictedTestTools>();
@@ -128,7 +130,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         servers.SetupGet(s => s.Servers).Returns(new List<IManageableServer>());
         builder.Services.AddSingleton(servers.Object);
         builder.Services.AddSingleton<IAdminReadModel, TestReadModel>();
-        builder.Services.AddSingleton(new PlugInManager([], Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, null, null));
+        builder.Services.AddSingleton(services => new PlugInManager([], Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, null, new ByDataSourceReferenceHandler(services.GetRequiredService<IDataSource<GameConfiguration>>())));
         this._app = builder.Build();
         this._app.UseRouting();
         // Model a container proxy with RFC 5737 documentation addresses; no traffic is sent to them.
@@ -147,6 +149,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         this._app.UseAdminMcpProtection();
         this._app.UseAdminPanelAuth();
         this._app.MapAdminMcp();
+        this._app.MapControllers();
         this._app.MapGet("/test-cookie", async (HttpContext http) =>
         {
             var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Viewer)], CookieAuthenticationDefaults.AuthenticationScheme);
@@ -316,10 +319,12 @@ public sealed class McpIntegrationTests : System.IDisposable
         using var second = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         using var limited = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         Assert.That(limited.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(limited.Headers.RetryAfter?.Delta, Is.GreaterThan(TimeSpan.Zero).And.LessThanOrEqualTo(TimeSpan.FromMinutes(1)));
         this._http.DefaultRequestHeaders.Remove("X-Api-Key");
         this._http.DefaultRequestHeaders.Add("X-Api-Key", "omu_mcp-admin-test");
         using var otherKey = await this._http.PostAsJsonAsync("/mcp", new { }).ConfigureAwait(false);
         Assert.That(otherKey.StatusCode, Is.Not.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(otherKey.Headers.RetryAfter, Is.Null);
         using var content = new StringContent(new string('x', 65537));
         using var oversized = await this._http.PostAsync("/mcp", content).ConfigureAwait(false);
         Assert.That(oversized.StatusCode, Is.EqualTo(HttpStatusCode.RequestEntityTooLarge));
