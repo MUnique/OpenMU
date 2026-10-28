@@ -27,3 +27,9 @@ position (`B6`), NPC position (`BB`), and guild command (`B2:1D`) packets. Withi
 each update, the player packet replaces the position layer and the NPC packet
 adds structures afterward. The commander position is already known locally;
 the existing position packet has no separate commander-identity field.
+
+## Friendly fire during the battle
+
+During the battle, players of the same siege side can't damage each other,
+including with area skills and pets. This applies only on the Castle Siege map
+and only to players with a siege side.
