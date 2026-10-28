@@ -1,9 +1,10 @@
-﻿// <copyright file="CharacterMoveTest.cs" company="MUnique">
+// <copyright file="CharacterMoveTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Diagnostics;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -150,6 +151,25 @@ public class CharacterMoveTest
     }
 
     /// <summary>
+    /// Tests that a reported stop position one step ahead is accepted while the server position
+    /// is behind it, because the client may legitimately be ahead by the time since the last step.
+    /// </summary>
+    [Test]
+    public async ValueTask TestStopPositionOneStepAheadIsAcceptedAsync()
+    {
+        var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
+        var walkPoints = await GetWalkPointsAsync(player).ConfigureAwait(false);
+        var stopPoint = walkPoints[2];
+        await HandleStopPacketAsync(player, stopPoint).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(player.IsWalking, Is.False);
+            Assert.That(player.Position, Is.EqualTo(stopPoint));
+        });
+    }
+
+    /// <summary>
     /// Tests if a reported stop position further away than a walk may start away from us isn't taken, so
     /// the request can't be used to travel the rest of the path at once.
     /// the walk ends where we are and the player is told about it.
@@ -157,17 +177,7 @@ public class CharacterMoveTest
     [Test]
     public async ValueTask TestStopPositionTooFarAwayIsNotTakenAsync()
     {
-        // The walker takes its first step right away and runs in the background. If it took another step
-        // after we moved the player away from the path, the player would be back in reach of the end point.
-        // So the steps are slowed down, and we wait until the first one is done before moving the player away.
-        var player = await this.DoTheWalkAsync(movementSpeedFactor: 0.0001f).ConfigureAwait(false);
-        var deadline = DateTime.UtcNow.AddSeconds(10);
-        while (player.Position == StartPoint && DateTime.UtcNow < deadline)
-        {
-            await Task.Delay(10).ConfigureAwait(false);
-        }
-
-        Assert.That(player.Position, Is.Not.EqualTo(StartPoint), "The walker didn't take its first step.");
+        var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
         var farAway = new Point((byte)(StartPoint.X + 10), StartPoint.Y);
         player.Position = farAway;
 
@@ -216,6 +226,37 @@ public class CharacterMoveTest
         Assert.That(player.Position, Is.EqualTo(StartPoint));
         Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!)
             .Verify(p => p.ObjectMovedAsync(player, It.IsAny<MoveType>()), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that a client which restarts its walk on every request can't execute steps faster
+    /// than the character's step delay.
+    /// </summary>
+    [Test]
+    public async ValueTask TestRapidWalkRestartsCannotExceedStepPaceAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Position = StartPoint;
+        player.Attributes![Stats.MovementSpeed] = 40;
+
+        var startPosition = player.Position;
+        var stepDelay = player.StepDelay;
+        var stopwatch = Stopwatch.StartNew();
+        while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(500))
+        {
+            var from = player.Position;
+            var to = new Point((byte)(from.X + 1), from.Y);
+            WalkingStep[] steps = [new() { From = from, To = to, Direction = Direction.East }];
+            await player.WalkToAsync(to, steps).ConfigureAwait(false);
+            await Task.Delay(20).ConfigureAwait(false);
+        }
+
+        stopwatch.Stop();
+        await player.StopWalkingAsync().ConfigureAwait(false);
+        var distance = player.Position.EuclideanDistanceTo(startPosition);
+        var maxSteps = (stopwatch.Elapsed.TotalMilliseconds / stepDelay.TotalMilliseconds) + 2;
+
+        Assert.That(distance, Is.LessThanOrEqualTo(maxSteps), "Walk restarts granted more steps than the step delay allows.");
     }
 
     /// <summary>

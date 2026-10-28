@@ -31,8 +31,8 @@ public class RageSkillAttackAction
         }
 
         var explicitTarget = player.GetObject(explicitTargetId) as IAttackable;
-        if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { } skill
-                                     || (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, skill.Skill!.Range)))
+        if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { Skill: { } usedSkill } skill
+                                     || (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range)))
         {
             return;
         }
@@ -45,7 +45,7 @@ public class RageSkillAttackAction
 
         targets.AddRange(
             map
-                .GetAttackablesInRange(player.Position, skill.Skill!.Range)
+                .GetAttackablesInRange(player.Position, usedSkill.Range)
                 .Where(t => t != explicitTarget && t != player)
                 .Where(t => t is not Player)
                 .OrderBy(t => t.GetDistanceTo(player))
@@ -54,6 +54,11 @@ public class RageSkillAttackAction
         await player.InvokeViewPlugInAsync<IShowRageAttackRangePlugIn>(p => p.ShowRageAttackRangeAsync(skillId, targets)).ConfigureAwait(false);
 
         if (!targets.Any())
+        {
+            return;
+        }
+
+        if (!await AttackActionValidator.CanAttackAsync(player, usedSkill).ConfigureAwait(false))
         {
             return;
         }

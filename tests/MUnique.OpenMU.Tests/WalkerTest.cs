@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Diagnostics;
 using System.Threading;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -93,6 +94,52 @@ public class WalkerTest
         await walker.StopAsync().ConfigureAwait(false);
 
         await AssertNoLoopKeepsPollingAsync(supporter).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tests that a new walk which starts right after a step of the previous walk can't perform its
+    /// first step before the step delay has passed. Otherwise every walk restart would grant an extra
+    /// immediate step, which made normal frequent clicks look like a walk speed hack.
+    /// </summary>
+    [Test]
+    public async Task RestartingWalkKeepsTheStepDelayOfThePreviousStepAsync()
+    {
+        var supporter = new TestWalkSupporter();
+        using var walker = new Walker(supporter.Object, _ => TimeSpan.FromMilliseconds(200), paceFirstStepAcrossWalks: true);
+        var firstStep = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var secondStep = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var stepTimestamps = new List<TimeSpan>(2);
+        var stopwatch = Stopwatch.StartNew();
+        walker.StepPerformed += (_, _) =>
+        {
+            lock (stepTimestamps)
+            {
+                stepTimestamps.Add(stopwatch.Elapsed);
+                if (stepTimestamps.Count == 1)
+                {
+                    firstStep.TrySetResult();
+                }
+                else if (stepTimestamps.Count == 2)
+                {
+                    secondStep.TrySetResult();
+                }
+                else
+                {
+                    // Ignore additional steps.
+                }
+            }
+        };
+
+        var firstToken = await walker.InitializeWalkToAsync(new Point(101, 100), CreateSteps()[..1]).ConfigureAwait(false);
+        await walker.StartWalkAsync(firstToken).ConfigureAwait(false);
+        await firstStep.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+        WalkingStep[] secondSteps = [new(new Point(101, 100), new Point(102, 100), Direction.East)];
+        var secondToken = await walker.InitializeWalkToAsync(new Point(102, 100), secondSteps).ConfigureAwait(false);
+        await walker.StartWalkAsync(secondToken).ConfigureAwait(false);
+        await secondStep.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+        Assert.That(stepTimestamps[1] - stepTimestamps[0], Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(150)));
     }
 
     /// <summary>

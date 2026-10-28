@@ -158,6 +158,18 @@ public static class AreaSkillTargetSelector
     }
 
     /// <summary>
+    /// Gets the radius in which a target-area skill can hit targets around its aimed center.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns>The target-area radius, or <c>null</c> if the skill doesn't use a target-area filter.</returns>
+    internal static float? GetTargetAreaRadius(Skill skill)
+    {
+        return skill.AreaSkillSettings is { UseTargetAreaFilter: true } settings
+            ? settings.TargetAreaDiameter * 0.5f
+            : null;
+    }
+
+    /// <summary>
     /// Applies the filters which every implicit area target must pass: not the
     /// attacker, no safezone, active, no summoned monsters, skill restrictions,
     /// and players only when the configuration allows hitting them.
@@ -192,9 +204,9 @@ public static class AreaSkillTargetSelector
             targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
         }
 
-        if (skill.AreaSkillSettings is { UseTargetAreaFilter: true })
+        if (GetTargetAreaRadius(skill) is { } targetAreaRadius)
         {
-            targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < skill.AreaSkillSettings.TargetAreaDiameter * 0.5f);
+            targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < targetAreaRadius);
         }
 
         return targetsInRange;
