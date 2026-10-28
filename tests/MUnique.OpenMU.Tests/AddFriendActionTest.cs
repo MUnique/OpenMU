@@ -51,9 +51,35 @@ public class AddFriendActionTest
         friendServer.Verify(f => f.FriendRequestAsync("Requester", "Existing"), Times.Once);
     }
 
-    private static async ValueTask<Player> CreatePlayerAsync(IFriendServer friendServer, string existingCharacter)
+    /// <summary>
+    /// Checking the name must not leave a friend record behind in the persistence, neither for an
+    /// unknown nor for an existing name (the friend server creates the real one).
+    /// </summary>
+    [Test]
+    public async ValueTask CheckingTheNameCreatesNoFriendRecordAsync()
     {
+        var friendServer = new Mock<IFriendServer>();
         var persistence = new InMemoryPersistenceContextProvider();
+        var player = await CreatePlayerAsync(friendServer.Object, "Existing", persistence).ConfigureAwait(false);
+        var friendsBefore = await CountFriendsAsync(persistence).ConfigureAwait(false);
+
+        await new AddFriendAction().AddFriendAsync(player, "Nobody").ConfigureAwait(false);
+        await new AddFriendAction().AddFriendAsync(player, "Existing").ConfigureAwait(false);
+
+        var friendsAfter = await CountFriendsAsync(persistence).ConfigureAwait(false);
+        Assert.That(friendsAfter, Is.EqualTo(friendsBefore));
+    }
+
+    private static async ValueTask<int> CountFriendsAsync(InMemoryPersistenceContextProvider persistence)
+    {
+        // The repository only exists after the first friend record was created.
+        var repository = persistence.RepositoryProvider.GetRepository<Friend>();
+        return repository is null ? 0 : (await repository.GetAllAsync().ConfigureAwait(false)).Count();
+    }
+
+    private static async ValueTask<Player> CreatePlayerAsync(IFriendServer friendServer, string existingCharacter, InMemoryPersistenceContextProvider? persistence = null)
+    {
+        persistence ??= new InMemoryPersistenceContextProvider();
         using (var setup = persistence.CreateNewContext())
         {
             setup.CreateNew<MUnique.OpenMU.DataModel.Entities.Character>().Name = existingCharacter;
