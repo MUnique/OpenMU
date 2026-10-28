@@ -17,7 +17,7 @@ public sealed class AdminOperationExceptionFilter : IExceptionFilter
     {
         if (context.Exception is AdminOperationException error)
         {
-            context.Result = new ObjectResult(new { error = error.Message })
+            context.Result = new ObjectResult(new { error = error.Message, kind = error.Kind.ToString() })
             {
                 StatusCode = error.Kind switch
                 {

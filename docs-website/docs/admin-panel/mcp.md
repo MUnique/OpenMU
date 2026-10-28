@@ -237,6 +237,8 @@ instructions to the agent.
 Tools are filtered by role during discovery and checked again when called.
 The host limits requests per API client and returns HTTP 429 when the configured
 minute allowance is exhausted, or HTTP 413 for oversized request bodies.
+The 429 response includes a `Retry-After` header in seconds; wait at least that
+long before sending another request with the same API key.
 Configuration and offline character changes use preview/apply as described
 below. Live GM tools are described below; OAuth remains a separate follow-up.
 
@@ -301,6 +303,12 @@ failures return HTTP 503, authorization failures return HTTP 403, and invalid
 operational arguments return HTTP 400. Business refusals and uncertain audit
 completion return HTTP 409. After an uncertain outcome, inspect current state
 before retrying.
+Operational error bodies retain `error` and include `kind`: `Conflict`,
+`Forbidden`, `InvalidInput`, `Unavailable`, or `Uncertain`. MCP tool errors
+retain their text and `isError: true`, and expose the same invariant value in
+`_meta["openmu/errorKind"]`. Validation errors use `InvalidInput`; configuration
+read conflicts use `Conflict`. Unexpected errors remain generic and do not
+expose host details. A missing kind is not evidence that retrying is safe.
 
 ## Configuration and offline character changes
 

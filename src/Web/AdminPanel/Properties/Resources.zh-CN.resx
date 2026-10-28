@@ -2104,6 +2104,39 @@
   <data name="EditorContextChanged" xml:space="preserve">
     <value>此编辑器打开期间配置已更改。请先复制未保存的修改，再使用刷新加载当前数据后保存。</value>
   </data>
+  <data name="AuditHistory" xml:space="preserve">
+    <value>操作审计</value>
+  </data>
+  <data name="AuditPendingExplanation" xml:space="preserve">
+    <value>状态为 Pending（结果未确认）的记录，其操作结果尚不明确。重试操作前，请先检查当前状态。</value>
+  </data>
+  <data name="AuditUnavailable" xml:space="preserve">
+    <value>无法加载操作审计记录，请检查管理数据库连接。</value>
+  </data>
+  <data name="AuditTime" xml:space="preserve">
+    <value>时间（UTC）</value>
+  </data>
+  <data name="AuditPrincipal" xml:space="preserve">
+    <value>操作人</value>
+  </data>
+  <data name="AuditFrontend" xml:space="preserve">
+    <value>操作来源</value>
+  </data>
+  <data name="AuditOperation" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="AuditArguments" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="AuditOutcome" xml:space="preserve">
+    <value>执行结果</value>
+  </data>
+  <data name="AuditPrevious" xml:space="preserve">
+    <value>上一页</value>
+  </data>
+  <data name="AuditNext" xml:space="preserve">
+    <value>下一页</value>
+  </data>
   <data name="Discord" xml:space="preserve">
     <value>Discord</value>
   </data>

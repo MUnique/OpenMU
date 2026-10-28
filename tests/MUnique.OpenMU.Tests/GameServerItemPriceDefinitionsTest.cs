@@ -4,15 +4,8 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.InMemory;
-using MUnique.OpenMU.PlugIns;
-using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
 /// Tests that a game server doesn't start without <see cref="ItemPriceDefinition"/>s,
@@ -28,7 +21,9 @@ public class GameServerItemPriceDefinitionsTest
     [Test]
     public async Task DoesNotStartWithoutItemPriceDefinitionsAsync()
     {
-        var gameServer = CreateGameServer(new BasicModel.GameConfiguration());
+        var gameConfiguration = TestGameServers.CreateStartableConfiguration();
+        gameConfiguration.ItemPriceDefinitions.Clear();
+        await using var gameServer = TestGameServers.Create(gameConfiguration);
 
         await gameServer.StartAsync().ConfigureAwait(false);
 
@@ -42,31 +37,10 @@ public class GameServerItemPriceDefinitionsTest
     [Test]
     public async Task StartsWithItemPriceDefinitionsAsync()
     {
-        var gameConfiguration = new BasicModel.GameConfiguration();
-        gameConfiguration.ItemPriceDefinitions.Add(new BasicModel.ItemPriceDefinition { Name = "Jewel of Bless", BasePriceFormula = "9000000" });
-        var gameServer = CreateGameServer(gameConfiguration);
+        await using var gameServer = TestGameServers.Create(TestGameServers.CreateStartableConfiguration());
 
         await gameServer.StartAsync().ConfigureAwait(false);
 
         Assert.That(gameServer.ServerState, Is.EqualTo(ServerState.Started));
-    }
-
-    private static GameServer CreateGameServer(BasicModel.GameConfiguration gameConfiguration)
-    {
-        return new GameServer(
-            new BasicModel.GameServerDefinition
-            {
-                ServerID = 1,
-                GameConfiguration = gameConfiguration,
-                ServerConfiguration = new BasicModel.GameServerConfiguration(),
-            },
-            new Mock<IGuildServer>().Object,
-            new Mock<IEventPublisher>().Object,
-            new Mock<ILoginServer>().Object,
-            new InMemoryPersistenceContextProvider(),
-            new Mock<IFriendServer>().Object,
-            NullLoggerFactory.Instance,
-            new PlugInManager([], NullLoggerFactory.Instance, null, null),
-            new ConfigurationChangeMediator());
     }
 }
