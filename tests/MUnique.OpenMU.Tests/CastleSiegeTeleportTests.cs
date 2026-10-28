@@ -97,7 +97,7 @@ public class CastleSiegeTeleportTests
 
     private sealed class SiegeFixture
     {
-        private SiegeFixture(IGameContext gameContext, CastleSiegeContext context, GameMap map, GameMap otherMap)
+        public SiegeFixture(IGameContext gameContext, CastleSiegeContext context, GameMap map, GameMap otherMap)
         {
             this.GameContext = gameContext;
             this.Context = context;
