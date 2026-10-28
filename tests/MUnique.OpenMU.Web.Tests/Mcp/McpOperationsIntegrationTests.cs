@@ -8,6 +8,7 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
@@ -15,6 +16,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Mcp;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.Tests.AdminAuth;
 
 /// <summary>Verifies real MCP writes, audit durability, role isolation and read-only enforcement.</summary>
@@ -202,6 +204,46 @@ public sealed class McpOperationsIntegrationTests
             .Select(t => new { t.Name, t.ProtocolTool.InputSchema, t.ProtocolTool.Annotations }));
         var expected = System.Text.Json.Nodes.JsonNode.Parse(await System.IO.File.ReadAllTextAsync(System.IO.Path.Combine(TestContext.CurrentContext.TestDirectory, "Mcp", "operations-tools.json")).ConfigureAwait(false));
         Assert.That(System.Text.Json.Nodes.JsonNode.DeepEquals(schema, expected), Is.True, schema!.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+    }
+
+    /// <summary>Operational errors keep their text and expose the invariant error kind over HTTP MCP.</summary>
+    [TestCase(AdminOperationErrorKind.Conflict)]
+    [TestCase(AdminOperationErrorKind.Forbidden)]
+    [TestCase(AdminOperationErrorKind.InvalidInput)]
+    [TestCase(AdminOperationErrorKind.Unavailable)]
+    [TestCase(AdminOperationErrorKind.Uncertain)]
+    public async Task OperationalErrorsIncludeKindAsync(AdminOperationErrorKind kind)
+    {
+        var server = this.InstallServer(9);
+        server.Setup(s => s.StartAsync()).Returns(() => ValueTask.FromException(new AdminOperationException("Safe operational message.", kind)));
+        await using var client = await this.AdminAsync().ConfigureAwait(false);
+        var result = await client.CallToolAsync("server_start", new Dictionary<string, object?> { ["serverId"] = 9, ["serverType"] = "GameServer" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.True);
+        Assert.That(result.Content.OfType<TextContentBlock>().Single().Text, Is.EqualTo("An error occurred invoking 'server_start': Safe operational message."));
+        Assert.That(result.Meta?["openmu/errorKind"]?.GetValue<string>(), Is.EqualTo(kind.ToString()));
+    }
+
+    /// <summary>Read validation uses the same machine-readable kind without changing its message.</summary>
+    [Test]
+    public async Task ReadValidationIncludesKindAsync()
+    {
+        await using var client = await this.AdminAsync().ConfigureAwait(false);
+        var result = await client.CallToolAsync("accounts_get", new Dictionary<string, object?> { ["loginName"] = "missing" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.True);
+        Assert.That(result.Meta?["openmu/errorKind"]?.GetValue<string>(), Is.EqualTo("InvalidInput"));
+        Assert.That(result.Content.OfType<TextContentBlock>().Single().Text, Does.Contain("Account not found."));
+    }
+
+    /// <summary>Unexpected failures still use the SDK's generic error without disclosing host details.</summary>
+    [Test]
+    public async Task UnexpectedErrorsStayPrivateAsync()
+    {
+        var server = this.InstallServer(9);
+        server.Setup(s => s.StartAsync()).Returns(() => ValueTask.FromException(new InvalidOperationException("private-database-details")));
+        await using var client = await this.AdminAsync().ConfigureAwait(false);
+        var result = await client.CallToolAsync("server_start", new Dictionary<string, object?> { ["serverId"] = 9, ["serverType"] = "GameServer" }).ConfigureAwait(false);
+        Assert.That(result.IsError, Is.True);
+        Assert.That(JsonSerializer.Serialize(result), Does.Not.Contain("private-database-details"));
     }
 
     private ValueTask<McpClient> AdminAsync() => this._host.ConnectAsync("omu_mcp-admin-test");

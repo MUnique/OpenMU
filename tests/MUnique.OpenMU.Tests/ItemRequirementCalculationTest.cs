@@ -15,7 +15,7 @@ using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 using ItemSlotType = MUnique.OpenMU.Persistence.BasicModel.ItemSlotType;
 
 /// <summary>
-/// Unit tests for <see cref="ItemExtensions.GetRequirement"/>.
+/// Unit tests for <see cref="GameLogic.ItemExtensions.GetRequirement"/>.
 /// </summary>
 [TestFixture]
 public class ItemRequirementCalculationTest
@@ -53,8 +53,8 @@ public class ItemRequirementCalculationTest
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
 
-        var strengthValue = item.GetRequirement(strengthRequirement);
-        var agilityValue = item.GetRequirement(agilityRequirement);
+        var strengthValue = item.GetRequirement(strengthRequirement, TestItemStatProfiles.ForItem(item.Definition!));
+        var agilityValue = item.GetRequirement(agilityRequirement, TestItemStatProfiles.ForItem(item.Definition!));
 
         Assert.That(strengthValue.Item1, Is.EqualTo(Stats.TotalStrength));
         Assert.That(strengthValue.Item2, Is.EqualTo(requiredStrength));
@@ -79,8 +79,8 @@ public class ItemRequirementCalculationTest
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
 
-        var strengthValue = item.GetRequirement(strengthRequirement);
-        var agilityValue = item.GetRequirement(agilityRequirement);
+        var strengthValue = item.GetRequirement(strengthRequirement, TestItemStatProfiles.ForItem(item.Definition!));
+        var agilityValue = item.GetRequirement(agilityRequirement, TestItemStatProfiles.ForItem(item.Definition!));
 
         Assert.That(strengthValue.Item1, Is.EqualTo(Stats.TotalStrength));
         Assert.That(strengthValue.Item2, Is.EqualTo(33));
@@ -107,7 +107,7 @@ public class ItemRequirementCalculationTest
         item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
 
-        var strengthValue = item.GetRequirement(strengthRequirement);
+        var strengthValue = item.GetRequirement(strengthRequirement, TestItemStatProfiles.ForItem(item.Definition!));
 
         Assert.That(strengthValue.Item1, Is.EqualTo(Stats.TotalStrength));
         Assert.That(strengthValue.Item2, Is.EqualTo(35));
@@ -130,7 +130,7 @@ public class ItemRequirementCalculationTest
             MinimumItemLevel = 3,
         };
 
-        var result = item.GetRequirement(requirement);
+        var result = item.GetRequirement(requirement, TestItemStatProfiles.ForItem(item.Definition!));
 
         Assert.That(result.Attr, Is.EqualTo(Stats.Level));
         Assert.That(result.Value, Is.EqualTo(expectedRequirement));
@@ -169,8 +169,8 @@ public class ItemRequirementCalculationTest
         var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 62 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 16 };
 
-        var strengthValue = item.GetRequirement(strengthRequirement);
-        var agilityValue = item.GetRequirement(agilityRequirement);
+        var strengthValue = item.GetRequirement(strengthRequirement, TestItemStatProfiles.ForItem(item.Definition!));
+        var agilityValue = item.GetRequirement(agilityRequirement, TestItemStatProfiles.ForItem(item.Definition!));
 
         Assert.That(strengthValue.Item1, Is.EqualTo(Stats.TotalStrength));
         Assert.That(strengthValue.Item2, Is.EqualTo(requiredStrength));
@@ -213,8 +213,8 @@ public class ItemRequirementCalculationTest
         var energyRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 168 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 25 };
 
-        var energyValue = item.GetRequirement(energyRequirement);
-        var agilityValue = item.GetRequirement(agilityRequirement);
+        var energyValue = item.GetRequirement(energyRequirement, TestItemStatProfiles.ForItem(item.Definition!));
+        var agilityValue = item.GetRequirement(agilityRequirement, TestItemStatProfiles.ForItem(item.Definition!));
 
         Assert.That(energyValue.Item1, Is.EqualTo(Stats.TotalEnergy));
         Assert.That(energyValue.Item2, Is.EqualTo(requiredEnergy));

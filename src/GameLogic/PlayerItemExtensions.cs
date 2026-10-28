@@ -23,7 +23,7 @@ public static class PlayerItemExtensions
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
-        foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
+        foreach (var requirement in item.GetRequirements(player.GameContext.Configuration))
         {
             if (player.Attributes![requirement.Attr] < requirement.Value)
             {
