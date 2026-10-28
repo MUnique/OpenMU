@@ -124,6 +124,7 @@ public static class AdminPanelAuthExtensions
                 configureOptions: null);
 
         services.AddSingleton<IAuthorizationHandler, AdminAccessRequirementHandler>();
+        services.AddSingleton<IAuthorizationHandler, AdminUserExistsRequirementHandler>();
         services.AddAuthorizationBuilder()
             .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddRequirements(new AdminAccessRequirement()).Build())
             .AddPolicy(AdminPolicies.AuthenticatedOperator, policy => policy.RequireAuthenticatedUser().RequireRole(AdminRoles.Operator))
@@ -131,7 +132,12 @@ public static class AdminPanelAuthExtensions
             .AddPolicy(AdminPolicies.Viewer, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Viewer)))
             .AddPolicy(AdminPolicies.Operator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Operator)))
             .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)))
-            .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)));
+            .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)))
+            .AddPolicy(AdminPolicies.ApiKeyViewer, policy => policy
+                .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .RequireRole(AdminRoles.Viewer)
+                .AddRequirements(new AdminUserExistsRequirement()));
         services.AddHttpContextAccessor();
         services.AddScoped<AdminOperationCircuitState>();
         services.AddScoped<CircuitHandler>(sp => sp.GetRequiredService<AdminOperationCircuitState>());

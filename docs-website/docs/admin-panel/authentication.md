@@ -199,6 +199,7 @@ have this role implicitly.
 | `POST /api/players/{account}/disconnect` | Operator |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
+| `GET /api/items/exchange` | Viewer, [key only](#items-for-the-client-editor) |
 
 So a status page gets a Viewer key and can only read, while an application which
 announces something in the game needs an Operator key. The role is chosen when
@@ -206,7 +207,27 @@ the key is created and can't be changed afterwards — create a new key with the
 role you need and delete the old one.
 
 A signed in admin panel user can use the API as well, with the same roles — this
-is handy while trying things out in the browser.
+is handy while trying things out in the browser. Only the item exchange file
+needs a key.
+
+### Items for the client editor
+
+`GET /api/items/exchange` returns the items as an item exchange file of the
+MuMain client. Its editor, MuEditor, downloads it with "Update from server" and
+shows what differs from the client's items before anything changes; see the
+client's `docs/item-data.md`.
+
+- It needs an API key with the Viewer role. The login cookie of the admin panel
+  isn't accepted.
+- It's refused (403) while the admin panel has no user yet: in that state,
+  anybody who reaches the admin panel can create a key.
+- It reads the saved configuration, so changes which aren't saved yet in the
+  admin panel aren't part of it.
+- The file names the item fields it carries in its `fields` list; the client
+  keeps its own values of the other fields.
+
+The admin panel shouldn't be reachable from the internet for this either: keep
+it on localhost, behind a VPN or a firewall.
 
 ### Registering accounts from a website
 

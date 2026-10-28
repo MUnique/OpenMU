@@ -37,4 +37,11 @@ internal static class AdminPolicies
 
     /// <summary>Authenticated cash shop API callers.</summary>
     internal const string AuthenticatedCashShop = "Admin.AuthenticatedCashShop";
+
+    /// <summary>
+    /// The policy which needs an API key with the viewer role, and which refuses
+    /// requests while the admin panel has no user (in its setup mode).
+    /// The login cookie of the admin panel isn't accepted.
+    /// </summary>
+    internal const string ApiKeyViewer = "OpenMU.ApiKeyViewer";
 }
