@@ -2137,4 +2137,49 @@
   <data name="AuditNext" xml:space="preserve">
     <value>下一页</value>
   </data>
+  <data name="LoggingConfiguration" xml:space="preserve">
+    <value>日志配置</value>
+  </data>
+  <data name="LoggingConfigurationDescription" xml:space="preserve">
+    <value>服务器的日志配置保存在文件 {0} 中。保存后，日志级别的修改立即生效；新增或删除日志来源，以及其他配置修改，需要重启服务器后才能生效。</value>
+  </data>
+  <data name="LoggingConfigurationNotAvailable" xml:space="preserve">
+    <value>仅当管理后台与服务器运行在同一进程中（一体化部署）时，才能编辑日志配置。</value>
+  </data>
+  <data name="LogLevels" xml:space="preserve">
+    <value>日志级别</value>
+  </data>
+  <data name="DefaultLogLevel" xml:space="preserve">
+    <value>默认日志级别</value>
+  </data>
+  <data name="LogLevelOverrides" xml:space="preserve">
+    <value>按来源设置日志级别</value>
+  </data>
+  <data name="LogLevelOverridesDescription" xml:space="preserve">
+    <value>日志来源是日志记录器的名称，通常为类的完整名称，也可以是包含多个日志记录器的命名空间。匹配时，范围最具体的来源规则优先。</value>
+  </data>
+  <data name="LogSource" xml:space="preserve">
+    <value>日志来源</value>
+  </data>
+  <data name="AdvancedJson" xml:space="preserve">
+    <value>高级（JSON）</value>
+  </data>
+  <data name="AdvancedLoggingJsonDescription" xml:space="preserve">
+    <value>在此可编辑配置文件中的整个 Serilog 配置节，例如添加日志输出目标或过滤器。可用配置项请参阅 Serilog 文档。</value>
+  </data>
+  <data name="LoggingConfigurationSaved" xml:space="preserve">
+    <value>日志配置已保存。</value>
+  </data>
+  <data name="LoggingConfigurationLoadError" xml:space="preserve">
+    <value>无法加载日志配置：{0}</value>
+  </data>
+  <data name="LoggingConfigurationSaveError" xml:space="preserve">
+    <value>无法保存日志配置：{0}</value>
+  </data>
+  <data name="LoggingConfigurationInvalidJson" xml:space="preserve">
+    <value>JSON 格式无效：{0}</value>
+  </data>
+  <data name="LogLevelOverridesInvalid" xml:space="preserve">
+    <value>每个日志来源都必须填写名称，且名称不能重复。</value>
+  </data>
 </root>
