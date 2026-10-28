@@ -85,6 +85,10 @@ public class BuyNpcItemAction
             // be sent on actual failures; the durability update tells the client the new stack size.
             await player.InvokeViewPlugInAsync<INpcItemBoughtPlugIn>(p => p.NpcItemBoughtAsync(targetItem)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
+            if (purchasePlugIns is not null)
+            {
+                await purchasePlugIns.AfterPurchaseAsync(player, merchant, purchase, targetItem).ConfigureAwait(false);
+            }
         }
         else
         {
