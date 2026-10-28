@@ -5,8 +5,6 @@ sidebar_position: 2
 description: Movement and attack speed checks, client clock observation, and how to roll them out safely.
 ---
 
-# Speed hack detection
-
 The *Speed Hack Detection* feature plugin watches the walk and attack pace of
 players and compares it with what their character may do. It is an observation
 tool first: the stronger responses are opt-in, so a server can trial the checks

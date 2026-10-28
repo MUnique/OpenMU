@@ -134,6 +134,10 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             // when it's too large. The mismatch still contributes to warnings and punishments.
             await this._violationRecorder.RecordAsync(player, state, config, positionMismatchSeverity).ConfigureAwait(false);
         }
+        else
+        {
+            // Neither the walk pace check nor the position mismatch recorded a violation.
+        }
     }
 
     /// <inheritdoc/>

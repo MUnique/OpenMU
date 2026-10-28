@@ -123,6 +123,10 @@ public class WalkerTest
                 {
                     secondStep.TrySetResult();
                 }
+                else
+                {
+                    // Ignore additional steps.
+                }
             }
         };
 

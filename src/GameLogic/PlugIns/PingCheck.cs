@@ -76,6 +76,10 @@ internal sealed class PingCheck
                 serverElapsedMs,
                 config.PingClockToleranceMs);
         }
+        else
+        {
+            // Client clock is within expected tolerance; no action taken.
+        }
 
         if (player.Attributes is { } attributes)
         {
