@@ -262,7 +262,7 @@ public class SpeedHackAntiCheatTests
         await new AreaSkillAttackAction().AttackAsync(player, 0, (ushort)skill.Number, player.Position, 0).ConfigureAwait(false);
         Assert.That(player.SkillHitValidator.IsTargetInArea((ushort)skill.Number, targetPosition), Is.True, "The cast did not record its area.");
 
-        var skillEntry = player.SkillList.GetSkill((ushort)skill.Number)!;
+        var skillEntry = player.SkillList!.GetSkill((ushort)skill.Number)!;
         var hitAction = new AreaSkillHitAction();
         await hitAction.AttackTargetAsync(player, target.Object, skillEntry).ConfigureAwait(false);
         target.Verify(t => t.AttackByAsync(It.IsAny<IAttacker>(), It.IsAny<SkillEntry?>(), It.IsAny<bool>(), It.IsAny<double>(), It.IsAny<bool?>()), Times.Once);
