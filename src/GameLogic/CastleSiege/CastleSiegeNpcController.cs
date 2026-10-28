@@ -213,6 +213,41 @@ public sealed class CastleSiegeNpcController
     }
 
     /// <summary>
+    /// Determines whether the straight line between two points crosses the area of a closed gate.
+    /// </summary>
+    /// <param name="from">The start point.</param>
+    /// <param name="to">The end point.</param>
+    /// <returns><see langword="true"/> if a tile on the line is blocked by a closed gate.</returns>
+    /// <remarks>
+    /// The line visits at least one tile per row and column it covers, so it can't skip the two rows of a gate.
+    /// </remarks>
+    internal bool IsLineBlockedByClosedGate(Point from, Point to)
+    {
+        lock (this._gateTerrainLock)
+        {
+            if (this._gateTerrain.Count == 0)
+            {
+                return false;
+            }
+
+            var deltaX = to.X - from.X;
+            var deltaY = to.Y - from.Y;
+            var steps = Math.Max(Math.Abs(deltaX), Math.Abs(deltaY));
+            for (var step = 0; step <= steps; step++)
+            {
+                var x = from.X + (steps == 0 ? 0 : (int)Math.Round((double)deltaX * step / steps));
+                var y = from.Y + (steps == 0 ? 0 : (int)Math.Round((double)deltaY * step / steps));
+                if (this._gateTerrain.ContainsKey(new Point((byte)x, (byte)y)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Applies a reference-counted terrain block for one gate area.
     /// </summary>
     /// <param name="map">The Castle Siege map.</param>

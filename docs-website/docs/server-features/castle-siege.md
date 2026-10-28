@@ -27,3 +27,11 @@ position (`B6`), NPC position (`BB`), and guild command (`B2:1D`) packets. Withi
 each update, the player packet replaces the position layer and the NPC packet
 adds structures afterward. The commander position is already known locally;
 the existing position packet has no separate commander-identity field.
+
+## Teleporting over gates
+
+While a castle gate is closed, players can't use the Teleport or Teleport Ally
+skill to cross it. The gate blocks a teleport when the straight line between
+the start and the target passes through its area. An opened or destroyed gate
+doesn't block teleports. The castle walls are ordinary terrain and are not
+covered by this rule.
