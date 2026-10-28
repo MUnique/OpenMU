@@ -9,9 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
@@ -25,6 +23,9 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
 {
     private readonly ConditionalWeakTable<Player, SpeedHackState> _playerStates = new();
     private readonly TimeProvider _timeProvider;
+    private readonly WalkSpeedCheck _walkCheck;
+    private readonly AttackSpeedCheck _attackCheck;
+    private readonly PingCheck _pingCheck;
     private readonly SpeedHackViolationRecorder _violationRecorder;
 
     /// <summary>
@@ -42,6 +43,9 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     internal SpeedHackDetectPlugIn(TimeProvider timeProvider)
     {
         this._timeProvider = timeProvider;
+        this._walkCheck = new WalkSpeedCheck(timeProvider);
+        this._attackCheck = new AttackSpeedCheck(timeProvider);
+        this._pingCheck = new PingCheck(timeProvider);
         this._violationRecorder = new SpeedHackViolationRecorder(timeProvider);
     }
 
@@ -64,56 +68,19 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// <inheritdoc/>
     public ValueTask ResetMovementStateAsync(Player player)
     {
-        var state = this.GetState(player);
-        lock (state.Lock)
-        {
-            state.ResetWalk();
-        }
-
+        this._walkCheck.Reset(this.GetState(player));
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
     public void WalkStepPerformed(Player player, WalkingStep step, TimeSpan stepDelay)
     {
-        if (IsServerControlled(player))
+        if (IsServerControlled(player) || this.Configuration is not { } config)
         {
             return;
         }
 
-        var config = this.Configuration;
-        if (config is null)
-        {
-            return;
-        }
-
-        if (player.IsAtSafezone())
-        {
-            var safezoneState = this.GetState(player);
-            lock (safezoneState.Lock)
-            {
-                safezoneState.ResetWalk();
-            }
-
-            return;
-        }
-
-        double distance = step.From.EuclideanDistanceTo(step.To);
-        if (distance <= 0)
-        {
-            return;
-        }
-
-        double costMs = WalkSpeedValidator.GetExpectedTimeMs(distance, stepDelay);
-        double windowMs = WalkSpeedValidator.ResolveWindowSeconds(config.WalkSpeedWindowSeconds) * 1000.0;
-        long now = this._timeProvider.GetTimestamp();
-        double nowMs = this._timeProvider.GetElapsedTime(0, now).TotalMilliseconds;
-
-        var state = this.GetState(player);
-        lock (state.Lock)
-        {
-            state.WalkWindow.Add(nowMs, costMs, windowMs);
-        }
+        this._walkCheck.RecordStep(player, this.GetState(player), config, step, stepDelay);
     }
 
     /// <summary>
@@ -147,11 +114,11 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             }
             else
             {
-                var walkEvaluation = this.EvaluateWalkLocked(player, config, state, this._timeProvider.GetTimestamp());
+                var walkEvaluation = this._walkCheck.Evaluate(player, config, state, this._timeProvider.GetTimestamp());
                 violationSeverity = walkEvaluation.Severity;
                 if (!walkEvaluation.IsViolation)
                 {
-                    positionMismatchSeverity = this.PenalizePositionMismatchLocked(player, config, state, startPoint.EuclideanDistanceTo(player.Position));
+                    positionMismatchSeverity = this._walkCheck.PenalizePositionMismatch(player, config, state, startPoint.EuclideanDistanceTo(player.Position));
                 }
             }
         }
@@ -183,59 +150,15 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             return;
         }
 
-        var attackLimit = AttackSpeedModel.Resolve(config, player, skill);
-        var now = this._timeProvider.GetTimestamp();
-
-        var minIntervalMs = attackLimit.IntervalMs;
         var state = this.GetState(player);
-        bool shouldRecordViolation = false;
-        double elapsedMs = 0;
-        double remainingTokens = 0;
-
-        lock (state.Lock)
+        var severity = this._attackCheck.Evaluate(player, config, state, skill);
+        if (severity is SpeedHackViolationSeverity.None)
         {
-            if (state.LastAttackTokenUpdateTimestamp is null)
-            {
-                state.LastAttackTokenUpdateTimestamp = now;
-                state.AttackTokens = config.MaxAttackTokens - 1.0;
-                return;
-            }
-
-            elapsedMs = Math.Max(0, this._timeProvider.GetElapsedTime(state.LastAttackTokenUpdateTimestamp.Value, now).TotalMilliseconds);
-            state.LastAttackTokenUpdateTimestamp = now;
-
-            var regen = elapsedMs / minIntervalMs;
-            state.AttackTokens = Math.Min(config.MaxAttackTokens, state.AttackTokens + regen);
-
-            if (state.AttackTokens >= 1.0)
-            {
-                state.AttackTokens -= 1.0;
-                return;
-            }
-
-            remainingTokens = state.AttackTokens;
-            shouldRecordViolation = !config.ObserveOnly;
+            return;
         }
 
-        player.Logger.LogDebug(
-            "Speedhack detected on attack for player {0}: {1:F0}ms since the last attack, expected at least {2:F0}ms ({3} {4:F0}, skill {5}), {6:F2} attack tokens left.{7}",
-            player.Name,
-            elapsedMs,
-            minIntervalMs,
-            attackLimit.SpeedSource,
-            attackLimit.Speed,
-            skill?.Number.ToString() ?? "melee",
-            remainingTokens,
-            config.ObserveOnly ? " Observe-only, the attack is not blocked." : string.Empty);
-
-        if (shouldRecordViolation)
-        {
-            // The attack path has no resync response and no score model, so its violations
-            // stay soft and debounced, exactly as before: only sustained violations spread
-            // over time can accumulate toward a punishment, never a single burst.
-            eventArgs.Severity = SpeedHackViolationSeverity.Soft;
-            await this._violationRecorder.RecordAsync(player, state, config, eventArgs.Severity).ConfigureAwait(false);
-        }
+        eventArgs.Severity = severity;
+        await this._violationRecorder.RecordAsync(player, state, config, severity).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -245,71 +168,12 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// <inheritdoc/>
     public ValueTask PingCheatCheckAsync(Player player, uint tickCount, ushort attackSpeed)
     {
-        if (IsServerControlled(player))
+        if (IsServerControlled(player) || this.Configuration is not { } config)
         {
             return ValueTask.CompletedTask;
         }
 
-        var config = this.Configuration;
-        if (config is null)
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        var state = this.GetState(player);
-        var now = this._timeProvider.GetTimestamp();
-
-        double serverElapsedMs = 0;
-        PingClockValidator.Result clockResult;
-        lock (state.Lock)
-        {
-            if (state.LastPingTimestamp is not { } lastPingTimestamp
-                || state.LastClientTickCount is not { } lastClientTickCount)
-            {
-                state.LastPingTimestamp = now;
-                state.LastClientTickCount = tickCount;
-                return ValueTask.CompletedTask;
-            }
-
-            serverElapsedMs = this._timeProvider.GetElapsedTime(lastPingTimestamp, now).TotalMilliseconds;
-            clockResult = PingClockValidator.Evaluate(lastClientTickCount, tickCount, serverElapsedMs, config.PingClockToleranceMs);
-            state.LastPingTimestamp = now;
-            state.LastClientTickCount = tickCount;
-        }
-
-        if (clockResult.IsClockReset)
-        {
-            player.Logger.LogDebug(
-                "Client tick count reset for player {0}: client advanced {1:F0}ms, server advanced {2:F0}ms. Resetting the ping baseline.",
-                player.Name,
-                clockResult.ClientElapsedMs,
-                serverElapsedMs);
-        }
-        else if (clockResult.IsClientAhead)
-        {
-            player.Logger.LogDebug(
-                "Client clock inconsistency for player {0}: client advanced {1:F0}ms while the server advanced {2:F0}ms (tolerance {3}ms). Observe-only, no action taken.",
-                player.Name,
-                clockResult.ClientElapsedMs,
-                serverElapsedMs,
-                config.PingClockToleranceMs);
-        }
-
-        if (player.Attributes is { } attributes)
-        {
-            double serverAttackSpeed = attributes[Stats.AttackSpeed];
-            double difference = Math.Abs(attackSpeed - serverAttackSpeed);
-            if (difference > config.PingAttackSpeedTolerance)
-            {
-                player.Logger.LogDebug(
-                    "Client attack speed mismatch for player {0}: client reported {1}, server calculated {2:F0} (tolerance {3}). Observe-only, no action taken.",
-                    player.Name,
-                    attackSpeed,
-                    serverAttackSpeed,
-                    config.PingAttackSpeedTolerance);
-            }
-        }
-
+        this._pingCheck.Evaluate(player, config, this.GetState(player), tickCount, attackSpeed);
         return ValueTask.CompletedTask;
     }
 
@@ -353,167 +217,8 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// <returns><c>true</c> if the player is controlled by the server; otherwise, <c>false</c>.</returns>
     private static bool IsServerControlled(Player player) => player is Offline.OfflinePlayer;
 
-    /// <summary>
-    /// Gets the tolerance of the walk speed check, which defines how much the walked distance
-    /// may exceed the time which actually passed within the window.
-    /// </summary>
-    /// <param name="config">The configuration.</param>
-    /// <param name="stepDelayMs">The current step delay of the player.</param>
-    /// <returns>The tolerance in milliseconds.</returns>
-    private static double GetWalkToleranceMs(SpeedHackDetectConfiguration config, double stepDelayMs)
-    {
-        return config.WalkSpeedToleranceMs * (stepDelayMs / WalkSpeedValidator.NormalStepDelayMs);
-    }
-
-    /// <summary>
-    /// Evaluates the walk step rate of the sliding window and updates the player's walk state.
-    /// The caller must hold <see cref="SpeedHackState.Lock"/>.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="config">The configuration.</param>
-    /// <param name="state">The state of the player.</param>
-    /// <param name="now">The current monotonic timestamp.</param>
-    /// <returns>
-    /// The violation severity, and whether the walk rate violated the speed budget. The severity is
-    /// <see cref="SpeedHackViolationSeverity.None"/> when the walk rate is clean or only observed.
-    /// </returns>
-    /// <remarks>
-    /// Only steps which the server actually executed are recorded, with the time at which they were executed.
-    /// A walk request therefore cannot inflate the measured distance by running ahead of the character, and
-    /// the time between two packets is irrelevant. The cost of the executed steps is summed up over a long
-    /// window and compared to the length of that window. Time which passes without walking earns nothing
-    /// beyond the window, and a speed hack, which walks more than the window allows, exceeds its budget
-    /// however its packets are spread over time.
-    /// </remarks>
-    private (SpeedHackViolationSeverity Severity, bool IsViolation) EvaluateWalkLocked(Player player, SpeedHackDetectConfiguration config, SpeedHackState state, long now)
-    {
-        double halfLifeMinutes = ViolationPolicy.ResolveHalfLifeMinutes(config.ViolationScoreHalfLifeMinutes);
-        var scoreElapsed = state.LastScoreUpdateTimestamp is { } lastScoreUpdateTimestamp
-            ? this._timeProvider.GetElapsedTime(lastScoreUpdateTimestamp, now)
-            : TimeSpan.Zero;
-        state.ViolationScore = ViolationPolicy.DecayScore(state.ViolationScore, scoreElapsed, halfLifeMinutes);
-        state.LastScoreUpdateTimestamp = now;
-
-        double stepDelayMs = player.StepDelay.TotalMilliseconds;
-        double windowMs = WalkSpeedValidator.ResolveWindowSeconds(config.WalkSpeedWindowSeconds) * 1000.0;
-        double toleranceMs = GetWalkToleranceMs(config, stepDelayMs);
-
-        // The timestamps of the time provider are monotonic, so they are immune to wall-clock adjustments.
-        double nowMs = this._timeProvider.GetElapsedTime(0, now).TotalMilliseconds;
-        double windowCostMs = state.WalkWindow.GetCost(nowMs, windowMs);
-
-        var verdict = WalkSpeedValidator.Evaluate(windowCostMs, windowMs, toleranceMs);
-        if (!verdict.IsViolation)
-        {
-            return (SpeedHackViolationSeverity.None, false);
-        }
-
-        // The window starts again after a violation. Otherwise, every following walk would still see the
-        // same excess and be flagged again until it leaves the window, although it's the same incident.
-        // A speed hack which keeps going exceeds the budget of the new window again, and is flagged again.
-        state.WalkWindow.Clear();
-
-        var violation = new WalkViolation(windowMs, toleranceMs, verdict);
-        if (!config.EnforceWalkSpeed)
-        {
-            // The client is authoritative for walking, so the result is diagnostic only
-            // and never blocks the walk or contributes to punishments.
-            player.Logger.LogInformation(
-                "Walk pace observation for player {0}: server-executed walk steps take at least {1:F0}ms within the last {2:F0}ms, exceeding the budget of {3:F0}ms (including a tolerance of {4:F0}ms), overshoot {5:F0}ms. Walk speed enforcement is disabled; movement is accepted.",
-                player.Name,
-                violation.Verdict.ExpectedTimeMs,
-                violation.WindowMs,
-                violation.Verdict.BudgetMs,
-                violation.ToleranceMs,
-                violation.Verdict.OvershootMs);
-            return (SpeedHackViolationSeverity.None, true);
-        }
-
-        return (this.PenalizeWalkViolationLocked(player, config, state, violation), true);
-    }
-
-    /// <summary>
-    /// Scores a detected walk violation, logs it and decides its severity.
-    /// The caller must hold <see cref="SpeedHackState.Lock"/>.
-    /// Recording the warning and punishing stay in <see cref="SpeedHackViolationRecorder"/>.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="config">The configuration.</param>
-    /// <param name="state">The state of the player.</param>
-    /// <param name="violation">The detected violation.</param>
-    /// <returns>The violation severity, or <see cref="SpeedHackViolationSeverity.None"/> when only observed.</returns>
-    private SpeedHackViolationSeverity PenalizeWalkViolationLocked(Player player, SpeedHackDetectConfiguration config, SpeedHackState state, WalkViolation violation)
-    {
-        // Each violation adds to the score proportionally to its overshoot, so isolated
-        // blips stay soft while sustained cheating escalates to a hard rejection.
-        state.ViolationScore += ViolationPolicy.WeighViolation(violation.Verdict.OvershootMs, violation.Verdict.BudgetMs);
-        player.Logger.LogWarning(
-            "Speedhack detected on walk for player {0}: server-executed walk steps take at least {1:F0}ms within the last {2:F0}ms, exceeding the budget of {3:F0}ms (including a tolerance of {4:F0}ms). Score: {5:F2}, overshoot: {6:F0}ms.",
-            player.Name,
-            violation.Verdict.ExpectedTimeMs,
-            violation.WindowMs,
-            violation.Verdict.BudgetMs,
-            violation.ToleranceMs,
-            state.ViolationScore,
-            violation.Verdict.OvershootMs);
-        if (config.ObserveOnly)
-        {
-            return SpeedHackViolationSeverity.None;
-        }
-
-        double rejectThreshold = ViolationPolicy.ResolveRejectThreshold(config.ViolationScoreRejectThreshold);
-        return ViolationPolicy.ShouldEscalate(state.ViolationScore, rejectThreshold)
-            ? SpeedHackViolationSeverity.Reject
-            : SpeedHackViolationSeverity.Soft;
-    }
-
-    /// <summary>
-    /// Scores a large difference between the client-reported walk start and the server position.
-    /// The caller must hold <see cref="SpeedHackState.Lock"/>.
-    /// PlayerMovement bounds the offset independently; the severity contributes to the warning and
-    /// punishment history.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="config">The configuration.</param>
-    /// <param name="state">The state of the player.</param>
-    /// <param name="offset">The distance between client and server position.</param>
-    /// <returns>The violation severity, or <see cref="SpeedHackViolationSeverity.None"/> when only observed.</returns>
-    private SpeedHackViolationSeverity PenalizePositionMismatchLocked(Player player, SpeedHackDetectConfiguration config, SpeedHackState state, double offset)
-    {
-        var maxOffset = Math.Max(0, config.MaxAllowedWalkStartOffset);
-        if (offset <= maxOffset)
-        {
-            return SpeedHackViolationSeverity.None;
-        }
-
-        state.ViolationScore += ViolationPolicy.WeighViolation(offset - maxOffset, maxOffset);
-        player.Logger.LogWarning(
-            "Speedhack detected on walk for player {0}: client position is {1:F1} tiles away from the server position, exceeding the allowed offset of {2}. Score: {3:F2}.",
-            player.Name,
-            offset,
-            maxOffset,
-            state.ViolationScore);
-        if (config.ObserveOnly)
-        {
-            return SpeedHackViolationSeverity.None;
-        }
-
-        double rejectThreshold = ViolationPolicy.ResolveRejectThreshold(config.ViolationScoreRejectThreshold);
-        return ViolationPolicy.ShouldEscalate(state.ViolationScore, rejectThreshold)
-            ? SpeedHackViolationSeverity.Reject
-            : SpeedHackViolationSeverity.Soft;
-    }
-
     private SpeedHackState GetState(Player player)
     {
         return this._playerStates.GetValue(player, p => new SpeedHackState(this.Configuration?.MaxAttackTokens ?? 5.0));
     }
-
-    /// <summary>
-    /// A detected walk violation with everything needed to score and log it.
-    /// </summary>
-    /// <param name="WindowMs">The length of the window in milliseconds.</param>
-    /// <param name="ToleranceMs">The tolerance which was added to the window.</param>
-    /// <param name="Verdict">The time-budget verdict.</param>
-    private readonly record struct WalkViolation(double WindowMs, double ToleranceMs, WalkSpeedValidator.Verdict Verdict);
 }

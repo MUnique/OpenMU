@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 /// within a sliding time window costs a certain amount of walking time, and that cost must not exceed
 /// the time which actually passed within the window (plus a tolerance).
 /// It has no dependencies on players, clocks or configuration, so it can be unit-tested deterministically.
-/// Policy (tolerance, punishment) stays in <see cref="SpeedHackDetectPlugIn"/>.
+/// Policy (tolerance, punishment) stays in the plugin and its collaborators.
 /// </summary>
 /// <remarks>
 /// The check deliberately doesn't look at the timing of walk packets. Only steps which the server

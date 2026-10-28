@@ -1049,6 +1049,39 @@ public class SpeedHackAntiCheatTests
     }
 
     /// <summary>
+    /// Tests that a real <see cref="PlayerMovement"/> and <see cref="Walker"/> detect a client which
+    /// keeps reporting a position ahead without waiting for the server step, while the server still
+    /// paces the player's own steps.
+    /// </summary>
+    [Test]
+    public async Task TestRealFastClientIsDetectedAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        plugin.Configuration!.AutoBan = false;
+        plugin.Configuration.MaxWarnings = 100;
+        plugin.Configuration.WalkSpeedToleranceMs = 0;
+        plugin.Configuration.WalkSpeedWindowSeconds = 1;
+        plugin.Configuration.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
+        player.Attributes![Stats.MovementSpeed] = 100;
+        player.Position = StartPoint;
+
+        var clientPosition = StartPoint;
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(800))
+        {
+            var from = clientPosition;
+            var to = new Point((byte)(from.X + 1), from.Y);
+            WalkingStep[] steps = [new() { From = from, To = to, Direction = Direction.East }];
+            await player.WalkToAsync(to, steps).ConfigureAwait(false);
+            clientPosition = to;
+            await Task.Delay(10).ConfigureAwait(false);
+        }
+
+        Assert.That(plugin.GetWarningCount(player), Is.GreaterThan(0), "The fast client should be detected.");
+    }
+
+    /// <summary>
     /// Tests that a walk request which starts on the diagonal neighbour of the server position is
     /// taken over while walking. That's what a client reports when it turns, and it's never closer
     /// than 1.41 tiles, which is more than the lag bound right after a step.
