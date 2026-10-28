@@ -217,6 +217,8 @@ public static class AttackableExtensions
             dmg = minLevelDmg;
         }
 
+        var petDamage = dmg;
+
         dmg = (int)(dmg * attacker.Attributes[Stats.AttackDamageIncrease]);
         if (dmg > 1)
         {
@@ -306,7 +308,7 @@ public static class AttackableExtensions
             }
         }
 
-        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll, skill);
+        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll, skill, (uint)petDamage);
     }
 
     /// <summary>
@@ -318,20 +320,21 @@ public static class AttackableExtensions
     /// <param name="attacker">The attacker.</param>
     /// <param name="manaToll">The mana reduction amount that is traded for damage (e.g. from Soul Barrier).</param>
     /// <param name="skill">The <paramref name="attacker"/>'s skill.</param>
+    /// <param name="petDamage">The pet damage.</param>
     /// <returns>The calculated hit info.</returns>
-    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null)
+    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null, uint petDamage = 0)
     {
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
         {
-            return new HitInfo(damage, 0, attributes, manaToll);
+            return new HitInfo(damage, 0, attributes, manaToll, petDamage);
         }
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
         {
             var shieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
-            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll);
+            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll, petDamage);
         }
 
         var shieldRatio = 0.90;
@@ -339,7 +342,7 @@ public static class AttackableExtensions
         shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
         shieldRatio = Math.Min(1, shieldRatio);
-        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll);
+        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage);
     }
 
     /// <summary>
