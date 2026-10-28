@@ -219,7 +219,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
-    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger, this.GameContext.PlugInManager);
+    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(
+        this.Logger,
+        this.GameContext.PlugInManager,
+        configuration: this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration);
 
     /// <inheritdoc/>
     public int Money

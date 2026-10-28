@@ -4861,6 +4861,32 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for ItemCraftingPreviewExtended.
+    /// </summary>
+    [Test]
+    public void ItemCraftingPreviewExtended_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = ItemCraftingPreviewExtendedRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'MixType' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MixType' exceeds packet boundary");
+        
+        // Validate field 'SuccessRate' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SuccessRate' exceeds packet boundary");
+        
+        // Validate field 'Price' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Price' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for LegacyQuestStateList.
     /// </summary>
     [Test]

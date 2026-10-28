@@ -1429,6 +1429,11 @@
   <data name="SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption" xml:space="preserve"><value>Attack Speed Base Delay Ms</value></data>
   <data name="SpeedHackDetectConfiguration_MaxAttackTokens_Caption" xml:space="preserve"><value>Max Attack Tokens</value></data>
   <data name="SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption" xml:space="preserve"><value>Max Allowed Walk Start Offset</value></data>
+  <data name="SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption" xml:space="preserve"><value>Skill Hit Area Range Slack</value></data>
+  <data name="SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption" xml:space="preserve"><value>Skill Hit Counter Replay Window Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption" xml:space="preserve"><value>Skill Hit Max Area To Hit Delay Seconds</value></data>
+  <data name="SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption" xml:space="preserve"><value>Enforce Walk Speed</value></data>
+  <data name="SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption" xml:space="preserve"><value>Walk Speed Window Seconds</value></data>
   <data name="SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption" xml:space="preserve"><value>Walk Speed Tolerance Ms</value></data>
   <data name="SpeedHackDetectConfiguration_WarningHistoryHours_Caption" xml:space="preserve"><value>Warning History Hours</value></data>
   <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>Alert Debounce Seconds</value></data>
@@ -1438,6 +1443,21 @@
   <data name="SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption" xml:space="preserve"><value>Violation Score Reject Threshold</value></data>
   <data name="SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption" xml:space="preserve"><value>Violation Score Half Life Minutes</value></data>
   <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>Auto Ban</value></data>
+  <data name="SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption" xml:space="preserve"><value>Magic Speed Base Delay Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption" xml:space="preserve"><value>Magic Speed Scaling Factor</value></data>
+  <data name="SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption" xml:space="preserve"><value>Magic Speed Min Interval Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_PingClockToleranceMs_Caption" xml:space="preserve"><value>Ping Clock Tolerance Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption" xml:space="preserve"><value>Ping Attack Speed Tolerance</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption" xml:space="preserve"><value>Per-Skill Attack Speed Profiles</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedProfiles_Description" xml:space="preserve"><value>Optional overrides for individual skills. A profile replaces the common attack or magic speed settings for its skill.</value></data>
+  <data name="AttackSpeedProfile_SkillId_Caption" xml:space="preserve"><value>Skill Id</value></data>
+  <data name="AttackSpeedProfile_SpeedSource_Caption" xml:space="preserve"><value>Speed Source</value></data>
+  <data name="AttackSpeedProfile_SpeedSource_Description" xml:space="preserve"><value>Which speed attribute scales the delay: Attack Speed for physical skills, Magic Speed for wizardry and curse skills.</value></data>
+  <data name="AttackSpeedProfile_BaseDelayMs_Caption" xml:space="preserve"><value>Base Delay Ms</value></data>
+  <data name="AttackSpeedProfile_ScalingFactor_Caption" xml:space="preserve"><value>Scaling Factor</value></data>
+  <data name="AttackSpeedProfile_MinimumIntervalMs_Caption" xml:space="preserve"><value>Minimum Interval Ms</value></data>
+  <data name="AttackSpeedSource_AttackSpeed" xml:space="preserve"><value>Attack Speed</value></data>
+  <data name="AttackSpeedSource_MagicSpeed" xml:space="preserve"><value>Magic Speed</value></data>
   <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y</value></data>
   <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X</value></data>
   <data name="InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption" xml:space="preserve"><value>Is Spawn On All Maps</value></data>
