@@ -1,4 +1,4 @@
-﻿// <copyright file="CharacterMoveTest.cs" company="MUnique">
+// <copyright file="CharacterMoveTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -157,16 +157,8 @@ public class CharacterMoveTest
     [Test]
     public async ValueTask TestStopPositionOneStepAheadIsAcceptedAsync()
     {
-        var player = await this.DoTheWalkAsync(movementSpeedFactor: 0.0001f).ConfigureAwait(false);
+        var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
         var walkPoints = await GetWalkPointsAsync(player).ConfigureAwait(false);
-        var deadline = DateTime.UtcNow.AddSeconds(10);
-        while (player.Position == StartPoint && DateTime.UtcNow < deadline)
-        {
-            await Task.Delay(10).ConfigureAwait(false);
-        }
-
-        Assert.That(player.Position, Is.Not.EqualTo(StartPoint), "The walker didn't take its first step.");
-
         var stopPoint = walkPoints[2];
         await HandleStopPacketAsync(player, stopPoint).ConfigureAwait(false);
 
@@ -185,14 +177,7 @@ public class CharacterMoveTest
     [Test]
     public async ValueTask TestStopPositionTooFarAwayIsNotTakenAsync()
     {
-        var player = await this.DoTheWalkAsync(movementSpeedFactor: 0.0001f).ConfigureAwait(false);
-        var deadline = DateTime.UtcNow.AddSeconds(10);
-        while (player.Position == StartPoint && DateTime.UtcNow < deadline)
-        {
-            await Task.Delay(10).ConfigureAwait(false);
-        }
-
-        Assert.That(player.Position, Is.Not.EqualTo(StartPoint), "The walker didn't take its first step.");
+        var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
         var farAway = new Point((byte)(StartPoint.X + 10), StartPoint.Y);
         player.Position = farAway;
 

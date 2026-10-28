@@ -135,18 +135,7 @@ public class SpeedHackAntiCheatTests
         Assert.That(player.IsAtSafezone(), Is.True);
 
         // Perform rapid walks to show it is bypassed.
-        for (int i = 0; i < 12; i++)
-        {
-            var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
-            var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
-
-            player.Position = nextFrom;
-            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.ResetAlertDebounce(player);
-
-            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
-
-            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
-        }
+        await PerformRapidWalkRequestsAsync(player).ConfigureAwait(false);
 
         // Account should remain normal
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
@@ -195,21 +184,10 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestExplicitAreaSkillAttackIsRateLimitedAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var skillMock = new Mock<Skill>();
-        skillMock.SetupAllProperties();
-        skillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
-        skillMock.Setup(s => s.ConsumeRequirements).Returns(new List<AttributeRequirement>());
-        var skill = skillMock.Object;
-        skill.Number = 1;
-        skill.SkillType = SkillType.AreaSkillExplicitHits;
-        skill.Range = 5;
-        await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        var (player, plugin, _) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
+        var skill = await SetupExplicitAreaSkillAsync(player, range: 5).ConfigureAwait(false);
 
         player.Attributes![Stats.AttackSpeed] = 20;
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
         plugin.Configuration!.MaxAttackTokens = 1;
 
         Assert.That(player.SkillList?.GetSkill((ushort)skill.Number), Is.Not.Null);
@@ -228,26 +206,11 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestSpeedRejectedAreaSkillDoesNotConsumeManaAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var skillMock = new Mock<Skill>();
-        skillMock.SetupAllProperties();
-        skillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
-        skillMock.Setup(s => s.AttributeRelationships).Returns(new List<AttributeRelationship>());
-        skillMock.Setup(s => s.ConsumeRequirements).Returns(new List<AttributeRequirement>
-        {
-            new() { Attribute = Stats.CurrentMana, MinimumValue = 10 },
-        });
-        var skill = skillMock.Object;
-        skill.Number = 1;
-        skill.SkillType = SkillType.AreaSkillExplicitHits;
-        skill.Range = 5;
-        await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        var (player, plugin, _) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
+        var skill = await SetupExplicitAreaSkillAsync(player, range: 5, consumeRequirements: [new() { Attribute = Stats.CurrentMana, MinimumValue = 10 }]).ConfigureAwait(false);
 
         player.Attributes![Stats.CurrentMana] = 100;
         player.Attributes[Stats.AttackSpeed] = 20;
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
         plugin.Configuration!.MaxAttackTokens = 1;
 
         var action = new AreaSkillAttackAction();
@@ -267,15 +230,7 @@ public class SpeedHackAntiCheatTests
     public async Task TestTruncatedAreaSkillHitPacketIsIgnoredAsync()
     {
         var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
-        var skillMock = new Mock<Skill>();
-        skillMock.SetupAllProperties();
-        skillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
-        skillMock.Setup(s => s.ConsumeRequirements).Returns(new List<AttributeRequirement>());
-        var skill = skillMock.Object;
-        skill.Number = 1;
-        skill.SkillType = SkillType.AreaSkillExplicitHits;
-        await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        await SetupExplicitAreaSkillAsync(player).ConfigureAwait(false);
 
         var packet = new byte[11];
         packet[3] = 0;
@@ -294,16 +249,7 @@ public class SpeedHackAntiCheatTests
     public async Task TestDelayedAreaSkillHitIsIgnoredAfterAttackerEntersSafezoneAsync()
     {
         var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
-        var skillMock = new Mock<Skill>();
-        skillMock.SetupAllProperties();
-        skillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
-        skillMock.Setup(s => s.ConsumeRequirements).Returns(new List<AttributeRequirement>());
-        var skill = skillMock.Object;
-        skill.Number = 1;
-        skill.SkillType = SkillType.AreaSkillExplicitHits;
-        skill.Range = 5;
-        await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        var skill = await SetupExplicitAreaSkillAsync(player, range: 5).ConfigureAwait(false);
         player.Position = StartPoint;
 
         var targetPosition = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
@@ -510,12 +456,10 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestAttackCheckUsesMagicSpeedForWizardrySkillAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         player.Attributes![Stats.AttackSpeed] = 200;
         player.Attributes[Stats.MagicSpeed] = 0;
 
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
         plugin.Configuration!.MaxAttackTokens = 1;
 
         var skill = new Skill { Number = 7, DamageType = DamageType.Wizardry };
@@ -575,10 +519,7 @@ public class SpeedHackAntiCheatTests
         player.Position = StartPoint;
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
 
-        // Perform rapid executed steps to exceed the warnings limit.
         await RecordRapidStepsAsync(player, plugin, timeProvider, 16, 8, TimeSpan.FromMilliseconds(1100)).ConfigureAwait(false);
-
-        // The account should be banned because the executed steps were too fast.
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Banned));
     }
 
@@ -604,10 +545,7 @@ public class SpeedHackAntiCheatTests
         Assert.That(player.StepDelay.TotalMilliseconds, Is.EqualTo(TimeSpan.FromMilliseconds(4000.0 / 17.0).TotalMilliseconds).Within(1.0));
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
 
-        // Perform rapid executed steps to exceed the warnings limit.
         await RecordRapidStepsAsync(player, plugin, timeProvider, 16, 8, TimeSpan.FromMilliseconds(1100)).ConfigureAwait(false);
-
-        // The account should be banned because the executed steps were too fast.
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Banned));
     }
 
@@ -619,9 +557,7 @@ public class SpeedHackAntiCheatTests
     public async Task TestHighMovementSpeedDoesNotTriggerFalsePositivesAsync()
     {
         // Speed attribute is 100, which yields expected step delay: 4000.0 / 100.0 = 40ms.
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         player.Attributes![Stats.MovementSpeed] = 100;
         player.Position = StartPoint;
 
@@ -641,9 +577,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestWalkPacketBurstAfterStallDoesNotTriggerFalsePositivesAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         plugin.Configuration!.WalkSpeedWindowSeconds = 1;
         var stepDelay = player.StepDelay;
 
@@ -713,9 +647,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestWalkingInCirclesWithFrequentClicksIsNotFlaggedAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync(new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
 
         var severities = await WalkInCirclesAsync(player, plugin, timeProvider, speedFactor: 1.0, duration: TimeSpan.FromMinutes(2)).ConfigureAwait(false);
 
@@ -731,9 +663,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestWalkingInCirclesAtDoubleSpeedIsDetectedAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync(new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
 
         var severities = await WalkInCirclesAsync(player, plugin, timeProvider, speedFactor: 2.0, duration: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
 
@@ -749,9 +679,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestIdleTimeDoesNotBankWalkingTimeAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync(new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
         player.Position = StartPoint;
 
         RecordStep(player, plugin, StartPoint, new Point((byte)(StartPoint.X + 1), StartPoint.Y));
@@ -769,9 +697,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestWalkWallClockJumpDoesNotTriggerViolationAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         plugin.Configuration!.WalkSpeedToleranceMs = 900;
         player.Position = StartPoint;
 
@@ -796,10 +722,8 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestAttackWallClockJumpDoesNotTriggerViolationAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         player.Attributes![Stats.AttackSpeed] = 20;
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
 
         await plugin.AttackCheatCheckAsync(player, null, new SpeedHackCheckEventArgs()).ConfigureAwait(false);
 
@@ -821,9 +745,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestSlowMultiTileWalkDoesNotTriggerViolationAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         plugin.Configuration!.WalkSpeedToleranceMs = 900;
         player.Position = StartPoint;
 
@@ -871,36 +793,21 @@ public class SpeedHackAntiCheatTests
     }
 
     /// <summary>
-    /// Tests that a game master is never banned or disconnected, even when exceeding the warning limit.
+    /// Tests that privileged accounts (game masters, spectators) are never banned or disconnected, even when exceeding the warning limit.
     /// </summary>
-    [Test]
-    public async Task TestGameMasterIsNotBannedOrDisconnectedAsync()
+    /// <param name="accountState">The privileged account state.</param>
+    [TestCase(AccountState.GameMaster)]
+    [TestCase(AccountState.Spectator)]
+    public async Task TestPrivilegedAccountIsNotBannedOrDisconnectedAsync(AccountState accountState)
     {
         var (player, plugin, timeProvider) = await CreateStrictWalkPlayerAsync().ConfigureAwait(false);
-        player.Account!.State = AccountState.GameMaster;
+        player.Account!.State = accountState;
         plugin.Configuration!.DisconnectOnViolation = true;
 
         await RecordRapidStepsAsync(player, plugin, timeProvider, 12, 8, TimeSpan.FromMilliseconds(1100)).ConfigureAwait(false);
 
         Assert.That(plugin.GetWarningCount(player), Is.GreaterThan(plugin.Configuration.MaxWarnings));
-        Assert.That(player.Account.State, Is.EqualTo(AccountState.GameMaster));
-        Assert.That(player.IsConnected, Is.True);
-    }
-
-    /// <summary>
-    /// Tests that a spectator is never banned or disconnected, even when exceeding the warning limit.
-    /// </summary>
-    [Test]
-    public async Task TestSpectatorIsNotBannedOrDisconnectedAsync()
-    {
-        var (player, plugin, timeProvider) = await CreateStrictWalkPlayerAsync().ConfigureAwait(false);
-        player.Account!.State = AccountState.Spectator;
-        plugin.Configuration!.DisconnectOnViolation = true;
-
-        await RecordRapidStepsAsync(player, plugin, timeProvider, 12, 8, TimeSpan.FromMilliseconds(1100)).ConfigureAwait(false);
-
-        Assert.That(plugin.GetWarningCount(player), Is.GreaterThan(plugin.Configuration.MaxWarnings));
-        Assert.That(player.Account.State, Is.EqualTo(AccountState.Spectator));
+        Assert.That(player.Account.State, Is.EqualTo(accountState));
         Assert.That(player.IsConnected, Is.True);
     }
 
@@ -931,27 +838,10 @@ public class SpeedHackAntiCheatTests
         plugin.Configuration!.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
         player.Position = StartPoint;
 
-        var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
-        WalkingStep[] firstSteps =
-        [
-            new() { From = StartPoint, To = new Point((byte)(StartPoint.X + 1), StartPoint.Y), Direction = Direction.East },
-            new() { From = new Point((byte)(StartPoint.X + 1), StartPoint.Y), To = firstTarget, Direction = Direction.East },
-        ];
-        await player.WalkToAsync(firstTarget, firstSteps).ConfigureAwait(false);
-        Assert.That(player.IsWalking, Is.True);
-        await player.StopWalkingAsync().ConfigureAwait(false);
+        await SeedMovementStateWithShortWalkAsync(player).ConfigureAwait(false);
 
         // Record executed steps which exceed the one second window, so the next walk is rejected.
-        var recordedFrom = StartPoint;
-        for (int i = 0; i < 5; i++)
-        {
-            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
-            RecordStep(player, plugin, recordedFrom, recordedTo);
-            recordedFrom = recordedTo;
-        }
-
-        // Almost no time passed: the executed steps exceeded the one second window, so this walk is rejected.
-        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+        ExceedWalkWindowWithRecordedSteps(player, plugin, timeProvider);
 
         var rejectedFrom = new Point((byte)(StartPoint.X + 9), StartPoint.Y);
         player.Position = rejectedFrom;
@@ -977,25 +867,10 @@ public class SpeedHackAntiCheatTests
         speedHackDetectPlugIn.Configuration!.ViolationScoreRejectThreshold = RejectOnFirstViolationThreshold;
         player.Position = StartPoint;
 
-        var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
-        WalkingStep[] firstSteps =
-        [
-            new() { From = StartPoint, To = new Point((byte)(StartPoint.X + 1), StartPoint.Y), Direction = Direction.East },
-            new() { From = new Point((byte)(StartPoint.X + 1), StartPoint.Y), To = firstTarget, Direction = Direction.East },
-        ];
-        await player.WalkToAsync(firstTarget, firstSteps).ConfigureAwait(false);
-        await player.StopWalkingAsync().ConfigureAwait(false);
+        await SeedMovementStateWithShortWalkAsync(player).ConfigureAwait(false);
 
         // Record executed steps which exceed the one second window, so the next walk is rejected.
-        var recordedFrom = StartPoint;
-        for (int i = 0; i < 5; i++)
-        {
-            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
-            RecordStep(player, speedHackDetectPlugIn, recordedFrom, recordedTo);
-            recordedFrom = recordedTo;
-        }
-
-        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+        ExceedWalkWindowWithRecordedSteps(player, speedHackDetectPlugIn, timeProvider);
 
         var rejectedFrom = new Point((byte)(StartPoint.X + 9), StartPoint.Y);
         player.Position = rejectedFrom;
@@ -1119,29 +994,10 @@ public class SpeedHackAntiCheatTests
         plugin.Configuration!.ObserveOnly = true;
         player.Position = StartPoint;
 
-        var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
-        WalkingStep[] firstSteps =
-        [
-            new() { From = StartPoint, To = new Point((byte)(StartPoint.X + 1), StartPoint.Y), Direction = Direction.East },
-            new() { From = new Point((byte)(StartPoint.X + 1), StartPoint.Y), To = firstTarget, Direction = Direction.East },
-        ];
-        await player.WalkToAsync(firstTarget, firstSteps).ConfigureAwait(false);
-
-        // The first walk only seeds the movement state. Stop its loop before changing the
-        // position manually; otherwise it can overwrite the position while the next request
-        // is validated, depending on thread scheduling.
-        await player.StopWalkingAsync().ConfigureAwait(false);
+        await SeedMovementStateWithShortWalkAsync(player).ConfigureAwait(false);
 
         // Record executed steps which exceed the one second window, so the next walk is a violation.
-        var recordedFrom = StartPoint;
-        for (int i = 0; i < 5; i++)
-        {
-            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
-            RecordStep(player, plugin, recordedFrom, recordedTo);
-            recordedFrom = recordedTo;
-        }
-
-        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+        ExceedWalkWindowWithRecordedSteps(player, plugin, timeProvider);
 
         // Would be a violation with enforcement on: the executed steps exceeded the one second window.
         var fastFrom = new Point((byte)(StartPoint.X + 9), StartPoint.Y);
@@ -1167,9 +1023,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestObserveOnlyDoesNotScoreWalkViolationTwiceAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        var (player, plugin, _) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         plugin.Configuration!.ObserveOnly = true;
         plugin.Configuration.WalkSpeedToleranceMs = 0;
         plugin.Configuration.MaxAllowedWalkStartOffset = 3;
@@ -1199,15 +1053,7 @@ public class SpeedHackAntiCheatTests
         plugin.Configuration!.EnforceWalkSpeed = false;
         player.Position = StartPoint;
 
-        var recordedFrom = StartPoint;
-        for (int i = 0; i < 5; i++)
-        {
-            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
-            RecordStep(player, plugin, recordedFrom, recordedTo);
-            recordedFrom = recordedTo;
-        }
-
-        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+        ExceedWalkWindowWithRecordedSteps(player, plugin, timeProvider);
 
         var fastFrom = new Point((byte)(StartPoint.X + 9), StartPoint.Y);
         var fastTarget = new Point((byte)(fastFrom.X + 1), fastFrom.Y);
@@ -1344,8 +1190,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestRapidAttackViolationsAreDebouncedAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        var (player, _, _) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         player.Attributes![Stats.AttackSpeed] = 20;
 
         var speedCheck = player.GameContext.PlugInManager.GetPlugInPoint<IAttackSpeedCheckPlugIn>();
@@ -1552,10 +1397,8 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestPingInconsistencyDoesNotSanctionAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         player.Attributes![Stats.AttackSpeed] = 20;
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
 
         await plugin.PingCheatCheckAsync(player, tickCount: 1000, attackSpeed: 20).ConfigureAwait(false);
         timeProvider.Advance(TimeSpan.FromSeconds(1));
@@ -1578,18 +1421,7 @@ public class SpeedHackAntiCheatTests
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
 
         // Rapid walks which would normally ban the player
-        for (int i = 0; i < 12; i++)
-        {
-            var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
-            var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
-
-            player.Position = nextFrom;
-            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.ResetAlertDebounce(player);
-
-            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
-
-            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
-        }
+        await PerformRapidWalkRequestsAsync(player).ConfigureAwait(false);
 
         // The account should remain normal because plugin is disabled
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
@@ -1602,9 +1434,7 @@ public class SpeedHackAntiCheatTests
     [Test]
     public async Task TestCustomizedWarningThresholdAndNoBanAsync()
     {
-        var timeProvider = new ManualTimeProvider(new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
-        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
-        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>();
+        var (player, plugin, timeProvider) = await CreatePlayerWithManualClockAsync().ConfigureAwait(false);
         Assert.That(plugin, Is.Not.Null);
 
         // Customize configuration: 5 warnings limit, no autoban, no disconnect
@@ -1724,9 +1554,7 @@ public class SpeedHackAntiCheatTests
     /// </summary>
     private static async ValueTask<SpeedHackViolationSeverity> RecordStepAndCheckAsync(Player player, SpeedHackDetectPlugIn plugin, Point from, Point to)
     {
-        var stepDelay = TimeSpan.FromTicks((long)(player.StepDelay.Ticks * Math.Max(1.0, from.EuclideanDistanceTo(to))));
-        plugin.WalkStepPerformed(player, new WalkingStep { From = from, To = to, Direction = Direction.East }, stepDelay);
-        player.Position = to;
+        RecordStep(player, plugin, from, to);
         var args = new SpeedHackCheckEventArgs();
         await plugin.WalkCheatCheckAsync(player, new[] { new WalkingStep { From = to, To = to, Direction = Direction.East } }, args).ConfigureAwait(false);
         return args.Severity;
@@ -1940,15 +1768,7 @@ public class SpeedHackAntiCheatTests
         player.Position = StartPoint;
 
         // Executed steps which exceed the one second window, so the next walk request is a violation.
-        var recordedFrom = StartPoint;
-        for (int i = 0; i < 5; i++)
-        {
-            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
-            RecordStep(player, plugin, recordedFrom, recordedTo);
-            recordedFrom = recordedTo;
-        }
-
-        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+        ExceedWalkWindowWithRecordedSteps(player, plugin, timeProvider);
 
         var from = player.Position;
         var target = new Point((byte)(from.X + 1), from.Y);
@@ -1971,6 +1791,71 @@ public class SpeedHackAntiCheatTests
         }
 
         return condition();
+    }
+
+    private static void ExceedWalkWindowWithRecordedSteps(Player player, SpeedHackDetectPlugIn plugin, ManualTimeProvider timeProvider, int stepCount = 5)
+    {
+        var recordedFrom = StartPoint;
+        for (int i = 0; i < stepCount; i++)
+        {
+            var recordedTo = new Point((byte)(recordedFrom.X + 1), recordedFrom.Y);
+            RecordStep(player, plugin, recordedFrom, recordedTo);
+            recordedFrom = recordedTo;
+        }
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(10));
+    }
+
+    private static async Task SeedMovementStateWithShortWalkAsync(Player player)
+    {
+        var firstTarget = new Point((byte)(StartPoint.X + 2), StartPoint.Y);
+        WalkingStep[] firstSteps =
+        [
+            new() { From = StartPoint, To = new Point((byte)(StartPoint.X + 1), StartPoint.Y), Direction = Direction.East },
+            new() { From = new Point((byte)(StartPoint.X + 1), StartPoint.Y), To = firstTarget, Direction = Direction.East },
+        ];
+        await player.WalkToAsync(firstTarget, firstSteps).ConfigureAwait(false);
+        await player.StopWalkingAsync().ConfigureAwait(false);
+    }
+
+    private static async Task PerformRapidWalkRequestsAsync(Player player, int count = 12)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var nextFrom = new Point((byte)(StartPoint.X + (i * 2)), StartPoint.Y);
+            var nextTo = new Point((byte)(StartPoint.X + (i * 2) + 2), StartPoint.Y);
+
+            player.Position = nextFrom;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.ResetAlertDebounce(player);
+
+            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
+
+            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task<Skill> SetupExplicitAreaSkillAsync(Player player, short skillNumber = 1, short range = 0, List<AttributeRequirement>? consumeRequirements = null)
+    {
+        var skillMock = new Mock<Skill>();
+        skillMock.SetupAllProperties();
+        skillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
+        skillMock.Setup(s => s.AttributeRelationships).Returns(new List<AttributeRelationship>());
+        skillMock.Setup(s => s.ConsumeRequirements).Returns(consumeRequirements ?? new List<AttributeRequirement>());
+        var skill = skillMock.Object;
+        skill.Number = skillNumber;
+        skill.SkillType = SkillType.AreaSkillExplicitHits;
+        skill.Range = range;
+        await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        return skill;
+    }
+
+    private static async ValueTask<(Player Player, SpeedHackDetectPlugIn PlugIn, ManualTimeProvider TimeProvider)> CreatePlayerWithManualClockAsync(DateTime? initialTime = null)
+    {
+        var timeProvider = new ManualTimeProvider(initialTime ?? new DateTime(2026, 10, 12, 0, 0, 0, DateTimeKind.Utc));
+        var player = await CreatePlayerWithSpeedAttributesAsync(timeProvider: timeProvider).ConfigureAwait(false);
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+        return (player, plugin, timeProvider);
     }
 
     /// <summary>
