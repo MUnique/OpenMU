@@ -25,30 +25,30 @@ using MUnique.OpenMU.Persistence;
 public static class ItemExchangeExport
 {
     /// <summary>
-    /// The format version of a file with a <c>fields</c> list.
+    /// Gets the format version of a file with a <c>fields</c> list.
     /// </summary>
-    public const int FormatVersion = 2;
+    public static int FormatVersion { get; } = 2;
 
     /// <summary>
-    /// The source which the file names.
+    /// Gets the source which the file names.
     /// </summary>
-    public const string Source = "OpenMU";
+    public static string Source { get; } = "OpenMU";
 
     /// <summary>
-    /// The game version of the client's data, the key of the Season 6 data initialization.
+    /// Gets the game version of the client's data, the key of the Season 6 data initialization.
     /// The client refuses a file of another version.
     /// </summary>
-    public const string ClientGameVersion = "season6";
+    public static string ClientGameVersion { get; } = "season6";
 
     /// <summary>
-    /// The highest item group the client knows.
+    /// Gets the highest item group the client knows.
     /// </summary>
-    public const int MaximumGroup = 15;
+    public static int MaximumGroup { get; } = 15;
 
     /// <summary>
-    /// The highest item number within a group the client knows.
+    /// Gets the highest item number within a group the client knows.
     /// </summary>
-    public const int MaximumNumber = 511;
+    public static int MaximumNumber { get; } = 511;
 
     /// <summary>
     /// Gets the item fields the file carries, in the order the client writes them.
@@ -149,6 +149,6 @@ public static class ItemExchangeExport
 
     private static bool IsKnownToTheClient(ItemDefinition item)
     {
-        return item.Group <= MaximumGroup && item.Number is >= 0 and <= MaximumNumber;
+        return item.Group <= MaximumGroup && item.Number >= 0 && item.Number <= MaximumNumber;
     }
 }
