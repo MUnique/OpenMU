@@ -6,11 +6,15 @@ namespace MUnique.OpenMU.Web.Tests.ItemExchange;
 
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Operations.ItemExchange;
 
 /// <summary>
@@ -127,6 +131,47 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
+    /// Tests that the admin panel's read operations include the export, which the controller needs.
+    /// </summary>
+    [Test]
+    public void ReadOperationsIncludeTheExport()
+    {
+        var services = new ServiceCollection().AddAdminReadOperations();
+
+        Assert.That(
+            services.Where(service => service.ServiceType == typeof(ItemExchangeOperations)).Select(service => service.Lifetime),
+            Is.EqualTo(new[] { ServiceLifetime.Scoped }));
+    }
+
+    /// <summary>
+    /// Tests that edits which the admin panel hasn't saved yet aren't part of the file: while the
+    /// admin panel has changes, the stored configuration is read.
+    /// </summary>
+    [Test]
+    public async Task UnsavedChangesAreLeftOutAsync()
+    {
+        var (stored, configurations) = await CreateEditedConfigurationAsync(hasChanges: true).ConfigureAwait(false);
+
+        var file = await new ItemExchangeOperations(stored, configurations).ExportAsync(default).ConfigureAwait(false);
+
+        Assert.That(GetItemKeys(file), Is.EqualTo(new[] { (0, 1) }));
+    }
+
+    /// <summary>
+    /// Tests that the configuration which the admin panel has already loaded is written when it
+    /// has no changes, instead of loading the stored one again.
+    /// </summary>
+    [Test]
+    public async Task LoadedConfigurationIsWrittenWithoutChangesAsync()
+    {
+        var (stored, configurations) = await CreateEditedConfigurationAsync(hasChanges: false).ConfigureAwait(false);
+
+        var file = await new ItemExchangeOperations(stored, configurations).ExportAsync(default).ConfigureAwait(false);
+
+        Assert.That(GetItemKeys(file), Is.EqualTo(new[] { (0, 1), (0, 2) }));
+    }
+
+    /// <summary>
     /// Tests that items outside the client's groups and numbers are left out, because the client refuses
     /// the whole file because of them, and that the others are sorted.
     /// </summary>
@@ -171,6 +216,48 @@ public sealed class ItemExchangeExportTests
     }
 
     private static JsonDocument Parse(byte[] file) => JsonDocument.Parse(file);
+
+    private static List<(int Group, int Number)> GetItemKeys(byte[] file)
+    {
+        using var document = Parse(file);
+        return document.RootElement.GetProperty("items").EnumerateArray()
+            .Select(item => (item.GetProperty("group").GetInt32(), item.GetProperty("number").GetInt32()))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Creates a stored configuration with the item 0/1, and the admin panel's copy of it, which
+    /// has the item 0/2 as well.
+    /// </summary>
+    private static async Task<(IPersistenceContextProvider Stored, IDataSource<GameConfiguration> Configurations)> CreateEditedConfigurationAsync(bool hasChanges)
+    {
+        var stored = new InMemoryPersistenceContextProvider();
+        Guid id;
+        using (var context = stored.CreateNewContext())
+        {
+            var configuration = context.CreateNew<GameConfiguration>();
+            AddItem(context, configuration, 0, 1);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            id = configuration.GetId();
+        }
+
+        using var editContext = new InMemoryPersistenceContextProvider().CreateNewContext();
+        var edited = editContext.CreateNew<GameConfiguration>();
+        ((IIdentifiable)edited).Id = id;
+        AddItem(editContext, edited, 0, 1);
+        AddItem(editContext, edited, 0, 2);
+
+        var adminPanelContext = new Mock<IContext>();
+        adminPanelContext.Setup(context => context.HasChanges).Returns(hasChanges);
+        var configurations = new Mock<IDataSource<GameConfiguration>>();
+        configurations
+            .Setup(source => source.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(edited);
+        configurations
+            .Setup(source => source.GetContextAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(adminPanelContext.Object);
+        return (stored, configurations.Object);
+    }
 
     private static void AddItem(IContext context, GameConfiguration configuration, byte group, short number)
     {
