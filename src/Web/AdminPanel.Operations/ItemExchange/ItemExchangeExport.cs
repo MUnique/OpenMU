@@ -9,6 +9,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Writes the items of a game configuration as an item exchange file of the MuMain client,
@@ -113,11 +114,17 @@ public static class ItemExchangeExport
     /// </summary>
     /// <param name="configuration">The game configuration.</param>
     /// <returns>The exported items.</returns>
+    /// <remarks>
+    /// OpenMU doesn't keep the group and number of an item unique. Items which share them are
+    /// sorted by their id, so that the same configuration always gives the same file; the order
+    /// in which the configuration is loaded can differ.
+    /// </remarks>
     internal static IEnumerable<ItemDefinition> GetExportedItems(GameConfiguration configuration)
     {
         return configuration.Items
             .Where(item => item.Group <= MaximumGroup && item.Number is >= 0 and <= MaximumNumber)
             .OrderBy(item => item.Group)
-            .ThenBy(item => item.Number);
+            .ThenBy(item => item.Number)
+            .ThenBy(item => item.GetId());
     }
 }

@@ -146,13 +146,41 @@ public sealed class ItemExchangeExportTests
         Assert.That(items, Is.EqualTo(new (byte, short)[] { (0, 1), (14, 2), (14, 3) }));
     }
 
+    /// <summary>
+    /// Tests that items which share their group and number are sorted by their id, so that the
+    /// order in which the configuration was loaded doesn't change the file.
+    /// </summary>
+    [Test]
+    public void RepeatedItemsAreSortedByTheirId()
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using var context = provider.CreateNewContext();
+        var configuration = context.CreateNew<GameConfiguration>();
+        var repeated = Enumerable.Range(0, 3).Select(_ => CreateItem(context, 14, 15)).ToList();
+
+        // The configuration gets them in the reverse order of their ids.
+        foreach (var item in repeated.OrderByDescending(item => item.GetId()))
+        {
+            configuration.Items.Add(item);
+        }
+
+        var items = ItemExchangeExport.GetExportedItems(configuration);
+
+        Assert.That(items, Is.EqualTo(repeated.OrderBy(item => item.GetId())));
+    }
+
     private static JsonDocument Parse(byte[] file) => JsonDocument.Parse(file);
 
     private static void AddItem(IContext context, GameConfiguration configuration, byte group, short number)
     {
+        configuration.Items.Add(CreateItem(context, group, number));
+    }
+
+    private static ItemDefinition CreateItem(IContext context, byte group, short number)
+    {
         var item = context.CreateNew<ItemDefinition>();
         item.Group = group;
         item.Number = number;
-        configuration.Items.Add(item);
+        return item;
     }
 }
