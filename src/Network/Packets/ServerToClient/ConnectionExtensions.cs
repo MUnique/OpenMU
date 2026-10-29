@@ -3472,11 +3472,12 @@ public static class ConnectionExtensions
     /// <param name="maximumAttackSpeed">The maximum attack speed.</param>
     /// <param name="inventoryExtensions">The inventory extensions.</param>
     /// <param name="resets">The resets.</param>
+    /// <param name="mapDiscriminator">The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7), which a character enters again after losing its connection. It's appended after the 92 bytes the packet had before, so a client can tell by the packet length whether it was sent.</param>
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets)
+    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets, byte @mapDiscriminator)
     {
         if (connection is null)
         {
@@ -3518,6 +3519,7 @@ public static class ConnectionExtensions
             packet.MaximumAttackSpeed = @maximumAttackSpeed;
             packet.InventoryExtensions = @inventoryExtensions;
             packet.Resets = @resets;
+            packet.MapDiscriminator = @mapDiscriminator;
 
             return packet.Header.Length;
         }

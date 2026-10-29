@@ -6492,7 +6492,7 @@
       <Code>F3</Code>
       <SubCode>03</SubCode>
       <Name>CharacterInformationExtended</Name>
-      <Length>92</Length>
+      <Length>93</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
       <CausedReaction>The characters enters the game world.</CausedReaction>
@@ -6654,6 +6654,12 @@
           <Index>90</Index>
           <Type>ShortLittleEndian</Type>
           <Name>Resets</Name>
+        </Field>
+        <Field>
+          <Index>92</Index>
+          <Type>Byte</Type>
+          <Name>MapDiscriminator</Name>
+          <Description>The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7), which a character enters again after losing its connection. It's appended after the 92 bytes the packet had before, so a client can tell by the packet length whether it was sent.</Description>
         </Field>
       </Fields>
     </Packet>

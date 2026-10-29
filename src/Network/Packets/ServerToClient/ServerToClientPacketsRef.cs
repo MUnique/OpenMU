@@ -16717,7 +16717,7 @@ public readonly ref struct CharacterInformationExtendedRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 92;
+    public static int Length => 93;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -17001,6 +17001,15 @@ public readonly ref struct CharacterInformationExtendedRef
     {
         get => ReadUInt16LittleEndian(this._data[90..]);
         set => WriteUInt16LittleEndian(this._data[90..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7), which a character enters again after losing its connection. It's appended after the 92 bytes the packet had before, so a client can tell by the packet length whether it was sent.
+    /// </summary>
+    public byte MapDiscriminator
+    {
+        get => this._data[92];
+        set => this._data[92] = value;
     }
 
     /// <summary>
