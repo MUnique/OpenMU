@@ -90,6 +90,12 @@ public sealed class ItemExchangeApiTests : IDisposable
             Assert.That(signIn.IsSuccessStatusCode, Is.True);
         }
 
+        // The cookie signs in: without that, the refusal below would prove nothing.
+        using (var signedIn = await http.GetAsync("/test-signed-in").ConfigureAwait(false))
+        {
+            Assert.That(signedIn.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
         using var response = await http.GetAsync(ExchangePath).ConfigureAwait(false);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
@@ -217,6 +223,7 @@ public sealed class ItemExchangeApiTests : IDisposable
             var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Administrator), new Claim(ClaimTypes.Role, AdminRoles.Viewer)], CookieAuthenticationDefaults.AuthenticationScheme);
             await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity)).ConfigureAwait(false);
         });
+        this._app.MapGet("/test-signed-in", (HttpContext http) => http.User.Identity?.IsAuthenticated is true ? Results.Ok() : Results.Unauthorized());
         await this._app.StartAsync().ConfigureAwait(false);
         this._http = new HttpClient(new HttpClientHandler { UseProxy = false }) { BaseAddress = new Uri(this._app.Urls.Single()) };
         return this._http;
