@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -14,9 +13,6 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for area skill hit packets.
 /// </summary>
-/// <remarks>
-/// TODO: It's usually required to perform a <see cref="AreaSkillAttackAction"/> before, so this check has to be implemented.
-/// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AreaSkillHitHandlerPlugIn095_Name), Description = nameof(PlugInResources.AreaSkillHitHandlerPlugIn095_Description), ResourceType = typeof(PlugInResources))]
 [Guid("71C2E116-D1B2-4F07-9A3B-41CEA1975108")]

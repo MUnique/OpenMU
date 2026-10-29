@@ -21,7 +21,7 @@ public partial class ItemStorage
     /// <summary>
     /// Gets or sets the money which is stored.
     /// </summary>
-    public int Money { get; set; }
+    public virtual int Money { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

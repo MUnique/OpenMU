@@ -30,6 +30,17 @@ public class ItemStorageAdapter : ItemStorage
     /// <inheritdoc />
     public override ICollection<Item> Items => this._adapter;
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// Forwards to <see cref="ActualStorage"/> so money is shared with the wrapped storage,
+    /// the same way items are. Without this, trade backup/restore reads and writes 0.
+    /// </remarks>
+    public override int Money
+    {
+        get => this.ActualStorage.Money;
+        set => this.ActualStorage.Money = value;
+    }
+
     /// <summary>
     /// Gets the actual storage which is wrapped by this instance.
     /// </summary>

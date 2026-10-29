@@ -532,13 +532,6 @@ public static class ItemExtensions
             // apply, as in the game client.
             value = minimumValue;
         }
-        else if (totalAttribute == Stats.TotalEnergy && item.IsBook(out _))
-        {
-            // The energy requirement of the summoner's books, which increase the curse damage by their book rise, keeps
-            // two quirks of the item formulas: a base value of 0 gives the formula's add, and options don't reduce it
-            // (see MUnique/OpenMU#1301).
-            return (totalAttribute, item.CalculateRequirement(formula, minimumValue, gameConfiguration));
-        }
         else
         {
             value = minimumValue == 0 ? 0 : item.CalculateRequirement(formula, minimumValue, gameConfiguration);

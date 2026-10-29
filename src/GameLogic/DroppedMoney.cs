@@ -152,12 +152,18 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         // only apply when the party which picks it up is the one which earned it; then the money
         // follows the experience. For anyone else there is no experience to follow, so it is split
         // equally between the picking party, just like money without any shares (e.g. an item box).
-        var earnedByThisParty = this._shares.Any(share => party.IsEligibleForMoney(share.Player, player));
+        // The picking player is always eligible, even when standing in a safezone: the safezone rule
+        // keeps members who idle in town out of the split, but whoever picks the money up is right
+        // there. Otherwise a party member picking up money in a safezone, with nobody else eligible,
+        // could never take it.
+        bool IsEligible(Player member) => member == player || party.IsEligibleForMoney(member, player);
+
+        var earnedByThisParty = this._shares.Any(share => IsEligible(share.Player));
         var shares = earnedByThisParty
             ? this._shares
             : MoneyDistribution.CreateEqualShares(this.Amount, party.PartyList.OfType<Player>().ToList());
 
-        var received = MoneyDistribution.TryPayShares(shares, member => party.IsEligibleForMoney(member, player));
+        var received = MoneyDistribution.TryPayShares(shares, IsEligible);
         if (!received)
         {
             player.Logger.LogDebug("No party member could take the money, Player {0}, Money {1}", player, this);

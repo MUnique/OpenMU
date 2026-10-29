@@ -241,6 +241,29 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Determines whether two players fight on opposing sides of the running battle.
+    /// </summary>
+    /// <param name="player">The one player.</param>
+    /// <param name="otherPlayer">The other player.</param>
+    /// <returns><see langword="true"/> if both are on the Castle Siege map during the battle, and on different sides.</returns>
+    /// <remarks>
+    /// The attacking sides fight each other as well as the defenders, so any two different sides are enemies.
+    /// </remarks>
+    public bool AreOnOpposingSides(Player player, Player otherPlayer)
+    {
+        if (this.CurrentState != CastleSiegeState.Start)
+        {
+            return false;
+        }
+
+        var side = this.GetPlayerJoinSide(player);
+        var otherSide = this.GetPlayerJoinSide(otherPlayer);
+        return side != CastleSiegeJoinSide.None
+               && otherSide != CastleSiegeJoinSide.None
+               && side != otherSide;
+    }
+
+    /// <summary>
     /// Assigns the current Castle Siege side to all online players on the Castle Siege map.
     /// </summary>
     /// <returns>A task that represents the asynchronous synchronization operation.</returns>

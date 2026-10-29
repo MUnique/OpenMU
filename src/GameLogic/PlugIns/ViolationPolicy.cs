@@ -77,12 +77,12 @@ internal static class ViolationPolicy
     /// Weighs one violation for the score: every violation counts at least one,
     /// larger overshoots count proportionally more.
     /// </summary>
-    /// <param name="deficitMs">By how much the walk exceeded its time budget.</param>
-    /// <param name="expectedTimeMs">The time budget the walk cost.</param>
+    /// <param name="overshoot">By how much the action exceeded its budget.</param>
+    /// <param name="expected">The budget the action had, in the same unit as <paramref name="overshoot"/>.</param>
     /// <returns>The weight to add to the score.</returns>
-    internal static double WeighViolation(double deficitMs, double expectedTimeMs)
+    internal static double WeighViolation(double overshoot, double expected)
     {
-        return 1.0 + (deficitMs / Math.Max(1.0, expectedTimeMs));
+        return 1.0 + (overshoot / Math.Max(1.0, expected));
     }
 
     /// <summary>
@@ -102,16 +102,22 @@ internal static class ViolationPolicy
     /// </summary>
     /// <param name="config">The configuration.</param>
     /// <param name="warningsInWindow">The warnings in the history window, including the current one.</param>
-    /// <param name="canBanAccount">Whether the player has an account which may be banned, e.g. not a game master's.</param>
+    /// <param name="canPunish">Whether the player may be punished at all, e.g. not a game master or spectator.</param>
+    /// <param name="hasAccount">Whether the player has an account which can be banned.</param>
     /// <returns>The sanction to execute.</returns>
-    internal static Sanction DecideSanction(SpeedHackDetectConfiguration config, int warningsInWindow, bool canBanAccount)
+    internal static Sanction DecideSanction(SpeedHackDetectConfiguration config, int warningsInWindow, bool canPunish, bool hasAccount)
     {
+        if (!canPunish)
+        {
+            return default;
+        }
+
         if (warningsInWindow <= config.MaxWarnings)
         {
             return new Sanction(WarnPlayer: true, DisconnectPlayer: false, BanAccount: false);
         }
 
-        bool banAccount = config.AutoBan && canBanAccount;
+        bool banAccount = config.AutoBan && hasAccount;
         bool disconnectPlayer = config.DisconnectOnViolation;
         return new Sanction(!banAccount && !disconnectPlayer, disconnectPlayer, banAccount);
     }

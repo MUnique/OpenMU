@@ -32,6 +32,12 @@ public class FriendServerInMemoryContext : InMemoryContext, IFriendServerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<bool> CharacterExistsAsync(string characterName)
+    {
+        return (await this.Provider.GetRepository<Character>().GetAllAsync().ConfigureAwait(false)).Any(character => character.Name == characterName);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<Friend?> GetFriendByNamesAsync(string characterName, string friendName)
     {
         var friendId = (await this.Provider.GetRepository<Character>().GetAllAsync().ConfigureAwait(false)).FirstOrDefault(character => character.Name == friendName)?.Id;
