@@ -74,7 +74,7 @@ public sealed class ApiKeyManagementServiceTests
         var service = new ApiKeyManagementService(keys, dialog, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(users, keys));
 
         var creation = service.CreateNewInModalDialogAsync();
-        Assert.That(dialog.Parameters, Is.Not.Null);
+        Assert.That(dialog.Shown, Has.Count.EqualTo(1));
         Assert.That(creation.IsCompleted, Is.False);
         await users.DeleteAsync(user).ConfigureAwait(false);
         dialog.Confirm();
@@ -92,10 +92,7 @@ public sealed class ApiKeyManagementServiceTests
     {
         private readonly TaskCompletionSource<ModalResult> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        /// <summary>
-        /// Gets the parameters of the open dialog; <c>null</c>, while it isn't shown.
-        /// </summary>
-        public ModalParameters? Parameters { get; private set; }
+        public IList<ShownDialog> Shown { get; } = new List<ShownDialog>();
 
         public void Confirm() => this._result.SetResult(ModalResult.Ok(true));
 
@@ -107,7 +104,7 @@ public sealed class ApiKeyManagementServiceTests
 
         public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
         {
-            this.Parameters = parameters ?? new ModalParameters();
+            this.Shown.Add(new ShownDialog(componentType, title, parameters, options));
             return new Reference(this._result.Task);
         }
 

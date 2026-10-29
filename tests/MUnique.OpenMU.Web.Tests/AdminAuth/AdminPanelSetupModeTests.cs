@@ -15,7 +15,6 @@ using Moq;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Services;
-using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 
@@ -125,13 +124,15 @@ public sealed class AdminPanelSetupModeTests
         var keys = new InMemoryApiKeyRepository();
         await keys.AddAsync(CreateKey("launcher", isDisabled: false)).ConfigureAwait(false);
         var toasts = new Mock<IToastService>();
-        using var services = BuildServices(users, keys, toasts.Object, "first");
+        var dialog = new UserDialog("first");
+        using var services = BuildServices(users, keys, toasts.Object, dialog);
 
         using var scope = services.CreateScope();
 
         var created = await scope.ServiceProvider.GetRequiredService<AdminUserManagementService>().CreateNewInModalDialogAsync().ConfigureAwait(false);
 
         Assert.That(created, Is.True);
+        Assert.That(dialog.Shown, Has.Count.EqualTo(1));
         Assert.That(await users.GetCountAsync().ConfigureAwait(false), Is.EqualTo(1));
         Assert.That((await keys.GetAllAsync().ConfigureAwait(false)).Single().IsDisabled, Is.True);
         toasts.Verify(toast => toast.ShowWarning(It.IsAny<string>(), It.IsAny<string?>()), Times.Once);
@@ -148,13 +149,15 @@ public sealed class AdminPanelSetupModeTests
         var keys = new InMemoryApiKeyRepository();
         await keys.AddAsync(CreateKey("launcher", isDisabled: false)).ConfigureAwait(false);
         var toasts = new Mock<IToastService>();
-        using var services = BuildServices(users, keys, toasts.Object, "second");
+        var dialog = new UserDialog("second");
+        using var services = BuildServices(users, keys, toasts.Object, dialog);
 
         using var scope = services.CreateScope();
 
         var created = await scope.ServiceProvider.GetRequiredService<AdminUserManagementService>().CreateNewInModalDialogAsync().ConfigureAwait(false);
 
         Assert.That(created, Is.True);
+        Assert.That(dialog.Shown, Has.Count.EqualTo(1));
         Assert.That(await users.GetCountAsync().ConfigureAwait(false), Is.EqualTo(2));
         Assert.That((await keys.GetAllAsync().ConfigureAwait(false)).Single().IsDisabled, Is.False);
         toasts.Verify(toast => toast.ShowWarning(It.IsAny<string>(), It.IsAny<string?>()), Times.Never);
@@ -205,7 +208,7 @@ public sealed class AdminPanelSetupModeTests
         };
     }
 
-    private static ServiceProvider BuildServices(InMemoryAdminUserRepository users, IApiKeyRepository keys, IToastService toasts, string newLoginName)
+    private static ServiceProvider BuildServices(InMemoryAdminUserRepository users, IApiKeyRepository keys, IToastService toasts, UserDialog dialog)
     {
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Warning));
@@ -219,7 +222,7 @@ public sealed class AdminPanelSetupModeTests
         services.AddSingleton<SignInTicketService>();
         services.AddSingleton<AdminUserAvailabilityService>();
         services.AddSingleton<AdminPanelSetupMode>();
-        services.AddSingleton<IModalService>(new UserDialog(newLoginName));
+        services.AddSingleton<IModalService>(dialog);
         services.AddSingleton(toasts);
         services.AddScoped<AdminUserStore>();
         services.AddScoped<IUserStore<AdminUser>>(provider => provider.GetRequiredService<AdminUserStore>());
@@ -249,6 +252,8 @@ public sealed class AdminPanelSetupModeTests
             this._loginName = loginName;
         }
 
+        public IList<ShownDialog> Shown { get; } = new List<ShownDialog>();
+
         public IModalReference Show<TComponent>(string title, ModalParameters? parameters = null, ModalOptions? options = null)
             where TComponent : class, IComponent
         {
@@ -257,11 +262,7 @@ public sealed class AdminPanelSetupModeTests
 
         public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
         {
-            if (!componentType.IsGenericType || componentType.GetGenericTypeDefinition() != typeof(ModalCreateNew<>))
-            {
-                throw new InvalidOperationException($"The test fills in only the dialog which creates a user, not {componentType.Name}.");
-            }
-
+            this.Shown.Add(new ShownDialog(componentType, title, parameters, options));
             var input = parameters?.FirstOrDefault(parameter => parameter.Key == "Item").Value
                         ?? throw new InvalidOperationException("The dialog has no item to fill in.");
             input.GetType().GetProperty("LoginName")!.SetValue(input, this._loginName);
