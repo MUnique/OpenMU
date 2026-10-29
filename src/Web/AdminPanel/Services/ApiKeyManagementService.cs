@@ -22,7 +22,7 @@ public class ApiKeyManagementService
     private readonly IApiKeyRepository _repository;
     private readonly IModalService _modalService;
     private readonly IToastService _toastService;
-    private readonly AdminUserAvailabilityService _userAvailability;
+    private readonly AdminPanelSetupMode _setupMode;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiKeyManagementService"/> class.
@@ -30,13 +30,13 @@ public class ApiKeyManagementService
     /// <param name="repository">The repository of the stored keys.</param>
     /// <param name="modalService">The modal service.</param>
     /// <param name="toastService">The toast service.</param>
-    /// <param name="userAvailability">The service which knows whether the admin panel has a user.</param>
-    public ApiKeyManagementService(IApiKeyRepository repository, IModalService modalService, IToastService toastService, AdminUserAvailabilityService userAvailability)
+    /// <param name="setupMode">The setup mode, which knows whether the admin panel has a user.</param>
+    public ApiKeyManagementService(IApiKeyRepository repository, IModalService modalService, IToastService toastService, AdminPanelSetupMode setupMode)
     {
         this._repository = repository;
         this._modalService = modalService;
         this._toastService = toastService;
-        this._userAvailability = userAvailability;
+        this._setupMode = setupMode;
     }
 
     /// <summary>
@@ -58,13 +58,13 @@ public class ApiKeyManagementService
     /// <remarks>
     /// No key is created while the admin panel has no user. In that initial setup mode, anybody
     /// who reaches the admin panel could create one, and the key would keep working after the
-    /// first user exists.
+    /// first user exists. It's checked again right before the key is stored, because the dialog
+    /// can stay open for a long time.
     /// </remarks>
     public async Task<string?> CreateNewInModalDialogAsync()
     {
-        if (!await this._userAvailability.AnyUserExistsAsync().ConfigureAwait(false))
+        if (await this.RefuseInSetupModeAsync().ConfigureAwait(false))
         {
-            this._toastService.ShowError(Resources.ApiKeyNeedsAUser);
             return null;
         }
 
@@ -97,6 +97,11 @@ public class ApiKeyManagementService
 
         try
         {
+            if (await this.RefuseInSetupModeAsync().ConfigureAwait(false))
+            {
+                return null;
+            }
+
             await this._repository.AddAsync(apiKey).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -190,6 +195,21 @@ public class ApiKeyManagementService
         }
 
         this._toastService.ShowSuccess(Resources.ApiKeyDeleted);
+        return true;
+    }
+
+    /// <summary>
+    /// Refuses to create a key while the admin panel has no user, and tells why.
+    /// </summary>
+    /// <returns><c>true</c>, if the admin panel has no user and no key may be created; otherwise, <c>false</c>.</returns>
+    private async ValueTask<bool> RefuseInSetupModeAsync()
+    {
+        if (!await this._setupMode.IsActiveAsync().ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        this._toastService.ShowError(Resources.ApiKeyNeedsAUser);
         return true;
     }
 

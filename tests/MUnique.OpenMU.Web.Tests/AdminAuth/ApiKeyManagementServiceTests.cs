@@ -4,13 +4,11 @@
 
 namespace MUnique.OpenMU.Web.Tests.AdminAuth;
 
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Components;
 using Moq;
 using MUnique.OpenMU.Persistence.AdminAuth;
-using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Tests.NetworkAnalyzer;
 
@@ -31,7 +29,7 @@ public sealed class ApiKeyManagementServiceTests
         var keys = new InMemoryApiKeyRepository();
         var modals = new TestModalService();
         var toasts = new Mock<IToastService>();
-        var service = new ApiKeyManagementService(keys, modals, toasts.Object, CreateUserAvailability(new InMemoryAdminUserRepository()));
+        var service = new ApiKeyManagementService(keys, modals, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(new InMemoryAdminUserRepository()));
 
         var createdKey = await service.CreateNewInModalDialogAsync().ConfigureAwait(false);
 
@@ -48,10 +46,10 @@ public sealed class ApiKeyManagementServiceTests
     public async Task KeyWithAUserAsync()
     {
         var users = new InMemoryAdminUserRepository();
-        await users.AddAsync(new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator }).ConfigureAwait(false);
+        await users.AddAsync(AdminPanelSetupModeTests.CreateUser("admin")).ConfigureAwait(false);
         var keys = new InMemoryApiKeyRepository();
         var modals = new TestModalService();
-        var service = new ApiKeyManagementService(keys, modals, Mock.Of<IToastService>(), CreateUserAvailability(users));
+        var service = new ApiKeyManagementService(keys, modals, Mock.Of<IToastService>(), AdminPanelSetupModeTests.CreateSetupMode(users));
 
         var createdKey = await service.CreateNewInModalDialogAsync().ConfigureAwait(false);
 
@@ -61,16 +59,63 @@ public sealed class ApiKeyManagementServiceTests
     }
 
     /// <summary>
-    /// Creates the service which knows whether the admin panel has a user, without a bootstrap user:
-    /// the environment variables of the bootstrap user are not read here.
+    /// Tests that no key is created when the last user is gone while the dialog of the key is
+    /// open: the check is repeated right before the key is stored, not only when the dialog opens.
     /// </summary>
-    private static AdminUserAvailabilityService CreateUserAvailability(IAdminUserRepository users)
+    [Test]
+    public async Task NoKeyWhenTheLastUserIsGoneWhileTheDialogIsOpenAsync()
     {
-        var bootstrapUser = new BootstrapAdminUserProvider(
-            Options.Create(new AdminPanelAuthOptions()),
-            new BCryptPasswordHasher(),
-            new AdminUserSecretProtector(new EphemeralDataProtectionProvider(), NullLogger<AdminUserSecretProtector>.Instance),
-            NullLogger<BootstrapAdminUserProvider>.Instance);
-        return new AdminUserAvailabilityService(users, bootstrapUser);
+        var users = new InMemoryAdminUserRepository();
+        var user = AdminPanelSetupModeTests.CreateUser("admin");
+        await users.AddAsync(user).ConfigureAwait(false);
+        var keys = new InMemoryApiKeyRepository();
+        var dialog = new PendingDialog();
+        var toasts = new Mock<IToastService>();
+        var service = new ApiKeyManagementService(keys, dialog, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(users));
+
+        var creation = service.CreateNewInModalDialogAsync();
+        Assert.That(dialog.IsShown, Is.True);
+        Assert.That(creation.IsCompleted, Is.False);
+        await users.DeleteAsync(user).ConfigureAwait(false);
+        dialog.Confirm();
+        var createdKey = await creation.ConfigureAwait(false);
+
+        Assert.That(createdKey, Is.Null);
+        Assert.That(await keys.GetAllAsync().ConfigureAwait(false), Is.Empty);
+        toasts.Verify(toast => toast.ShowError(It.IsAny<string>(), It.IsAny<string?>()), Times.Once);
+    }
+
+    /// <summary>
+    /// A dialog which stays open until the test confirms it.
+    /// </summary>
+    private sealed class PendingDialog : IModalService
+    {
+        private readonly TaskCompletionSource<ModalResult> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public bool IsShown { get; private set; }
+
+        public void Confirm() => this._result.SetResult(ModalResult.Ok(true));
+
+        public IModalReference Show<TComponent>(string title, ModalParameters? parameters = null, ModalOptions? options = null)
+            where TComponent : class, IComponent
+        {
+            return this.Show(typeof(TComponent), title, parameters, options);
+        }
+
+        public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
+        {
+            this.IsShown = true;
+            return new Reference(this._result.Task);
+        }
+
+        private sealed class Reference : IModalReference
+        {
+            public Reference(Task<ModalResult> result)
+            {
+                this.Result = result;
+            }
+
+            public Task<ModalResult> Result { get; }
+        }
     }
 }

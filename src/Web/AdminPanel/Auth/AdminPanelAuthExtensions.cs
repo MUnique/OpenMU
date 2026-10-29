@@ -77,6 +77,7 @@ public static class AdminPanelAuthExtensions
         services.AddSingleton<BootstrapAdminUserProvider>();
         services.AddSingleton<SignInTicketService>();
         services.AddSingleton<AdminUserAvailabilityService>();
+        services.AddSingleton<AdminPanelSetupMode>();
         services.AddSingleton<AdminPrincipalValidator>();
         services.AddSingleton<ReverseProxyAuthenticationService>();
         services.AddScoped<AdminUserStore>();
