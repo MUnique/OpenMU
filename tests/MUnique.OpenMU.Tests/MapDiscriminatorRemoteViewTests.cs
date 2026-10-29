@@ -171,7 +171,8 @@ public class MapDiscriminatorRemoteViewTests
     {
         var data = output.ToArray();
         var packets = new List<byte[]>();
-        for (var offset = 0; offset < data.Length;)
+        var offset = 0;
+        while (offset < data.Length)
         {
             var length = data.AsSpan(offset).GetPacketSize();
             if (length <= 0)
