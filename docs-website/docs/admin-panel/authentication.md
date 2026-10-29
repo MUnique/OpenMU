@@ -221,17 +221,17 @@ MuMain client. Its editor, MuEditor, downloads it with "Update from server" and
 shows what differs from the client's items before anything changes; see the
 client's `docs/item-data.md`.
 
-- It needs an API key with the Viewer role. The login cookie of the admin panel
+* It needs an API key with the Viewer role. The login cookie of the admin panel
   isn't accepted.
-- It reads the saved configuration, so changes which aren't saved yet in the
+* It reads the saved configuration, so changes which aren't saved yet in the
   admin panel aren't part of it.
-- One export runs at a time. A request in the meantime gets `429 Too Many
+* One export runs at a time. A request in the meantime gets `429 Too Many
   Requests`, with `Retry-After` in seconds.
-- The file names the item fields it carries in its `fields` list; the client
+* The file names the item fields it carries in its `fields` list; the client
   keeps its own values of the other fields.
-- Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
+* Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
   out, because the client would refuse the whole file. The log names them.
-- The file names the game version of the configuration, `season6` for Season 6.
+* The file names the game version of the configuration, `season6` for Season 6.
   The client only reads Season 6 data, so it refuses the file of a server with
   another version.
 
