@@ -251,7 +251,8 @@ client's `docs/item-data.md`.
 * One export runs at a time. A request in the meantime gets `429 Too Many
   Requests`, with `Retry-After` in seconds.
 * The file names the item fields it carries in its `fields` list; the client
-  keeps its own values of the other fields.
+  keeps its own values of the other fields. So far it carries the item size
+  (`width`, `height`).
 * Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
   out, because the client would refuse the whole file. The log names them.
 * The file names the game version of the configuration, `season6` for Season 6.

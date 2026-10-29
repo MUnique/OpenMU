@@ -287,6 +287,47 @@ public sealed class ItemExchangeExportTests
         Assert.That(items, Is.EqualTo(repeated.OrderBy(item => item.GetId())));
     }
 
+    /// <summary>
+    /// Tests the size: <c>width</c> and <c>height</c> are the item's, e.g. 1x1 for the Seed Spheres.
+    /// </summary>
+    [Test]
+    public void SizeIsTheItemsWidthAndHeight()
+    {
+        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
+        var items = file.RootElement.GetProperty("items").EnumerateArray()
+            .ToDictionary(item => (item.GetProperty("group").GetInt32(), item.GetProperty("number").GetInt32()));
+
+        Assert.That(ItemExchangeExport.Fields.Select(field => field.Key), Is.SupersetOf(new[] { "width", "height" }));
+        foreach (var definition in this._seasonSixConfiguration.Items)
+        {
+            var item = items[(definition.Group, definition.Number)];
+            Assert.That(GetNumberOrZero(item, "width"), Is.EqualTo(definition.Width), $"width of {definition.Group},{definition.Number}");
+            Assert.That(GetNumberOrZero(item, "height"), Is.EqualTo(definition.Height), $"height of {definition.Group},{definition.Number}");
+        }
+
+        var seedSphere = items[(12, 118)];
+        Assert.That(seedSphere.GetProperty("width").GetInt32(), Is.EqualTo(1));
+        Assert.That(seedSphere.GetProperty("height").GetInt32(), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that a size of 0, the client's default, is left out as the client's files leave it out.
+    /// </summary>
+    [Test]
+    public void SizeOfZeroIsLeftOut()
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using var context = provider.CreateNewContext();
+        var configuration = context.CreateNew<GameConfiguration>();
+        AddItem(context, configuration, 14, 3);
+
+        using var file = Parse(ItemExchangeExport.Write(configuration, ItemExchangeExport.ClientGameVersion));
+        var item = file.RootElement.GetProperty("items")[0];
+
+        Assert.That(item.TryGetProperty("width", out _), Is.False);
+        Assert.That(item.TryGetProperty("height", out _), Is.False);
+    }
+
     private static JsonDocument Parse(byte[] file) => JsonDocument.Parse(file);
 
     private static List<(int Group, int Number)> GetItemKeys(byte[] file)
@@ -357,6 +398,11 @@ public sealed class ItemExchangeExportTests
             .Setup(source => source.GetContextAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(adminPanelContext.Object);
         return (stored, configurations.Object);
+    }
+
+    private static int GetNumberOrZero(JsonElement item, string key)
+    {
+        return item.TryGetProperty(key, out var value) ? value.GetInt32() : 0;
     }
 
     private static void AddItem(IContext context, GameConfiguration configuration, byte group, short number)
