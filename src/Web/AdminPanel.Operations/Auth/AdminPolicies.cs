@@ -41,7 +41,8 @@ internal static class AdminPolicies
     /// <summary>
     /// The policy which needs an API key with the viewer role, and which refuses
     /// requests while the admin panel has no user (in its setup mode).
-    /// The login cookie of the admin panel isn't accepted.
+    /// The login cookie of the admin panel isn't accepted: the policy names the API key
+    /// scheme itself, so an endpoint only names the policy.
     /// </summary>
     internal const string ApiKeyViewer = "OpenMU.ApiKeyViewer";
 }

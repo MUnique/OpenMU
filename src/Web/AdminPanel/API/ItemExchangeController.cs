@@ -16,7 +16,7 @@ using MUnique.OpenMU.Web.AdminPanel.Operations.ItemExchange;
 /// <param name="operations">The item exchange operations.</param>
 [ApiController]
 [Route("api/items")]
-[Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.AuthenticationScheme, Policy = AdminPolicies.ApiKeyViewer)]
+[Authorize(Policy = AdminPolicies.ApiKeyViewer)]
 public sealed class ItemExchangeController(ItemExchangeOperations operations) : ControllerBase
 {
     /// <summary>
