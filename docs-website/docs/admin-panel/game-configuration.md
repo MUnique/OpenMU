@@ -164,8 +164,7 @@ on its damage and magic power instead of the excellent part.
 The level bonus of these stats still comes from the level table of the item's
 base power-up. The table which a profile names for a stat, and *per level after
 halving* of the rises, aren't used by the game for now. Which kinds of items get
-which part, the halving of the magic power and two quirks of the energy
-requirement of books stay part of the game logic.
+which part and the halving of the magic power stay part of the game logic.
 
 A game server doesn't start without the profile `default` (see
 [Configuration updates](configuration-updates.md)). The game client calculates

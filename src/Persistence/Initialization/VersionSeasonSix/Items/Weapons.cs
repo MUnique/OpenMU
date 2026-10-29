@@ -1,4 +1,4 @@
-// <copyright file="Weapons.cs" company="MUnique">
+﻿// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -471,8 +471,7 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
-        // Crystal Sword.
-        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5))
+        if (group == (int)ItemGroups.Swords)
         {
             if (ragefighterClass == 0 || number < 2)
             {
@@ -502,9 +501,14 @@ internal class Weapons : InitializerBase
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1, AggregateType.AddRaw));
             }
-            else if (knightClass > 0 && (skillNumber == (int)SkillNumber.FallingSlash || number < 5))
+            else if (knightClass > 0 && number < 5)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1, AggregateType.AddRaw));
+            }
+            else if (number == 5)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped, 1, AggregateType.AddRaw));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.CrystalSwordIceChance, 1.0f / 20, AggregateType.AddRaw));
             }
             else
             {

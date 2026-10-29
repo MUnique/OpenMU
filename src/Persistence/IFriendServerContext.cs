@@ -20,6 +20,13 @@ public interface IFriendServerContext : IContext
     ValueTask<Friend> CreateNewFriendAsync(string characterName, string friendName);
 
     /// <summary>
+    /// Determines whether a character with the specified name exists. Doesn't change anything.
+    /// </summary>
+    /// <param name="characterName">Name of the character.</param>
+    /// <returns><see langword="true"/>, if a character with this name exists.</returns>
+    ValueTask<bool> CharacterExistsAsync(string characterName);
+
+    /// <summary>
     /// Gets the friend view item by friend.
     /// </summary>
     /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>

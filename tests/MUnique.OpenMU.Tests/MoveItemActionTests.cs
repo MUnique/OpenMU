@@ -415,6 +415,7 @@ public class MoveItemActionTests
     private static Storage CreateVaultStorage()
     {
         var itemStorage = new Mock<ItemStorage>();
+        itemStorage.SetupProperty(i => i.Money);
         itemStorage.Setup(i => i.Items).Returns(new List<Item>());
         return new Storage(InventoryConstants.WarehouseSize, itemStorage.Object);
     }
