@@ -225,6 +225,8 @@ client's `docs/item-data.md`.
   isn't accepted.
 - It reads the saved configuration, so changes which aren't saved yet in the
   admin panel aren't part of it.
+- One export runs at a time. A request in the meantime gets `429 Too Many
+  Requests`, with `Retry-After` in seconds.
 - The file names the item fields it carries in its `fields` list; the client
   keeps its own values of the other fields.
 - Items outside the client's groups (0 to 15) and numbers (0 to 511) are left

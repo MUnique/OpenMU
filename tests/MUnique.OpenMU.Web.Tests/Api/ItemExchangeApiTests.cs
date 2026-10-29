@@ -127,6 +127,33 @@ public sealed class ItemExchangeApiTests : IDisposable
         var item = file.RootElement.GetProperty("items").EnumerateArray().Single();
         Assert.That(item.GetProperty("group").GetInt32(), Is.EqualTo(0));
         Assert.That(item.GetProperty("number").GetInt32(), Is.EqualTo(1));
+        Assert.That(ItemExchangeController.ExportGate.CurrentCount, Is.EqualTo(1), "The export is done, so the next one may start.");
+    }
+
+    /// <summary>
+    /// Tests that a request while another export is running gets <c>429</c> instead of a second export,
+    /// and that the next request after it gets the file.
+    /// </summary>
+    [Test]
+    public async Task OneExportAtATimeAsync()
+    {
+        var http = await this.StartAsync().ConfigureAwait(false);
+
+        await ItemExchangeController.ExportGate.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            using var refused = await SendAsync(http, ViewerKey).ConfigureAwait(false);
+
+            Assert.That(refused.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+            Assert.That(refused.Headers.RetryAfter?.Delta, Is.EqualTo(TimeSpan.FromSeconds(1)));
+        }
+        finally
+        {
+            ItemExchangeController.ExportGate.Release();
+        }
+
+        using var response = await SendAsync(http, ViewerKey).ConfigureAwait(false);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
     private static async Task<HttpResponseMessage> SendAsync(HttpClient http, string key)
