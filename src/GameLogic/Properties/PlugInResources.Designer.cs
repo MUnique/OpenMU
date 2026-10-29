@@ -4636,6 +4636,21 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption", resourceCulture)!;
 
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption", resourceCulture)!;
+
         /// <summary>Gets the localized SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption", resourceCulture)!;
 
@@ -4662,6 +4677,51 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_PingClockToleranceMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_PingClockToleranceMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_PingClockToleranceMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedProfiles_Description text.</summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Description => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_SkillId_Caption text.</summary>
+        public static string AttackSpeedProfile_SkillId_Caption => ResourceManager.GetString("AttackSpeedProfile_SkillId_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_SpeedSource_Caption text.</summary>
+        public static string AttackSpeedProfile_SpeedSource_Caption => ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_SpeedSource_Description text.</summary>
+        public static string AttackSpeedProfile_SpeedSource_Description => ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_BaseDelayMs_Caption text.</summary>
+        public static string AttackSpeedProfile_BaseDelayMs_Caption => ResourceManager.GetString("AttackSpeedProfile_BaseDelayMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_ScalingFactor_Caption text.</summary>
+        public static string AttackSpeedProfile_ScalingFactor_Caption => ResourceManager.GetString("AttackSpeedProfile_ScalingFactor_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_MinimumIntervalMs_Caption text.</summary>
+        public static string AttackSpeedProfile_MinimumIntervalMs_Caption => ResourceManager.GetString("AttackSpeedProfile_MinimumIntervalMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedSource_AttackSpeed text.</summary>
+        public static string AttackSpeedSource_AttackSpeed => ResourceManager.GetString("AttackSpeedSource_AttackSpeed", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedSource_MagicSpeed text.</summary>
+        public static string AttackSpeedSource_MagicSpeed => ResourceManager.GetString("AttackSpeedSource_MagicSpeed", resourceCulture)!;
 
         /// <summary>Gets the localized InvasionSpawnConfiguration_Y_Caption text.</summary>
         public static string InvasionSpawnConfiguration_Y_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_Y_Caption", resourceCulture)!;

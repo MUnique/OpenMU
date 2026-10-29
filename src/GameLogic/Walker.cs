@@ -30,6 +30,8 @@ public sealed class Walker : IDisposable
 
     private readonly AsyncReaderWriterLock _walkLock;
 
+    private readonly bool _paceFirstStepAcrossWalks;
+
     /// <summary>
     /// The number of steps which are stored in <see cref="_currentWalkSteps"/> for the current walk.
     /// </summary>
@@ -39,16 +41,35 @@ public sealed class Walker : IDisposable
     private Guid _currentWalkToken;
 
     /// <summary>
+    /// The <see cref="Stopwatch"/> timestamp of the last performed step, or zero if none was performed yet.
+    /// It survives walk restarts, so that a new walk request can't skip the delay of the previous step.
+    /// </summary>
+    private long _lastStepTimestamp;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Walker" /> class.
     /// </summary>
     /// <param name="walkSupporter">The walk supporter.</param>
     /// <param name="stepDelay">The delay between performing a step.</param>
-    public Walker(ISupportWalk walkSupporter, Func<WalkingStep?, TimeSpan> stepDelay)
+    /// <param name="paceFirstStepAcrossWalks">
+    /// If <c>true</c>, the first step of a new walk waits for the delay of the previous step. This prevents
+    /// a client which restarts its walk on every click from getting an extra immediate step. It is only
+    /// needed for client-controlled walkers; server-controlled walkers keep their original cadence.
+    /// </param>
+    public Walker(ISupportWalk walkSupporter, Func<WalkingStep?, TimeSpan> stepDelay, bool paceFirstStepAcrossWalks = false)
     {
         this._walkSupporter = walkSupporter;
         this.StepDelay = stepDelay;
+        this._paceFirstStepAcrossWalks = paceFirstStepAcrossWalks;
         this._walkLock = new AsyncReaderWriterLock();
     }
+
+    /// <summary>
+    /// Occurs after a walk step has been performed.
+    /// The second parameter is the delay which was used for pacing this step; it already includes the
+    /// distance of the step (e.g. a diagonal step takes longer than a straight one).
+    /// </summary>
+    public event Action<WalkingStep, TimeSpan>? StepPerformed;
 
     /// <summary>
     /// Gets the current walk target.
@@ -273,10 +294,20 @@ public sealed class Walker : IDisposable
 
     private async Task WalkLoopAsync(CancellationTokenSource ownCts, CancellationToken cancellationToken)
     {
-        // Task.Delay might take longer than we specify. We need to compensate that.
+        // Task.Delay might take longer than we specify. We need to compensate that within a walk.
         var lastOffset = TimeSpan.Zero;
+        var isFirstStep = true;
         while (!cancellationToken.IsCancellationRequested)
         {
+            if (isFirstStep && this._paceFirstStepAcrossWalks)
+            {
+                var firstStepDelay = await this.GetNextStepDelayAsync().ConfigureAwait(false);
+                if (!await this.WaitForNextStepAsync(firstStepDelay, cancellationToken).ConfigureAwait(false))
+                {
+                    break;
+                }
+            }
+
             var sw = Stopwatch.StartNew();
             var step = await this.WalkStepAsync(ownCts, cancellationToken).ConfigureAwait(false);
             if (step is null)
@@ -298,6 +329,7 @@ public sealed class Walker : IDisposable
                 break;
             }
 
+            isFirstStep = false;
             var delay = this.StepDelay(step);
             var nextDelay = delay - lastOffset;
             if (nextDelay > TimeSpan.Zero)
@@ -322,15 +354,59 @@ public sealed class Walker : IDisposable
     }
 
     /// <summary>
+    /// Gets the delay of the step at the front of the queue.
+    /// </summary>
+    /// <returns>The delay of the next step, or zero if the queue is empty.</returns>
+    private async ValueTask<TimeSpan> GetNextStepDelayAsync()
+    {
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
+        return this._nextSteps.TryPeek(out var nextStep) ? this.StepDelay(nextStep) : TimeSpan.Zero;
+    }
+
+    /// <summary>
+    /// Waits until the delay of the next step has passed since the last performed step.
+    /// The pacing is kept across walk restarts, so a new walk request can't grant an extra immediate step.
+    /// </summary>
+    /// <param name="stepDelay">The delay of the next step.</param>
+    /// <param name="cancellationToken">The cancellation token of the walk loop.</param>
+    /// <returns><c>True</c>, if a step may be performed; <c>False</c>, if the walk was cancelled.</returns>
+    private async ValueTask<bool> WaitForNextStepAsync(TimeSpan stepDelay, CancellationToken cancellationToken)
+    {
+        var lastStep = Volatile.Read(ref this._lastStepTimestamp);
+        if (lastStep == 0)
+        {
+            return true;
+        }
+
+        var now = Stopwatch.GetTimestamp();
+        var elapsed = TimeSpan.FromSeconds((now - lastStep) / (double)Stopwatch.Frequency);
+        var remaining = stepDelay - elapsed;
+        if (remaining <= TimeSpan.Zero)
+        {
+            return true;
+        }
+
+        try
+        {
+            await Task.Delay(remaining, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Performs the next step of a walk.
     /// </summary>
     private async ValueTask<WalkingStep?> WalkStepAsync(CancellationTokenSource ownCts, CancellationToken cancellationToken)
     {
         try
         {
-            if (this._isDisposed)
+            if (this._isDisposed || cancellationToken.IsCancellationRequested)
             {
-                Debug.WriteLine("walker already disposed");
                 return null;
             }
 
@@ -379,6 +455,13 @@ public sealed class Walker : IDisposable
             rotatable.Rotation = nextStep.Direction;
         }
 
+        // The timestamp and the delay belong to the step which was just performed, and they have to be
+        // kept even when a new walk starts in the meantime. Without this, every walk restart granted an
+        // extra immediate step.
+        var stepDelay = this.StepDelay(nextStep);
+        Volatile.Write(ref this._lastStepTimestamp, Stopwatch.GetTimestamp());
+
+        this.StepPerformed?.Invoke(nextStep, stepDelay);
         return nextStep;
     }
 

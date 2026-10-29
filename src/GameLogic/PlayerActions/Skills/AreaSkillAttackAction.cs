@@ -36,17 +36,9 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration)
+        if (!await AttackActionValidator.CanAttackAsync(player, skill).ConfigureAwait(false))
         {
-            if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
-            {
-                var eventArgs = new SpeedHackCheckEventArgs();
-                await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
-                if (eventArgs.IsCheatDetected)
-                {
-                    return;
-                }
-            }
+            return;
         }
 
         if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
@@ -54,14 +46,19 @@ public class AreaSkillAttackAction
             return;
         }
 
+        if (skill.SkillType is SkillType.AreaSkillExplicitHits)
+        {
+            player.SkillHitValidator.RegisterArea((ushort)skill.Number, skill, player.Position, targetAreaCenter);
+        }
+
+        await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
+
         if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.Buff
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
-            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, rotation).ConfigureAwait(false);
         }
-
-        await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
     }
 
     private static bool AreaSkillSettingsAreDefault([NotNullWhen(true)] AreaSkillSettings? settings)
@@ -157,40 +154,6 @@ public class AreaSkillAttackAction
 
     private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, byte rotation)
     {
-        if (player.Attributes is not { } attributes)
-        {
-            return;
-        }
-
-        if (attributes[Stats.IsStunned] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in stunned state", player);
-            return;
-        }
-
-        if (attributes[Stats.IsAsleep] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in sleep state", player);
-            return;
-        }
-
-        if (player.IsAtSafezone())
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking from safezone", player);
-            return;
-        }
-
-        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
-        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
-        {
-            return;
-        }
-
-        if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
-        {
-            return;
-        }
-
         bool isCombo = false;
         if (player.ComboState is { } comboState)
         {
@@ -347,11 +310,18 @@ public class AreaSkillAttackAction
         }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
-        await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
+        var success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
 
         for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
         {
             await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+        }
+
+        if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+        {
+            // The hit generated a different skill (e.g. ice) than the one originally casted.
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
+            return;
         }
 
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
