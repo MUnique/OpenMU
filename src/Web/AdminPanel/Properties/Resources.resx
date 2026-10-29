@@ -921,6 +921,15 @@
   <data name="ApiKeyNeedsAUser" xml:space="preserve">
     <value>Create the first user of the admin panel before an API key: until then, anybody who reaches the admin panel could create a key, and it would keep working afterwards.</value>
   </data>
+  <data name="ApiKeyCreatedBeforeFirstUser" xml:space="preserve">
+    <value>Created before the first user</value>
+  </data>
+  <data name="ApiKeysCreatedBeforeFirstUserHint" xml:space="preserve">
+    <value>Keys marked “Created before the first user” were created while the admin panel had no user, when anybody who reached it could create keys. They have been disabled once. Enable such a key only if you created it yourself, or better replace it: create a new key, put it into the application and delete the old one.</value>
+  </data>
+  <data name="ApiKeysOfSetupModeDisabled" xml:space="preserve">
+    <value>{0} API key(s) have been disabled: they were created while the admin panel had no user, when anybody who reached it could create keys. On the API keys page, enable only the keys you created yourself.</value>
+  </data>
   <data name="NoApiKeys" xml:space="preserve">
     <value>No API key has been created yet.</value>
   </data>

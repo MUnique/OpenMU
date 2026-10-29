@@ -182,6 +182,29 @@ them apart without knowing them.
 reaction when you suspect a key has leaked and you don't want to touch the
 application's configuration yet. **Delete** removes it for good.
 
+### Keys from before the first user
+
+Earlier versions created keys while the admin panel had no user. At that time
+anybody who reached the panel could create one, and it kept working after the
+first user existed. So such keys are disabled once:
+
+* when the server updates its database, every key which is older than the
+  oldest user is disabled,
+* when the first user is created in the admin panel, every key which exists at
+  that moment is disabled.
+
+The **API keys** page marks them with *Created before the first user*. Enable
+such a key only if you created it yourself. Better, replace it: create a new
+key, put it into the application and delete the old one. Delete a key which you
+don't know: whoever created it can do everything its role allows.
+
+If users have been deleted since, the oldest remaining user is younger than the
+first one was, so keys from between are disabled and marked as well; enable the
+ones you know. If you only sign in with the [bootstrap user](#bootstrap-user)
+and never created a user in the panel, the server can't tell when the panel got
+its first user, so it disables nothing. If the panel was open without a user
+before you configured the bootstrap user, check the keys yourself.
+
 ### What a key may do
 
 A key has the same [roles](#roles) as a user, and defaults to **Viewer**. A key

@@ -906,6 +906,15 @@
   <data name="ApiKeyNeedsAUser" xml:space="preserve">
     <value>请先创建第一个后台用户，再创建 API 密钥：在此之前，任何能访问管理后台的人都能创建密钥，且该密钥之后仍然有效。</value>
   </data>
+  <data name="ApiKeyCreatedBeforeFirstUser" xml:space="preserve">
+    <value>在第一个用户之前创建</value>
+  </data>
+  <data name="ApiKeysCreatedBeforeFirstUserHint" xml:space="preserve">
+    <value>标记为“在第一个用户之前创建”的密钥是在管理后台还没有用户时创建的，当时任何能访问管理后台的人都能创建密钥。这些密钥已被停用一次。只有当密钥是你自己创建的时才重新启用它；更好的做法是替换它：创建一个新密钥，在应用程序中改用新密钥，然后删除旧密钥。</value>
+  </data>
+  <data name="ApiKeysOfSetupModeDisabled" xml:space="preserve">
+    <value>已停用 {0} 个 API 密钥：它们是在管理后台还没有用户时创建的，当时任何能访问管理后台的人都能创建密钥。请在 API 密钥页面只重新启用你自己创建的密钥。</value>
+  </data>
   <data name="NoApiKeys" xml:space="preserve">
     <value>尚未创建任何 API 密钥。</value>
   </data>

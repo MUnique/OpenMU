@@ -29,7 +29,7 @@ public sealed class ApiKeyManagementServiceTests
         var keys = new InMemoryApiKeyRepository();
         var modals = new TestModalService();
         var toasts = new Mock<IToastService>();
-        var service = new ApiKeyManagementService(keys, modals, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(new InMemoryAdminUserRepository()));
+        var service = new ApiKeyManagementService(keys, modals, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(new InMemoryAdminUserRepository(), keys));
 
         var createdKey = await service.CreateNewInModalDialogAsync().ConfigureAwait(false);
 
@@ -49,7 +49,7 @@ public sealed class ApiKeyManagementServiceTests
         await users.AddAsync(AdminPanelSetupModeTests.CreateUser("admin")).ConfigureAwait(false);
         var keys = new InMemoryApiKeyRepository();
         var modals = new TestModalService();
-        var service = new ApiKeyManagementService(keys, modals, Mock.Of<IToastService>(), AdminPanelSetupModeTests.CreateSetupMode(users));
+        var service = new ApiKeyManagementService(keys, modals, Mock.Of<IToastService>(), AdminPanelSetupModeTests.CreateSetupMode(users, keys));
 
         var createdKey = await service.CreateNewInModalDialogAsync().ConfigureAwait(false);
 
@@ -71,7 +71,7 @@ public sealed class ApiKeyManagementServiceTests
         var keys = new InMemoryApiKeyRepository();
         var dialog = new PendingDialog();
         var toasts = new Mock<IToastService>();
-        var service = new ApiKeyManagementService(keys, dialog, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(users));
+        var service = new ApiKeyManagementService(keys, dialog, toasts.Object, AdminPanelSetupModeTests.CreateSetupMode(users, keys));
 
         var creation = service.CreateNewInModalDialogAsync();
         Assert.That(dialog.IsShown, Is.True);
