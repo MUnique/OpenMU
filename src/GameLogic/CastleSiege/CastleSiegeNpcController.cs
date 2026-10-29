@@ -243,7 +243,9 @@ public sealed class CastleSiegeNpcController
                 return true;
             }
 
-            for (int crossedX = 0, crossedY = 0; crossedX < distanceX || crossedY < distanceY;)
+            var crossedX = 0;
+            var crossedY = 0;
+            while (crossedX < distanceX || crossedY < distanceY)
             {
                 // Compares where the line crosses the next vertical and the next horizontal tile border.
                 var decision = ((1 + (2 * crossedX)) * distanceY) - ((1 + (2 * crossedY)) * distanceX);
