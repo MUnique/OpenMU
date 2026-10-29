@@ -143,7 +143,7 @@ or behind a firewall) and you want to use it within your computer or private net
 		<value>Auto Update Database Schema</value>
 	</data>
 	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
-		<value>Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema when the server process starts. In a distributed deployment, the user must start the update manually over the admin panel.</value>
+		<value>Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema and applies the mandatory configuration updates when the server process starts. In a distributed deployment, the user must start the updates manually over the admin panel.</value>
 	</data>
     <data name="Slot" xml:space="preserve">
       <value>Slot</value>

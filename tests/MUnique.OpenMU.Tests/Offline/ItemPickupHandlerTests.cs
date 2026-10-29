@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Tests for <see cref="ItemPickupHandler"/>.
@@ -64,6 +65,67 @@ public class ItemPickupHandlerTests
 
         // Act
         await handler.PickupItemsAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tests that a wanted drop out of pickup reach (but within the obtain range) is not requested from
+    /// where the player stands - the server refuses it - but walked to instead.
+    /// </summary>
+    [Test]
+    public async ValueTask WalksToDropOutOfPickupReachAsync()
+    {
+        // Arrange
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var map = player.CurrentMap!;
+        var config = new MuHelperSettings
+        {
+            PickAllItems = true,
+            ObtainRange = 6,
+        };
+
+        var handler = new ItemPickupHandler(player, config, new MovementHandler(player, config));
+        var dropPosition = new Point((byte)(player.Position.X + 5), player.Position.Y);
+        var drop = new DroppedItem(this.CreateItem(14, 13), dropPosition, map, player);
+        await map.AddAsync(drop).ConfigureAwait(false);
+
+        // Act
+        await handler.PickupItemsAsync().ConfigureAwait(false);
+
+        // Assert
+        Assert.That(map.GetObject(drop.Id), Is.Not.Null, "The drop is out of reach and must stay on the ground for now");
+        Assert.That(player.IsWalking, Is.True, "The player should walk to the drop");
+    }
+
+    /// <summary>
+    /// Tests that a drop which stays on the ground after a pick up request is ignored for a while, so the
+    /// player doesn't request it again on every tick. Even when it could be taken now, it's left alone.
+    /// </summary>
+    [Test]
+    public async ValueTask IgnoresDropWhichCouldNotBePickedUpAsync()
+    {
+        // Arrange
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var map = player.CurrentMap!;
+        var config = new MuHelperSettings
+        {
+            PickAllItems = true,
+            ObtainRange = 6,
+        };
+
+        var handler = new ItemPickupHandler(player, config);
+        var item = this.CreateItem(14, 13);
+        item.Definition!.IsQuestItem = true; // refused: the player has no quest which requires it
+        var drop = new DroppedItem(item, player.Position, map, player);
+        await map.AddAsync(drop).ConfigureAwait(false);
+
+        // Act
+        await handler.PickupItemsAsync().ConfigureAwait(false);
+        Assert.That(map.GetObject(drop.Id), Is.Not.Null, "The quest item can't be picked up without the quest");
+        item.Definition.IsQuestItem = false;
+        await handler.PickupItemsAsync().ConfigureAwait(false);
+
+        // Assert
+        Assert.That(map.GetObject(drop.Id), Is.Not.Null, "The refused drop must not be requested again right away");
     }
 
     private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()

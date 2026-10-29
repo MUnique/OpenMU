@@ -2508,4 +2508,10 @@
   <data name="GensRewardRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>处理玩家领取家族排名奖励的请求。</value>
   </data>
+  <data name="ShowItemCraftingPreviewExtendedPlugIn_Name" xml:space="preserve">
+    <value>显示物品合成预览（扩展）</value>
+  </data>
+  <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
+    <value>IShowItemCraftingPreviewPlugIn 的扩展实现，通过特定数据包将所有内容转发到游戏客户端。</value>
+  </data>
 </root>

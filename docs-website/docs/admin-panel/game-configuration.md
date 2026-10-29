@@ -31,7 +31,7 @@ the server process itself.
 | IP resolver | How the server determines the address it reports to the game client: `Auto`, `Public`, `Local`, `Loopback` or `Custom`. See [Connect a game client](../getting-started/game-client.md#disconnects-after-selecting-a-server). |
 | IP resolver parameter | The fixed IP or host name, when the resolver is `Custom` |
 | Auto start | Start the listeners of all servers when the process starts. Only applies to the all-in-one startup — distributed processes always start their listeners. |
-| Auto update schema | Update the database schema automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the update is started manually on the [Setup page](setup.md). |
+| Auto update schema | Update the database schema, and apply the mandatory [configuration updates](configuration-updates.md#at-startup), automatically at startup. Only applies to the all-in-one startup; in a distributed deployment the updates are started manually on the [Setup page](setup.md) and the [Configuration updates page](configuration-updates.md). |
 | Read console input | Whether the all-in-one process reacts to commands typed in its console |
 | Time zone id | The time zone used to interpret the time-of-day entries of periodic event schedules (invasions, Blood Castle, Devil Square, …) and of the Castle Siege schedule. IANA ids such as `Europe/Warsaw` are recommended; when empty or unresolvable, UTC is used. |
 
@@ -63,7 +63,9 @@ This is where the values live which most server operators want to change:
   drop level delta
 * **Characters** — maximum characters per account, character name regex,
   maximum password length, maximum party size
-* **Formulas** — the experience formula and master experience formula
+* **Formulas** — the experience formula and master experience formula, the
+  excellent and ancient drop level bonuses of the
+  [item formulas](#item-stat-profiles)
 * **Misc** — info range, recovery interval, letter settings, durability
   consumption
 
@@ -128,6 +130,46 @@ The formula can use the variables `level`, `durability`, `maxDurability`,
 `healthRecoveryOptionLevel` and `automaticPrice` (the equipment price). The game
 client calculates the prices it shows by itself, so changed prices only show up
 correctly in clients which calculate them the same way.
+
+### Item stat profiles
+
+The item formulas decide how the stat requirements of an item grow with its drop
+level, item level and option, and what excellent and ancient items get on top of
+their base values. They are kept in named *stat profiles* (`ItemStatProfiles` of
+the game configuration, in the full configuration tree), and each item names the
+profile of its kind (the `StatProfile` of the item). The profile `default` holds
+every formula. Another profile only holds what differs and takes the rest from
+`default`: for example, `armor` only says that each option level adds 5 to the
+strength requirement instead of 4. An item without a profile has the formulas of
+`default`, and a change to a profile applies to every item which uses it. A new
+item doesn't get a profile by itself: give it the profile of its kind, e.g.
+`armor`, `shield` or `book`, or it lacks the formulas of that kind, like the
+ancient defense of shields. A game server lists the items which can be worn but
+have no profile in a warning when it starts.
+
+| Setting | Meaning |
+|---|---|
+| Requirement formulas | One per stat requirement: `add + base × (drop level + item level × level weight) × percent ÷ 100`. A base of 0 stays 0. *Keep base* keeps the value of the item; *level requirement basis* takes the stored level requirement of the item (without its growth per item level and the excellent addition, as in the client) instead of the drop level and the item level. |
+| Level per item level | What each item level adds to the level requirement. |
+| Excellent level add | What an excellent item adds to the level requirement, unless *Excellent raises level* of the item is off. |
+| Strength per option level | What each option level adds to the strength requirement. |
+| Stat terms | One per stat: defense, defense rate and defense of shields, physical damage (the minimum, which also applies to the maximum), and the rises of staffs, sceptres and books. The excellent part and the ancient part are each `value × times ÷ drop level + add + drop level ÷ drop level divisor`; a divisor of 0 leaves out the last term. A part is *not written* (the part of `default` applies), *none* (the item gets nothing more) or has values. *After level bonus* lets the ancient part start from the value with the level bonus. |
+
+For an excellent item, the formulas add the *excellent drop level bonus* (25) of
+the game configuration to the drop level of its requirements, and for an ancient
+item the *ancient drop level bonus* (30) to the drop level of its requirements
+and of its ancient part. An item with an *Excellent bonus* gets this fixed value
+on its damage and magic power instead of the excellent part.
+
+The level bonus of these stats still comes from the level table of the item's
+base power-up. The table which a profile names for a stat, and *per level after
+halving* of the rises, aren't used by the game for now. Which kinds of items get
+which part and the halving of the magic power stay part of the game logic.
+
+A game server doesn't start without the profile `default` (see
+[Configuration updates](configuration-updates.md)). The game client calculates
+the values it shows by itself, so changed formulas only show up correctly in
+clients which calculate them the same way.
 
 ## Item options, option types and item sets
 

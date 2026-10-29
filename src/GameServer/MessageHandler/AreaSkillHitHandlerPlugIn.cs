@@ -54,8 +54,20 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
         // Only the animations of skills with explicit hits are registered, so only their hits can be validated.
         // The hits of other skills don't cause damage, but they still count for the client.
         var validateHits = skill.SkillType == SkillType.AreaSkillExplicitHits;
-        var increaseCounterAfterLoop = false;
         var targetCount = message.TargetCount;
+        if (packet.Length < AreaSkillHit.GetRequiredSize(targetCount))
+        {
+            return;
+        }
+
+        if (validateHits
+            && targetCount > 0
+            && !player.SkillHitValidator.IsHitCounterValid(skillId, message[0].AnimationCounter, message.HitCounter))
+        {
+            return;
+        }
+
+        var increaseCounterAfterLoop = false;
         try
         {
             for (int i = 0; i < targetCount; i++)
@@ -74,7 +86,7 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
                 {
                     if (target is IObservable observable && observable.Observers.Contains(player))
                     {
-                        await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
+                        await this._skillHitAction.AttackTargetAsync(player, target, skillEntry, targetInfo.AnimationCounter).ConfigureAwait(false);
                     }
                     else
                     {

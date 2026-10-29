@@ -41,22 +41,42 @@ public class DataUpdateService
     {
         using var context = this._contextProvider.CreateNewContext();
         var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
-
-        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
-
-        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
-        if (updateStrategyProvider is null)
-        {
-            // it's null when there are no plugins yet ...
-            return [];
-        }
-
-        var pending = updateStrategyProvider.AvailableStrategies
-            .Where(up => up.DataInitializationKey == initializationKey)
-            .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
-            .ToList();
-
+        var pending = await this.DeterminePendingUpdatesAsync(context, installedVersions).ConfigureAwait(false);
         return OrderByDependencies(pending, installedVersions);
+    }
+
+    /// <summary>
+    /// Determines the available updates (see <see cref="DetermineAvailableUpdatesAsync()"/>) which are mandatory,
+    /// in the order in which they are applied.
+    /// </summary>
+    /// <remarks>
+    /// Only the dependencies of the mandatory updates are checked, so the optional updates can't prevent anything here.
+    /// A mandatory update which depends on an optional update, or on an update which isn't available (e.g. a disabled one),
+    /// is left out, so the operator decides about it on the admin panel, as on a new database (see <see cref="NewDatabaseUpdates"/>).
+    /// </remarks>
+    /// <returns>The available mandatory updates.</returns>
+    /// <exception cref="System.InvalidOperationException">No data is installed.</exception>
+    public async ValueTask<IReadOnlyList<IConfigurationUpdatePlugIn>> DetermineMandatoryUpdatesAsync()
+    {
+        using var context = this._contextProvider.CreateNewContext();
+        var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
+        var pending = await this.DeterminePendingUpdatesAsync(context, installedVersions).ConfigureAwait(false);
+        var mandatoryByKey = pending.Where(update => update.IsMandatory).ToDictionary(update => update.Key);
+
+        // Leaving out an update can leave out the updates which depend on it, so this repeats until nothing is left out.
+        bool leftOut;
+        do
+        {
+            var unsatisfied = mandatoryByKey.Values
+                .Where(update => !update.DependsOn.All(dependency => IsDependencySatisfied(dependency, installedVersions, mandatoryByKey)))
+                .Select(update => update.Key)
+                .ToList();
+            unsatisfied.ForEach(key => mandatoryByKey.Remove(key));
+            leftOut = unsatisfied.Count > 0;
+        }
+        while (leftOut);
+
+        return OrderByDependencies(mandatoryByKey.Values.ToList(), installedVersions);
     }
 
     /// <summary>
@@ -212,5 +232,22 @@ public class DataUpdateService
             .Where(up => up.InstalledAt is not null)
             .GroupBy(up => up.Key)
             .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
+    }
+
+    private async ValueTask<IReadOnlyList<IConfigurationUpdatePlugIn>> DeterminePendingUpdatesAsync(IContext context, IReadOnlyDictionary<Guid, int> installedVersions)
+    {
+        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
+
+        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
+        if (updateStrategyProvider is null)
+        {
+            // it's null when there are no plugins yet ...
+            return [];
+        }
+
+        return updateStrategyProvider.AvailableStrategies
+            .Where(up => up.DataInitializationKey == initializationKey)
+            .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
+            .ToList();
     }
 }

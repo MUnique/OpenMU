@@ -157,8 +157,8 @@ its own process:
 * **Auto start** and **auto update schema** of the
   [System configuration](../admin-panel/game-configuration.md#system) only apply
   to the all-in-one startup. The distributed processes always start their
-  listeners automatically, and the schema update has to be started manually over
-  the admin panel.
+  listeners automatically, and the schema update and the mandatory configuration
+  updates have to be started manually over the admin panel.
 
 ## Health endpoints
 

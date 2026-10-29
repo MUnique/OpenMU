@@ -172,7 +172,7 @@ public class CloneableGenerator : IIncrementalGenerator
                     sb.AppendLine($"        this.{property.Name}.AssignCollection(other.{property.Name}, gameConfiguration);");
                 }
             }
-            else if (property.IsVirtual)
+            else if (property.IsVirtual && !property.Type.IsValueType)
             {
                 sb.AppendLine($"        this.{property.Name} = gameConfiguration.GetObjectOfConfig(other.{property.Name});");
             }

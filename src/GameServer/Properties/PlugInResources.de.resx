@@ -2649,4 +2649,10 @@
   <data name="DiscordIntegrationViewPlugIn_Description" xml:space="preserve">
     <value>Sendet die Discord-Integrationsinfo, den Verknüpfungscode und die in Discord geschriebenen Nachrichten an den Game-Client.</value>
   </data>
+  <data name="ShowItemCraftingPreviewExtendedPlugIn_Name" xml:space="preserve">
+    <value>Vorschau der Herstellung anzeigen (erweitert)</value>
+  </data>
+  <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
+    <value>Die erweiterte Implementierung von IShowItemCraftingPreviewPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
+  </data>
 </root>

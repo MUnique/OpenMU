@@ -55,7 +55,7 @@ public class LegacyQuestStateDialogPlugIn : ILegacyQuestStateDialogPlugIn
                 {
                     var monsterState = packet[i];
                     monsterState.MonsterNumber = (uint)requirement.Monster!.Number;
-                    monsterState.KillCount = (uint)(questState?.RequirementStates.FirstOrDefault(r => r.Requirement == requirement)?.KillCount ?? 0);
+                    monsterState.KillCount = (uint)(questState?.RequirementStates.FirstOrDefault(r => object.Equals(r.Requirement, requirement))?.KillCount ?? 0);
                     i++;
                 }
 

@@ -102,6 +102,13 @@ public sealed class BotPlayer : OfflinePlayer
     }
 
     /// <inheritdoc />
+    protected override async ValueTask InternalDisconnectAsync()
+    {
+        await this.StopNavigatorAsync().ConfigureAwait(false);
+        await base.InternalDisconnectAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
         await this.StopNavigatorAsync().ConfigureAwait(false);

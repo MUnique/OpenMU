@@ -145,6 +145,11 @@ internal sealed class PlayerMapTransitions
     public async ValueTask WarpToAsync(ExitGate gate)
     {
         var player = this._player;
+        if (player.PlayerState.CurrentState.IsDisconnectedOrFinished() || player.SelectedCharacter is null)
+        {
+            return;
+        }
+
         var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
 
         // A common guard for all warps, because an instance of the map may still exist after the map got deactivated.
@@ -343,10 +348,15 @@ internal sealed class PlayerMapTransitions
     internal async ValueTask PlaceAtGateAsync(ExitGate gate)
     {
         var player = this._player;
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
         var landingPoint = gate.GetRandomPoint();
-        player.SelectedCharacter!.PositionX = landingPoint.X;
-        player.SelectedCharacter.PositionY = landingPoint.Y;
-        player.SelectedCharacter.CurrentMap = gate.Map;
+        character.PositionX = landingPoint.X;
+        character.PositionY = landingPoint.Y;
+        character.CurrentMap = gate.Map;
         player.Rotation = gate.Direction;
 
         await this._movement.ResetMovementStateAsync().ConfigureAwait(false);

@@ -8,6 +8,7 @@ using System.IO;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 using MUnique.OpenMU.Network.PlugIns;
@@ -35,6 +36,8 @@ public partial class Setup
     private bool _showSnapshotBackup = true;
 
     private string _importMessageCssClass = string.Empty;
+
+    private string? _updateErrorMessage;
 
     /// <summary>
     /// Gets or sets a value indicating whether to show the <see cref="Install"/> component.
@@ -64,6 +67,12 @@ public partial class Setup
     /// </summary>
     [Inject]
     public IJSRuntime JsRuntime { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<Setup> Logger { get; set; } = null!;
 
     /// <inheritdoc />
     protected override Task OnInitializedAsync()
@@ -100,7 +109,17 @@ public partial class Setup
 
     private async Task OnUpdateClickAsync()
     {
-        await this.SetupService.InstallUpdatesAsync(default).ConfigureAwait(false);
+        this._updateErrorMessage = null;
+        try
+        {
+            await this.SetupService.InstallUpdatesAsync(default).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error during the update of the database schema.");
+            this._updateErrorMessage = string.Format(Resources.UnexpectedErrorCheckLogs, ex.Message);
+            return;
+        }
 
         // Before the update, the state could not be determined on the outdated schema.
         await this.LoadDataStateAsync().ConfigureAwait(false);
