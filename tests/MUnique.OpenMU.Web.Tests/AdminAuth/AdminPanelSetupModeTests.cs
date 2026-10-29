@@ -15,6 +15,7 @@ using Moq;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 
@@ -256,6 +257,11 @@ public sealed class AdminPanelSetupModeTests
 
         public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
         {
+            if (!componentType.IsGenericType || componentType.GetGenericTypeDefinition() != typeof(ModalCreateNew<>))
+            {
+                throw new InvalidOperationException($"The test fills in only the dialog which creates a user, not {componentType.Name}.");
+            }
+
             var input = parameters?.FirstOrDefault(parameter => parameter.Key == "Item").Value
                         ?? throw new InvalidOperationException("The dialog has no item to fill in.");
             input.GetType().GetProperty("LoginName")!.SetValue(input, this._loginName);
