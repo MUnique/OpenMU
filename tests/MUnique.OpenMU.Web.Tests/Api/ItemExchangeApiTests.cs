@@ -191,6 +191,7 @@ public sealed class ItemExchangeApiTests : IDisposable
         }
 
         builder.Services.AddSingleton<IPersistenceContextProvider>(persistence);
+        builder.Services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
 
         this._app = builder.Build();
         this._app.UseRouting();

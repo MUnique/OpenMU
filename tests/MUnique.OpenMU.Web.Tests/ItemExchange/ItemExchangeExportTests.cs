@@ -118,7 +118,8 @@ public sealed class ItemExchangeExportTests
     [Test]
     public async Task OperationExportsTheStoredConfigurationAsync()
     {
-        var operations = new ItemExchangeOperations(this._seasonSix);
+        using var configurations = new GameConfigurationDataSource(NullLogger<GameConfigurationDataSource>.Instance, this._seasonSix);
+        var operations = new ItemExchangeOperations(this._seasonSix, configurations);
 
         var file = await operations.ExportAsync(default).ConfigureAwait(false);
 
