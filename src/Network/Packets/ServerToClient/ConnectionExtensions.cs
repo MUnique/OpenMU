@@ -1388,6 +1388,44 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MapChangedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="positionX">The position x.</param>
+    /// <param name="positionY">The position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="mapDiscriminator">The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7). It's appended after the 15 bytes of MapChanged, so a client can tell by the packet length whether it was sent.</param>
+    /// <param name="isMapChange">If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</param>
+    /// <remarks>
+    /// Is sent by the server when: The map was changed on the server side.
+    /// Causes reaction on client side: The game client changes to the specified map and coordinates, and to the variant of the map with the specified discriminator.
+    /// </remarks>
+    public static async ValueTask SendMapChangedExtendedAsync(this IConnection? connection, ushort @mapNumber, byte @positionX, byte @positionY, byte @rotation, byte @mapDiscriminator, bool @isMapChange = true)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapChangedExtendedRef.Length;
+            var packet = new MapChangedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsMapChange = @isMapChange;
+            packet.MapNumber = @mapNumber;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.Rotation = @rotation;
+            packet.MapDiscriminator = @mapDiscriminator;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MapChanged075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

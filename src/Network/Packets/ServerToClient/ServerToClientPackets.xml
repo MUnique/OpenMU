@@ -2785,6 +2785,52 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>1C</Code>
+      <SubCode>0F</SubCode>
+      <Name>MapChangedExtended</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The map was changed on the server side.</SentWhen>
+      <CausedReaction>The game client changes to the specified map and coordinates, and to the variant of the map with the specified discriminator.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsMapChange</Name>
+          <Description>If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</Description>
+          <DefaultValue>true</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>MapNumber</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PositionX</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>PositionY</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+        <!-- 5 unused bytes, as in MapChanged, which is 15 bytes long -->
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>MapDiscriminator</Name>
+          <Description>The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7). It's appended after the 15 bytes of MapChanged, so a client can tell by the packet length whether it was sent.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>1C</Code>
       <Name>MapChanged075</Name>
