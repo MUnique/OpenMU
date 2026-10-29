@@ -21,6 +21,7 @@ using MUnique.OpenMU.PlugIns;
 public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 {
     private const byte MaximumDropDistance = 2;
+    private const short IceSkillNumber = 7;
 
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
@@ -109,6 +110,13 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             || !this.CanBeAttackedBy(attacker))
         {
             return null;
+        }
+
+        if (attacker is Player player_
+            && Rand.NextRandomBool(attacker.Attributes[Stats.CrystalSwordIceChance])
+            && player_.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == IceSkillNumber) is { } ice)
+        {
+            skill = new SkillEntry { Skill = ice };
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);

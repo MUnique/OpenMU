@@ -69,7 +69,7 @@ public static class AttackableExtensions
     {
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
-            return new HitInfo(0, 0, DamageAttributes.Undefined);
+            return new HitInfo(0, 0, DamageAttributes.Undefined, 0, 0, skill);
         }
 
         Player? attackerPlayer = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (attacker is Player player ? player : null);
@@ -327,14 +327,14 @@ public static class AttackableExtensions
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
         {
-            return new HitInfo(damage, 0, attributes, manaToll, petDamage);
+            return new HitInfo(damage, 0, attributes, manaToll, petDamage, skill);
         }
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
         {
             var shieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
-            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll, petDamage);
+            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll, petDamage, skill);
         }
 
         var shieldRatio = 0.90;
@@ -342,7 +342,7 @@ public static class AttackableExtensions
         shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
         shieldRatio = Math.Min(1, shieldRatio);
-        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage);
+        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage, skill);
     }
 
     /// <summary>
@@ -413,7 +413,7 @@ public static class AttackableExtensions
     /// <param name="skillEntry">The skill entry.</param>
     /// <param name="hitInfo">The hit information.</param>
     /// <returns>The success of the appliance.</returns>
-    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry, HitInfo? hitInfo = null)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry, HitInfo? hitInfo)
     {
         if (!target.IsAlive)
         {
@@ -425,6 +425,11 @@ public static class AttackableExtensions
             // The attack was blocked (e.g. guard NPC, safezone, or another attack restriction),
             // so no elemental effect may be applied.
             return false;
+        }
+
+        if (hitInfo.Value.SkillEntry is { } hitSkillEntry)
+        {
+            skillEntry = hitSkillEntry;
         }
 
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
