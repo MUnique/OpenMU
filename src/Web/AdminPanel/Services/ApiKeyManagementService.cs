@@ -22,6 +22,7 @@ public class ApiKeyManagementService
     private readonly IApiKeyRepository _repository;
     private readonly IModalService _modalService;
     private readonly IToastService _toastService;
+    private readonly AdminUserAvailabilityService _userAvailability;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiKeyManagementService"/> class.
@@ -29,11 +30,13 @@ public class ApiKeyManagementService
     /// <param name="repository">The repository of the stored keys.</param>
     /// <param name="modalService">The modal service.</param>
     /// <param name="toastService">The toast service.</param>
-    public ApiKeyManagementService(IApiKeyRepository repository, IModalService modalService, IToastService toastService)
+    /// <param name="userAvailability">The service which knows whether the admin panel has a user.</param>
+    public ApiKeyManagementService(IApiKeyRepository repository, IModalService modalService, IToastService toastService, AdminUserAvailabilityService userAvailability)
     {
         this._repository = repository;
         this._modalService = modalService;
         this._toastService = toastService;
+        this._userAvailability = userAvailability;
     }
 
     /// <summary>
@@ -52,8 +55,19 @@ public class ApiKeyManagementService
     /// The generated key in plain text, so it can be shown to the user exactly once;
     /// <c>null</c>, if no key has been created.
     /// </returns>
+    /// <remarks>
+    /// No key is created while the admin panel has no user. In that initial setup mode, anybody
+    /// who reaches the admin panel could create one, and the key would keep working after the
+    /// first user exists.
+    /// </remarks>
     public async Task<string?> CreateNewInModalDialogAsync()
     {
+        if (!await this._userAvailability.AnyUserExistsAsync().ConfigureAwait(false))
+        {
+            this._toastService.ShowError(Resources.ApiKeyNeedsAUser);
+            return null;
+        }
+
         var input = new ApiKeyCreationParameters();
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<ApiKeyCreationParameters>.Item), input);

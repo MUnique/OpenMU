@@ -382,6 +382,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Create the first user of the admin panel before an API key: until then, anybody who reaches the admin panel could create a key, and it would keep working afterwards..
+        /// </summary>
+        public static string ApiKeyNeedsAUser {
+            get {
+                return ResourceManager.GetString("ApiKeyNeedsAUser", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Key.
         /// </summary>
         public static string ApiKeyPrefix {

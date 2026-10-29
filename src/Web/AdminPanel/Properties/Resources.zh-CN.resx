@@ -903,6 +903,9 @@
   <data name="ApiKeyShownOnceDescription" xml:space="preserve">
     <value>密钥仅显示一次，请立即复制并妥善保存。系统只保存密钥的哈希值，无法找回原始密钥。若密钥遗失，请删除后重新创建。</value>
   </data>
+  <data name="ApiKeyNeedsAUser" xml:space="preserve">
+    <value>请先创建第一个后台用户，再创建 API 密钥：在此之前，任何能访问管理后台的人都能创建密钥，且该密钥之后仍然有效。</value>
+  </data>
   <data name="NoApiKeys" xml:space="preserve">
     <value>尚未创建任何 API 密钥。</value>
   </data>

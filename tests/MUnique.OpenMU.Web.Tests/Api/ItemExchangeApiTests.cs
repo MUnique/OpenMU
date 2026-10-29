@@ -71,7 +71,7 @@ public sealed class ItemExchangeApiTests : IDisposable
     [Test]
     public async Task WithoutKeyIsUnauthorizedAsync()
     {
-        var http = await this.StartAsync(withAdminUser: true).ConfigureAwait(false);
+        var http = await this.StartAsync().ConfigureAwait(false);
 
         using var response = await http.GetAsync(ExchangePath).ConfigureAwait(false);
 
@@ -84,7 +84,7 @@ public sealed class ItemExchangeApiTests : IDisposable
     [Test]
     public async Task LoginCookieIsNotEnoughAsync()
     {
-        var http = await this.StartAsync(withAdminUser: true).ConfigureAwait(false);
+        var http = await this.StartAsync().ConfigureAwait(false);
         using (var signIn = await http.GetAsync("/test-cookie").ConfigureAwait(false))
         {
             Assert.That(signIn.IsSuccessStatusCode, Is.True);
@@ -101,23 +101,9 @@ public sealed class ItemExchangeApiTests : IDisposable
     [Test]
     public async Task CashShopKeyIsForbiddenAsync()
     {
-        var http = await this.StartAsync(withAdminUser: true).ConfigureAwait(false);
+        var http = await this.StartAsync().ConfigureAwait(false);
 
         using var response = await SendAsync(http, CashShopKey).ConfigureAwait(false);
-
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
-    }
-
-    /// <summary>
-    /// Tests that the file is refused while the admin panel has no user: in that setup mode,
-    /// anyone can create an API key.
-    /// </summary>
-    [Test]
-    public async Task RefusedWhileTheAdminPanelHasNoUserAsync()
-    {
-        var http = await this.StartAsync(withAdminUser: false).ConfigureAwait(false);
-
-        using var response = await SendAsync(http, ViewerKey).ConfigureAwait(false);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
@@ -128,7 +114,7 @@ public sealed class ItemExchangeApiTests : IDisposable
     [Test]
     public async Task ViewerKeyGetsTheFileAsync()
     {
-        var http = await this.StartAsync(withAdminUser: true).ConfigureAwait(false);
+        var http = await this.StartAsync().ConfigureAwait(false);
 
         using var response = await SendAsync(http, ViewerKey).ConfigureAwait(false);
         var body = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
@@ -150,7 +136,7 @@ public sealed class ItemExchangeApiTests : IDisposable
         return await http.SendAsync(request).ConfigureAwait(false);
     }
 
-    private async Task<HttpClient> StartAsync(bool withAdminUser)
+    private async Task<HttpClient> StartAsync()
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Development" });
         builder.Logging.ClearProviders();
@@ -165,11 +151,9 @@ public sealed class ItemExchangeApiTests : IDisposable
         await keys.AddAsync(new ApiKey { Id = Guid.NewGuid(), Name = "cash shop", KeyHash = ApiKeyGenerator.Hash(CashShopKey), Roles = AdminRoles.CashShop }).ConfigureAwait(false);
         builder.Services.AddSingleton<IApiKeyRepository>(keys);
 
+        // A user ends the setup mode of the admin panel, as on a server in use.
         var users = new InMemoryAdminUserRepository();
-        if (withAdminUser)
-        {
-            await users.AddAsync(new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator }).ConfigureAwait(false);
-        }
+        await users.AddAsync(new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator }).ConfigureAwait(false);
 
         builder.Services.AddSingleton<IAdminUserRepository>(users);
         builder.Services.AddSingleton(Mock.Of<IModalService>());

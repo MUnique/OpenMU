@@ -864,6 +864,9 @@
   <data name="ApiKeyShownOnceDescription" xml:space="preserve">
     <value>Es wird nur der Hash des Schlüssels gespeichert, daher wird er nur dieses eine Mal angezeigt. Wenn er verloren geht, löschen Sie den Schlüssel und erstellen Sie einen neuen.</value>
   </data>
+  <data name="ApiKeyNeedsAUser" xml:space="preserve">
+    <value>Legen Sie zuerst den ersten Benutzer des Admin-Panels an: bis dahin könnte jeder, der das Admin-Panel erreicht, einen API-Schlüssel erstellen, der danach weiter funktionieren würde.</value>
+  </data>
   <data name="NoApiKeys" xml:space="preserve">
     <value>Es wurde noch kein API-Schlüssel erstellt.</value>
   </data>

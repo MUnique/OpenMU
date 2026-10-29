@@ -162,6 +162,10 @@ Open **API keys** in the navigation — it's next to *Users* and needs the
 administrator role. Click **Create API key**, give the application a name and
 pick its role.
 
+A key can only be created once the admin panel has its [first
+user](#the-first-user). Until then, anybody who reaches the panel could create
+one, and the key would keep working after the first user exists.
+
 The generated key is then shown once, with a button which copies it to the
 clipboard.
 
@@ -219,8 +223,6 @@ client's `docs/item-data.md`.
 
 - It needs an API key with the Viewer role. The login cookie of the admin panel
   isn't accepted.
-- It's refused (403) while the admin panel has no user yet: in that state,
-  anybody who reaches the admin panel can create a key.
 - It reads the saved configuration, so changes which aren't saved yet in the
   admin panel aren't part of it.
 - The file names the item fields it carries in its `fields` list; the client
