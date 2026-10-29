@@ -6,15 +6,45 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Action for rage attacks.
 /// </summary>
 public class RageSkillAttackAction
 {
-    private const int MaximumTargetsPerAttack = 5;
+    /// <summary>
+    /// The maximum number of targets per attack.
+    /// </summary>
+    public const int MaximumTargetsPerAttack = 5;
 
     private const int HitsPerTarget = 2;
+
+    /// <summary>
+    /// Selects the targets of a rage attack: the explicit target first, then the
+    /// nearest other monsters around the <paramref name="searchCenter"/>.
+    /// </summary>
+    /// <param name="player">The attacking player.</param>
+    /// <param name="explicitTarget">The explicit target, if any.</param>
+    /// <param name="searchCenter">The point around which the additional targets are searched.</param>
+    /// <param name="candidates">The attackables in range of the <paramref name="searchCenter"/>.</param>
+    /// <returns>The selected targets, at most <see cref="MaximumTargetsPerAttack"/>.</returns>
+    public static List<IAttackable> SelectTargets(IAttackable player, IAttackable? explicitTarget, Point searchCenter, IEnumerable<IAttackable> candidates)
+    {
+        var targets = new List<IAttackable>(MaximumTargetsPerAttack);
+        if (explicitTarget is not null)
+        {
+            targets.Add(explicitTarget);
+        }
+
+        targets.AddRange(
+            candidates
+                .Where(t => t != explicitTarget && t != player)
+                .Where(t => t is not Player)
+                .OrderBy(t => t.GetDistanceTo(searchCenter))
+                .Take(MaximumTargetsPerAttack - targets.Count));
+        return targets;
+    }
 
     /// <summary>
     /// Attacks the target with a rage skill.
@@ -37,19 +67,14 @@ public class RageSkillAttackAction
             return;
         }
 
-        var targets = new List<IAttackable>(MaximumTargetsPerAttack);
-        if (explicitTarget is not null)
-        {
-            targets.Add(explicitTarget);
-        }
-
-        targets.AddRange(
-            map
-                .GetAttackablesInRange(player.Position, usedSkill.Range)
-                .Where(t => t != explicitTarget && t != player)
-                .Where(t => t is not Player)
-                .OrderBy(t => t.GetDistanceTo(player))
-                .Take(MaximumTargetsPerAttack - targets.Count));
+        // The additional targets are searched around the explicit target, so the skill also hits
+        // a group of monsters when the fighter attacks it from the maximum distance.
+        var searchCenter = explicitTarget?.Position ?? player.Position;
+        var targets = SelectTargets(
+            player,
+            explicitTarget,
+            searchCenter,
+            map.GetAttackablesInRange(searchCenter, usedSkill.Range));
 
         await player.InvokeViewPlugInAsync<IShowRageAttackRangePlugIn>(p => p.ShowRageAttackRangeAsync(skillId, targets)).ConfigureAwait(false);
 
