@@ -16,14 +16,14 @@ public enum SpeedHackViolationSeverity
 
     /// <summary>
     /// A soft violation, recorded through the normal (debounced) policy.
-    /// The walk consumer additionally resynchronizes the client to the server
-    /// position; attack consumers only drop the attack.
+    /// Walk consumers only record it; attack consumers only drop the attack.
     /// </summary>
-    Resync,
+    Soft,
 
     /// <summary>
-    /// A hard violation from sustained cheating. The action is not performed and the
-    /// violation is recorded through the full policy without debounce leniency.
+    /// A hard violation from sustained cheating. When assigned to a check event,
+    /// consumers suppress the checked action. The violation is recorded through
+    /// the full policy without debounce leniency.
     /// </summary>
     Reject,
 }

@@ -36,22 +36,19 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration)
+        if (!await AttackActionValidator.CanAttackAsync(player, skill).ConfigureAwait(false))
         {
-            if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
-            {
-                var eventArgs = new SpeedHackCheckEventArgs();
-                await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
-                if (eventArgs.IsCheatDetected)
-                {
-                    return;
-                }
-            }
+            return;
         }
 
         if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             return;
+        }
+
+        if (skill.SkillType is SkillType.AreaSkillExplicitHits)
+        {
+            player.SkillHitValidator.RegisterArea((ushort)skill.Number, skill, player.Position, targetAreaCenter);
         }
 
         if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.Buff
@@ -157,40 +154,6 @@ public class AreaSkillAttackAction
 
     private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, byte rotation)
     {
-        if (player.Attributes is not { } attributes)
-        {
-            return;
-        }
-
-        if (attributes[Stats.IsStunned] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in stunned state", player);
-            return;
-        }
-
-        if (attributes[Stats.IsAsleep] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in sleep state", player);
-            return;
-        }
-
-        if (player.IsAtSafezone())
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking from safezone", player);
-            return;
-        }
-
-        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
-        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
-        {
-            return;
-        }
-
-        if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
-        {
-            return;
-        }
-
         bool isCombo = false;
         if (player.ComboState is { } comboState)
         {

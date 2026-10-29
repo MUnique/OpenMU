@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -18,6 +19,8 @@ using MUnique.OpenMU.PlugIns;
 [Guid("5EC0FCA3-726B-45CA-A696-BB94FF7E7497")]
 internal class PingHandlerPlugIn : IPacketHandlerPlugIn
 {
+    private readonly PingAction _pingAction = new();
+
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
 
@@ -25,9 +28,15 @@ internal class PingHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => Ping.Code;
 
     /// <inheritdoc/>
-    public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        player.ReportAlive();
-        return ValueTask.CompletedTask;
+        if (packet.Length < Ping.Length)
+        {
+            player.ReportAlive();
+            return;
+        }
+
+        var ping = new Ping(packet);
+        await this._pingAction.PingAsync(player, ping.TickCount, ping.AttackSpeed).ConfigureAwait(false);
     }
 }

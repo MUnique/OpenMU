@@ -266,15 +266,13 @@ internal static class LegacyItemExtensions
             if (totalAttribute == Stats.TotalEnergy)
             {
                 multiplier = 4;
-
-                // Summoner books, which increase the curse damage by their book rise, are calculated differently.
-                if (item.IsBook(out _))
-                {
-                    return (totalAttribute, item.CalculateBookEnergyRequirement(minimumValue));
-                }
             }
 
-            var value = item.CalculateRequirement(minimumValue, multiplier);
+            // Summoner books, which increase the curse damage by their book rise, are calculated differently. Changed
+            // after commit 90a571100: a base value of 0 stays 0, and the reduction applies (see MUnique/OpenMU#1301).
+            var value = totalAttribute == Stats.TotalEnergy && item.IsBook(out _)
+                ? item.CalculateBookEnergyRequirement(minimumValue)
+                : item.CalculateRequirement(minimumValue, multiplier);
             if (value > 0 && totalAttribute == Stats.TotalStrength)
             {
                 var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
@@ -394,6 +392,11 @@ internal static class LegacyItemExtensions
 
     private static int CalculateBookEnergyRequirement(this Item item, int energyRequirementValue)
     {
+        if (energyRequirementValue == 0)
+        {
+            return 0;
+        }
+
         var dropLevel = item.Definition!.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), 0);
 
         return (((energyRequirementValue * (dropLevel + item.Level)) * 3) / 100) + 20;

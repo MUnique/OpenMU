@@ -1664,4 +1664,46 @@
   <data name="CastleSiegeRegistrationGuardsmanTalkPlugIn_Description" xml:space="preserve">
     <value>玩家在攻城战地图上与守卫对话时，打开显示攻城战状态的攻城战报名窗口。</value>
   </data>
+  <data name="GameEventPublisherPlugIn_Name" xml:space="preserve">
+    <value>游戏事件发布器</value>
+  </data>
+  <data name="GameEventPublisherPlugIn_Description" xml:space="preserve">
+    <value>向整个服务器发布小游戏、入侵活动、攻城战状态变化和稀有物品掉落等游戏事件，例如供 Discord 集成使用。</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishMiniGameEvents_Name" xml:space="preserve">
+    <value>发布小游戏事件</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishInvasionEvents_Name" xml:space="preserve">
+    <value>发布入侵活动事件</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name" xml:space="preserve">
+    <value>发布攻城战事件</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishGlobalNotices_Name" xml:space="preserve">
+    <value>发布 GM 全服公告</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishExcellentItemDrops_Name" xml:space="preserve">
+    <value>发布卓越物品掉落</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishAncientItemDrops_Name" xml:space="preserve">
+    <value>发布套装物品掉落</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishBossKills_Name" xml:space="preserve">
+    <value>发布 Boss 击杀</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_BossMonsterNumbers_Name" xml:space="preserve">
+    <value>Boss 怪物编号</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishLevelMilestones_Name" xml:space="preserve">
+    <value>发布等级里程碑</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_LevelMilestones_Name" xml:space="preserve">
+    <value>等级里程碑</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_MasterLevelMilestones_Name" xml:space="preserve">
+    <value>大师等级里程碑</value>
+  </data>
+  <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
+    <value>发布战盟、联盟和世界聊天</value>
+  </data>
 </root>

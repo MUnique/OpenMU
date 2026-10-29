@@ -2137,4 +2137,559 @@
   <data name="AuditNext" xml:space="preserve">
     <value>下一页</value>
   </data>
+  <data name="Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="DiscordDescription" xml:space="preserve">
+    <value>将游戏接入你的 Discord 服务器，提供事件通知、支持斜杠命令的机器人、账号绑定和聊天互通。请从上到下依次完成设置。配置保存在 {0} 中，Discord 集成将立即使用新配置重新启动。</value>
+  </data>
+  <data name="DiscordNotAvailable" xml:space="preserve">
+    <value>仅当管理后台与游戏服务器运行在同一进程中时，此页面才可用。在分布式部署中，Discord 集成运行在独立容器内，通过环境变量配置，详情请参阅文档。</value>
+  </data>
+  <data name="DiscordLoadError" xml:space="preserve">
+    <value>无法从 {0} 加载配置：{1}</value>
+  </data>
+  <data name="DiscordSaveError" xml:space="preserve">
+    <value>无法保存配置：{0}</value>
+  </data>
+  <data name="DiscordSaved" xml:space="preserve">
+    <value>配置已保存并应用。请测试消息发送，确认目标频道可用。</value>
+  </data>
+  <data name="DiscordInvalidId" xml:space="preserve">
+    <value>“{0}”不是有效的 Discord ID。</value>
+  </data>
+  <data name="DiscordDefinedElsewhere" xml:space="preserve">
+    <value>此项由环境变量或其他配置来源设置，其优先级高于本页面。</value>
+  </data>
+  <data name="DiscordSecretSet" xml:space="preserve">
+    <value>已设置，留空可保留现有值</value>
+  </data>
+  <data name="DiscordStatus" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="DiscordStatusNotConfigured" xml:space="preserve">
+    <value>尚未配置机器人，请从第 1 步开始。</value>
+  </data>
+  <data name="DiscordStatusConnected" xml:space="preserve">
+    <value>机器人已以 {0} 的身份连接，并已加入 {1} 个 Discord 服务器。</value>
+  </data>
+  <data name="DiscordStatusConnecting" xml:space="preserve">
+    <value>机器人正在连接 Discord……</value>
+  </data>
+  <data name="DiscordStatusStopped" xml:space="preserve">
+    <value>机器人未运行，可在服务器页面启动。</value>
+  </data>
+  <data name="DiscordProblemTokenRejected" xml:space="preserve">
+    <value>Discord 拒绝了此 Token。请从开发者门户重新复制（Bot → Reset Token）。</value>
+  </data>
+  <data name="DiscordProblemIntentNotEnabled" xml:space="preserve">
+    <value>Discord 不允许机器人读取消息。请在开发者门户的 Bot → Privileged Gateway Intents 中启用 Message Content，或关闭第 5 步中的消息读取功能。</value>
+  </data>
+  <data name="DiscordProblemStartFailed" xml:space="preserve">
+    <value>无法启动机器人，具体原因请查看日志文件。</value>
+  </data>
+  <data name="DiscordSettingsError" xml:space="preserve">
+    <value>无法应用配置：{0}</value>
+  </data>
+  <data name="DiscordWebhooksOnly" xml:space="preserve">
+    <value>不使用机器人时，通知将通过第 4 步配置的 Webhook 发送。</value>
+  </data>
+  <data name="DiscordPublisherInactive" xml:space="preserve">
+    <value>游戏事件发布器（Game Event Publisher）插件未启用，因此游戏内事件不会发布到 Discord。</value>
+  </data>
+  <data name="DiscordPublisherActive" xml:space="preserve">
+    <value>游戏事件发布器（Game Event Publisher）插件已启用。可在插件页面选择要发布的内容。</value>
+  </data>
+  <data name="DiscordStep1Title" xml:space="preserve">
+    <value>1. 创建机器人</value>
+  </data>
+  <data name="DiscordStep1Text" xml:space="preserve">
+    <value>在 Discord 开发者门户中，使用你的服务器名称创建新应用（New Application）。在 Bot 页面点击 Reset Token，然后将 Token 粘贴到这里。请像保护密码一样保护它：它保存在服务器配置文件中，而非数据库中。</value>
+  </data>
+  <data name="DiscordOpenDeveloperPortal" xml:space="preserve">
+    <value>打开 Discord 开发者门户</value>
+  </data>
+  <data name="DiscordToken" xml:space="preserve">
+    <value>机器人 Token</value>
+  </data>
+  <data name="DiscordSkipBot" xml:space="preserve">
+    <value>可以跳过机器人设置，仅使用 Webhook 发送通知，参见第 4 步。</value>
+  </data>
+  <data name="DiscordStep2Title" xml:space="preserve">
+    <value>2. 邀请机器人</value>
+  </data>
+  <data name="DiscordStep2Text" xml:space="preserve">
+    <value>将机器人邀请到你的 Discord 服务器。邀请链接会请求机器人所需的权限。</value>
+  </data>
+  <data name="DiscordInviteBot" xml:space="preserve">
+    <value>邀请机器人</value>
+  </data>
+  <data name="DiscordInviteNeedsToken" xml:space="preserve">
+    <value>请先输入 Token。</value>
+  </data>
+  <data name="DiscordStep3Title" xml:space="preserve">
+    <value>3. 设置 Discord 服务器</value>
+  </data>
+  <data name="DiscordStep3Text" xml:space="preserve">
+    <value>选择用于接收通知和状态消息的 Discord 服务器。机器人的命令将在该服务器中立即可用。</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord 服务器</value>
+  </data>
+  <data name="DiscordServerNone" xml:space="preserve">
+    <value>（机器人所在的唯一服务器）</value>
+  </data>
+  <data name="DiscordServerId" xml:space="preserve">
+    <value>Discord 服务器 ID</value>
+  </data>
+  <data name="DiscordServerIdHint" xml:space="preserve">
+    <value>机器人连接后，可在此选择 Discord 服务器。否则，请在 Discord 的高级设置中启用开发者模式，右键点击服务器并选择“复制服务器 ID”。</value>
+  </data>
+  <data name="DiscordSetUpServer" xml:space="preserve">
+    <value>创建频道和身份组</value>
+  </data>
+  <data name="DiscordSetUpServerText" xml:space="preserve">
+    <value>创建机器人使用的身份组、分类和频道，与 Discord 中的 /openmu setup 命令相同。已有内容会保留，可随时重复执行。机器人需要“管理频道”和“管理身份组”权限。</value>
+  </data>
+  <data name="DiscordSetUpServerNeedsBot" xml:space="preserve">
+    <value>机器人必须已连接并加入该 Discord 服务器。</value>
+  </data>
+  <data name="DiscordSetUpCreated" xml:space="preserve">
+    <value>已创建：{0}</value>
+  </data>
+  <data name="DiscordSetUpAdopted" xml:space="preserve">
+    <value>已存在：{0}</value>
+  </data>
+  <data name="DiscordSetUpFailed" xml:space="preserve">
+    <value>失败：{0}</value>
+  </data>
+  <data name="DiscordSetUpPublic" xml:space="preserve">
+    <value>由于缺少所需身份组，以下内容对所有人可见：{0}</value>
+  </data>
+  <data name="DiscordSetUpRoleHint" xml:space="preserve">
+    <value>在 Discord 服务器的身份组列表中，将机器人的身份组移到 Linked Player 上方，以便机器人能为已绑定的玩家分配该身份组。</value>
+  </data>
+  <data name="DiscordStep4Title" xml:space="preserve">
+    <value>4. 通知</value>
+  </data>
+  <data name="DiscordStep4Text" xml:space="preserve">
+    <value>按名称选择频道。留空时使用频道布局中的默认设置；机器人连接时，优先使用已配置的机器人频道，而非 Webhook。</value>
+  </data>
+  <data name="DiscordCategory" xml:space="preserve">
+    <value>类别</value>
+  </data>
+  <data name="DiscordChannelId" xml:space="preserve">
+    <value>机器人频道</value>
+  </data>
+  <data name="DiscordWebhookUrl" xml:space="preserve">
+    <value>Webhook URL</value>
+  </data>
+  <data name="DiscordCategory_Events" xml:space="preserve">
+    <value>小游戏、入侵活动及其获胜者</value>
+  </data>
+  <data name="DiscordCategory_CastleSiege" xml:space="preserve">
+    <value>攻城战</value>
+  </data>
+  <data name="DiscordCategory_WorldNews" xml:space="preserve">
+    <value>Boss 击杀、稀有掉落和等级里程碑</value>
+  </data>
+  <data name="DiscordCategory_Notices" xml:space="preserve">
+    <value>GM 公告</value>
+  </data>
+  <data name="DiscordCategory_StaffAlerts" xml:space="preserve">
+    <value>GM 在 Discord 中执行的命令</value>
+  </data>
+  <data name="DiscordLanguage" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="DiscordEventAnnouncingServers" xml:space="preserve">
+    <value>发布活动通知的游戏服务器</value>
+  </data>
+  <data name="DiscordEventAnnouncingServersHint" xml:space="preserve">
+    <value>填写服务器 ID，多个 ID 用逗号分隔，留空表示全部。当多个游戏服务器运行相同活动时，可只选择其中一个，避免重复发送消息。</value>
+  </data>
+  <data name="DiscordStep5Title" xml:space="preserve">
+    <value>5. 聊天互通（可选）</value>
+  </data>
+  <data name="DiscordStep5Text" xml:space="preserve">
+    <value>选择允许绑定战盟聊天的位置，以及是否将 Discord 消息转发到游戏。要将游戏消息转发到 Discord，请启用下方的游戏聊天发布功能。</value>
+  </data>
+  <data name="DiscordBindingMode" xml:space="preserve">
+    <value>允许战盟绑定聊天的位置</value>
+  </data>
+  <data name="DiscordBindingMode_Both" xml:space="preserve">
+    <value>你的 Discord 服务器和战盟自己的 Discord 服务器</value>
+  </data>
+  <data name="DiscordBindingMode_HostedOnly" xml:space="preserve">
+    <value>仅你的 Discord 服务器</value>
+  </data>
+  <data name="DiscordBindingMode_GuildOwnedOnly" xml:space="preserve">
+    <value>仅战盟自己的 Discord 服务器</value>
+  </data>
+  <data name="DiscordAllowedServers" xml:space="preserve">
+    <value>允许使用的战盟 Discord 服务器</value>
+  </data>
+  <data name="DiscordAllowedServersHint" xml:space="preserve">
+    <value>填写服务器 ID，多个 ID 用逗号分隔，留空表示全部。</value>
+  </data>
+  <data name="DiscordReadMessages" xml:space="preserve">
+    <value>读取消息</value>
+  </data>
+  <data name="DiscordReadMessagesHint" xml:space="preserve">
+    <value>将已绑定频道中的普通消息发送到游戏。此功能需要启用 Message Content 特权意图（开发者门户 → Bot → Privileged Gateway Intents）。未启用时，玩家可通过 /say 发送消息。</value>
+  </data>
+  <data name="DiscordMaximumMessageLength" xml:space="preserve">
+    <value>Discord 消息的最大长度</value>
+  </data>
+  <data name="DiscordMaximumMessagesPerMinute" xml:space="preserve">
+    <value>每位 Discord 用户每分钟最多发送的消息数</value>
+  </data>
+  <data name="DiscordStep6Title" xml:space="preserve">
+    <value>高级设置</value>
+  </data>
+  <data name="DiscordStatusChannelId" xml:space="preserve">
+    <value>状态消息频道</value>
+  </data>
+  <data name="DiscordStatusUpdateInterval" xml:space="preserve">
+    <value>状态更新间隔（秒）</value>
+  </data>
+  <data name="DiscordLayoutFile" xml:space="preserve">
+    <value>频道布局文件</value>
+  </data>
+  <data name="DiscordLayoutFilePlaceholder" xml:space="preserve">
+    <value>默认布局</value>
+  </data>
+  <data name="DiscordCreateScheduledEvents" xml:space="preserve">
+    <value>为下一次攻城战创建 Discord 活动</value>
+  </data>
+  <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
+    <value>每个频道最多排队等待的消息数</value>
+  </data>
+  <data name="DiscordTest" xml:space="preserve">
+    <value>发送测试消息</value>
+  </data>
+  <data name="DiscordTestHint" xml:space="preserve">
+    <value>使用已保存的配置发送测试消息，发送方式与该类别的通知相同：通过机器人发送到其频道，否则使用 Webhook。请先保存修改。</value>
+  </data>
+  <data name="DiscordTest_SentByBot" xml:space="preserve">
+    <value>已通过机器人发送到 {0}。</value>
+  </data>
+  <data name="DiscordTest_SentByWebhook" xml:space="preserve">
+    <value>已通过 Webhook 发送。</value>
+  </data>
+  <data name="DiscordTest_NoChannel" xml:space="preserve">
+    <value>未发送：未配置机器人频道或 Webhook。</value>
+  </data>
+  <data name="DiscordTest_ChannelUnavailable" xml:space="preserve">
+    <value>机器人无法访问频道 {0}。该频道是否已被删除？</value>
+  </data>
+  <data name="DiscordTest_MissingPermissions" xml:space="preserve">
+    <value>机器人无权向 {0} 发送消息，请检查频道权限。</value>
+  </data>
+  <data name="DiscordTest_WebhookInvalid" xml:space="preserve">
+    <value>Discord 无法识别此 Webhook，请重新复制其 URL。</value>
+  </data>
+  <data name="DiscordTest_Failed" xml:space="preserve">
+    <value>失败：{0}</value>
+  </data>
+  <data name="DiscordCheckServer" xml:space="preserve">
+    <value>检查权限和频道</value>
+  </data>
+  <data name="DiscordCheckServerText" xml:space="preserve">
+    <value>使用已保存的配置，检查所选 Discord 服务器中的机器人权限、已绑定玩家的身份组和频道。</value>
+  </data>
+  <data name="DiscordCheckServerNeedsServer" xml:space="preserve">
+    <value>机器人必须已连接，且已选择并保存 Discord 服务器。</value>
+  </data>
+  <data name="DiscordCheckServerName" xml:space="preserve">
+    <value>Discord 服务器 {0}：</value>
+  </data>
+  <data name="DiscordCheckPermissionsOk" xml:space="preserve">
+    <value>机器人已具备所需的全部权限。</value>
+  </data>
+  <data name="DiscordCheckPermissionsMissing" xml:space="preserve">
+    <value>机器人缺少以下权限：{0}。请使用第 2 步的链接重新邀请机器人，或为其身份组授予这些权限。</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Assignable" xml:space="preserve">
+    <value>机器人可以分配已绑定玩家的身份组。</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Missing" xml:space="preserve">
+    <value>已绑定玩家的身份组不存在，请创建频道和身份组。</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_AboveBot" xml:space="preserve">
+    <value>已绑定玩家的身份组位于机器人身份组上方，机器人无法分配它。请在身份组列表中将机器人的身份组移到其上方。</value>
+  </data>
+  <data name="DiscordCheckChannelsOk" xml:space="preserve">
+    <value>每个通知类别都已配置机器人频道。</value>
+  </data>
+  <data name="DiscordCheckChannelsMissing" xml:space="preserve">
+    <value>以下类别未配置机器人频道：{0}。它们只能通过 Webhook 发送。</value>
+  </data>
+  <data name="DiscordCheckStatusChannelOk" xml:space="preserve">
+    <value>机器人会在状态频道中显示服务器状态。</value>
+  </data>
+  <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
+    <value>未配置状态频道，机器人不会显示服务器状态。</value>
+  </data>
+  <data name="DiscordPublisherActivated" xml:space="preserve">
+    <value>游戏事件发布器已启用。可在插件页面选择要发布的内容。</value>
+  </data>
+  <data name="DiscordPublisherSwitch" xml:space="preserve">
+    <value>发布游戏事件（Game Event Publisher 插件）</value>
+  </data>
+  <data name="DiscordPublisherDeactivated" xml:space="preserve">
+    <value>游戏事件发布器已停用，游戏内容将不再发布到 Discord。</value>
+  </data>
+  <data name="DiscordDefaultChannel" xml:space="preserve">
+    <value>默认：#{0}</value>
+  </data>
+  <data name="DiscordNoDefaultChannel" xml:space="preserve">
+    <value>不发送</value>
+  </data>
+  <data name="DiscordStep4WebhookText" xml:space="preserve">
+    <value>不使用机器人时，各类别通过对应频道的 Webhook 发送通知：在 Discord 中打开频道设置，进入“整合 → Webhooks”，创建 Webhook 并将其 URL 粘贴到这里。请像保护密码一样保护它。</value>
+  </data>
+  <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
+    <value>Webhook 仅用于发送未配置机器人频道的通知类别。使用机器人时无需配置 Webhook，也可以将其移除。</value>
+  </data>
+  <data name="DiscordStepDone" xml:space="preserve">
+    <value>已验证</value>
+  </data>
+  <data name="DiscordStepProblem" xml:space="preserve">
+    <value>需要检查</value>
+  </data>
+  <data name="DiscordUnsavedChanges" xml:space="preserve">
+    <value>存在未保存的修改。请先保存：消息测试和 Discord 服务器设置操作均使用已保存的配置。</value>
+  </data>
+  <data name="DiscordTestAll" xml:space="preserve">
+    <value>为已启用的类别发送测试消息</value>
+  </data>
+  <data name="DiscordLayoutPreview" xml:space="preserve">
+    <value>将创建的内容</value>
+  </data>
+  <data name="DiscordLayoutRoles" xml:space="preserve">
+    <value>身份组：{0}</value>
+  </data>
+  <data name="DiscordLayoutVisibleTo" xml:space="preserve">
+    <value>仅 {0} 可见</value>
+  </data>
+  <data name="DiscordChatBindings" xml:space="preserve">
+    <value>已绑定的聊天</value>
+  </data>
+  <data name="DiscordChatBindingsNone" xml:space="preserve">
+    <value>尚未绑定任何战盟或联盟聊天。</value>
+  </data>
+  <data name="DiscordChatBindingsNeedBot" xml:space="preserve">
+    <value>机器人连接后，将显示已绑定的聊天。</value>
+  </data>
+  <data name="DiscordChatBindingGuild" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="DiscordChatBindingChannel" xml:space="preserve">
+    <value>频道</value>
+  </data>
+  <data name="DiscordChatBindingBoundBy" xml:space="preserve">
+    <value>绑定者</value>
+  </data>
+  <data name="DiscordChatBindingUnknownChannel" xml:space="preserve">
+    <value>未知频道 {0}</value>
+  </data>
+  <data name="DiscordChatBindingRemoved" xml:space="preserve">
+    <value>已解除绑定，Discord 频道将保留。</value>
+  </data>
+  <data name="DiscordScope_Guild" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="DiscordScope_Alliance" xml:space="preserve">
+    <value>联盟</value>
+  </data>
+  <data name="DiscordOverview" xml:space="preserve">
+    <value>设置 Discord 通知、账号绑定和聊天互通。检查消息发送前，请先保存并应用修改。</value>
+  </data>
+  <data name="DiscordConfigurationSource" xml:space="preserve">
+    <value>配置来源</value>
+  </data>
+  <data name="DiscordConfigurationSourcesHint" xml:space="preserve">
+    <value>可在此编辑文件中的配置。环境变量及其他优先级更高的配置仍需在外部管理，敏感值会保持隐藏。</value>
+  </data>
+  <data name="DiscordMode" xml:space="preserve">
+    <value>接入模式</value>
+  </data>
+  <data name="DiscordModeBot" xml:space="preserve">
+    <value>Discord 机器人：通知、命令和聊天</value>
+  </data>
+  <data name="DiscordModeWebhooks" xml:space="preserve">
+    <value>Webhook：仅通知</value>
+  </data>
+  <data name="DiscordModeHint" xml:space="preserve">
+    <value>选择所需功能。保存为仅 Webhook 模式后，机器人会停止运行，但其 Token 会保留以供后续使用。</value>
+  </data>
+  <data name="DiscordWebhooksModeReady" xml:space="preserve">
+    <value>Webhook 模式：无需连接机器人，请在下方配置发送目标。</value>
+  </data>
+  <data name="DiscordConfigured" xml:space="preserve">
+    <value>已配置 · 未验证</value>
+  </data>
+  <data name="DiscordApplying" xml:space="preserve">
+    <value>正在应用修改……</value>
+  </data>
+  <data name="DiscordApplied" xml:space="preserve">
+    <value>配置已应用，请测试消息发送以验证配置。</value>
+  </data>
+  <data name="DiscordSaveApply" xml:space="preserve">
+    <value>保存并应用</value>
+  </data>
+  <data name="DiscordDiscardChanges" xml:space="preserve">
+    <value>放弃修改</value>
+  </data>
+  <data name="DiscordKeepEditing" xml:space="preserve">
+    <value>继续编辑</value>
+  </data>
+  <data name="DiscordConfirmDiscard" xml:space="preserve">
+    <value>是否放弃此页面上所有未保存的配置？</value>
+  </data>
+  <data name="DiscordNavigationBlocked" xml:space="preserve">
+    <value>离开此页面前，请先保存或放弃修改。</value>
+  </data>
+  <data name="DiscordPublisherStaged" xml:space="preserve">
+    <value>游戏事件发布设置将在点击“保存并应用”后生效。可在各通知类别旁选择要发布的事件。</value>
+  </data>
+  <data name="DiscordPublisherMissing" xml:space="preserve">
+    <value>缺少游戏事件发布器的配置，请前往插件页面配置。</value>
+  </data>
+  <data name="DiscordSecretStaged" xml:space="preserve">
+    <value>留空可保留已保存的 Token。替换或移除将在保存后生效。</value>
+  </data>
+  <data name="DiscordProvisioningChanges" xml:space="preserve">
+    <value>按名称沿用已有频道和身份组，可能会更新其访问权限，不会删除任何内容。如果缺少所需身份组或权限，将跳过私密的管理频道。</value>
+  </data>
+  <data name="DiscordShowWebhookFallbacks" xml:space="preserve">
+    <value>显示可选的 Webhook 发送目标</value>
+  </data>
+  <data name="DiscordSourceEvents" xml:space="preserve">
+    <value>要发布的游戏事件</value>
+  </data>
+  <data name="DiscordOff" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="DiscordRouteBot" xml:space="preserve">
+    <value>机器人 → #{0}</value>
+  </data>
+  <data name="DiscordRouteWebhook" xml:space="preserve">
+    <value>已配置 Webhook</value>
+  </data>
+  <data name="DiscordRouteNone" xml:space="preserve">
+    <value>无可用发送目标</value>
+  </data>
+  <data name="DiscordCategoryName_Events" xml:space="preserve">
+    <value>活动</value>
+  </data>
+  <data name="DiscordCategoryName_CastleSiege" xml:space="preserve">
+    <value>攻城战</value>
+  </data>
+  <data name="DiscordCategoryName_WorldNews" xml:space="preserve">
+    <value>世界消息</value>
+  </data>
+  <data name="DiscordCategoryName_Notices" xml:space="preserve">
+    <value>GM 公告</value>
+  </data>
+  <data name="DiscordCategoryName_StaffAlerts" xml:space="preserve">
+    <value>管理操作审计日志</value>
+  </data>
+  <data name="DiscordDeliveryOnly" xml:space="preserve">
+    <value>此操作会向 Discord 发送消息，仅用于验证消息能否送达，不代表游戏事件发布功能已启用。</value>
+  </data>
+  <data name="DiscordLastChecked" xml:space="preserve">
+    <value>上次检查时间：{0}（UTC）</value>
+  </data>
+  <data name="DiscordEventFilters" xml:space="preserve">
+    <value>Boss 和等级里程碑筛选</value>
+  </data>
+  <data name="DiscordFilterHint" xml:space="preserve">
+    <value>输入编号或等级数值，多个值用逗号分隔。Boss 列表为空时不发布 Boss 击杀通知；里程碑列表为空时不发布等级里程碑通知。</value>
+  </data>
+  <data name="DiscordChatSetup" xml:space="preserve">
+    <value>先在游戏中申请绑定账号，再在 Discord 中输入绑定码；如有需要，使用 /character 选择你的战盟盟主角色。在主 Discord 服务器中使用 /guildchat create，或在战盟自己的 Discord 服务器中选择你管理的频道并使用 /guildchat bind。</value>
+  </data>
+  <data name="DiscordForwardNormalMessages" xml:space="preserve">
+    <value>将频道中的普通消息转发到游戏（否则使用 /say）</value>
+  </data>
+  <data name="DiscordBindingRemovalImmediate" xml:space="preserve">
+    <value>解除绑定会立即生效，并停止转发聊天消息。Discord 频道将保留。</value>
+  </data>
+  <data name="DiscordConfirmUnbind" xml:space="preserve">
+    <value>是否立即停止转发此战盟或联盟的聊天消息？频道及其消息将保留。</value>
+  </data>
+  <data name="DiscordUnbindChat" xml:space="preserve">
+    <value>立即解除聊天绑定</value>
+  </data>
+  <data name="DiscordManagedKey" xml:space="preserve">
+    <value>由外部管理。配置键：{0}</value>
+  </data>
+  <data name="DiscordMinimum" xml:space="preserve">
+    <value>请输入不小于 {0} 的值。</value>
+  </data>
+  <data name="DiscordSavedConnectionFailed" xml:space="preserve">
+    <value>配置已保存，但机器人无法连接。请解决上方显示的连接问题。</value>
+  </data>
+  <data name="DiscordNotConfigured" xml:space="preserve">
+    <value>未配置</value>
+  </data>
+  <data name="DiscordChooseServer" xml:space="preserve">
+    <value>选择 Discord 服务器</value>
+  </data>
+  <data name="DiscordStaffPrivacy" xml:space="preserve">
+    <value>请选择私密的管理频道，GM 审计消息可能包含敏感信息。</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>自动创建战盟频道</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>战盟盟主绑定账号后，机器人会在你的 Discord 服务器的 GUILDS 分类中创建该战盟的频道，并绑定战盟聊天。只有已绑定账号的战盟成员可见，盟主可管理频道消息。已绑定聊天的战盟会保留现有频道。新战盟和新盟主通常会在约十分钟内被识别。</value>
+  </data>
+  <data name="LoggingConfiguration" xml:space="preserve">
+    <value>日志配置</value>
+  </data>
+  <data name="LoggingConfigurationDescription" xml:space="preserve">
+    <value>服务器的日志配置保存在文件 {0} 中。保存后，日志级别的修改立即生效；新增或删除日志来源，以及其他配置修改，需要重启服务器后才能生效。</value>
+  </data>
+  <data name="LoggingConfigurationNotAvailable" xml:space="preserve">
+    <value>仅当管理后台与服务器运行在同一进程中（一体化部署）时，才能编辑日志配置。</value>
+  </data>
+  <data name="LogLevels" xml:space="preserve">
+    <value>日志级别</value>
+  </data>
+  <data name="DefaultLogLevel" xml:space="preserve">
+    <value>默认日志级别</value>
+  </data>
+  <data name="LogLevelOverrides" xml:space="preserve">
+    <value>按来源设置日志级别</value>
+  </data>
+  <data name="LogLevelOverridesDescription" xml:space="preserve">
+    <value>日志来源是日志记录器的名称，通常为类的完整名称，也可以是包含多个日志记录器的命名空间。匹配时，范围最具体的来源规则优先。</value>
+  </data>
+  <data name="LogSource" xml:space="preserve">
+    <value>日志来源</value>
+  </data>
+  <data name="AdvancedJson" xml:space="preserve">
+    <value>高级（JSON）</value>
+  </data>
+  <data name="AdvancedLoggingJsonDescription" xml:space="preserve">
+    <value>在此可编辑配置文件中的整个 Serilog 配置节，例如添加日志输出目标或过滤器。可用配置项请参阅 Serilog 文档。</value>
+  </data>
+  <data name="LoggingConfigurationSaved" xml:space="preserve">
+    <value>日志配置已保存。</value>
+  </data>
+  <data name="LoggingConfigurationLoadError" xml:space="preserve">
+    <value>无法加载日志配置：{0}</value>
+  </data>
+  <data name="LoggingConfigurationSaveError" xml:space="preserve">
+    <value>无法保存日志配置：{0}</value>
+  </data>
+  <data name="LoggingConfigurationInvalidJson" xml:space="preserve">
+    <value>JSON 格式无效：{0}</value>
+  </data>
+  <data name="LogLevelOverridesInvalid" xml:space="preserve">
+    <value>每个日志来源都必须填写名称，且名称不能重复。</value>
+  </data>
 </root>
