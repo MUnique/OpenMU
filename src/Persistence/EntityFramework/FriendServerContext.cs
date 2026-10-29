@@ -43,6 +43,12 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     }
 
     /// <inheritdoc/>
+    public async ValueTask<bool> CharacterExistsAsync(string characterName)
+    {
+        return await this.GetCharacterIdByNameAsync(characterName).ConfigureAwait(false) is not null;
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<Interfaces.Friend?> GetFriendByNamesAsync(string characterName, string friendName)
     {
         return await this.FindItems(characterName, friendName).FirstOrDefaultAsync().ConfigureAwait(false);

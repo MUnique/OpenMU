@@ -222,4 +222,59 @@ public class ItemRequirementCalculationTest
         Assert.That(agilityValue.Item1, Is.EqualTo(Stats.TotalAgility));
         Assert.That(agilityValue.Item2, Is.EqualTo(requiredAgility));
     }
+
+    /// <summary>
+    /// Tests that an energy requirement of 0 of a book stays 0, as for other items (see MUnique/OpenMU#1301).
+    /// </summary>
+    [Test]
+    public void BookEnergyRequirementOf0Stays0()
+    {
+        var item = CreateBook(itemLevel: 9);
+        var energyRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 0 };
+
+        var energyValue = item.GetRequirement(energyRequirement, TestItemStatProfiles.ForItem(item.Definition!));
+
+        Assert.That(energyValue.Item1, Is.EqualTo(Stats.TotalEnergy));
+        Assert.That(energyValue.Item2, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that an energy requirement reduction, e.g. of a harmony option, lowers the energy requirement of a book,
+    /// as for other items (see MUnique/OpenMU#1301).
+    /// </summary>
+    [Test]
+    public void BookEnergyRequirementIsReduced()
+    {
+        var item = CreateBook(itemLevel: 0);
+        item.ItemOptions.Add(new ItemOptionLink
+        {
+            ItemOption = new IncreasableItemOption
+            {
+                OptionType = ItemOptionTypes.HarmonyOption,
+                PowerUpDefinition = new PowerUpDefinition
+                {
+                    TargetAttribute = Stats.RequiredEnergyReduction,
+                    Boost = new PowerUpDefinitionValue { ConstantValue = { Value = 10 } },
+                },
+            },
+        });
+        var energyRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 168 };
+
+        var energyValue = item.GetRequirement(energyRequirement, TestItemStatProfiles.ForItem(item.Definition!));
+
+        // 317 of the 'Book of Neil' at level 0, minus the reduction of 10
+        Assert.That(energyValue.Item1, Is.EqualTo(Stats.TotalEnergy));
+        Assert.That(energyValue.Item2, Is.EqualTo(307));
+    }
+
+    private static Item CreateBook(byte itemLevel)
+    {
+        var item = new Item();
+        item.Level = itemLevel;
+        item.Definition = new ItemDefinition();
+        item.Definition.DropLevel = 59;
+        item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.BookRise, BaseValue = 23 });
+        return item;
+    }
 }
