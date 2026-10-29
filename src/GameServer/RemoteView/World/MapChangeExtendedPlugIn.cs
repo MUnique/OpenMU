@@ -50,6 +50,6 @@ public class MapChangeExtendedPlugIn : IMapChangePlugIn
 
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
 
-        await this._player.Connection.SendMapChangedExtendedAsync(map.Number.ToUnsigned(), position.X, position.Y, this._player.Rotation.ToPacketByte(), map.GetDiscriminatorForClient(), success).ConfigureAwait(false);
+        await this._player.Connection.SendClearedMapChangedExtendedAsync(map.Number.ToUnsigned(), position.X, position.Y, this._player.Rotation.ToPacketByte(), map.GetDiscriminatorForClient(), success).ConfigureAwait(false);
     }
 }

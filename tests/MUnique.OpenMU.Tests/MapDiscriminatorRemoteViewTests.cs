@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.IO;
+using System.IO.Pipelines;
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
@@ -23,11 +25,14 @@ using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
 /// Tests that the extended client (MuMain) gets the discriminator of its map, which tells maps with
 /// the same number apart (the stages of Devil Square), and that other clients get the original packets.
+/// The packets are written into memory which is filled with 0xFF, as a reused output buffer may hold
+/// the bytes of earlier packets.
 /// </summary>
 [TestFixture]
 public class MapDiscriminatorRemoteViewTests
@@ -36,6 +41,21 @@ public class MapDiscriminatorRemoteViewTests
     private const byte MapChangedCode = 0x1C;
     private const byte CharacterInformationCode = 0xF3;
     private const byte CharacterInformationSubCode = 0x03;
+
+    /// <summary>
+    /// The value of the bytes in the memory which the output hands out, before a packet is written.
+    /// </summary>
+    private const byte StaleByte = 0xFF;
+
+    /// <summary>
+    /// The unused byte of <see cref="CharacterInformationExtended"/>, between the inventory extensions and the resets.
+    /// </summary>
+    private const int CharacterInformationUnusedByte = 89;
+
+    /// <summary>
+    /// The unused bytes of <see cref="MapChangedExtended"/>, between the rotation and the discriminator.
+    /// </summary>
+    private static readonly System.Range MapChangedUnusedBytes = 10..15;
 
     private static ClientVersion ExtendedClient { get; } = new(106, 3, ClientLanguage.Invariant);
 
@@ -90,6 +110,30 @@ public class MapDiscriminatorRemoteViewTests
         CharacterInformationExtended characterInformation = packet.AsMemory();
         Assert.That(characterInformation.MapId, Is.EqualTo(DevilSquareMapNumber));
         Assert.That(characterInformation.MapDiscriminator, Is.EqualTo(2));
+    }
+
+    /// <summary>
+    /// The packets of the extended client write their unused bytes as 0, although the memory of the output
+    /// still holds other bytes, e.g. of an earlier packet.
+    /// </summary>
+    [Test]
+    public async Task ExtendedPacketsWriteTheirUnusedBytesAsZeroAsync()
+    {
+        var (player, output, stage) = await CreatePlayerInWorldAsync(ExtendedClient, 2, enterOnStage: false).ConfigureAwait(false);
+
+        await player.WarpToAsync(new ExitGate { Map = stage, X1 = 130, X2 = 130, Y1 = 90, Y2 = 90 }).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
+
+        var packets = ReadPackets(output);
+        var mapChanges = packets.Where(p => p[2] == MapChangedCode).ToList();
+        var characterInformation = packets.Single(p => p[2] == CharacterInformationCode && p[3] == CharacterInformationSubCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(mapChanges, Has.Count.EqualTo(3), "map change, teleport and failed map change");
+            Assert.That(mapChanges.Select(p => p[MapChangedUnusedBytes]), Is.All.All.EqualTo(0), "unused bytes of MapChangedExtended");
+            Assert.That(characterInformation[CharacterInformationUnusedByte], Is.EqualTo(0), "unused byte of CharacterInformationExtended");
+        });
     }
 
     /// <summary>
@@ -159,7 +203,12 @@ public class MapDiscriminatorRemoteViewTests
             character.CurrentMap = stage;
         }
 
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(gameServerContext, clientVersion);
+        var output = new MemoryStream();
+        var connection = new Mock<IConnection>();
+        connection.SetupGet(c => c.Connected).Returns(true);
+        connection.SetupGet(c => c.Output).Returns(new PrefilledPipeWriter(output));
+        connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
+        var player = new RemotePlayer(gameServerContext, connection.Object, clientVersion);
         await PlayerTestHelper.EnterWorldAsync(player, character).ConfigureAwait(false);
         return (player, output, stage);
     }
@@ -185,5 +234,55 @@ public class MapDiscriminatorRemoteViewTests
         }
 
         return packets;
+    }
+
+    /// <summary>
+    /// A pipe writer which hands out memory filled with <see cref="StaleByte"/>, and writes what was
+    /// advanced to a stream.
+    /// </summary>
+    private sealed class PrefilledPipeWriter : PipeWriter
+    {
+        private const int MinimumSize = 256;
+
+        private readonly Stream _stream;
+
+        private byte[] _buffer = new byte[MinimumSize];
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrefilledPipeWriter"/> class.
+        /// </summary>
+        /// <param name="stream">The stream which gets the advanced bytes.</param>
+        public PrefilledPipeWriter(Stream stream) => this._stream = stream;
+
+        /// <inheritdoc/>
+        public override void Advance(int bytes) => this._stream.Write(this._buffer, 0, bytes);
+
+        /// <inheritdoc/>
+        public override Memory<byte> GetMemory(int sizeHint = 0)
+        {
+            if (this._buffer.Length < sizeHint)
+            {
+                this._buffer = new byte[sizeHint];
+            }
+
+            Array.Fill(this._buffer, StaleByte);
+            return this._buffer;
+        }
+
+        /// <inheritdoc/>
+        public override Span<byte> GetSpan(int sizeHint = 0) => this.GetMemory(sizeHint).Span;
+
+        /// <inheritdoc/>
+        public override void CancelPendingFlush()
+        {
+        }
+
+        /// <inheritdoc/>
+        public override void Complete(Exception? exception = null)
+        {
+        }
+
+        /// <inheritdoc/>
+        public override ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken = default) => ValueTask.FromResult(new FlushResult(false, false));
     }
 }

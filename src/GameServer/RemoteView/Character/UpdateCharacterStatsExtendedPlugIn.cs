@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -39,42 +40,60 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
         }
 
         var maxAttackSpeed = this._player.GameContext.Configuration.Attributes.FirstOrDefault(a => a == Stats.AttackSpeed)?.MaximumValue ?? 200;
-        await connection.SendCharacterInformationExtendedAsync(
-                this._player.Position.X,
-                this._player.Position.Y,
-                this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
-                (ulong)this._player.SelectedCharacter.Experience,
-                (ulong)this._player.GameServerContext.ExperienceTable[(int)this._player.Attributes![Stats.Level] + 1],
-                (ushort)Math.Max(0, this._player.SelectedCharacter.LevelUpPoints),
-                (ushort)this._player.Attributes[Stats.BaseStrength],
-                (ushort)this._player.Attributes[Stats.BaseAgility],
-                (ushort)this._player.Attributes[Stats.BaseVitality],
-                (ushort)this._player.Attributes[Stats.BaseEnergy],
-                (ushort)this._player.Attributes[Stats.BaseLeadership],
-                (uint)this._player.Attributes[Stats.CurrentHealth],
-                (uint)this._player.Attributes[Stats.MaximumHealth],
-                (uint)this._player.Attributes[Stats.CurrentMana],
-                (uint)this._player.Attributes[Stats.MaximumMana],
-                (uint)this._player.Attributes[Stats.CurrentShield],
-                (uint)this._player.Attributes[Stats.MaximumShield],
-                (uint)this._player.Attributes[Stats.CurrentAbility],
-                (uint)this._player.Attributes[Stats.MaximumAbility],
-                (uint)this._player.Money,
-                this._player.SelectedCharacter.State.Convert(),
-                this._player.SelectedCharacter.CharacterStatus.Convert(),
-                (ushort)this._player.SelectedCharacter.UsedFruitPoints,
-                this._player.SelectedCharacter.GetMaximumFruitPoints(),
-                (ushort)this._player.SelectedCharacter.UsedNegFruitPoints,
-                this._player.SelectedCharacter.GetMaximumFruitPoints(),
-                (ushort)this._player.Attributes[Stats.AttackSpeed],
-                (ushort)this._player.Attributes[Stats.MagicSpeed],
-                (ushort)maxAttackSpeed,
-                (byte)this._player.SelectedCharacter.InventoryExtensions,
-                (ushort)this._player.Attributes[Stats.Resets],
-                this._player.SelectedCharacter.CurrentMap.GetDiscriminatorForClient())
-            .ConfigureAwait(false);
+        var character = this._player.SelectedCharacter!;
+        var attributes = this._player.Attributes!;
+        var map = character.CurrentMap!;
+        var experienceForNextLevel = this._player.GameServerContext.ExperienceTable[(int)attributes[Stats.Level] + 1];
 
-        if (this._player.SelectedCharacter.CharacterClass!.IsMasterClass)
+        // Written by hand instead of with the generated sender, to clear the packet first: its unused
+        // byte 89 would keep what an earlier packet left in the reused output buffer.
+        int WritePacket()
+        {
+            var length = CharacterInformationExtendedRef.Length;
+            var span = connection.Output.GetSpan(length)[..length];
+            span.Clear();
+            _ = new CharacterInformationExtendedRef(span)
+            {
+                X = this._player.Position.X,
+                Y = this._player.Position.Y,
+                MapId = ShortExtensions.ToUnsigned(map.Number),
+                CurrentExperience = (ulong)character.Experience,
+                ExperienceForNextLevel = (ulong)experienceForNextLevel,
+                LevelUpPoints = (ushort)Math.Max(0, character.LevelUpPoints),
+                Strength = (ushort)attributes[Stats.BaseStrength],
+                Agility = (ushort)attributes[Stats.BaseAgility],
+                Vitality = (ushort)attributes[Stats.BaseVitality],
+                Energy = (ushort)attributes[Stats.BaseEnergy],
+                Leadership = (ushort)attributes[Stats.BaseLeadership],
+                CurrentHealth = (uint)attributes[Stats.CurrentHealth],
+                MaximumHealth = (uint)attributes[Stats.MaximumHealth],
+                CurrentMana = (uint)attributes[Stats.CurrentMana],
+                MaximumMana = (uint)attributes[Stats.MaximumMana],
+                CurrentShield = (uint)attributes[Stats.CurrentShield],
+                MaximumShield = (uint)attributes[Stats.MaximumShield],
+                CurrentAbility = (uint)attributes[Stats.CurrentAbility],
+                MaximumAbility = (uint)attributes[Stats.MaximumAbility],
+                Money = (uint)this._player.Money,
+                HeroState = character.State.Convert(),
+                Status = character.CharacterStatus.Convert(),
+                UsedFruitPoints = (ushort)character.UsedFruitPoints,
+                MaxFruitPoints = character.GetMaximumFruitPoints(),
+                UsedNegativeFruitPoints = (ushort)character.UsedNegFruitPoints,
+                MaxNegativeFruitPoints = character.GetMaximumFruitPoints(),
+                AttackSpeed = (ushort)attributes[Stats.AttackSpeed],
+                MagicSpeed = (ushort)attributes[Stats.MagicSpeed],
+                MaximumAttackSpeed = (ushort)maxAttackSpeed,
+                InventoryExtensions = (byte)character.InventoryExtensions,
+                Resets = (ushort)attributes[Stats.Resets],
+                MapDiscriminator = map.GetDiscriminatorForClient(),
+            };
+
+            return length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+
+        if (character.CharacterClass!.IsMasterClass)
         {
             await this._player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
         }

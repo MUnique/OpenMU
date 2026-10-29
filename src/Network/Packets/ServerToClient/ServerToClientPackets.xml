@@ -2821,7 +2821,7 @@
           <Type>Byte</Type>
           <Name>Rotation</Name>
         </Field>
-        <!-- 5 unused bytes, as in MapChanged, which is 15 bytes long -->
+        <!-- 5 unused bytes, as in MapChanged, which is 15 bytes long; the game server writes them as 0 -->
         <Field>
           <Index>15</Index>
           <Type>Byte</Type>
