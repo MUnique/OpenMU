@@ -2137,6 +2137,69 @@
   <data name="AuditNext" xml:space="preserve">
     <value>下一页</value>
   </data>
+  <data name="ContentActivation" xml:space="preserve">
+    <value>内容启用</value>
+  </data>
+  <data name="ContentActivationDescription" xml:space="preserve">
+    <value>启用或停用地图、角色职业、怪物、物品和小游戏，例如将游戏内容限制在某个赛季范围内。停用的条目仍保留在配置中，但在游戏中不可用。已生成的怪物会保留到游戏服务器重启。</value>
+  </data>
+  <data name="ContentActivationConfirmFormat" xml:space="preserve">
+    <value>将启用 {0} 个条目并停用 {1} 个条目。是否继续？</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>内容类型</value>
+  </data>
+  <data name="ActivateAllShown" xml:space="preserve">
+    <value>启用所有显示的条目</value>
+  </data>
+  <data name="DeactivateAllShown" xml:space="preserve">
+    <value>停用所有显示的条目</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="ActiveCountFormat" xml:space="preserve">
+    <value>已启用 {0} 个，共 {1} 个</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="OnlyActive" xml:space="preserve">
+    <value>仅显示已启用</value>
+  </data>
+  <data name="OnlyInactive" xml:space="preserve">
+    <value>仅显示已停用</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>按游戏版本限制内容</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>启用所选游戏版本及此前引入的全部内容，停用后续版本引入的内容。版本未知的内容保持不变。修改将在保存后写入。</value>
+  </data>
+  <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
+    <value>请先保存或放弃尚未保存的修改。</value>
+  </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>引入版本</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>版本 {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>第 {0} 季</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>第 {0} 季第 {1} 章</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>编号</value>
+  </data>
   <data name="Discord" xml:space="preserve">
     <value>Discord</value>
   </data>
