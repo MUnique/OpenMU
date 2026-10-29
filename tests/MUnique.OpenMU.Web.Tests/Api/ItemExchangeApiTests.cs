@@ -35,7 +35,7 @@ using MUnique.OpenMU.Web.Tests.AdminAuth;
 /// Tests who may download the item exchange file at <c>GET /api/items/exchange</c>.
 /// </summary>
 [TestFixture]
-public sealed class ItemExchangeApiTests : IDisposable
+public sealed class ItemExchangeApiTests : System.IDisposable
 {
     private const string ExchangePath = "/api/items/exchange";
     private const string ViewerKey = "omu_item-exchange-viewer-test";
