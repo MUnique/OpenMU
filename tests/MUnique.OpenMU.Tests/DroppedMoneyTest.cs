@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Pathfinding;
 using NUnit.Framework;
@@ -116,6 +117,37 @@ public class DroppedMoneyTest
         Assert.That(await money.TryPickUpByAsync(big).ConfigureAwait(false), Is.True);
         Assert.That(big.Money, Is.EqualTo(800));
         Assert.That(small.Money, Is.EqualTo(200));
+    }
+
+    /// <summary>
+    /// Tests that a party member standing in a safezone can pick up money which only they earned.
+    /// The safezone rule keeps members idling in town out of the split, but it used to exclude the
+    /// picking player as well - then nobody was eligible and the money could never be picked up.
+    /// The other member, idling in the safezone too, still receives nothing.
+    /// </summary>
+    [Test]
+    public async Task PartyMemberInSafezoneCanPickUpMoneyAsync()
+    {
+        var picker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var gameContext = picker.GameContext;
+        gameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
+
+        var party = CreateParty();
+        await party.AddAsync(picker).ConfigureAwait(false);
+        var idler = await AddPartyMemberAsync(gameContext, party).ConfigureAwait(false);
+
+        var terrain = picker.CurrentMap!.Terrain;
+        terrain.ApplyTerrainAttribute((byte)picker.Position.X, (byte)picker.Position.Y, TerrainAttributeType.Safezone, true);
+        terrain.ApplyTerrainAttribute((byte)idler.Position.X, (byte)idler.Position.Y, TerrainAttributeType.Safezone, true);
+        Assert.That(picker.IsAtSafezone(), Is.True);
+        Assert.That(idler.IsAtSafezone(), Is.True);
+
+        var shares = new[] { new MoneyShare(picker, DroppedAmount) };
+        var money = new DroppedMoney(DroppedAmount, picker.Position, picker.CurrentMap!, shares);
+
+        Assert.That(await money.TryPickUpByAsync(picker).ConfigureAwait(false), Is.True);
+        Assert.That(picker.Money, Is.EqualTo((int)DroppedAmount));
+        Assert.That(idler.Money, Is.EqualTo(0));
     }
 
     private static Party CreateParty()
