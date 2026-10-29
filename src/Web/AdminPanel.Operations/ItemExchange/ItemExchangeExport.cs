@@ -127,9 +127,28 @@ public static class ItemExchangeExport
     internal static IEnumerable<ItemDefinition> GetExportedItems(GameConfiguration configuration)
     {
         return configuration.Items
-            .Where(item => item.Group <= MaximumGroup && item.Number is >= 0 and <= MaximumNumber)
+            .Where(IsKnownToTheClient)
             .OrderBy(item => item.Group)
             .ThenBy(item => item.Number)
             .ThenBy(item => item.GetId());
+    }
+
+    /// <summary>
+    /// Gets the items which the file leaves out, because they are outside the client's groups or numbers.
+    /// </summary>
+    /// <param name="configuration">The game configuration.</param>
+    /// <returns>The items which the file leaves out, sorted by group and number.</returns>
+    internal static IReadOnlyList<ItemDefinition> GetLeftOutItems(GameConfiguration configuration)
+    {
+        return configuration.Items
+            .Where(item => !IsKnownToTheClient(item))
+            .OrderBy(item => item.Group)
+            .ThenBy(item => item.Number)
+            .ToList();
+    }
+
+    private static bool IsKnownToTheClient(ItemDefinition item)
+    {
+        return item.Group <= MaximumGroup && item.Number is >= 0 and <= MaximumNumber;
     }
 }

@@ -225,6 +225,8 @@ client's `docs/item-data.md`.
   admin panel aren't part of it.
 - The file names the item fields it carries in its `fields` list; the client
   keeps its own values of the other fields.
+- Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
+  out, because the client would refuse the whole file. The log names them.
 - The file names the game version of the configuration, `season6` for Season 6.
   The client only reads Season 6 data, so it refuses the file of a server with
   another version.

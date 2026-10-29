@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Operations.ItemExchange;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
@@ -14,7 +16,8 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 /// </summary>
 /// <param name="persistence">The persistence context provider.</param>
 /// <param name="configurations">The game configuration which the admin panel edits.</param>
-public sealed class ItemExchangeOperations(IPersistenceContextProvider persistence, IDataSource<GameConfiguration> configurations)
+/// <param name="logger">The logger, which names the items the file leaves out.</param>
+public sealed class ItemExchangeOperations(IPersistenceContextProvider persistence, IDataSource<GameConfiguration> configurations, ILogger<ItemExchangeOperations> logger)
 {
     /// <summary>
     /// The number of attempts to write the file while an edit in the admin panel changes the items.
@@ -52,7 +55,9 @@ public sealed class ItemExchangeOperations(IPersistenceContextProvider persisten
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                return ItemExchangeExport.Write(read.Configuration, gameVersion);
+                var file = ItemExchangeExport.Write(read.Configuration, gameVersion);
+                this.LogLeftOutItems(ItemExchangeExport.GetLeftOutItems(read.Configuration));
+                return file;
             }
             catch (InvalidOperationException) when (attempt < MaximumWriteAttempts)
             {
@@ -60,6 +65,26 @@ public sealed class ItemExchangeOperations(IPersistenceContextProvider persisten
                 // configuration reads of the agents. The file is written again from the start.
             }
         }
+    }
+
+    /// <summary>
+    /// Logs the items which the file leaves out, so that the server operator learns why the
+    /// client editor doesn't get them.
+    /// </summary>
+    /// <param name="leftOut">The items which the file leaves out.</param>
+    private void LogLeftOutItems(IReadOnlyList<ItemDefinition> leftOut)
+    {
+        if (leftOut.Count == 0)
+        {
+            return;
+        }
+
+        logger.LogWarning(
+            "The item exchange file leaves out {Count} item(s) outside of the client's groups (0 to {MaximumGroup}) and numbers (0 to {MaximumNumber}): {Items}",
+            leftOut.Count,
+            ItemExchangeExport.MaximumGroup,
+            ItemExchangeExport.MaximumNumber,
+            string.Join(", ", leftOut.Select(item => $"{item.Group}/{item.Number} {item.Name}")));
     }
 
     /// <summary>

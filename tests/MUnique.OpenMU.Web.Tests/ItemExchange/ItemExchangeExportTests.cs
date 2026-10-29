@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -123,7 +124,7 @@ public sealed class ItemExchangeExportTests
     public async Task OperationExportsTheStoredConfigurationAsync()
     {
         using var configurations = new GameConfigurationDataSource(NullLogger<GameConfigurationDataSource>.Instance, this._seasonSix);
-        var operations = new ItemExchangeOperations(this._seasonSix, configurations);
+        var operations = new ItemExchangeOperations(this._seasonSix, configurations, NullLogger<ItemExchangeOperations>.Instance);
 
         var file = await operations.ExportAsync(default).ConfigureAwait(false);
 
@@ -189,7 +190,7 @@ public sealed class ItemExchangeExportTests
     {
         var (stored, configurations) = await CreateEditedConfigurationAsync(hasChanges: true).ConfigureAwait(false);
 
-        var file = await new ItemExchangeOperations(stored, configurations).ExportAsync(default).ConfigureAwait(false);
+        var file = await new ItemExchangeOperations(stored, configurations, NullLogger<ItemExchangeOperations>.Instance).ExportAsync(default).ConfigureAwait(false);
 
         Assert.That(GetItemKeys(file), Is.EqualTo(new[] { (0, 1) }));
     }
@@ -203,7 +204,7 @@ public sealed class ItemExchangeExportTests
     {
         var (stored, configurations) = await CreateEditedConfigurationAsync(hasChanges: false).ConfigureAwait(false);
 
-        var file = await new ItemExchangeOperations(stored, configurations).ExportAsync(default).ConfigureAwait(false);
+        var file = await new ItemExchangeOperations(stored, configurations, NullLogger<ItemExchangeOperations>.Instance).ExportAsync(default).ConfigureAwait(false);
 
         Assert.That(GetItemKeys(file), Is.EqualTo(new[] { (0, 1), (0, 2) }));
     }
@@ -225,8 +226,42 @@ public sealed class ItemExchangeExportTests
         AddItem(context, configuration, 14, 2);
 
         var items = ItemExchangeExport.GetExportedItems(configuration).Select(item => (item.Group, item.Number));
+        var leftOut = ItemExchangeExport.GetLeftOutItems(configuration).Select(item => (item.Group, item.Number));
 
         Assert.That(items, Is.EqualTo(new (byte, short)[] { (0, 1), (14, 2), (14, 3) }));
+        Assert.That(leftOut, Is.EqualTo(new (byte, short)[] { (0, 512), (16, 0) }));
+    }
+
+    /// <summary>
+    /// Tests that the items which the file leaves out are logged, so that the server operator learns
+    /// why the client editor doesn't get them.
+    /// </summary>
+    [Test]
+    public async Task LeftOutItemsAreLoggedAsync()
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using (var context = provider.CreateNewContext())
+        {
+            var configuration = context.CreateNew<GameConfiguration>();
+            AddItem(context, configuration, 0, 1);
+            AddItem(context, configuration, 16, 0);
+            context.CreateNew<ConfigurationUpdateState>().InitializationKey = ItemExchangeExport.ClientGameVersion;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        using var configurations = new GameConfigurationDataSource(NullLogger<GameConfigurationDataSource>.Instance, provider);
+        var logger = new Mock<ILogger<ItemExchangeOperations>>();
+
+        await new ItemExchangeOperations(provider, configurations, logger.Object).ExportAsync(default).ConfigureAwait(false);
+
+        logger.Verify(
+            log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) => $"{state}".Contains("leaves out 1 item(s)", StringComparison.Ordinal) && $"{state}".Contains("16/0", StringComparison.Ordinal)),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
     }
 
     /// <summary>
@@ -277,7 +312,7 @@ public sealed class ItemExchangeExportTests
         }
 
         using var configurations = new GameConfigurationDataSource(NullLogger<GameConfigurationDataSource>.Instance, provider);
-        var file = await new ItemExchangeOperations(provider, configurations).ExportAsync(default).ConfigureAwait(false);
+        var file = await new ItemExchangeOperations(provider, configurations, NullLogger<ItemExchangeOperations>.Instance).ExportAsync(default).ConfigureAwait(false);
         using var document = Parse(file);
         return document.RootElement.GetProperty("gameVersion").GetString() ?? string.Empty;
     }
