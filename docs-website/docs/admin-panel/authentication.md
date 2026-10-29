@@ -194,9 +194,9 @@ have this role implicitly.
 | `POST /api/accounts` | Operator |
 | `GET /api/accounts/{account}` | Viewer |
 | `GET /api/characters/{name}` | Viewer |
-| `PUT /api/accounts/{account}/password` | Operator |
-| `PUT /api/accounts/{account}/state` | Operator |
-| `POST /api/players/{account}/disconnect` | Operator |
+| `PUT /api/accounts/{account}/password` | Operator, key only |
+| `PUT /api/accounts/{account}/state` | Operator, key only |
+| `POST /api/players/{account}/disconnect` | Operator, key only |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
 | `GET /api/items/exchange` | Viewer, [key only](#items-for-the-client-editor) |
@@ -207,8 +207,8 @@ the key is created and can't be changed afterwards — create a new key with the
 role you need and delete the old one.
 
 A signed in admin panel user can use the API as well, with the same roles — this
-is handy while trying things out in the browser. Only the item exchange file
-needs a key.
+is handy while trying things out in the browser. The endpoints marked "key only"
+don't accept the login cookie; they need an API key.
 
 ### Items for the client editor
 
