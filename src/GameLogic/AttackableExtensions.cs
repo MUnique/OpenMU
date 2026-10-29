@@ -69,7 +69,7 @@ public static class AttackableExtensions
     {
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
-            return new HitInfo(0, 0, DamageAttributes.Undefined, 0, skill);
+            return new HitInfo(0, 0, DamageAttributes.Undefined, 0, 0, skill);
         }
 
         Player? attackerPlayer = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (attacker is Player player ? player : null);
