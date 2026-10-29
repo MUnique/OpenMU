@@ -50,21 +50,35 @@ public sealed class ItemExchangeOperations(IPersistenceContextProvider persisten
         var gameVersion = await this.GetGameVersionAsync(cancellationToken).ConfigureAwait(false);
         using var read = new ConfigurationReadScope();
         await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 1; attempt < MaximumWriteAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                var file = ItemExchangeExport.Write(read.Configuration, gameVersion);
-                this.LogLeftOutItems(ItemExchangeExport.GetLeftOutItems(read.Configuration));
-                return file;
+                return this.WriteFile(read.Configuration, gameVersion);
             }
-            catch (InvalidOperationException) when (attempt < MaximumWriteAttempts)
+            catch (InvalidOperationException)
             {
                 // An edit in the admin panel changed the items while they were read, like in the
                 // configuration reads of the agents. The file is written again from the start.
             }
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return this.WriteFile(read.Configuration, gameVersion);
+    }
+
+    /// <summary>
+    /// Writes the file and logs the items which it leaves out.
+    /// </summary>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="gameVersion">The game version which the file names.</param>
+    /// <returns>The file.</returns>
+    private byte[] WriteFile(GameConfiguration configuration, string gameVersion)
+    {
+        var file = ItemExchangeExport.Write(configuration, gameVersion);
+        this.LogLeftOutItems(ItemExchangeExport.GetLeftOutItems(configuration));
+        return file;
     }
 
     /// <summary>
