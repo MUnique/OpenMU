@@ -55,7 +55,7 @@ public sealed class ItemExchangeExportTests
     [Test]
     public void HeaderNamesTheSourceAndTheFields()
     {
-        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration));
+        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
         var root = file.RootElement;
 
         Assert.That(root.GetProperty("formatVersion").GetInt32(), Is.EqualTo(2));
@@ -73,7 +73,7 @@ public sealed class ItemExchangeExportTests
     [Test]
     public void SeasonSixFileHasEveryItemSorted()
     {
-        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration));
+        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
         var items = file.RootElement.GetProperty("items").EnumerateArray()
             .Select(item => (Group: item.GetProperty("group").GetInt32(), Number: item.GetProperty("number").GetInt32()))
             .ToList();
@@ -93,7 +93,7 @@ public sealed class ItemExchangeExportTests
     [Test]
     public void ItemsCarryOnlyTheListedFields()
     {
-        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration));
+        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
         var allowed = new[] { "group", "number" }.Concat(ItemExchangeExport.Fields.Select(field => field.Key)).ToHashSet();
         var keys = file.RootElement.GetProperty("items").EnumerateArray()
             .SelectMany(item => item.EnumerateObject().Select(property => property.Name))
@@ -108,7 +108,7 @@ public sealed class ItemExchangeExportTests
     [Test]
     public void FileIsUtf8WithLineFeeds()
     {
-        var bytes = ItemExchangeExport.Write(this._seasonSixConfiguration);
+        var bytes = ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion);
         var text = Encoding.UTF8.GetString(bytes);
 
         Assert.That(bytes.Take(3), Is.Not.EqualTo(Encoding.UTF8.Preamble.ToArray()));
@@ -117,7 +117,7 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
-    /// Tests that the operation reads the stored configuration and writes the same file.
+    /// Tests that the operation reads the stored configuration and writes the same file, as Season 6 data.
     /// </summary>
     [Test]
     public async Task OperationExportsTheStoredConfigurationAsync()
@@ -127,7 +127,44 @@ public sealed class ItemExchangeExportTests
 
         var file = await operations.ExportAsync(default).ConfigureAwait(false);
 
-        Assert.That(file, Is.EqualTo(ItemExchangeExport.Write(this._seasonSixConfiguration)));
+        Assert.That(file, Is.EqualTo(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion)));
+    }
+
+    /// <summary>
+    /// Tests that the file names the game version of the configuration, so that the client refuses
+    /// the file of another version than its own.
+    /// </summary>
+    [Test]
+    public async Task FileNamesTheGameVersionOfTheConfigurationAsync()
+    {
+        var gameVersion = await ExportGameVersionAsync(context => context.CreateNew<ConfigurationUpdateState>().InitializationKey = "0.75").ConfigureAwait(false);
+
+        Assert.That(gameVersion, Is.EqualTo("0.75"));
+    }
+
+    /// <summary>
+    /// Tests that a configuration from before the stored update state is Season 6 data when it has
+    /// a Season 6 client, the original one or the open source one.
+    /// </summary>
+    /// <param name="season">The season of the client.</param>
+    [TestCase((byte)6)]
+    [TestCase((byte)106)]
+    public async Task SeasonSixClientTellsTheGameVersionWithoutUpdateStateAsync(byte season)
+    {
+        var gameVersion = await ExportGameVersionAsync(context => AddClient(context, season, 3)).ConfigureAwait(false);
+
+        Assert.That(gameVersion, Is.EqualTo(ItemExchangeExport.ClientGameVersion));
+    }
+
+    /// <summary>
+    /// Tests that the file is refused when the game version of the configuration is unknown.
+    /// </summary>
+    [Test]
+    public void UnknownGameVersionIsRefused()
+    {
+        var error = Assert.ThrowsAsync<AdminOperationException>(() => ExportGameVersionAsync(context => AddClient(context, 0, 75)));
+
+        Assert.That(error?.Kind, Is.EqualTo(AdminOperationErrorKind.Unavailable));
     }
 
     /// <summary>
@@ -226,6 +263,33 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
+    /// Exports a stored configuration with the item 0/1 and the data which tells its game version.
+    /// </summary>
+    private static async Task<string> ExportGameVersionAsync(Action<IContext> addVersionData)
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using (var context = provider.CreateNewContext())
+        {
+            var configuration = context.CreateNew<GameConfiguration>();
+            AddItem(context, configuration, 0, 1);
+            addVersionData(context);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        using var configurations = new GameConfigurationDataSource(NullLogger<GameConfigurationDataSource>.Instance, provider);
+        var file = await new ItemExchangeOperations(provider, configurations).ExportAsync(default).ConfigureAwait(false);
+        using var document = Parse(file);
+        return document.RootElement.GetProperty("gameVersion").GetString() ?? string.Empty;
+    }
+
+    private static void AddClient(IContext context, byte season, byte episode)
+    {
+        var client = context.CreateNew<GameClientDefinition>();
+        client.Season = season;
+        client.Episode = episode;
+    }
+
+    /// <summary>
     /// Creates a stored configuration with the item 0/1, and the admin panel's copy of it, which
     /// has the item 0/2 as well.
     /// </summary>
@@ -237,6 +301,7 @@ public sealed class ItemExchangeExportTests
         {
             var configuration = context.CreateNew<GameConfiguration>();
             AddItem(context, configuration, 0, 1);
+            context.CreateNew<ConfigurationUpdateState>().InitializationKey = ItemExchangeExport.ClientGameVersion;
             await context.SaveChangesAsync().ConfigureAwait(false);
             id = configuration.GetId();
         }

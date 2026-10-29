@@ -35,9 +35,10 @@ public static class ItemExchangeExport
     public const string Source = "OpenMU";
 
     /// <summary>
-    /// The game version of the exported data. The client refuses a file of another version.
+    /// The game version of the client's data, the key of the Season 6 data initialization.
+    /// The client refuses a file of another version.
     /// </summary>
-    public const string GameVersion = "season6";
+    public const string ClientGameVersion = "season6";
 
     /// <summary>
     /// The highest item group the client knows.
@@ -58,12 +59,16 @@ public static class ItemExchangeExport
     /// Writes the exchange file of the items of the configuration.
     /// </summary>
     /// <param name="configuration">The game configuration.</param>
+    /// <param name="gameVersion">
+    /// The game version of the configuration, the key of the data initialization which created it.
+    /// The client only reads a file of its own version, <see cref="ClientGameVersion"/>.
+    /// </param>
     /// <returns>The file as UTF-8 text with LF line endings, without a byte order mark.</returns>
     /// <remarks>
     /// Items are sorted by group and number. An item outside the client's groups or numbers
     /// is left out, because the client refuses the whole file because of it.
     /// </remarks>
-    public static byte[] Write(GameConfiguration configuration)
+    public static byte[] Write(GameConfiguration configuration, string gameVersion)
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions
@@ -78,7 +83,7 @@ public static class ItemExchangeExport
             writer.WriteStartObject();
             writer.WriteNumber("formatVersion", FormatVersion);
             writer.WriteString("source", Source);
-            writer.WriteString("gameVersion", GameVersion);
+            writer.WriteString("gameVersion", gameVersion);
             writer.WriteStartArray("fields");
             foreach (var field in Fields)
             {

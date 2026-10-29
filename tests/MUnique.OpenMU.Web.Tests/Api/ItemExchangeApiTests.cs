@@ -137,6 +137,7 @@ public sealed class ItemExchangeApiTests : IDisposable
         Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo("application/json"));
         using var file = JsonDocument.Parse(body);
         Assert.That(file.RootElement.GetProperty("source").GetString(), Is.EqualTo("OpenMU"));
+        Assert.That(file.RootElement.GetProperty("gameVersion").GetString(), Is.EqualTo("season6"));
         var item = file.RootElement.GetProperty("items").EnumerateArray().Single();
         Assert.That(item.GetProperty("group").GetInt32(), Is.EqualTo(0));
         Assert.That(item.GetProperty("number").GetInt32(), Is.EqualTo(1));
@@ -187,6 +188,7 @@ public sealed class ItemExchangeApiTests : IDisposable
             item.Number = 1;
             item.Name = "Short Sword";
             configuration.Items.Add(item);
+            context.CreateNew<ConfigurationUpdateState>().InitializationKey = "season6";
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 

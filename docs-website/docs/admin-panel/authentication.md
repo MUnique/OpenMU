@@ -225,6 +225,9 @@ client's `docs/item-data.md`.
   admin panel aren't part of it.
 - The file names the item fields it carries in its `fields` list; the client
   keeps its own values of the other fields.
+- The file names the game version of the configuration, `season6` for Season 6.
+  The client only reads Season 6 data, so it refuses the file of a server with
+  another version.
 
 The admin panel shouldn't be reachable from the internet for this either: keep
 it on localhost, behind a VPN or a firewall.
