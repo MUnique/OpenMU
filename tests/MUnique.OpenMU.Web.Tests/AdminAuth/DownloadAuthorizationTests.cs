@@ -7,14 +7,10 @@ namespace MUnique.OpenMU.Web.Tests.AdminAuth;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -227,13 +223,7 @@ public sealed class DownloadAuthorizationTests : IDisposable
         app.MapControllers();
         app.UseRouting();
         app.UseAdminPanelAuth();
-        app.MapGet(TestLoginPath, async (HttpContext http) =>
-        {
-            // The claims of a real login, which include the roles implied by the assigned one.
-            var claims = AdminLoginService.CreateClaims(adminUser, usedSecondFactor: true);
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-            await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity)).ConfigureAwait(false);
-        });
+        app.MapTestSignIn(TestLoginPath, adminUser);
         await app.StartAsync().ConfigureAwait(false);
 
         this._http = new HttpClient(new HttpClientHandler { UseProxy = false, AllowAutoRedirect = false }) { BaseAddress = new Uri(app.Urls.Single()) };

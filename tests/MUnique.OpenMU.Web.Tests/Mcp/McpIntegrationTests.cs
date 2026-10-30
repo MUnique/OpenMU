@@ -9,14 +9,10 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -150,11 +146,7 @@ public sealed class McpIntegrationTests : System.IDisposable
         this._app.UseAdminPanelAuth();
         this._app.MapAdminMcp();
         this._app.MapControllers();
-        this._app.MapGet("/test-cookie", async (HttpContext http) =>
-        {
-            var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Viewer)], CookieAuthenticationDefaults.AuthenticationScheme);
-            await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity)).ConfigureAwait(false);
-        });
+        this._app.MapTestSignIn("/test-cookie", new AdminUser { LoginName = "admin", Roles = AdminRoles.Viewer });
         await this._app.StartAsync().ConfigureAwait(false);
         this._http = new HttpClient(new HttpClientHandler { UseProxy = false }) { BaseAddress = new Uri(this._app.Urls.Single()) };
     }
