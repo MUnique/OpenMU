@@ -22,6 +22,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -42,9 +43,12 @@ public sealed class DownloadAuthorizationTests : IDisposable
 
     private const string PasswordHash = "secret-password-hash";
 
+    private static readonly string[] RolesWithoutAccountAccess = [AdminRoles.Viewer, AdminRoles.CashShop];
+
     private WebApplication? _app;
     private HttpClient? _http;
     private string[] _downloadUris = [];
+    private string _accountUri = string.Empty;
 
     /// <summary>Stops the host of the test.</summary>
     [TearDown]
@@ -52,6 +56,7 @@ public sealed class DownloadAuthorizationTests : IDisposable
     {
         this.Dispose();
         this._downloadUris = [];
+        this._accountUri = string.Empty;
         if (this._app is { } app)
         {
             this._app = null;
@@ -74,7 +79,7 @@ public sealed class DownloadAuthorizationTests : IDisposable
     [Test]
     public async Task DownloadsRequireLoginAsync()
     {
-        var http = await this.StartHostAsync(withAdminUser: true).ConfigureAwait(false);
+        var http = await this.StartHostAsync(AdminRoles.Administrator).ConfigureAwait(false);
 
         var responses = await GetAllAsync(http, this._downloadUris).ConfigureAwait(false);
 
@@ -90,19 +95,19 @@ public sealed class DownloadAuthorizationTests : IDisposable
     }
 
     /// <summary>
-    /// A logged in user gets the downloads. Before the first admin user is created, they work
-    /// without a login by design, so that the server can be set up.
+    /// An administrator and an operator get all downloads. Before the first admin user is created,
+    /// they work without a login by design, so that the server can be set up.
     /// </summary>
-    /// <param name="withAdminUser">If set to <c>true</c>, an admin user exists and the test logs in as it.</param>
-    [TestCase(true, TestName = "DownloadsWorkWithLogin")]
-    [TestCase(false, TestName = "DownloadsWorkWithoutLoginInSetupMode")]
-    public async Task DownloadsWorkAsync(bool withAdminUser)
+    /// <param name="role">The role of the admin user which logs in, or <c>null</c> for the setup mode without an admin user.</param>
+    [TestCase(nameof(AdminRole.Administrator), TestName = "DownloadsWorkForAnAdministrator")]
+    [TestCase(nameof(AdminRole.Operator), TestName = "DownloadsWorkForAnOperator")]
+    [TestCase(null, TestName = "DownloadsWorkWithoutLoginInSetupMode")]
+    public async Task DownloadsWorkAsync(string? role)
     {
-        var http = await this.StartHostAsync(withAdminUser).ConfigureAwait(false);
-        if (withAdminUser)
+        var http = await this.StartHostAsync(role).ConfigureAwait(false);
+        if (role is not null)
         {
-            using var login = await http.GetAsync(TestLoginPath).ConfigureAwait(false);
-            login.EnsureSuccessStatusCode();
+            await LogInAsync(http).ConfigureAwait(false);
         }
 
         var responses = await GetAllAsync(http, this._downloadUris).ConfigureAwait(false);
@@ -110,6 +115,32 @@ public sealed class DownloadAuthorizationTests : IDisposable
         Assert.Multiple(() =>
         {
             foreach (var (uri, status, _, _) in responses)
+            {
+                Assert.That(status, Is.EqualTo(HttpStatusCode.OK), uri);
+            }
+        });
+    }
+
+    /// <summary>
+    /// A viewer or a cash shop user gets the downloads, except the one of an account, because it
+    /// contains the password hash and only an operator may edit accounts.
+    /// </summary>
+    /// <param name="role">The role of the admin user which logs in.</param>
+    [TestCaseSource(nameof(RolesWithoutAccountAccess))]
+    public async Task AccountDownloadRequiresOperatorAsync(string role)
+    {
+        var http = await this.StartHostAsync(role).ConfigureAwait(false);
+        await LogInAsync(http).ConfigureAwait(false);
+
+        var account = (await GetAllAsync(http, [this._accountUri]).ConfigureAwait(false)).Single();
+        var others = await GetAllAsync(http, this._downloadUris.Except([this._accountUri])).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(account.Status, Is.EqualTo(HttpStatusCode.Redirect), $"{account.Uri} answered for a {role}: {account.Content}");
+            Assert.That(account.Location, Is.EqualTo(AdminAuthenticationDefaults.AccessDeniedPath), account.Uri);
+            Assert.That(account.Content, Does.Not.Contain(PasswordHash), account.Uri);
+            foreach (var (uri, status, _, _) in others)
             {
                 Assert.That(status, Is.EqualTo(HttpStatusCode.OK), uri);
             }
@@ -162,6 +193,12 @@ public sealed class DownloadAuthorizationTests : IDisposable
         return dataSource.Object;
     }
 
+    private static async Task LogInAsync(HttpClient http)
+    {
+        using var login = await http.GetAsync(TestLoginPath).ConfigureAwait(false);
+        login.EnsureSuccessStatusCode();
+    }
+
     private static WebApplicationBuilder CreateBuilder(IAdminUserRepository users)
     {
         var builder = WebApplication.CreateBuilder();
@@ -175,20 +212,19 @@ public sealed class DownloadAuthorizationTests : IDisposable
         builder.Services.AddSingleton<IApiKeyRepository>(new InMemoryApiKeyRepository());
         builder.Services.AddAdminPanelAuth(builder.Configuration);
 
-        // The same controllers as AddAdminPanel adds.
-        builder.Services.AddControllers()
+        // The same controllers as AddAdminPanel adds. A hosting application finds their assemblies through its references.
+        builder.Services.AddAdminPanelControllers()
             .AddApplicationPart(typeof(AccountController).Assembly)
-            .AddApplicationPart(typeof(ByteArrayDownloadController).Assembly)
-            .ConfigureApplicationPartManager(setup => setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
+            .AddApplicationPart(typeof(ByteArrayDownloadController).Assembly);
 
         return builder;
     }
 
-    private async Task<HttpClient> StartHostAsync(bool withAdminUser)
+    private async Task<HttpClient> StartHostAsync(string? adminUserRole)
     {
-        var adminUser = new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator, SecurityStamp = Guid.NewGuid().ToString() };
+        var adminUser = new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = adminUserRole ?? string.Empty, SecurityStamp = Guid.NewGuid().ToString() };
         var users = new InMemoryAdminUserRepository();
-        if (withAdminUser)
+        if (adminUserRole is not null)
         {
             await users.AddAsync(adminUser).ConfigureAwait(false);
         }
@@ -207,10 +243,11 @@ public sealed class DownloadAuthorizationTests : IDisposable
         builder.Services.AddSingleton(CreateDataSource(configuration));
         builder.Services.AddSingleton(CreateDataSource(account));
 
+        this._accountUri = $"/download/{nameof(Account)}/{nameof(Account)}_{account.GetId()}.json";
         this._downloadUris =
         [
             $"/download/{nameof(GameConfiguration)}/{nameof(GameConfiguration)}_{configuration.GetId()}.json",
-            $"/download/{nameof(Account)}/{nameof(Account)}_{account.GetId()}.json",
+            this._accountUri,
             $"/download/{client.GetType()}/{client.GetId()}/{nameof(GameClientDefinition.Serial)}",
         ];
 
