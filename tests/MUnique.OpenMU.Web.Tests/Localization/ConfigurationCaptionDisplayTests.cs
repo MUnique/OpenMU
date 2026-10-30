@@ -6,7 +6,10 @@ namespace MUnique.OpenMU.Web.Tests.Localization;
 
 using System.Globalization;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>Checks that nested captions display translated text instead of serialized source metadata.</summary>
 [TestFixture]
@@ -33,4 +36,35 @@ public class ConfigurationCaptionDisplayTests
             CultureInfo.CurrentCulture = previous;
         }
     }
+    /// <summary>Quest captions follow the UI language and preserve stored quest names.</summary>
+    /// <param name="cultureName">The UI language.</param>
+    /// <param name="expected">The expected localized caption.</param>
+    [TestCase("zh-CN", "#18, 最近完成的任务: —, 当前任务: 猎杀蜘蛛！")]
+    [TestCase("en", "#18, Last Finished Quest: —, Active Quest: Hunt spiders!")]
+    public void QuestStateCaptionUsesUiCulture(string cultureName, string expected)
+    {
+        var previous = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(cultureName);
+            var name = new LocalizedString("Hunt spiders!")
+                .WithTranslation(CultureInfo.GetCultureInfo("zh-CN"), "猎杀蜘蛛！")
+                .WithSourceKey("Test/Quest");
+            var storedName = name.Value;
+            var state = new CharacterQuestState { Group = 18, ActiveQuest = new QuestDefinition { Name = name } };
+            Assert.That(state.GetName(), Is.EqualTo(expected));
+            Assert.That(state.ActiveQuest.Name.Value, Is.EqualTo(storedName));
+            state.LastFinishedQuest = state.ActiveQuest;
+            state.ActiveQuest = null;
+            Assert.That(state.GetName(), Does.Not.Contain("@src="));
+            Assert.That(state.GetName(), Does.EndWith(": —"));
+            state.LastFinishedQuest = null;
+            Assert.That(state.GetName().Count(character => character == '—'), Is.EqualTo(2));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
 }
