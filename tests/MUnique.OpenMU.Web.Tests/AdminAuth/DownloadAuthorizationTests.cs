@@ -119,9 +119,11 @@ public sealed class DownloadAuthorizationTests : IDisposable
     [Test]
     public async Task EveryControllerActionDeclaresItsAuthorizationAsync()
     {
-        await this.StartHostAsync(withAdminUser: true).ConfigureAwait(false);
+        // The endpoints are known as soon as the controllers are mapped, so the host doesn't need to run.
+        await using var app = CreateBuilder(new InMemoryAdminUserRepository()).Build();
+        app.MapControllers();
 
-        var actions = ((IEndpointRouteBuilder)this._app!).DataSources
+        var actions = ((IEndpointRouteBuilder)app).DataSources
             .SelectMany(source => source.Endpoints)
             .Where(endpoint => endpoint.Metadata.GetMetadata<ControllerActionDescriptor>() is not null)
             .ToList();
@@ -156,15 +158,8 @@ public sealed class DownloadAuthorizationTests : IDisposable
         return dataSource.Object;
     }
 
-    private async Task<HttpClient> StartHostAsync(bool withAdminUser)
+    private static WebApplicationBuilder CreateBuilder(IAdminUserRepository users)
     {
-        var adminUser = new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator, SecurityStamp = Guid.NewGuid().ToString() };
-        var users = new InMemoryAdminUserRepository();
-        if (withAdminUser)
-        {
-            await users.AddAsync(adminUser).ConfigureAwait(false);
-        }
-
         var builder = WebApplication.CreateBuilder();
         builder.Logging.ClearProviders();
         builder.WebHost.UseUrls("http://127.0.0.1:0");
@@ -182,6 +177,19 @@ public sealed class DownloadAuthorizationTests : IDisposable
             .AddApplicationPart(typeof(ByteArrayDownloadController).Assembly)
             .ConfigureApplicationPartManager(setup => setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
+        return builder;
+    }
+
+    private async Task<HttpClient> StartHostAsync(bool withAdminUser)
+    {
+        var adminUser = new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator, SecurityStamp = Guid.NewGuid().ToString() };
+        var users = new InMemoryAdminUserRepository();
+        if (withAdminUser)
+        {
+            await users.AddAsync(adminUser).ConfigureAwait(false);
+        }
+
+        var builder = CreateBuilder(users);
         var persistence = new InMemoryPersistenceContextProvider();
         using var context = persistence.CreateNewContext();
         var configuration = context.CreateNew<GameConfiguration>();
