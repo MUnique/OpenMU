@@ -36,3 +36,10 @@ The attacking sides are enemies of each other as well as of the defenders.
 This applies only on the Castle Siege map and only to players with a siege
 side. Killing a player of the own side, or any player outside the battle, is
 still a normal player kill.
+
+## Gate and statue list
+
+The list of castle gates and Guardian Statues, with their health, upgrade
+levels and positions, is only answered while the Senior's window is open, and
+only shows the structures to the guild master and assistant master of the
+castle owner guild. Other players get an empty list.
