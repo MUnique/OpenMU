@@ -1020,6 +1020,12 @@ public class CastleSiegeContext : IEventStateProvider
         this.FinalGuildList.TryRemove(persistedEntry.Key, out _);
         persistedEntry.Value.GuildId = guildStatus.GuildId;
         this.FinalGuildList[guildStatus.GuildId] = persistedEntry.Value;
+        if (this.MiddleOwnerGuildId == persistedEntry.Key)
+        {
+            // The battle owner is looked up by its runtime identifier when the result is decided.
+            this.MiddleOwnerGuildId = guildStatus.GuildId;
+        }
+
         return persistedEntry.Value.Side;
     }
 }
