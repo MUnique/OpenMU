@@ -398,9 +398,9 @@
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>将种子球的最大物品等级设置为其元素的最高选项编号。种子球的物品等级决定其选项，因此此前无法创建第一个选项以外的种子球，例如通过物品聊天命令。</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve">
-    <value>添加水晶剑冰冻概率</value>
+    <value>添加玄冰剑冰冻概率</value>
   </data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
-    <value>添加水晶剑的冰冻概率，使攻击转变为冰系技能。</value>
+    <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
 </root>
