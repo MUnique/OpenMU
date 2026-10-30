@@ -46,13 +46,16 @@ public sealed class DownloadAuthorizationTests : IDisposable
     private HttpClient? _http;
     private string[] _downloadUris = [];
 
-    /// <summary>Stops the host.</summary>
+    /// <summary>Stops the host of the test.</summary>
     [TearDown]
     public async Task TearDownAsync()
     {
         this.Dispose();
+        this._downloadUris = [];
         if (this._app is { } app)
         {
+            this._app = null;
+            await app.StopAsync().ConfigureAwait(false);
             await app.DisposeAsync().ConfigureAwait(false);
         }
     }
@@ -61,6 +64,7 @@ public sealed class DownloadAuthorizationTests : IDisposable
     public void Dispose()
     {
         this._http?.Dispose();
+        this._http = null;
         GC.SuppressFinalize(this);
     }
 
