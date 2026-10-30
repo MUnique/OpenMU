@@ -215,7 +215,7 @@ public sealed class DownloadAuthorizationTests : IDisposable
         // The same controllers as AddAdminPanel adds. A hosting application finds their assemblies through its references.
         builder.Services.AddAdminPanelControllers()
             .AddApplicationPart(typeof(AccountController).Assembly)
-            .AddApplicationPart(typeof(ByteArrayDownloadController).Assembly);
+            .AddApplicationPart(typeof(JsonDownloadController<,>).Assembly);
 
         return builder;
     }
