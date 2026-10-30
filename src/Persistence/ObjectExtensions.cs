@@ -5,8 +5,11 @@
 namespace MUnique.OpenMU.Persistence;
 
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Reflection;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -58,6 +61,16 @@ public static class ObjectExtensions
         if (item is ConstValueAttribute constant)
         {
             return $"{constant.Definition.GetDisplayName()}: {constant.Value} ({constant.AggregateType.GetDisplayName()})";
+        }
+
+        if (item is CharacterQuestState questState)
+        {
+            var culture = CultureInfo.CurrentUICulture;
+            var lastFinishedCaption = typeof(CharacterQuestState).GetPropertyCaption(nameof(CharacterQuestState.LastFinishedQuest), culture);
+            var activeCaption = typeof(CharacterQuestState).GetPropertyCaption(nameof(CharacterQuestState.ActiveQuest), culture);
+            var lastFinishedName = questState.LastFinishedQuest?.Name.GetTranslation(culture);
+            var activeName = questState.ActiveQuest?.Name.GetTranslation(culture);
+            return $"#{questState.Group}, {lastFinishedCaption}: {(string.IsNullOrWhiteSpace(lastFinishedName) ? "—" : lastFinishedName)}, {activeCaption}: {(string.IsNullOrWhiteSpace(activeName) ? "—" : activeName)}";
         }
 
         if (!NameProperties.TryGetValue(item.GetType(), out var nameProperty))
