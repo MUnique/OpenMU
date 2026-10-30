@@ -275,14 +275,20 @@ public class MapDiscriminatorRemoteViewTests
         /// <inheritdoc/>
         public override void CancelPendingFlush()
         {
+            // Nothing to cancel: the flush completes at once, because the bytes are already in the stream.
         }
 
         /// <inheritdoc/>
         public override void Complete(Exception? exception = null)
         {
+            // Nothing to complete: the tests read the stream after the player was used.
         }
 
         /// <inheritdoc/>
-        public override ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken = default) => ValueTask.FromResult(new FlushResult(false, false));
+        public override ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return ValueTask.FromResult(new FlushResult(false, false));
+        }
     }
 }
