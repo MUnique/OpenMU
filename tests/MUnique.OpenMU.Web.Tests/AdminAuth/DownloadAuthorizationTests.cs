@@ -85,35 +85,21 @@ public sealed class DownloadAuthorizationTests : IDisposable
         });
     }
 
-    /// <summary>A logged in user gets the downloads.</summary>
-    [Test]
-    public async Task DownloadsWorkWithLoginAsync()
+    /// <summary>
+    /// A logged in user gets the downloads. Before the first admin user is created, they work
+    /// without a login by design, so that the server can be set up.
+    /// </summary>
+    /// <param name="withAdminUser">If set to <c>true</c>, an admin user exists and the test logs in as it.</param>
+    [TestCase(true, TestName = "DownloadsWorkWithLogin")]
+    [TestCase(false, TestName = "DownloadsWorkWithoutLoginInSetupMode")]
+    public async Task DownloadsWorkAsync(bool withAdminUser)
     {
-        var http = await this.StartHostAsync(withAdminUser: true).ConfigureAwait(false);
-        using (var login = await http.GetAsync(TestLoginPath).ConfigureAwait(false))
+        var http = await this.StartHostAsync(withAdminUser).ConfigureAwait(false);
+        if (withAdminUser)
         {
+            using var login = await http.GetAsync(TestLoginPath).ConfigureAwait(false);
             login.EnsureSuccessStatusCode();
         }
-
-        var responses = await GetAllAsync(http, this._downloadUris).ConfigureAwait(false);
-
-        Assert.Multiple(() =>
-        {
-            foreach (var (uri, status, _, _) in responses)
-            {
-                Assert.That(status, Is.EqualTo(HttpStatusCode.OK), uri);
-            }
-        });
-    }
-
-    /// <summary>
-    /// Before the first admin user is created, the admin panel is usable without a login by design,
-    /// so that the server can be set up.
-    /// </summary>
-    [Test]
-    public async Task DownloadsWorkWithoutLoginInSetupModeAsync()
-    {
-        var http = await this.StartHostAsync(withAdminUser: false).ConfigureAwait(false);
 
         var responses = await GetAllAsync(http, this._downloadUris).ConfigureAwait(false);
 
