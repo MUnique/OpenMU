@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 /// <summary>
 /// The information about a hit.
 /// </summary>
-public record struct HitInfo(uint HealthDamage, uint ShieldDamage, DamageAttributes Attributes, uint ManaToll = 0, uint PetDamage = 0)
+public record struct HitInfo(uint HealthDamage, uint ShieldDamage, DamageAttributes Attributes, uint ManaToll = 0, uint PetDamage = 0, SkillEntry? SkillEntry = null)
 {
     /// <summary>
     /// Gets the total damage.

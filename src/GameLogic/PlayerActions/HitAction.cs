@@ -43,7 +43,14 @@ public class HitAction
         }
 
         player.Rotation = lookingDirection;
-        await target.AttackByAsync(player, null, false).ConfigureAwait(false);
+        var hitInfo = await target.AttackByAsync(player, null, false).ConfigureAwait(false);
+        if (hitInfo is { SkillEntry.Skill: not null } hit)
+        {
+            var success = await target.TryApplyElementalEffectsAsync(player, hit.SkillEntry, hit).ConfigureAwait(false);
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hit.SkillEntry.Skill, success), true).ConfigureAwait(false);
+            return;
+        }
+
         if (player.Attributes?[Stats.TransformationSkin] is { } skin and not 0
             && await this.ApplySkinnedMonstersSkillAsync(player, target, (short)skin).ConfigureAwait(false) is var (skill, effectApplied))
         {

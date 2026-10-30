@@ -122,7 +122,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             await target.MoveRandomlyAsync().ConfigureAwait(false);
         }
 
-        var effectApplied = false;
+        (bool Success, Skill Skill, IAttackable Target) appliedSkill = (false, skill, target);
         if (skill.SkillType == SkillType.SummonMonster)
         {
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
@@ -133,10 +133,10 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         }
         else
         {
-            effectApplied = await this.ApplySkillAsync(player, target, skillEntry!).ConfigureAwait(false);
+            appliedSkill = await this.ApplySkillAsync(player, target, skillEntry).ConfigureAwait(false);
         }
 
-        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
+        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, appliedSkill.Target, appliedSkill.Skill, appliedSkill.Success), true).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -240,11 +240,12 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         return Enumerable.Empty<IAttackable>();
     }
 
-    private async ValueTask<bool> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
+    private async ValueTask<(bool Success, Skill Skill, IAttackable Target)> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var skill = skillEntry.Skill;
         var success = false;
+        Skill? animatedSkill = null;
         var targets = this.DetermineTargets(player, targetedTarget, skill);
         bool isCombo = false;
         if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
@@ -270,6 +271,13 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                     for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
                     {
                         await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+                    }
+
+                    if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+                    {
+                        // The hit generated a different skill (e.g. ice) than the one originally casted.
+                        animatedSkill = hitInfo.Value.SkillEntry.Skill;
+                        targetedTarget = target;
                     }
                 }
             }
@@ -309,6 +317,6 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
         }
 
-        return success;
+        return (success, animatedSkill ?? skill, targetedTarget);
     }
 }

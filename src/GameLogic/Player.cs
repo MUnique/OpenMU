@@ -37,6 +37,8 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
+    private const int IceSkillNumber = 7;
+
     private static readonly MagicEffectDefinition GMEffect = new GameMasterMagicEffectDefinition
     {
         InformObservers = true,
@@ -792,6 +794,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.CurrentMiniGame?.AllowPlayerKilling is false)
         {
             return null;
+        }
+
+        if (Rand.NextRandomBool(attacker.Attributes[Stats.CrystalSwordIceChance])
+            && this.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == IceSkillNumber) is { } ice)
+        {
+            skill = new SkillEntry { Skill = ice };
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
