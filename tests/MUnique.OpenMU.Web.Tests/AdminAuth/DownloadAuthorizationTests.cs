@@ -176,10 +176,11 @@ public sealed class DownloadAuthorizationTests : IDisposable
 
     private async Task<HttpClient> StartHostAsync(bool withAdminUser)
     {
+        var adminUser = new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator, SecurityStamp = Guid.NewGuid().ToString() };
         var users = new InMemoryAdminUserRepository();
         if (withAdminUser)
         {
-            await users.AddAsync(new AdminUser { Id = Guid.NewGuid(), LoginName = "admin", NormalizedLoginName = "ADMIN", Roles = AdminRoles.Administrator }).ConfigureAwait(false);
+            await users.AddAsync(adminUser).ConfigureAwait(false);
         }
 
         var builder = WebApplication.CreateBuilder();
@@ -228,7 +229,9 @@ public sealed class DownloadAuthorizationTests : IDisposable
         app.UseAdminPanelAuth();
         app.MapGet(TestLoginPath, async (HttpContext http) =>
         {
-            var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, "admin"), new Claim(ClaimTypes.Role, AdminRoles.Administrator)], CookieAuthenticationDefaults.AuthenticationScheme);
+            // The claims of a real login, which include the roles implied by the assigned one.
+            var claims = AdminLoginService.CreateClaims(adminUser, usedSecondFactor: true);
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
             await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity)).ConfigureAwait(false);
         });
         await app.StartAsync().ConfigureAwait(false);
