@@ -25,6 +25,12 @@ internal sealed class GatedAdminUserRepository : IAdminUserRepository
     /// </summary>
     public Gate CountGate { get; } = new();
 
+    /// <summary>
+    /// Gets or sets a value indicating whether <see cref="GetCountAsync"/> counts the users before it waits
+    /// at the <see cref="CountGate"/>, so that its result is outdated when users change meanwhile.
+    /// </summary>
+    public bool CountsBeforeGate { get; set; }
+
     /// <inheritdoc />
     public async ValueTask<bool> EnsureStorageAsync(CancellationToken cancellationToken = default)
     {
@@ -44,8 +50,9 @@ internal sealed class GatedAdminUserRepository : IAdminUserRepository
     /// <inheritdoc />
     public async ValueTask<int> GetCountAsync(CancellationToken cancellationToken = default)
     {
+        var countBeforeGate = await this._users.GetCountAsync(cancellationToken).ConfigureAwait(false);
         await this.CountGate.PassAsync(cancellationToken).ConfigureAwait(false);
-        return await this._users.GetCountAsync(cancellationToken).ConfigureAwait(false);
+        return this.CountsBeforeGate ? countBeforeGate : await this._users.GetCountAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

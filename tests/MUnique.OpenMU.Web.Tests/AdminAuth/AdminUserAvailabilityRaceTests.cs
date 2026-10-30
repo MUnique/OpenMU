@@ -121,6 +121,49 @@ public class AdminUserAvailabilityRaceTests
         Assert.That(await service.AnyUserExistsAsync().ConfigureAwait(false), Is.True);
     }
 
+    /// <summary>
+    /// Tests that a created user ends the initial setup mode right away, without asking the storage again.
+    /// </summary>
+    [Test]
+    public async Task CreatedUserEndsSetupModeWithoutCheckAsync()
+    {
+        var repository = new GatedAdminUserRepository();
+        var service = CreateService(repository);
+        Assert.That(await service.AnyUserExistsAsync().ConfigureAwait(false), Is.False, "Without a user, the panel is in its setup mode.");
+
+        await repository.AddAsync(CreateUser("admin")).ConfigureAwait(false);
+        service.NotifyUserCreated();
+        repository.StorageGate.Close();
+        repository.CountGate.Close();
+
+        var check = service.AnyUserExistsAsync();
+        Assert.That(check.IsCompleted, Is.True, "The answer is known after a user has been created.");
+        Assert.That(await check.ConfigureAwait(false), Is.True);
+        Assert.That(repository.StorageGate.Entered.IsCompleted || repository.CountGate.Entered.IsCompleted, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a check which counted the users before the first user was created doesn't
+    /// bring the initial setup mode back when it finishes afterwards.
+    /// </summary>
+    [Test]
+    public async Task OutdatedCheckDoesNotGrantSetupModeAfterUserCreationAsync()
+    {
+        var repository = new GatedAdminUserRepository { CountsBeforeGate = true };
+        var service = CreateService(repository);
+
+        repository.CountGate.Close();
+        var outdatedCall = Task.Run(async () => await service.AnyUserExistsAsync().ConfigureAwait(false));
+        await repository.CountGate.Entered.WaitAsync(Timeout).ConfigureAwait(false);
+
+        await repository.AddAsync(CreateUser("admin")).ConfigureAwait(false);
+        service.NotifyUserCreated();
+        repository.CountGate.Open();
+
+        Assert.That(await outdatedCall.WaitAsync(Timeout).ConfigureAwait(false), Is.True);
+        Assert.That(await service.AnyUserExistsAsync().ConfigureAwait(false), Is.True, "The outdated count overwrote the created user.");
+    }
+
     private static async Task AssertConcurrentCheckRequiresLoginAsync(AdminUserAvailabilityService service, GatedAdminUserRepository repository)
     {
         repository.CountGate.Close();

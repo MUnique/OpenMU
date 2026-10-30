@@ -90,7 +90,7 @@ public class AdminUserManagementService
             return false;
         }
 
-        this._userAvailability.Invalidate();
+        this._userAvailability.NotifyUserCreated();
         this._toastService.ShowSuccess(Resources.UserCreated);
         return true;
     }
