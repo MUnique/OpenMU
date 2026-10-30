@@ -37,7 +37,7 @@ using MUnique.OpenMU.Web.Shared.Services;
 /// <c>MUnique.OpenMU.Dapr.Common</c>. The host of these tests maps them the same way.
 /// </remarks>
 [TestFixture]
-public sealed class DownloadAuthorizationTests : IDisposable
+public sealed class DownloadAuthorizationTests : System.IDisposable
 {
     private const string TestLoginPath = "/test-login";
 
