@@ -66,6 +66,35 @@ public class TranslationCoverageTests
         AssertExistingTranslations(neutral, german, manager.BaseName);
     }
 
+    /// <summary>Checks that the player messages of a culture are complete and keep the format arguments of the neutral resources.</summary>
+    /// <param name="culture">The culture of the translations.</param>
+    [TestCase("pt")]
+    public void PlayerMessagesAreCompleteAndMatchNeutralPlaceholders(string culture)
+    {
+        // A separate manager, so that disposing the sets doesn't affect the shared one.
+        var manager = new ResourceManager(typeof(MUnique.OpenMU.GameLogic.Properties.PlayerMessage));
+        using var neutral = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
+        using var translated = manager.GetResourceSet(CultureInfo.GetCultureInfo(culture), true, false)!;
+        Assert.That(translated, Is.Not.Null, manager.BaseName);
+        AssertExistingTranslations(neutral, translated, manager.BaseName);
+        var missing = neutral.Cast<DictionaryEntry>()
+            .Where(entry => entry.Value is string)
+            .Select(entry => (string)entry.Key)
+            .Where(key => translated.GetString(key) is null)
+            .ToList();
+        Assert.That(missing, Is.Empty, $"{manager.BaseName}.{culture}");
+    }
+
+    /// <summary>Checks that the player messages are resolved in the culture of the player.</summary>
+    /// <param name="culture">The culture of the player.</param>
+    /// <param name="expected">The expected message.</param>
+    [TestCase("pt", "O MU Helper requer 1000 zen.")]
+    public void PlayerMessageIsResolvedInCulture(string culture, string expected)
+    {
+        var format = MUnique.OpenMU.GameLogic.Properties.PlayerMessage.ResourceManager.GetString(nameof(MUnique.OpenMU.GameLogic.Properties.PlayerMessage.MuHelperRequiresMoney), CultureInfo.GetCultureInfo(culture));
+        Assert.That(string.Format(CultureInfo.InvariantCulture, format!, 1000), Is.EqualTo(expected));
+    }
+
     /// <summary>A new English-only key remains usable without requiring a Chinese translation.</summary>
     [Test]
     public void MissingChineseKeyFallsBackToEnglish()
