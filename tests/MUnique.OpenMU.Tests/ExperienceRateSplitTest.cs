@@ -192,6 +192,47 @@ public class ExperienceRateSplitTest
     }
 
     /// <summary>
+    /// A reset lowers the normal level and leaves the master level, so the total level stays high.
+    /// The member is the only one in range: party members on another map are not part of the split.
+    /// That kill has to pay the same experience as a solo kill. Weighting the share by the normal
+    /// level instead pays only the fraction normal level / total level.
+    /// </summary>
+    [Test]
+    public async ValueTask ResetCharacterAloneInPartyGainsTheSameExperienceAsSoloAsync()
+    {
+        const short levelAfterReset = 10;
+        const float totalLevel = 210;
+
+        var partyContext = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 400,
+            maximumMasterLevel: 200);
+        var soloContext = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 400,
+            maximumMasterLevel: 200);
+
+        var resetPlayer = await this.CreatePlayerAsync(partyContext, levelAfterReset, totalLevel, isMasterClass: true).ConfigureAwait(false);
+        var distantMember = await this.CreatePlayerAsync(partyContext, level: 400, totalLevel: 499, isMasterClass: true).ConfigureAwait(false);
+        var soloPlayer = await this.CreatePlayerAsync(soloContext, levelAfterReset, totalLevel, isMasterClass: true).ConfigureAwait(false);
+
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(resetPlayer).ConfigureAwait(false);
+        await party.AddAsync(distantMember).ConfigureAwait(false);
+
+        var killedObject = CreateKilledObject(level: 15);
+        var shares = await party.DistributeExperienceAfterKillAsync(killedObject.Object, resetPlayer).ConfigureAwait(false);
+        var soloGained = await soloPlayer.AddExpAfterKillAsync(killedObject.Object).ConfigureAwait(false);
+
+        Assert.That(shares.Select(share => share.Player), Is.EquivalentTo(new[] { resetPlayer }));
+        Assert.That(Math.Abs(resetPlayer.SelectedCharacter!.Experience - soloGained), Is.LessThanOrEqualTo(1));
+        Assert.That(distantMember.SelectedCharacter!.Experience, Is.EqualTo(0));
+        Assert.That(distantMember.SelectedCharacter.MasterExperience, Is.EqualTo(0));
+    }
+
+    /// <summary>
     /// Verifies that concurrent normal experience gains cannot exceed the maximum level.
     /// </summary>
     [Test]

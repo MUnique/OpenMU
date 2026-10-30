@@ -390,8 +390,13 @@ public sealed class Party : AsyncDisposable
             return exp;
         }
 
+        // The pool was divided by the sum of total levels, so the share has to be
+        // weighted by the total level too. Weighting it by the normal level pays a
+        // fraction of a solo kill when those two differ. A reset lowers the normal
+        // level and leaves the master level in place, and a member who is the only
+        // one in range must still receive the same experience as a solo kill.
         var calculatedExperience = perLevel
-                                   * attributes[Stats.Level]
+                                   * attributes[Stats.TotalLevel]
                                    * player.GameContext.ExperienceRate
                                    * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]);
         var normalExperience = await ApplyExperienceCalculationPlugInsAsync(player, killed, false, calculatedExperience).ConfigureAwait(false);
