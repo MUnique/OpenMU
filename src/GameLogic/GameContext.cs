@@ -55,18 +55,21 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <summary>
     /// Keeps the players of <see cref="_playerList"/> which are logged in, see <see cref="LoggedInPlayerCount"/>.
+    /// Guarded by <see cref="_loginStateLock"/>.
     /// </summary>
-    private readonly ConcurrentDictionary<Player, byte> _loggedInPlayers = new();
+    private readonly HashSet<Player> _loggedInPlayers = new();
 
     /// <summary>
-    /// Keeps the handlers with which this context follows the state of each of its players.
+    /// Keeps the handlers with which this context follows the state of each of its players. A player
+    /// which has none isn't (or no longer) in this context. Guarded by <see cref="_loginStateLock"/>.
     /// </summary>
-    private readonly ConcurrentDictionary<Player, AsyncEventHandler<StateMachine.StateChangedEventArgs>> _playerStateHandlers = new();
+    private readonly Dictionary<Player, AsyncEventHandler<StateMachine.StateChangedEventArgs>> _playerStateHandlers = new();
 
     /// <summary>
-    /// The lock for the check for a free place and the reservation of it, see <see cref="TryReserveLoginPlace"/>.
+    /// The lock for the logged in players, the handlers of the player states and the reserved places of
+    /// logins. It's only held for short, synchronous work, and no other lock is taken while it's held.
     /// </summary>
-    private readonly Lock _loginPlacesLock = new();
+    private readonly Lock _loginStateLock = new();
 
     private readonly IDisposable _configChangeHandlerRegistration;
 
@@ -76,11 +79,13 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <summary>
     /// The number of places which are reserved by logins in progress, see <see cref="TryReserveLoginPlace"/>.
+    /// Guarded by <see cref="_loginStateLock"/>.
     /// </summary>
     private int _reservedLoginPlaces;
 
     /// <summary>
     /// The number of entries of <see cref="_loggedInPlayers"/>, see <see cref="LoggedInPlayerCount"/>.
+    /// Changed under <see cref="_loginStateLock"/>, read without it.
     /// </summary>
     private int _loggedInPlayerCount;
 
@@ -321,8 +326,14 @@ public class GameContext : AsyncDisposable, IGameContext
         player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
         player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
         player.PlayerDisconnected += this.RemovePlayerAsync;
-        AsyncEventHandler<StateMachine.StateChangedEventArgs> stateHandler = args => this.OnPlayerStateChangedAsync(player, args.CurrentStateState);
-        if (this._playerStateHandlers.TryAdd(player, stateHandler))
+        AsyncEventHandler<StateMachine.StateChangedEventArgs> stateHandler = _ => this.OnPlayerStateChangedAsync(player);
+        bool added;
+        lock (this._loginStateLock)
+        {
+            added = this._playerStateHandlers.TryAdd(player, stateHandler);
+        }
+
+        if (added)
         {
             player.PlayerState.StateChanged += stateHandler;
         }
@@ -335,18 +346,18 @@ public class GameContext : AsyncDisposable, IGameContext
         PlayerCounter.Add(1);
 
         // Offline players, for example, are already logged in when they get added.
-        this.SetLoggedIn(player, IsLoggedIn(player.PlayerState.CurrentState));
+        this.UpdateLoggedIn(player);
     }
 
     /// <inheritdoc />
     public IDisposable? TryReserveLoginPlace(int maximumPlayers, Player? replacedPlayer, out int occupiedPlaces)
     {
-        lock (this._loginPlacesLock)
+        lock (this._loginStateLock)
         {
             // A login adds itself to the logged in players before it releases its reservation, and the
             // logged in players only get fewer otherwise. So, this sum never misses a login which passed.
-            occupiedPlaces = this.LoggedInPlayerCount + this._reservedLoginPlaces;
-            if (replacedPlayer is not null && this._loggedInPlayers.ContainsKey(replacedPlayer))
+            occupiedPlaces = this._loggedInPlayerCount + this._reservedLoginPlaces;
+            if (replacedPlayer is not null && this._loggedInPlayers.Contains(replacedPlayer))
             {
                 // Its place is taken over.
                 occupiedPlaces--;
@@ -387,12 +398,25 @@ public class GameContext : AsyncDisposable, IGameContext
             removed = this._playerList.Remove(player);
         }
 
-        if (this._playerStateHandlers.TryRemove(player, out var stateHandler))
+        AsyncEventHandler<StateMachine.StateChangedEventArgs>? stateHandler;
+        bool loggedOut;
+        lock (this._loginStateLock)
+        {
+            // Together, so that a state change of the player which runs at the same time can't
+            // count it as logged in again after it was removed.
+            this._playerStateHandlers.Remove(player, out stateHandler);
+            loggedOut = this.RemoveLoggedInPlayer(player);
+        }
+
+        if (stateHandler is not null)
         {
             player.PlayerState.StateChanged -= stateHandler;
         }
 
-        this.SetLoggedIn(player, false);
+        if (loggedOut)
+        {
+            this.OnLoggedInPlayerCountChanged();
+        }
 
         if (!removed)
         {
@@ -560,29 +584,60 @@ public class GameContext : AsyncDisposable, IGameContext
                && state != PlayerState.Finished;
     }
 
-    private ValueTask OnPlayerStateChangedAsync(Player player, State currentState)
+    private ValueTask OnPlayerStateChangedAsync(Player player)
     {
-        // A player which is no longer in this context may not count as logged in again.
-        if (this._playerStateHandlers.ContainsKey(player))
-        {
-            this.SetLoggedIn(player, IsLoggedIn(currentState));
-        }
-
+        this.UpdateLoggedIn(player);
         return ValueTask.CompletedTask;
     }
 
-    private void SetLoggedIn(Player player, bool loggedIn)
+    /// <summary>
+    /// Counts the player as logged in or not, depending on its current state.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <remarks>
+    /// The current state is read under the lock, instead of being passed by the caller: when two updates
+    /// of the same player run at the same time, the later one sees the latest state, so they can't undo
+    /// each other. A player which isn't (or no longer) in this context isn't counted.
+    /// </remarks>
+    private void UpdateLoggedIn(Player player)
     {
-        if (loggedIn && this._loggedInPlayers.TryAdd(player, default))
+        bool changed;
+        lock (this._loginStateLock)
         {
-            Interlocked.Increment(ref this._loggedInPlayerCount);
+            if (this._playerStateHandlers.ContainsKey(player) && IsLoggedIn(player.PlayerState.CurrentState))
+            {
+                changed = this._loggedInPlayers.Add(player);
+                if (changed)
+                {
+                    this._loggedInPlayerCount++;
+                }
+            }
+            else
+            {
+                changed = this.RemoveLoggedInPlayer(player);
+            }
+        }
+
+        if (changed)
+        {
             this.OnLoggedInPlayerCountChanged();
         }
-        else if (!loggedIn && this._loggedInPlayers.TryRemove(player, out _))
+    }
+
+    /// <summary>
+    /// Removes the player from the logged in players. It has to be called under <see cref="_loginStateLock"/>.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if it was logged in.</returns>
+    private bool RemoveLoggedInPlayer(Player player)
+    {
+        if (!this._loggedInPlayers.Remove(player))
         {
-            Interlocked.Decrement(ref this._loggedInPlayerCount);
-            this.OnLoggedInPlayerCountChanged();
+            return false;
         }
+
+        this._loggedInPlayerCount--;
+        return true;
     }
 
     private void OnLoggedInPlayerCountChanged()
@@ -672,7 +727,7 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private void ReleaseLoginPlace()
     {
-        lock (this._loginPlacesLock)
+        lock (this._loginStateLock)
         {
             this._reservedLoginPlaces--;
         }
