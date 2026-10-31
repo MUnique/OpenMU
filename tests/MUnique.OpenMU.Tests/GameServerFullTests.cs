@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Net;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -472,6 +473,46 @@ public class GameServerFullTests
         {
             listener.Stop();
         }
+    }
+
+    /// <summary>
+    /// Only the first of several refused connections is logged at the Information level; when a
+    /// connection is accepted again, the number of refused ones is logged.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerLogsTheFirstRefusalOnlyAtInformationLevelAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var port = GetFreePort();
+        var resolver = new Mock<IIpAddressResolver>();
+        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
+        var endpoint = new Persistence.BasicModel.GameServerEndpoint
+        {
+            NetworkPort = port,
+            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
+        };
+        var loggerFactory = new CapturingLoggerFactory();
+        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 1), gameContext, new Mock<IGameServerStateObserver>().Object, resolver.Object, loggerFactory);
+        await listener.StartAsync().ConfigureAwait(false);
+        try
+        {
+            var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            for (var i = 0; i < 3; i++)
+            {
+                Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.True);
+            }
+
+            await new LoginAction().LoginAsync(waiting, "a", Password).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False);
+        }
+        finally
+        {
+            listener.Stop();
+        }
+
+        var information = loggerFactory.Entries.Where(e => e.Level == LogLevel.Information).Select(e => e.Message).ToList();
+        Assert.That(information.Count(m => m.StartsWith("Connection of", StringComparison.Ordinal)), Is.EqualTo(1));
+        Assert.That(information.Count(m => m.StartsWith("Connections are accepted again, after 3 were refused", StringComparison.Ordinal)), Is.EqualTo(1));
     }
 
     /// <summary>

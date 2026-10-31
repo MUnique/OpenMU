@@ -43,6 +43,11 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private Listener? _listener;
 
     /// <summary>
+    /// The number of connections which were refused since a connection was accepted the last time.
+    /// </summary>
+    private int _refusedConnections;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
     /// </summary>
     /// <param name="endPoint">The endpoint to which this listener is listening.</param>
@@ -230,12 +235,28 @@ public class DefaultTcpGameServerListener : IGameServerListener
         var waitingForLogin = this._gameContext.WaitingForLoginCount;
         if (waitingForLogin >= maximum)
         {
-            this.Log(l => l.LogInformation(
-                "Connection of {RemoteEndPoint} refused, because {WaitingConnections} connections are waiting for their login already, which is the maximum of {Maximum}.",
-                e.AcceptingSocket.RemoteEndPoint,
-                waitingForLogin,
-                maximum));
             e.Cancel = true;
+
+            // Only the first refusal is logged at the Information level, so that a flood of connections doesn't flood the log.
+            if (Interlocked.Increment(ref this._refusedConnections) == 1)
+            {
+                this.Log(l => l.LogInformation(
+                    "Connection of {RemoteEndPoint} refused, because {WaitingConnections} connections are waiting for their login already, which is the maximum of {Maximum}. Further refusals are logged at the Debug level, until a connection is accepted again.",
+                    e.AcceptingSocket.RemoteEndPoint,
+                    waitingForLogin,
+                    maximum));
+            }
+            else
+            {
+                this.Log(l => l.LogDebug("Connection of {RemoteEndPoint} refused, because {WaitingConnections} connections are waiting for their login already.", e.AcceptingSocket.RemoteEndPoint, waitingForLogin));
+            }
+
+            return ValueTask.CompletedTask;
+        }
+
+        if (Interlocked.Exchange(ref this._refusedConnections, 0) is var refused and > 0)
+        {
+            this.Log(l => l.LogInformation("Connections are accepted again, after {RefusedConnections} were refused because too many connections were waiting for their login.", refused));
         }
 
         return ValueTask.CompletedTask;
