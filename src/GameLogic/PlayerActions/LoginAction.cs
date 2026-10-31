@@ -99,6 +99,20 @@ public class LoginAction
         return null;
     }
 
+    /// <summary>
+    /// Refuses the login, because the game server is full. The connection stays at the login screen.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="context">The context of the state change to <see cref="PlayerState.Authenticated"/>, which doesn't happen.</param>
+    /// <returns>The result of the session establishment.</returns>
+    private static async ValueTask<(bool Success, Account? Account)> RefuseBecauseFullAsync(Player player, StateMachine.StateChangeContext context)
+    {
+        context.Allowed = false;
+        await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
+        return (false, null);
+    }
+
     private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
     {
         try
@@ -164,9 +178,7 @@ public class LoginAction
                 reservedPlace = TryReservePlace(player, gameServerContext, username, offlinePlayer);
                 if (reservedPlace is null)
                 {
-                    context.Allowed = false;
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
-                    return (false, null);
+                    return await RefuseBecauseFullAsync(player, context).ConfigureAwait(false);
                 }
 
                 var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
@@ -215,10 +227,7 @@ public class LoginAction
                 reservedPlace = TryReservePlace(player, gameServerContext, username, null);
                 if (reservedPlace is null)
                 {
-                    context.Allowed = false;
-                    await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
-                    return (false, null);
+                    return await RefuseBecauseFullAsync(player, context).ConfigureAwait(false);
                 }
             }
 
@@ -248,10 +257,7 @@ public class LoginAction
             reservedPlace ??= TryReservePlace(player, gameServerContext, username, null);
             if (reservedPlace is null)
             {
-                context.Allowed = false;
-                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
-                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
-                return (false, null);
+                return await RefuseBecauseFullAsync(player, context).ConfigureAwait(false);
             }
 
             return (true, loadedAccount);
