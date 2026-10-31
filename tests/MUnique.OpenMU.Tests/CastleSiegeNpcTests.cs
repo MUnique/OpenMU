@@ -1659,6 +1659,68 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that the gate list is only shown to the officers of the castle owner guild.
+    /// </summary>
+    [Test]
+    public async ValueTask NpcListIsOnlyShownToOwnerOfficersAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        try
+        {
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+
+            fixture.Player.GuildStatus = new GuildMemberStatus(OwnerRuntimeGuildId, GuildPosition.GuildMaster);
+            var asMaster = await CastleSiegeNpcListAction
+                .ShowDefenseStructuresAsync(fixture.Player, fixture.Context, CastleSiegeGate.MonsterNumber)
+                .ConfigureAwait(false);
+
+            fixture.Player.GuildStatus = new GuildMemberStatus(OwnerRuntimeGuildId, GuildPosition.NormalMember);
+            var asOwnerMember = await CastleSiegeNpcListAction
+                .ShowDefenseStructuresAsync(fixture.Player, fixture.Context, CastleSiegeGate.MonsterNumber)
+                .ConfigureAwait(false);
+
+            fixture.Player.GuildStatus = new GuildMemberStatus(999, GuildPosition.GuildMaster);
+            var asOtherMaster = await CastleSiegeNpcListAction
+                .ShowDefenseStructuresAsync(fixture.Player, fixture.Context, CastleSiegeGate.MonsterNumber)
+                .ConfigureAwait(false);
+
+            fixture.Player.GuildStatus = null;
+            var withoutGuild = await CastleSiegeNpcListAction
+                .ShowDefenseStructuresAsync(fixture.Player, fixture.Context, CastleSiegeGate.MonsterNumber)
+                .ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(asMaster, Is.Not.Empty);
+                Assert.That(asOwnerMember, Is.Empty);
+                Assert.That(asOtherMaster, Is.Empty);
+                Assert.That(withoutGuild, Is.Empty);
+            });
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeNpcListPlugIn>()!)
+                .Verify(view => view.ShowNpcListAsync(It.IsAny<IReadOnlyList<CastleSiegeNpcInfo>>()), Times.Exactly(4));
+        }
+        finally
+        {
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that the gate list request is only answered while the Senior's window is open.
+    /// </summary>
+    [Test]
+    public async ValueTask NpcListRequestNeedsTheSeniorWindowAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Player.GuildStatus = new GuildMemberStatus(OwnerRuntimeGuildId, GuildPosition.GuildMaster);
+
+        await new CastleSiegeGateListHandlerPlugIn().HandlePacketAsync(fixture.Player, new byte[4]).ConfigureAwait(false);
+
+        Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeNpcListPlugIn>()!)
+            .Verify(view => view.ShowNpcListAsync(It.IsAny<IReadOnlyList<CastleSiegeNpcInfo>>()), Times.Never);
+    }
+
+    /// <summary>
     /// Verifies all client request identifiers required by the NPC issue.
     /// </summary>
     [Test]
