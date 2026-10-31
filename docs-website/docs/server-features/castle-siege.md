@@ -43,3 +43,11 @@ The list of castle gates and Guardian Statues, with their health, upgrade
 levels and positions, is only answered while the Senior's window is open, and
 only shows the structures to the guild master and assistant master of the
 castle owner guild. Other players get an empty list.
+
+## Teleporting over gates
+
+While a castle gate is closed, players can't use the Teleport or Teleport Ally
+skill to cross it. The gate blocks a teleport when the straight line between
+the start and the target passes through its area. An opened or destroyed gate
+doesn't block teleports. The castle walls are ordinary terrain and are not
+covered by this rule.
