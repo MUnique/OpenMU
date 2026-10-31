@@ -440,9 +440,7 @@ public class GameServerFullTests
     public async ValueTask ListenerLimitsTheConnectionsWhichWaitForTheirLoginAsync()
     {
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
-        var port = GetFreePort();
-        var listener = CreateListener(gameContext, port);
-        await listener.StartAsync().ConfigureAwait(false);
+        var (listener, port) = await StartListenerOnFreePortAsync(gameContext).ConfigureAwait(false);
         try
         {
             var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
@@ -469,10 +467,8 @@ public class GameServerFullTests
     public async ValueTask ListenerLogsTheFirstRefusalOnlyAtInformationLevelAsync()
     {
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
-        var port = GetFreePort();
         var loggerFactory = new CapturingLoggerFactory();
-        var listener = CreateListener(gameContext, port, loggerFactory: loggerFactory);
-        await listener.StartAsync().ConfigureAwait(false);
+        var (listener, port) = await StartListenerOnFreePortAsync(gameContext, loggerFactory).ConfigureAwait(false);
         try
         {
             var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
@@ -507,11 +503,11 @@ public class GameServerFullTests
         observer
             .Setup(o => o.CurrentConnectionsChanged(It.IsAny<ushort>(), It.IsAny<int>()))
             .Callback((ushort _, int count) => reports.Add(count));
-        var port = GetFreePort();
-        var listener = CreateListener(gameContext, port, observer.Object);
-
-        var portUser = new System.Net.Sockets.TcpListener(IPAddress.Any, port);
+        // The port is taken by another listener first, so nobody else can take it in between.
+        var portUser = new System.Net.Sockets.TcpListener(IPAddress.Any, 0);
         portUser.Start();
+        var port = ((IPEndPoint)portUser.LocalEndpoint).Port;
+        var listener = CreateListener(gameContext, port, observer.Object);
         try
         {
             Assert.CatchAsync(() => listener.StartAsync().AsTask(), "The port is in use.");
@@ -546,6 +542,28 @@ public class GameServerFullTests
         };
         var serverInfo = new ServerInfo(0, "test", 0, gameContext.ServerConfiguration.MaximumPlayers);
         return new DefaultTcpGameServerListener(endpoint, serverInfo, gameContext, observer ?? new Mock<IGameServerStateObserver>().Object, resolver.Object, loggerFactory ?? new NullLoggerFactory());
+    }
+
+    /// <summary>
+    /// Starts a listener on a free port. When another process takes the port before the listener
+    /// is bound to it, it tries again with another one.
+    /// </summary>
+    private static async ValueTask<(DefaultTcpGameServerListener Listener, int Port)> StartListenerOnFreePortAsync(GameServerContext gameContext, ILoggerFactory? loggerFactory = null)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            var port = GetFreePort();
+            var listener = CreateListener(gameContext, port, loggerFactory: loggerFactory);
+            try
+            {
+                await listener.StartAsync().ConfigureAwait(false);
+                return (listener, port);
+            }
+            catch (System.Net.Sockets.SocketException ex) when (ex.SocketErrorCode == System.Net.Sockets.SocketError.AddressAlreadyInUse && attempt < 5)
+            {
+                listener.Stop();
+            }
+        }
     }
 
     private static int GetFreePort()
