@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using System.ComponentModel;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -31,8 +33,6 @@ public class WizardTeleportAction
     /// <param name="target">The target.</param>
     public async ValueTask TryTeleportWithSkillAsync(Player player, Point target)
     {
-        // todo: additional checks:
-        //  - During castle siege, can't teleport over the non-destroyed gates (simple y-axis check)
         if (!player.IsAtSafezone()
             && player.IsActive()
             && player.SkillList?.GetSkill(TeleportSkillId) is { } skillEntry
@@ -41,6 +41,7 @@ public class WizardTeleportAction
             && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
             && player.IsInRange(target, skill.Range)
             && CanPlayerBeTeleported(player)
+            && !IsTeleportPreventedByPlugIns(player, target)
             && await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             _ = Task.Run(() => player.TeleportAsync(target, skill));
@@ -71,6 +72,7 @@ public class WizardTeleportAction
             && targetPlayer.IsActive()
             && CanPlayerBeTeleported(targetPlayer)
             && targetPlayer.IsInRange(target, skill.Range + 1)
+            && !IsTeleportPreventedByPlugIns(targetPlayer, target)
             && await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             _ = Task.Run(() => targetPlayer.TeleportAsync(target, skill));
@@ -80,5 +82,17 @@ public class WizardTeleportAction
     private static bool CanPlayerBeTeleported(Player player)
     {
         return !player.MagicEffectList.ContainsAnyEffect(PreventingMagicEffects);
+    }
+
+    private static bool IsTeleportPreventedByPlugIns(Player player, Point target)
+    {
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTeleportRestrictionPlugIn>() is not { } plugInPoint)
+        {
+            return false;
+        }
+
+        var eventArgs = new CancelEventArgs();
+        plugInPoint.CheckTeleport(player, target, eventArgs);
+        return eventArgs.Cancel;
     }
 }
