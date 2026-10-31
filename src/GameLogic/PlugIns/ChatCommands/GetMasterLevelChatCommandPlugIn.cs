@@ -60,6 +60,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
         /// <summary>
         /// Gets or sets the character name to get master level for.
         /// </summary>
+        [ValueReference(ChatCommandValueReference.CharacterName)]
         public string? CharacterName { get; set; }
     }
 }
