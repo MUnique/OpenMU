@@ -52,6 +52,24 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// Which states count as logged in: everything after the login screen, until the player disconnects.
+    /// </summary>
+    [Test]
+    public void LoggedInStates()
+    {
+        var notLoggedIn = new[] { PlayerState.Initial, PlayerState.LoginScreen, PlayerState.Disconnected, PlayerState.Finished };
+        var loggedIn = new[]
+        {
+            PlayerState.Authenticated, PlayerState.CharacterSelection, PlayerState.EnteredWorld, PlayerState.ChangingMap,
+            PlayerState.Dead, PlayerState.NpcDialogOpened, PlayerState.PartyRequest, PlayerState.GuildRequest,
+            PlayerState.TradeRequested, PlayerState.TradeOpened, PlayerState.TradeButtonPressed,
+        };
+
+        Assert.That(notLoggedIn.Where(s => s.IsLoggedIn()), Is.Empty);
+        Assert.That(loggedIn.Where(s => !s.IsLoggedIn()), Is.Empty);
+    }
+
+    /// <summary>
     /// A connection which stays at the login screen doesn't take the last place.
     /// </summary>
     [Test]

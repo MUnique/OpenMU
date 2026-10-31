@@ -571,19 +571,6 @@ public class GameContext : AsyncDisposable, IGameContext
             .ToArray();
     }
 
-    /// <summary>
-    /// Determines whether a player in the given state is logged in: it passed the login screen and didn't disconnect.
-    /// </summary>
-    /// <param name="state">The state of the player.</param>
-    /// <returns><c>true</c>, if a player in this state is logged in.</returns>
-    private static bool IsLoggedIn(State state)
-    {
-        return state != PlayerState.Initial
-               && state != PlayerState.LoginScreen
-               && state != PlayerState.Disconnected
-               && state != PlayerState.Finished;
-    }
-
     private ValueTask OnPlayerStateChangedAsync(Player player)
     {
         this.UpdateLoggedIn(player);
@@ -604,7 +591,7 @@ public class GameContext : AsyncDisposable, IGameContext
         bool changed;
         lock (this._loginStateLock)
         {
-            if (this._playerStateHandlers.ContainsKey(player) && IsLoggedIn(player.PlayerState.CurrentState))
+            if (this._playerStateHandlers.ContainsKey(player) && player.PlayerState.CurrentState.IsLoggedIn())
             {
                 changed = this._loggedInPlayers.Add(player);
                 if (changed)
