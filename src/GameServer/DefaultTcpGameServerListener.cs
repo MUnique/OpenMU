@@ -117,6 +117,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         this._logger.LogInformation("Starting Server Listener, port {port}", port);
         this._listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this._loggerFactory);
         this._listener.ClientAccepted += this.OnClientAcceptedAsync;
+        this._listener.ClientAccepting += this.OnClientAcceptingAsync;
         if (this.PublishedPort != port)
         {
             this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", port, this.PublishedPort);
@@ -209,10 +210,36 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
     }
 
+    /// <summary>
+    /// Refuses a connection when as many connections wait for their login as players may log in.
+    /// </summary>
+    /// <param name="e">The event args of the accepting socket.</param>
+    /// <returns>The completed task.</returns>
+    /// <remarks>
+    /// Only logged in players take a place, so a full server refuses the login (see LoginAction).
+    /// Connections which didn't log in yet don't take a place, but each of them holds a player
+    /// with its resources. They are limited by the maximum players as well, so that connections
+    /// which never log in can't use up the memory of the server.
+    /// </remarks>
+    private ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
+    {
+        var maximum = this._gameContext.ServerConfiguration.MaximumPlayers;
+        var waitingForLogin = this._gameContext.PlayerCount - this._gameContext.LoggedInPlayerCount;
+        if (waitingForLogin >= maximum)
+        {
+            this.Log(l => l.LogInformation(
+                "Connection of {RemoteEndPoint} refused, because {WaitingConnections} connections are waiting for their login already, which is the maximum of {Maximum}.",
+                e.AcceptingSocket.RemoteEndPoint,
+                waitingForLogin,
+                maximum));
+            e.Cancel = true;
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
     private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
-        // Every connection is accepted. Only logged in players take a place, so a full server
-        // refuses the login instead (see LoginAction).
         var connection = e.AcceptedConnection;
         var remoteEndPoint = connection.EndPoint as IPEndPoint;
         this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));

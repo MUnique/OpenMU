@@ -214,6 +214,71 @@ public class GameServerFullTests
         Assert.That(reports, Is.EqualTo(new[] { 0, 1, 0 }));
     }
 
+    /// <summary>
+    /// Connections which didn't log in yet are limited by the maximum players as well, while the
+    /// logged in players don't count against this limit.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerLimitsTheConnectionsWhichWaitForTheirLoginAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var port = GetFreePort();
+        var resolver = new Mock<IIpAddressResolver>();
+        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
+        var endpoint = new Persistence.BasicModel.GameServerEndpoint
+        {
+            NetworkPort = port,
+            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
+        };
+        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 1), gameContext, new Mock<IGameServerStateObserver>().Object, resolver.Object, new NullLoggerFactory());
+        await listener.StartAsync().ConfigureAwait(false);
+        try
+        {
+            var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.True, "One connection waits for its login already.");
+
+            await new LoginAction().LoginAsync(waiting, "a", Password).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False, "The logged in player doesn't count against this limit.");
+        }
+        finally
+        {
+            listener.Stop();
+        }
+    }
+
+    private static int GetFreePort()
+    {
+        var probe = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
+        probe.Start();
+        var port = ((IPEndPoint)probe.LocalEndpoint).Port;
+        probe.Stop();
+        return port;
+    }
+
+    /// <summary>
+    /// Connects to the listener and determines whether it closes the connection right away.
+    /// </summary>
+    private static async ValueTask<bool> IsRefusedAsync(int port)
+    {
+        using var client = new System.Net.Sockets.TcpClient();
+        await client.ConnectAsync(IPAddress.Loopback, port).ConfigureAwait(false);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        try
+        {
+            var read = await client.GetStream().ReadAsync(new byte[16], timeout.Token).ConfigureAwait(false);
+            return read == 0;
+        }
+        catch (OperationCanceledException)
+        {
+            // Still connected; without a game server, nobody sends the greeting.
+            return false;
+        }
+        catch (System.IO.IOException)
+        {
+            return true;
+        }
+    }
+
     private static void VerifyLoginResult(Player player, LoginResult result)
     {
         Mock.Get(player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()!)

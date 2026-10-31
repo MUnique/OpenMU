@@ -31,6 +31,11 @@ fill up the server. When all places are taken, a login is refused with the
 level. The server list of the clients shows the same number as the load of the
 server.
 
+Clients which didn't log in yet are limited to the same number: when as many
+connections wait for their login as players may log in, the game server refuses
+further connections right away, and logs that at the *Information* level, too.
+This way, connections which never log in can't use up the memory of the server.
+
 ### Starting and stopping
 
 * ▶ **Start** — starts the TCP listener of that server. Players can connect from
