@@ -68,13 +68,13 @@ public class Storage : IStorage
             var item = unfittingItems[index];
             var freeSlot = this.CheckInvSpace(item);
 
-            if (freeSlot is not null && this.ContainsSlot(freeSlot.Value) && this.AddItem(freeSlot.Value, item))
+            if (freeSlot is not null && this.ContainsSlot(freeSlot.Value)
+                && this.AddItemInternal((byte)(freeSlot.Value - this._slotOffset), item))
             {
+                // The item already belongs to the backing collection. Removing a duplicate
+                // after adding it again would clear its persistent storage ownership.
+                item.ItemSlot = freeSlot.Value;
                 unfittingItems.RemoveAt(index);
-                if (this.ItemStorage.Items.Count(i => item == i) > 1)
-                {
-                    this.ItemStorage.Items.Remove(item);
-                }
             }
         }
 
