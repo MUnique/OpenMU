@@ -239,7 +239,7 @@ public class CastleSiegeCrownMechanicsTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(AttackGuildId));
+            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
             Assert.That(fixture.Context.FinalGuildList[AttackGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
             Assert.That(fixture.Context.FinalGuildList[DefenseGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(fixture.Context.GetPlayerJoinSide(crownUser), Is.EqualTo(CastleSiegeJoinSide.Defense));
@@ -278,7 +278,7 @@ public class CastleSiegeCrownMechanicsTests
         {
             Assert.That(restartedContext.FinalGuildList[AttackGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
             Assert.That(restartedContext.FinalGuildList[DefenseGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
-            Assert.That(restartedContext.MiddleOwnerGuildId, Is.EqualTo(AttackGuildId));
+            Assert.That(restartedContext.MiddleOwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
         });
     }
 
@@ -331,7 +331,7 @@ public class CastleSiegeCrownMechanicsTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(AttackGuildId));
+            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
             Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
             Assert.That(fixture.Context.FinalGuildList[AttackGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
             Assert.That(fixture.Context.FinalGuildList[allianceMemberGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
@@ -505,7 +505,7 @@ public class CastleSiegeCrownMechanicsTests
                 100,
                 100)
             .ConfigureAwait(false);
-        fixture.Context.MiddleOwnerGuildId = AttackGuildId;
+        fixture.Context.MiddleOwnerGuildId = fixture.AttackPersistentGuildId;
         fixture.Context.SiegeData.TaxChaos = 3;
         fixture.Context.SiegeData.TaxStore = 3;
         fixture.Context.SiegeData.TaxHunt = 300_000;
@@ -576,7 +576,7 @@ public class CastleSiegeCrownMechanicsTests
     public async ValueTask FinalResultRetainsPersistedOwnerWhenIntermediateOwnerIsMissingAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
-        fixture.Context.MiddleOwnerGuildId = uint.MaxValue;
+        fixture.Context.MiddleOwnerGuildId = Guid.NewGuid();
 
         await CastleSiegeCrownMechanics.CheckResultAsync(fixture.Context).ConfigureAwait(false);
 
