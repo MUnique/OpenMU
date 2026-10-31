@@ -359,7 +359,9 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     {
         if (this.Type is not null && GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == this.Type))
         {
-            var uri = $"/download/{this.Type.Name}/{this.Type.Name}_{this.Id}.json";
+            // Relative to the base address of the page, which contains the path base of the host,
+            // e.g. "/admin/" in the distributed deployment.
+            var uri = $"download/{this.Type.Name}/{this.Type.Name}_{this.Id}.json";
             return $"<p>{Resources.DownloadAsJson}: <a href=\"{uri}\" download><span class=\"oi oi-data-transfer-download\"></span></a></p>";
         }
 

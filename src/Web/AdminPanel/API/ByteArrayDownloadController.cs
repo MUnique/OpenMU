@@ -2,15 +2,24 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.Shared.Services;
+namespace MUnique.OpenMU.Web.AdminPanel.API;
 
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// API-Controller which returns data of a byte array of an object.
 /// </summary>
+/// <remarks>
+/// It's part of the admin panel and not of the shared project, because the game server host of the
+/// distributed deployment also uses the shared project, and it has no authentication.
+/// The attribute is required, because not every host requires an authorization for all of
+/// its controllers, e.g. the admin panel of the distributed deployment also offers endpoints
+/// which are called by dapr.
+/// </remarks>
+[Authorize]
 [Route("download/{typeString}/{id:guid}/{propertyName}")]
 public class ByteArrayDownloadController : Controller
 {

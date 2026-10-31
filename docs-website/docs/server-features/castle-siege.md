@@ -50,6 +50,15 @@ During the battle, players of the same siege side can't damage each other,
 including with area skills and pets. This applies only on the Castle Siege map
 and only to players with a siege side.
 
+## Restarting after a missed cycle end
+
+When the server wasn't running at the end of a cycle (`EndCycle`), it notices
+on the next start: if the selected guilds of a battle are still stored while
+the schedule is already before the guild selection (`Notify`) of the next
+cycle, the old registrations, marks and selected guilds are cleared, as the
+cycle end would have done. A cycle which ended without selecting guilds leaves
+no trace, so its registrations stay.
+
 ## Teleporting over gates
 
 While a castle gate is closed, players can't use the Teleport or Teleport Ally

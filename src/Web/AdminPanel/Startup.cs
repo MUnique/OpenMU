@@ -58,9 +58,7 @@ public class Startup
 
         services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
 
-        services.AddControllers(options => options.Filters.Add<MUnique.OpenMU.Web.AdminPanel.API.AdminOperationExceptionFilter>())
-            .ConfigureApplicationPartManager(setup =>
-                setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
+        services.AddAdminPanelControllers();
 
         services.AddToasts();
         services.AddScoped<ModalService>();

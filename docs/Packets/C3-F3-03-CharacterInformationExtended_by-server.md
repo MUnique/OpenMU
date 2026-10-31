@@ -13,7 +13,7 @@ The characters enters the game world.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   92   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   93   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x03  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | X |
@@ -47,6 +47,7 @@ The characters enters the game world.
 | 86 | 2 | ShortLittleEndian |  | MaximumAttackSpeed |
 | 88 | 1 | Byte |  | InventoryExtensions |
 | 90 | 2 | ShortLittleEndian |  | Resets |
+| 92 | 1 | Byte |  | MapDiscriminator; The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7), which a character enters again after losing its connection. It's appended after the 92 bytes the packet had before, so a client can tell by the packet length whether it was sent. |
 
 ### CharacterHeroState Enum
 

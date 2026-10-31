@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations.ItemExchange;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>Registers UI independent admin read operations.</summary>
@@ -31,6 +32,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<ConfigurationReadOperations>();
         services.AddScoped<PluginReadOperations>();
         services.AddScoped<MiniGameReadOperations>();
+        services.AddScoped<ItemExchangeOperations>();
         services.TryAddScoped<IAdminOperationContext, UnconfiguredAdminOperationContext>();
         services.TryAddSingleton<IAdminAuditRepository, UnconfiguredAdminAuditRepository>();
         services.TryAddSingleton<AdminWriteSettings>();

@@ -245,6 +245,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             if (!context.IsInitialized)
             {
                 await context.InitializeAsync(utcNow).ConfigureAwait(false);
+                await CleanUpMissedCycleEndAsync(context, logger).ConfigureAwait(false);
                 context.NextEconomySaveUtc = utcNow + EconomySaveInterval;
                 this.ConfigureNotifications(context, utcNow);
                 await this.OnEnterStateAsync(context, true).ConfigureAwait(false);
@@ -291,6 +292,32 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     /// <param name="context">The Castle Siege context.</param>
     /// <remarks>The packet-backed implementation is added with the Castle Siege network view phase.</remarks>
     protected virtual ValueTask BroadcastStateUpdateAsync(CastleSiegeContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Clears the registrations and the selected guilds of the previous cycle, if the server
+    /// wasn't running when that cycle ended.
+    /// </summary>
+    /// <remarks>
+    /// The selected guilds are only persisted from <see cref="CastleSiegeState.Notify"/> until <see cref="CastleSiegeState.EndCycle"/>,
+    /// so finding them in an earlier state of a cycle means the clean-up of <see cref="CastleSiegeState.EndCycle"/> never ran.
+    /// A cycle which ended without selecting guilds leaves no such trace, so its registrations can't be told apart from new ones.
+    /// </remarks>
+    private static async ValueTask CleanUpMissedCycleEndAsync(CastleSiegeContext context, ILogger logger)
+    {
+        if (context.CurrentState >= CastleSiegeState.Notify
+            || context.SiegeData.Guilds.Count == 0)
+        {
+            return;
+        }
+
+        logger.LogWarning(
+            "Castle Siege started in state {state} with {count} selected guilds of the previous cycle; the server wasn't running at its end. Clearing the registrations and selected guilds.",
+            context.CurrentState,
+            context.SiegeData.Guilds.Count);
+        await context.ClearRegistrationsAsync().ConfigureAwait(false);
+        context.FinalGuildList.Clear();
+        await context.SaveFinalGuildListAsync().ConfigureAwait(false);
+    }
 
     private static TimeSpan? GetNotificationInterval(CastleSiegeState state)
     {
