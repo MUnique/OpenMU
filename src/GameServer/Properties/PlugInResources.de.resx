@@ -1677,6 +1677,18 @@
   <data name="DroppedItemsDisappearedPlugIn_Description" xml:space="preserve">
     <value>Die Standardimplementierung von IDroppedItemsDisappearedPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
   </data>
+  <data name="MapChangeExtendedPlugIn_Name" xml:space="preserve">
+    <value>Kartenwechsel (erweitert)</value>
+  </data>
+  <data name="MapChangeExtendedPlugIn_Description" xml:space="preserve">
+    <value>Die erweiterte Implementierung von IMapChangePlugIn, die auch den Diskriminator der Karte (z. B. die Stufe des Devil Square) an den Spielclient sendet.</value>
+  </data>
+  <data name="TeleportExtendedPlugIn_Name" xml:space="preserve">
+    <value>Teleport (erweitert)</value>
+  </data>
+  <data name="TeleportExtendedPlugIn_Description" xml:space="preserve">
+    <value>Die erweiterte Implementierung von ITeleportPlugIn, die auch den Diskriminator der Karte (z. B. die Stufe des Devil Square) an den Spielclient sendet.</value>
+  </data>
   <data name="MapChangePlugIn_Name" xml:space="preserve">
     <value>Kartenwechsel</value>
   </data>

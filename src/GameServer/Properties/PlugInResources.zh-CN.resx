@@ -1618,6 +1618,18 @@
   <data name="DroppedItemsDisappearedPlugIn_Description" xml:space="preserve">
     <value>IDroppedItemsDisappearedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
   </data>
+  <data name="MapChangeExtendedPlugIn_Name" xml:space="preserve">
+    <value>地图切换通知（扩展版）</value>
+  </data>
+  <data name="MapChangeExtendedPlugIn_Description" xml:space="preserve">
+    <value>IMapChangePlugIn 的扩展实现，同时将地图的区分值（例如恶魔广场的关卡）发送至游戏客户端。</value>
+  </data>
+  <data name="TeleportExtendedPlugIn_Name" xml:space="preserve">
+    <value>瞬移通知（扩展版）</value>
+  </data>
+  <data name="TeleportExtendedPlugIn_Description" xml:space="preserve">
+    <value>ITeleportPlugIn 的扩展实现，同时将地图的区分值（例如恶魔广场的关卡）发送至游戏客户端。</value>
+  </data>
   <data name="MapChangePlugIn_Name" xml:space="preserve">
     <value>地图切换通知</value>
   </data>

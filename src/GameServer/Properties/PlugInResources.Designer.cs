@@ -4183,6 +4183,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IMapChangePlugIn which also sends the discriminator of the map (e.g. the stage of Devil Square) to the game client..
+        /// </summary>
+        public static string MapChangeExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MapChangeExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Map Change Extended.
+        /// </summary>
+        public static string MapChangeExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MapChangeExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string MapChangePlugIn_Description {
@@ -7152,6 +7170,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the ITeleportPlugIn which also sends the discriminator of the map (e.g. the stage of Devil Square) to the game client..
+        /// </summary>
+        public static string TeleportExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("TeleportExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Teleport Extended.
+        /// </summary>
+        public static string TeleportExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("TeleportExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>

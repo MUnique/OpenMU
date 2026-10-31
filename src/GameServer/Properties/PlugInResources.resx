@@ -1683,6 +1683,18 @@
   <data name="DroppedItemsDisappearedPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IDroppedItemsDisappearedPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="MapChangeExtendedPlugIn_Name" xml:space="preserve">
+    <value>Map Change Extended</value>
+  </data>
+  <data name="MapChangeExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IMapChangePlugIn which also sends the discriminator of the map (e.g. the stage of Devil Square) to the game client.</value>
+  </data>
+  <data name="TeleportExtendedPlugIn_Name" xml:space="preserve">
+    <value>Teleport Extended</value>
+  </data>
+  <data name="TeleportExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the ITeleportPlugIn which also sends the discriminator of the map (e.g. the stage of Devil Square) to the game client.</value>
+  </data>
   <data name="MapChangePlugIn_Name" xml:space="preserve">
     <value>Map Change</value>
   </data>

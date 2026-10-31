@@ -30,6 +30,7 @@
   * [C1 1B - MagicEffectCancelled075 (by server)](C1-1B-MagicEffectCancelled075_by-server.md)
   * [C3 1C - MapChanged075 (by server)](C3-1C-MapChanged075_by-server.md)
   * [C3 1C 0F - MapChanged (by server)](C3-1C-0F-MapChanged_by-server.md)
+  * [C3 1C 0F - MapChangedExtended (by server)](C3-1C-0F-MapChangedExtended_by-server.md)
   * [C3 1E - AreaSkillAnimation (by server)](C3-1E-AreaSkillAnimation_by-server.md)
   * [C1 1E - AreaSkillAnimation075 (by server)](C1-1E-AreaSkillAnimation075_by-server.md)
   * [C3 1E - AreaSkillAnimation095 (by server)](C3-1E-AreaSkillAnimation095_by-server.md)

@@ -1465,6 +1465,44 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for MapChangedExtended.
+    /// </summary>
+    [Test]
+    public void MapChangedExtended_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = MapChangedExtendedRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'IsMapChange' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsMapChange' exceeds packet boundary");
+        
+        // Validate field 'MapNumber' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MapNumber' exceeds packet boundary");
+        
+        // Validate field 'PositionX' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PositionX' exceeds packet boundary");
+        
+        // Validate field 'PositionY' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PositionY' exceeds packet boundary");
+        
+        // Validate field 'Rotation' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rotation' exceeds packet boundary");
+        
+        // Validate field 'MapDiscriminator' boundary
+        Assert.That(15 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MapDiscriminator' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for MapChanged075.
     /// </summary>
     [Test]
@@ -3453,7 +3491,7 @@ public class PacketStructureTests
     public void CharacterInformationExtended_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 92;
+        const int expectedLength = 93;
         var actualLength = CharacterInformationExtendedRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -3582,6 +3620,10 @@ public class PacketStructureTests
         // Validate field 'Resets' boundary
         Assert.That(90 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Resets' exceeds packet boundary");
+        
+        // Validate field 'MapDiscriminator' boundary
+        Assert.That(92 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MapDiscriminator' exceeds packet boundary");
     }
 
     /// <summary>

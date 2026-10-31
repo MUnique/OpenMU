@@ -72,6 +72,18 @@ public static class PlayerTestHelper
     /// <returns>The test player.</returns>
     public static async ValueTask<Player> CreatePlayerAsync(IGameContext gameContext)
     {
+        var player = new TestPlayer(gameContext);
+        await EnterWorldAsync(player, CreateCharacter(gameContext)).ConfigureAwait(false);
+        return player;
+    }
+
+    /// <summary>
+    /// Creates a character of a minimal character class on the map with the number 0, which is sufficient for test players.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The character.</returns>
+    public static Character CreateCharacter(IGameContext gameContext)
+    {
         var characterMock = new Mock<Character>();
         characterMock.SetupAllProperties();
         characterMock.Setup(c => c.LearnedSkills).Returns(new List<SkillEntry>());
@@ -140,16 +152,24 @@ public static class PlayerTestHelper
             character.Attributes.Add(new StatAttribute(attributeDef.Attribute!, attributeDef.BaseValue));
         }
 
+        return character;
+    }
+
+    /// <summary>
+    /// Logs the player in with a new account and lets it enter the world with the character.
+    /// </summary>
+    /// <param name="player">The player, e.g. a remote player whose packets are tested.</param>
+    /// <param name="character">The character, see <see cref="CreateCharacter"/>.</param>
+    public static async ValueTask EnterWorldAsync(Player player, Character character)
+    {
         var accountMock = new Mock<Account>();
         accountMock.Setup(mock => mock.Attributes).Returns(new List<StatAttribute>());
         accountMock.Setup(mock => mock.UnlockedCharacterClasses).Returns(new List<CharacterClass>());
-        var player = new TestPlayer(gameContext) { Account = accountMock.Object };
+        player.Account = accountMock.Object;
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
         await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
-
-        return player;
     }
 
     /// <summary>
