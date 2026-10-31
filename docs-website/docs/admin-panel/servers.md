@@ -35,6 +35,9 @@ Clients which didn't log in yet are limited to the same number: when as many
 connections wait for their login as players may log in, the game server refuses
 further connections right away, and logs that at the *Information* level, too.
 This way, connections which never log in can't use up the memory of the server.
+To disconnect clients which stay at the login screen for too long, activate the
+*Login Timeout* [plugin](plugins.md); it's disabled by default, and its timeout
+can be configured.
 
 ### Starting and stopping
 
