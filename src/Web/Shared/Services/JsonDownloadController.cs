@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.IO;
 using System.Threading;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Persistence;
@@ -17,6 +18,12 @@ using MUnique.OpenMU.Persistence.Json;
 /// </summary>
 /// <typeparam name="T">The source type of the data object.</typeparam>
 /// <typeparam name="TSerializable">The type of the serializable.</typeparam>
+/// <remarks>
+/// The data is sensitive, e.g. an account contains its password hash. The attribute is required,
+/// because not every host requires an authorization for all of its controllers, e.g. the admin
+/// panel of the distributed deployment also offers endpoints which are called by dapr.
+/// </remarks>
+[Authorize]
 [Route("download/[controller]")]
 [GenericControllerName]
 public class JsonDownloadController<T, TSerializable> : ControllerBase
