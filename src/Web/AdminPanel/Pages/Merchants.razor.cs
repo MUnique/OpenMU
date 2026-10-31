@@ -21,12 +21,11 @@ using MUnique.OpenMU.Web.Shared.Services;
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
 /// </summary>
-public partial class Merchants : ComponentBase, IAsyncDisposable
+public partial class Merchants : ComponentBase, IDisposable
 {
     private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
     private readonly PaginationState _itemPagination = new() { ItemsPerPage = 20 };
 
-    private Task? _loadTask;
     private CancellationTokenSource? _disposeCts;
     private List<MerchantStorageViewModel>? _viewModels;
     private MerchantStorageViewModel? _selectedMerchant;
@@ -78,43 +77,26 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     private IQueryable<MerchantStorageViewModel>? ViewModels => this._viewModels?.AsQueryable();
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         this._navigationLockDisposable?.Dispose();
         this._navigationLockDisposable = null;
 
-        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+        this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
         this._disposeCts = null;
-
-        try
-        {
-            await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            // we can ignore that ...
-        }
-        catch
-        {
-            // and we should not throw exceptions in the dispose method ...
-        }
     }
 
     /// <inheritdoc />
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync().ConfigureAwait(true);
         this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
-        return base.OnInitializedAsync();
-    }
+        this._disposeCts = new CancellationTokenSource();
 
-    /// <inheritdoc />
-    protected override async Task OnParametersSetAsync()
-    {
-        var cts = new CancellationTokenSource();
-        this._disposeCts = cts;
-        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token));
-        await base.OnParametersSetAsync().ConfigureAwait(true);
+        // Awaited within the component lifecycle, so Blazor renders the loading state first and
+        // re-renders on completion - and ignores the completion if the component is gone by then.
+        await this.LoadDataAsync(this._disposeCts.Token).ConfigureAwait(true);
     }
 
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
@@ -155,12 +137,14 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
                 .Select(o => new MerchantStorageViewModel(o))
                 .OrderBy(o => o.Name)
                 .ToList();
-
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
         }
         catch (OperationCanceledException)
         {
             // Expected when navigating away - ignore
+        }
+        catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The component (and its circuit) got disposed while loading - ignore
         }
         catch (Exception ex)
         {
