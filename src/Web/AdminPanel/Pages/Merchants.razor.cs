@@ -25,8 +25,8 @@ public partial class Merchants : ComponentBase, IDisposable
 {
     private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
     private readonly PaginationState _itemPagination = new() { ItemsPerPage = 20 };
+    private readonly CancellationTokenSource _disposeCts = new();
 
-    private CancellationTokenSource? _disposeCts;
     private List<MerchantStorageViewModel>? _viewModels;
     private MerchantStorageViewModel? _selectedMerchant;
     private IContext? _persistenceContext;
@@ -82,12 +82,8 @@ public partial class Merchants : ComponentBase, IDisposable
         this._navigationLockDisposable?.Dispose();
         this._navigationLockDisposable = null;
 
-        if (this._disposeCts is { } cts)
-        {
-            cts.Cancel();
-            cts.Dispose();
-            this._disposeCts = null;
-        }
+        this._disposeCts.Cancel();
+        this._disposeCts.Dispose();
     }
 
     /// <inheritdoc />
@@ -95,7 +91,6 @@ public partial class Merchants : ComponentBase, IDisposable
     {
         await base.OnInitializedAsync().ConfigureAwait(true);
         this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
-        this._disposeCts = new CancellationTokenSource();
 
         // Awaited within the component lifecycle, so Blazor renders the loading state first and
         // re-renders on completion - and ignores the completion if the component is gone by then.
@@ -189,7 +184,7 @@ public partial class Merchants : ComponentBase, IDisposable
         {
             var previousMerchantId = this._selectedMerchant?.Id;
             await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
-            await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
+            await this.LoadDataAsync(this._disposeCts.Token).ConfigureAwait(true);
             if (previousMerchantId is { } id && this._viewModels is not null)
             {
                 this._selectedMerchant = this._viewModels.FirstOrDefault(vm => vm.Id == id);
