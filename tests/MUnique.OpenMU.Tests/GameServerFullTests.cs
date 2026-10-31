@@ -89,6 +89,24 @@ public class GameServerFullTests
         Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
         this._loginServer.Verify(l => l.LogOffAsync("b", It.IsAny<byte>()), Times.Once);
         this._loginServer.Verify(l => l.LogOffAsync("a", It.IsAny<byte>()), Times.Never);
+        this._playerContext.Verify(c => c.GetAccountByLoginNameAsync("b", It.IsAny<CancellationToken>()), Times.Never, "A full server refuses before the account is loaded.");
+    }
+
+    /// <summary>
+    /// An account which is logged in somewhere else is still reported as such on a full server.
+    /// </summary>
+    [Test]
+    public async ValueTask ReportsAnAccountWhichIsLoggedInElsewhereOnAFullServerAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var first = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var second = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(first, "a", Password).ConfigureAwait(false);
+        this._loginServer.Setup(l => l.TryLoginAsync("b", It.IsAny<byte>())).ReturnsAsync(false);
+
+        await new LoginAction().LoginAsync(second, "b", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(second, LoginResult.AccountAlreadyConnected);
     }
 
     /// <summary>

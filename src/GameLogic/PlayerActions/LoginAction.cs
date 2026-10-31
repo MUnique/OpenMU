@@ -208,6 +208,18 @@ public class LoginAction
                 // Remembered while the state change is in progress, which a disconnect waits for.
                 // Set before the load, so that every failure below releases it exactly once.
                 player.SetLoginServerRegistration(username);
+
+                // A full game server refuses the login before the account gets loaded. When the account
+                // couldn't be reserved, it's loaded first, so that an account which is logged in
+                // somewhere else is still reported as such (unless it's a template account).
+                reservedPlace = TryReservePlace(player, gameServerContext, username, null);
+                if (reservedPlace is null)
+                {
+                    context.Allowed = false;
+                    await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
+                    return (false, null);
+                }
             }
 
             var loadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username).ConfigureAwait(false);
@@ -233,7 +245,7 @@ public class LoginAction
                 return (false, null);
             }
 
-            reservedPlace = TryReservePlace(player, gameServerContext, username, null);
+            reservedPlace ??= TryReservePlace(player, gameServerContext, username, null);
             if (reservedPlace is null)
             {
                 context.Allowed = false;
