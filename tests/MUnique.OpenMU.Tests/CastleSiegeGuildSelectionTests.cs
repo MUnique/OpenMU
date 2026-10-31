@@ -255,6 +255,30 @@ public class CastleSiegeGuildSelectionTests
     }
 
     /// <summary>
+    /// Verifies that the battle owner follows its guild when the guild gets a new runtime identifier,
+    /// so the result still goes to the guild which holds the castle.
+    /// </summary>
+    [Test]
+    public async ValueTask BattleOwnerFollowsReconnectedGuildAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+        fixture.Context.CurrentState = CastleSiegeState.Start;
+        fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
+        await CreateSiegePlayerAsync(fixture, ReconnectedAlphaGuildId, "Fighter").ConfigureAwait(false);
+
+        await fixture.Context.SetPlayerJoinSideAsync().ConfigureAwait(false);
+        var ownerAfterReconnect = fixture.Context.MiddleOwnerGuildId;
+        await CastleSiegeCrownMechanics.CheckResultAsync(fixture.Context).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ownerAfterReconnect, Is.EqualTo(ReconnectedAlphaGuildId));
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.AlphaPersistentGuildId));
+        });
+    }
+
+    /// <summary>
     /// Verifies join-side notification, reconnect mapping, magic effects, and participant accumulation.
     /// </summary>
     [Test]
