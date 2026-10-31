@@ -111,27 +111,66 @@ public class GameServerFullTests
     }
 
     /// <summary>
-    /// A login checks for a free place only after the login which holds the completion lock is done,
-    /// so two logins can't take the last place at the same time.
+    /// The place which another login in progress reserved counts like a logged in player, so two logins
+    /// can't take the last place at the same time. When the reservation is released, the place is free.
     /// </summary>
     [Test]
-    public async ValueTask WaitsForTheLoginWhichTakesTheLastPlaceAsync()
+    public async ValueTask ReservedPlaceOfALoginInProgressCountsAsync()
     {
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
-        var completing = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
         var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
 
-        var completionLock = await gameContext.LockLoginCompletionAsync().ConfigureAwait(false);
-        var login = new LoginAction().LoginAsync(player, "b", Password).AsTask();
-        Assert.That(login.IsCompleted, Is.False, "The login should wait for the completion lock.");
-
-        // The other login completes and takes the last place.
-        await completing.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
-        completionLock.Dispose();
-        await login.ConfigureAwait(false);
-
+        var otherLogin = gameContext.TryReserveLoginPlace(1, null, out _);
+        Assert.That(otherLogin, Is.Not.Null);
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
         VerifyLoginResult(player, LoginResult.ServerIsFull);
-        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+
+        otherLogin!.Dispose();
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        VerifyLoginResult(player, LoginResult.Ok);
+    }
+
+    /// <summary>
+    /// A login releases its reservation when it's done, whether it succeeded or failed.
+    /// </summary>
+    [Test]
+    public async ValueTask LoginReleasesItsReservedPlaceAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var first = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var second = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(first, "a", Password).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(second, "b", Password).ConfigureAwait(false);
+
+        await first.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+
+        using var reservation = gameContext.TryReserveLoginPlace(1, null, out var occupiedPlaces);
+        Assert.That(reservation, Is.Not.Null);
+        Assert.That(occupiedPlaces, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// A player which takes over the place of a logged in player, like the one which takes over its
+    /// offline session, doesn't need a free place - but it does when that player isn't logged in anymore.
+    /// </summary>
+    [Test]
+    public async ValueTask TakesOverThePlaceOfTheReplacedPlayerAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var replaced = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var other = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        using (var takeover = gameContext.TryReserveLoginPlace(1, replaced, out _))
+        {
+            Assert.That(takeover, Is.Not.Null);
+            Assert.That(gameContext.TryReserveLoginPlace(1, null, out _), Is.Null, "The place of the replaced player is reserved.");
+        }
+
+        // The replaced player left, and another player took the place in the meantime.
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        await other.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        Assert.That(gameContext.TryReserveLoginPlace(1, replaced, out _), Is.Null);
     }
 
     /// <summary>

@@ -64,15 +64,20 @@ public class GameContext : AsyncDisposable, IGameContext
     private readonly ConcurrentDictionary<Player, AsyncEventHandler<StateMachine.StateChangedEventArgs>> _playerStateHandlers = new();
 
     /// <summary>
-    /// The lock which is held by a login from its check for a free place until it is completed, see <see cref="LockLoginCompletionAsync"/>.
+    /// The lock for the check for a free place and the reservation of it, see <see cref="TryReserveLoginPlace"/>.
     /// </summary>
-    private readonly AsyncLock _loginCompletionLock = new();
+    private readonly Lock _loginPlacesLock = new();
 
     private readonly IDisposable _configChangeHandlerRegistration;
 
     private readonly ILogger<GameContext> _logger;
 
     private int _periodicTasksStopped;
+
+    /// <summary>
+    /// The number of places which are reserved by logins in progress, see <see cref="TryReserveLoginPlace"/>.
+    /// </summary>
+    private int _reservedLoginPlaces;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -329,9 +334,28 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <inheritdoc />
-    public async ValueTask<IDisposable> LockLoginCompletionAsync()
+    public IDisposable? TryReserveLoginPlace(int maximumPlayers, Player? replacedPlayer, out int occupiedPlaces)
     {
-        return await this._loginCompletionLock.LockAsync().ConfigureAwait(false);
+        lock (this._loginPlacesLock)
+        {
+            // A login adds itself to the logged in players before it releases its reservation, and the
+            // logged in players only get fewer otherwise. So, this sum never misses a login which passed.
+            occupiedPlaces = this.LoggedInPlayerCount + this._reservedLoginPlaces;
+            if (replacedPlayer is not null && this._loggedInPlayers.ContainsKey(replacedPlayer))
+            {
+                // Its place is taken over.
+                occupiedPlaces--;
+            }
+
+            if (occupiedPlaces >= maximumPlayers)
+            {
+                return null;
+            }
+
+            this._reservedLoginPlaces++;
+        }
+
+        return new LoginPlaceReservation(this);
     }
 
     /// <inheritdoc />
@@ -636,5 +660,38 @@ public class GameContext : AsyncDisposable, IGameContext
     {
         this.PlayersByCharacterName.TryRemove(player.SelectedCharacter!.Name, out _);
         return ValueTask.CompletedTask;
+    }
+
+    private void ReleaseLoginPlace()
+    {
+        lock (this._loginPlacesLock)
+        {
+            this._reservedLoginPlaces--;
+        }
+    }
+
+    /// <summary>
+    /// The place which a login reserved, see <see cref="TryReserveLoginPlace"/>.
+    /// </summary>
+    private sealed class LoginPlaceReservation : IDisposable
+    {
+        private GameContext? _context;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginPlaceReservation"/> class.
+        /// </summary>
+        /// <param name="context">The context in which the place is reserved.</param>
+        public LoginPlaceReservation(GameContext context)
+        {
+            this._context = context;
+        }
+
+        /// <summary>
+        /// Releases the place; again calls do nothing.
+        /// </summary>
+        public void Dispose()
+        {
+            Interlocked.Exchange(ref this._context, null)?.ReleaseLoginPlace();
+        }
     }
 }

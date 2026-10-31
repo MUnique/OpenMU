@@ -173,15 +173,19 @@ public interface IGameContext
     ValueTask RemovePlayerAsync(Player player);
 
     /// <summary>
-    /// Waits until no other login is completing, and returns a handle which keeps the next logins waiting until it's disposed.
+    /// Reserves a place for a player which logs in, if the game has a free one.
     /// </summary>
-    /// <returns>The handle which releases the lock when it's disposed.</returns>
+    /// <param name="maximumPlayers">The maximum number of logged in players.</param>
+    /// <param name="replacedPlayer">The logged in player whose place the player takes over, e.g. its offline player; <c>null</c> otherwise.
+    /// When it's no longer logged in, a free place is required.</param>
+    /// <param name="occupiedPlaces">The number of places which are taken by logged in players and reservations, without the place which is taken over.</param>
+    /// <returns>The reservation, or <c>null</c> when there is no free place.</returns>
     /// <remarks>
-    /// A login holds it from its check for a free place until its state change to <see cref="PlayerState.Authenticated"/>
-    /// is done, so that two logins can't take the last free place at the same time.
-    /// The login holds the lock of its own <see cref="Player.PlayerState"/> while it waits for this lock, never the other way around.
+    /// A reservation counts like a logged in player until it's disposed. A login keeps it until its state
+    /// change to <see cref="PlayerState.Authenticated"/> is done, or until it failed, so that two logins
+    /// can't take the last free place at the same time.
     /// </remarks>
-    ValueTask<IDisposable> LockLoginCompletionAsync();
+    IDisposable? TryReserveLoginPlace(int maximumPlayers, Player? replacedPlayer, out int occupiedPlaces);
 
     /// <summary>
     /// Gets the maps which is meant to be hosted by the game.

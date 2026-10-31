@@ -72,30 +72,31 @@ public class LoginAction
     }
 
     /// <summary>
-    /// Determines whether the game server has no free place for another logged in player.
+    /// Reserves a place for the player on the game server, see <see cref="IGameContext.TryReserveLoginPlace"/>.
     /// </summary>
     /// <param name="player">The player which logs in. It's not logged in yet, so it isn't counted.</param>
     /// <param name="gameServerContext">The game server context.</param>
     /// <param name="username">The username.</param>
-    /// <returns><c>true</c>, if the game server is full.</returns>
+    /// <param name="replacedPlayer">The logged in player whose place the player takes over, e.g. its offline player.</param>
+    /// <returns>The reservation, or <c>null</c> when the game server is full.</returns>
     /// <remarks>
-    /// Only logged in players count, so connections which stay at the login screen don't take a place.
+    /// Only logged in players and logins in progress take a place, so connections which stay at the
+    /// login screen don't.
     /// </remarks>
-    private static bool IsServerFull(Player player, IGameServerContext gameServerContext, string username)
+    private static IDisposable? TryReservePlace(Player player, IGameServerContext gameServerContext, string username, Player? replacedPlayer)
     {
         var maximumPlayers = gameServerContext.ServerConfiguration.MaximumPlayers;
-        var loggedInPlayers = gameServerContext.LoggedInPlayerCount;
-        if (loggedInPlayers < maximumPlayers)
+        if (gameServerContext.TryReserveLoginPlace(maximumPlayers, replacedPlayer, out var occupiedPlaces) is { } reservation)
         {
-            return false;
+            return reservation;
         }
 
         player.Logger.LogInformation(
-            "Login of [{Username}] refused, because the game server is full: {LoggedInPlayers} of {MaximumPlayers} players are logged in.",
+            "Login of [{Username}] refused, because the game server is full: {OccupiedPlaces} of {MaximumPlayers} players are logged in or logging in.",
             username,
-            loggedInPlayers,
+            occupiedPlaces,
             maximumPlayers);
-        return true;
+        return null;
     }
 
     private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
@@ -138,8 +139,8 @@ public class LoginAction
 
     private async ValueTask<(bool Success, Account? Account)> TryEstablishSessionAsync(Player player, string username)
     {
-        // Held until the state change of the context below is done, see IGameContext.LockLoginCompletionAsync.
-        IDisposable? loginCompletionLock = null;
+        // Kept until the state change of the context below is done, see IGameContext.TryReserveLoginPlace.
+        IDisposable? reservedPlace = null;
         try
         {
             await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
@@ -157,6 +158,17 @@ public class LoginAction
 
             if (player.GameContext.OfflinePlayerManager.TryGetPlayer(username, out var offlinePlayer))
             {
+                // The player takes over the place of its offline player. It needs a free place only when the
+                // offline player isn't logged in anymore, e.g. because its session ended in the meantime.
+                // The place is reserved before the offline session gets stopped, so it's kept when it fails.
+                reservedPlace = TryReservePlace(player, gameServerContext, username, offlinePlayer);
+                if (reservedPlace is null)
+                {
+                    context.Allowed = false;
+                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
+                    return (false, null);
+                }
+
                 var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
                 if (!isTemplateOffline)
                 {
@@ -172,9 +184,6 @@ public class LoginAction
                     player.SetLoginServerRegistration(username);
                 }
 
-                // The player takes the place of its offline player, so it doesn't need a free one. The
-                // other logins wait until it's done, so that none of them takes this place in between.
-                loginCompletionLock = await gameServerContext.LockLoginCompletionAsync().ConfigureAwait(false);
                 var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
                 if (offlineAccount is null)
                 {
@@ -224,12 +233,12 @@ public class LoginAction
                 return (false, null);
             }
 
-            loginCompletionLock = await gameServerContext.LockLoginCompletionAsync().ConfigureAwait(false);
-            if (IsServerFull(player, gameServerContext, username))
+            reservedPlace = TryReservePlace(player, gameServerContext, username, null);
+            if (reservedPlace is null)
             {
+                context.Allowed = false;
                 await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
-                context.Allowed = false;
                 return (false, null);
             }
 
@@ -245,7 +254,7 @@ public class LoginAction
         finally
         {
             // After the state change: the context is disposed when the try block is left.
-            loginCompletionLock?.Dispose();
+            reservedPlace?.Dispose();
         }
     }
 
