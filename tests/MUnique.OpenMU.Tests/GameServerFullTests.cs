@@ -413,14 +413,7 @@ public class GameServerFullTests
         observer
             .Setup(o => o.CurrentConnectionsChanged(It.IsAny<ushort>(), It.IsAny<int>()))
             .Callback((ushort _, int count) => reports.Add(count));
-        var resolver = new Mock<IIpAddressResolver>();
-        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
-        var endpoint = new Persistence.BasicModel.GameServerEndpoint
-        {
-            NetworkPort = 0,
-            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
-        };
-        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 5), gameContext, observer.Object, resolver.Object, new NullLoggerFactory());
+        var listener = CreateListener(gameContext, 0, observer.Object);
 
         await listener.StartAsync().ConfigureAwait(false);
         try
@@ -448,14 +441,7 @@ public class GameServerFullTests
     {
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
         var port = GetFreePort();
-        var resolver = new Mock<IIpAddressResolver>();
-        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
-        var endpoint = new Persistence.BasicModel.GameServerEndpoint
-        {
-            NetworkPort = port,
-            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
-        };
-        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 1), gameContext, new Mock<IGameServerStateObserver>().Object, resolver.Object, new NullLoggerFactory());
+        var listener = CreateListener(gameContext, port);
         await listener.StartAsync().ConfigureAwait(false);
         try
         {
@@ -484,15 +470,8 @@ public class GameServerFullTests
     {
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
         var port = GetFreePort();
-        var resolver = new Mock<IIpAddressResolver>();
-        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
-        var endpoint = new Persistence.BasicModel.GameServerEndpoint
-        {
-            NetworkPort = port,
-            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
-        };
         var loggerFactory = new CapturingLoggerFactory();
-        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 1), gameContext, new Mock<IGameServerStateObserver>().Object, resolver.Object, loggerFactory);
+        var listener = CreateListener(gameContext, port, loggerFactory: loggerFactory);
         await listener.StartAsync().ConfigureAwait(false);
         try
         {
@@ -528,15 +507,8 @@ public class GameServerFullTests
         observer
             .Setup(o => o.CurrentConnectionsChanged(It.IsAny<ushort>(), It.IsAny<int>()))
             .Callback((ushort _, int count) => reports.Add(count));
-        var resolver = new Mock<IIpAddressResolver>();
-        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
         var port = GetFreePort();
-        var endpoint = new Persistence.BasicModel.GameServerEndpoint
-        {
-            NetworkPort = port,
-            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
-        };
-        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 5), gameContext, observer.Object, resolver.Object, new NullLoggerFactory());
+        var listener = CreateListener(gameContext, port, observer.Object);
 
         var portUser = new System.Net.Sockets.TcpListener(IPAddress.Any, port);
         portUser.Start();
@@ -561,6 +533,19 @@ public class GameServerFullTests
         }
 
         Assert.That(reports, Is.EqualTo(new[] { 0, 1 }));
+    }
+
+    private static DefaultTcpGameServerListener CreateListener(GameServerContext gameContext, int port, IGameServerStateObserver? observer = null, ILoggerFactory? loggerFactory = null)
+    {
+        var resolver = new Mock<IIpAddressResolver>();
+        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
+        var endpoint = new Persistence.BasicModel.GameServerEndpoint
+        {
+            NetworkPort = port,
+            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
+        };
+        var serverInfo = new ServerInfo(0, "test", 0, gameContext.ServerConfiguration.MaximumPlayers);
+        return new DefaultTcpGameServerListener(endpoint, serverInfo, gameContext, observer ?? new Mock<IGameServerStateObserver>().Object, resolver.Object, loggerFactory ?? new NullLoggerFactory());
     }
 
     private static int GetFreePort()
