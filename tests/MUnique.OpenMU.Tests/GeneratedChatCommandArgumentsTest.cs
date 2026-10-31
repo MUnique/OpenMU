@@ -92,6 +92,8 @@ public class GeneratedChatCommandArgumentsTest
     {
         var argument = property.Argument is { } a ? $"{a.ShortName}:{a.IsRequired}" : "-";
         var validValues = property.ValidValues is { } v ? string.Join('|', v.ValidValues) : "-";
-        return $"{property.Name} {property.PropertyType} {argument} {validValues}";
+        var range = property.Range is { } r ? $"{r.Minimum}..{r.Maximum}" : "-";
+        var valueReference = property.ValueReference is { } vr ? $"{vr.Kind}+{vr.GroupWith}" : "-";
+        return $"{property.Name} {property.PropertyType} {argument} {validValues} {range} {valueReference}";
     }
 }
