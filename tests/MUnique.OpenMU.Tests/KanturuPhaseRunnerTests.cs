@@ -4,14 +4,21 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
 using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
 
@@ -33,6 +40,184 @@ public class KanturuPhaseRunnerTests
     {
         this._gameContext = GameContextTestHelper.CreateGameContext();
         this._map = (await this._gameContext.GetMapAsync(0).ConfigureAwait(false))!;
+    }
+
+    /// <summary>
+    /// Tests that killing Nightmare before its spawn notification finishes cannot return the
+    /// clients from the already opened tower to the battle state.
+    /// </summary>
+    [Test]
+    public async Task NightmareDeathDuringSpawn_DoesNotPublishBattleAfterTowerAsync()
+    {
+        await using var context = (GameContext)this._gameContext;
+        context.StopPeriodicTasks();
+        // Keep this ordering regression independent of optional monster stat scaling.
+        context.PlugInManager.DeactivatePlugIn<GameLogic.PlugIns.MonsterAttributeScaler>();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var spawnAdded = new TaskCompletionSource<Monster>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseSpawn = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var towerOpened = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var towerClosing = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var states = new ConcurrentQueue<(KanturuState State, byte Detail)>();
+        var monsterDefinition = new MonsterDefinition
+        {
+            Id = Guid.NewGuid(),
+            Number = 361,
+            ObjectKind = NpcObjectKind.Monster,
+            AttackDelay = TimeSpan.FromHours(1),
+        };
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1 });
+        var phase = new KanturuPhaseDefinition
+        {
+            Kind = KanturuPhaseKind.Nightmare,
+            State = KanturuState.NightmareBattle,
+            DetailState = (byte)KanturuNightmareDetailState.NightmareIntro,
+            SpawnWaveNumber = 1,
+            KillTarget = 1,
+            CountedMonsters = [monsterDefinition],
+            Nightmare = new KanturuNightmareDefinition
+            {
+                Monster = monsterDefinition,
+                HealthCheckInterval = TimeSpan.Zero,
+                SpecialAttackInterval = TimeSpan.Zero,
+            },
+        };
+        // The helper already activated the keyed strategy; a second registration would
+        // leave the original instance in use and run its default phases instead.
+        var start = this._gameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.Kanturu) as KanturuStartPlugIn
+            ?? throw new InvalidOperationException("The test context requires the Kanturu start strategy.");
+        start.Configuration = new KanturuStartConfiguration
+        {
+            EventDefinition = new KanturuEventDefinition
+            {
+                IntroDuration = TimeSpan.Zero,
+                MayaAttackInterval = TimeSpan.Zero,
+                RequiredItemDurabilityLossInterval = TimeSpan.Zero,
+                VictoryCinematicDuration = TimeSpan.Zero,
+                Phases = [phase],
+            },
+            TowerOpenDuration = TimeSpan.Zero,
+        };
+        var mapDefinition = this._map.Definition;
+        mapDefinition.ExitGates.Add(new Persistence.BasicModel.ExitGate { Map = mapDefinition, IsSpawnGate = true, X1 = 99, X2 = 99, Y1 = 100, Y2 = 100 });
+        mapDefinition.MonsterSpawns.Add(new Persistence.BasicModel.MonsterSpawnArea
+        {
+            GameMap = mapDefinition,
+            MonsterDefinition = monsterDefinition,
+            SpawnTrigger = SpawnTrigger.OnceAtWaveStart,
+            WaveNumber = 1,
+            Quantity = 1,
+            X1 = 100,
+            X2 = 100,
+            Y1 = 100,
+            Y2 = 100,
+        });
+        var initializer = new MapInitializer(this._gameContext.Configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null)
+        {
+            PlugInManager = this._gameContext.PlugInManager,
+            PathFinderPool = this._gameContext.PathFinderPool,
+        };
+        var definition = new Persistence.BasicModel.MiniGameDefinition
+        {
+            Type = MiniGameType.Kanturu,
+            Entrance = new Persistence.BasicModel.ExitGate { Map = mapDefinition, X1 = 99, X2 = 99, Y1 = 100, Y2 = 100 },
+            MaximumPlayerCount = 1,
+            GameDuration = TimeSpan.FromMinutes(1),
+        };
+        await using var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        await using var game = new KanturuContext(new MiniGameMapKey(0, 0, string.Empty), definition, this._gameContext, initializer);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IKanturuEventViewPlugIn>()
+            ?? throw new InvalidOperationException("The test player requires a Kanturu view."));
+        view.Setup(p => p.ShowStateChangeAsync(It.IsAny<KanturuState>(), It.IsAny<byte>()))
+            .Returns((KanturuState state, byte detail) =>
+            {
+                states.Enqueue((state, detail));
+                if (state == phase.State && detail == phase.DetailState)
+                {
+                    // The runner has armed its spawn capture before publishing Intro. Add our
+                    // handler last, so GameMap.AddAsync awaits this barrier after updating AOI.
+                    game.Map.ObjectAdded += PauseNightmareSpawnAsync;
+                }
+
+                if (state == KanturuState.Tower && detail == (byte)KanturuTowerDetailState.Revitalization)
+                {
+                    towerOpened.TrySetResult();
+                }
+
+                if (state == KanturuState.Tower && detail == (byte)KanturuTowerDetailState.Notify)
+                {
+                    towerClosing.TrySetResult();
+                }
+
+                return ValueTask.CompletedTask;
+            });
+
+        try
+        {
+            player.Attributes!.AddElement(new ConstantElement(1), Stats.AttackRatePvm);
+            player.Attributes.AddElement(new ConstantElement(2000), Stats.MinimumPhysBaseDmg);
+            player.Attributes.AddElement(new ConstantElement(2000), Stats.MaximumPhysBaseDmg);
+            Assert.That(await game.TryEnterAsync(player).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
+            await player.WarpToAsync(definition.Entrance).ConfigureAwait(false);
+            await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            Assert.That(player.CurrentMap, Is.SameAs(game.Map));
+            Assert.That(game.PlayerCount, Is.EqualTo(1));
+            game.EnsureGameLoopRunning();
+            var skippedWaits = 0;
+            while (!spawnAdded.Task.IsCompleted)
+            {
+                if (game.SkipCurrentWait()) // Skip only the unrelated entrance and countdown waits.
+                {
+                    skippedWaits++;
+                }
+
+                await Task.WhenAny(spawnAdded.Task, Task.Delay(10, timeout.Token)).ConfigureAwait(false);
+                Assert.That(timeout.IsCancellationRequested, Is.False,
+                    $"Spawn timed out: game={game.State}, players={game.PlayerCount}, alive={player.IsAlive}, playerState={player.PlayerState.CurrentState}, "
+                    + $"mapMatches={ReferenceEquals(player.CurrentMap, game.Map)}, state={game.CurrentKanturuState}/{game.CurrentKanturuDetailState}, "
+                    + $"monsters={game.Map.GetAttackablesInRange(KanturuContext.MapCenter, byte.MaxValue).OfType<Monster>().Count()}, skipped={skippedWaits}, views=[{string.Join(", ", states)}].");
+            }
+
+            var nightmare = await spawnAdded.Task.ConfigureAwait(false);
+            Assert.That(nightmare.Observers, Does.Contain(player), "The ordinary hit must pass the real AOI check.");
+            Assert.That(game.CurrentKanturuDetailState, Is.EqualTo(phase.DetailState));
+            Assert.That(player.IsAlive, Is.True);
+            Assert.That(player.IsAtSafezone() || nightmare.IsAtSafezone(), Is.False);
+            Assert.That(player.Attributes[Stats.AttackRatePvm], Is.GreaterThanOrEqualTo(1));
+            Assert.That(nightmare.GetDefenseRatePvm(), Is.Zero);
+            var hitView = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()
+                ?? throw new InvalidOperationException("The test player requires a hit view."));
+            await new HitAction().HitAsync(player, nightmare, 0, Direction.East).ConfigureAwait(false);
+            Assert.That(nightmare.IsAlive, Is.False,
+                $"A normal hit must kill the boss during Intro: hp={nightmare.Health}, hits=[{string.Join(", ", hitView.Invocations.Select(call => call.Arguments.Last()))}], "
+                + $"damage={player.Attributes[Stats.MinimumPhysBaseDmg]}..{player.Attributes[Stats.MaximumPhysBaseDmg]}, increase={player.Attributes[Stats.AttackDamageIncrease]}, "
+                + $"stunned={player.Attributes[Stats.IsStunned]}, asleep={player.Attributes[Stats.IsAsleep]}.");
+            await towerOpened.Task.WaitAsync(timeout.Token).ConfigureAwait(false);
+            Assert.That(releaseSpawn.Task.IsCompleted, Is.False, "Tower must open while BeginPhaseAsync is still suspended.");
+            Assert.That(game.CurrentKanturuState, Is.EqualTo(KanturuState.Tower));
+
+            releaseSpawn.TrySetResult();
+            // Notify is emitted only after the Nightmare runner returns. No timing sleep is
+            // needed to know that its late Battle publication has had a chance to run.
+            await towerClosing.Task.WaitAsync(timeout.Token).ConfigureAwait(false);
+            Assert.That(states.SkipWhile(state => state.State != KanturuState.Tower).All(state => state.State == KanturuState.Tower), Is.True,
+                $"A completed victory must not return to battle: {string.Join(", ", states)}");
+        }
+        finally
+        {
+            // Release before any asynchronous disposal, including when an assertion fails.
+            releaseSpawn.TrySetResult();
+            game.Map.ObjectAdded -= PauseNightmareSpawnAsync;
+        }
+
+        async ValueTask PauseNightmareSpawnAsync((GameMap Map, ILocateable Object) args)
+        {
+            if (args.Object is Monster monster && ReferenceEquals(monster.Definition, monsterDefinition))
+            {
+                spawnAdded.TrySetResult(monster);
+                await releaseSpawn.Task.WaitAsync(timeout.Token).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <summary>

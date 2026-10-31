@@ -16,6 +16,7 @@ using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The context of a Kanturu Refinery Tower event game.
@@ -62,6 +63,9 @@ public sealed class KanturuContext : MiniGameContext
     private readonly KanturuMayaWideAttacker _mayaAttacker;
     private readonly Dictionary<KanturuPhaseKind, IKanturuPhaseRunner> _phaseRunners;
     private readonly TimeSpan _towerOpenDuration;
+
+    // State precedes the registry read lock; retain it through broadcasts to prevent late battle delivery.
+    private readonly AsyncLock _stateLock = new();
 
     // Interlocked flags (0 = false, 1 = true) - avoids volatile by using explicit atomic reads/writes.
     private int _isVictory;
@@ -293,7 +297,7 @@ public sealed class KanturuContext : MiniGameContext
         // through GetEntrySpawnPosition.
         if (args.Object is Player && this.CurrentKanturuState == KanturuState.Tower)
         {
-            await this.ShowKanturuStateAsync(this.CurrentKanturuState, this.CurrentKanturuDetailState).ConfigureAwait(false);
+            await this.ShowCurrentKanturuStateAsync().ConfigureAwait(false);
             await this.ShowLiveMinionCountAsync().ConfigureAwait(false);
             await this.SendBarrierAttributesAsync().ConfigureAwait(false);
         }
@@ -887,10 +891,34 @@ public sealed class KanturuContext : MiniGameContext
     /// <see cref="CurrentKanturuState"/> and <see cref="CurrentKanturuDetailState"/>, so the
     /// gateway NPC plug-in can report the current phase of the event.
     /// </summary>
-    private ValueTask ShowKanturuStateAsync(KanturuState state, byte detailState)
+    private async ValueTask ShowKanturuStateAsync(KanturuState state, byte detailState)
     {
+        using var stateLock = await this._stateLock.LockAsync().ConfigureAwait(false);
+        if (this.CurrentKanturuState == KanturuState.Tower
+            && state is KanturuState.MayaBattle or KanturuState.NightmareBattle)
+        {
+            // A death during spawn can open Tower before the runner resumes its stale Battle publication.
+            return;
+        }
+
         this.CurrentKanturuState = state;
         this.CurrentKanturuDetailState = detailState;
+        await this.BroadcastKanturuStateAsync().ConfigureAwait(false);
+    }
+
+    private async ValueTask ShowCurrentKanturuStateAsync()
+    {
+        using var stateLock = await this._stateLock.LockAsync().ConfigureAwait(false);
+
+        // Read inside the gate so queued entrants cannot replay an obsolete Tower state.
+        await this.BroadcastKanturuStateAsync().ConfigureAwait(false);
+    }
+
+    // Both callers hold _stateLock through the returned broadcast.
+    private ValueTask BroadcastKanturuStateAsync()
+    {
+        var state = this.CurrentKanturuState;
+        var detailState = this.CurrentKanturuDetailState;
         return this.ForEachPlayerAsync(player =>
             player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
                 p.ShowStateChangeAsync(state, detailState)).AsTask());
