@@ -80,6 +80,11 @@ public class GameContext : AsyncDisposable, IGameContext
     private int _reservedLoginPlaces;
 
     /// <summary>
+    /// The number of entries of <see cref="_loggedInPlayers"/>, see <see cref="LoggedInPlayerCount"/>.
+    /// </summary>
+    private int _loggedInPlayerCount;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GameContext" /> class.
     /// </summary>
     /// <param name="configuration">The configuration.</param>
@@ -209,7 +214,7 @@ public class GameContext : AsyncDisposable, IGameContext
     public int PlayerCount => this._playerList.Count;
 
     /// <inheritdoc />
-    public int LoggedInPlayerCount => this._loggedInPlayers.Count;
+    public int LoggedInPlayerCount => Volatile.Read(ref this._loggedInPlayerCount);
 
     /// <summary>
     /// Gets a value indicating whether the periodic tasks of this context have been stopped,
@@ -568,11 +573,14 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private void SetLoggedIn(Player player, bool loggedIn)
     {
-        var changed = loggedIn
-            ? this._loggedInPlayers.TryAdd(player, default)
-            : this._loggedInPlayers.TryRemove(player, out _);
-        if (changed)
+        if (loggedIn && this._loggedInPlayers.TryAdd(player, default))
         {
+            Interlocked.Increment(ref this._loggedInPlayerCount);
+            this.OnLoggedInPlayerCountChanged();
+        }
+        else if (!loggedIn && this._loggedInPlayers.TryRemove(player, out _))
+        {
+            Interlocked.Decrement(ref this._loggedInPlayerCount);
             this.OnLoggedInPlayerCountChanged();
         }
     }
