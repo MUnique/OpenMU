@@ -629,6 +629,102 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that a restart after a missed EndCycle clears the registrations and selected guilds of the previous cycle.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInCleansUpMissedCycleEndAfterRestartAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSelectedGuildAsync(fixture).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+        var persistedSelectedGuilds = await GetPersistedSelectedGuildsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(context.RegisteredGuilds, Is.Empty);
+            Assert.That(persistedRegistrations, Is.Empty);
+            Assert.That(persistedSelectedGuilds, Is.Empty);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a restart during the registration keeps the registrations of the current cycle.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInKeepsCurrentRegistrationsAfterRestartAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.RegisteredGuilds.Keys, Does.Contain(fixture.RegisteredGuildId));
+            Assert.That(persistedRegistrations, Has.Count.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a restart after the guild selection doesn't treat the selected guilds as left over from a missed EndCycle.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInKeepsRegistrationsAfterRestartBeforeTheBattleAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSelectedGuildAsync(fixture).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 8, 19, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Ready));
+            Assert.That(persistedRegistrations, Has.Count.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Verifies the known limitation of the missed EndCycle detection: when the previous cycle ended without
+    /// any selected guilds, its registrations leave no trace of their cycle and are kept after a restart.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInKeepsRegistrationsOfMissedCycleEndWithoutSelectedGuildsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await SetPersistedMarksAsync(fixture, 10).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(context.RegisteredGuilds.Keys, Does.Contain(fixture.RegisteredGuildId));
+            Assert.That(persistedRegistrations, Has.Count.EqualTo(1));
+            Assert.That(persistedRegistrations[0].Marks, Is.EqualTo(10));
+        });
+    }
+
+    /// <summary>
     /// Verifies that forcing the event starts the battle for its configured duration.
     /// </summary>
     [Test]
@@ -878,6 +974,51 @@ public class CastleSiegeStateMachineTests
         siegeData.NpcStates.Add(npcState);
         await context.SaveChangesAsync().ConfigureAwait(false);
         return npcState.Id;
+    }
+
+    private static async ValueTask AddSelectedGuildAsync(TestFixture fixture)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var siegeData = (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        var guild = context.CreateNew<CastleSiegeGuild>();
+        guild.GuildId = fixture.RegisteredGuildId;
+        guild.GuildName = "Test";
+        guild.Side = CastleSiegeJoinSide.Attack1;
+        guild.IsAllianceMaster = true;
+        siegeData.Guilds.Add(guild);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private static async ValueTask SetPersistedMarksAsync(TestFixture fixture, int marks)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            fixture.GameConfiguration);
+        var registration = (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).Single();
+        registration.Marks = marks;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private static async ValueTask<IReadOnlyList<CastleSiegeGuildRegistration>> GetPersistedRegistrationsAsync(TestFixture fixture)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            fixture.GameConfiguration);
+        return (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).ToList();
+    }
+
+    private static async ValueTask<IReadOnlyList<CastleSiegeGuild>> GetPersistedSelectedGuildsAsync(TestFixture fixture)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        return (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single().Guilds.ToList();
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync(bool createSiegeData = true)
