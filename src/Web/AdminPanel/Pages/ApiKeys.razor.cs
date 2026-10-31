@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
@@ -19,6 +20,7 @@ public partial class ApiKeys : IAsyncDisposable
     private const string ClipboardScriptPath = "./_content/MUnique.OpenMU.Web.AdminPanel/js/clipboard.js";
 
     private IList<ApiKey> _apiKeys = new List<ApiKey>();
+    private DateTime? _firstUserCreatedAt;
     private bool _isLoading = true;
     private IJSObjectReference? _clipboardModule;
 
@@ -30,6 +32,9 @@ public partial class ApiKeys : IAsyncDisposable
 
     [Inject]
     private ApiKeyManagementService ApiKeyManagementService { get; set; } = null!;
+
+    [Inject]
+    private AdminPanelSetupMode SetupMode { get; set; } = null!;
 
     [Inject]
     private IToastService ToastService { get; set; } = null!;
@@ -69,12 +74,19 @@ public partial class ApiKeys : IAsyncDisposable
         try
         {
             this._apiKeys = await this.ApiKeyManagementService.GetKeysAsync().ConfigureAwait(true);
+            this._firstUserCreatedAt = await this.SetupMode.GetFirstUserCreatedAtAsync().ConfigureAwait(true);
         }
         finally
         {
             this._isLoading = false;
         }
     }
+
+    /// <summary>
+    /// Determines whether the key was created while the admin panel had no user, when anybody who
+    /// reached it could create keys.
+    /// </summary>
+    private bool IsCreatedBeforeFirstUser(ApiKey apiKey) => this._firstUserCreatedAt is { } firstUserCreatedAt && apiKey.CreatedAt < firstUserCreatedAt;
 
     private async Task OnEditToolGroupsAsync(ApiKey apiKey)
     {

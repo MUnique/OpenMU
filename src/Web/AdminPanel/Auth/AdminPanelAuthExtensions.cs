@@ -77,6 +77,7 @@ public static class AdminPanelAuthExtensions
         services.AddSingleton<BootstrapAdminUserProvider>();
         services.AddSingleton<SignInTicketService>();
         services.AddSingleton<AdminUserAvailabilityService>();
+        services.AddSingleton<AdminPanelSetupMode>();
         services.AddSingleton<AdminPrincipalValidator>();
         services.AddSingleton<ReverseProxyAuthenticationService>();
         services.AddScoped<AdminUserStore>();
@@ -131,7 +132,11 @@ public static class AdminPanelAuthExtensions
             .AddPolicy(AdminPolicies.Viewer, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Viewer)))
             .AddPolicy(AdminPolicies.Operator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Operator)))
             .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)))
-            .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)));
+            .AddPolicy(AdminPolicies.CashShop, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.CashShop)))
+            .AddPolicy(AdminPolicies.ApiKeyViewer, policy => policy
+                .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .RequireRole(AdminRoles.Viewer));
         services.AddHttpContextAccessor();
         services.AddScoped<AdminOperationCircuitState>();
         services.AddScoped<CircuitHandler>(sp => sp.GetRequiredService<AdminOperationCircuitState>());

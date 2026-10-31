@@ -162,6 +162,10 @@ Open **API keys** in the navigation — it's next to *Users* and needs the
 administrator role. Click **Create API key**, give the application a name and
 pick its role.
 
+A key can only be created once the admin panel has its [first
+user](#the-first-user). Until then, anybody who reaches the panel could create
+one, and the key would keep working after the first user exists.
+
 The generated key is then shown once, with a button which copies it to the
 clipboard.
 
@@ -177,6 +181,29 @@ them apart without knowing them.
 **Disable** stops a key from working without deleting it, which is the quickest
 reaction when you suspect a key has leaked and you don't want to touch the
 application's configuration yet. **Delete** removes it for good.
+
+### Keys from before the first user
+
+Earlier versions created keys while the admin panel had no user. At that time
+anybody who reached the panel could create one, and it kept working after the
+first user existed. So such keys are disabled once:
+
+* when the server updates its database, every key which is older than the
+  oldest user is disabled,
+* when the first user is created in the admin panel, every key which exists at
+  that moment is disabled.
+
+The **API keys** page marks them with *Created before the first user*. Enable
+such a key only if you created it yourself. Better, replace it: create a new
+key, put it into the application and delete the old one. Delete a key which you
+don't know: whoever created it can do everything its role allows.
+
+If users have been deleted since, the oldest remaining user is younger than the
+first one was, so keys from between are disabled and marked as well; enable the
+ones you know. If you only sign in with the [bootstrap user](#bootstrap-user)
+and never created a user in the panel, the server can't tell when the panel got
+its first user, so it disables nothing. If the panel was open without a user
+before you configured the bootstrap user, check the keys yourself.
 
 ### What a key may do
 
@@ -194,11 +221,12 @@ have this role implicitly.
 | `POST /api/accounts` | Operator |
 | `GET /api/accounts/{account}` | Viewer |
 | `GET /api/characters/{name}` | Viewer |
-| `PUT /api/accounts/{account}/password` | Operator |
-| `PUT /api/accounts/{account}/state` | Operator |
-| `POST /api/players/{account}/disconnect` | Operator |
+| `PUT /api/accounts/{account}/password` | Operator, key only |
+| `PUT /api/accounts/{account}/state` | Operator, key only |
+| `POST /api/players/{account}/disconnect` | Operator, key only |
 | `GET /api/accounts/{account}/cash-shop` | Cash shop |
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
+| `GET /api/items/exchange` | Viewer, [key only](#items-for-the-client-editor) |
 
 So a status page gets a Viewer key and can only read, while an application which
 announces something in the game needs an Operator key. The role is chosen when
@@ -206,7 +234,32 @@ the key is created and can't be changed afterwards — create a new key with the
 role you need and delete the old one.
 
 A signed in admin panel user can use the API as well, with the same roles — this
-is handy while trying things out in the browser.
+is handy while trying things out in the browser. The endpoints marked "key only"
+don't accept the login cookie; they need an API key.
+
+### Items for the client editor
+
+`GET /api/items/exchange` returns the items as an item exchange file of the
+MuMain client. Its editor, MuEditor, downloads it with "Update from server" and
+shows what differs from the client's items before anything changes; see the
+client's `docs/item-data.md`.
+
+* It needs an API key with the Viewer role. The login cookie of the admin panel
+  isn't accepted.
+* It reads the saved configuration, so changes which aren't saved yet in the
+  admin panel aren't part of it.
+* One export runs at a time. A request in the meantime gets `429 Too Many
+  Requests`, with `Retry-After` in seconds.
+* The file names the item fields it carries in its `fields` list; the client
+  keeps its own values of the other fields.
+* Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
+  out, because the client would refuse the whole file. The log names them.
+* The file names the game version of the configuration, `season6` for Season 6.
+  The client only reads Season 6 data, so it refuses the file of a server with
+  another version.
+
+The admin panel shouldn't be reachable from the internet for this either: keep
+it on localhost, behind a VPN or a firewall.
 
 ### Registering accounts from a website
 

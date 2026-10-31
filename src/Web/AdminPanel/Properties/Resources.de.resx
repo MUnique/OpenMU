@@ -864,6 +864,18 @@
   <data name="ApiKeyShownOnceDescription" xml:space="preserve">
     <value>Es wird nur der Hash des Schlüssels gespeichert, daher wird er nur dieses eine Mal angezeigt. Wenn er verloren geht, löschen Sie den Schlüssel und erstellen Sie einen neuen.</value>
   </data>
+  <data name="ApiKeyNeedsAUser" xml:space="preserve">
+    <value>Legen Sie zuerst den ersten Benutzer des Admin-Panels an: bis dahin könnte jeder, der das Admin-Panel erreicht, einen API-Schlüssel erstellen, der danach weiter funktionieren würde.</value>
+  </data>
+  <data name="ApiKeyCreatedBeforeFirstUser" xml:space="preserve">
+    <value>Vor dem ersten Benutzer erstellt</value>
+  </data>
+  <data name="ApiKeysCreatedBeforeFirstUserHint" xml:space="preserve">
+    <value>Mit „Vor dem ersten Benutzer erstellt“ markierte Schlüssel wurden erstellt, als das Admin-Panel noch keinen Benutzer hatte und jeder, der es erreichte, Schlüssel erstellen konnte. Sie wurden einmalig deaktiviert. Aktivieren Sie einen solchen Schlüssel nur, wenn Sie ihn selbst erstellt haben, oder ersetzen Sie ihn besser: Erstellen Sie einen neuen Schlüssel, tragen Sie ihn in der Anwendung ein und löschen Sie den alten.</value>
+  </data>
+  <data name="ApiKeysOfSetupModeDisabled" xml:space="preserve">
+    <value>{0} API-Schlüssel wurden deaktiviert: Sie wurden erstellt, als das Admin-Panel noch keinen Benutzer hatte und jeder, der es erreichte, Schlüssel erstellen konnte. Aktivieren Sie auf der Seite API-Schlüssel nur die Schlüssel, die Sie selbst erstellt haben.</value>
+  </data>
   <data name="NoApiKeys" xml:space="preserve">
     <value>Es wurde noch kein API-Schlüssel erstellt.</value>
   </data>
