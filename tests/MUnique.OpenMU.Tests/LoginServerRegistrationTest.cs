@@ -46,7 +46,7 @@ public class LoginServerRegistrationTest
                 return Task.FromResult(true);
             });
         var gameContext = await CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
-        player = new TestPlayer(gameContext);
+        player = new LoginTestPlayer(gameContext);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         string? releasedAtDisconnect = null;
         player.PlayerDisconnected += disconnectedPlayer =>
@@ -91,49 +91,13 @@ public class LoginServerRegistrationTest
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        var gameConfiguration = new BasicModel.GameConfiguration();
-        var map = new BasicModel.GameMapDefinition { TerrainData = new byte[ushort.MaxValue + 3] };
-        gameConfiguration.Maps.Add(map);
-        var plugInManager = new PlugInManager([], NullLoggerFactory.Instance, null, null);
-        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameServerContext = new GameServerContext(
-            new BasicModel.GameServerDefinition
-            {
-                GameConfiguration = gameConfiguration,
-                ServerConfiguration = new BasicModel.GameServerConfiguration { MaximumPlayers = 10 },
-            },
-            new Mock<IGuildServer>().Object,
-            new Mock<IEventPublisher>().Object,
-            loginServer,
-            new Mock<IFriendServer>().Object,
-            persistenceContextProvider,
-            mapInitializer,
-            NullLoggerFactory.Instance,
-            plugInManager,
-            NullDropGenerator.Instance,
-            new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameServerContext.PlugInManager;
-        mapInitializer.PathFinderPool = gameServerContext.PathFinderPool;
-        return gameServerContext;
-    }
-
-    private class TestPlayer : Player
-    {
-        public TestPlayer(IGameContext gameContext)
-            : base(gameContext)
-        {
-        }
-
-        protected override ICustomPlugInContainer<GameLogic.Views.IViewPlugIn> CreateViewPlugInContainer()
-        {
-            return new MockViewPlugInContainer();
-        }
+        return LoginTestSetup.CreateGameServerContext(persistenceContextProvider, loginServer);
     }
 
     /// <summary>
     /// A player whose login fails after the login server accepted it, because assigning the account fails.
     /// </summary>
-    private sealed class FailingLoginPlayer : TestPlayer
+    private sealed class FailingLoginPlayer : LoginTestPlayer
     {
         public FailingLoginPlayer(IGameContext gameContext)
             : base(gameContext)

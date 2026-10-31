@@ -437,42 +437,6 @@ public class GameServerFullTests
 
     private GameServerContext CreateGameServerContext(short maximumPlayers)
     {
-        var gameConfiguration = new Persistence.BasicModel.GameConfiguration();
-        gameConfiguration.Maps.Add(new Persistence.BasicModel.GameMapDefinition());
-        var persistence = new Mock<IPersistenceContextProvider> { DefaultValue = DefaultValue.Mock };
-        persistence.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Returns(this._playerContext.Object);
-        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameServer = new GameServerContext(
-            new Persistence.BasicModel.GameServerDefinition
-            {
-                GameConfiguration = gameConfiguration,
-                ServerConfiguration = new Persistence.BasicModel.GameServerConfiguration { MaximumPlayers = maximumPlayers },
-            },
-            new Mock<IGuildServer>().Object,
-            new Mock<IEventPublisher>().Object,
-            this._loginServer.Object,
-            new Mock<IFriendServer>().Object,
-            persistence.Object,
-            mapInitializer,
-            new NullLoggerFactory(),
-            new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null, null),
-            NullDropGenerator.Instance,
-            new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameServer.PlugInManager;
-        mapInitializer.PathFinderPool = gameServer.PathFinderPool;
-        return gameServer;
-    }
-
-    private sealed class LoginTestPlayer : Player
-    {
-        public LoginTestPlayer(IGameContext gameContext)
-            : base(gameContext)
-        {
-        }
-
-        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
-        {
-            return new MockViewPlugInContainer();
-        }
+        return LoginTestSetup.CreateGameServerContext(LoginTestSetup.CreatePersistence(this._playerContext.Object), this._loginServer.Object, maximumPlayers: maximumPlayers);
     }
 }
