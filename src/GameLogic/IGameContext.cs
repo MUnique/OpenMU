@@ -116,6 +116,14 @@ public interface IGameContext
     int LoggedInPlayerCount { get; }
 
     /// <summary>
+    /// Gets the number of players which wait for their login: they are connected, but didn't log in yet.
+    /// </summary>
+    /// <remarks>
+    /// Players which disconnect and are still saving their progress are neither waiting nor logged in.
+    /// </remarks>
+    int WaitingForLoginCount { get; }
+
+    /// <summary>
     /// Gets the logger factory.
     /// </summary>
     ILoggerFactory LoggerFactory { get; }

@@ -227,7 +227,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
     {
         var maximum = this._gameContext.ServerConfiguration.MaximumPlayers;
-        var waitingForLogin = this._gameContext.PlayerCount - this._gameContext.LoggedInPlayerCount;
+        var waitingForLogin = this._gameContext.WaitingForLoginCount;
         if (waitingForLogin >= maximum)
         {
             this.Log(l => l.LogInformation(

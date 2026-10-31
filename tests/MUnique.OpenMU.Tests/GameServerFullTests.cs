@@ -314,6 +314,29 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// Only connections at the login screen wait for their login; logged in and disconnecting players don't.
+    /// </summary>
+    [Test]
+    public async ValueTask WaitingForLoginCountsTheConnectionsAtTheLoginScreenAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 2);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(1));
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(0));
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(0));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+        Assert.That(gameContext.PlayerCount, Is.EqualTo(1), "The player isn't removed yet.");
+
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+        await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// A player which was removed from the game isn't counted when its state changes afterwards.
     /// </summary>
     [Test]
@@ -392,6 +415,10 @@ public class GameServerFullTests
 
             await new LoginAction().LoginAsync(waiting, "a", Password).ConfigureAwait(false);
             Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False, "The logged in player doesn't count against this limit.");
+
+            // It disconnects, and saves its progress before it's removed.
+            await waiting.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False, "A disconnecting player doesn't wait for its login.");
         }
         finally
         {

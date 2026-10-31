@@ -268,6 +268,18 @@ public static class PlayerState
     /// </returns>
     public static bool IsLoggedIn(this State state)
     {
-        return state != Initial && state != LoginScreen && !state.IsDisconnectedOrFinished();
+        return !state.IsWaitingForLogin() && !state.IsDisconnectedOrFinished();
+    }
+
+    /// <summary>
+    /// Determines whether a player in this state waits for its login: it's connected, but didn't log in yet.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <returns>
+    ///   <c>true</c> if a player in this state waits for its login; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsWaitingForLogin(this State state)
+    {
+        return state == Initial || state == LoginScreen;
     }
 }

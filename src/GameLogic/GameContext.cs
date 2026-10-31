@@ -60,13 +60,19 @@ public class GameContext : AsyncDisposable, IGameContext
     private readonly HashSet<Player> _loggedInPlayers = new();
 
     /// <summary>
+    /// Keeps the players of <see cref="_playerList"/> which wait for their login, see <see cref="WaitingForLoginCount"/>.
+    /// Guarded by <see cref="_loginStateLock"/>.
+    /// </summary>
+    private readonly HashSet<Player> _waitingPlayers = new();
+
+    /// <summary>
     /// Keeps the players whose states this context counts: the ones of <see cref="_playerList"/>, but
     /// added and removed together with <see cref="_loggedInPlayers"/>. Guarded by <see cref="_loginStateLock"/>.
     /// </summary>
     private readonly HashSet<Player> _countedPlayers = new();
 
     /// <summary>
-    /// The lock for the counted players, the logged in players and the reserved places of logins.
+    /// The lock for the counted players, the logged in and waiting players and the reserved places of logins.
     /// It's only held for short, synchronous work, and no other lock is taken while it's held.
     /// </summary>
     private readonly Lock _loginStateLock = new();
@@ -88,6 +94,12 @@ public class GameContext : AsyncDisposable, IGameContext
     /// Changed under <see cref="_loginStateLock"/>, read without it.
     /// </summary>
     private int _loggedInPlayerCount;
+
+    /// <summary>
+    /// The number of entries of <see cref="_waitingPlayers"/>, see <see cref="WaitingForLoginCount"/>.
+    /// Changed under <see cref="_loginStateLock"/>, read without it.
+    /// </summary>
+    private int _waitingForLoginCount;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -220,6 +232,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <inheritdoc />
     public int LoggedInPlayerCount => Volatile.Read(ref this._loggedInPlayerCount);
+
+    /// <inheritdoc />
+    public int WaitingForLoginCount => Volatile.Read(ref this._waitingForLoginCount);
 
     /// <summary>
     /// Gets a value indicating whether the periodic tasks of this context have been stopped,
@@ -404,6 +419,7 @@ public class GameContext : AsyncDisposable, IGameContext
             // count it as logged in again after it was removed.
             this._countedPlayers.Remove(player);
             loggedOut = this.RemoveLoggedInPlayer(player);
+            this.SetWaitingForLogin(player, false);
         }
 
         if (loggedOut)
@@ -565,7 +581,7 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <summary>
-    /// Counts the player as logged in or not, depending on its current state.
+    /// Counts the player as logged in, waiting for its login or neither, depending on its current state.
     /// </summary>
     /// <param name="player">The player.</param>
     /// <remarks>
@@ -578,7 +594,8 @@ public class GameContext : AsyncDisposable, IGameContext
         bool changed;
         lock (this._loginStateLock)
         {
-            if (this._countedPlayers.Contains(player) && player.PlayerState.CurrentState.IsLoggedIn())
+            var state = this._countedPlayers.Contains(player) ? player.PlayerState.CurrentState : PlayerState.Finished;
+            if (state.IsLoggedIn())
             {
                 changed = this._loggedInPlayers.Add(player);
                 if (changed)
@@ -590,11 +607,30 @@ public class GameContext : AsyncDisposable, IGameContext
             {
                 changed = this.RemoveLoggedInPlayer(player);
             }
+
+            this.SetWaitingForLogin(player, state.IsWaitingForLogin());
         }
 
         if (changed)
         {
             this.OnLoggedInPlayerCountChanged();
+        }
+    }
+
+    /// <summary>
+    /// Adds the player to or removes it from the players which wait for their login. It has to be called under <see cref="_loginStateLock"/>.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="waiting">If set to <c>true</c>, the player waits for its login.</param>
+    private void SetWaitingForLogin(Player player, bool waiting)
+    {
+        if (waiting && this._waitingPlayers.Add(player))
+        {
+            this._waitingForLoginCount++;
+        }
+        else if (!waiting && this._waitingPlayers.Remove(player))
+        {
+            this._waitingForLoginCount--;
         }
     }
 
