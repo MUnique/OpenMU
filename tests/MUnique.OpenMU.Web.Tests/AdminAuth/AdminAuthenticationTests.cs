@@ -453,7 +453,9 @@ public class AdminAuthenticationTests
 
         var concurrentCall = service.AnyUserExistsAsync();
         Assert.That(concurrentCall.IsCompleted, Is.True, "A check must not wait for a probe which is already running.");
-        Assert.That(await concurrentCall.ConfigureAwait(false), Is.False);
+
+        // Nothing is known before the first probe finished, so a login is required instead of the setup mode.
+        Assert.That(await concurrentCall.ConfigureAwait(false), Is.True);
 
         repository.Release();
         Assert.That(await blockedCall.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.False);

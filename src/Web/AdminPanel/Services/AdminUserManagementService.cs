@@ -99,7 +99,7 @@ public class AdminUserManagementService
             return false;
         }
 
-        this._userAvailability.Invalidate();
+        this._userAvailability.NotifyUserCreated();
         this._toastService.ShowSuccess(Resources.UserCreated);
         if (endsSetupMode && await this._setupMode.DisableApiKeysAsync().ConfigureAwait(false) is var disabledKeys and > 0)
         {
