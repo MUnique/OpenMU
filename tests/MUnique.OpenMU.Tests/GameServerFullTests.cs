@@ -154,6 +154,28 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// The game context follows the state of its players, and a state change still waits for the
+    /// subscribers which were there before, like the one which runs the state changed plugins.
+    /// </summary>
+    [Test]
+    public async ValueTask StateChangeWaitsForEarlierSubscribersAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = new LoginTestPlayer(gameContext);
+        var earlierSubscriberCompleted = false;
+        player.PlayerState.StateChanged += async _ =>
+        {
+            await Task.Delay(50).ConfigureAwait(false);
+            earlierSubscriberCompleted = true;
+        };
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+
+        Assert.That(earlierSubscriberCompleted, Is.True);
+    }
+
+    /// <summary>
     /// The listener reports the logged in players to the connect server: not the connections at the
     /// login screen, and a disconnected player right away instead of after it saved its progress.
     /// </summary>
