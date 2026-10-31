@@ -96,7 +96,7 @@ public static class CastleSiegeCrownMechanics
         CastleSiegeJoinSide capturingSide)
     {
         if (crownUser.GuildStatus is not { } guildStatus
-            || !context.FinalGuildList.TryGetValue(guildStatus.GuildId, out var capturingGuild)
+            || context.GetFinalGuild(guildStatus.GuildId) is not { } capturingGuild
             || !IsAttackingSide(capturingSide)
             || capturingGuild.Side != capturingSide)
         {
@@ -304,9 +304,7 @@ public static class CastleSiegeCrownMechanics
             return null;
         }
 
-        var selectedOwner = context.FinalGuildList.Values
-            .FirstOrDefault(guild => guild.PersistentGuildId == ownerGuildId);
-        if (selectedOwner is not null)
+        if (context.FinalGuildList.TryGetValue(ownerGuildId, out var selectedOwner))
         {
             return selectedOwner.GuildName;
         }

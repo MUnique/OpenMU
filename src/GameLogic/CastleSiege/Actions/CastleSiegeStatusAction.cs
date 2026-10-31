@@ -54,7 +54,7 @@ public class CastleSiegeStatusAction
                 : context.Schedule.GetNextStateStartUtc(CastleSiegeState.Start, utcNow) ?? stateEndUtc;
             ownerGuildId = context.SiegeData.IsOccupied ? context.SiegeData.OwnerGuildId : null;
             selectedOwnerName = ownerGuildId is { } id
-                ? context.FinalGuildList.Values.FirstOrDefault(guild => guild.PersistentGuildId == id)?.GuildName
+                ? context.FinalGuildList.GetValueOrDefault(id)?.GuildName
                 : null;
         }
         finally
