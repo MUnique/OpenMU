@@ -82,9 +82,12 @@ public partial class Merchants : ComponentBase, IDisposable
         this._navigationLockDisposable?.Dispose();
         this._navigationLockDisposable = null;
 
-        this._disposeCts?.Cancel();
-        this._disposeCts?.Dispose();
-        this._disposeCts = null;
+        if (this._disposeCts is { } cts)
+        {
+            cts.Cancel();
+            cts.Dispose();
+            this._disposeCts = null;
+        }
     }
 
     /// <inheritdoc />
