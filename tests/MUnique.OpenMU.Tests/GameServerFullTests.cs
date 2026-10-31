@@ -337,6 +337,27 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// State changes within the game keep the player counted once, until it disconnects.
+    /// </summary>
+    [Test]
+    public async ValueTask StateChangesWithinTheGameKeepTheCountAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 2);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        foreach (var state in new[] { PlayerState.CharacterSelection, PlayerState.EnteredWorld, PlayerState.NpcDialogOpened, PlayerState.EnteredWorld, PlayerState.Dead, PlayerState.EnteredWorld })
+        {
+            Assert.That(await player.PlayerState.TryAdvanceToAsync(state).ConfigureAwait(false), Is.True, state.Name);
+            Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1), state.Name);
+            Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(0), state.Name);
+        }
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
     /// A player which was removed from the game isn't counted when its state changes afterwards.
     /// </summary>
     [Test]

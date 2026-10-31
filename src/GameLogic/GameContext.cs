@@ -360,6 +360,14 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public void OnPlayerStateChanged(Player player, State previousState, State currentState)
     {
+        // Most state changes happen within the game, e.g. when the player opens an NPC dialog or
+        // changes the map. They don't change any count, so they don't need the lock.
+        if (previousState.IsLoggedIn() == currentState.IsLoggedIn()
+            && previousState.IsWaitingForLogin() == currentState.IsWaitingForLogin())
+        {
+            return;
+        }
+
         this.UpdateLoggedIn(player);
     }
 
