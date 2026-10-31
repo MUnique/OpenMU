@@ -70,6 +70,8 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private readonly IDisposable _configChangeHandlerRegistration;
 
+    private readonly ILogger<GameContext> _logger;
+
     private int _periodicTasksStopped;
 
     /// <summary>
@@ -91,6 +93,7 @@ public class GameContext : AsyncDisposable, IGameContext
             this.PlugInManager = plugInManager;
             this._mapInitializer = mapInitializer;
             this.LoggerFactory = loggerFactory;
+            this._logger = loggerFactory.CreateLogger<GameContext>();
             this.DropGenerator = dropGenerator;
             this.ConfigurationChangeMediator = changeMediator;
             this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>(), configuration);
@@ -546,7 +549,29 @@ public class GameContext : AsyncDisposable, IGameContext
             : this._loggedInPlayers.TryRemove(player, out _);
         if (changed)
         {
-            this.LoggedInPlayerCountChanged?.Invoke(this, EventArgs.Empty);
+            this.OnLoggedInPlayerCountChanged();
+        }
+    }
+
+    private void OnLoggedInPlayerCountChanged()
+    {
+        if (this.LoggedInPlayerCountChanged is not { } handler)
+        {
+            return;
+        }
+
+        // It's raised within the state change of a player, which must not fail because of a
+        // subscriber: a failing disconnect, for example, would leave the player in the game.
+        foreach (var subscriber in handler.GetInvocationList())
+        {
+            try
+            {
+                ((EventHandler)subscriber).Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "A subscriber of the changed number of logged in players failed.");
+            }
         }
     }
 

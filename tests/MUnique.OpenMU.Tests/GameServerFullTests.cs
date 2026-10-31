@@ -154,6 +154,25 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// A subscriber of the changed number of logged in players which throws doesn't break the
+    /// disconnect of a player: it's still removed from the game.
+    /// </summary>
+    [Test]
+    public async ValueTask FailingCountSubscriberDoesNotBreakTheDisconnectAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        gameContext.LoggedInPlayerCountChanged += (_, _) => throw new InvalidOperationException("The subscriber failed.");
+
+        await player.DisconnectAsync().ConfigureAwait(false);
+
+        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.Finished));
+        Assert.That(gameContext.PlayerCount, Is.EqualTo(0));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
     /// The game context follows the state of its players, and a state change still waits for the
     /// subscribers which were there before, like the one which runs the state changed plugins.
     /// </summary>
