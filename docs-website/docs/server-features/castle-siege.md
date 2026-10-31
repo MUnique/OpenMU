@@ -44,6 +44,12 @@ levels and positions, is only answered while the Senior's window is open, and
 only shows the structures to the guild master and assistant master of the
 castle owner guild. Other players get an empty list.
 
+## Friendly fire during the battle
+
+During the battle, players of the same siege side can't damage each other,
+including with area skills and pets. This applies only on the Castle Siege map
+and only to players with a siege side.
+
 ## Restarting after a missed cycle end
 
 When the server wasn't running at the end of a cycle (`EndCycle`), it notices
