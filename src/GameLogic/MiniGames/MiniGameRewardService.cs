@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using System.Collections.Concurrent;
 using MUnique.OpenMU.DataModel.Statistics;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -78,17 +79,20 @@ internal sealed class MiniGameRewardService
     /// <returns>The bonus score and the given money.</returns>
     public async Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank)
     {
-        int bonusScore = 0;
-        int givenMoney = 0;
-        var rewards = this._definition.Rewards.Where(r => this.DoesRewardApply(player, rank, r));
-        foreach (var reward in rewards)
+        return await player.RunPersistenceExclusiveAsync(async () =>
         {
-            var result = await this.GiveRewardAsync(player, reward).ConfigureAwait(false);
-            bonusScore += result.BonusScore;
-            givenMoney += result.GivenMoney;
-        }
+            int bonusScore = 0;
+            int givenMoney = 0;
+            var rewards = this._definition.Rewards.Where(r => this.DoesRewardApply(player, rank, r));
+            foreach (var reward in rewards)
+            {
+                var result = await this.GiveRewardAsync(player, reward).ConfigureAwait(false);
+                bonusScore += result.BonusScore;
+                givenMoney += result.GivenMoney;
+            }
 
-        return (bonusScore, givenMoney);
+            return (bonusScore, givenMoney);
+        }).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -194,14 +198,18 @@ internal sealed class MiniGameRewardService
                 return;
             }
 
-            var droppedItem = new DroppedItem(item, player.RandomPosition, this._map, player, player.GetAsEnumerable());
-
-            var shouldDrop = drop || !(player.Inventory is not null && await player.Inventory.AddItemAsync(item).ConfigureAwait(false));
-            if (shouldDrop)
+            if (!drop && player.Inventory is { } inventory
+                && inventory.CheckInvSpace(item) is { } slot
+                && await inventory.AddItemAsync(slot, item).ConfigureAwait(false))
             {
-                this._logger.LogDebug("{context}: Reward {item} for {player} has been dropped by players coordinates {position}.", this._owner, item, player, player.Position);
-                await this._map.AddAsync(droppedItem).ConfigureAwait(false);
+                var inventoryItem = inventory.GetItem(slot)!;
+                await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(view => view.ItemAppearAsync(inventoryItem)).ConfigureAwait(false);
+                continue;
             }
+
+            var droppedItem = new DroppedItem(item, player.RandomPosition, this._map, player, player.GetAsEnumerable());
+            this._logger.LogDebug("{context}: Reward {item} for {player} has been dropped by players coordinates {position}.", this._owner, item, player, player.Position);
+            await this._map.AddAsync(droppedItem).ConfigureAwait(false);
         }
     }
 
