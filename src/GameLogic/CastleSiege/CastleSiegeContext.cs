@@ -90,9 +90,13 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
-    /// Gets or sets the runtime identifier of the guild which currently owns the castle during the battle.
+    /// Gets or sets the persistent identifier of the guild which currently owns the castle during the battle.
     /// </summary>
-    public uint? MiddleOwnerGuildId { get; set; }
+    /// <remarks>
+    /// This is the persistent and not the runtime guild identifier, because the runtime identifier
+    /// of a guild changes when it is loaded again by the guild server, e.g. after all members were offline.
+    /// </remarks>
+    public Guid? MiddleOwnerGuildId { get; set; }
 
     /// <summary>
     /// Gets the active Castle Siege NPCs.
@@ -617,10 +621,21 @@ public class CastleSiegeContext : IEventStateProvider
         this.MiddleOwnerGuildId = this.FinalGuildList.Values
                                       .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense
                                                                && guild.PersistentGuildId == this.SiegeData.OwnerGuildId)
-                                      ?.GuildId
+                                      ?.PersistentGuildId
                                   ?? this.FinalGuildList.Values
                                       .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
-                                      ?.GuildId;
+                                      ?.PersistentGuildId;
+    }
+
+    /// <summary>
+    /// Gets the selected guild which currently owns the castle during the battle.
+    /// </summary>
+    /// <returns>The current battle owner, or <see langword="null"/> if there is none or it is not selected.</returns>
+    internal CastleSiegeGuildParticipant? GetBattleOwner()
+    {
+        return this.MiddleOwnerGuildId is { } ownerGuildId
+            ? this.FinalGuildList.Values.FirstOrDefault(guild => guild.PersistentGuildId == ownerGuildId)
+            : null;
     }
 
     /// <summary>
@@ -1038,12 +1053,6 @@ public class CastleSiegeContext : IEventStateProvider
         this.FinalGuildList.TryRemove(persistedEntry.Key, out _);
         persistedEntry.Value.GuildId = guildStatus.GuildId;
         this.FinalGuildList[guildStatus.GuildId] = persistedEntry.Value;
-        if (this.MiddleOwnerGuildId == persistedEntry.Key)
-        {
-            // The battle owner is looked up by its runtime identifier when the result is decided.
-            this.MiddleOwnerGuildId = guildStatus.GuildId;
-        }
-
         return persistedEntry.Value.Side;
     }
 }

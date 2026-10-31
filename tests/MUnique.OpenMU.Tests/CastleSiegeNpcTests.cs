@@ -1330,7 +1330,7 @@ public class CastleSiegeNpcTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(OwnerRuntimeGuildId));
+                Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(fixture.OwnerPersistentGuildId));
                 Assert.That(fixture.Context.FinalGuildList[OwnerRuntimeGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
                 Assert.That(fixture.Context.LifeStones, Is.Empty);
                 Assert.That(fixture.Map.GetObject(lifeStone.Id), Is.Null);
