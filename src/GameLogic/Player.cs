@@ -87,6 +87,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly MapPowerUps _mapPowerUps = new();
 
+    private readonly AccountAttributeGrantPowerUps _accountAttributeGrantPowerUps = new();
+
     private CancellationTokenSource? _respawnAfterDeathCts;
 
     private Character? _selectedCharacter;
@@ -1949,6 +1951,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void ReleaseAttributeSystem()
     {
         this._mapPowerUps.Remove();
+        this._accountAttributeGrantPowerUps.Remove();
         if (this.Attributes is { } attributes)
         {
             // The ammunition amount of some classes is a stat attribute, which belongs to the character.
@@ -2077,6 +2080,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         // The previous character of this connection may still hold its attribute system.
         this.ReleaseAttributeSystem();
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
+        this._accountAttributeGrantPowerUps.Apply(this.Account!, this.Attributes);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();

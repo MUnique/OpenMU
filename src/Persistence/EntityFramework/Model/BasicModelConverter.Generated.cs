@@ -50,6 +50,7 @@ internal sealed class BasicModelConverter
             IncreasableItemOption value => this.Convert(value),
             ItemDropItemGroup value => this.Convert(value),
             Account value => this.Convert(value),
+            AccountAttributeGrant value => this.Convert(value),
             AccountExternalLink value => this.Convert(value),
             AppearanceData value => this.Convert(value),
             AreaSkillSettings value => this.Convert(value),
@@ -211,6 +212,30 @@ internal sealed class BasicModelConverter
             }
         }
 
+        if (source.AttributeGrants is { } attributeGrantsItems)
+        {
+            foreach (var item in attributeGrantsItems)
+            {
+                target.AttributeGrants.Add((MUnique.OpenMU.DataModel.Entities.AccountAttributeGrant)this.ConvertObject(item)!);
+            }
+        }
+
+        return target;
+    }
+
+    private BasicModel.AccountAttributeGrant Convert(AccountAttributeGrant source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.AccountAttributeGrant)converted;
+        }
+
+        var target = new BasicModel.AccountAttributeGrant();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
+        target.Value = source.Value;
+        target.ValidUntil = source.ValidUntil;
         return target;
     }
 
@@ -1588,6 +1613,14 @@ internal sealed class BasicModelConverter
             foreach (var item in endpointsItems)
             {
                 target.Endpoints.Add((MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.JoinRequirements is { } joinRequirementsItems)
+        {
+            foreach (var item in joinRequirementsItems)
+            {
+                target.JoinRequirements.Add((MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement)this.ConvertObject(item)!);
             }
         }
 
