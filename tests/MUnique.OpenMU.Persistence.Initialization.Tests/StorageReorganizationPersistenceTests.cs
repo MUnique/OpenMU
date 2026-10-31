@@ -42,7 +42,10 @@ public class StorageReorganizationPersistenceTests
         Assert.That(reorganized.RawItemStorage, Is.SameAs(persistentStorage));
         Assert.That(reorganized.ItemStorageId, Is.EqualTo(persistentStorage.Id));
         var collectionChanges = new List<NotifyCollectionChangedAction>();
-        ((INotifyCollectionChanged)persistentStorage.Items).CollectionChanged += (_, args) => collectionChanges.Add(args.Action);
+        var notifier = persistentStorage.Items is INotifyCollectionChanged collection
+            ? collection
+            : throw new InvalidOperationException("The persistent collection must expose membership changes.");
+        notifier.CollectionChanged += (_, args) => collectionChanges.Add(args.Action);
 
         var storage = new Storage(
             numberOfSlots,
