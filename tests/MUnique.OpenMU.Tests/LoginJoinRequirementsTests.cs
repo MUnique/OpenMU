@@ -86,7 +86,7 @@ public class LoginJoinRequirementsTests
     [Test]
     public async ValueTask PermanentAccountAttributeFulfillsRequirementAsync()
     {
-        this._account.Attributes.Add(new StatAttribute(Vip, RequiredValue));
+        this._account.Attributes.Add(new Persistence.BasicModel.StatAttribute(Vip, RequiredValue));
 
         await this.LoginAndVerifyAsync(LoginResult.Ok).ConfigureAwait(false);
     }
