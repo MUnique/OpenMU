@@ -153,7 +153,7 @@ public class LoginReservationTests
         persistence.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Returns(this._playerContext.Object);
         var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var gameServer = new GameServerContext(
-            new Persistence.BasicModel.GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration() },
+            new Persistence.BasicModel.GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration { MaximumPlayers = 10 } },
             new Mock<IGuildServer>().Object,
             this._eventPublisher.Object,
             this._loginServer.Object,

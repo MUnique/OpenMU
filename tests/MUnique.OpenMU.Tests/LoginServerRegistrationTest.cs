@@ -100,7 +100,7 @@ public class LoginServerRegistrationTest
             new BasicModel.GameServerDefinition
             {
                 GameConfiguration = gameConfiguration,
-                ServerConfiguration = new BasicModel.GameServerConfiguration(),
+                ServerConfiguration = new BasicModel.GameServerConfiguration { MaximumPlayers = 10 },
             },
             new Mock<IGuildServer>().Object,
             new Mock<IEventPublisher>().Object,

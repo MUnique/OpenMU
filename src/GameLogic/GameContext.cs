@@ -53,6 +53,21 @@ public class GameContext : AsyncDisposable, IGameContext
     /// </summary>
     private readonly List<Player> _playerList = new();
 
+    /// <summary>
+    /// Keeps the players of <see cref="_playerList"/> which are logged in, see <see cref="LoggedInPlayerCount"/>.
+    /// </summary>
+    private readonly ConcurrentDictionary<Player, byte> _loggedInPlayers = new();
+
+    /// <summary>
+    /// Keeps the handlers with which this context follows the state of each of its players.
+    /// </summary>
+    private readonly ConcurrentDictionary<Player, AsyncEventHandler<StateMachine.StateChangedEventArgs>> _playerStateHandlers = new();
+
+    /// <summary>
+    /// The lock which is held by a login from its check for a free place until it is completed, see <see cref="LockLoginCompletionAsync"/>.
+    /// </summary>
+    private readonly AsyncLock _loginCompletionLock = new();
+
     private readonly IDisposable _configChangeHandlerRegistration;
 
     private int _periodicTasksStopped;
@@ -111,6 +126,9 @@ public class GameContext : AsyncDisposable, IGameContext
     /// It may make sense to remove unused maps after a certain period.
     /// </remarks>
     public event EventHandler<GameMap>? GameMapRemoved;
+
+    /// <inheritdoc />
+    public event EventHandler? LoggedInPlayerCountChanged;
 
     /// <inheritdoc />
     public virtual float ExperienceRate => this.Configuration.ExperienceRate;
@@ -181,6 +199,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <inheritdoc />
     public int PlayerCount => this._playerList.Count;
+
+    /// <inheritdoc />
+    public int LoggedInPlayerCount => this._loggedInPlayers.Count;
 
     /// <summary>
     /// Gets a value indicating whether the periodic tasks of this context have been stopped,
@@ -287,6 +308,11 @@ public class GameContext : AsyncDisposable, IGameContext
         player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
         player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
         player.PlayerDisconnected += this.RemovePlayerAsync;
+        AsyncEventHandler<StateMachine.StateChangedEventArgs> stateHandler = args => this.OnPlayerStateChangedAsync(player, args.CurrentStateState);
+        if (this._playerStateHandlers.TryAdd(player, stateHandler))
+        {
+            player.PlayerState.StateChanged += stateHandler;
+        }
 
         using (await this._playerListLock.WriterLockAsync().ConfigureAwait(false))
         {
@@ -294,6 +320,15 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         PlayerCounter.Add(1);
+
+        // Offline players, for example, are already logged in when they get added.
+        this.SetLoggedIn(player, IsLoggedIn(player.PlayerState.CurrentState));
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IDisposable> LockLoginCompletionAsync()
+    {
+        return await this._loginCompletionLock.LockAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -319,6 +354,13 @@ public class GameContext : AsyncDisposable, IGameContext
         {
             removed = this._playerList.Remove(player);
         }
+
+        if (this._playerStateHandlers.TryRemove(player, out var stateHandler))
+        {
+            player.PlayerState.StateChanged -= stateHandler;
+        }
+
+        this.SetLoggedIn(player, false);
 
         if (!removed)
         {
@@ -471,6 +513,41 @@ public class GameContext : AsyncDisposable, IGameContext
                 return (long)expression.calculate();
             })
             .ToArray();
+    }
+
+    /// <summary>
+    /// Determines whether a player in the given state is logged in: it passed the login screen and didn't disconnect.
+    /// </summary>
+    /// <param name="state">The state of the player.</param>
+    /// <returns><c>true</c>, if a player in this state is logged in.</returns>
+    private static bool IsLoggedIn(State state)
+    {
+        return state != PlayerState.Initial
+               && state != PlayerState.LoginScreen
+               && state != PlayerState.Disconnected
+               && state != PlayerState.Finished;
+    }
+
+    private ValueTask OnPlayerStateChangedAsync(Player player, State currentState)
+    {
+        // A player which is no longer in this context may not count as logged in again.
+        if (this._playerStateHandlers.ContainsKey(player))
+        {
+            this.SetLoggedIn(player, IsLoggedIn(currentState));
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    private void SetLoggedIn(Player player, bool loggedIn)
+    {
+        var changed = loggedIn
+            ? this._loggedInPlayers.TryAdd(player, default)
+            : this._loggedInPlayers.TryRemove(player, out _);
+        if (changed)
+        {
+            this.LoggedInPlayerCountChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private ValueTask OnGameConfigurationChangeAsync(Action unregisterAction, GameConfiguration gameConfiguration, GameContext context)

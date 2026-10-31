@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer;
 
 using System.IO.Pipelines;
 using System.Net;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -17,11 +18,18 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A game server listener that listens on a TCP port.
-/// To be visible in the server list, this listener also registers the game server at the connect server.
+/// To be visible in the server list, this listener also registers the game server at the connect server,
+/// and keeps it informed about the number of logged in players.
 /// </summary>
 public class DefaultTcpGameServerListener : IGameServerListener
 {
     private readonly ILogger<DefaultTcpGameServerListener> _logger;
+
+    /// <summary>
+    /// The lock for reading and reporting the number of logged in players, so that the last report
+    /// has the latest number, also when it changes on several threads at the same time.
+    /// </summary>
+    private readonly Lock _reportLock = new();
 
     private readonly GameServerEndpoint _endPoint;
     private readonly ServerInfo _gameServerInfo;
@@ -109,13 +117,14 @@ public class DefaultTcpGameServerListener : IGameServerListener
         this._logger.LogInformation("Starting Server Listener, port {port}", port);
         this._listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this._loggerFactory);
         this._listener.ClientAccepted += this.OnClientAcceptedAsync;
-        this._listener.ClientAccepting += this.OnClientAcceptingAsync;
         if (this.PublishedPort != port)
         {
             this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", port, this.PublishedPort);
         }
 
         this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), this.PublishedPort));
+        this._gameContext.LoggedInPlayerCountChanged += this.OnLoggedInPlayerCountChanged;
+        this.ReportLoggedInPlayerCount();
 
         if (this._addressResolver is ConfigurableIpResolver configurableIpResolver)
         {
@@ -135,6 +144,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
 
         var port = this.ListenerPort;
+        this._gameContext.LoggedInPlayerCountChanged -= this.OnLoggedInPlayerCountChanged;
         this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
         this._logger.LogInformation($"Stopping listener on port {port}.");
         if (this._listener is null || !this._listener.IsBound)
@@ -164,6 +174,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
 
             this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
             this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(newAddress, this.PublishedPort));
+            this.ReportLoggedInPlayerCount();
         }
         catch (Exception ex)
         {
@@ -185,29 +196,29 @@ public class DefaultTcpGameServerListener : IGameServerListener
             : new PipelinedDecryptor(arg);
     }
 
-    private async ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
+    private void OnLoggedInPlayerCountChanged(object? sender, EventArgs e)
     {
-        if (this._gameContext.PlayerCount >= this._gameContext.ServerConfiguration.MaximumPlayers)
-        {
-            this.Log(l => l.LogDebug($"The server is full... disconnecting the game client {e.AcceptingSocket.RemoteEndPoint}"));
+        this.ReportLoggedInPlayerCount();
+    }
 
-            e.Cancel = true;
+    private void ReportLoggedInPlayerCount()
+    {
+        lock (this._reportLock)
+        {
+            this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.LoggedInPlayerCount);
         }
     }
 
     private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
+        // Every connection is accepted. Only logged in players take a place, so a full server
+        // refuses the login instead (see LoginAction).
         var connection = e.AcceptedConnection;
         var remoteEndPoint = connection.EndPoint as IPEndPoint;
         this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
 
+        // The remote player disconnects itself when the connection gets disconnected.
         var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
-        connection.Disconnected += async () =>
-        {
-            await remotePlayer.DisconnectAsync().ConfigureAwait(false);
-            this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
-        };
-
         await this.OnPlayerConnectedAsync(remotePlayer).ConfigureAwait(false);
 
         // we don't want to await the call.
@@ -225,8 +236,6 @@ public class DefaultTcpGameServerListener : IGameServerListener
         {
             this.Log(l => l.LogError($"Event {nameof(this.PlayerConnected)} was not handled."));
         }
-
-        this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
     }
 
     private void Log(Action<ILogger<DefaultTcpGameServerListener>> logAction)

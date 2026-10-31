@@ -71,6 +71,33 @@ public class LoginAction
         }
     }
 
+    /// <summary>
+    /// Determines whether the game server has no free place for another logged in player.
+    /// </summary>
+    /// <param name="player">The player which logs in. It's not logged in yet, so it isn't counted.</param>
+    /// <param name="gameServerContext">The game server context.</param>
+    /// <param name="username">The username.</param>
+    /// <returns><c>true</c>, if the game server is full.</returns>
+    /// <remarks>
+    /// Only logged in players count, so connections which stay at the login screen don't take a place.
+    /// </remarks>
+    private static bool IsServerFull(Player player, IGameServerContext gameServerContext, string username)
+    {
+        var maximumPlayers = gameServerContext.ServerConfiguration.MaximumPlayers;
+        var loggedInPlayers = gameServerContext.LoggedInPlayerCount;
+        if (loggedInPlayers < maximumPlayers)
+        {
+            return false;
+        }
+
+        player.Logger.LogInformation(
+            "Login of [{Username}] refused, because the game server is full: {LoggedInPlayers} of {MaximumPlayers} players are logged in.",
+            username,
+            loggedInPlayers,
+            maximumPlayers);
+        return true;
+    }
+
     private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
     {
         try
@@ -111,6 +138,8 @@ public class LoginAction
 
     private async ValueTask<(bool Success, Account? Account)> TryEstablishSessionAsync(Player player, string username)
     {
+        // Held until the state change of the context below is done, see IGameContext.LockLoginCompletionAsync.
+        IDisposable? loginCompletionLock = null;
         try
         {
             await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
@@ -143,6 +172,9 @@ public class LoginAction
                     player.SetLoginServerRegistration(username);
                 }
 
+                // The player takes the place of its offline player, so it doesn't need a free one. The
+                // other logins wait until it's done, so that none of them takes this place in between.
+                loginCompletionLock = await gameServerContext.LockLoginCompletionAsync().ConfigureAwait(false);
                 var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
                 if (offlineAccount is null)
                 {
@@ -183,14 +215,21 @@ public class LoginAction
             {
                 // Template accounts may be logged in several times at once, so they never hold the reservation.
                 await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
-                return (true, loadedAccount);
             }
-
-            if (!reserved)
+            else if (!reserved)
             {
                 context.Allowed = false;
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
                 await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
+                return (false, null);
+            }
+
+            loginCompletionLock = await gameServerContext.LockLoginCompletionAsync().ConfigureAwait(false);
+            if (IsServerFull(player, gameServerContext, username))
+            {
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
+                context.Allowed = false;
                 return (false, null);
             }
 
@@ -202,6 +241,11 @@ public class LoginAction
             await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return (false, null);
+        }
+        finally
+        {
+            // After the state change: the context is disposed when the try block is left.
+            loginCompletionLock?.Dispose();
         }
     }
 

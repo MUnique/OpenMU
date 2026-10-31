@@ -28,6 +28,11 @@ public interface IGameContext
     event EventHandler<GameMap>? GameMapRemoved;
 
     /// <summary>
+    /// Occurs when the <see cref="LoggedInPlayerCount"/> changed.
+    /// </summary>
+    event EventHandler? LoggedInPlayerCountChanged;
+
+    /// <summary>
     /// Gets the global experience rate.
     /// </summary>
     float ExperienceRate { get; }
@@ -96,7 +101,19 @@ public interface IGameContext
     /// <summary>
     /// Gets the players count of the game.
     /// </summary>
+    /// <remarks>
+    /// It includes the connections which didn't log in (yet). See <see cref="LoggedInPlayerCount"/> for the players which are online.
+    /// </remarks>
     int PlayerCount { get; }
+
+    /// <summary>
+    /// Gets the number of players which are logged in: they passed the login screen and didn't disconnect.
+    /// </summary>
+    /// <remarks>
+    /// Unlike <see cref="PlayerCount"/>, it doesn't include the connections which are still at the login screen.
+    /// It's the number which is limited by the maximum players of a game server.
+    /// </remarks>
+    int LoggedInPlayerCount { get; }
 
     /// <summary>
     /// Gets the logger factory.
@@ -154,6 +171,17 @@ public interface IGameContext
     /// </summary>
     /// <param name="player">The player.</param>
     ValueTask RemovePlayerAsync(Player player);
+
+    /// <summary>
+    /// Waits until no other login is completing, and returns a handle which keeps the next logins waiting until it's disposed.
+    /// </summary>
+    /// <returns>The handle which releases the lock when it's disposed.</returns>
+    /// <remarks>
+    /// A login holds it from its check for a free place until its state change to <see cref="PlayerState.Authenticated"/>
+    /// is done, so that two logins can't take the last free place at the same time.
+    /// The login holds the lock of its own <see cref="Player.PlayerState"/> while it waits for this lock, never the other way around.
+    /// </remarks>
+    ValueTask<IDisposable> LockLoginCompletionAsync();
 
     /// <summary>
     /// Gets the maps which is meant to be hosted by the game.
