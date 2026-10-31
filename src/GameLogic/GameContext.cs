@@ -72,6 +72,13 @@ public class GameContext : AsyncDisposable, IGameContext
     private readonly HashSet<Player> _countedPlayers = new();
 
     /// <summary>
+    /// The reservations of logins which take over the place of a logged in player, by that player,
+    /// see <see cref="TryReserveLoginPlace"/>. Until that player isn't logged in anymore, they don't
+    /// take a place of their own. Guarded by <see cref="_loginStateLock"/>.
+    /// </summary>
+    private readonly Dictionary<Player, LoginPlaceReservation> _takeovers = new();
+
+    /// <summary>
     /// The lock for the counted players, the logged in and waiting players and the reserved places of logins.
     /// It's only held for short, synchronous work, and no other lock is taken while it's held.
     /// </summary>
@@ -376,24 +383,32 @@ public class GameContext : AsyncDisposable, IGameContext
     {
         lock (this._loginStateLock)
         {
+            // The place of the replaced player is taken over while it's logged in, unless another login
+            // takes it over already.
+            var takesOver = replacedPlayer is not null
+                && this._loggedInPlayers.Contains(replacedPlayer)
+                && !this._takeovers.ContainsKey(replacedPlayer);
+
             // A login adds itself to the logged in players before it releases its reservation, and the
             // logged in players only get fewer otherwise. So, this sum never misses a login which passed.
-            occupiedPlaces = this._loggedInPlayerCount + this._reservedLoginPlaces;
-            if (replacedPlayer is not null && this._loggedInPlayers.Contains(replacedPlayer))
-            {
-                // Its place is taken over.
-                occupiedPlaces--;
-            }
-
+            occupiedPlaces = this._loggedInPlayerCount + this._reservedLoginPlaces - (takesOver ? 1 : 0);
             if (occupiedPlaces >= maximumPlayers)
             {
                 return null;
             }
 
+            if (takesOver)
+            {
+                // It takes a place of its own when the replaced player isn't logged in anymore, see RemoveLoggedInPlayer.
+                var takeover = new LoginPlaceReservation(this, replacedPlayer);
+                this._takeovers.Add(replacedPlayer!, takeover);
+                return takeover;
+            }
+
             this._reservedLoginPlaces++;
         }
 
-        return new LoginPlaceReservation(this);
+        return new LoginPlaceReservation(this, null);
     }
 
     /// <inheritdoc />
@@ -655,6 +670,14 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         this._loggedInPlayerCount--;
+        if (this._takeovers.Remove(player, out var takeover))
+        {
+            // The login which takes over its place needs a place of its own now - in the same step, so
+            // that no other login can take it in between.
+            takeover.TakesOver = false;
+            this._reservedLoginPlaces++;
+        }
+
         return true;
     }
 
@@ -743,11 +766,18 @@ public class GameContext : AsyncDisposable, IGameContext
         return ValueTask.CompletedTask;
     }
 
-    private void ReleaseLoginPlace()
+    private void ReleaseLoginPlace(LoginPlaceReservation reservation)
     {
         lock (this._loginStateLock)
         {
-            this._reservedLoginPlaces--;
+            if (reservation is { TakesOver: true, ReplacedPlayer: { } replacedPlayer })
+            {
+                this._takeovers.Remove(replacedPlayer);
+            }
+            else
+            {
+                this._reservedLoginPlaces--;
+            }
         }
     }
 
@@ -762,17 +792,32 @@ public class GameContext : AsyncDisposable, IGameContext
         /// Initializes a new instance of the <see cref="LoginPlaceReservation"/> class.
         /// </summary>
         /// <param name="context">The context in which the place is reserved.</param>
-        public LoginPlaceReservation(GameContext context)
+        /// <param name="replacedPlayer">The logged in player whose place is taken over; <c>null</c> for a place of its own.</param>
+        public LoginPlaceReservation(GameContext context, Player? replacedPlayer)
         {
             this._context = context;
+            this.ReplacedPlayer = replacedPlayer;
+            this.TakesOver = replacedPlayer is not null;
         }
+
+        /// <summary>
+        /// Gets the logged in player whose place is taken over; <c>null</c> for a reservation of a place of its own.
+        /// </summary>
+        public Player? ReplacedPlayer { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this reservation takes over the place of <see cref="ReplacedPlayer"/>,
+        /// instead of taking a place of its own. It's set to <c>false</c> when that player isn't logged in anymore.
+        /// Changed and read under the lock of the context.
+        /// </summary>
+        public bool TakesOver { get; set; }
 
         /// <summary>
         /// Releases the place; again calls do nothing.
         /// </summary>
         public void Dispose()
         {
-            Interlocked.Exchange(ref this._context, null)?.ReleaseLoginPlace();
+            Interlocked.Exchange(ref this._context, null)?.ReleaseLoginPlace(this);
         }
     }
 }

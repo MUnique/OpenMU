@@ -227,6 +227,33 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// While the replaced player is still logged in, e.g. during the stop of an offline session, a takeover
+    /// doesn't take another place; when that player leaves, the takeover takes its place right away.
+    /// </summary>
+    [Test]
+    public async ValueTask TakeoverTakesOnlyOnePlaceAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 2);
+        var replaced = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        using var takeover = gameContext.TryReserveLoginPlace(2, replaced, out _);
+        using var otherLogin = gameContext.TryReserveLoginPlace(2, null, out var occupiedPlaces);
+        Assert.That(otherLogin, Is.Not.Null, "The second place is free.");
+        Assert.That(occupiedPlaces, Is.EqualTo(1));
+
+        // The offline session is stopped: the takeover takes the place of its own now.
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        Assert.That(gameContext.TryReserveLoginPlace(2, null, out occupiedPlaces), Is.Null);
+        Assert.That(occupiedPlaces, Is.EqualTo(2));
+
+        takeover!.Dispose();
+        using var afterTakeover = gameContext.TryReserveLoginPlace(2, null, out occupiedPlaces);
+        Assert.That(afterTakeover, Is.Not.Null);
+        Assert.That(occupiedPlaces, Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// A player which is already logged in when it's added, like an offline player, counts as well,
     /// until it's removed.
     /// </summary>
