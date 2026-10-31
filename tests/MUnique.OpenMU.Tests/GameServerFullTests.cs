@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -12,6 +14,7 @@ using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Login;
@@ -252,6 +255,44 @@ public class GameServerFullTests
         using var afterTakeover = gameContext.TryReserveLoginPlace(2, null, out occupiedPlaces);
         Assert.That(afterTakeover, Is.Not.Null);
         Assert.That(occupiedPlaces, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// The owner of an offline session logs in on a full server: it takes over the place of its offline
+    /// player, whose session is stopped.
+    /// </summary>
+    [Test]
+    public async ValueTask LoginTakesOverThePlaceOfItsOfflineSessionAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        await AddOfflineSessionAsync(gameContext, "a", loggedIn: true).ConfigureAwait(false);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(player, LoginResult.Ok);
+        Assert.That(gameContext.OfflinePlayerManager.IsActive("a"), Is.False);
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// When the offline player isn't logged in anymore, the login needs a free place; on a full server,
+    /// it's refused before the offline session is stopped.
+    /// </summary>
+    [Test]
+    public async ValueTask LoginNeedsAFreePlaceWhenItsOfflinePlayerIsGoneAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var other = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(other, "b", Password).ConfigureAwait(false);
+        await AddOfflineSessionAsync(gameContext, "a", loggedIn: false).ConfigureAwait(false);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(player, LoginResult.ServerIsFull);
+        Assert.That(gameContext.OfflinePlayerManager.IsActive("a"), Is.True);
+        this._loginServer.Verify(l => l.TryLoginAsync("a", It.IsAny<byte>()), Times.Never, "The full server refuses before the account is reserved.");
     }
 
     /// <summary>
@@ -529,6 +570,30 @@ public class GameServerFullTests
         }
 
         Assert.That(reports, Is.EqualTo(new[] { 0, 1 }));
+    }
+
+    /// <summary>
+    /// Adds an offline session of the account to the offline player manager.
+    /// </summary>
+    /// <remarks>
+    /// Starting a real offline session needs a player in the game with its account and character
+    /// loaded. The manager has no other way to add a session, so it's added to its sessions directly.
+    /// </remarks>
+    private static async ValueTask<OfflinePlayer> AddOfflineSessionAsync(GameServerContext gameContext, string loginName, bool loggedIn)
+    {
+        var offlinePlayer = new OfflinePlayer(gameContext);
+        if (loggedIn)
+        {
+            await gameContext.AddPlayerAsync(offlinePlayer).ConfigureAwait(false);
+            await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+            await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        }
+
+        var sessionsField = typeof(OfflinePlayerManager).GetField("_activePlayers", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.That(sessionsField, Is.Not.Null, "The sessions field of the OfflinePlayerManager was renamed.");
+        var sessions = (ConcurrentDictionary<string, OfflinePlayer>)sessionsField!.GetValue(gameContext.OfflinePlayerManager)!;
+        sessions[loginName] = offlinePlayer;
+        return offlinePlayer;
     }
 
     private static DefaultTcpGameServerListener CreateListener(GameServerContext gameContext, int port, IGameServerStateObserver? observer = null, ILoggerFactory? loggerFactory = null)
