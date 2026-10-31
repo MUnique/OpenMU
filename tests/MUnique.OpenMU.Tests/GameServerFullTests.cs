@@ -287,6 +287,48 @@ public class GameServerFullTests
     }
 
     /// <summary>
+    /// The game context counts a player before the other subscribers of its state change run, like the
+    /// state changed plugins, so they already see the new number.
+    /// </summary>
+    [Test]
+    public async ValueTask CountIsUpdatedBeforeOtherStateSubscribersRunAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = new LoginTestPlayer(gameContext);
+        int? countSeenBySubscriber = null;
+        player.PlayerState.StateChanged += args =>
+        {
+            if (args.CurrentStateState == PlayerState.Authenticated)
+            {
+                countSeenBySubscriber = gameContext.LoggedInPlayerCount;
+            }
+
+            return ValueTask.CompletedTask;
+        };
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        Assert.That(countSeenBySubscriber, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// A player which was removed from the game isn't counted when its state changes afterwards.
+    /// </summary>
+    [Test]
+    public async ValueTask RemovedPlayerIsNotCountedAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
     /// The listener reports the logged in players to the connect server: not the connections at the
     /// login screen, and a disconnected player right away instead of after it saved its progress.
     /// </summary>

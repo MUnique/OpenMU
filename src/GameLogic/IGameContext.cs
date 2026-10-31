@@ -173,6 +173,19 @@ public interface IGameContext
     ValueTask RemovePlayerAsync(Player player);
 
     /// <summary>
+    /// Is called by a player when its state changed, before the plugins for state changes run.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="previousState">The previous state.</param>
+    /// <param name="currentState">The current state.</param>
+    /// <remarks>
+    /// The game context counts its players by their state, see <see cref="LoggedInPlayerCount"/>.
+    /// A player which isn't in this context is ignored. It must not throw, because it runs within
+    /// the state change of the player.
+    /// </remarks>
+    void OnPlayerStateChanged(Player player, State previousState, State currentState);
+
+    /// <summary>
     /// Reserves a place for a player which logs in, if the game has a free one.
     /// </summary>
     /// <param name="maximumPlayers">The maximum number of logged in players.</param>

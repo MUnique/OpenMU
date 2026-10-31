@@ -60,14 +60,14 @@ public class GameContext : AsyncDisposable, IGameContext
     private readonly HashSet<Player> _loggedInPlayers = new();
 
     /// <summary>
-    /// Keeps the handlers with which this context follows the state of each of its players. A player
-    /// which has none isn't (or no longer) in this context. Guarded by <see cref="_loginStateLock"/>.
+    /// Keeps the players whose states this context counts: the ones of <see cref="_playerList"/>, but
+    /// added and removed together with <see cref="_loggedInPlayers"/>. Guarded by <see cref="_loginStateLock"/>.
     /// </summary>
-    private readonly Dictionary<Player, AsyncEventHandler<StateMachine.StateChangedEventArgs>> _playerStateHandlers = new();
+    private readonly HashSet<Player> _countedPlayers = new();
 
     /// <summary>
-    /// The lock for the logged in players, the handlers of the player states and the reserved places of
-    /// logins. It's only held for short, synchronous work, and no other lock is taken while it's held.
+    /// The lock for the counted players, the logged in players and the reserved places of logins.
+    /// It's only held for short, synchronous work, and no other lock is taken while it's held.
     /// </summary>
     private readonly Lock _loginStateLock = new();
 
@@ -326,16 +326,9 @@ public class GameContext : AsyncDisposable, IGameContext
         player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
         player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
         player.PlayerDisconnected += this.RemovePlayerAsync;
-        AsyncEventHandler<StateMachine.StateChangedEventArgs> stateHandler = _ => this.OnPlayerStateChangedAsync(player);
-        bool added;
         lock (this._loginStateLock)
         {
-            added = this._playerStateHandlers.TryAdd(player, stateHandler);
-        }
-
-        if (added)
-        {
-            player.PlayerState.StateChanged += stateHandler;
+            this._countedPlayers.Add(player);
         }
 
         using (await this._playerListLock.WriterLockAsync().ConfigureAwait(false))
@@ -346,6 +339,12 @@ public class GameContext : AsyncDisposable, IGameContext
         PlayerCounter.Add(1);
 
         // Offline players, for example, are already logged in when they get added.
+        this.UpdateLoggedIn(player);
+    }
+
+    /// <inheritdoc />
+    public void OnPlayerStateChanged(Player player, State previousState, State currentState)
+    {
         this.UpdateLoggedIn(player);
     }
 
@@ -398,19 +397,13 @@ public class GameContext : AsyncDisposable, IGameContext
             removed = this._playerList.Remove(player);
         }
 
-        AsyncEventHandler<StateMachine.StateChangedEventArgs>? stateHandler;
         bool loggedOut;
         lock (this._loginStateLock)
         {
             // Together, so that a state change of the player which runs at the same time can't
             // count it as logged in again after it was removed.
-            this._playerStateHandlers.Remove(player, out stateHandler);
+            this._countedPlayers.Remove(player);
             loggedOut = this.RemoveLoggedInPlayer(player);
-        }
-
-        if (stateHandler is not null)
-        {
-            player.PlayerState.StateChanged -= stateHandler;
         }
 
         if (loggedOut)
@@ -571,12 +564,6 @@ public class GameContext : AsyncDisposable, IGameContext
             .ToArray();
     }
 
-    private ValueTask OnPlayerStateChangedAsync(Player player)
-    {
-        this.UpdateLoggedIn(player);
-        return ValueTask.CompletedTask;
-    }
-
     /// <summary>
     /// Counts the player as logged in or not, depending on its current state.
     /// </summary>
@@ -591,7 +578,7 @@ public class GameContext : AsyncDisposable, IGameContext
         bool changed;
         lock (this._loginStateLock)
         {
-            if (this._playerStateHandlers.ContainsKey(player) && player.PlayerState.CurrentState.IsLoggedIn())
+            if (this._countedPlayers.Contains(player) && player.PlayerState.CurrentState.IsLoggedIn())
             {
                 changed = this._loggedInPlayers.Add(player);
                 if (changed)
