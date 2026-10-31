@@ -111,7 +111,7 @@ public static class CastleSiegeGuildSelector
             }
 
             // The owner or another member of an already selected alliance must not consume an attack slot.
-            if (context.FinalGuildList.ContainsKey(candidate.RuntimeGuildId))
+            if (context.FinalGuildList.ContainsKey(candidate.Registration.GuildId))
             {
                 continue;
             }
@@ -192,7 +192,7 @@ public static class CastleSiegeGuildSelector
             .GetAllianceGuildsAsync(masterGuildId)
             .ConfigureAwait(false);
         if (!context.FinalGuildList.TryAdd(
-                masterGuildId,
+                persistentMasterGuildId,
                 CreateParticipant(
                     masterGuildId,
                     persistentMasterGuildId,
@@ -215,7 +215,7 @@ public static class CastleSiegeGuildSelector
             }
 
             context.FinalGuildList.TryAdd(
-                allianceGuild.Id,
+                persistentGuildId.Value,
                 CreateParticipant(
                     allianceGuild.Id,
                     persistentGuildId.Value,
