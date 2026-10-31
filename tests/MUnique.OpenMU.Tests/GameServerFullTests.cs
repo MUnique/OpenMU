@@ -30,6 +30,8 @@ public class GameServerFullTests
 {
     private const string Password = "pw";
 
+    private readonly List<GameServerContext> _contexts = new();
+
     private Mock<ILoginServer> _loginServer = null!;
 
     private Mock<IPlayerContext> _playerContext = null!;
@@ -49,6 +51,21 @@ public class GameServerFullTests
         this._playerContext
             .Setup(c => c.GetAccountByLoginNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((string loginName, CancellationToken _) => new Persistence.BasicModel.Account { LoginName = loginName });
+    }
+
+    /// <summary>
+    /// Disposes the game server contexts of the test, which stops their timers.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        foreach (var context in this._contexts)
+        {
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        this._contexts.Clear();
     }
 
     /// <summary>
@@ -437,6 +454,8 @@ public class GameServerFullTests
 
     private GameServerContext CreateGameServerContext(short maximumPlayers)
     {
-        return LoginTestSetup.CreateGameServerContext(LoginTestSetup.CreatePersistence(this._playerContext.Object), this._loginServer.Object, maximumPlayers: maximumPlayers);
+        var context = LoginTestSetup.CreateGameServerContext(LoginTestSetup.CreatePersistence(this._playerContext.Object), this._loginServer.Object, maximumPlayers: maximumPlayers);
+        this._contexts.Add(context);
+        return context;
     }
 }

@@ -30,6 +30,8 @@ public class LoginReservationTests
 
     private readonly List<string> _calls = new();
 
+    private readonly List<GameServerContext> _contexts = new();
+
     private Mock<ILoginServer> _loginServer = null!;
 
     private Mock<IEventPublisher> _eventPublisher = null!;
@@ -56,6 +58,21 @@ public class LoginReservationTests
             .Setup(c => c.GetAccountByLoginNameAsync(LoginName, It.IsAny<CancellationToken>()))
             .Callback(() => this._calls.Add("load"))
             .ReturnsAsync(() => this._account);
+    }
+
+    /// <summary>
+    /// Disposes the game server contexts of the test, which stops their timers.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        foreach (var context in this._contexts)
+        {
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        this._contexts.Clear();
     }
 
     /// <summary>
@@ -148,6 +165,7 @@ public class LoginReservationTests
     private async ValueTask<Player> CreatePlayerAtLoginScreenAsync()
     {
         var gameServer = LoginTestSetup.CreateGameServerContext(LoginTestSetup.CreatePersistence(this._playerContext.Object), this._loginServer.Object, this._eventPublisher.Object);
+        this._contexts.Add(gameServer);
         var player = new LoginTestPlayer(gameServer);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         return player;
