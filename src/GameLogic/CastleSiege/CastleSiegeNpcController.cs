@@ -213,6 +213,76 @@ public sealed class CastleSiegeNpcController
     }
 
     /// <summary>
+    /// Determines whether the straight line between two points crosses the area of a closed gate.
+    /// </summary>
+    /// <param name="from">The start point.</param>
+    /// <param name="to">The end point.</param>
+    /// <returns><see langword="true"/> if a tile on the line is blocked by a closed gate.</returns>
+    /// <remarks>
+    /// The line runs between the tile centers and visits every tile it touches (supercover), so the result
+    /// doesn't depend on its direction. Where it passes exactly through a tile corner, both tiles beside the
+    /// corner count as touched, so it can't slip diagonally between two blocked tiles.
+    /// </remarks>
+    internal bool IsLineBlockedByClosedGate(Point from, Point to)
+    {
+        lock (this._gateTerrainLock)
+        {
+            if (this._gateTerrain.Count == 0)
+            {
+                return false;
+            }
+
+            var x = (int)from.X;
+            var y = (int)from.Y;
+            var distanceX = Math.Abs(to.X - from.X);
+            var distanceY = Math.Abs(to.Y - from.Y);
+            var stepX = Math.Sign(to.X - from.X);
+            var stepY = Math.Sign(to.Y - from.Y);
+            if (this.IsClosedGateTile(x, y))
+            {
+                return true;
+            }
+
+            var crossedX = 0;
+            var crossedY = 0;
+            while (crossedX < distanceX || crossedY < distanceY)
+            {
+                // Compares where the line crosses the next vertical and the next horizontal tile border.
+                var decision = ((1 + (2 * crossedX)) * distanceY) - ((1 + (2 * crossedY)) * distanceX);
+                if (decision == 0)
+                {
+                    if (this.IsClosedGateTile(x + stepX, y) || this.IsClosedGateTile(x, y + stepY))
+                    {
+                        return true;
+                    }
+
+                    x += stepX;
+                    y += stepY;
+                    crossedX++;
+                    crossedY++;
+                }
+                else if (decision < 0)
+                {
+                    x += stepX;
+                    crossedX++;
+                }
+                else
+                {
+                    y += stepY;
+                    crossedY++;
+                }
+
+                if (this.IsClosedGateTile(x, y))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Applies a reference-counted terrain block for one gate area.
     /// </summary>
     /// <param name="map">The Castle Siege map.</param>
@@ -409,6 +479,12 @@ public sealed class CastleSiegeNpcController
 
         runtime.SpawnedInstance = null;
         runtime.IsAlive = runtime.PersistedState is { CurrentHp: > 0 };
+    }
+
+    // Requires the lock of the gate terrain. The coordinates stay between the two byte points of the line.
+    private bool IsClosedGateTile(int x, int y)
+    {
+        return this._gateTerrain.ContainsKey(new Point((byte)x, (byte)y));
     }
 
     private CastleSiegeNpcInfo CreateInfo(CastleSiegeNpcRuntime runtime)
