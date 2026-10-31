@@ -27459,8 +27459,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public ushort PlayerIndex
     {
-        get => ReadUInt16LittleEndian(this._data.Span[4..]);
-        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -27468,8 +27468,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte PositionX
     {
-        get => this._data.Span[6];
-        set => this._data.Span[6] = value;
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
     }
 
     /// <summary>
@@ -27477,8 +27477,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte PositionY
     {
-        get => this._data.Span[7];
-        set => this._data.Span[7] = value;
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
     }
 
     /// <summary>
@@ -27486,8 +27486,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte Team1Points
     {
-        get => this._data.Span[8];
-        set => this._data.Span[8] = value;
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
     }
 
     /// <summary>
@@ -27495,8 +27495,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte Team2Points
     {
-        get => this._data.Span[9];
-        set => this._data.Span[9] = value;
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
     }
 
     /// <summary>
@@ -27504,8 +27504,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte MyTeam
     {
-        get => this._data.Span[10];
-        set => this._data.Span[10] = value;
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
     }
 
     /// <summary>
@@ -27513,14 +27513,14 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte PartyCount
     {
-        get => this._data.Span[11];
-        set => this._data.Span[11] = value;
+        get => this._data.Span[13];
+        set => this._data.Span[13] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="IllusionTemplePartyEntry"/> of the specified index.
     /// </summary>
-        public IllusionTemplePartyEntry this[int index] => new (this._data.Slice(12 + index * IllusionTemplePartyEntry.Length));
+        public IllusionTemplePartyEntry this[int index] => new (this._data.Slice(14 + index * IllusionTemplePartyEntry.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleState"/>.
@@ -27541,7 +27541,7 @@ public readonly struct IllusionTempleState
     /// </summary>
     /// <param name="partyMembersCount">The count of <see cref="IllusionTemplePartyEntry"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int partyMembersCount) => partyMembersCount * IllusionTemplePartyEntry.Length + 12;
+    public static int GetRequiredSize(int partyMembersCount) => partyMembersCount * IllusionTemplePartyEntry.Length + 14;
 
 
 /// <summary>
@@ -27563,7 +27563,7 @@ public readonly struct IllusionTemplePartyEntry
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 5;
+    public static int Length => 6;
 
     /// <summary>
     /// Gets or sets the player id.
@@ -27577,10 +27577,10 @@ public readonly struct IllusionTemplePartyEntry
     /// <summary>
     /// Gets or sets the map number.
     /// </summary>
-    public ushort MapNumber
+    public byte MapNumber
     {
-        get => ReadUInt16LittleEndian(this._data.Span[2..]);
-        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 
     /// <summary>
@@ -27934,7 +27934,7 @@ public readonly struct IllusionTempleResult
     /// <summary>
     /// Gets the <see cref="PlayerResult"/> of the specified index.
     /// </summary>
-        public PlayerResult this[int index] => new (this._data.Slice(10 + index * PlayerResult.Length));
+        public PlayerResult this[int index] => new (this._data.Slice(7 + index * PlayerResult.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleResult"/>.
@@ -27955,7 +27955,7 @@ public readonly struct IllusionTempleResult
     /// </summary>
     /// <param name="playersCount">The count of <see cref="PlayerResult"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResult.Length + 10;
+    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResult.Length + 7;
 
 
 /// <summary>
@@ -27977,15 +27977,15 @@ public readonly struct PlayerResult
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 17;
+    public static int Length => 20;
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
     public string Name
     {
-        get => this._data.Span.ExtractString(0, this._data.Length - 0, System.Text.Encoding.UTF8);
-        set => this._data.Slice(0).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(0, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -28020,21 +28020,9 @@ public readonly struct PlayerResult
     /// </summary>
     public uint AddedExperience
     {
-        get => ReadUInt32LittleEndian(this._data.Span[13..]);
-        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
     }
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 0;
 }
 }
 
@@ -30222,7 +30210,7 @@ public readonly struct AddLetter
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 79;
+    public static int Length => 107;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -30261,8 +30249,8 @@ public readonly struct AddLetter
     /// </summary>
     public string Subject
     {
-        get => this._data.Span.ExtractString(46, 32, System.Text.Encoding.UTF8);
-        set => this._data.Slice(46, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(46, 60, System.Text.Encoding.UTF8);
+        set => this._data.Slice(46, 60).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -30270,8 +30258,8 @@ public readonly struct AddLetter
     /// </summary>
     public AddLetter.LetterState State
     {
-        get => (LetterState)this._data.Span[78];
-        set => this._data.Span[78] = (byte)value;
+        get => (LetterState)this._data.Span[106];
+        set => this._data.Span[106] = (byte)value;
     }
 
     /// <summary>
@@ -35513,7 +35501,7 @@ public readonly struct CastleSiegeDefenseBuyResponse
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 13;
+    public static int Length => 16;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -35534,8 +35522,8 @@ public readonly struct CastleSiegeDefenseBuyResponse
     /// </summary>
     public uint NpcNumber
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -35543,8 +35531,8 @@ public readonly struct CastleSiegeDefenseBuyResponse
     /// </summary>
     public uint NpcIndex
     {
-        get => ReadUInt32LittleEndian(this._data.Span[9..]);
-        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
     }
 
     /// <summary>
@@ -35617,7 +35605,7 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 21;
+    public static int Length => 24;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -35638,8 +35626,8 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// </summary>
     public uint NpcNumber
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -35647,8 +35635,8 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// </summary>
     public uint NpcIndex
     {
-        get => ReadUInt32LittleEndian(this._data.Span[9..]);
-        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
     }
 
     /// <summary>
@@ -35656,8 +35644,8 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// </summary>
     public uint CurrentHp
     {
-        get => ReadUInt32LittleEndian(this._data.Span[13..]);
-        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
     }
 
     /// <summary>
@@ -35665,8 +35653,8 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// </summary>
     public uint MaxHp
     {
-        get => ReadUInt32LittleEndian(this._data.Span[17..]);
-        set => WriteUInt32LittleEndian(this._data.Span[17..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[20..]);
+        set => WriteUInt32LittleEndian(this._data.Span[20..], value);
     }
 
     /// <summary>
@@ -35739,7 +35727,7 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 21;
+    public static int Length => 24;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -35760,8 +35748,8 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// </summary>
     public uint NpcNumber
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -35769,8 +35757,8 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// </summary>
     public uint NpcIndex
     {
-        get => ReadUInt32LittleEndian(this._data.Span[9..]);
-        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
     }
 
     /// <summary>
@@ -35778,8 +35766,8 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// </summary>
     public uint NpcUpgradeType
     {
-        get => ReadUInt32LittleEndian(this._data.Span[13..]);
-        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
     }
 
     /// <summary>
@@ -35787,8 +35775,8 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// </summary>
     public uint NpcUpgradeValue
     {
-        get => ReadUInt32LittleEndian(this._data.Span[17..]);
-        set => WriteUInt32LittleEndian(this._data.Span[17..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[20..]);
+        set => WriteUInt32LittleEndian(this._data.Span[20..], value);
     }
 
     /// <summary>
@@ -36571,7 +36559,7 @@ public readonly struct CastleSiegeCrownAccessState
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 9;
+    public static int Length => 12;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -36592,8 +36580,8 @@ public readonly struct CastleSiegeCrownAccessState
     /// </summary>
     public uint AccumulatedTimeMs
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -37634,14 +37622,14 @@ public readonly struct CastleSiegeNpcList
     /// </summary>
     public uint NpcCount
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="CastleSiegeNpcInfo"/> of the specified index.
     /// </summary>
-        public CastleSiegeNpcInfo this[int index] => new (this._data.Slice(9 + index * CastleSiegeNpcInfo.Length));
+        public CastleSiegeNpcInfo this[int index] => new (this._data.Slice(12 + index * CastleSiegeNpcInfo.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeNpcList"/>.
@@ -37662,7 +37650,7 @@ public readonly struct CastleSiegeNpcList
     /// </summary>
     /// <param name="npcListCount">The count of <see cref="CastleSiegeNpcInfo"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int npcListCount) => npcListCount * CastleSiegeNpcInfo.Length + 9;
+    public static int GetRequiredSize(int npcListCount) => npcListCount * CastleSiegeNpcInfo.Length + 12;
 
 
 /// <summary>
@@ -37684,7 +37672,7 @@ public readonly struct CastleSiegeNpcInfo
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 27;
+    public static int Length => 28;
 
     /// <summary>
     /// Gets or sets the npc number.
@@ -37833,14 +37821,14 @@ public readonly struct CastleSiegeRegisteredGuildList
     /// </summary>
     public uint GuildCount
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="RegisteredGuildEntry"/> of the specified index.
     /// </summary>
-        public RegisteredGuildEntry this[int index] => new (this._data.Slice(9 + index * RegisteredGuildEntry.Length));
+        public RegisteredGuildEntry this[int index] => new (this._data.Slice(12 + index * RegisteredGuildEntry.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegisteredGuildList"/>.
@@ -37861,7 +37849,7 @@ public readonly struct CastleSiegeRegisteredGuildList
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="RegisteredGuildEntry"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int guildsCount) => guildsCount * RegisteredGuildEntry.Length + 9;
+    public static int GetRequiredSize(int guildsCount) => guildsCount * RegisteredGuildEntry.Length + 12;
 
 
 /// <summary>
@@ -37987,14 +37975,14 @@ public readonly struct CastleSiegeGuildList
     /// </summary>
     public uint GuildCount
     {
-        get => ReadUInt32LittleEndian(this._data.Span[5..]);
-        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="CastleSiegeGuildEntry"/> of the specified index.
     /// </summary>
-        public CastleSiegeGuildEntry this[int index] => new (this._data.Slice(9 + index * CastleSiegeGuildEntry.Length));
+        public CastleSiegeGuildEntry this[int index] => new (this._data.Slice(12 + index * CastleSiegeGuildEntry.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeGuildList"/>.
@@ -38015,7 +38003,7 @@ public readonly struct CastleSiegeGuildList
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="CastleSiegeGuildEntry"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int guildsCount) => guildsCount * CastleSiegeGuildEntry.Length + 9;
+    public static int GetRequiredSize(int guildsCount) => guildsCount * CastleSiegeGuildEntry.Length + 12;
 
 
 /// <summary>
@@ -38037,7 +38025,7 @@ public readonly struct CastleSiegeGuildEntry
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 14;
+    public static int Length => 16;
 
     /// <summary>
     /// Gets or sets the side.
@@ -38071,8 +38059,8 @@ public readonly struct CastleSiegeGuildEntry
     /// </summary>
     public uint Score
     {
-        get => ReadUInt32LittleEndian(this._data.Span[10..]);
-        set => WriteUInt32LittleEndian(this._data.Span[10..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
     }
 }
 }
@@ -38769,7 +38757,7 @@ public readonly struct CastleSiegeHuntingZoneGuardInfo
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 18;
+    public static int Length => 20;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -38799,8 +38787,8 @@ public readonly struct CastleSiegeHuntingZoneGuardInfo
     /// </summary>
     public uint CurrentPrice
     {
-        get => ReadUInt32LittleEndian(this._data.Span[6..]);
-        set => WriteUInt32LittleEndian(this._data.Span[6..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -38808,8 +38796,8 @@ public readonly struct CastleSiegeHuntingZoneGuardInfo
     /// </summary>
     public uint MaxPrice
     {
-        get => ReadUInt32LittleEndian(this._data.Span[10..]);
-        set => WriteUInt32LittleEndian(this._data.Span[10..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
     }
 
     /// <summary>
@@ -38817,8 +38805,8 @@ public readonly struct CastleSiegeHuntingZoneGuardInfo
     /// </summary>
     public uint UnitPrice
     {
-        get => ReadUInt32LittleEndian(this._data.Span[14..]);
-        set => WriteUInt32LittleEndian(this._data.Span[14..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
     }
 
     /// <summary>
