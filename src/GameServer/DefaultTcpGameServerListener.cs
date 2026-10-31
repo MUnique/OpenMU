@@ -124,8 +124,6 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
 
         this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), this.PublishedPort));
-        this._gameContext.LoggedInPlayerCountChanged += this.OnLoggedInPlayerCountChanged;
-        this.ReportLoggedInPlayerCount();
 
         if (this._addressResolver is ConfigurableIpResolver configurableIpResolver)
         {
@@ -133,6 +131,11 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
 
         this._listener.Start();
+
+        // Only after the start succeeded, so that a failed start doesn't leave a subscription
+        // behind, which a following start would add a second time.
+        this._gameContext.LoggedInPlayerCountChanged += this.OnLoggedInPlayerCountChanged;
+        this.ReportLoggedInPlayerCount();
         this._logger.LogInformation("Server listener started.");
     }
 

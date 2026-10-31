@@ -322,6 +322,54 @@ public class GameServerFullTests
         }
     }
 
+    /// <summary>
+    /// A start of the listener which failed, e.g. because the port is in use, doesn't leave its
+    /// subscription behind: after the next start, every change is reported once.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerReportsOnceAfterAFailedStartAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 5);
+        var reports = new List<int>();
+        var observer = new Mock<IGameServerStateObserver>();
+        observer
+            .Setup(o => o.CurrentConnectionsChanged(It.IsAny<ushort>(), It.IsAny<int>()))
+            .Callback((ushort _, int count) => reports.Add(count));
+        var resolver = new Mock<IIpAddressResolver>();
+        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
+        var port = GetFreePort();
+        var endpoint = new Persistence.BasicModel.GameServerEndpoint
+        {
+            NetworkPort = port,
+            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
+        };
+        var listener = new DefaultTcpGameServerListener(endpoint, new ServerInfo(0, "test", 0, 5), gameContext, observer.Object, resolver.Object, new NullLoggerFactory());
+
+        var portUser = new System.Net.Sockets.TcpListener(IPAddress.Any, port);
+        portUser.Start();
+        try
+        {
+            Assert.CatchAsync(() => listener.StartAsync().AsTask(), "The port is in use.");
+        }
+        finally
+        {
+            portUser.Stop();
+        }
+
+        await listener.StartAsync().ConfigureAwait(false);
+        try
+        {
+            var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        }
+        finally
+        {
+            listener.Stop();
+        }
+
+        Assert.That(reports, Is.EqualTo(new[] { 0, 1 }));
+    }
+
     private static int GetFreePort()
     {
         var probe = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
