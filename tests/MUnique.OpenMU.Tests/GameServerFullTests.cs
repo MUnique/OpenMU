@@ -4,9 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using System.Collections.Concurrent;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -581,7 +579,7 @@ public class GameServerFullTests
     /// </summary>
     /// <remarks>
     /// Starting a real offline session needs a player in the game with its account and character
-    /// loaded. The manager has no other way to add a session, so it's added to its sessions directly.
+    /// loaded, so it's added to the sessions of the manager directly.
     /// </remarks>
     private static async ValueTask<OfflinePlayer> AddOfflineSessionAsync(GameServerContext gameContext, string loginName, bool loggedIn)
     {
@@ -593,10 +591,7 @@ public class GameServerFullTests
             await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         }
 
-        var sessionsField = typeof(OfflinePlayerManager).GetField("_activePlayers", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.That(sessionsField, Is.Not.Null, "The sessions field of the OfflinePlayerManager was renamed.");
-        var sessions = (ConcurrentDictionary<string, OfflinePlayer>)sessionsField!.GetValue(gameContext.OfflinePlayerManager)!;
-        sessions[loginName] = offlinePlayer;
+        Assert.That(gameContext.OfflinePlayerManager.TryAdd(loginName, offlinePlayer), Is.True);
         return offlinePlayer;
     }
 
