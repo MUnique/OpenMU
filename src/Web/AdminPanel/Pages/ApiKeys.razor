@@ -35,6 +35,13 @@
 }
 else
 {
+    @if (this._apiKeys.Any(this.IsCreatedBeforeFirstUser))
+    {
+        <div class="alert alert-warning" role="alert">
+            <span class="oi oi-warning" aria-hidden="true"></span> @Resources.ApiKeysCreatedBeforeFirstUserHint
+        </div>
+    }
+
     <div>
         <table class="table table-striped table-hover">
             <thead>
@@ -42,6 +49,7 @@ else
                 <th class="col-4">@Resources.ApiKeyName</th>
                 <th class="col-2">@Resources.ApiKeyPrefix</th>
                 <th class="col-2">@Resources.Role</th>
+                <th>@MUnique.OpenMU.Web.AdminPanel.Services.ApiKeyToolGroupResources.Caption</th>
                 <th class="col-4">@Resources.Actions</th>
             </tr>
             </thead>
@@ -49,9 +57,19 @@ else
             @foreach (var apiKey in this._apiKeys)
             {
                 <tr class="@(apiKey.IsDisabled ? "opacity-50" : null)">
-                    <td>@apiKey.Name</td>
+                    <td>
+                        @apiKey.Name
+                        @if (this.IsCreatedBeforeFirstUser(apiKey))
+                        {
+                            <span class="badge bg-warning text-dark ms-1">@Resources.ApiKeyCreatedBeforeFirstUser</span>
+                        }
+                    </td>
                     <td><code>@apiKey.KeyPrefix…</code></td>
-                    <td>@apiKey.Roles</td>
+                    <td>@MUnique.OpenMU.Web.AdminPanel.Auth.RoleCaption.Get(apiKey.Roles)</td>
+                    <td>
+                        <code>@apiKey.AllowedToolGroups</code>
+                        <button type="button" class="btn btn-sm btn-secondary" @onclick="@(() => this.OnEditToolGroupsAsync(apiKey))">@MUnique.OpenMU.Web.Shared.Properties.Resources.Change</button>
+                    </td>
                     <td>
                         @if (apiKey.IsDisabled)
                         {
@@ -68,7 +86,7 @@ else
             @if (this._apiKeys.Count == 0)
             {
                 <tr>
-                    <td colspan="4" class="text-muted">@Resources.NoApiKeys</td>
+                    <td colspan="5" class="text-muted">@Resources.NoApiKeys</td>
                 </tr>
             }
             </tbody>

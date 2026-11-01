@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +21,6 @@ internal class LandOfTrials : BaseMapInitializer
     internal const byte Number = 31;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Land_of_Trials";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="LandOfTrials"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +30,16 @@ internal class LandOfTrials : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.LandOfTrials);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -257,7 +258,7 @@ internal class LandOfTrials : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 290;
-            monster.Designation = "Lizard Warrior";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.LizardWarrior);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -289,7 +290,7 @@ internal class LandOfTrials : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 291;
-            monster.Designation = "Fire Golem";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.FireGolem);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -321,7 +322,7 @@ internal class LandOfTrials : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 292;
-            monster.Designation = "Queen Bee";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.QueenBee);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 5;
@@ -354,7 +355,7 @@ internal class LandOfTrials : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 293;
-            monster.Designation = "Poison Golem";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.PoisonGolem);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 6;
@@ -387,7 +388,7 @@ internal class LandOfTrials : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 294;
-            monster.Designation = "Axe Warrior";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.AxeWarrior);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -419,7 +420,7 @@ internal class LandOfTrials : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 295;
-            monster.Designation = "Erohim";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Erohim);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 8;
@@ -458,7 +459,7 @@ internal class LandOfTrials : BaseMapInitializer
         jewelsDropItemGroup.SetGuid(this.MapNumber, 1);
         jewelsDropItemGroup.Chance = 0.001;
         jewelsDropItemGroup.ItemType = SpecialItemType.Jewel;
-        jewelsDropItemGroup.Description = "Jewel of Guardian";
+        jewelsDropItemGroup.Description = LocalizedString.FromResource(() => DropGroupDescriptions.JewelOfGuardian);
 
         var jewelOfGuardian = this.GameConfiguration.Items.First(y => y.Group == 14 && y.Number == 31);
         jewelsDropItemGroup.PossibleItems.Add(jewelOfGuardian);

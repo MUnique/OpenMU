@@ -1,0 +1,731 @@
+[
+  {
+    "Name": "accounts_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact account login name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "accounts_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive text to match.",
+          "type": "string",
+          "default": ""
+        },
+        "state": {
+          "description": "Optional account state.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Normal",
+            "Spectator",
+            "GameMaster",
+            "GameMasterInvisible",
+            "Banned",
+            "TemporarilyBanned",
+            null
+          ],
+          "default": null
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "castle_siege_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "characters_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact character name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_describe",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant type name from config_types.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant type name from config_types.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Persistent identifier from config_query.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "depth": {
+          "description": "Nested object depth (0 to 2).",
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_query",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant type name from config_types.",
+          "type": "string"
+        },
+        "field": {
+          "description": "Optional scalar filter field.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "op": {
+          "description": "Comparison: eq, ne, contains, gt, ge, lt or le.",
+          "type": "string",
+          "default": "eq"
+        },
+        "value": {
+          "description": "Comparison value in invariant format; null matches null.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "fields": {
+          "description": "Optional comma-separated fields from config_describe.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive text to find.",
+          "type": "string"
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "text"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_types",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "content_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Content type.",
+          "type": "string",
+          "enum": [
+            "Maps",
+            "CharacterClasses",
+            "Monsters",
+            "Items",
+            "MiniGames"
+          ]
+        },
+        "isActive": {
+          "description": "Optional active state to filter by.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "text": {
+          "description": "Case-insensitive text which the key, name or version must contain.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching entries to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum entries, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "diagnostics_check",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "drops_explain",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "monsterNumber": {
+          "description": "Monster number.",
+          "type": "integer"
+        },
+        "mapNumber": {
+          "description": "Map number.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Number of groups to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum groups, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "monsterNumber",
+        "mapNumber"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "events_schedule",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "guilds_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Exact guild name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "guilds_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive guild name text.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "minigames_leaderboard",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "miniGameType": {
+          "description": "Optional mini game type; empty for the first type which has a leaderboard.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Undefined",
+            "DevilSquare",
+            "BloodCastle",
+            "ChaosCastle",
+            "IllusionTemple",
+            "Doppelganger",
+            "Kanturu",
+            "ImperialGuardian",
+            null
+          ],
+          "default": null
+        },
+        "days": {
+          "description": "Optional number of past days (1 to 3650) of which finished games are counted; empty for all time.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Optional game server identifier.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "mapNumber": {
+          "description": "Optional map number; requires live data.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "guildName": {
+          "description": "Optional exact guild name; requires live data.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugin_operations_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugin_operations_read",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "plugInId": {
+          "description": "Plugin type identifier from plugin_operations_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Exact operation name from the catalog.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "JSON object matching the contributed input schema.",
+          "type": "string",
+          "default": "{}"
+        }
+      },
+      "required": [
+        "serverId",
+        "plugInId",
+        "name"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugins_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Optional case-insensitive name filter.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "rates_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "server_overview",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "server_statistics",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "newAccountDays": {
+          "description": "Count accounts registered in this many days (1 to 365).",
+          "type": "integer",
+          "default": 7
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "spawns_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "mapNumber": {
+          "description": "Map number.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Number of spawns to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum spawns, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "mapNumber"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  }
+]

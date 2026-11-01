@@ -22,8 +22,15 @@ using MUnique.OpenMU.Persistence.InMemory;
 internal class TestInitializationWithEfCore
 {
     private const byte IcarusMapNumber = 10;
+    private const byte CrywolfMapNumber = 34;
     private static readonly Guid FeatherDropGroupId = new(0x200, IcarusMapNumber, 1, 0, 0, 0, 0, 0, 0, 0, 0);
     private static readonly Guid CrestDropGroupId = new(0x200, IcarusMapNumber, 2, 0, 0, 0, 0, 0, 0, 0, 0);
+    private static readonly Guid[] FenrirMaterialDropGroupIds =
+    [
+        new(0x200, CrywolfMapNumber, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+        new(0x200, CrywolfMapNumber, 2, 0, 0, 0, 0, 0, 0, 0, 0),
+        new(0x200, CrywolfMapNumber, 3, 0, 0, 0, 0, 0, 0, 0, 0),
+    ];
 
     /// <summary>
     /// Tests the data initialization using the entity framework core.
@@ -56,6 +63,7 @@ internal class TestInitializationWithEfCore
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
         await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
         await this.AssertIcarusFeatherAndCrestDropGroupsAsync(contextProvider).ConfigureAwait(false);
+        await this.AssertFenrirMaterialDropGroupsAsync(contextProvider).ConfigureAwait(false);
         await this.AssertCastleSiegeUpdatePlugInAsync(contextProvider).ConfigureAwait(false);
         await this.TestIfItemsFitIntoInventoriesAsync(contextProvider).ConfigureAwait(false);
     }
@@ -93,6 +101,65 @@ internal class TestInitializationWithEfCore
         Assert.That(groups[0].PossibleItems, Has.Count.EqualTo(1));
         Assert.That(groups[0].PossibleItems.Single().Group, Is.EqualTo((byte)13));
         Assert.That(groups[0].PossibleItems.Single().Number, Is.EqualTo((short)14));
+    }
+
+    /// <summary>
+    /// Tests that applying the update for the Fenrir material drops in Season 6 is idempotent.
+    /// </summary>
+    [Test]
+    public async Task TestSeason6FenrirMaterialDropGroupsUpdatePlugInAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var map = gameConfiguration.Maps.First(m => m.Number == CrywolfMapNumber && m.Discriminator == 0);
+        foreach (var existingGroup in gameConfiguration.DropItemGroups.Where(group => FenrirMaterialDropGroupIds.Contains(group.GetId())).ToList())
+        {
+            map.DropItemGroups.Remove(existingGroup);
+            gameConfiguration.DropItemGroups.Remove(existingGroup);
+        }
+
+        var update = new AddFenrirMaterialDropGroupsUpdateSeason6();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        this.AssertFenrirMaterialDropGroups(gameConfiguration, map);
+    }
+
+    /// <summary>
+    /// Tests that the update for the Fenrir material drops skips a material which an admin already added to Crywolf.
+    /// </summary>
+    [Test]
+    public async Task TestSeason6FenrirMaterialDropGroupsUpdateSkipsExistingDropAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var map = gameConfiguration.Maps.First(m => m.Number == CrywolfMapNumber && m.Discriminator == 0);
+        foreach (var existingGroup in gameConfiguration.DropItemGroups.Where(group => FenrirMaterialDropGroupIds.Contains(group.GetId())).ToList())
+        {
+            map.DropItemGroups.Remove(existingGroup);
+            gameConfiguration.DropItemGroups.Remove(existingGroup);
+        }
+
+        var splinterOfArmor = gameConfiguration.Items.First(item => item.Group == 13 && item.Number == 32);
+        var adminGroup = context.CreateNew<DropItemGroup>();
+        adminGroup.Description = "Splinter of Armor (admin)";
+        adminGroup.Chance = 0.1;
+        adminGroup.PossibleItems.Add(splinterOfArmor);
+        gameConfiguration.DropItemGroups.Add(adminGroup);
+        map.DropItemGroups.Add(adminGroup);
+
+        await new AddFenrirMaterialDropGroupsUpdateSeason6().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(map.DropItemGroups.Where(group => group.PossibleItems.Contains(splinterOfArmor)).ToList(), Is.EqualTo(new[] { adminGroup }));
+        Assert.That(map.DropItemGroups.Count(group => FenrirMaterialDropGroupIds.Contains(group.GetId())), Is.EqualTo(2));
     }
 
     /// <summary>
@@ -345,9 +412,8 @@ internal class TestInitializationWithEfCore
         configuration.SignOfLordItemLevel = 0;
         signOfLord.MaximumItemLevel = 0;
 
-        var registrationUpdate = new ConfigureCastleSiegeRegistrationUpdatePlugIn();
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.Multiple(() =>
         {
@@ -359,7 +425,7 @@ internal class TestInitializationWithEfCore
         var customSignOfLord = gameConfiguration.Items.First(item => item != signOfLord);
         configuration.SignOfLordItemDefinition = customSignOfLord;
         configuration.SignOfLordItemLevel = 1;
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(configuration.SignOfLordItemDefinition, Is.SameAs(customSignOfLord));
@@ -369,7 +435,7 @@ internal class TestInitializationWithEfCore
         gameConfiguration.Items.Remove(signOfLord);
         configuration.SignOfLordItemDefinition = null;
         configuration.SignOfLordItemLevel = 0;
-        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(configuration.SignOfLordItemDefinition, Is.Null);
@@ -383,9 +449,8 @@ internal class TestInitializationWithEfCore
             gameConfiguration.MagicEffects.Remove(participantEffect);
         }
 
-        var participationUpdate = new ConfigureCastleSiegeParticipationUpdatePlugIn();
-        await participationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await participationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(
             gameConfiguration.MagicEffects
                 .Where(effect => Enum.IsDefined(typeof(CastleSiegeMagicEffectNumber), effect.Number))
@@ -395,9 +460,8 @@ internal class TestInitializationWithEfCore
         var senior = gameConfiguration.Monsters.Single(monster => monster.Number == 223);
         Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
         senior.NpcWindow = NpcWindow.Undefined;
-        var economyUpdate = new ConfigureCastleSiegeEconomyUpdatePlugIn();
-        await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
 
         var lifeStone = gameConfiguration.Monsters.Single(monster => monster.Number == 278);
@@ -405,9 +469,8 @@ internal class TestInitializationWithEfCore
         maximumHealth.Value = 12_345;
         var defense = lifeStone.Attributes.Single(attribute => attribute.AttributeDefinition?.Id == Stats.DefenseBase.Id);
         lifeStone.Attributes.Remove(defense);
-        var lifeStoneUpdate = new ConfigureCastleSiegeLifeStoneUpdatePlugIn();
-        await lifeStoneUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-        await lifeStoneUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(maximumHealth.Value, Is.EqualTo(12_345));
@@ -440,5 +503,33 @@ internal class TestInitializationWithEfCore
     private void AssertZone(CastleSiegeZoneDefinition actual, (byte X1, byte Y1, byte X2, byte Y2) expected)
     {
         Assert.That((actual.X1, actual.Y1, actual.X2, actual.Y2), Is.EqualTo(expected));
+    }
+
+    private void AssertFenrirMaterialDropGroups(GameConfiguration gameConfiguration, GameMapDefinition map)
+    {
+        (short ItemNumber, double Chance)[] expected = [(32, 0.05), (33, 0.02), (34, 0.005)];
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var (itemNumber, chance) = expected[i];
+            var id = FenrirMaterialDropGroupIds[i];
+            var groups = gameConfiguration.DropItemGroups.Where(group => group.GetId() == id).ToList();
+            Assert.That(groups, Has.Count.EqualTo(1));
+            Assert.That(map.DropItemGroups.Count(group => group.GetId() == id), Is.EqualTo(1));
+            Assert.That(groups[0].Chance, Is.EqualTo(chance));
+            Assert.That(groups[0].MinimumMonsterLevel, Is.Null);
+            Assert.That(groups[0].MaximumMonsterLevel, Is.Null);
+            Assert.That(groups[0].ItemLevel, Is.EqualTo((byte)0));
+            Assert.That(groups[0].PossibleItems, Has.Count.EqualTo(1));
+            Assert.That(groups[0].PossibleItems.Single().Group, Is.EqualTo((byte)13));
+            Assert.That(groups[0].PossibleItems.Single().Number, Is.EqualTo(itemNumber));
+        }
+    }
+
+    private async Task AssertFenrirMaterialDropGroupsAsync(IPersistenceContextProvider contextProvider)
+    {
+        using var context = contextProvider.CreateNewConfigurationContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var map = gameConfiguration.Maps.First(m => m.Number == CrywolfMapNumber && m.Discriminator == 0);
+        this.AssertFenrirMaterialDropGroups(gameConfiguration, map);
     }
 }

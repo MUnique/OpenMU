@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -27,14 +28,14 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (CraftingResult.Failed, null);
         }
 
-        if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
+        var (error, items, successRate, price) = this.GetRequiredItemsAndPrice(player);
+        if (error is not null)
         {
-            return (error, null);
+            return (error.Value, null);
         }
 
         player.Logger.LogInformation("Crafting success chance: {successRate} %", successRate);
 
-        var price = this.GetPrice(successRate, items);
         if (!await this._castleSiegeTaxProvider.TryPayChaosCostAsync(player, price).ConfigureAwait(false))
         {
             return (CraftingResult.NotEnoughMoney, null);
@@ -76,6 +77,48 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 
     /// <inheritdoc/>
     public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+
+    /// <summary>
+    /// Gets the required items, the success rate including the <see cref="Stats.CraftingBonusPercentage"/>
+    /// of the player, and the price of this crafting, without changing anything.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>
+    /// The error, if the required items couldn't be get; Otherwise, <c>null</c> with the required items,
+    /// the success rate including the crafting bonus of the player and the price without taxes.
+    /// </returns>
+    public (CraftingResult? Error, IList<CraftingRequiredItemLink> Items, byte SuccessRate, int Price) GetRequiredItemsAndPrice(Player player)
+    {
+        if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
+        {
+            return (error, items, successRate, 0);
+        }
+
+        // The price is based on the success rate of the items, so a bonus doesn't make the crafting more expensive.
+        var price = this.GetPrice(successRate, items);
+        return (null, items, ApplyCraftingBonus(successRate, player.Attributes?[Stats.CraftingBonusPercentage] ?? 0), price);
+    }
+
+    /// <summary>
+    /// Applies the <see cref="Stats.CraftingBonusPercentage"/> of the player to the success rate of a crafting.
+    /// </summary>
+    /// <remarks>
+    /// A success rate of 0 or 100 percent is kept, because such craftings either can't fail or
+    /// can't succeed by design. Otherwise, the result stays between 1 and 100 percent.
+    /// </remarks>
+    /// <param name="successRate">The success rate, which is defined by the required items.</param>
+    /// <param name="bonusPercentage">The bonus in percentage points.</param>
+    /// <returns>The resulting success rate.</returns>
+    internal static byte ApplyCraftingBonus(byte successRate, float bonusPercentage)
+    {
+        var bonus = (int)bonusPercentage;
+        if (successRate is 0 or >= 100 || bonus == 0)
+        {
+            return successRate;
+        }
+
+        return (byte)Math.Clamp(successRate + bonus, 1, 100);
+    }
 
     /// <summary>
     /// Gets the price based on the success rate and the required items.

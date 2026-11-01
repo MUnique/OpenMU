@@ -9,14 +9,6 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using QRCoder;
 
 /// <summary>
-/// The data which is needed to set an authenticator app up.
-/// </summary>
-/// <param name="SharedKey">The shared key, formatted in groups of four characters for manual entry.</param>
-/// <param name="AuthenticatorUri">The otpauth uri which is encoded in the QR code.</param>
-/// <param name="QrCodeSvg">The QR code as inline SVG.</param>
-public record AuthenticatorSetup(string SharedKey, string AuthenticatorUri, string QrCodeSvg);
-
-/// <summary>
 /// Sets the time based one time password (TOTP) second factor of an admin panel user up.
 /// </summary>
 /// <remarks>
@@ -96,7 +88,8 @@ public class AuthenticatorSetupService
         await this._userManager.SetTwoFactorEnabledAsync(user, false).ConfigureAwait(false);
         user.ProtectedAuthenticatorKey = null;
         user.RecoveryCodeHashes = null;
-        user.LastAcceptedTotpStep = 0;
+
+        // LastAcceptedTotpStep stays: time steps only grow, so it doesn't block the codes of a new authenticator.
         await this._userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
     }
 

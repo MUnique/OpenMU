@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
 /// A chat message processor for alliance chat.
@@ -29,5 +30,6 @@ public class ChatMessageAllianceProcessor : BannableChatMessageBaseProcessor
 
         // TODO: Use DI to get the IEventPublisher
         await publisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter!.Name, content.Message).ConfigureAwait(false);
+        await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Alliance).ConfigureAwait(false);
     }
 }

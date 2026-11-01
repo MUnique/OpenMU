@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -50,6 +51,18 @@ public interface IGameServerContext : IGameContext
     /// Gets the server configuration.
     /// </summary>
     GameServerConfiguration ServerConfiguration { get; }
+
+    /// <summary>
+    /// Gets the locator for the maps which this game server doesn't host itself,
+    /// but other game servers do. It's <c>null</c>, if maps are not shared between game servers.
+    /// </summary>
+    IMapHostLocator? MapHostLocator { get; }
+
+    /// <summary>
+    /// Gets the requirements which an account has to fulfill to join this game server,
+    /// see <see cref="GameServerDefinition.JoinRequirements"/>.
+    /// </summary>
+    IEnumerable<AttributeRequirement> JoinRequirements => [];
 
     /// <summary>
     /// Stops the periodic tasks of this context (the per-second plug-in tasks and the recovery

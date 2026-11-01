@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="TheJewelsDropItemGroup01PercentDropChance" xml:space="preserve">
+    <value>Die Drop-Gruppe für Juwelen (0,1 % Drop-Chance)</value>
+  </data>
+  <data name="TheCommonDropItemGroupForRandomItems30PercentDropChance" xml:space="preserve">
+    <value>Die allgemeine Drop-Gruppe für zufällige Gegenstände (30 % Drop-Chance)</value>
+  </data>
+  <data name="TheCommonMoneyDropItemGroup50PercentDropChance" xml:space="preserve">
+    <value>Die allgemeine Drop-Gruppe für Geld (50 % Drop-Chance)</value>
+  </data>
+  <data name="TheCommonDropItemGroupForRandomExcellentItems001PercentDropChance" xml:space="preserve">
+    <value>Die allgemeine Drop-Gruppe für zufällige exzellente Gegenstände (0,01 % Drop-Chance)</value>
+  </data>
+  <data name="ItemsFromRedDragon" xml:space="preserve">
+    <value>Gegenstände vom Roten Drachen</value>
+  </data>
+  <data name="BoxOfKundunPlus1" xml:space="preserve">
+    <value>Box des Kundun +1</value>
+  </data>
+  <data name="BoxOfKundunPlus2" xml:space="preserve">
+    <value>Box des Kundun +2</value>
+  </data>
+  <data name="BoxOfKundunPlus3" xml:space="preserve">
+    <value>Box des Kundun +3</value>
+  </data>
+  <data name="BoxOfKundunPlus4" xml:space="preserve">
+    <value>Box des Kundun +4</value>
+  </data>
+  <data name="BoxOfKundunPlus5" xml:space="preserve">
+    <value>Box des Kundun +5</value>
+  </data>
+  <data name="BoxOfLuck" xml:space="preserve">
+    <value>Glücksbox</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel1" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 1)</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel2" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 2)</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel3" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 3)</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel4" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 4)</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel5" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 5)</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel6" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 6)</value>
+  </data>
+  <data name="TheDropItemGroupForSymbolOfKundunLevel7" xml:space="preserve">
+    <value>Die Drop-Gruppe für Symbol des Kundun (Level 7)</value>
+  </data>
+  <data name="DarkRavenSpirit" xml:space="preserve">
+    <value>Geist des Dunklen Raben</value>
+  </data>
+  <data name="DarkHorseSpirit" xml:space="preserve">
+    <value>Geist des Dunklen Pferdes</value>
+  </data>
+  <data name="SignOfDimensions" xml:space="preserve">
+    <value>Zeichen der Dimensionen</value>
+  </data>
+  <data name="QuestItemBrokenSwordDarkStoneBladeKnight" xml:space="preserve">
+    <value>Questgegenstand 'Zerbrochenes Schwert;Dunkler Stein' (Blade Knight)</value>
+  </data>
+  <data name="QuestItemBrokenSwordDarkStoneDarkKnight" xml:space="preserve">
+    <value>Questgegenstand 'Zerbrochenes Schwert;Dunkler Stein' (Dark Knight)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorBloodySummoner" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Bloody Summoner)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorMuseElf" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Muse Elf)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorSoulMaster" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Soul Master)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorBladeKnight" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Blade Knight)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorSummoner" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Summoner)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorDarkWizard" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Dark Wizard)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorFairyElf" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Fairy Elf)</value>
+  </data>
+  <data name="QuestItemScrollOfEmperorRingOfHonorDarkKnight" xml:space="preserve">
+    <value>Questgegenstand 'Schriftrolle des Imperators;Ehrenring' (Dark Knight)</value>
+  </data>
+  <data name="CrestOfMonarch" xml:space="preserve">
+    <value>Wappen des Monarchen</value>
+  </data>
+  <data name="LochsFeather" xml:space="preserve">
+    <value>Lochs Feder</value>
+  </data>
+  <data name="QuestItemFeatherOfDarkPhoenix" xml:space="preserve">
+    <value>Questgegenstand 'Feder des Dunkelphönix' ()</value>
+  </data>
+  <data name="QuestItemHornOfHellMaine" xml:space="preserve">
+    <value>Questgegenstand 'Horn des Hell Maine' ()</value>
+  </data>
+  <data name="QuestItemFlameOfDeathBeamKnight" xml:space="preserve">
+    <value>Questgegenstand 'Flamme des Death Beam Knight' ()</value>
+  </data>
+  <data name="QuestItemEyeOfAbyssalSummoner" xml:space="preserve">
+    <value>Questgegenstand 'Auge des Abgrunds' (Summoner)</value>
+  </data>
+  <data name="QuestItemSoulShardOfWizardDarkWizard" xml:space="preserve">
+    <value>Questgegenstand 'Seelensplitter des Zauberers' (Dark Wizard)</value>
+  </data>
+  <data name="QuestItemTearOfElfFairyElf" xml:space="preserve">
+    <value>Questgegenstand 'Träne der Elfe' (Fairy Elf)</value>
+  </data>
+  <data name="JewelOfGuardian" xml:space="preserve">
+    <value>Juwel des Wächters</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle2" xml:space="preserve">
+    <value>Belohnte Ancient-Gegenstände für Chaos Castle 2</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle3" xml:space="preserve">
+    <value>Belohnte Ancient-Gegenstände für Chaos Castle 3</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle4" xml:space="preserve">
+    <value>Belohnte Ancient-Gegenstände für Chaos Castle 4</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle5" xml:space="preserve">
+    <value>Belohnte Ancient-Gegenstände für Chaos Castle 5</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle6" xml:space="preserve">
+    <value>Belohnte Ancient-Gegenstände für Chaos Castle 6</value>
+  </data>
+  <data name="RewardedAncientItemsForChaosCastle7" xml:space="preserve">
+    <value>Belohnte Ancient-Gegenstände für Chaos Castle 7</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle1" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 1</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle2" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 2</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle3" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 3</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle4" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 4</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle5" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 5</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle6" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 6</value>
+  </data>
+  <data name="RewardedJewelsForChaosCastle7" xml:space="preserve">
+    <value>Belohnte Juwelen für Chaos Castle 7</value>
+  </data>
+  <data name="TheDropItemGroupForRena" xml:space="preserve">
+    <value>Die Drop-Gruppe für Rena</value>
+  </data>
+  <data name="ArchangelWeaponBloodCastle" xml:space="preserve">
+    <value>Waffe des Erzengels (Blutburg)</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle1" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 1</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle2" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 2</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle3" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 3</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle4" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 4</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle5" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 5</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle6" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 6</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle7" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 7</value>
+  </data>
+  <data name="RewardedItemsForBloodCastle8" xml:space="preserve">
+    <value>Belohnte Gegenstände für Blutburg 8</value>
+  </data>
+  <data name="WizardsRingFromDestructiveOgreArcher" xml:space="preserve">
+    <value>Ring des Zauberers vom Destructive Ogre Archer</value>
+  </data>
+  <data name="WizardsRingFromDestructiveOgreSoldier" xml:space="preserve">
+    <value>Ring des Zauberers vom Destructive Ogre Soldier</value>
+  </data>
+  <data name="JewelOfBlessFromWhiteWizard" xml:space="preserve">
+    <value>Juwel des Segens vom Weißen Zauberer</value>
+  </data>
+  <data name="GoldenCompensationBoxCrestOfMonarch" xml:space="preserve">
+    <value>Goldene Entschädigungsbox: Wappen des Monarchen</value>
+  </data>
+  <data name="GoldenCompensationBoxLochsFeather" xml:space="preserve">
+    <value>Goldene Entschädigungsbox: Lochs Feder</value>
+  </data>
+  <data name="GoldenCompensationBoxJewel" xml:space="preserve">
+    <value>Goldene Entschädigungsbox: Juwel</value>
+  </data>
+  <data name="CompensationBoxCrestOfMonarch" xml:space="preserve">
+    <value>Entschädigungsbox: Wappen des Monarchen</value>
+  </data>
+  <data name="CompensationBoxLochsFeather" xml:space="preserve">
+    <value>Entschädigungsbox: Lochs Feder</value>
+  </data>
+  <data name="CompensationBoxJewel" xml:space="preserve">
+    <value>Entschädigungsbox: Juwel</value>
+  </data>
+  <data name="FlameOfCondor" xml:space="preserve">
+    <value>Kondorflamme</value>
+  </data>
+</root>

@@ -54,7 +54,8 @@ public partial class SystemConfiguration
 
     /// <summary>
     /// Gets or sets a value indicating whether to automatically update the
-    /// database schema when the server process starts.
+    /// database schema, and apply the mandatory configuration updates,
+    /// when the server process starts.
     /// Only applicable to the All-In-One Startup. In a distributed deployment,
     /// the user must start the update manually over the admin panel.
     /// </summary>
@@ -147,6 +148,6 @@ public partial class SystemConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return "System Configuration";
+        return Resources.SystemConfiguration_Name;
     }
 }

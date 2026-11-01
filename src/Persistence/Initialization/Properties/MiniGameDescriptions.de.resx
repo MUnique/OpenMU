@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ImperialGuardianMonday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Montag, das auf Karte 69 stattfindet.</value>
+  </data>
+  <data name="ImperialGuardianTuesday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Dienstag, das auf Karte 70 stattfindet.</value>
+  </data>
+  <data name="ImperialGuardianWednesday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Mittwoch, das auf Karte 71 stattfindet.</value>
+  </data>
+  <data name="ImperialGuardianThursday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Donnerstag, das auf Karte 69 stattfindet.</value>
+  </data>
+  <data name="ImperialGuardianFriday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Freitag, das auf Karte 70 stattfindet.</value>
+  </data>
+  <data name="ImperialGuardianSaturday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Samstag, das auf Karte 71 stattfindet.</value>
+  </data>
+  <data name="ImperialGuardianSunday" xml:space="preserve">
+    <value>Eventdefinition für das Imperial-Guardian-Event am Sonntag, das auf Karte 72 stattfindet.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel1" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 1.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel2" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 2.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel3" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 3.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel4" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 4.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel5" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 5.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel6" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 6.</value>
+  </data>
+  <data name="EventDefinitionForDevilSquareEventLevel7" xml:space="preserve">
+    <value>Eventdefinition für das Devil-Square-Event, Stufe 7.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel1" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 1.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel2" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 2.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel3" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 3.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel4" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 4.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel5" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 5.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel6" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 6.</value>
+  </data>
+  <data name="EventDefinitionForChaosCastleEventLevel7" xml:space="preserve">
+    <value>Eventdefinition für das Chaos-Castle-Event, Stufe 7.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel1" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 1.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel2" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 2.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel3" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 3.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel4" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 4.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel5" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 5.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel6" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 6.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel7" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 7.</value>
+  </data>
+  <data name="EventDefinitionForBloodCastleEventLevel8" xml:space="preserve">
+    <value>Eventdefinition für das Blutburg-Event, Stufe 8.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap65" xml:space="preserve">
+    <value>Eventdefinition für das Doppelgänger-Event auf Karte 65.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap66" xml:space="preserve">
+    <value>Eventdefinition für das Doppelgänger-Event auf Karte 66.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap67" xml:space="preserve">
+    <value>Eventdefinition für das Doppelgänger-Event auf Karte 67.</value>
+  </data>
+  <data name="EventDefinitionForTheDoppelgangerEventOnMap68" xml:space="preserve">
+    <value>Eventdefinition für das Doppelgänger-Event auf Karte 68.</value>
+  </data>
+  <data name="EventDefinitionForTheKanturuRefineryTowerEvent" xml:space="preserve">
+    <value>Eventdefinition für das Event im Raffinerieturm von Kanturu.</value>
+  </data>
+</root>

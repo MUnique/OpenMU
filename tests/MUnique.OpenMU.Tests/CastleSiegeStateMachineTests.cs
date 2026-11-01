@@ -1,9 +1,10 @@
-// <copyright file="CastleSiegeStateMachineTests.cs" company="MUnique">
+﻿// <copyright file="CastleSiegeStateMachineTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -50,7 +51,7 @@ public class CastleSiegeStateMachineTests
     [TestCase("2026-08-08T23:00:00Z", CastleSiegeState.EndCycle)]
     public void CurrentStateIsCalculatedFromWeeklySchedule(string utcTime, CastleSiegeState expectedState)
     {
-        var schedule = new CastleSiegeSchedule(CreateSchedule());
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.Utc);
 
         var period = schedule.GetCurrentPeriod(DateTime.Parse(utcTime, null, System.Globalization.DateTimeStyles.AdjustToUniversal));
 
@@ -67,7 +68,7 @@ public class CastleSiegeStateMachineTests
     [TestCase("2026-08-10T12:00:00Z")]
     public void EarlyRegistrationPeriodIsRecoveredAcrossRestart(string utcTime)
     {
-        var schedule = new CastleSiegeSchedule(CreateSchedule());
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.Utc);
         var period = schedule.GetCurrentEventPeriod(
             DateTime.Parse(utcTime, null, System.Globalization.DateTimeStyles.AdjustToUniversal));
 
@@ -85,13 +86,167 @@ public class CastleSiegeStateMachineTests
     [Test]
     public void LastStateEndsAtStartOfNextWeek()
     {
-        var schedule = new CastleSiegeSchedule(CreateSchedule());
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.Utc);
         var utcNow = new DateTime(2026, 8, 8, 23, 0, 0, DateTimeKind.Utc);
 
         var period = schedule.GetCurrentPeriod(utcNow);
 
         Assert.That(period.State, Is.EqualTo(CastleSiegeState.EndCycle));
         Assert.That(period.EndUtc, Is.EqualTo(new DateTime(2026, 8, 9, 0, 0, 0, DateTimeKind.Utc)));
+    }
+
+    /// <summary>
+    /// Verifies that the configured times are interpreted in the server time zone, independent of the DST offset.
+    /// </summary>
+    /// <param name="timeZoneId">The server time zone id.</param>
+    /// <param name="utcTime">The current UTC time.</param>
+    /// <param name="expectedState">The expected state.</param>
+    /// <param name="expectedStartUtc">The expected UTC start of the state.</param>
+    /// <param name="expectedEndUtc">The expected UTC end of the state.</param>
+    [TestCase("Europe/Warsaw", "2026-08-08T15:59:00Z", CastleSiegeState.Notify, "2026-08-06T22:00:00Z", "2026-08-08T16:00:00Z")]
+    [TestCase("Europe/Warsaw", "2026-08-08T17:59:00Z", CastleSiegeState.Ready, "2026-08-08T16:00:00Z", "2026-08-08T18:00:00Z")]
+    [TestCase("Europe/Warsaw", "2026-08-08T18:00:00Z", CastleSiegeState.Start, "2026-08-08T18:00:00Z", "2026-08-08T20:00:00Z")]
+    [TestCase("Europe/Warsaw", "2026-12-12T18:59:00Z", CastleSiegeState.Ready, "2026-12-12T17:00:00Z", "2026-12-12T19:00:00Z")]
+    [TestCase("Europe/Warsaw", "2026-12-12T19:00:00Z", CastleSiegeState.Start, "2026-12-12T19:00:00Z", "2026-12-12T21:00:00Z")]
+    [TestCase("America/New_York", "2026-08-08T23:59:00Z", CastleSiegeState.Ready, "2026-08-08T22:00:00Z", "2026-08-09T00:00:00Z")]
+    [TestCase("America/New_York", "2026-08-09T00:00:00Z", CastleSiegeState.Start, "2026-08-09T00:00:00Z", "2026-08-09T02:00:00Z")]
+    [TestCase("Asia/Kolkata", "2026-08-08T14:29:00Z", CastleSiegeState.Ready, "2026-08-08T12:30:00Z", "2026-08-08T14:30:00Z")]
+    [TestCase("UTC", "2026-08-08T20:00:00Z", CastleSiegeState.Start, "2026-08-08T20:00:00Z", "2026-08-08T22:00:00Z")]
+    public void CurrentPeriodIsCalculatedInServerTimeZone(string timeZoneId, string utcTime, CastleSiegeState expectedState, string expectedStartUtc, string expectedEndUtc)
+    {
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.FindSystemTimeZoneById(timeZoneId));
+
+        var period = schedule.GetCurrentPeriod(ParseUtc(utcTime));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(period.State, Is.EqualTo(expectedState));
+            Assert.That(period.StartUtc, Is.EqualTo(ParseUtc(expectedStartUtc)));
+            Assert.That(period.EndUtc, Is.EqualTo(ParseUtc(expectedEndUtc)));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that the week boundary follows the local Sunday midnight, which is not
+    /// the UTC midnight, so the same UTC instant belongs to different states in different zones.
+    /// </summary>
+    [Test]
+    public void WeekStartFollowsLocalMidnight()
+    {
+        var utcNow = new DateTime(2026, 8, 8, 23, 30, 0, DateTimeKind.Utc);
+
+        var utcPeriod = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.Utc).GetCurrentPeriod(utcNow);
+        var warsawPeriod = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw")).GetCurrentPeriod(utcNow);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(utcPeriod.State, Is.EqualTo(CastleSiegeState.EndCycle));
+            Assert.That(warsawPeriod.State, Is.EqualTo(CastleSiegeState.Idle1));
+            Assert.That(warsawPeriod.StartUtc, Is.EqualTo(new DateTime(2026, 8, 8, 22, 0, 0, DateTimeKind.Utc)));
+            Assert.That(warsawPeriod.EndUtc, Is.EqualTo(new DateTime(2026, 8, 9, 22, 0, 0, DateTimeKind.Utc)));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a state which spans a DST change keeps its local start and end times,
+    /// so its duration is 23 or 25 hours instead of 24.
+    /// </summary>
+    /// <param name="utcTime">The current UTC time.</param>
+    /// <param name="expectedStartUtc">The expected UTC start of the state.</param>
+    /// <param name="expectedEndUtc">The expected UTC end of the state.</param>
+    [TestCase("2026-03-29T12:00:00Z", "2026-03-28T23:00:00Z", "2026-03-29T22:00:00Z")]
+    [TestCase("2026-10-25T12:00:00Z", "2026-10-24T22:00:00Z", "2026-10-25T23:00:00Z")]
+    public void StateSpanningDstChangeKeepsLocalBoundaries(string utcTime, string expectedStartUtc, string expectedEndUtc)
+    {
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw"));
+
+        var period = schedule.GetCurrentPeriod(ParseUtc(utcTime));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(period.State, Is.EqualTo(CastleSiegeState.Idle1));
+            Assert.That(period.StartUtc, Is.EqualTo(ParseUtc(expectedStartUtc)));
+            Assert.That(period.EndUtc, Is.EqualTo(ParseUtc(expectedEndUtc)));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that the Saturday start time stays at the same local time before and after the DST change.
+    /// </summary>
+    [Test]
+    public void StartStaysAtLocalTimeAcrossDstChange()
+    {
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw"));
+
+        var beforeChange = schedule.GetCurrentPeriod(new DateTime(2026, 3, 28, 19, 30, 0, DateTimeKind.Utc));
+        var afterChange = schedule.GetCurrentPeriod(new DateTime(2026, 4, 4, 18, 30, 0, DateTimeKind.Utc));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(beforeChange.State, Is.EqualTo(CastleSiegeState.Start));
+            Assert.That(beforeChange.StartUtc, Is.EqualTo(new DateTime(2026, 3, 28, 19, 0, 0, DateTimeKind.Utc)));
+            Assert.That(afterChange.State, Is.EqualTo(CastleSiegeState.Start));
+            Assert.That(afterChange.StartUtc, Is.EqualTo(new DateTime(2026, 4, 4, 18, 0, 0, DateTimeKind.Utc)));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that following states from the end of a state continues at the scheduled local time across a DST change.
+    /// </summary>
+    [Test]
+    public void CreatedPeriodEndsAtNextLocalBoundaryAcrossDstChange()
+    {
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw"));
+        var idleStart = new DateTime(2026, 3, 28, 23, 0, 0, DateTimeKind.Utc);
+
+        var idle = schedule.CreatePeriod(CastleSiegeState.Idle1, idleStart);
+        var registration = schedule.CreatePeriod(CastleSiegeState.RegisterGuild, idle.EndUtc);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(idle.EndUtc, Is.EqualTo(new DateTime(2026, 3, 29, 22, 0, 0, DateTimeKind.Utc)));
+            Assert.That(registration.EndUtc, Is.EqualTo(new DateTime(2026, 3, 30, 22, 0, 0, DateTimeKind.Utc)));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that the early registration period after the cycle ends at the local start of the scheduled successor state.
+    /// </summary>
+    [Test]
+    public void EarlyRegistrationPeriodIsCalculatedInServerTimeZone()
+    {
+        var schedule = new CastleSiegeSchedule(CreateSchedule(), TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw"));
+
+        var period = schedule.GetCurrentEventPeriod(new DateTime(2026, 8, 9, 12, 0, 0, DateTimeKind.Utc));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(period.State, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(period.StartUtc, Is.EqualTo(new DateTime(2026, 8, 8, 20, 5, 0, DateTimeKind.Utc)));
+            Assert.That(period.EndUtc, Is.EqualTo(new DateTime(2026, 8, 10, 22, 0, 0, DateTimeKind.Utc)));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a scheduled time which does not exist because the clock is set forward is moved by the length of the gap.
+    /// </summary>
+    [Test]
+    public void ScheduledTimeInDstGapIsMovedForward()
+    {
+        var entries = new[]
+        {
+            CreateScheduleEntry(CastleSiegeState.Idle1, DayOfWeek.Sunday, 2, 30),
+            CreateScheduleEntry(CastleSiegeState.RegisterGuild, DayOfWeek.Monday, 0, 0),
+        };
+        var schedule = new CastleSiegeSchedule(entries, TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw"));
+
+        var period = schedule.GetCurrentPeriod(new DateTime(2026, 3, 29, 12, 0, 0, DateTimeKind.Utc));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(period.State, Is.EqualTo(CastleSiegeState.Idle1));
+            Assert.That(period.StartUtc, Is.EqualTo(new DateTime(2026, 3, 29, 1, 30, 0, DateTimeKind.Utc)));
+        });
     }
 
     /// <summary>
@@ -108,7 +263,7 @@ public class CastleSiegeStateMachineTests
             Hour = 23,
         });
 
-        Assert.That(() => new CastleSiegeSchedule(schedule), Throws.InvalidOperationException);
+        Assert.That(() => new CastleSiegeSchedule(schedule, TimeZoneInfo.Utc), Throws.InvalidOperationException);
     }
 
     /// <summary>
@@ -267,6 +422,27 @@ public class CastleSiegeStateMachineTests
         await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
 
         Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Idle2));
+    }
+
+    /// <summary>
+    /// Verifies that a state transition is reported to the <see cref="ICastleSiegeStateChangedPlugIn"/>.
+    /// </summary>
+    [Test]
+    public async ValueTask StateChangeIsReportedToPlugInAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
+        var recorder = new StateChangeRecordingPlugIn();
+        plugInManager.RegisterPlugInAtPlugInPoint<ICastleSiegeStateChangedPlugIn>(recorder);
+        fixture.GameContext.SetupGet(game => game.PlugInManager).Returns(plugInManager);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        timeProvider.Advance(TimeSpan.FromHours(12));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.That(recorder.Changes, Is.EqualTo(new[] { (CastleSiegeState.RegisterGuild, CastleSiegeState.Idle2) }));
     }
 
     /// <summary>
@@ -453,6 +629,102 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that a restart after a missed EndCycle clears the registrations and selected guilds of the previous cycle.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInCleansUpMissedCycleEndAfterRestartAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSelectedGuildAsync(fixture).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+        var persistedSelectedGuilds = await GetPersistedSelectedGuildsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(context.RegisteredGuilds, Is.Empty);
+            Assert.That(persistedRegistrations, Is.Empty);
+            Assert.That(persistedSelectedGuilds, Is.Empty);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a restart during the registration keeps the registrations of the current cycle.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInKeepsCurrentRegistrationsAfterRestartAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.RegisteredGuilds.Keys, Does.Contain(fixture.RegisteredGuildId));
+            Assert.That(persistedRegistrations, Has.Count.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a restart after the guild selection doesn't treat the selected guilds as left over from a missed EndCycle.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInKeepsRegistrationsAfterRestartBeforeTheBattleAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSelectedGuildAsync(fixture).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 8, 19, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Ready));
+            Assert.That(persistedRegistrations, Has.Count.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Verifies the known limitation of the missed EndCycle detection: when the previous cycle ended without
+    /// any selected guilds, its registrations leave no trace of their cycle and are kept after a restart.
+    /// </summary>
+    [Test]
+    public async ValueTask PlugInKeepsRegistrationsOfMissedCycleEndWithoutSelectedGuildsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await SetPersistedMarksAsync(fixture, 10).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        var persistedRegistrations = await GetPersistedRegistrationsAsync(fixture).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(context.RegisteredGuilds.Keys, Does.Contain(fixture.RegisteredGuildId));
+            Assert.That(persistedRegistrations, Has.Count.EqualTo(1));
+            Assert.That(persistedRegistrations[0].Marks, Is.EqualTo(10));
+        });
+    }
+
+    /// <summary>
     /// Verifies that forcing the event starts the battle for its configured duration.
     /// </summary>
     [Test]
@@ -607,6 +879,38 @@ public class CastleSiegeStateMachineTests
         Assert.That(plugIn.GetContext(gameContext.Object), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies three-second mini-map scheduling and skipping missed intervals instead of sending catch-up bursts.
+    /// </summary>
+    [Test]
+    public async ValueTask MiniMapUpdatesFollowThreeSecondCadenceAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var start = new DateTimeOffset(2026, 8, 8, 20, 0, 0, TimeSpan.Zero);
+        var timeProvider = new ManualTimeProvider(start);
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(3).UtcDateTime));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(2));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(3).UtcDateTime));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(6).UtcDateTime));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(10));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        Assert.That(context.NextMiniMapUpdateUtc, Is.EqualTo(start.AddSeconds(15).UtcDateTime));
+    }
+
+    private static DateTime ParseUtc(string utcTime)
+    {
+        return DateTime.Parse(utcTime, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+    }
+
     private static IEnumerable<CastleSiegeStateScheduleEntry> CreateSchedule()
     {
         yield return CreateScheduleEntry(CastleSiegeState.Idle1, DayOfWeek.Sunday, 0, 0);
@@ -672,6 +976,51 @@ public class CastleSiegeStateMachineTests
         return npcState.Id;
     }
 
+    private static async ValueTask AddSelectedGuildAsync(TestFixture fixture)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var siegeData = (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        var guild = context.CreateNew<CastleSiegeGuild>();
+        guild.GuildId = fixture.RegisteredGuildId;
+        guild.GuildName = "Test";
+        guild.Side = CastleSiegeJoinSide.Attack1;
+        guild.IsAllianceMaster = true;
+        siegeData.Guilds.Add(guild);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private static async ValueTask SetPersistedMarksAsync(TestFixture fixture, int marks)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            fixture.GameConfiguration);
+        var registration = (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).Single();
+        registration.Marks = marks;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private static async ValueTask<IReadOnlyList<CastleSiegeGuildRegistration>> GetPersistedRegistrationsAsync(TestFixture fixture)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            fixture.GameConfiguration);
+        return (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).ToList();
+    }
+
+    private static async ValueTask<IReadOnlyList<CastleSiegeGuild>> GetPersistedSelectedGuildsAsync(TestFixture fixture)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        return (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single().Guilds.ToList();
+    }
+
     private static async ValueTask<TestFixture> CreateFixtureAsync(bool createSiegeData = true)
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();
@@ -708,6 +1057,7 @@ public class CastleSiegeStateMachineTests
         gameContext.SetupGet(game => game.Configuration).Returns(gameConfiguration);
         gameContext.SetupGet(game => game.PersistenceContextProvider).Returns(persistenceContextProvider);
         gameContext.SetupGet(game => game.LoggerFactory).Returns(NullLoggerFactory.Instance);
+        gameContext.SetupGet(game => game.ServerTimeZone).Returns(TimeZoneInfo.Utc);
         gameContext
             .Setup(game => game.SendGlobalNotificationAsync(It.IsAny<string>()))
             .Callback<string>(notifications.Add)
@@ -729,6 +1079,18 @@ public class CastleSiegeStateMachineTests
         Mock<IGameContext> GameContext,
         Guid RegisteredGuildId,
         List<string> Notifications);
+
+    [Guid("8D96455D-B16B-4E02-91DE-5DF862FB4386")]
+    private sealed class StateChangeRecordingPlugIn : ICastleSiegeStateChangedPlugIn
+    {
+        public List<(CastleSiegeState Previous, CastleSiegeState Current)> Changes { get; } = new();
+
+        public ValueTask CastleSiegeStateChangedAsync(IGameContext gameContext, CastleSiegeContext castleSiege, CastleSiegeState previousState)
+        {
+            this.Changes.Add((previousState, castleSiege.CurrentState));
+            return ValueTask.CompletedTask;
+        }
+    }
 
     private sealed class ManualTimeProvider : TimeProvider
     {

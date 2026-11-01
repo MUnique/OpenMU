@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Views.Login;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to log in a player to the game.
@@ -45,14 +46,72 @@ public class LoginAction
             catch (Exception ex)
             {
                 player.Logger.LogError(ex, "Failed to finish login for [{Username}].", username);
-                if (!account.IsTemplate && player.GameContext is IGameServerContext gameServerContext)
-                {
-                    await gameServerContext.LoginServer.LogOffAsync(username, gameServerContext.Id).ConfigureAwait(false);
-                }
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
 
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             }
         }
+    }
+
+    private static async ValueTask ReleaseLoginServerRegistrationAsync(Player player)
+    {
+        if (player.ReleaseLoginServerRegistration() is not { } loginName
+            || player.GameContext is not IGameServerContext gameServerContext)
+        {
+            return;
+        }
+
+        try
+        {
+            await gameServerContext.LoginServer.LogOffAsync(loginName, gameServerContext.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Couldn't log off [{Username}] at the login server after the failed login.", loginName);
+        }
+    }
+
+    /// <summary>
+    /// Reserves a place for the player on the game server, see <see cref="IGameContext.TryReserveLoginPlace"/>.
+    /// </summary>
+    /// <param name="player">The player which logs in. It's not logged in yet, so it isn't counted.</param>
+    /// <param name="gameServerContext">The game server context.</param>
+    /// <param name="username">The username.</param>
+    /// <param name="replacedPlayer">The logged in player whose place the player takes over, e.g. its offline player.</param>
+    /// <returns>The reservation, or <c>null</c> when the game server is full.</returns>
+    /// <remarks>
+    /// Only logged in players and logins in progress take a place, so connections which stay at the
+    /// login screen don't.
+    /// </remarks>
+    private static IDisposable? TryReservePlace(Player player, IGameServerContext gameServerContext, string username, Player? replacedPlayer)
+    {
+        var maximumPlayers = gameServerContext.ServerConfiguration.MaximumPlayers;
+        var (reservation, occupiedPlaces) = gameServerContext.TryReserveLoginPlace(maximumPlayers, replacedPlayer);
+        if (reservation is not null)
+        {
+            return reservation;
+        }
+
+        player.Logger.LogInformation(
+            "Login of [{Username}] refused, because the game server is full: {OccupiedPlaces} of {MaximumPlayers} players are logged in or logging in.",
+            username,
+            occupiedPlaces,
+            maximumPlayers);
+        return null;
+    }
+
+    /// <summary>
+    /// Refuses the login, because the game server is full. The connection stays at the login screen.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="context">The context of the state change to <see cref="PlayerState.Authenticated"/>, which doesn't happen.</param>
+    /// <returns>The result of the session establishment.</returns>
+    private static async ValueTask<(bool Success, Account? Account)> RefuseBecauseFullAsync(Player player, StateMachine.StateChangeContext context)
+    {
+        context.Allowed = false;
+        await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ServerIsFull)).ConfigureAwait(false);
+        return (false, null);
     }
 
     private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
@@ -95,6 +154,8 @@ public class LoginAction
 
     private async ValueTask<(bool Success, Account? Account)> TryEstablishSessionAsync(Player player, string username)
     {
+        // Kept until the state change of the context below is done, see IGameContext.TryReserveLoginPlace.
+        IDisposable? reservedPlace = null;
         try
         {
             await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
@@ -112,23 +173,43 @@ public class LoginAction
 
             if (player.GameContext.OfflinePlayerManager.TryGetPlayer(username, out var offlinePlayer))
             {
-                var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
-                if (!isTemplateOffline && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                // The player takes over the place of its offline player. It needs a free place only when the
+                // offline player isn't logged in anymore, e.g. because its session ended in the meantime.
+                // The place is reserved before the offline session gets stopped, so it's kept when it fails.
+                reservedPlace = TryReservePlace(player, gameServerContext, username, offlinePlayer);
+                if (reservedPlace is null)
                 {
+                    return await RefuseBecauseFullAsync(player, context).ConfigureAwait(false);
+                }
+
+                var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
+                if (!isTemplateOffline)
+                {
+                    if (!await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                    {
+                        context.Allowed = false;
+                        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+                        await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
+                        return (false, null);
+                    }
+
+                    // Remembered while the state change is in progress, which a disconnect waits for.
+                    player.SetLoginServerRegistration(username);
+                }
+
+                // Checked before the offline session is stopped, so that it keeps running when the account is rejected.
+                if (offlinePlayer.Account is { } runningAccount
+                    && !await this.CheckJoinRequirementsAsync(player, runningAccount, gameServerContext).ConfigureAwait(false))
+                {
+                    await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
                     context.Allowed = false;
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                    await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
                     return (false, null);
                 }
 
                 var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
                 if (offlineAccount is null)
                 {
-                    if (!isTemplateOffline)
-                    {
-                        await gameServerContext.LoginServer.LogOffAsync(username, gameServerContext.Id).ConfigureAwait(false);
-                    }
-
+                    await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
                     context.Allowed = false;
                     return (false, null);
                 }
@@ -136,21 +217,65 @@ public class LoginAction
                 return (true, offlineAccount);
             }
 
+            // The account is reserved at the login server BEFORE it's loaded. The old session of an
+            // account saves its progress and only then logs off (see Player.DisconnectAsync), so a
+            // reservation which succeeds guarantees that the load below sees that save. Loading first
+            // let a quick reconnect (the client resumes about 2 seconds after a lost connection) load
+            // the account while the old session was still saving, and reserve it right after the old
+            // session logged off: two diverging copies of the character, and the database ended up
+            // with both of them - duplicated items, and items on top of each other.
+            var reserved = await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false);
+            if (reserved)
+            {
+                // Remembered while the state change is in progress, which a disconnect waits for.
+                // Set before the load, so that every failure below releases it exactly once.
+                player.SetLoginServerRegistration(username);
+
+                // A full game server refuses the login before the account gets loaded. When the account
+                // couldn't be reserved, it's loaded first, so that an account which is logged in
+                // somewhere else is still reported as such (unless it's a template account).
+                reservedPlace = TryReservePlace(player, gameServerContext, username, null);
+                if (reservedPlace is null)
+                {
+                    return await RefuseBecauseFullAsync(player, context).ConfigureAwait(false);
+                }
+            }
+
             var loadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username).ConfigureAwait(false);
             if (loadedAccount is null)
             {
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
                 player.Logger.LogError("Failed to load account {Username} after authentication.", username);
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
                 context.Allowed = false;
                 return (false, null);
             }
 
-            if (!loadedAccount.IsTemplate && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+            if (!await this.CheckJoinRequirementsAsync(player, loadedAccount, gameServerContext).ConfigureAwait(false))
+            {
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+                context.Allowed = false;
+                return (false, null);
+            }
+
+            if (loadedAccount.IsTemplate)
+            {
+                // Template accounts may be logged in several times at once, so they never hold the reservation.
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+            }
+
+            if (!reserved && !loadedAccount.IsTemplate)
             {
                 context.Allowed = false;
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-                await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
                 return (false, null);
+            }
+
+            reservedPlace ??= TryReservePlace(player, gameServerContext, username, null);
+            if (reservedPlace is null)
+            {
+                return await RefuseBecauseFullAsync(player, context).ConfigureAwait(false);
             }
 
             return (true, loadedAccount);
@@ -158,9 +283,46 @@ public class LoginAction
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Unexpected error during login through login server.");
+            await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return (false, null);
         }
+        finally
+        {
+            // After the state change: the context is disposed when the try block is left.
+            reservedPlace?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Checks if the account fulfills the <see cref="IGameServerContext.JoinRequirements"/> of the game server,
+    /// and shows the login result to the player if it doesn't.
+    /// </summary>
+    /// <remarks>
+    /// Game masters can join every game server, so that they can look after the players.
+    /// </remarks>
+    /// <returns><c>true</c>, if the account may join the game server.</returns>
+    private async ValueTask<bool> CheckJoinRequirementsAsync(Player player, Account account, IGameServerContext gameServerContext)
+    {
+        if (account.State is AccountState.GameMaster or AccountState.GameMasterInvisible)
+        {
+            return true;
+        }
+
+        if (account.GetFirstUnfulfilledRequirement(gameServerContext.JoinRequirements, DateTime.UtcNow) is not { } requirement)
+        {
+            return true;
+        }
+
+        player.Logger.LogInformation("Account {Username} doesn't fulfill the join requirement [{Requirement}] of game server {ServerId}.", account.LoginName, requirement, gameServerContext.Id);
+
+        // When the account has an expired grant of the attribute, its subscription is over.
+        // Without any grant of the attribute, the account never had a subscription.
+        var result = account.AttributeGrants?.Any(grant => grant.Attribute == requirement.Attribute) is true
+            ? LoginResult.SubscriptionTermOver
+            : LoginResult.NoChargeInfo;
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(result)).ConfigureAwait(false);
+        return false;
     }
 
     private async ValueTask<Account?> HandleOfflineSessionHandoverAsync(Player player, string username)
@@ -187,6 +349,15 @@ public class LoginAction
         }
     }
 
+    /// <summary>
+    /// Notifies the game servers and external systems, that somebody tried to log into an account which is already logged in.
+    /// </summary>
+    private static async ValueTask NotifyAlreadyLoggedInAsync(IGameServerContext gameServerContext, string username)
+    {
+        await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+        await gameServerContext.EventPublisher.GameEventAsync(new AccountLoginBlockedEvent(gameServerContext.Id, DateTime.UtcNow, username)).ConfigureAwait(false);
+    }
+
     private async ValueTask HandleAlreadyConnectedAsync(Player player, string username)
     {
         var result = player.LoginResultOverride ?? LoginResult.AccountAlreadyConnected;
@@ -194,7 +365,7 @@ public class LoginAction
         await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(result)).ConfigureAwait(false);
         if (player.GameContext is IGameServerContext gameServerContext)
         {
-            await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+            await NotifyAlreadyLoggedInAsync(gameServerContext, username).ConfigureAwait(false);
         }
     }
 

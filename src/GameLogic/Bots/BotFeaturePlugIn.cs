@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// Appears in the "Feature Plugins" section of the admin panel next to the MU Helper and reset features.
 /// </summary>
 [PlugIn]
-[Display(Name = "Bots", Description = "Spawns server-side bots which hunt monsters on the maps. Configure the accounts to animate and enable the feature.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotFeaturePlugIn_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotFeaturePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("6F3A2B91-7C4E-4D88-9A1F-2E5C0B7A4D63")]
 public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCustomConfiguration<BotConfiguration>, ISupportDefaultCustomConfiguration
 {
@@ -150,6 +150,17 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     {
         return new BotConfiguration();
     }
+
+    /// <summary>
+    /// Determines whether the hosting server is shutting down (or already gone), in which case no bot
+    /// must be spawned, restarted or stopped here: the shutdown disconnects and saves every bot itself,
+    /// and anything spawned now would miss its disconnect snapshot, while stopping would race the
+    /// shutdown's disconnect loop on the same player instances (save vs. dispose).
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> when the server is shutting down or gone.</returns>
+    private static bool IsServerShuttingDown(GameContext gameContext)
+        => gameContext.IsDisposed || gameContext.IsDisposing || gameContext.ArePeriodicTasksStopped;
 
     /// <summary>
     /// Stops every bot this server animates and puts it back to the state before the startup pass, so
@@ -673,17 +684,6 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             logger.LogError(ex, "Failed to persist the bot plugin configuration.");
         }
     }
-
-    /// <summary>
-    /// Determines whether the hosting server is shutting down (or already gone), in which case no bot
-    /// must be spawned, restarted or stopped here: the shutdown disconnects and saves every bot itself,
-    /// and anything spawned now would miss its disconnect snapshot, while stopping would race the
-    /// shutdown's disconnect loop on the same player instances (save vs. dispose).
-    /// </summary>
-    /// <param name="gameContext">The game context.</param>
-    /// <returns><c>true</c> when the server is shutting down or gone.</returns>
-    private static bool IsServerShuttingDown(GameContext gameContext)
-        => gameContext.IsDisposed || gameContext.IsDisposing || gameContext.ArePeriodicTasksStopped;
 
     /// <summary>
     /// The bot feature's state of ONE game server: its own share of the population, its own bots, and

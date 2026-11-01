@@ -39,6 +39,11 @@ public static class GameConfigurationHelper
         { typeof(ItemOfItemSet), c => c.ItemSetGroups.SelectMany(o => o.Items) },
         { typeof(ItemLevelBonusTable), c => c.ItemLevelBonusTables },
         { typeof(LevelBonus), c => c.ItemLevelBonusTables.SelectMany(i => i.BonusPerLevel) },
+        { typeof(ItemStatProfile), c => c.ItemStatProfiles },
+        { typeof(ItemStatTerms), c => c.ItemStatProfiles.SelectMany(p => p.StatTerms) },
+        { typeof(ItemRequirementFormula), c => c.ItemStatProfiles.SelectMany(p => p.RequirementFormulas) },
+        { typeof(ItemPriceDefinition), c => c.ItemPriceDefinitions },
+        { typeof(ItemLevelPrice), c => c.ItemPriceDefinitions.SelectMany(i => i.PricePerLevel) },
         { typeof(ItemOptionCombinationBonus), c => c.ItemOptionCombinationBonuses },
         { typeof(CombinationBonusRequirement), c => c.ItemOptionCombinationBonuses.SelectMany(b => b.Requirements) },
         {
@@ -82,6 +87,7 @@ public static class GameConfigurationHelper
         { typeof(ExitGate), c => c.Maps.SelectMany(m => m.ExitGates) },
         { typeof(EnterGate), c => c.Maps.SelectMany(m => m.EnterGates) },
         { typeof(BattleZoneDefinition), c => c.Maps.Select(m => m.BattleZone).WhereNotNull() },
+        { typeof(GameMapTerrainVariant), c => c.Maps.SelectMany(m => m.TerrainVariants) },
         {
             typeof(MonsterSpawnArea), c => c.Maps.SelectMany(m => m.MonsterSpawns)
                 .Concat(c.MiniGameDefinitions.SelectMany(m => m.ChangeEvents).Select(e => e.SpawnArea).WhereNotNull())

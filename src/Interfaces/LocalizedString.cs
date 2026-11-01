@@ -5,12 +5,19 @@
 namespace MUnique.OpenMU.Interfaces;
 
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 
 /// <summary>
 /// Represents a string which can be translated to different languages and serializes into a single string.
 /// It's meant for simple usage in database fields and not for complex localization scenarios.
 /// To keep compatibility with normal strings, we simply assume the first string to be in neutral (usually english) language.
 /// Example: "Some text||de=Etwas Text||fr=Un peu de texte" where the first part is english, second german and third french.
+/// Translations can also be stored for specific cultures, e.g. "Some text||zh-CN=简体文本||zh-TW=繁體文本".
+/// When looking up a translation, the exact culture name is tried first, then its parent cultures
+/// (e.g. zh-CN, zh-Hans, zh) and finally any other culture of the same language.
+/// Entries starting with "@" are metadata and never a translation, e.g. "Lorencia||zh-CN=勇者大陆||@src=MapNames/Lorencia||@stamp=1a2b3c4d".
+/// They identify the source of the texts (<see cref="SourceKey"/>) and allow to detect later changes (<see cref="SourceStamp"/>).
 /// </summary>
 public readonly struct LocalizedString : IEquatable<LocalizedString>
 {
@@ -34,9 +41,45 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     public static string NeutralLanguageCode => "en";
 
     /// <summary>
+    /// Gets the prefix of metadata entries. Culture names never start with it, so metadata entries
+    /// can be stored like translations without being mistaken for one.
+    /// </summary>
+    public static string MetadataPrefix => "@";
+
+    /// <summary>
+    /// Gets the code of the metadata entry which holds the <see cref="SourceKey"/>.
+    /// </summary>
+    public static string SourceKeyCode => "@src";
+
+    /// <summary>
+    /// Gets the code of the metadata entry which holds the <see cref="SourceStamp"/>.
+    /// </summary>
+    public static string SourceStampCode => "@stamp";
+
+    /// <summary>
     /// Gets the underlying serialized value of this localized string.
     /// </summary>
     public string? Value { get; }
+
+    /// <summary>
+    /// Gets the key of the source (e.g. a resource entry like "MapNames/Lorencia") from which the texts were taken.
+    /// It allows to update the texts from their source later, without relying on the neutral text.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? SourceKey => this.GetMetadata(SourceKeyCode);
+
+    /// <summary>
+    /// Gets the hash of the content (see <see cref="ComputeContentHash"/>) at the time the texts were taken from their source.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? SourceStamp => this.GetMetadata(SourceStampCode);
+
+    /// <summary>
+    /// Gets a value indicating whether the texts are unchanged since they were taken from their source,
+    /// i.e. the <see cref="SourceStamp"/> matches the current content.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool IsUnchangedSinceSourceStamp => this.SourceStamp is { } stamp && stamp == this.ComputeContentHash();
 
     /// <summary>
     /// Gets the value in the neutral language as a <see cref="string"/>.
@@ -179,32 +222,38 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     /// </returns>
     public ReadOnlySpan<char> GetTranslationAsSpan(CultureInfo cultureInfo, bool fallbackToNeutral = true)
     {
-        // Implementation for retrieving the localized string based on the cultureInfo
         if (this.Value is null)
         {
             return [];
         }
 
-        if (cultureInfo.TwoLetterISOLanguageName == NeutralLanguageCode)
+        if (IsNeutralLanguage(cultureInfo))
         {
             return this.ValueInNeutralLanguageAsSpan;
         }
 
-        var searchPattern = Separator + cultureInfo.TwoLetterISOLanguageName + "=";
-        var startIndex = this.Value.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
-        if (startIndex == -1)
+        // Exact culture first, then the parent cultures, e.g. zh-CN -> zh-Hans -> zh.
+        for (var culture = cultureInfo; !string.IsNullOrEmpty(culture.Name); culture = culture.Parent)
         {
-            return fallbackToNeutral ? this.ValueInNeutralLanguageAsSpan : [];
+            if (this.TryFindTranslation(culture.Name, out var translation))
+            {
+                return translation;
+            }
         }
 
-        var part = this.Value.AsSpan(startIndex + searchPattern.Length);
-        var endIndex = part.IndexOf(Separator);
-        if (endIndex == -1)
+        // The parent chain may differ between platforms (ICU/NLS), so try the plain language code explicitly.
+        if (this.TryFindTranslation(cultureInfo.TwoLetterISOLanguageName, out var languageTranslation))
         {
-            return part;
+            return languageTranslation;
         }
 
-        return part.Slice(0, endIndex);
+        // Last resort: any other culture of the same language, e.g. "zh-CN" when "zh" was requested.
+        if (this.TryFindTranslationOfLanguage(cultureInfo.TwoLetterISOLanguageName, out var siblingTranslation))
+        {
+            return siblingTranslation;
+        }
+
+        return fallbackToNeutral ? this.ValueInNeutralLanguageAsSpan : [];
     }
 
     /// <summary>
@@ -221,7 +270,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     public LocalizedString WithTranslation(CultureInfo cultureInfo, string? text)
     {
         // Plan (pseudocode):
-        // 1. Determine language code from culture (TwoLetterISOLanguageName).
+        // 1. Determine language code from culture (full culture name, e.g. "de" or "zh-CN").
         // 2. If language is neutral ("en"):
         //    a. If Value is null or empty:
         //       - If text is null or empty: return this (no change).
@@ -240,12 +289,12 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
         //         ii. Else: replace its content with text.
         //       - If not found and text is not null/empty: append "||xx=text".
         // 4. Return new LocalizedString with computed value.
-        var languageCode = cultureInfo.TwoLetterISOLanguageName;
+        var languageCode = GetLanguageCode(cultureInfo);
 
         // Work with a mutable string representation
         var current = this.Value ?? string.Empty;
 
-        if (languageCode == NeutralLanguageCode)
+        if (IsNeutralLanguage(cultureInfo))
         {
             // Handle neutral language as the base string (before first separator)
             var separatorIndex = current.IndexOf(Separator, StringComparison.OrdinalIgnoreCase);
@@ -271,7 +320,197 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
             return new LocalizedString(newBase + suffix);
         }
 
-        // Handle non-neutral languages
+        return this.WithEntry(languageCode, text);
+    }
+
+    /// <summary>
+    /// Gets the translation which is stored exactly for the specified culture, without any fallback
+    /// to parent cultures, other cultures of the same language or the neutral language.
+    /// For the neutral language, the neutral text is returned.
+    /// </summary>
+    /// <param name="cultureInfo">The culture.</param>
+    /// <returns>The translation stored for exactly this culture, or <see langword="null"/> if there is none.</returns>
+    public string? GetOwnTranslation(CultureInfo cultureInfo)
+    {
+        if (this.Value is null)
+        {
+            return null;
+        }
+
+        if (IsNeutralLanguage(cultureInfo))
+        {
+            var neutral = this.ValueInNeutralLanguage;
+            return neutral.Length > 0 ? neutral : null;
+        }
+
+        return this.TryFindTranslation(GetLanguageCode(cultureInfo), out var translation) && !translation.IsEmpty
+            ? new string(translation)
+            : null;
+    }
+
+    /// <summary>
+    /// Gets all stored translations, excluding the neutral text and metadata entries.
+    /// </summary>
+    /// <returns>The culture names and their translations, in stored order.</returns>
+    public IEnumerable<KeyValuePair<string, string>> GetTranslations()
+    {
+        foreach (var (code, text) in this.GetEntries())
+        {
+            if (!IsMetadataCode(code))
+            {
+                yield return new(code, text);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns a new <see cref="LocalizedString"/> with the specified <see cref="SourceKey"/>.
+    /// </summary>
+    /// <param name="sourceKey">The source key, e.g. "MapNames/Lorencia". If <see langword="null"/> or empty, the source key is removed.</param>
+    /// <returns>A new <see cref="LocalizedString"/> instance with the modified source key.</returns>
+    public LocalizedString WithSourceKey(string? sourceKey)
+    {
+        if (sourceKey?.Contains('|', StringComparison.Ordinal) is true)
+        {
+            throw new ArgumentException("The source key must not contain '|'.", nameof(sourceKey));
+        }
+
+        return this.WithEntry(SourceKeyCode, sourceKey);
+    }
+
+    /// <summary>
+    /// Returns a new <see cref="LocalizedString"/> with a <see cref="SourceStamp"/> of the current content.
+    /// It allows to detect later if the texts were changed after they were taken from their source.
+    /// </summary>
+    /// <returns>A new <see cref="LocalizedString"/> instance with the updated source stamp.</returns>
+    public LocalizedString WithSourceStamp()
+    {
+        return this.WithEntry(SourceStampCode, this.ComputeContentHash());
+    }
+
+    /// <summary>
+    /// Computes a stable hash of the texts, i.e. the neutral text and all translations, excluding metadata entries.
+    /// The order of the translations doesn't matter.
+    /// </summary>
+    /// <returns>The hash as hexadecimal string with 8 characters.</returns>
+    public string ComputeContentHash()
+    {
+        var builder = new StringBuilder();
+        builder.Append(this.ValueInNeutralLanguageAsSpan).Append('\0');
+        foreach (var (code, text) in this.GetTranslations()
+                     .Select(t => (Code: t.Key.ToLowerInvariant(), Text: t.Value))
+                     .OrderBy(t => t.Code, StringComparer.Ordinal))
+        {
+            builder.Append(code).Append('=').Append(text).Append('\0');
+        }
+
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(builder.ToString()));
+        return Convert.ToHexStringLower(hash.AsSpan(0, 4));
+    }
+
+    /// <inheritdoc />
+    public bool Equals(LocalizedString other)
+    {
+        return this.Value == other.Value;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return obj is LocalizedString other && this.Equals(other);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return this.Value != null ? this.Value.GetHashCode() : 0;
+    }
+
+    private static bool IsNeutralLanguage(CultureInfo cultureInfo)
+    {
+        return cultureInfo.TwoLetterISOLanguageName == NeutralLanguageCode;
+    }
+
+    private static bool IsMetadataCode(string code)
+    {
+        return code.StartsWith(MetadataPrefix, StringComparison.Ordinal);
+    }
+
+    private static string GetLanguageCode(CultureInfo cultureInfo)
+    {
+        return string.IsNullOrEmpty(cultureInfo.Name) ? cultureInfo.TwoLetterISOLanguageName : cultureInfo.Name;
+    }
+
+    private static ReadOnlySpan<char> GetTranslationPart(string value, int partStart)
+    {
+        var part = value.AsSpan(partStart);
+        var endIndex = part.IndexOf(Separator);
+        return endIndex == -1 ? part : part.Slice(0, endIndex);
+    }
+
+    private string? GetMetadata(string code)
+    {
+        return this.Value is not null && this.TryFindTranslation(code, out var value) && !value.IsEmpty
+            ? new string(value)
+            : null;
+    }
+
+    private IEnumerable<(string Code, string Text)> GetEntries()
+    {
+        if (this.Value is null)
+        {
+            yield break;
+        }
+
+        var parts = this.Value.Split(Separator);
+        for (var i = 1; i < parts.Length; i++)
+        {
+            var equalsIndex = parts[i].IndexOf('=', StringComparison.Ordinal);
+            if (equalsIndex > 0)
+            {
+                yield return (parts[i][..equalsIndex], parts[i][(equalsIndex + 1)..]);
+            }
+        }
+    }
+
+    private bool TryFindTranslation(string languageCode, out ReadOnlySpan<char> translation)
+    {
+        var searchPattern = Separator + languageCode + "=";
+        var startIndex = this.Value!.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
+        if (startIndex == -1)
+        {
+            translation = default;
+            return false;
+        }
+
+        translation = GetTranslationPart(this.Value, startIndex + searchPattern.Length);
+        return true;
+    }
+
+    private bool TryFindTranslationOfLanguage(string twoLetterLanguageCode, out ReadOnlySpan<char> translation)
+    {
+        var searchPattern = Separator + twoLetterLanguageCode + "-";
+        var startIndex = this.Value!.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
+        if (startIndex == -1)
+        {
+            translation = default;
+            return false;
+        }
+
+        var equalsIndex = this.Value.IndexOf('=', startIndex + searchPattern.Length);
+        if (equalsIndex == -1)
+        {
+            translation = default;
+            return false;
+        }
+
+        translation = GetTranslationPart(this.Value, equalsIndex + 1);
+        return true;
+    }
+
+    private LocalizedString WithEntry(string languageCode, string? text)
+    {
+        var current = this.Value ?? string.Empty;
         var searchPattern = Separator + languageCode + "=";
         var startIndex = current.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
 
@@ -289,7 +528,14 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
                 return new LocalizedString(string.Empty + Separator + languageCode + "=" + text);
             }
 
-            return new LocalizedString(current + Separator + languageCode + "=" + text);
+            // Translations are kept in front of metadata entries.
+            var entry = Separator + languageCode + "=" + text;
+            var metadataIndex = IsMetadataCode(languageCode)
+                ? -1
+                : current.IndexOf(Separator + MetadataPrefix, StringComparison.Ordinal);
+            return metadataIndex == -1
+                ? new LocalizedString(current + entry)
+                : new LocalizedString(current.Insert(metadataIndex, entry));
         }
 
         // Existing translation found
@@ -332,23 +578,5 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
             var result = string.Concat(prefix, text, suffixSpan);
             return new LocalizedString(result);
         }
-    }
-
-    /// <inheritdoc />
-    public bool Equals(LocalizedString other)
-    {
-        return this.Value == other.Value;
-    }
-
-    /// <inheritdoc />
-    public override bool Equals(object? obj)
-    {
-        return obj is LocalizedString other && this.Equals(other);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        return this.Value != null ? this.Value.GetHashCode() : 0;
     }
 }

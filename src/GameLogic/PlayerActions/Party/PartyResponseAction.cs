@@ -50,6 +50,14 @@ public class PartyResponseAction
             return;
         }
 
+        // Checked again, because the players could have changed in the meantime, e.g. their gens.
+        if (player.LastPartyRequester is Player requester
+            && await PartyRequestAction.IsPartyDeniedAsync(requester, player).ConfigureAwait(false))
+        {
+            player.LastPartyRequester = null;
+            return;
+        }
+
         if (player.LastPartyRequester.Party != null)
         {
             // The Requester got a party already, so add him to his party

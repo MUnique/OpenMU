@@ -155,7 +155,7 @@ public class ResetCharacterActionTest
 
         var definition = new MonsterDefinition
         {
-            Number = ResetCharacterNpcPlugin.ResetNpcNumber,
+            Number = ResetCharacterNpcPlugin.LeoTheHelperNumber,
             ObjectKind = NpcObjectKind.PassiveNpc,
             Designation = "Reset Helper",
         };

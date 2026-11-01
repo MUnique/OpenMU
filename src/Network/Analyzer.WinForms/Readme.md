@@ -20,10 +20,10 @@ soon as they change, the analyzer reloads them automatically.
 ### Setup
 
 First, enter your local port, on which the tcp/ip listener should run at. For
-example, I run it at port 55900.
+example, I run it at port 45900.
 
 Next, enter the ip and port of the (game) server you want to connect.
-For example, I run a game server at 55901 on my local machine (127.x.x.x).
+For example, I run a game server at 45901 on my local machine (127.x.x.x).
 
 Next, change the MU version, if it's different from season 6. You can change
 this anytime you want, however it only has effect on new connections.
@@ -31,7 +31,7 @@ Selecting the correct MU Version is required to correctly de & encrypt the
 network traffic. Currently, there are 3 options for that.
 
 Finally, click on 'Start Proxy' - then the application will listen on port
-55900 and is waiting for client connections.
+45900 and is waiting for client connections.
 
 ### Features
 

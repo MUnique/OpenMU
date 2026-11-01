@@ -36,8 +36,8 @@ public class SocketOptionViewModel
     /// <inheritdoc />
     public override string ToString()
     {
-        var elementPrefix = this.Definition.Name.ToString();
-        if (Regex.Match(this.Definition.Name, @".\((\w+)\)") is { Success: true } match)
+        var elementPrefix = this.Definition.Name.ToString() ?? string.Empty;
+        if (Regex.Match(elementPrefix, @".\((\w+)\)") is { Success: true } match)
         {
             elementPrefix = match.Groups[1].Value;
         }

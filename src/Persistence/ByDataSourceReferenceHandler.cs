@@ -26,6 +26,13 @@ public class ByDataSourceReferenceHandler : ReferenceHandler
         this._dataSource = dataSource;
     }
 
+    /// <summary>
+    /// Gets the data source which is used to resolve the references.
+    /// It's exposed, so that it can be reloaded when the underlying data changed,
+    /// e.g. after the database has been (re-)initialized.
+    /// </summary>
+    public IDataSource<GameConfiguration> DataSource => this._dataSource;
+
     /// <inheritdoc />
     public override ReferenceResolver CreateResolver()
     {

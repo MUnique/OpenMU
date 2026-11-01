@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.DataModel;
 
 using System.Globalization;
 using System.Resources;
+using MUnique.OpenMU.Interfaces;
 using Nito.Disposables;
-using Nito.Disposables.Internals;
 
 /// <summary>
 /// Helper class for culture related operations.
@@ -36,22 +36,33 @@ public static class CultureHelper
     }
 
     /// <summary>
+    /// Gets a weekday caption, preferring deployed resources over platform culture data.
+    /// </summary>
+    /// <param name="day">The weekday.</param>
+    /// <returns>The localized weekday name.</returns>
+    public static string GetDayName(DayOfWeek day)
+    {
+        var culture = CultureInfo.CurrentUICulture;
+        var resources = Properties.Resources.ResourceManager.GetResourceSet(culture, true, false);
+        return resources?.GetString($"DayOfWeek_{day}") ?? culture.DateTimeFormat.GetDayName(day);
+    }
+
+    /// <summary>
     /// Gets the available cultures for a specific resource.
     /// </summary>
     /// <typeparam name="TResources">The type of the resources.</typeparam>
-    /// <returns>An enumeration of <see cref="CultureInfo.TwoLetterISOLanguageName"/> of available cultures of the given resource type.</returns>
+    /// <returns>The available cultures of the given resource type.</returns>
     public static IEnumerable<CultureInfo> GetAvailableCultures<TResources>()
     {
-        var resourceManager = new ResourceManager(typeof(TResources));
+        return AvailableCulturesCache<TResources>.Cultures;
+    }
 
-        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
-        var result = cultures
-            .Except([CultureInfo.InvariantCulture])
-            .Where(culture => culture is { IsNeutralCulture: true, TwoLetterISOLanguageName: "en" }
-                              || !object.Equals(resourceManager.GetResourceSet(culture, true, false), null))
-            .WhereNotNull()
-            .ToList();
-
-        return result;
+    private static class AvailableCulturesCache<TResources>
+    {
+        public static readonly IReadOnlyList<CultureInfo> Cultures =
+        [
+            CultureInfo.GetCultureInfo(LocalizedString.NeutralLanguageCode),
+            .. new ResourceManager(typeof(TResources)).AvailableCultures,
+        ];
     }
 }

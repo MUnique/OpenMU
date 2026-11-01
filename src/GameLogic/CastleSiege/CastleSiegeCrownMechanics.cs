@@ -96,14 +96,19 @@ public static class CastleSiegeCrownMechanics
         CastleSiegeJoinSide capturingSide)
     {
         if (crownUser.GuildStatus is not { } guildStatus
-            || !context.FinalGuildList.TryGetValue(guildStatus.GuildId, out var capturingGuild)
+            || context.GetFinalGuild(guildStatus.GuildId) is not { } capturingGuild
             || !IsAttackingSide(capturingSide)
             || capturingGuild.Side != capturingSide)
         {
             throw new InvalidOperationException("The Crown winner is not a selected attacking guild.");
         }
 
-        context.MiddleOwnerGuildId = guildStatus.GuildId;
+        // The castle belongs to the alliance of the sealing player, which is represented by its alliance master.
+        // The tax exemption, the owner's alliance checks and the next selection all compare against that guild.
+        var winnerGuild = context.FinalGuildList.Values
+            .FirstOrDefault(guild => guild.Side == capturingSide && guild.IsAllianceMaster)
+            ?? capturingGuild;
+        context.MiddleOwnerGuildId = winnerGuild.PersistentGuildId;
         foreach (var guild in context.FinalGuildList.Values)
         {
             if (guild.Side == capturingSide)
@@ -118,7 +123,7 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
-        var ownershipChanged = ApplyOwner(context, capturingGuild.PersistentGuildId);
+        var ownershipChanged = ApplyOwner(context, winnerGuild.PersistentGuildId);
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
         await context.SaveOwnerAsync().ConfigureAwait(false);
         if (ownershipChanged)
@@ -149,7 +154,7 @@ public static class CastleSiegeCrownMechanics
             siegeSwitch.Occupant = null;
         }
 
-        await BroadcastOwnershipChangeAsync(context, capturingGuild.GuildName).ConfigureAwait(false);
+        await BroadcastOwnershipChangeAsync(context, winnerGuild.GuildName).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -159,21 +164,14 @@ public static class CastleSiegeCrownMechanics
     /// <returns>A task that represents the asynchronous result operation.</returns>
     internal static async ValueTask CheckResultAsync(CastleSiegeContext context)
     {
-        CastleSiegeGuildParticipant? winner = null;
-        if (context.MiddleOwnerGuildId is { } middleOwnerGuildId)
+        var winner = context.GetBattleOwner();
+        if (winner is null && context.MiddleOwnerGuildId is { } middleOwnerGuildId)
         {
-            if (context.FinalGuildList.TryGetValue(middleOwnerGuildId, out var participant))
-            {
-                winner = participant;
-            }
-            else
-            {
-                context.GameContext.LoggerFactory
-                    .CreateLogger(typeof(CastleSiegeCrownMechanics))
-                    .LogWarning(
-                        "The intermediate Castle Siege owner {guildId} is not in the selected guild list. The persisted owner is retained.",
-                        middleOwnerGuildId);
-            }
+            context.GameContext.LoggerFactory
+                .CreateLogger(typeof(CastleSiegeCrownMechanics))
+                .LogWarning(
+                    "The intermediate Castle Siege owner {guildId} is not in the selected guild list. The persisted owner is retained.",
+                    middleOwnerGuildId);
         }
 
         var ownershipChanged = winner is not null && ApplyOwner(context, winner.PersistentGuildId);
@@ -286,21 +284,10 @@ public static class CastleSiegeCrownMechanics
 
     private static async ValueTask RespawnAttackersAsync(CastleSiegeContext context)
     {
-        if (context.Configuration.AttackRespawnArea is not { } respawnArea
-            || context.Configuration.CastleSiegeMapDefinition is not { } siegeMap)
+        if (context.GetRespawnGate(CastleSiegeJoinSide.Attack1) is not { } respawnGate)
         {
             return;
         }
-
-        var respawnGate = new ExitGate
-        {
-            Map = siegeMap,
-            X1 = respawnArea.X1,
-            Y1 = respawnArea.Y1,
-            X2 = respawnArea.X2,
-            Y2 = respawnArea.Y2,
-            Direction = Direction.South,
-        };
         foreach (var player in context.GetSiegePlayers())
         {
             if (IsAttackingSide(context.GetPlayerJoinSide(player)))
@@ -317,9 +304,7 @@ public static class CastleSiegeCrownMechanics
             return null;
         }
 
-        var selectedOwner = context.FinalGuildList.Values
-            .FirstOrDefault(guild => guild.PersistentGuildId == ownerGuildId);
-        if (selectedOwner is not null)
+        if (context.FinalGuildList.TryGetValue(ownerGuildId, out var selectedOwner))
         {
             return selectedOwner.GuildName;
         }

@@ -362,6 +362,69 @@ public class CastleSiegeRegistrationTests
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Verifies the combined-level boundary and the exact minimum guild size.
+    /// </summary>
+    /// <param name="level">The normal level.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="expected">The expected registration result.</param>
+    [TestCase(199, 0, CastleSiegeRegistrationResult.LevelInsufficient)]
+    [TestCase(200, 0, CastleSiegeRegistrationResult.Success)]
+    [TestCase(199, 1, CastleSiegeRegistrationResult.Success)]
+    public async ValueTask RegistrationHonorsCombinedLevelBoundaryAsync(int level, int masterLevel, CastleSiegeRegistrationResult expected)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Player.GuildStatus = new GuildMemberStatus(RuntimeGuildId, GuildPosition.GuildMaster);
+        fixture.Player.Attributes![Stats.Level] = level;
+        fixture.Player.Attributes[Stats.MasterLevel] = masterLevel;
+
+        await new CastleSiegeRegisterGuildAction().RegisterAsync(fixture.Player, fixture.Context).ConfigureAwait(false);
+
+        Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeRegistrationResultPlugIn>()!)
+            .Verify(view => view.ShowRegistrationResultAsync(expected, GuildName), Times.Once);
+        Assert.That(fixture.Context.RegisteredGuilds.ContainsKey(fixture.PersistentGuildId), Is.EqualTo(expected == CastleSiegeRegistrationResult.Success));
+    }
+
+    /// <summary>
+    /// Verifies rejected mark submissions preserve both the item and the persistent mark count.
+    /// </summary>
+    /// <param name="enabled">Whether Castle Siege is enabled.</param>
+    /// <param name="markPeriod">Whether marks may currently be submitted.</param>
+    /// <param name="authorized">Whether the requester is the guild master.</param>
+    /// <param name="expected">The expected submission result.</param>
+    [TestCase(false, true, true, CastleSiegeMarkRegistrationResult.Failed)]
+    [TestCase(true, false, true, CastleSiegeMarkRegistrationResult.Failed)]
+    [TestCase(true, true, false, CastleSiegeMarkRegistrationResult.GuildNotRegistered)]
+    public async ValueTask RejectedMarkSubmissionPreservesInventoryAndPersistenceAsync(bool enabled, bool markPeriod, bool authorized, CastleSiegeMarkRegistrationResult expected)
+    {
+        const byte slot = 20;
+        var fixture = await CreateRegisteredFixtureAsync().ConfigureAwait(false);
+        fixture.CastleSiegeConfiguration.Enabled = enabled;
+        if (markPeriod)
+        {
+            fixture.Context.SetPeriod(fixture.Context.Schedule.GetCurrentPeriod(new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc)));
+        }
+
+        fixture.Player.GuildStatus = new GuildMemberStatus(RuntimeGuildId, authorized ? GuildPosition.GuildMaster : GuildPosition.NormalMember);
+        var item = fixture.Player.PersistenceContext.CreateNew<Item>();
+        item.Definition = fixture.CastleSiegeConfiguration.SignOfLordItemDefinition;
+        item.Level = fixture.CastleSiegeConfiguration.SignOfLordItemLevel;
+        await fixture.Player.Inventory!.AddItemAsync(slot, item).ConfigureAwait(false);
+
+        await new CastleSiegeRegisterMarkAction().RegisterMarkAsync(fixture.Player, fixture.Context, slot).ConfigureAwait(false);
+
+        Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMarkRegistrationResultPlugIn>()!)
+            .Verify(view => view.ShowMarkRegistrationResultAsync(expected, string.Empty, 0), Times.Once);
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeGuildRegistration), false, fixture.GameConfiguration);
+        var registration = (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Player.Inventory.GetItem(slot), Is.SameAs(item));
+            Assert.That(fixture.Context.RegisteredGuilds[fixture.PersistentGuildId].Marks, Is.Zero);
+            Assert.That(registration.Marks, Is.Zero);
+        });
+    }
+
     private static async ValueTask<TestFixture> CreateRegisteredFixtureAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);

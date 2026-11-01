@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixChaosMixesPlugInSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixChaosMixesPlugInSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("EFD7EA69-56AE-48A3-ACE2-1C3B5B87780A")]
 public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
 {
@@ -43,18 +43,15 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixChaosMixesSeason6;
-
-    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Dark horse spirit and raven spirit drop item groups id fix (do this first because it persists changes to DB)
-        if (gameConfiguration.Items.Single(id => id.Name == "Spirit") is { } spirit)
+        if (gameConfiguration.Items.Single(id => id.Name.ValueInNeutralLanguage == "Spirit") is { } spirit)
         {
             spirit.MaximumItemLevel = 1;
             var maps = gameConfiguration.Maps;
-            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } oldHorseGroup
-                && gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } oldRavenGroup)
+            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description.ValueInNeutralLanguage == "Dark Horse Spirit") is { } oldHorseGroup
+                && gameConfiguration.DropItemGroups.Single(dig => dig.Description.ValueInNeutralLanguage == "Dark Raven Spirit") is { } oldRavenGroup)
             {
                 await DeleteDropItemGroupAsync(oldHorseGroup).ConfigureAwait(false);
                 await DeleteDropItemGroupAsync(oldRavenGroup).ConfigureAwait(false);

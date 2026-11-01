@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.Shared.Components.Form;
 
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel;
 
 /// <summary>
 /// Lookup field that allows to select multiple objects which will be stored in a bound <see cref="IList{TObject}"/>.
@@ -16,8 +17,6 @@ public partial class FlagsEnumField<TValue> : NotifyableInputBase<TValue>
 {
     private static readonly TValue[] PossibleFlags = Enum.GetValues(typeof(TValue)).OfType<TValue>().Where(v => !default(TValue).HasFlag(v)).OrderBy(v => v.ToString()).ToArray();
 
-    private static readonly Dictionary<TValue, string> FlagNames = PossibleFlags.ToDictionary(f => f, f => f.ToString());
-
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
     /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
@@ -25,7 +24,7 @@ public partial class FlagsEnumField<TValue> : NotifyableInputBase<TValue>
     [Parameter]
     public string? Label { get; set; }
 
-    private string Placeholder => this.UnassignedFlags.Any() ? "Add ..." : "No more available";
+    private string Placeholder => this.UnassignedFlags.Any() ? MUnique.OpenMU.Web.Shared.Properties.Resources.AddPlaceholder : MUnique.OpenMU.Web.Shared.Properties.Resources.NoMoreAvailable;
 
     private IEnumerable<TValue> UnassignedFlags => PossibleFlags.Where(f => !this.Value.HasFlag(f));
 
@@ -76,7 +75,7 @@ public partial class FlagsEnumField<TValue> : NotifyableInputBase<TValue>
             return Task.FromCanceled<IEnumerable<TValue>>(token);
         }
 
-        var results = this.UnassignedFlags.Where(f => FlagNames[f].Contains(text, StringComparison.OrdinalIgnoreCase));
+        var results = this.UnassignedFlags.Where(f => (f.GetEnumCaption().Contains(text, StringComparison.OrdinalIgnoreCase) || f.ToString().Contains(text, StringComparison.OrdinalIgnoreCase)));
         return Task.FromResult(results);
     }
 }

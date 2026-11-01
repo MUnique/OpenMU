@@ -19,7 +19,7 @@ public abstract class InputShortBase<TShort> : InputBase<TShort>
     /// Gets or sets the error message used when displaying an a parsing error.
     /// </summary>
     [Parameter]
-    public string ParsingErrorMessage { get; set; } = $"The {0} field must be a number between {short.MinValue} and {short.MaxValue}.";
+    public string ParsingErrorMessage { get; set; } = string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.NumberRangeError, "{0}", short.MinValue, short.MaxValue);
 
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)

@@ -4,11 +4,11 @@
 
 <EditForm Model="@this">
   <CascadingValue Value="@this.PersistenceContext">
-    <LookupField TObject="TItem" @bind-Value="@Item" Label="@typeof(TItem).Name"/>
+    <LookupField TObject="TItem" @bind-Value="@Item" Label="@(MUnique.OpenMU.DataModel.ModelResourceProvider.GetTypeCaption<TItem>())"/>
   </CascadingValue>
 
   <div class="form-actions">
-    <button type="submit" @onclick="@SubmitAsync" class="btn btn-primary">OK</button>
-    <button type="button" @onclick="@CancelAsync" class="btn btn-secondary">Cancel</button>
+    <button type="submit" @onclick="@SubmitAsync" class="btn btn-primary">@Resources.OK</button>
+    <button type="button" @onclick="@CancelAsync" class="btn btn-secondary">@Resources.Cancel</button>
   </div>
 </EditForm>

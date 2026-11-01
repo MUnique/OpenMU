@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ImperialGuardianMonday" xml:space="preserve">
+    <value>Imperial Guardian Monday</value>
+  </data>
+  <data name="ImperialGuardianTuesday" xml:space="preserve">
+    <value>Imperial Guardian Tuesday</value>
+  </data>
+  <data name="ImperialGuardianWednesday" xml:space="preserve">
+    <value>Imperial Guardian Wednesday</value>
+  </data>
+  <data name="ImperialGuardianThursday" xml:space="preserve">
+    <value>Imperial Guardian Thursday</value>
+  </data>
+  <data name="ImperialGuardianFriday" xml:space="preserve">
+    <value>Imperial Guardian Friday</value>
+  </data>
+  <data name="ImperialGuardianSaturday" xml:space="preserve">
+    <value>Imperial Guardian Saturday</value>
+  </data>
+  <data name="ImperialGuardianSunday" xml:space="preserve">
+    <value>Imperial Guardian Sunday</value>
+  </data>
+  <data name="DevilSquare4" xml:space="preserve">
+    <value>Devil Square 4</value>
+  </data>
+  <data name="DevilSquare3" xml:space="preserve">
+    <value>Devil Square 3</value>
+  </data>
+  <data name="DevilSquare2" xml:space="preserve">
+    <value>Devil Square 2</value>
+  </data>
+  <data name="DevilSquare1" xml:space="preserve">
+    <value>Devil Square 1</value>
+  </data>
+  <data name="Doppelganger4" xml:space="preserve">
+    <value>Doppelganger 4</value>
+  </data>
+  <data name="Doppelganger3" xml:space="preserve">
+    <value>Doppelganger 3</value>
+  </data>
+  <data name="Doppelganger2" xml:space="preserve">
+    <value>Doppelganger 2</value>
+  </data>
+  <data name="Doppelganger1" xml:space="preserve">
+    <value>Doppelganger 1</value>
+  </data>
+  <data name="KanturuRefineryTower" xml:space="preserve">
+    <value>Kanturu Refinery Tower</value>
+  </data>
+  <data name="ChaosCastle7" xml:space="preserve">
+    <value>Chaos Castle 7</value>
+  </data>
+  <data name="ChaosCastle6" xml:space="preserve">
+    <value>Chaos Castle 6</value>
+  </data>
+  <data name="ChaosCastle5" xml:space="preserve">
+    <value>Chaos Castle 5</value>
+  </data>
+  <data name="ChaosCastle4" xml:space="preserve">
+    <value>Chaos Castle 4</value>
+  </data>
+  <data name="ChaosCastle3" xml:space="preserve">
+    <value>Chaos Castle 3</value>
+  </data>
+  <data name="ChaosCastle2" xml:space="preserve">
+    <value>Chaos Castle 2</value>
+  </data>
+  <data name="ChaosCastle1" xml:space="preserve">
+    <value>Chaos Castle 1</value>
+  </data>
+  <data name="BloodCastle8" xml:space="preserve">
+    <value>Blood Castle 8</value>
+  </data>
+  <data name="BloodCastle7" xml:space="preserve">
+    <value>Blood Castle 7</value>
+  </data>
+  <data name="BloodCastle6" xml:space="preserve">
+    <value>Blood Castle 6</value>
+  </data>
+  <data name="BloodCastle5" xml:space="preserve">
+    <value>Blood Castle 5</value>
+  </data>
+  <data name="BloodCastle4" xml:space="preserve">
+    <value>Blood Castle 4</value>
+  </data>
+  <data name="BloodCastle3" xml:space="preserve">
+    <value>Blood Castle 3</value>
+  </data>
+  <data name="BloodCastle2" xml:space="preserve">
+    <value>Blood Castle 2</value>
+  </data>
+  <data name="BloodCastle1" xml:space="preserve">
+    <value>Blood Castle 1</value>
+  </data>
+  <data name="DevilSquare7" xml:space="preserve">
+    <value>Devil Square 7</value>
+  </data>
+  <data name="DevilSquare6" xml:space="preserve">
+    <value>Devil Square 6</value>
+  </data>
+  <data name="DevilSquare5" xml:space="preserve">
+    <value>Devil Square 5</value>
+  </data>
+</root>

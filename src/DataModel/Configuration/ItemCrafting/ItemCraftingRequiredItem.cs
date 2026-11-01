@@ -76,7 +76,7 @@ public partial class ItemCraftingRequiredItem
         string itemName;
         if (!this.PossibleItems.Any())
         {
-            itemName = "Random Item";
+            itemName = MUnique.OpenMU.DataModel.Properties.Resources.RandomItemSummary;
         }
         else
         {

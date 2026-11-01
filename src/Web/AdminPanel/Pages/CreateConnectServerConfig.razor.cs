@@ -103,7 +103,7 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
         var existingServerDefinitions = (await persistenceContext.GetAsync<ConnectServerDefinition>(cancellationToken).ConfigureAwait(false)).ToList();
 
         var nextServerId = 0;
-        var networkPort = 55901;
+        var networkPort = 44405;
         if (existingServerDefinitions.Count > 0)
         {
             nextServerId = existingServerDefinitions.Max(s => s.ServerId) + 1;
@@ -190,23 +190,27 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
         /// <summary>
         /// Gets or sets the server identifier.
         /// </summary>
+        [Display(Name = nameof(Resources.CreateConnectServer_ServerId), ResourceType = typeof(Resources))]
         public byte ServerId { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
+        [Display(Name = nameof(Resources.CreateConnectServer_Description), ResourceType = typeof(Resources))]
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the client which is expected to connect.
         /// </summary>
         [Required]
+        [Display(Name = nameof(Resources.CreateConnectServer_Client), ResourceType = typeof(Resources))]
         public GameClientDefinition? Client { get; set; }
 
         /// <summary>
         /// Gets or sets the network port on which the server is listening.
         /// </summary>
         [Range(1, ushort.MaxValue)]
+        [Display(Name = nameof(Resources.CreateConnectServer_NetworkPort), ResourceType = typeof(Resources))]
         public int NetworkPort { get; set; }
     }
 }

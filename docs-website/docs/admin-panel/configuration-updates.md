@@ -22,7 +22,9 @@ notice them after an upgrade.
 ## Applying updates
 
 The page lists every update which has not been applied to your database yet, with
-its description.
+its description. An update can also reappear with a new version (shown as
+`v1 → v2`) when a previously installed update was extended — applying it brings
+your database to the current state without duplicating anything.
 
 * **Mandatory updates** are always applied and cannot be deselected — the server
   requires them.
@@ -36,6 +38,53 @@ as failed.
 The updates take effect after a restart of the server process. Until then, the
 running server still works with the configuration it loaded at startup.
 :::
+
+Some updates are required before the game servers can run. For example, a game
+server doesn't start without the item price definitions, which the update *Add
+item price definitions* adds to databases from before they existed. Otherwise
+it would sell special items like jewels at the price of equipment. The same goes
+for the item stat profiles with the item formulas, which the update *Add item
+stat profiles* adds. The game server logs the reason and stays stopped, while
+the admin panel keeps running, so you can apply the update here. Then use
+**Reload configuration and restart all game servers** on the
+[Servers page](servers.md), or restart the server process.
+
+## At startup
+
+The all-in-one server applies the pending mandatory updates itself when it
+starts, right after the database schema update, so the game servers don't start
+without the data they require. It lists the updates in the console and handles
+them like the schema update:
+
+* With *Auto update schema* enabled in the
+  [System configuration](game-configuration.md#system), it applies them
+  automatically.
+* Otherwise, it asks whether to apply them. If you decline, or the console can't
+  be read, the server doesn't start.
+
+The start leaves out the optional updates, so they never prevent it; they stay
+listed here for you to decide. It also leaves out a mandatory update which
+depends on an optional update you haven't applied, or on an update which isn't
+available, e.g. a disabled one. In a distributed deployment, the processes don't
+apply updates; apply them here.
+
+## On a new database
+
+A new database already contains the changes of OpenMU's own updates, because the
+initialization creates the current configuration. It therefore marks them as
+applied, and this page starts empty.
+
+Plugins can bring configuration updates too, for example one which adds the
+plugin's own item. Their changes are not part of OpenMU's initialization, so such
+an update declares `RunsOnNewDatabase`, and a new database applies it right away,
+after the updates it depends on. On an existing database it is listed here like
+any other update.
+
+An optional update of that kind is not applied on a new database: it is listed
+here as pending, as on an existing database, so you decide whether to apply it.
+The same goes for the updates which would be applied and depend on it. Their
+dependencies are checked when you apply them, so an optional plugin update with a
+missing dependency doesn't stop the creation of a new database.
 
 ## Preconditions
 

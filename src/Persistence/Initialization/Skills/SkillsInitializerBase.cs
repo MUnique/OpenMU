@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
 /// <summary>
@@ -50,7 +51,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
     /// <param name="hitsPerAttack">The number of hits per attack.</param>
     protected void CreateSkill(
         SkillNumber number,
-        string name,
+        LocalizedString name,
         CharacterClasses characterClasses = CharacterClasses.None,
         DamageType damageType = DamageType.None,
         int damage = 0,
@@ -265,7 +266,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
 
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(effect);
-        effect.Name = Enum.GetName(effectNumber) ?? string.Empty;
+        effect.Name = MagicEffectNames.ResourceManager.GetLocalizedString(effectNumber.ToString());
         effect.InformObservers = true;
         effect.Number = (short)effectNumber;
         effect.StopByDeath = true;

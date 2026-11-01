@@ -18,6 +18,8 @@ using static MUnique.OpenMU.DataModel.InventoryConstants;
 /// </summary>
 public class MoveItemAction
 {
+    private readonly ItemCraftAction _craftAction = new();
+
     private enum Movement
     {
         None,
@@ -56,6 +58,18 @@ public class MoveItemAction
             return;
         }
 
+        if (fromStorage != toStorage && GetRuleBlockingMove(item, toStorage) is { } blockedMessage)
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to move {1} into the {2}, which its item definition doesn't allow. The client item data may differ from the server.",
+                player,
+                item,
+                toStorage);
+            await player.ShowLocalizedBlueMessageAsync(blockedMessage).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
+            return;
+        }
+
         var toStorageInfo = this.GetStorageInfo(player, toStorage);
         var toItemStorage = toStorageInfo?.Storage;
 
@@ -73,7 +87,12 @@ public class MoveItemAction
         switch (movement)
         {
             case Movement.Normal:
-                await this.MoveNormalAsync(player, fromStorage, fromSlot, toStorage, toSlot, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
+                if (!await this.MoveNormalAsync(player, fromStorage, fromSlot, toStorage, toSlot, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false))
+                {
+                    // The move was rolled back, so nothing changed.
+                    movement = Movement.None;
+                }
+
                 break;
             case Movement.PartiallyStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
                 await this.PartiallyStackAsync(player, item, targetItem).ConfigureAwait(false);
@@ -84,6 +103,14 @@ public class MoveItemAction
             default:
                 await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
                 break;
+        }
+
+        if (movement is not Movement.None
+            && player.PlayerState.CurrentState == PlayerState.NpcDialogOpened
+            && player.TemporaryStorage is { } craftingStorage
+            && (fromItemStorage == craftingStorage || toItemStorage == craftingStorage))
+        {
+            await this._craftAction.ShowCraftingPreviewAsync(player).ConfigureAwait(false);
         }
 
         if (movement is not Movement.None
@@ -98,6 +125,27 @@ public class MoveItemAction
         {
             await itemStackedPlugIn.ItemStackedAsync(player, item, target).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Gets the message to show when the item rules of the item definition don't allow
+    /// moving it into the target storage, or <c>null</c> when they do.
+    /// </summary>
+    private static string? GetRuleBlockingMove(Item item, Storages toStorage)
+    {
+        var definition = item.Definition;
+        if (definition is null)
+        {
+            return null;
+        }
+
+        return toStorage switch
+        {
+            Storages.Trade when !definition.IsTradable => nameof(PlayerMessage.ItemCannotBeTraded),
+            Storages.Vault when !definition.IsStorable => nameof(PlayerMessage.ItemCannotBeStored),
+            Storages.PersonalStore when !definition.IsPersonalStoreSellable => nameof(PlayerMessage.ItemCannotBeSoldInPersonalStore),
+            _ => null,
+        };
     }
 
     private async ValueTask FullStackAsync(Player player, IStorage sourceStorage, Item sourceItem, Item targetItem)
@@ -119,11 +167,18 @@ public class MoveItemAction
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
     }
 
-    private async ValueTask MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
+    private async ValueTask<bool> MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
+        var wasEquipped = fromItemStorage == player.Inventory && fromSlot <= LastEquippableItemSlotIndex;
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
-        if (!await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false))
+        var wasAdded = await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false);
+        if (!wasAdded || (wasEquipped && !this.CompliesWithMapRequirements(player)))
         {
+            if (wasAdded)
+            {
+                await toItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
+            }
+
             var restoredToOriginalSlot = await fromItemStorage.AddItemAsync(fromSlot, item).ConfigureAwait(false);
             if (!restoredToOriginalSlot)
             {
@@ -140,8 +195,13 @@ public class MoveItemAction
                 await player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
             }
 
+            if (wasEquipped && player.CurrentMap is { } currentMap && currentMap.Definition.TryGetRequirementError(player, out var errorMessage))
+            {
+                await player.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
+            }
+
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
-            return;
+            return false;
         }
 
         await player.InvokeViewPlugInAsync<Views.Inventory.IItemMovedPlugIn>(p => p.ItemMovedAsync(item, toSlot, toStorage)).ConfigureAwait(false);
@@ -161,6 +221,14 @@ public class MoveItemAction
                 await tradingPartner.InvokeViewPlugInAsync<ITradeItemAppearPlugIn>(p => p.TradeItemAppearAsync(toSlot, item)).ConfigureAwait(false);
             }
         }
+
+        return true;
+    }
+
+    private bool CompliesWithMapRequirements(Player player)
+    {
+        return player.CurrentMap is not { } currentMap
+               || !currentMap.Definition.TryGetRequirementError(player, out _);
     }
 
     /// <summary>
@@ -236,9 +304,7 @@ public class MoveItemAction
             return Movement.None;
         }
 
-        if (fromStorage.Storage == player.Vault
-            && toStorage.Storage == player.Inventory
-            && player.IsVaultLocked)
+        if (player.IsVaultLocked && fromStorage.Storage == player.Vault)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
             return Movement.None;

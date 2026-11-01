@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <remarks>Might not be complete. Negative numbers are for internal usage and their effects are not exposed to the game client.</remarks>
 internal enum MagicEffectNumber : short
 {
-    #region Artificial effects which don't end up as an actual magic effect, but regenerate something
+    // Artificial effects which don't end up as an actual magic effect, but regenerate something
 
     /// <summary>
     /// The Beast Uppercut skill effect number.
@@ -43,8 +43,6 @@ internal enum MagicEffectNumber : short
     /// Internal.
     /// </remarks>
     Heal = -2,
-
-    #endregion
 
     /// <summary>
     /// Undefined effect number.
@@ -357,7 +355,7 @@ internal enum MagicEffectNumber : short
     /// </summary>
     IncreaseHealthStrengthener = 155,
 
-    #region Artificial effects which are not sent to the client, starting at 200.
+    // Artificial effects which are not sent to the client, starting at 200.
 
     /// <summary>
     /// The shield skill effect number.
@@ -371,7 +369,4 @@ internal enum MagicEffectNumber : short
     /// The alcohol effect number.
     /// </summary>
     Alcohol = 201,
-
-    #endregion
-
 }

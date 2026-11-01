@@ -90,7 +90,7 @@ public class MapInitializer : IMapInitializer
 
         this._logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap.Definition.Name);
         var automaticSpawns = createdMap.Definition.MonsterSpawns
-            .Where(m => m.MonsterDefinition is not null)
+            .Where(m => m.MonsterDefinition is { IsActive: true })
             .Where(m => m.SpawnTrigger is SpawnTrigger.Automatic);
         foreach (var spawnArea in automaticSpawns)
         {
@@ -102,9 +102,10 @@ public class MapInitializer : IMapInitializer
             this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
         }
 
-        this._configurationChangeMediator?.RegisterForNew<MonsterSpawnArea, GameMap>(createdMap, async (spawnArea, map) =>
+        var newSpawnRegistration = this._configurationChangeMediator?.RegisterForNew<MonsterSpawnArea, GameMap>(createdMap, async (spawnArea, map) =>
         {
-            if (!Equals(spawnArea.GameMap, map.Definition))
+            if (!Equals(spawnArea.GameMap, map.Definition)
+                || spawnArea.MonsterDefinition is not { IsActive: true })
             {
                 return;
             }
@@ -116,6 +117,11 @@ public class MapInitializer : IMapInitializer
 
             this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
         });
+
+        if (newSpawnRegistration is not null)
+        {
+            createdMap.RegisterOwnedRegistration(newSpawnRegistration);
+        }
 
         this._logger.LogDebug("Finished creating monster instances for map {createdMap}", createdMap.Definition.Name);
     }
@@ -132,7 +138,7 @@ public class MapInitializer : IMapInitializer
 
         this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap.Definition.Name);
         var eventSpawns = createdMap.Definition.MonsterSpawns
-            .Where(m => m.MonsterDefinition is not null)
+            .Where(m => m.MonsterDefinition is { IsActive: true })
             .Where(m => m.SpawnTrigger is SpawnTrigger.OnceAtEventStart or SpawnTrigger.AutomaticDuringEvent);
 
         foreach (var spawnArea in eventSpawns)
@@ -154,7 +160,7 @@ public class MapInitializer : IMapInitializer
 
         this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap.Definition.Name);
         var waveSpawns = createdMap.Definition.MonsterSpawns
-            .Where(m => m.MonsterDefinition is not null)
+            .Where(m => m.MonsterDefinition is { IsActive: true })
             .Where(m => m.SpawnTrigger is SpawnTrigger.AutomaticDuringWave or SpawnTrigger.OnceAtWaveStart)
             .Where(m => m.WaveNumber == waveNumber);
 
@@ -180,7 +186,20 @@ public class MapInitializer : IMapInitializer
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
-        var monsterDef = spawnArea.MonsterDefinition!;
+        if (createdMap.IsTornDown)
+        {
+            // E.g. a spawn wave of a mini game which ended in the meantime.
+            this._logger.LogDebug("Skipping spawn {spawn}, because its map is torn down.", spawnArea);
+            return null;
+        }
+
+        if (spawnArea.MonsterDefinition is not { IsActive: true } monsterDef)
+        {
+            // E.g. a spawn of a mini game, which doesn't filter its spawn areas before.
+            this._logger.LogDebug("Skipping spawn {spawn}, because its monster is not active.", spawnArea);
+            return null;
+        }
+
         NonPlayerCharacter npc;
 
         var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);
@@ -226,6 +245,13 @@ public class MapInitializer : IMapInitializer
             npc.SpawnIndex = spawnIndex;
             npc.Initialize();
             await createdMap.AddAsync(npc).ConfigureAwait(false);
+            if (createdMap.IsTornDown)
+            {
+                // The map got torn down while the NPC was created, so the teardown may have missed it.
+                await npc.DisposeAsync().ConfigureAwait(false);
+                return null;
+            }
+
             npc.OnSpawn();
             if (spawnArea.SpawnTrigger is SpawnTrigger.Automatic or SpawnTrigger.Wandering)
             {
@@ -245,12 +271,13 @@ public class MapInitializer : IMapInitializer
 
     /// <summary>
     /// Gets the map definition by searching for it at the <see cref="GameConfiguration"/>.
+    /// Inactive maps are not considered.
     /// </summary>
     /// <param name="mapNumber">The map number.</param>
     /// <returns>The game map definition.</returns>
     protected virtual GameMapDefinition? GetMapDefinition(ushort mapNumber)
     {
-        return this._configuration.Maps.FirstOrDefault(m => m.Number == mapNumber);
+        return this._configuration.Maps.FirstOrDefault(m => m.Number == mapNumber && m.IsActive);
     }
 
     /// <summary>
@@ -286,7 +313,10 @@ public class MapInitializer : IMapInitializer
             attackableNpc.RegisterDisposable(definitionRegistration);
         }
 
-        this._configurationChangeMediator?.RegisterObject(
+        // The mediator keeps the registrations below under the configuration, which is shared by every
+        // instance of the map. So they are owned by the NPC as well, and released when it's disposed, e.g.
+        // when the map of a mini game is torn down.
+        var spawnAreaRegistration = this._configurationChangeMediator?.RegisterObject(
             spawnArea,
             spawnedObject,
             async (unregisterAction, area, o) =>
@@ -336,9 +366,13 @@ public class MapInitializer : IMapInitializer
                 this._spawnedMonsters.TryRemove(spawnArea, out var _);
             });
 
-        if (spawnedObject.Definition.MerchantStore is { } merchantStore)
+        if (spawnAreaRegistration is not null)
         {
-            this._configurationChangeMediator?.RegisterObject(merchantStore, spawnedObject, async (_, itemStorage, o) =>
+            spawnedObject.RegisterDisposable(spawnAreaRegistration);
+        }
+
+        if (spawnedObject.Definition.MerchantStore is { } merchantStore
+            && this._configurationChangeMediator?.RegisterObject(merchantStore, spawnedObject, async (_, itemStorage, o) =>
             {
                 await o.ForEachObservingAsync<Player>(
                     async player =>
@@ -346,12 +380,14 @@ public class MapInitializer : IMapInitializer
                         if (player.OpenedNpc == o)
                         {
                             await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
-                                    plugin => plugin.ShowMerchantStoreItemListAsync(itemStorage.Items, StoreKind.Normal))
+                                    plugin => plugin.ShowMerchantStoreItemListAsync(itemStorage.GetOfferedItems(), StoreKind.Normal))
                                 .ConfigureAwait(false);
                         }
                     },
                     false).ConfigureAwait(false);
-            });
+            }) is { } storeRegistration)
+        {
+            spawnedObject.RegisterDisposable(storeRegistration);
         }
     }
 
@@ -364,6 +400,12 @@ public class MapInitializer : IMapInitializer
 
         try
         {
+            if (NpcIntelligenceFactory.Create(monsterDefinition.IntelligenceTypeName, createdMap) is { } intelligence)
+            {
+                return intelligence;
+            }
+
+            // Not an intelligence of this assembly, e.g. an assembly qualified type name of another assembly.
             var type = Type.GetType(monsterDefinition.IntelligenceTypeName);
             if (type is null)
             {

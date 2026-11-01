@@ -58,6 +58,11 @@ public enum ItemBuyResult
     /// The requested player has item block active.
     /// </summary>
     ItemBlock = 9,
+
+    /// <summary>
+    /// The player has not enough of the currency (items or account coins) in which the price of the item is defined.
+    /// </summary>
+    LackOfPriceCurrency = 10,
 }
 
 /// <summary>

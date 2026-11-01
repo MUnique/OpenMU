@@ -165,6 +165,38 @@ public class GameMapTest
         Assert.That(player2.Object.Observers.Count, Is.EqualTo(0));
     }
 
+    /// <summary>
+    /// Tests that tearing down a map releases the registrations it owns.
+    /// </summary>
+    [Test]
+    public async ValueTask TearDownReleasesOwnedRegistrationsAsync()
+    {
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
+        var registration = new Mock<IDisposable>();
+        map.RegisterOwnedRegistration(registration.Object);
+        registration.Verify(r => r.Dispose(), Times.Never);
+
+        await map.TearDownAsync().ConfigureAwait(false);
+
+        registration.Verify(r => r.Dispose(), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that a registration which is added to an already torn down map, e.g. by a spawn which raced the
+    /// teardown, is released right away instead of being kept by the map.
+    /// </summary>
+    [Test]
+    public async ValueTask RegistrationOfTornDownMapIsReleasedImmediatelyAsync()
+    {
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
+        await map.TearDownAsync().ConfigureAwait(false);
+        var registration = new Mock<IDisposable>();
+
+        map.RegisterOwnedRegistration(registration.Object);
+
+        registration.Verify(r => r.Dispose(), Times.Once);
+    }
+
     private Mock<ITestPlayer> GetPlayer()
     {
         var player = new Mock<ITestPlayer>();

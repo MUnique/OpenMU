@@ -20,7 +20,7 @@
 {
     <div>
         <QuickGrid Items="@this.ViewModels" Pagination="@_merchantPagination" Theme="none">
-            <PropertyColumn Title="Name" Property="@(c => c.Name)" Sortable="true">
+            <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(c => c.Name)" Sortable="true">
             </PropertyColumn>
 
             <TemplateColumn Align="Align.Start">
@@ -28,13 +28,13 @@
             </TemplateColumn>
         </QuickGrid>
     </div>
-    <Paginator State="@_merchantPagination"/>
+    <LocalizedPaginator State="@_merchantPagination"/>
 }
 else
 {
     <div class="d-flex flex-row">
         <button type="button" class="btn btn-secondary me-3" @onclick="this.OnBackButtonClickAsync">&lt; @Resources.Back</button>
-        <h2>@((LocalizedString?)this._selectedMerchant.Merchant.Designation)</h2>
+        <h2>@this._selectedMerchant.Merchant.Designation.ToString()</h2>
     </div>
     <hr/>
     <CascadingValue TValue="IContext" Value="this._persistenceContext">

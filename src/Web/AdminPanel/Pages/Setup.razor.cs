@@ -8,6 +8,7 @@ using System.IO;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 using MUnique.OpenMU.Network.PlugIns;
@@ -20,7 +21,7 @@ using MUnique.OpenMU.Web.AdminPanel.Properties;
 /// </summary>
 public partial class Setup
 {
-    private bool _isDataInitialized;
+    private DataInitializationState _dataState;
 
     private ClientVersion? _gameClientVersion;
 
@@ -35,6 +36,8 @@ public partial class Setup
     private bool _showSnapshotBackup = true;
 
     private string _importMessageCssClass = string.Empty;
+
+    private string? _updateErrorMessage;
 
     /// <summary>
     /// Gets or sets a value indicating whether to show the <see cref="Install"/> component.
@@ -65,14 +68,16 @@ public partial class Setup
     [Inject]
     public IJSRuntime JsRuntime { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<Setup> Logger { get; set; } = null!;
+
     /// <inheritdoc />
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
-        this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
-        if (this._isDataInitialized)
-        {
-            this._gameClientVersion = await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false);
-        }
+        return this.LoadDataStateAsync();
     }
 
     private static async Task<MemoryStream> ReadFileAsync(IBrowserFile file)
@@ -86,9 +91,38 @@ public partial class Setup
         return memoryStream;
     }
 
-    private Task OnUpdateClickAsync()
+    private async Task LoadDataStateAsync()
     {
-        return this.SetupService.InstallUpdatesAsync(default);
+        this._dataState = await this.SetupService.GetDataInitializationStateAsync().ConfigureAwait(false);
+        this._gameClientVersion = this._dataState == DataInitializationState.Initialized
+            ? await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false)
+            : null;
+    }
+
+    private async Task OnInstallationFinishedAsync()
+    {
+        // We load the state first, so that the page doesn't show the state of the
+        // uninitialized database for a moment when it's rendered again.
+        await this.LoadDataStateAsync().ConfigureAwait(false);
+        this.ShowInstall = false;
+    }
+
+    private async Task OnUpdateClickAsync()
+    {
+        this._updateErrorMessage = null;
+        try
+        {
+            await this.SetupService.InstallUpdatesAsync(default).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error during the update of the database schema.");
+            this._updateErrorMessage = string.Format(Resources.UnexpectedErrorCheckLogs, ex.Message);
+            return;
+        }
+
+        // Before the update, the state could not be determined on the outdated schema.
+        await this.LoadDataStateAsync().ConfigureAwait(false);
     }
 
     private void OnInstallClick()

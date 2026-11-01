@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.Views;
@@ -45,19 +46,36 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
             skillId = player.SkillHitValidator.LastRegisteredSkillId;
         }
 
-        if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
+        if (player.SkillList?.GetSkill(skillId) is not { Skill: { } skill } skillEntry)
+        {
+            return;
+        }
+
+        // Only the animations of skills with explicit hits are registered, so only their hits can be validated.
+        // The hits of other skills don't cause damage, but they still count for the client.
+        var validateHits = skill.SkillType == SkillType.AreaSkillExplicitHits;
+        var targetCount = message.TargetCount;
+        if (packet.Length < AreaSkillHit.GetRequiredSize(targetCount))
+        {
+            return;
+        }
+
+        if (validateHits
+            && targetCount > 0
+            && !player.SkillHitValidator.IsHitCounterValid(skillId, message[0].AnimationCounter, message.HitCounter))
         {
             return;
         }
 
         var increaseCounterAfterLoop = false;
-        var targetCount = message.TargetCount;
         try
         {
             for (int i = 0; i < targetCount; i++)
             {
                 var targetInfo = message[i];
-                var (isHitValid, increaseCounter) = player.SkillHitValidator.IsHitValid(skillId, targetInfo.AnimationCounter, message.HitCounter);
+                var (isHitValid, increaseCounter) = validateHits
+                    ? player.SkillHitValidator.IsHitValid(skillId, targetInfo.AnimationCounter, message.HitCounter)
+                    : (true, true);
                 increaseCounterAfterLoop |= increaseCounter;
                 if (!isHitValid)
                 {
@@ -68,10 +86,7 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
                 {
                     if (target is IObservable observable && observable.Observers.Contains(player))
                     {
-                        if (player.SkillList.GetSkill(skillId) is { } skillEntry)
-                        {
-                            await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
-                        }
+                        await this._skillHitAction.AttackTargetAsync(player, target, skillEntry, targetInfo.AnimationCounter).ConfigureAwait(false);
                     }
                     else
                     {

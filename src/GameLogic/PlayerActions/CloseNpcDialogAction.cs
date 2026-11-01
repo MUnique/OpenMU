@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// </summary>
 public class CloseNpcDialogAction
 {
-    private const ushort ChaosGoblinId = 238;
+    private const short ChaosGoblinNumber = 238;
 
     /// <summary>
     /// Closes the currently opened npc dialog.
@@ -26,8 +26,17 @@ public class CloseNpcDialogAction
             player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
             player.OpenedNpc = null;
             player.Vault = null;
+            if (npc.Definition.ItemCraftings.Any())
+            {
+                // The backup which was taken when the crafting dialog opened only guards a disconnect while
+                // it's open. Kept beyond, a disconnect would roll the inventory back to that moment, losing or
+                // duplicating everything since. Items left in the machine are returned through the temporary
+                // storage instead.
+                player.BackupInventory = null;
+            }
+
             await player.InvokeViewPlugInAsync<INpcDialogClosedPlugIn>(p => p.DialogClosedAsync(npc.Definition)).ConfigureAwait(false);
-            if (npc.Id == ChaosGoblinId)
+            if (npc.Definition.Number == ChaosGoblinNumber)
             {
                 try
                 {

@@ -9,42 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
-/// <summary>
-/// The result status of a login attempt.
-/// </summary>
-public enum AdminLoginStatus
-{
     /// <summary>
-    /// The credentials were wrong or the user is not allowed to log in.
-    /// </summary>
-    Failed,
-
-    /// <summary>
-    /// The user is locked out because of too many failed attempts.
-    /// </summary>
-    LockedOut,
-
-    /// <summary>
-    /// The password was correct, but a second factor is required now.
-    /// </summary>
-    TwoFactorRequired,
-
-    /// <summary>
-    /// The login succeeded.
-    /// </summary>
-    Succeeded,
-}
-
-/// <summary>
-/// The result of a login attempt.
-/// </summary>
-/// <param name="Status">The status.</param>
-/// <param name="Ticket">The sign in ticket, in case the login succeeded.</param>
-/// <param name="Claims">The claims of the authenticated user, in case the login succeeded.</param>
-public record AdminLoginResult(AdminLoginStatus Status, string? Ticket = null, IReadOnlyList<Claim>? Claims = null);
-
-/// <summary>
-/// Validates the credentials of an admin panel user.
+    /// Validates the credentials of an admin panel user.
 /// </summary>
 /// <remarks>
 /// This service runs inside the blazor circuit, so the whole login - including the second factor -
@@ -53,9 +19,8 @@ public record AdminLoginResult(AdminLoginStatus Status, string? Ticket = null, I
 /// </remarks>
 public class AdminLoginService
 {
-    private const int TotpTimeStepSeconds = 30;
-
     private readonly UserManager<AdminUser> _userManager;
+    private readonly AdminUserStore _userStore;
     private readonly SignInTicketService _ticketService;
     private readonly ILogger<AdminLoginService> _logger;
 
@@ -66,11 +31,13 @@ public class AdminLoginService
     /// Initializes a new instance of the <see cref="AdminLoginService"/> class.
     /// </summary>
     /// <param name="userManager">The user manager.</param>
+    /// <param name="userStore">The user store, which consumes authenticator time steps atomically.</param>
     /// <param name="ticketService">The sign in ticket service.</param>
     /// <param name="logger">The logger.</param>
-    public AdminLoginService(UserManager<AdminUser> userManager, SignInTicketService ticketService, ILogger<AdminLoginService> logger)
+    public AdminLoginService(UserManager<AdminUser> userManager, AdminUserStore userStore, SignInTicketService ticketService, ILogger<AdminLoginService> logger)
     {
         this._userManager = userManager;
+        this._userStore = userStore;
         this._ticketService = ticketService;
         this._logger = logger;
     }
@@ -79,6 +46,35 @@ public class AdminLoginService
     /// Gets the login name of the user which has to provide its second factor now.
     /// </summary>
     public string? PendingTwoFactorLoginName => this._pendingTwoFactorUser?.LoginName;
+
+    /// <summary>
+    /// Builds the claims which describe the specified authenticated user.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="usedSecondFactor">If set to <c>true</c>, the user authenticated with a second factor.</param>
+    /// <returns>The claims of the user.</returns>
+    public static IReadOnlyList<Claim> CreateClaims(AdminUser user, bool usedSecondFactor)
+    {
+        var authenticationMethod = usedSecondFactor
+            ? AdminAuthenticationDefaults.MultiFactorAuthenticationMethod
+            : AdminAuthenticationDefaults.PasswordAuthenticationMethod;
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.LoginName),
+            new(AdminAuthenticationDefaults.SecurityStampClaimType, user.SecurityStamp),
+            new(AdminAuthenticationDefaults.AuthenticationMethodClaimType, authenticationMethod),
+        };
+
+        var assignedRoles = (user.Roles ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var effectiveRoles = assignedRoles
+            .SelectMany(AdminRoles.GetEffectiveRoles)
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+        claims.AddRange(effectiveRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        return claims;
+    }
 
     /// <summary>
     /// Checks the specified password and either finishes the login or asks for the second factor.
@@ -151,7 +147,7 @@ public class AdminLoginService
             isValid = await this._userManager
                 .VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, normalizedCode)
                 .ConfigureAwait(false)
-                && await this.TryConsumeTimeStepAsync(user).ConfigureAwait(false);
+                && await this.TryConsumeTimeStepAsync(user, normalizedCode).ConfigureAwait(false);
         }
 
         if (!isValid)
@@ -182,36 +178,6 @@ public class AdminLoginService
         return (this._ticketService.Issue(claims, false), claims);
     }
 
-    /// <summary>
-    /// Builds the claims which describe the specified authenticated user.
-    /// </summary>
-    /// <param name="user">The user.</param>
-    /// <param name="usedSecondFactor">If set to <c>true</c>, the user authenticated with a second factor.</param>
-    /// <returns>The claims of the user.</returns>
-    public static IReadOnlyList<Claim> CreateClaims(AdminUser user, bool usedSecondFactor)
-    {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.LoginName),
-            new(AdminAuthenticationDefaults.SecurityStampClaimType, user.SecurityStamp),
-            new(
-                AdminAuthenticationDefaults.AuthenticationMethodClaimType,
-                usedSecondFactor
-                    ? AdminAuthenticationDefaults.MultiFactorAuthenticationMethod
-                    : AdminAuthenticationDefaults.PasswordAuthenticationMethod),
-        };
-
-        var assignedRoles = (user.Roles ?? string.Empty)
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var effectiveRoles = assignedRoles
-            .SelectMany(AdminRoles.GetEffectiveRoles)
-            .Distinct(StringComparer.OrdinalIgnoreCase);
-        claims.AddRange(effectiveRoles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-        return claims;
-    }
-
     private async Task<AdminLoginResult> GetFailedResultAsync(AdminUser user)
     {
         return await this._userManager.IsLockedOutAsync(user).ConfigureAwait(false)
@@ -239,24 +205,28 @@ public class AdminLoginService
     /// Makes sure that an observed authenticator code can't be used a second time within its validation window.
     /// </summary>
     /// <remarks>
-    /// The token provider of ASP.NET Core Identity accepts a code of the current and of the adjacent
-    /// time steps, but it doesn't tell which step matched and it doesn't remember used codes.
-    /// Remembering the time step of the last successful validation at least prevents that the same
-    /// code is accepted twice within the same time step.
+    /// The token provider of ASP.NET Core Identity accepts codes of several adjacent time steps, but it
+    /// doesn't tell which step matched and it doesn't remember used codes. Remembering the time step
+    /// of the accepted code itself - not the current one, which may change while the code is still
+    /// accepted - rejects a replayed code as well as any older code.
     /// </remarks>
-    private async Task<bool> TryConsumeTimeStepAsync(AdminUser user)
+    /// <param name="user">The user.</param>
+    /// <param name="code">The code which the token provider accepted.</param>
+    /// <returns><c>true</c>, if the code wasn't used before.</returns>
+    private async Task<bool> TryConsumeTimeStepAsync(AdminUser user, string code)
     {
-        var currentStep = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / TotpTimeStepSeconds;
-        if (currentStep <= user.LastAcceptedTotpStep)
+        var key = await this._userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
+        var codeStep = key is null ? null : AuthenticatorTimeStep.FindStep(key, code, AuthenticatorTimeStep.GetStep(DateTimeOffset.UtcNow));
+
+        // The check and the update are one atomic operation, so concurrent logins can't both use the same code.
+        if (codeStep is not { } step || !await this._userStore.TryAdvanceTotpStepAsync(user, step, default).ConfigureAwait(false))
         {
             this._logger.LogWarning(
-                "Rejected an authenticator code of admin panel user '{LoginName}', because a code of the same time step was already used.",
+                "Rejected an authenticator code of admin panel user '{LoginName}', because it or a newer code was already used.",
                 user.LoginName);
             return false;
         }
 
-        user.LastAcceptedTotpStep = currentStep;
-        await this._userManager.UpdateAsync(user).ConfigureAwait(false);
         return true;
     }
 }

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initializer which initializes the wizardry enhance mastery effect.
@@ -29,7 +30,7 @@ public class WizardryEnhanceMasteryEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (byte)MagicEffectNumber.WizEnhanceMastery;
-        magicEffect.Name = "Wizardry Enhance Mastery Skill Effect";
+        magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.WizardryEnhanceMasterySkillEffect);
 
         this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.WizEnhanceStrengthener);
 

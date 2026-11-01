@@ -10,8 +10,11 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Discord;
+using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -28,7 +31,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
+public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 
@@ -54,6 +57,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     /// <param name="changeMediator"> The change mediatior.</param>
     /// <param name="packetArchive">The archive for the traffic of observed accounts. It's only
     /// available when the network observation is configured.</param>
+    /// <param name="mapHostLocator">The locator for the maps which are hosted by other game servers.
+    /// It's only available when the maps can be shared between game servers.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -64,7 +69,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
         IConfigurationChangeMediator changeMediator,
-        IPacketArchive? packetArchive = null)
+        IPacketArchive? packetArchive = null,
+        IMapHostLocator? mapHostLocator = null)
     {
         this.Id = gameServerDefinition.ServerID;
         this.Description = gameServerDefinition.Description;
@@ -78,9 +84,10 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
             var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
             var dropGenerator = new DefaultDropGenerator(gameConfiguration, Rand.GetRandomizer());
             var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>(), dropGenerator, changeMediator);
-            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator, changeMediator);
+            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator, changeMediator, mapHostLocator);
             this._gameContext.GameMapCreated += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             this._gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
+            this._gameContext.LoggedInPlayerCountChanged += (_, _) => this.OnPropertyChanged(nameof(this.CurrentConnections));
             mapInitializer.PlugInManager = this._gameContext.PlugInManager;
             mapInitializer.PathFinderPool = this._gameContext.PathFinderPool;
         }
@@ -131,7 +138,11 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     public int MaximumConnections => this.Context.ServerConfiguration.MaximumPlayers;
 
     /// <inheritdoc/>
-    public int CurrentConnections => this.Context.PlayerCount;
+    /// <remarks>
+    /// These are the logged in players, which are limited by <see cref="MaximumConnections"/>.
+    /// Connections which are still at the login screen are not included.
+    /// </remarks>
+    public int CurrentConnections => this.Context.LoggedInPlayerCount;
 
     /// <inheritdoc/>
     int IManageableServer.Id => this.Id;
@@ -159,6 +170,37 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     public async ValueTask StartAsync()
     {
         using var logScope = this._logger.BeginScope(("GameServer", this.Id));
+        if (this._gameContext.Configuration.ItemPriceDefinitions.Count == 0)
+        {
+            // Since the item prices are configured by item price definitions, a configuration without any is missing the
+            // mandatory update which adds them. The server would sell special items, e.g. jewels, at the price of equipment.
+            this._logger.LogError("The game server is not started, because the game configuration has no item price definitions. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.");
+            this.ServerState = ServerState.Stopped;
+            return;
+        }
+
+        if (!ResolvedItemStatProfile.HasDefaultProfile(this._gameContext.Configuration))
+        {
+            // The item formulas read the item stat profiles, so a configuration without the profile "default" is missing
+            // the mandatory update which adds them. The item formulas would throw for every requirement and every
+            // excellent or ancient item.
+            this._logger.LogError("The game server is not started, because the game configuration has no item stat profile '{profileName}'. Apply the pending configuration updates on the update page of the admin panel, and start the server again after reloading the configuration.", ItemStatProfile.DefaultName);
+            this.ServerState = ServerState.Stopped;
+            return;
+        }
+
+        if (ResolvedItemStatProfile.GetWearableItemsWithoutProfile(this._gameContext.Configuration) is { Count: > 0 } itemsWithoutProfile)
+        {
+            const int maximumListedItems = 10;
+            var listedItems = string.Join(", ", itemsWithoutProfile.Take(maximumListedItems).Select(item => $"{item.Name} ({item.Group}, {item.Number})"));
+            if (itemsWithoutProfile.Count > maximumListedItems)
+            {
+                listedItems += ", ...";
+            }
+
+            this._logger.LogWarning("{count} items which can be worn have no item stat profile, so they have the formulas of the profile '{profileName}' and not the ones of their kind: {items}. Give them the profile of their kind on the admin panel, e.g. 'armor', 'shield' or 'book'.", itemsWithoutProfile.Count, ItemStatProfile.DefaultName, listedItems);
+        }
+
         this.ServerState = ServerState.Starting;
         try
         {
@@ -210,6 +252,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         var playerList = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         await playerList.Select(player => player.DisconnectAsync().AsTask()).WhenAll().ConfigureAwait(false);
 
+        await this.MoveGuestPlayersOffMapsAsync().ConfigureAwait(false);
+
         this.ServerState = ServerState.Stopped;
         this._logger.LogInformation("Server shutted down.");
     }
@@ -238,6 +282,12 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         }
 
         await this._gameContext.ForEachAlliancePlayerAsync(guildId, player => player.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(messageSend, sender, ChatMessageType.Alliance)).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask WorldChatMessageAsync(string sender, string message)
+    {
+        await this._gameContext.ForEachPlayerAsync(player => ShowWorldChatMessageAsync(player, sender, message).AsTask()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -489,6 +539,48 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         }
     }
 
+    /// <summary>
+    /// Shows a message of the world chat. A message which was written in Discord is sent as external chat message
+    /// to the clients which support it.
+    /// </summary>
+    private static async ValueTask ShowWorldChatMessageAsync(Player player, string sender, string message)
+    {
+        if (BridgedChatSender.IsBridged(sender)
+            && player.ViewPlugIns.GetPlugIn<IDiscordIntegrationViewPlugIn>() is { } discordView
+            && await discordView.TryShowExternalChatMessageAsync(ExternalChatScope.World, BridgedChatSender.GetName(sender), message).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WorldChatMessage), sender, message).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Moves the players of other game servers off the maps of this game server, which they entered
+    /// because their own game server doesn't host these maps (see <see cref="IMapHostLocator"/>).
+    /// They stay connected to their own game server, so they're just warped to their safezone.
+    /// Since this game server is not available anymore, they end up on a map of another one.
+    /// </summary>
+    private async ValueTask MoveGuestPlayersOffMapsAsync()
+    {
+        var maps = await this._gameContext.GetMapsAsync().ConfigureAwait(false);
+        var guestPlayers = maps
+            .SelectMany(map => map.GetPlayers())
+            .Where(player => player.GameContext != this._gameContext)
+            .ToList();
+        foreach (var guestPlayer in guestPlayers)
+        {
+            try
+            {
+                await guestPlayer.WarpToSafezoneAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error while moving player {0} of another game server off the maps of this game server.", guestPlayer);
+            }
+        }
+    }
+
     private async ValueTask RemovePlayerFromGuildAsync(Player player, bool unregisterFromContext = true)
     {
         if (unregisterFromContext && player.GuildStatus?.GuildId is not null)
@@ -509,7 +601,6 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         await player.InvokeViewPlugInAsync<IShowLoginWindowPlugIn>(p => p.ShowLoginWindowAsync()).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         e.ConntectedPlayer.PlayerDisconnected += this.OnPlayerDisconnectedAsync;
-        this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
 
     private async ValueTask OnPlayerDisconnectedAsync(Player remotePlayer)
@@ -520,14 +611,15 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         }
 
         await remotePlayer.DisposeAsync().ConfigureAwait(false);
-        this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
 
     private async ValueTask SetOfflineAtLoginServerAsync(Player player)
     {
         try
         {
-            if (player.Account?.LoginName is { } loginName)
+            // The registration is used instead of the account, because the player may be disconnected
+            // after the login server accepted its login, but before the account was assigned.
+            if (player.ReleaseLoginServerRegistration() is { } loginName)
             {
                 await this.Context.LoginServer.LogOffAsync(loginName, this.Id).ConfigureAwait(false);
             }

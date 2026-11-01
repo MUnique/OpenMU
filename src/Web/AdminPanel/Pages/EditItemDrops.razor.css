@@ -1,0 +1,11 @@
+.item-drops-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 0.5rem 0;
+    background-color: var(--bs-body-bg, #fff);
+}
+
+.monster-max-drops {
+    width: 6rem;
+}

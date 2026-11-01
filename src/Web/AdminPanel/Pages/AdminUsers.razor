@@ -37,7 +37,7 @@ else
                                 @onchange="@(args => this.OnRoleChangedAsync(user, args.Value?.ToString()))">
                             @foreach (var role in AdminRoles.All)
                             {
-                                <option value="@role">@role</option>
+                                <option value="@role">@MUnique.OpenMU.Web.AdminPanel.Auth.RoleCaption.Get(role)</option>
                             }
                         </select>
                     </td>

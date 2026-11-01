@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.API
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Web.AdminPanel.Auth;
+    using MUnique.OpenMU.Web.AdminPanel.Operations;
 
     /// <summary>
     /// Server API controller.
@@ -26,13 +27,19 @@ namespace MUnique.OpenMU.Web.AdminPanel.API
     [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.Viewer)]
     public class ServerController : Controller
     {
-        private IDictionary<int, IGameServer> _gameServers;
+        private readonly IDictionary<int, IGameServer> _gameServers;
+        private readonly ServerWriteOperations _operations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerController"/> class.
         /// </summary>
         /// <param name="gameServers">The game servers.</param>
-        public ServerController(IDictionary<int, IGameServer> gameServers) => this._gameServers = gameServers;
+        /// <param name="operations">The audited server operations.</param>
+        public ServerController(IDictionary<int, IGameServer> gameServers, ServerWriteOperations operations)
+        {
+            this._gameServers = gameServers;
+            this._operations = operations;
+        }
 
         /// <summary>
         /// Sends a global message to the specified server.
@@ -43,18 +50,13 @@ namespace MUnique.OpenMU.Web.AdminPanel.API
         /// This is the only endpoint of the API which does something instead of reporting
         /// something, so it requires the operator role and not just the viewer role.
         /// </remarks>
+        [HttpPost]
         [Route("send/{id=0}")]
-        [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.Operator)]
+        [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.AuthenticatedOperator)]
         public async Task<IActionResult> SendGlobalMessageAsync(int id, [FromQuery(Name = "msg")] string msg)
         {
-            var server = (GameServer)this._gameServers.Values.ElementAt(id);
-            if (server is not null)
-            {
-                await server.Context.SendGlobalNotificationAsync(msg).ConfigureAwait(false);
-                return this.Ok("Done");
-            }
-
-            return this.Ok("Server not ready");
+            await this._operations.SendMessageAsync(id, msg, MessageType.GoldenCenter, this.HttpContext.RequestAborted).ConfigureAwait(false);
+            return this.Ok("Done");
         }
 
         /// <summary>
@@ -86,23 +88,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.API
         /// </summary>
         [HttpGet]
         [Route("status")]
-        public IActionResult ServerState()
+        public async Task<IActionResult> ServerStateAsync()
         {
-            int sum = 0;
             var list = new List<string>();
-            this._gameServers.Values.ForEach(async item =>
+            var sum = 0;
+            foreach (var server in this._gameServers.Values.OfType<GameServer>())
             {
-                var server = item as GameServer;
-                if (server is not null)
-                {
-                    await server.Context.ForEachPlayerAsync(player =>
-                    {
-                        list.Add(player.GetName());
-                        return Task.CompletedTask;
-                    }).ConfigureAwait(false);
-                    sum = sum + server.Context.PlayerCount;
-                }
-            });
+                var players = await server.Context.GetPlayersAsync().ConfigureAwait(false);
+                list.AddRange(players.Select(player => player.GetName()));
+                sum += server.Context.PlayerCount;
+            }
 
             var item = new
             {

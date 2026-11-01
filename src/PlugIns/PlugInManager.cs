@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInManager.cs" company="MUnique">
+// <copyright file="PlugInManager.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.PlugIns;
 
 using System.Collections.Concurrent;
 using System.ComponentModel.Design;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
@@ -19,12 +20,25 @@ using Nito.Disposables.Internals;
 /// </summary>
 public class PlugInManager
 {
+    /// <summary>
+    /// The name of the <see cref="AppContext"/> switch which disables the generated plugin registries (see <see cref="IPlugInRegistry"/>).
+    /// When it's set, the plugins are discovered by searching the types of the assemblies.
+    /// </summary>
+    public const string DisableGeneratedRegistriesSwitch = "MUnique.OpenMU.PlugIns.DisableGeneratedRegistries";
+
+    /// <summary>
+    /// The name of the directory below the application directory, from which external plugin assemblies
+    /// (<see cref="PlugInConfiguration.ExternalAssemblyName"/>) are loaded.
+    /// </summary>
+    private const string ExternalPlugInsDirectoryName = "plugins";
+
     private readonly ILogger<PlugInManager> _logger;
     private readonly ServiceContainer _serviceContainer;
     private readonly IDictionary<Type, object> _plugInPoints = new Dictionary<Type, object>();
     private readonly IDictionary<Guid, Type> _knownPlugIns = new ConcurrentDictionary<Guid, Type>();
     private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new();
     private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new();
+    private readonly List<PlugInConfiguration> _observedConfigurations = new();
     private object? _lastCreatedPlugIn;
 
     /// <summary>
@@ -48,11 +62,7 @@ public class PlugInManager
         if (configurations is not null)
         {
             this.DiscoverAndRegisterPlugIns();
-            var loadedAssemblies = new HashSet<string>();
-            foreach (var configuration in configurations)
-            {
-                this.ReadConfiguration(configuration, loadedAssemblies);
-            }
+            this.ReadConfigurations(configurations);
         }
     }
 
@@ -85,6 +95,51 @@ public class PlugInManager
     public ReferenceHandler? CustomConfigReferenceHandler { get; }
 
     /// <summary>
+    /// Discovers the plugin types of the specified assembly, which are the classes marked with the <see cref="PlugInAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    /// The types are taken from the generated plugin registry of the assembly (see <see cref="IPlugInRegistry"/>).
+    /// For an assembly without one, its types are searched.
+    /// </remarks>
+    /// <param name="assembly">The assembly.</param>
+    /// <returns>The plugin types of the assembly, in the order of their definition.</returns>
+    public static IEnumerable<Type> DiscoverPlugInTypes(Assembly assembly)
+    {
+        if (PlugInRegistries.Get(assembly) is { } registry)
+        {
+            return registry.PlugIns.Select(plugIn => plugIn.Type);
+        }
+
+        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null).Select(type => type.AsType());
+    }
+
+    /// <summary>
+    /// Reads the given plugin configurations and applies them to the known plugins.
+    /// It can be called again later, e.g. when the configurations became available
+    /// after the database has been initialized. In this case, the previously read
+    /// configurations are not observed anymore.
+    /// </summary>
+    /// <param name="configurations">The plugin configurations.</param>
+    public void ReadConfigurations(IEnumerable<PlugInConfiguration> configurations)
+    {
+        this.UnsubscribeFromConfigurations();
+
+        var loadedAssemblies = new HashSet<string>();
+        foreach (var configuration in configurations)
+        {
+            try
+            {
+                this.ReadConfiguration(configuration, loadedAssemblies);
+            }
+            catch (Exception ex)
+            {
+                // A failing configuration must not stop the remaining ones from being applied.
+                this._logger.LogError(ex, "Error when reading the configuration of plugin {TypeId}.", configuration.TypeId);
+            }
+        }
+    }
+
+    /// <summary>
     /// Discovers and registers all plugins of all loaded assemblies.
     /// </summary>
     public void DiscoverAndRegisterPlugIns()
@@ -111,7 +166,7 @@ public class PlugInManager
     /// <typeparam name="T">The type of the plugins that should be discovered.</typeparam>
     public void DiscoverAndRegisterPlugInsOf<T>()
     {
-        var plugIns = this.DiscoverAllPlugIns().Where(type => typeof(T).IsAssignableFrom(type));
+        var plugIns = this.DiscoverAllPlugIns().Where(plugIn => typeof(T).IsAssignableFrom(plugIn.Type));
         this.RegisterPlugIns(plugIns);
     }
 
@@ -355,9 +410,48 @@ public class PlugInManager
         }
     }
 
-    private void ValidateNoDuplicateGuids(IEnumerable<Type> plugIns)
+    /// <summary>
+    /// Creates the registration of a plugin type of an assembly without a generated <see cref="IPlugInRegistry"/>.
+    /// It registers the plugin at each of its plugin interfaces by reflection.
+    /// </summary>
+    /// <param name="plugIn">The type of the plugin.</param>
+    /// <returns>The registration of the plugin.</returns>
+    private static PlugInRegistration CreateRegistration(Type plugIn)
     {
-        var allPlugIns = plugIns.Concat(this._knownPlugIns.Values).Distinct();
+        return new PlugInRegistration(plugIn, manager =>
+        {
+            // A plugin usually should be small, but it should be possible that one plugin can implement more than one plugin interface.
+            // In this case, we need to register it at every plugin point
+            var plugInInterfaces = plugIn.GetInterfaces().Where(t => t.IsInterface && (t.GetCustomAttribute<PlugInPointAttribute>() != null || t.GetCustomAttribute<CustomPlugInContainerAttribute>() != null));
+            foreach (var plugInInterface in plugInInterfaces)
+            {
+                var genericMethod = manager.GetType().GetMethods().FirstOrDefault(mi => mi.IsGenericMethod && mi.Name == nameof(RegisterPlugIn))?.MakeGenericMethod(plugInInterface, plugIn);
+                genericMethod?.Invoke(manager, []);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Gets the absolute path of an external plugin assembly, which has to be located in the
+    /// <see cref="ExternalPlugInsDirectoryName"/> directory of the application.
+    /// </summary>
+    /// <param name="assemblyName">The file name of the assembly.</param>
+    /// <returns>The absolute path.</returns>
+    /// <exception cref="ArgumentException">The name is not a plain file name.</exception>
+    private static string GetExternalAssemblyPath(string assemblyName)
+    {
+        // Assembly.LoadFile requires an absolute path, and the path must not depend on the current directory.
+        if (Path.GetFileName(assemblyName) != assemblyName)
+        {
+            throw new ArgumentException($"The external assembly name '{assemblyName}' must be a file name without directories.", nameof(assemblyName));
+        }
+
+        return Path.Combine(AppContext.BaseDirectory, ExternalPlugInsDirectoryName, assemblyName);
+    }
+
+    private void ValidateNoDuplicateGuids(IEnumerable<PlugInRegistration> plugIns)
+    {
+        var allPlugIns = plugIns.Select(plugIn => plugIn.Type).Concat(this._knownPlugIns.Values).Distinct();
         var duplicates = allPlugIns.GroupBy(t => t.GUID).Where(g => g.Count() > 1).ToList();
         if (duplicates.Count == 0)
         {
@@ -393,21 +487,22 @@ public class PlugInManager
     private IPlugInContainer<TPlugInInterface> CreateProxy<TPlugInInterface>()
         where TPlugInInterface : class
     {
-        IPlugInContainer<TPlugInInterface> proxy;
         var strategyPlugInInterface = typeof(TPlugInInterface).GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IStrategyPlugIn<>));
         if (strategyPlugInInterface != null)
         {
             var keyType = strategyPlugInInterface.GetGenericArguments()[0];
             var providerType = typeof(StrategyPlugInProvider<,>).MakeGenericType(keyType, typeof(TPlugInInterface));
-            proxy = (IPlugInContainer<TPlugInInterface>)ActivatorUtilities.CreateInstance(this._serviceContainer, providerType);
-        }
-        else
-        {
-            var proxyGenerator = new PlugInProxyTypeGenerator();
-            proxy = proxyGenerator.GenerateProxy<TPlugInInterface>(this);
+            return (IPlugInContainer<TPlugInInterface>)ActivatorUtilities.CreateInstance(this._serviceContainer, providerType);
         }
 
-        return proxy;
+        if (PlugInProxyRegistry.TryCreate<TPlugInInterface>(this, out var generatedProxy))
+        {
+            return generatedProxy;
+        }
+
+        // Without a proxy which has been generated at compile time, we generate it now.
+        var proxyGenerator = new PlugInProxyTypeGenerator();
+        return proxyGenerator.GenerateProxy<TPlugInInterface>(this);
     }
 
     private TPlugInClass CreatePlugInInstance<TPlugInClass>()
@@ -426,7 +521,7 @@ public class PlugInManager
 
                 try
                 {
-                    var assembly = Assembly.LoadFile("plugins\\" + configuration.ExternalAssemblyName);
+                    var assembly = Assembly.LoadFile(GetExternalAssemblyPath(configuration.ExternalAssemblyName));
                     this.DiscoverAndRegisterPlugIns(assembly);
                 }
                 catch (Exception e)
@@ -450,7 +545,13 @@ public class PlugInManager
 
         if (this._knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
         {
-            if (!configuration.IsActive)
+            if (configuration.IsActive)
+            {
+                // Plugins are active by default when they get registered, but that's not
+                // necessarily the case anymore when the configurations are read again.
+                this.ActivatePlugIn(plugInType);
+            }
+            else
             {
                 this.DeactivatePlugIn(plugInType);
             }
@@ -459,11 +560,31 @@ public class PlugInManager
 
             // When the IsActive property changed, we activate/deactivate accordingly.
             // Currently, property changes are only fired for IsActive, so we don't need to check it.
-            configuration.PropertyChanged += (sender, args) => this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
+            configuration.PropertyChanged += this.OnConfigurationPropertyChanged;
+            this._observedConfigurations.Add(configuration);
         }
         else
         {
             this._logger.LogWarning("Unknown plugin type for id {TypeId}", configuration.TypeId);
+        }
+    }
+
+    private void UnsubscribeFromConfigurations()
+    {
+        foreach (var configuration in this._observedConfigurations)
+        {
+            configuration.PropertyChanged -= this.OnConfigurationPropertyChanged;
+        }
+
+        this._observedConfigurations.Clear();
+    }
+
+    private void OnConfigurationPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
+    {
+        if (sender is PlugInConfiguration configuration
+            && this._knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
+        {
+            this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
         }
     }
 
@@ -493,18 +614,18 @@ public class PlugInManager
         this.PlugInConfigurationChanged?.Invoke(this, new PlugInConfigurationChangedEventArgs(plugInType, configuration));
     }
 
-    private IEnumerable<Type> DiscoverNewPlugIns()
+    private IEnumerable<PlugInRegistration> DiscoverNewPlugIns()
     {
         return this.DiscoverNewPlugIns(this.DiscoverAllPlugIns());
     }
 
-    private IEnumerable<Type> DiscoverNewPlugIns(IEnumerable<Type> allPlugIns)
+    private IEnumerable<PlugInRegistration> DiscoverNewPlugIns(IEnumerable<PlugInRegistration> allPlugIns)
     {
-        var newPlugIns = allPlugIns.Where(plugIn => !this._knownPlugIns.ContainsKey(plugIn.GUID)).ToList();
+        var newPlugIns = allPlugIns.Where(plugIn => !this._knownPlugIns.ContainsKey(plugIn.Type.GUID)).ToList();
         return newPlugIns;
     }
 
-    private IEnumerable<Type> DiscoverAllPlugIns()
+    private IEnumerable<PlugInRegistration> DiscoverAllPlugIns()
     {
         return AppDomain.CurrentDomain.GetAssemblies()
             .Where(assembly => assembly.FullName is not null)
@@ -514,44 +635,47 @@ public class PlugInManager
             .Where(assembly => !assembly.FullName!.StartsWith("Blazor"))
             .SelectMany(assembly =>
                 {
+                    if (PlugInRegistries.Get(assembly) is { } registry)
+                    {
+                        return registry.PlugIns;
+                    }
+
                     try
                     {
-                        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
+                        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null).Select(CreateRegistration);
                     }
                     catch (ReflectionTypeLoadException ex)
                     {
-                        return ex.Types.WhereNotNull();
+                        return ex.Types.WhereNotNull().Select(CreateRegistration);
                     }
                     catch (Exception)
                     {
-                        return Enumerable.Empty<Type>();
+                        return Enumerable.Empty<PlugInRegistration>();
                     }
                 });
     }
 
-    private IEnumerable<Type> DiscoverPlugIns(Assembly assembly)
+    private IEnumerable<PlugInRegistration> DiscoverPlugIns(Assembly assembly)
     {
-        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
+        if (PlugInRegistries.Get(assembly) is { } registry)
+        {
+            return registry.PlugIns;
+        }
+
+        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null).Select(CreateRegistration);
     }
 
-    private void RegisterPlugIns(IEnumerable<Type> plugIns)
+    private void RegisterPlugIns(IEnumerable<PlugInRegistration> plugIns)
     {
         foreach (var plugIn in plugIns)
         {
             try
             {
-                // A plugin usually should be small, but it should be possible that one plugin can implement more than one plugin interface.
-                // In this case, we need to register it at every plugin point
-                var plugInInterfaces = plugIn.GetInterfaces().Where(t => t.IsInterface && (t.GetCustomAttribute<PlugInPointAttribute>() != null || t.GetCustomAttribute<CustomPlugInContainerAttribute>() != null));
-                foreach (var plugInInterface in plugInInterfaces)
-                {
-                    var genericMethod = this.GetType().GetMethods().FirstOrDefault(mi => mi.IsGenericMethod && mi.Name == nameof(this.RegisterPlugIn))?.MakeGenericMethod(plugInInterface, plugIn);
-                    genericMethod?.Invoke(this, []);
-                }
+                plugIn.Register(this);
             }
             catch (Exception e)
             {
-                this._logger.LogError(e, "Couldn't register plugin type {PlugIn}", plugIn);
+                this._logger.LogError(e, "Couldn't register plugin type {PlugIn}", plugIn.Type);
                 this._logger.LogError("TODO: Use ServiceContainer");
             }
 

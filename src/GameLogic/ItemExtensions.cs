@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.ItemFormulas;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -15,9 +16,12 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public static class ItemExtensions
 {
+    private const byte StaffItemGroup = 5;
     private const byte ShieldItemGroup = 6;
 
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
+
+    private static readonly float[] DurabilityFactors = { 0.2f, 0.3f, 0.5f };
 
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> RequirementAttributeMapping = new Dictionary<AttributeDefinition, AttributeDefinition>
     {
@@ -116,13 +120,13 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Determines whether this item is a defensive item.
+    /// Determines whether this item is a defensive item (armor or shield).
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns><see langword="true"/>, if the item is defensive.</returns>
     public static bool IsDefensiveItem(this Item item)
     {
-        return InventoryConstants.IsDefenseItemSlot(item.ItemSlot) || item.IsShield();
+        return IsArmorItem(item) || item.IsShield();
     }
 
     /// <summary>
@@ -181,6 +185,18 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this item is a transformation ring.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a transformation ring; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsTransformationRing(this Item item)
+    {
+        return item.Definition?.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.TransformationSkin) ?? false;
+    }
+
+    /// <summary>
     /// Determines whether this item is an armor item.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -189,7 +205,8 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsArmorItem(this Item item)
     {
-        return item.ItemSlot >= InventoryConstants.HelmSlot && item.ItemSlot <= InventoryConstants.BootsSlot;
+        return item.Definition?.ItemSlot?.ItemSlots.Any(slot =>
+            slot >= InventoryConstants.HelmSlot && slot <= InventoryConstants.BootsSlot) ?? false;
     }
 
     /// <summary>
@@ -249,45 +266,90 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Returns a random offensive item of the storage.
+    /// Determines whether this instance's durability decays with time.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance's durability decays with time; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsTimeDecaying(this Item item)
+    {
+        return item.IsJewelry() || item.IsWing();
+    }
+
+    /// <summary>
+    /// Determines whether this instance's power-ups depend on its current durability.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance's power-ups are subject to a durabiity factor; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool DegradesWithDurability(this Item item)
+    {
+        return item.ItemSlot != InventoryConstants.PetSlot && !item.IsTrainablePet() && !item.IsTransformationRing();
+    }
+
+    /// <summary>
+    /// Returns a random equipped weapon from the storage.
     /// </summary>
     /// <param name="storage">The storage.</param>
+    /// <param name="damageType">The damage type.</param>
     /// <returns>A randomly selected offensive item.</returns>
-    public static Item? GetRandomOffensiveItem(this IInventoryStorage storage)
+    public static Item? GetRandomWeapon(this IInventoryStorage storage, DamageType damageType)
     {
+        if (damageType == DamageType.Fenrir)
+        {
+            return null;
+        }
+
         var left = storage.GetItem(InventoryConstants.LeftHandSlot);
         var right = storage.GetItem(InventoryConstants.RightHandSlot);
-        var pendant = storage.GetItem(InventoryConstants.PendantSlot);
 
-        if ((left?.Definition?.IsAmmunition ?? false)
-            || left?.Definition?.Group == ShieldItemGroup)
+        if (left?.Definition?.IsAmmunition ?? false)
         {
             left = null;
         }
 
         if ((right?.Definition?.IsAmmunition ?? false)
-            || right?.Definition?.Group == ShieldItemGroup)
+            || right?.Definition?.Group == ShieldItemGroup
+            || (right?.IsTrainablePet() ?? false))
         {
             right = null;
         }
 
-        var random = Rand.NextInt(3, 6);
-        var result = left ?? right ?? pendant;
+        if (damageType is DamageType.Wizardry or DamageType.Curse)
+        {
+            if (!(left?.IsWizardryWeapon(out _) ?? true) || (left?.CanHaveSkill() ?? false))
+            {
+                left = null;
+            }
+
+            if (!right?.IsBook(out _) ?? true)
+            {
+                right = null;
+            }
+        }
+        else
+        {
+            if (left?.Definition?.Group == StaffItemGroup || right?.Definition?.Group == StaffItemGroup)
+            {
+                right = null;
+            }
+        }
+
+        var result = left ?? right;
         if (result is null)
         {
             return null;
         }
 
-        switch (random % 3)
+        switch (Rand.NextInt(0, 2))
         {
             case 0 when left is { }:
                 result = left;
                 break;
             case 1 when right is { }:
                 result = right;
-                break;
-            case 2 when pendant is { }:
-                result = pendant;
                 break;
             default:
                 // keep first available result
@@ -302,62 +364,38 @@ public static class ItemExtensions
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="requirement">The requirement.</param>
+    /// <param name="gameConfiguration">The game configuration, whose item stat profiles hold the requirement formulas.</param>
     /// <returns>The requirement as a tuple of an attribute and the corresponding value.</returns>
     /// <remarks>
-    /// Some requirements are depending on item level, drop level and item options.
+    /// The stat requirements of an item which can be worn grow with its drop level, its item level and its option, by the
+    /// requirement formulas of its item stat profile (see <see cref="ResolvedItemStatProfile"/>); the level requirement
+    /// grows by the profile's level growth.
     /// </remarks>
-    public static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement)
+    public static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement, GameConfiguration gameConfiguration)
     {
-        requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
+        ResolvedItemStatProfile? profile = null;
+        return item.GetRequirement(requirement, gameConfiguration, ref profile);
+    }
 
-        if (RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
+    /// <summary>
+    /// Gets the requirements of the item, each as a tuple of an attribute and the corresponding value (see
+    /// <see cref="GetRequirement(Item, AttributeRequirement, GameConfiguration)"/>).
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="gameConfiguration">The game configuration, whose item stat profiles hold the requirement formulas.</param>
+    /// <returns>The requirements of the item.</returns>
+    /// <remarks>The item stat profile of the item is resolved only once for all its requirements.</remarks>
+    public static IReadOnlyList<(AttributeDefinition Attr, int Value)> GetRequirements(this Item item, GameConfiguration gameConfiguration)
+    {
+        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+        ResolvedItemStatProfile? profile = null;
+        var requirements = new List<(AttributeDefinition Attr, int Value)>(item.Definition.Requirements.Count);
+        foreach (var requirement in item.Definition.Requirements)
         {
-            if (!item.IsWearable())
-            {
-                return (totalAttribute, requirement.MinimumValue);
-            }
-
-            var multiplier = 3;
-            if (totalAttribute == Stats.TotalEnergy)
-            {
-                multiplier = 4;
-
-                // Summoner Books are calculated differently. They are in group 5 (staffs) and are the only items in the group which can have skill.
-                if (item.Definition?.Skill != null && item.Definition.Group == 5)
-                {
-                    return (totalAttribute, item.CalculateBookEnergyRequirement(requirement.MinimumValue));
-                }
-            }
-
-            var value = item.CalculateRequirement(requirement.MinimumValue, multiplier);
-            if (value > 0 && totalAttribute == Stats.TotalStrength)
-            {
-                var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
-                if (itemOption != null)
-                {
-                    value += itemOption.Level * 4;
-                }
-            }
-
-            if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
-                && item.ItemOptions.FirstOrDefault(o =>
-                        o.ItemOption?.PowerUpDefinition?.TargetAttribute == reductionAttribute
-                        || (o.ItemOption?.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute) ?? false))
-                    is { } reductionOption)
-            {
-                var optionOfLevelPowerUp = reductionOption.ItemOption!.LevelDependentOptions
-                                               .FirstOrDefault(o => o.Level == reductionOption.Level)?.PowerUpDefinition
-                                           ?? reductionOption.ItemOption.PowerUpDefinition;
-                if (optionOfLevelPowerUp?.Boost?.ConstantValue is { } reduction)
-                {
-                    value -= (int)reduction.Value;
-                }
-            }
-
-            return (totalAttribute, value);
+            requirements.Add(item.GetRequirement(requirement, gameConfiguration, ref profile));
         }
 
-        return (requirement.Attribute, requirement.MinimumValue);
+        return requirements;
     }
 
     /// <summary>
@@ -407,61 +445,172 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Calculates the drop level.
+    /// Calculates the drop level which the item formulas use: the drop level of the item definition, plus the
+    /// <see cref="GameConfiguration.AncientDropLevelBonus"/> for an ancient item, or else the
+    /// <see cref="GameConfiguration.ExcellentDropLevelBonus"/> for an excellent one.
     /// </summary>
-    /// <param name="item">The item.</param>
+    /// <param name="item">The item definition.</param>
     /// <param name="isAncient">A value indicating whether the item is ancient.</param>
     /// <param name="isExcellent">A value indicating whether the item is excellent.</param>
-    /// <param name="itemLevel">The item level.</param>
-    /// <returns>The calculated drop level.</returns>
-    public static int CalculateDropLevel(this ItemDefinition item, bool isAncient, bool isExcellent, int itemLevel)
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The calculated drop level, without the item level.</returns>
+    public static int CalculateDropLevel(this ItemDefinition item, bool isAncient, bool isExcellent, GameConfiguration gameConfiguration)
     {
-        int dropLevel = item.DropLevel;
         if (isAncient)
         {
-            dropLevel += 30;
-        }
-        else if (isExcellent)
-        {
-            dropLevel += 25;
-        }
-        else
-        {
-            // nothing to add
+            return item.DropLevel + gameConfiguration.AncientDropLevelBonus;
         }
 
-        dropLevel += 3 * itemLevel;
-        return dropLevel;
+        return isExcellent ? item.DropLevel + gameConfiguration.ExcellentDropLevelBonus : item.DropLevel;
     }
 
     /// <summary>
-    /// Calculates the drop level of the item in the current state.
+    /// Gets the current durability factor for the item.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <returns>The calculated drop level.</returns>
-    public static int CalculateDropLevel(this Item item)
+    /// <remarks>
+    /// Directly related to the client's UI item durability icons, whose colors span yellow (&lt;50%), orange (&lt;30%), light red (&lt;20%) and red (exhausted).
+    /// </remarks>
+    /// <returns>The factor.</returns>
+    public static float GetCurrentDurabilityFactor(this Item item)
     {
-        return item.Definition?.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), item.Level) ?? 0;
-    }
-
-    private static int CalculateRequirement(this Item item, int requirementValue, int multiplier)
-    {
-        if (requirementValue == 0)
+        if (item.Durability == 0)
         {
             return 0;
         }
 
-        var dropLevel = item.Definition!.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), item.Level);
+        if (!item.DegradesWithDurability())
+        {
+            return 1;
+        }
 
-        return (multiplier * dropLevel * requirementValue / 100) + 20;
+        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
+        for (int i = 0; i < DurabilityFactors.Length; i++)
+        {
+            if (item.Durability < maxDurability * DurabilityFactors[i])
+            {
+                return 1 - DurabilityFactors[^(i + 1)];
+            }
+        }
+
+        return 1;
     }
 
-    private static int CalculateBookEnergyRequirement(this Item item, int energyRequirementValue)
+    /// <summary>
+    /// Gets the requirement, and resolves the item stat profile of the item into <paramref name="profile"/> when it's
+    /// needed and not resolved yet.
+    /// </summary>
+    private static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement, GameConfiguration gameConfiguration, ref ResolvedItemStatProfile? profile)
     {
-        var dropLevel = item.Definition!.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), 0);
+        requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
 
-        return (((energyRequirementValue * (dropLevel + item.Level)) * 3) / 100) + 20;
+        var minimumValue = requirement.MinimumItemLevel is { } minimumItemLevel && item.Level < minimumItemLevel
+            ? 0
+            : requirement.MinimumValue;
+
+        if (requirement.Attribute == Stats.Level)
+        {
+            return (requirement.Attribute, item.CalculateLevelRequirement(minimumValue, gameConfiguration, ref profile));
+        }
+
+        if (!RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
+        {
+            return (requirement.Attribute, minimumValue);
+        }
+
+        if (!item.IsWearable())
+        {
+            return (totalAttribute, minimumValue);
+        }
+
+        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+        profile ??= ResolvedItemStatProfile.Of(item.Definition, gameConfiguration);
+        int value;
+        if (profile.GetRequirementFormula(requirement.Attribute) is not { KeepBase: false } formula)
+        {
+            // Without a formula, or with "keep base", the requirement doesn't grow; the option and the reduction still
+            // apply, as in the game client.
+            value = minimumValue;
+        }
+        else
+        {
+            value = minimumValue == 0 ? 0 : item.CalculateRequirement(formula, minimumValue, gameConfiguration);
+        }
+
+        if (value > 0 && totalAttribute == Stats.TotalStrength)
+        {
+            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
+            if (itemOption != null)
+            {
+                value = LimitToInt(value + ((long)itemOption.Level * profile.StrengthPerOptionLevel));
+            }
+        }
+
+        if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
+            && item.ItemOptions.FirstOrDefault(o =>
+                    o.ItemOption?.PowerUpDefinition?.TargetAttribute == reductionAttribute
+                    || (o.ItemOption?.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute) ?? false))
+                is { } reductionOption)
+        {
+            var optionOfLevelPowerUp = reductionOption.ItemOption!.LevelDependentOptions
+                                           .FirstOrDefault(o => o.Level == reductionOption.Level)?.PowerUpDefinition
+                                       ?? reductionOption.ItemOption.PowerUpDefinition;
+            if (optionOfLevelPowerUp?.Boost?.ConstantValue is { } reduction)
+            {
+                value -= (int)reduction.Value;
+            }
+        }
+
+        return (totalAttribute, value);
     }
+
+    /// <summary>
+    /// Calculates a stat requirement by its formula: <c>Add + base × (drop level + item level × LevelWeight) × Percent ÷ 100</c>,
+    /// or with <see cref="ItemRequirementFormula.LevelRequirementBasis"/> and a level requirement of the item
+    /// <c>Add + base × level requirement × Percent ÷ 100</c>. That level requirement is the stored one of the item
+    /// definition, without its growth per item level and the excellent addition, as in the game client.
+    /// </summary>
+    private static int CalculateRequirement(this Item item, ItemRequirementFormula formula, int baseValue, GameConfiguration gameConfiguration)
+    {
+        var definition = item.Definition!;
+        if (formula.LevelRequirementBasis
+            && definition.Requirements.FirstOrDefault(r => r.Attribute == Stats.Level && r.MinimumItemLevel is null)?.MinimumValue is > 0 and var levelRequirement)
+        {
+            return LimitToInt(formula.Add + ((Int128)baseValue * levelRequirement * formula.Percent / 100));
+        }
+
+        var dropLevel = definition.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), gameConfiguration) + ((Int128)item.Level * formula.LevelWeight);
+        return LimitToInt(formula.Add + (baseValue * dropLevel * formula.Percent / 100));
+    }
+
+    /// <summary>
+    /// Calculates the level requirement: a base value above 0 grows by the profile's level growth per item level (a
+    /// trainable pet counts as level 0), and an excellent item with <see cref="ItemDefinition.ExcellentRaisesLevel"/>
+    /// needs the profile's <see cref="ItemStatProfile.ExcellentLevelAdd"/> more.
+    /// </summary>
+    private static int CalculateLevelRequirement(this Item item, int baseValue, GameConfiguration gameConfiguration, ref ResolvedItemStatProfile? profile)
+    {
+        if (baseValue == 0 || item.Definition is not { } definition)
+        {
+            return baseValue;
+        }
+
+        profile ??= ResolvedItemStatProfile.Of(definition, gameConfiguration);
+        var value = baseValue + ((long)profile.LevelPerItemLevel * (item.IsTrainablePet() ? 0 : item.Level));
+        if (definition.ExcellentRaisesLevel && item.IsExcellent())
+        {
+            value += profile.ExcellentLevelAdd;
+        }
+
+        return LimitToInt(value);
+    }
+
+    /// <summary>
+    /// Limits a value of the item formulas, which an owner can configure, to the range of <see cref="int"/>, so that a
+    /// large factor doesn't wrap to a negative requirement. <see cref="Int128"/> holds the product of three values of
+    /// <see cref="int"/>.
+    /// </summary>
+    private static int LimitToInt(Int128 value) => (int)Int128.Clamp(value, int.MinValue, int.MaxValue);
 
     private sealed class TemporaryItemAppearance : ItemAppearance
     {

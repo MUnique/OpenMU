@@ -125,6 +125,80 @@ public class MoveItemActionTests
     }
 
     /// <summary>
+    /// Verifies that an item can still be moved from the inventory into a locked vault.
+    /// </summary>
+    [Test]
+    public async ValueTask InventoryToLockedVaultMoveStoresItemInVaultAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        player.Vault = vaultStorage;
+        player.IsVaultLocked = true;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+
+        var source = CreateItem(CreateDefinition(), 1);
+        await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.Vault).ConfigureAwait(false);
+
+        Assert.That(vaultStorage.GetItem(0), Is.SameAs(source));
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that items can't be rearranged inside a locked vault.
+    /// </summary>
+    [Test]
+    public async ValueTask VaultToVaultMoveWhileLockedKeepsItemInPlaceAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        player.Vault = vaultStorage;
+        player.IsVaultLocked = true;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+
+        var source = CreateItem(CreateDefinition(), 1);
+        await vaultStorage.AddItemAsync(0, source).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 0, Storages.Vault, 8, Storages.Vault).ConfigureAwait(false);
+
+        Assert.That(vaultStorage.GetItem(0), Is.SameAs(source));
+        Assert.That(vaultStorage.GetItem(8), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that money can be deposited into a locked vault, but not taken out of it.
+    /// </summary>
+    [Test]
+    public async ValueTask LockedVaultAllowsOnlyMoneyDepositsAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        vaultStorage.ItemStorage.Money = 500;
+        player.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        player.GameContext.Configuration.MaximumVaultMoney = 1_000_000;
+        player.Vault = vaultStorage;
+        player.Money = 100;
+        player.IsVaultLocked = true;
+
+        Assert.That(player.TryTakeVaultMoney(200), Is.False);
+        Assert.That(player.Money, Is.EqualTo(100));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(500));
+
+        Assert.That(player.TryDepositVaultMoney(50), Is.True);
+        Assert.That(player.Money, Is.EqualTo(50));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(550));
+
+        player.IsVaultLocked = false;
+
+        Assert.That(player.TryTakeVaultMoney(200), Is.True);
+        Assert.That(player.Money, Is.EqualTo(250));
+        Assert.That(vaultStorage.ItemStorage.Money, Is.EqualTo(350));
+    }
+
+    /// <summary>
     /// Verifies that a move to a slot outside grid bounds is rejected without mutation.
     /// </summary>
     [Test]
@@ -239,11 +313,191 @@ public class MoveItemActionTests
         Assert.That(vaultStorage.Items.Count(i => ReferenceEquals(i, movedItem)), Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// Verifies that an item which isn't tradable can't be put into a trade, while a tradable one can.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWhichIsNotTradableIsNotMovedIntoTradeAsync()
+    {
+        var trader1 = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var trader2 = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var notTradable = CreateItem(CreateDefinition(), 1);
+        notTradable.Definition!.IsTradable = false;
+        var tradable = CreateItem(CreateDefinition(), 1);
+        await trader1.Inventory!.AddItemAsync(20, notTradable).ConfigureAwait(false);
+        await trader1.Inventory.AddItemAsync(21, tradable).ConfigureAwait(false);
+
+        await new TradeRequestAction().RequestTradeAsync(trader1, trader2).ConfigureAwait(false);
+        await new TradeAcceptAction().HandleTradeAcceptAsync(trader2, true).ConfigureAwait(false);
+
+        var action = new MoveItemAction();
+        await action.MoveItemAsync(trader1, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        await action.MoveItemAsync(trader1, 21, Storages.Inventory, 1, Storages.Trade).ConfigureAwait(false);
+
+        Assert.That(trader1.Inventory.GetItem(20), Is.SameAs(notTradable));
+        Assert.That(trader1.TemporaryStorage!.GetItem(0), Is.Null);
+        Assert.That(trader1.TemporaryStorage.GetItem(1), Is.SameAs(tradable));
+    }
+
+    /// <summary>
+    /// Verifies that an item which isn't storable can't be moved into the vault.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWhichIsNotStorableIsNotMovedIntoVaultAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        player.Vault = vaultStorage;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+
+        var item = CreateItem(CreateDefinition(), 1);
+        item.Definition!.IsStorable = false;
+        await player.Inventory!.AddItemAsync(20, item).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.Vault).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(item));
+        Assert.That(vaultStorage.GetItem(0), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that an item which isn't sellable in a personal store can't be moved into it.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWhichIsNotPersonalStoreSellableIsNotMovedIntoPersonalStoreAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var item = CreateItem(CreateDefinition(), 1);
+        item.Definition!.IsPersonalStoreSellable = false;
+        await player.Inventory!.AddItemAsync(20, item).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, InventoryConstants.FirstStoreItemSlotIndex, Storages.PersonalStore).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(item));
+        Assert.That(player.ShopStorage!.GetItem(InventoryConstants.FirstStoreItemSlotIndex), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that unequipping the last flying item on a map with a flying requirement is rejected
+    /// and the item is moved back to its slot.
+    /// </summary>
+    [Test]
+    public async ValueTask UnequippingLastFlyingItemOnFlyingMapIsRejectedAsync()
+    {
+        var player = await CreateTestPlayerOnFlyingMapAsync().ConfigureAwait(false);
+        var wings = CreateItem(CreateFlyingWingsDefinition(), 1);
+        await player.Inventory!.AddItemAsync(InventoryConstants.WingsSlot, wings).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, InventoryConstants.WingsSlot, Storages.Inventory, 20, Storages.Inventory).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(InventoryConstants.WingsSlot), Is.SameAs(wings));
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
+        Assert.That(player.Attributes![Stats.CanFly], Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Verifies that unequipping a flying item on a map without requirements is allowed.
+    /// </summary>
+    [Test]
+    public async ValueTask UnequippingFlyingItemWithoutMapRequirementIsAllowedAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var wings = CreateItem(CreateFlyingWingsDefinition(), 1);
+        await player.Inventory!.AddItemAsync(InventoryConstants.WingsSlot, wings).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, InventoryConstants.WingsSlot, Storages.Inventory, 20, Storages.Inventory).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(wings));
+        Assert.That(player.Inventory.GetItem(InventoryConstants.WingsSlot), Is.Null);
+    }
+
     private static Storage CreateVaultStorage()
     {
         var itemStorage = new Mock<ItemStorage>();
+        itemStorage.SetupProperty(i => i.Money);
         itemStorage.Setup(i => i.Items).Returns(new List<Item>());
         return new Storage(InventoryConstants.WarehouseSize, itemStorage.Object);
+    }
+
+    private static async ValueTask<Player> CreateTestPlayerOnFlyingMapAsync()
+    {
+        var gameConfig = new Mock<GameConfiguration>();
+        gameConfig.SetupAllProperties();
+        gameConfig.Setup(c => c.Maps).Returns(new List<GameMapDefinition>());
+        gameConfig.Setup(c => c.Items).Returns(new List<ItemDefinition>());
+        gameConfig.Setup(c => c.Skills).Returns(new List<Skill>());
+        gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
+        gameConfig.Setup(c => c.CharacterClasses).Returns(new List<CharacterClass>());
+        gameConfig.Setup(c => c.Attributes).Returns(new List<AttributeDefinition>());
+        gameConfig.Setup(c => c.GlobalAttributeCombinations).Returns(new List<AttributeRelationship>());
+        gameConfig.Setup(c => c.GlobalBaseAttributeValues).Returns(new List<ConstValueAttribute>
+        {
+            new(1, Stats.MoneyAmountRate),
+        });
+
+        var flyingMap = new Mock<GameMapDefinition>();
+        flyingMap.SetupAllProperties();
+        flyingMap.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
+        flyingMap.Setup(m => m.MonsterSpawns).Returns(new List<MonsterSpawnArea>());
+        flyingMap.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        flyingMap.Object.TerrainData = new byte[ushort.MaxValue + 3];
+        flyingMap.Object.Number = 1;
+        flyingMap.Setup(m => m.MapRequirements).Returns(new List<AttributeRequirement>
+        {
+            new() { Attribute = Stats.CanFly, MinimumValue = 1 },
+        });
+        gameConfig.Object.Maps.Add(flyingMap.Object);
+
+        var normalMap = new Mock<GameMapDefinition>();
+        normalMap.SetupAllProperties();
+        normalMap.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
+        normalMap.Setup(m => m.MonsterSpawns).Returns(new List<MonsterSpawnArea>());
+        normalMap.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        normalMap.Object.TerrainData = new byte[ushort.MaxValue + 3];
+        normalMap.Object.Number = 0;
+        gameConfig.Object.Maps.Add(normalMap.Object);
+
+        gameConfig.Object.RecoveryInterval = int.MaxValue;
+        var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(
+            gameConfig.Object,
+            new InMemoryPersistenceContextProvider(),
+            mapInitializer,
+            new NullLoggerFactory(),
+            new PlugInManager(null, new NullLoggerFactory(), null, null),
+            NullDropGenerator.Instance,
+            new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+
+        player.SelectedCharacter!.CurrentMap = flyingMap.Object;
+        player.CurrentMap = null;
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        return player;
+    }
+
+    private static ItemDefinition CreateFlyingWingsDefinition()
+    {
+        var definitionMock = new Mock<ItemDefinition>();
+        definitionMock.SetupAllProperties();
+        definitionMock.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+        definitionMock.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
+        var definition = definitionMock.Object;
+        definition.Width = 2;
+        definition.Height = 2;
+        definition.Durability = 20;
+        var slotType = new Mock<ItemSlotType>();
+        slotType.Setup(s => s.ItemSlots).Returns(new List<int> { InventoryConstants.WingsSlot });
+        definition.ItemSlot = slotType.Object;
+        definition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition
+        {
+            TargetAttribute = Stats.CanFly,
+            BaseValue = 1,
+            AggregateType = AggregateType.AddRaw,
+        });
+        return definition;
     }
 
     private static async ValueTask<Player> CreateTestPlayerAsync()

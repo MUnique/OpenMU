@@ -11,20 +11,27 @@
     <DataTable TItem=@PlugInConfigurationViewItem>
         <TableHeader>
             <th class="col-1">@Resources.ExtensionPoint</th>
-            <th class="col-1">@Resources.PluginName</th>
+            <th class="col-1">@Resources.PluginName / Help</th>
             <th class="col-1">@Resources.PluginType</th>
             <th class="col-1">@Resources.Action</th>
         </TableHeader>
         <FilterHeader>
             <th><PlugInExtensionPointSelection SelectedPointId="@this.PlugInController.PointFilter" ExtensionPoints="@this.PlugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
-            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="Search" @bind="@this.PlugInController.NameFilter" @bind:event="oninput"/></div></th>
-            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="Search" @bind="@this.PlugInController.TypeFilter" @bind:event="oninput"/></div></th>
+            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.PlugInController.NameFilter" @bind:event="oninput"/></div></th>
+            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.PlugInController.TypeFilter" @bind:event="oninput"/></div></th>
             <th></th>
         </FilterHeader>
         <ItemTemplate Context="item">
             <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
             <td title=@item.PlugInDescription>
                 <MarkedText Marked=@this.PlugInController.NameFilter Text=@item.PlugInName />
+                @if (!string.IsNullOrWhiteSpace(item.PlugInDescription))
+                {
+                    <details class="small mt-1">
+                        <summary class="text-primary" style="cursor: pointer">Help</summary>
+                        <MarkedText Marked=@this.PlugInController.NameFilter Text=@item.PlugInDescription />
+                    </details>
+                }
             </td>
             <td title=@item.TypeId>
                 <MarkedText Marked=@this.PlugInController.TypeFilter Text=@item.TypeName />

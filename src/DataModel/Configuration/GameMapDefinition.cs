@@ -29,6 +29,7 @@ public partial class GameMapDefinition
     /// <remarks>
     /// This number is identifying the map on the client.
     /// </remarks>
+    [Display(AutoGenerateField = true)]
     public short Number { get; set; }
 
     /// <summary>
@@ -37,12 +38,38 @@ public partial class GameMapDefinition
     public LocalizedString Name { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this map is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive maps stay in the configuration, but are not available in the game.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the version of the original game which introduced this map.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets the terrain data.
     /// </summary>
     /// <remarks>
     /// Content of the *.att file in the original server.
     /// </remarks>
     public byte[]? TerrainData { get; set; }
+
+    /// <summary>
+    /// Gets or sets the variants of the terrain, which replace the <see cref="TerrainData"/> in certain states
+    /// of the map, e.g. during an event.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<GameMapTerrainVariant> TerrainVariants { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the defined monster spawn areas.

@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -21,11 +22,6 @@ internal class Dungeon : BaseMapInitializer
     internal const byte Number = 1;
 
     /// <summary>
-    /// The name of the map.
-    /// </summary>
-    internal const string Name = "Dungeon";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Dungeon"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -35,11 +31,16 @@ internal class Dungeon : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Dungeon);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -625,7 +626,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 5;
-            monster.Designation = "Hell Hound";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.HellHound);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -654,7 +655,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 8;
-            monster.Designation = "Poison Bull";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.PoisonBull);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -685,7 +686,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 9;
-            monster.Designation = "Thunder Lich";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ThunderLich);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -715,7 +716,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 10;
-            monster.Designation = "Dark Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -747,7 +748,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 11;
-            monster.Designation = "Ghost";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Ghost);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -779,7 +780,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 12;
-            monster.Designation = "Larva";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Larva);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -809,7 +810,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 13;
-            monster.Designation = "Hell Spider";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.HellSpider);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -839,7 +840,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 15;
-            monster.Designation = "Skeleton Archer";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SkeletonArcher);
             monster.MoveRange = 2;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -867,7 +868,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 16;
-            monster.Designation = "Elite Skeleton";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.EliteSkeleton);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -895,7 +896,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 17;
-            monster.Designation = "Cyclops";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Cyclops);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -924,7 +925,7 @@ internal class Dungeon : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 18;
-            monster.Designation = "Gorgon";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Gorgon);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -956,7 +957,7 @@ internal class Dungeon : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 100;
-            trap.Designation = "Lance Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.LanceTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 4;
             trap.ViewRange = 4;
@@ -983,7 +984,7 @@ internal class Dungeon : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 101;
-            trap.Designation = "Iron Stick Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.IronStickTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 0;
             trap.ObjectKind = NpcObjectKind.Trap;
@@ -1010,7 +1011,7 @@ internal class Dungeon : BaseMapInitializer
             var trap = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(trap);
             trap.Number = 102;
-            trap.Designation = "Fire Trap";
+            trap.Designation = LocalizedString.FromResource(() => MonsterNames.FireTrap);
             trap.MoveRange = 0;
             trap.AttackRange = 2;
             trap.ObjectKind = NpcObjectKind.Trap;

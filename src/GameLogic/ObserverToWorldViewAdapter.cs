@@ -54,13 +54,13 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        using (await this._observingLock.WriterLockAsync())
+        using (await this._observingLock.WriterLockAsync().ConfigureAwait(false))
         {
             if (item is Player { IsInvisible: false } player)
             {
                 await this._adaptee.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(player.GetAsEnumerable())).ConfigureAwait(false);
             }
-            else if (item is NonPlayerCharacter npc)
+            else if (item is NonPlayerCharacter { IsInvisible: false } npc)
             {
                 await this._adaptee.InvokeViewPlugInAsync<INewNpcsInScopePlugIn>(p => p.NewNpcsInScopeAsync(npc.GetAsEnumerable())).ConfigureAwait(false);
             }
@@ -109,7 +109,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        using (await this._observingLock.WriterLockAsync())
+        using (await this._observingLock.WriterLockAsync().ConfigureAwait(false))
         {
             if (item is IObservable observable)
             {
@@ -141,7 +141,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
 
         IEnumerable<ILocateable> oldItems;
-        using (await this._observingLock.WriterLockAsync())
+        using (await this._observingLock.WriterLockAsync().ConfigureAwait(false))
         {
             oldItems = oldObjects.Where(this.ObjectWillBeOutOfScope).ToList();
             oldItems
@@ -183,7 +183,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
 
         IEnumerable<IObservable> newItems;
-        using (await this._observingLock.WriterLockAsync())
+        using (await this._observingLock.WriterLockAsync().ConfigureAwait(false))
         {
             newItems = newObjects.OfType<IObservable>().Where(item => !this._observingObjects.Contains(item)).ToList();
             newItems.ForEach(item => this._observingObjects.Add(item));
@@ -195,7 +195,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             await this._adaptee.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(players, false)).ConfigureAwait(false);
         }
 
-        var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive();
+        var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive().Where(npc => !npc.IsInvisible);
 
         if (npcs.Any())
         {
@@ -222,7 +222,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     /// </summary>
     internal async ValueTask ClearObservingObjectsListAsync()
     {
-        using (await this._observingLock.WriterLockAsync())
+        using (await this._observingLock.WriterLockAsync().ConfigureAwait(false))
         {
             this._observingObjects.Clear();
         }

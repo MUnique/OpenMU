@@ -8,22 +8,29 @@ using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Class which manages walking for instances of <see cref="ISupportWalk"/>.
 /// </summary>
 public sealed class Walker : IDisposable
 {
+    /// <summary>
+    /// The maximum number of steps a single walk can consist of. It is the number of steps which fit
+    /// into one walk packet of the game client.
+    /// </summary>
+    private const int MaximumStepCount = 16;
+
     private readonly ISupportWalk _walkSupporter;
     private readonly Queue<WalkingStep> _nextSteps = new(5);
 
     /// <summary>
     /// This array keeps all steps of the current walk.
     /// </summary>
-    private readonly WalkingStep[] _currentWalkSteps = new WalkingStep[16];
+    private readonly WalkingStep[] _currentWalkSteps = new WalkingStep[MaximumStepCount];
 
     private readonly AsyncReaderWriterLock _walkLock;
+
+    private readonly bool _paceFirstStepAcrossWalks;
 
     /// <summary>
     /// The number of steps which are stored in <see cref="_currentWalkSteps"/> for the current walk.
@@ -34,16 +41,35 @@ public sealed class Walker : IDisposable
     private Guid _currentWalkToken;
 
     /// <summary>
+    /// The <see cref="Stopwatch"/> timestamp of the last performed step, or zero if none was performed yet.
+    /// It survives walk restarts, so that a new walk request can't skip the delay of the previous step.
+    /// </summary>
+    private long _lastStepTimestamp;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Walker" /> class.
     /// </summary>
     /// <param name="walkSupporter">The walk supporter.</param>
     /// <param name="stepDelay">The delay between performing a step.</param>
-    public Walker(ISupportWalk walkSupporter, Func<WalkingStep?, TimeSpan> stepDelay)
+    /// <param name="paceFirstStepAcrossWalks">
+    /// If <c>true</c>, the first step of a new walk waits for the delay of the previous step. This prevents
+    /// a client which restarts its walk on every click from getting an extra immediate step. It is only
+    /// needed for client-controlled walkers; server-controlled walkers keep their original cadence.
+    /// </param>
+    public Walker(ISupportWalk walkSupporter, Func<WalkingStep?, TimeSpan> stepDelay, bool paceFirstStepAcrossWalks = false)
     {
         this._walkSupporter = walkSupporter;
         this.StepDelay = stepDelay;
+        this._paceFirstStepAcrossWalks = paceFirstStepAcrossWalks;
         this._walkLock = new AsyncReaderWriterLock();
     }
+
+    /// <summary>
+    /// Occurs after a walk step has been performed.
+    /// The second parameter is the delay which was used for pacing this step; it already includes the
+    /// distance of the step (e.g. a diagonal step takes longer than a straight one).
+    /// </summary>
+    public event Action<WalkingStep, TimeSpan>? StepPerformed;
 
     /// <summary>
     /// Gets the current walk target.
@@ -65,12 +91,12 @@ public sealed class Walker : IDisposable
             return Guid.Empty;
         }
 
-        if (steps.Length > 16)
+        if (steps.Length > MaximumStepCount)
         {
-            throw new ArgumentException("Maximum number of steps (16) exceeded.", nameof(steps));
+            throw new ArgumentException($"Maximum number of steps ({MaximumStepCount}) exceeded.", nameof(steps));
         }
 
-        using var writerLock = await this._walkLock.WriterLockAsync();
+        using var writerLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         void EnqueueSteps()
         {
@@ -105,7 +131,7 @@ public sealed class Walker : IDisposable
     /// <param name="walkToken">The walk token.</param>
     public async ValueTask StartWalkAsync(Guid walkToken)
     {
-        using var writerLock = await this._walkLock.WriterLockAsync();
+        using var writerLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         if (walkToken != this._currentWalkToken)
         {
@@ -142,7 +168,7 @@ public sealed class Walker : IDisposable
     public async ValueTask<int> GetDirectionsAsync(Memory<Direction> directions)
     {
         var count = 0;
-        using var readerLock = await this._walkLock.ReaderLockAsync();
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
         foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount].Select(step => step.Direction))
         {
             directions.Span[count] = direction;
@@ -160,7 +186,7 @@ public sealed class Walker : IDisposable
     public async ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps)
     {
         var count = 0;
-        using var readerLock = await this._walkLock.ReaderLockAsync();
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
         foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount])
         {
             steps.Span[count] = direction;
@@ -171,13 +197,36 @@ public sealed class Walker : IDisposable
     }
 
     /// <summary>
+    /// Determines whether the walk which is currently running passes through the specified point.
+    /// </summary>
+    /// <param name="point">The point.</param>
+    /// <returns>
+    /// <c>True</c>, if the current walk starts at, ends at or passes through the point;
+    /// Otherwise, <c>false</c>.
+    /// </returns>
+    public async ValueTask<bool> IsPointOfCurrentWalkAsync(Point point)
+    {
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
+        for (var index = 0; index < this._currentWalkStepCount; index++)
+        {
+            var step = this._currentWalkSteps[index];
+            if (step.From == point || step.To == point)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Stops the walk which is currently running - whichever one that is. This is what outside callers
     /// want: they are ending "the walk of this object", not one particular walk they started earlier.
     /// A walk loop stopping itself must use <see cref="StopOwnWalkAsync"/> instead.
     /// </summary>
     public async ValueTask StopAsync()
     {
-        using var writeLock = await this._walkLock.WriterLockAsync();
+        using var writeLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         await this.StopCurrentWalkAsync().ConfigureAwait(false);
     }
@@ -185,12 +234,22 @@ public sealed class Walker : IDisposable
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
+    /// <remarks>
+    /// This doesn't wait for the walk lock, so that disposing never blocks on the walk loop. It only
+    /// cancels the running walk: the loop ends at its next step, because it sees the cancellation or
+    /// <see cref="_isDisposed"/>, and disposes its cancellation token source when it ends.
+    /// No new walk can be initialized afterwards.
+    /// </remarks>
     public void Dispose()
     {
         this._isDisposed = true;
-        if (this._walkCts is { IsCancellationRequested: false })
+        try
         {
-            this.StopAsync().AsTask().WaitAndUnwrapException();
+            this._walkCts?.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // The walk was stopped concurrently, which already cancelled it.
         }
     }
 
@@ -205,7 +264,7 @@ public sealed class Walker : IDisposable
     /// <param name="ownCts">The cancellation token source of the calling walk loop.</param>
     private async ValueTask StopOwnWalkAsync(CancellationTokenSource ownCts)
     {
-        using var writeLock = await this._walkLock.WriterLockAsync();
+        using var writeLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         if (!ReferenceEquals(this._walkCts, ownCts))
         {
@@ -235,10 +294,20 @@ public sealed class Walker : IDisposable
 
     private async Task WalkLoopAsync(CancellationTokenSource ownCts, CancellationToken cancellationToken)
     {
-        // Task.Delay might take longer than we specify. We need to compensate that.
+        // Task.Delay might take longer than we specify. We need to compensate that within a walk.
         var lastOffset = TimeSpan.Zero;
+        var isFirstStep = true;
         while (!cancellationToken.IsCancellationRequested)
         {
+            if (isFirstStep && this._paceFirstStepAcrossWalks)
+            {
+                var firstStepDelay = await this.GetNextStepDelayAsync().ConfigureAwait(false);
+                if (!await this.WaitForNextStepAsync(firstStepDelay, cancellationToken).ConfigureAwait(false))
+                {
+                    break;
+                }
+            }
+
             var sw = Stopwatch.StartNew();
             var step = await this.WalkStepAsync(ownCts, cancellationToken).ConfigureAwait(false);
             if (step is null)
@@ -260,6 +329,7 @@ public sealed class Walker : IDisposable
                 break;
             }
 
+            isFirstStep = false;
             var delay = this.StepDelay(step);
             var nextDelay = delay - lastOffset;
             if (nextDelay > TimeSpan.Zero)
@@ -274,6 +344,58 @@ public sealed class Walker : IDisposable
                 lastOffset = nextDelay.Negate();
             }
         }
+
+        if (this._isDisposed)
+        {
+            // Dispose only cancels the walk, because the loop may still use the token at that point.
+            // Once the loop is over, nothing uses the source anymore, so it's disposed here.
+            ownCts.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Gets the delay of the step at the front of the queue.
+    /// </summary>
+    /// <returns>The delay of the next step, or zero if the queue is empty.</returns>
+    private async ValueTask<TimeSpan> GetNextStepDelayAsync()
+    {
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
+        return this._nextSteps.TryPeek(out var nextStep) ? this.StepDelay(nextStep) : TimeSpan.Zero;
+    }
+
+    /// <summary>
+    /// Waits until the delay of the next step has passed since the last performed step.
+    /// The pacing is kept across walk restarts, so a new walk request can't grant an extra immediate step.
+    /// </summary>
+    /// <param name="stepDelay">The delay of the next step.</param>
+    /// <param name="cancellationToken">The cancellation token of the walk loop.</param>
+    /// <returns><c>True</c>, if a step may be performed; <c>False</c>, if the walk was cancelled.</returns>
+    private async ValueTask<bool> WaitForNextStepAsync(TimeSpan stepDelay, CancellationToken cancellationToken)
+    {
+        var lastStep = Volatile.Read(ref this._lastStepTimestamp);
+        if (lastStep == 0)
+        {
+            return true;
+        }
+
+        var now = Stopwatch.GetTimestamp();
+        var elapsed = TimeSpan.FromSeconds((now - lastStep) / (double)Stopwatch.Frequency);
+        var remaining = stepDelay - elapsed;
+        if (remaining <= TimeSpan.Zero)
+        {
+            return true;
+        }
+
+        try
+        {
+            await Task.Delay(remaining, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -283,14 +405,13 @@ public sealed class Walker : IDisposable
     {
         try
         {
-            if (this._isDisposed)
+            if (this._isDisposed || cancellationToken.IsCancellationRequested)
             {
-                Debug.WriteLine("walker already disposed");
                 return null;
             }
 
             bool stop;
-            using (await this._walkLock.ReaderLockAsync(cancellationToken))
+            using (await this._walkLock.ReaderLockAsync(cancellationToken).ConfigureAwait(false))
             {
                 stop = !cancellationToken.IsCancellationRequested && this.ShouldWalkerStop();
             }
@@ -302,7 +423,7 @@ public sealed class Walker : IDisposable
             }
 
             // Update new coords
-            using (await this._walkLock.WriterLockAsync(cancellationToken))
+            using (await this._walkLock.WriterLockAsync(cancellationToken).ConfigureAwait(false))
             {
                 return this.WalkNextStepIfStepAvailable();
             }
@@ -334,6 +455,13 @@ public sealed class Walker : IDisposable
             rotatable.Rotation = nextStep.Direction;
         }
 
+        // The timestamp and the delay belong to the step which was just performed, and they have to be
+        // kept even when a new walk starts in the meantime. Without this, every walk restart granted an
+        // extra immediate step.
+        var stepDelay = this.StepDelay(nextStep);
+        Volatile.Write(ref this._lastStepTimestamp, Stopwatch.GetTimestamp());
+
+        this.StepPerformed?.Invoke(nextStep, stepDelay);
         return nextStep;
     }
 

@@ -28,6 +28,11 @@ public interface IGameContext
     event EventHandler<GameMap>? GameMapRemoved;
 
     /// <summary>
+    /// Occurs when the <see cref="LoggedInPlayerCount"/> changed.
+    /// </summary>
+    event EventHandler? LoggedInPlayerCountChanged;
+
+    /// <summary>
     /// Gets the global experience rate.
     /// </summary>
     float ExperienceRate { get; }
@@ -96,7 +101,27 @@ public interface IGameContext
     /// <summary>
     /// Gets the players count of the game.
     /// </summary>
+    /// <remarks>
+    /// It includes the connections which didn't log in (yet). See <see cref="LoggedInPlayerCount"/> for the players which are online.
+    /// </remarks>
     int PlayerCount { get; }
+
+    /// <summary>
+    /// Gets the number of players which are logged in: they passed the login screen and didn't disconnect.
+    /// </summary>
+    /// <remarks>
+    /// Unlike <see cref="PlayerCount"/>, it doesn't include the connections which are still at the login screen.
+    /// It's the number which is limited by the maximum players of a game server.
+    /// </remarks>
+    int LoggedInPlayerCount { get; }
+
+    /// <summary>
+    /// Gets the number of players which wait for their login: they are connected, but didn't log in yet.
+    /// </summary>
+    /// <remarks>
+    /// Players which disconnect and are still saving their progress are neither waiting nor logged in.
+    /// </remarks>
+    int WaitingForLoginCount { get; }
 
     /// <summary>
     /// Gets the logger factory.
@@ -129,6 +154,11 @@ public interface IGameContext
     IPartyManager PartyManager { get; }
 
     /// <summary>
+    /// Gets the manager which hosts and tracks the mini game instances of the game.
+    /// </summary>
+    IMiniGameManager MiniGames { get; }
+
+    /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
     ValueTask<IEnumerable<GameMap>> GetMapsAsync();
@@ -151,6 +181,36 @@ public interface IGameContext
     ValueTask RemovePlayerAsync(Player player);
 
     /// <summary>
+    /// Is called by a player when its state changed, before the plugins for state changes run.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="previousState">The previous state.</param>
+    /// <param name="currentState">The current state.</param>
+    /// <remarks>
+    /// The game context counts its players by their state, see <see cref="LoggedInPlayerCount"/>.
+    /// A player which isn't in this context is ignored. It must not throw, because it runs within
+    /// the state change of the player.
+    /// </remarks>
+    void OnPlayerStateChanged(Player player, State previousState, State currentState);
+
+    /// <summary>
+    /// Reserves a place for a player which logs in, if the game has a free one.
+    /// </summary>
+    /// <param name="maximumPlayers">The maximum number of logged in players.</param>
+    /// <param name="replacedPlayer">The logged in player whose place the player takes over, e.g. its offline player; <c>null</c> otherwise.
+    /// When it's no longer logged in, a free place is required.</param>
+    /// <returns>
+    /// The reservation, or <c>null</c> when there is no free place, and the number of places which were
+    /// taken by logged in players and reservations before, without the place which is taken over.
+    /// </returns>
+    /// <remarks>
+    /// A reservation counts like a logged in player until it's disposed. A login keeps it until its state
+    /// change to <see cref="PlayerState.Authenticated"/> is done, or until it failed, so that two logins
+    /// can't take the last free place at the same time.
+    /// </remarks>
+    (IDisposable? Reservation, int OccupiedPlaces) TryReserveLoginPlace(int maximumPlayers, Player? replacedPlayer);
+
+    /// <summary>
     /// Gets the maps which is meant to be hosted by the game.
     /// </summary>
     /// <param name="mapId">The map identifier.</param>
@@ -159,11 +219,6 @@ public interface IGameContext
     /// The hosted GameMap instance.
     /// </returns>
     ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true);
-
-    /// <summary>
-    /// Gets the manager which hosts and tracks the mini game instances of the game.
-    /// </summary>
-    IMiniGameManager MiniGames { get; }
 
     /// <summary>
     /// Gets the player object by character name.
@@ -200,6 +255,13 @@ public interface IGameContext
     /// </summary>
     /// <param name="message">The message.</param>
     ValueTask SendGlobalNotificationAsync(string message);
+
+    /// <summary>
+    /// Sends a golden global notification to all players of the game, in the language of each player.
+    /// </summary>
+    /// <param name="message">The message, which may contain translations and format placeholders.</param>
+    /// <param name="formatArguments">The arguments for the format placeholders of the message.</param>
+    ValueTask SendGlobalNotificationAsync(LocalizedString message, params object?[] formatArguments);
 
     /// <summary>
     /// Executes an action for each player.

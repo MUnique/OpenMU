@@ -37,3 +37,4 @@ The kind of result.
 | 7 | LackOfMoney | The player has not enough money to buy the item from the seller. |
 | 8 | MoneyOverflowOrNotEnoughSpace | The selling player cannot sell the item, because the sale would overflow his money amount in the inventory. Another possibility is that the inventory of the buyer cannot take the item. |
 | 9 | ItemBlock | The requested player has item block active. |
+| 10 | LackOfPriceCurrency | The player has not enough of the currency (jewels or account coins) in which the price of the item is defined. |

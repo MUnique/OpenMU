@@ -64,6 +64,7 @@ public class PlayerShopBuyRequestResultExtendedPlugIn : IPlayerShopBuyRequestRes
             ItemBuyResult.LackOfMoney => PlayerShopBuyResultExtended.ResultKind.LackOfMoney,
             ItemBuyResult.MoneyOverflowOrNotEnoughSpace => PlayerShopBuyResultExtended.ResultKind.MoneyOverflowOrNotEnoughSpace,
             ItemBuyResult.ItemBlock => PlayerShopBuyResultExtended.ResultKind.ItemBlock,
+            ItemBuyResult.LackOfPriceCurrency => PlayerShopBuyResultExtended.ResultKind.LackOfPriceCurrency,
             _ => PlayerShopBuyResultExtended.ResultKind.Undefined,
         };
     }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
@@ -20,11 +21,11 @@ using MUnique.OpenMU.PlugIns;
 public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 {
     private const byte MaximumDropDistance = 2;
+    private const short IceSkillNumber = 7;
 
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
     private readonly PlugInManager _plugInManager;
-    private readonly List<IDisposable> _registrations = new();
 
     private int _health;
 
@@ -111,6 +112,13 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return null;
         }
 
+        if (attacker is Player player_
+            && Rand.NextRandomBool(attacker.Attributes[Stats.CrystalSwordIceChance])
+            && player_.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == IceSkillNumber) is { } ice)
+        {
+            skill = new SkillEntry { Skill = ice };
+        }
+
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
         if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
@@ -129,7 +137,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker is Player player)
             {
-                await player.AfterHitTargetAsync().ConfigureAwait(false);
+                await player.AfterHitTargetAsync(this.Attributes[Stats.DefensePvm], skill?.Skill?.DamageType).ConfigureAwait(false);
 
                 if (this.IsAlive && Rand.NextRandomBool(player.Attributes![Stats.MaceMasteryStunChance]))
                 {
@@ -139,7 +147,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)
             {
-                await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+                await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
             }
         }
 
@@ -178,16 +186,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         (this.Attributes as MonsterAttributeHolder)?.ApplyChanges();
     }
 
-    /// <summary>
-    /// Registers a disposable (e.g. a configuration change registration) to be disposed
-    /// together with this instance.
-    /// </summary>
-    /// <param name="disposable">The disposable.</param>
-    public void RegisterDisposable(IDisposable disposable)
-    {
-        this._registrations.Add(disposable);
-    }
-
     /// <inheritdoc/>
     protected override void Dispose(bool managed)
     {
@@ -195,12 +193,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         {
             this.Died = null;
             this.IsAlive = false;
-            foreach (var registration in this._registrations)
-            {
-                registration.Dispose();
-            }
-
-            this._registrations.Clear();
         }
 
         base.Dispose(managed);
@@ -232,7 +224,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return;
         }
 
-        var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
+        var killed = this.TryHit(hitInfo.TotalDamage, attacker);
 
         var player = this.GetHitNotificationTarget(attacker);
         if (player is not null)
@@ -389,6 +381,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     {
         try
         {
+            if (this.IsDisposed || this.IsDisposing)
+            {
+                // It got disposed while waiting for the respawn, e.g. because its spawn area was removed.
+                return;
+            }
+
             if (!this.ShouldRespawn)
             {
                 await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
@@ -454,6 +452,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
         var droppedMoney = new DroppedMoney(amount, this.Position, this.CurrentMap, shares);
         await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
+        await killer.GameContext.PlugInManager.NotifyPlugInsAsync<IMonsterMoneyDroppedPlugIn>(
+            p => p.MonsterMoneyDroppedAsync(this, killer, droppedMoney),
+            killer.Logger).ConfigureAwait(false);
     }
 
     private async ValueTask DropItemAsync(IReadOnlyList<ExperienceShare> experienceShares, Player killer)
@@ -471,8 +472,19 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var firstItem = !droppedMoney.HasValue;
+        var plugInPoint = killer.GameContext.PlugInManager.GetPlugInPoint<IMonsterItemDropPlugIn>();
         foreach (var item in generatedItems)
         {
+            if (plugInPoint is not null)
+            {
+                var eventArgs = new CancelEventArgs();
+                plugInPoint.ItemDropping(this, killer, item, eventArgs);
+                if (eventArgs.Cancel)
+                {
+                    continue;
+                }
+            }
+
             Point dropCoordinates;
             if (firstItem)
             {
@@ -487,6 +499,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
             var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null, owners);
             await this.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
+            await killer.GameContext.PlugInManager.NotifyPlugInsAsync<IMonsterItemDroppedPlugIn>(
+                p => p.MonsterItemDroppedAsync(this, killer, droppedItem),
+                killer.Logger).ConfigureAwait(false);
         }
     }
 

@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// receive this attribute.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMaximumAllianceSizeUpdatePlugInSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMaximumAllianceSizeUpdatePlugInSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("2C2743B0-1305-47BF-85D9-09F6CA64AD54")]
 public class AddMaximumAllianceSizeUpdatePlugInSeason6 : UpdatePlugInBase
 {
@@ -30,9 +30,6 @@ public class AddMaximumAllianceSizeUpdatePlugInSeason6 : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMaximumAllianceSizeSeason6;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

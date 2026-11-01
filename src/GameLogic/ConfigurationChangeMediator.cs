@@ -110,7 +110,9 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
             (_, value) => value);
         registration.OnCreate += InvokeOnCreateAsync;
 
-        return registration;
+        // Only this handler is unregistered: the registration itself is shared by every object
+        // which is interested in new configurations of this type.
+        return new Nito.Disposables.Disposable(() => registration.OnCreate -= InvokeOnCreateAsync);
         async ValueTask InvokeOnCreateAsync(TConfig config)
         {
             await onNewConfig(config, obj).ConfigureAwait(false);
@@ -141,8 +143,15 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
     {
         if (this._registrations.Remove(id, out var registration))
         {
-            await registration.RaiseOnDeleteAsync().ConfigureAwait(false);
-            registration.Dispose();
+            try
+            {
+                await registration.RaiseOnDeleteAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                // Also when a subscriber failed; its exception is thrown after all subscribers ran.
+                registration.Dispose();
+            }
         }
     }
 

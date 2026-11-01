@@ -28,6 +28,9 @@ public class MaximumConnectionsPerIpPlugInTests
     private GameContext _gameContext = null!;
     private MaximumConnectionsPerIpPlugIn _plugin = null!;
 
+    /// <summary>
+    /// Sets up the game context and the plug-in with a limit of three connections per IP address.
+    /// </summary>
     [SetUp]
     public async Task SetUp()
     {
@@ -42,6 +45,9 @@ public class MaximumConnectionsPerIpPlugInTests
         };
     }
 
+    /// <summary>
+    /// Tests that a joining player below the connection limit is not cancelled.
+    /// </summary>
     [Test]
     public async ValueTask UnderLimitSucceedsAsync()
     {
@@ -71,6 +77,9 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(eventArgs.Cancel, Is.False);
     }
 
+    /// <summary>
+    /// Tests that a joining player at the connection limit is cancelled.
+    /// </summary>
     [Test]
     public async ValueTask AtLimitCancelsTransitionAsync()
     {
@@ -107,6 +116,43 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(joiningPlayer.LoginResultOverride, Is.EqualTo(GameLogic.Views.Login.LoginResult.ServerIsFull));
     }
 
+    /// <summary>
+    /// Tests that a player of the same IP address which is disconnecting doesn't count anymore,
+    /// like for the maximum players of the game server.
+    /// </summary>
+    [Test]
+    public async ValueTask DisconnectingPlayerDoesNotCountAsync()
+    {
+        // Arrange
+        for (var i = 0; i < 3; i++)
+        {
+            var player = new TestPlayer(this._gameContext);
+            player.SetIpAddress("127.0.0.1");
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+            await this._gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+            if (i == 0)
+            {
+                await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+            }
+        }
+
+        var joiningPlayer = new TestPlayer(this._gameContext);
+        joiningPlayer.SetIpAddress("127.0.0.1");
+        await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+
+        var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
+
+        // Act
+        await this._plugin.PlayerStateChangingAsync(joiningPlayer, eventArgs).ConfigureAwait(false);
+
+        // Assert
+        Assert.That(eventArgs.Cancel, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that players with a different IP address don't count toward the connection limit.
+    /// </summary>
     [Test]
     public async ValueTask DifferentIpDoesNotCountAsync()
     {
@@ -142,6 +188,9 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(eventArgs.Cancel, Is.False);
     }
 
+    /// <summary>
+    /// Tests that players which are still at the login screen don't count toward the connection limit.
+    /// </summary>
     [Test]
     public async ValueTask LoginScreenAndInitialPlayersDoNotCountAsync()
     {

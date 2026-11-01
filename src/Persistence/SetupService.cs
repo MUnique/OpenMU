@@ -93,16 +93,27 @@ public class SetupService
     /// </summary>
     public async ValueTask<bool> IsDataInitializedAsync()
     {
+        return await this.GetDataInitializationStateAsync().ConfigureAwait(false) == DataInitializationState.Initialized;
+    }
+
+    /// <summary>
+    /// Gets the state of the data initialization.
+    /// In contrast to <see cref="IsDataInitializedAsync"/>, it tells a failed check
+    /// apart from an actually empty database.
+    /// </summary>
+    /// <returns>The state of the data initialization.</returns>
+    public async ValueTask<DataInitializationState> GetDataInitializationStateAsync()
+    {
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             using var context = this._contextProvider.CreateNewConfigurationContext();
             var id = await context.GetDefaultGameConfigurationIdAsync(cts.Token).ConfigureAwait(false);
-            return id is not null;
+            return id is not null ? DataInitializationState.Initialized : DataInitializationState.NotInitialized;
         }
         catch
         {
-            return false;
+            return DataInitializationState.Unknown;
         }
     }
 
@@ -163,7 +174,13 @@ public class SetupService
         await dataInitialization().ConfigureAwait(false);
         if (this.DatabaseInitialized is { } eventHandler)
         {
-            await eventHandler.Invoke().ConfigureAwait(false);
+            // We have to invoke the subscribers one after another, because a multicast
+            // delegate would just return the ValueTask of the last subscriber. The
+            // subscribers rely on their registration order, so they must not run in parallel.
+            foreach (var subscriber in eventHandler.GetInvocationList().OfType<AsyncEventHandler>())
+            {
+                await subscriber.Invoke().ConfigureAwait(false);
+            }
         }
     }
 }

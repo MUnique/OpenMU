@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class Devias : BaseMapInitializer
     internal const byte Number = 2;
 
     /// <summary>
-    /// The name of the map.
-    /// </summary>
-    internal const string Name = "Devias";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Devias"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class Devias : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Devias);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -76,7 +78,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 19;
-            monster.Designation = "Yeti";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Yeti);
             monster.MoveRange = 2;
             monster.AttackRange = 4;
             monster.ViewRange = 6;
@@ -106,7 +108,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 20;
-            monster.Designation = "Elite Yeti";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.EliteYeti);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 6;
@@ -138,7 +140,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 21;
-            monster.Designation = "Assassin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Assassin);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -166,7 +168,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 22;
-            monster.Designation = "Ice Monster";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IceMonster);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -196,7 +198,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 23;
-            monster.Designation = "Hommerd";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Hommerd);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -225,7 +227,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 24;
-            monster.Designation = "Worm";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Worm);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 4;
@@ -254,7 +256,7 @@ internal class Devias : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 25;
-            monster.Designation = "Ice Queen";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IceQueen);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;

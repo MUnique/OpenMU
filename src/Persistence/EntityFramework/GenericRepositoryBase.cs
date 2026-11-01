@@ -30,8 +30,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     {
         this._logger = logger;
         this.RepositoryProvider = repositoryProvider;
-        using var completeContext = new EntityDataContext();
-        this.FullEntityType = completeContext.Model.FindEntityType(typeof(T)) ?? throw new InvalidOperationException($"{typeof(T)} is not included in the model");
+        this.FullEntityType = EntityDataContext.CompleteModel.FindEntityType(typeof(T)) ?? throw new InvalidOperationException($"{typeof(T)} is not included in the model");
     }
 
     /// <summary>

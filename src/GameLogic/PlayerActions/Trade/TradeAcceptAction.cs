@@ -66,6 +66,16 @@ public class TradeAcceptAction : BaseTradeAction
         // first make sure that all items which could be transferred are already present in the database
         await trader.SaveProgressAsync().ConfigureAwait(false);
 
+        // Items which another window (e.g. the chaos machine) left in the temporary storage go back to
+        // the inventory first. The trade uses the same storage, so they would be offered in the trade,
+        // and lost when it is cancelled, because a cancel restores the inventory backup made below.
+        if (trader.TemporaryStorage is { } temporaryStorage
+            && temporaryStorage.Items.Any()
+            && !await trader.Inventory!.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
+        {
+            trader.Logger.LogWarning("Could not return the items of the temporary storage of {trader} to the inventory before opening a trade.", trader);
+        }
+
         trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
         trader.TradingMoney = 0;
         await trader.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);

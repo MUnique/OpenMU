@@ -1388,6 +1388,44 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MapChangedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="positionX">The position x.</param>
+    /// <param name="positionY">The position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="mapDiscriminator">The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7). It's appended after the 15 bytes of MapChanged, so a client can tell by the packet length whether it was sent.</param>
+    /// <param name="isMapChange">If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</param>
+    /// <remarks>
+    /// Is sent by the server when: The map was changed on the server side.
+    /// Causes reaction on client side: The game client changes to the specified map and coordinates, and to the variant of the map with the specified discriminator.
+    /// </remarks>
+    public static async ValueTask SendMapChangedExtendedAsync(this IConnection? connection, ushort @mapNumber, byte @positionX, byte @positionY, byte @rotation, byte @mapDiscriminator, bool @isMapChange = true)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapChangedExtendedRef.Length;
+            var packet = new MapChangedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsMapChange = @isMapChange;
+            packet.MapNumber = @mapNumber;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.Rotation = @rotation;
+            packet.MapDiscriminator = @mapDiscriminator;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MapChanged075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -2495,6 +2533,54 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="AddTransformedCharacterToScopeExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="id">The id.</param>
+    /// <param name="currentPositionX">The current position x.</param>
+    /// <param name="currentPositionY">The current position y.</param>
+    /// <param name="skin">The skin.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="targetPositionX">The target position x.</param>
+    /// <param name="targetPositionY">The target position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="heroState">The hero state.</param>
+    /// <param name="appearanceAndEffects">The appearance data, followed by the number of effects and the effect ids.</param>
+    /// <param name="characterCount">The number of characters in this packet. This packet contains only one character, because the size of the appearance data depends on the used appearance serializer.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player wears a monster transformation ring (extended client).
+    /// Causes reaction on client side: The character appears as monster, defined by the Skin property.
+    /// </remarks>
+    public static async ValueTask SendAddTransformedCharacterToScopeExtendedAsync(this IConnection? connection, ushort @id, byte @currentPositionX, byte @currentPositionY, ushort @skin, string @name, byte @targetPositionX, byte @targetPositionY, byte @rotation, CharacterHeroState @heroState, Memory<byte> @appearanceAndEffects, byte @characterCount = 1)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AddTransformedCharacterToScopeExtendedRef.GetRequiredSize(appearanceAndEffects.Length);
+            var packet = new AddTransformedCharacterToScopeExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.CharacterCount = @characterCount;
+            packet.Id = @id;
+            packet.CurrentPositionX = @currentPositionX;
+            packet.CurrentPositionY = @currentPositionY;
+            packet.Skin = @skin;
+            packet.Name = @name;
+            packet.TargetPositionX = @targetPositionX;
+            packet.TargetPositionY = @targetPositionY;
+            packet.Rotation = @rotation;
+            packet.HeroState = @heroState;
+            @appearanceAndEffects.Span.CopyTo(packet.AppearanceAndEffects);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ShowEffect" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3386,11 +3472,12 @@ public static class ConnectionExtensions
     /// <param name="maximumAttackSpeed">The maximum attack speed.</param>
     /// <param name="inventoryExtensions">The inventory extensions.</param>
     /// <param name="resets">The resets.</param>
+    /// <param name="mapDiscriminator">The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7), which a character enters again after losing its connection. It's appended after the 92 bytes the packet had before, so a client can tell by the packet length whether it was sent.</param>
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets)
+    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets, byte @mapDiscriminator)
     {
         if (connection is null)
         {
@@ -3432,6 +3519,7 @@ public static class ConnectionExtensions
             packet.MaximumAttackSpeed = @maximumAttackSpeed;
             packet.InventoryExtensions = @inventoryExtensions;
             packet.Resets = @resets;
+            packet.MapDiscriminator = @mapDiscriminator;
 
             return packet.Header.Length;
         }
@@ -4079,6 +4167,44 @@ public static class ConnectionExtensions
             var length = ServerMessageRef.GetRequiredSize(message);
             var packet = new ServerMessageRef(connection.Output.GetSpan(length)[..length]);
             packet.Type = @type;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SlideNotice" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="loopDelay">The delay between the loops, in seconds.</param>
+    /// <param name="color">The color of the text, as 0xAABBGGRR.</param>
+    /// <param name="speed">The scroll speed, multiplied by 10. 0 means the default speed.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="loopCount">How often the message is shown. The client ignores messages with more than 30 loops.</param>
+    /// <param name="type">The band and queueing of the message. 10 to 12 use the help band, 13 to 15 the notice band. Within a band, the first value drops the message when it could not be shown within a minute, the second one queues it, and the third one puts it in front of the queue, ignoring the loop delay.</param>
+    /// <remarks>
+    /// Is sent by the server when: A game master or the server sends a notice which should scroll across the top of the screen.
+    /// Causes reaction on client side: The client scrolls the message through the band at the top of the screen, as often as the loop count says.
+    /// </remarks>
+    public static async ValueTask SendSlideNoticeAsync(this IConnection? connection, ushort @loopDelay, uint @color, byte @speed, string @message, byte @loopCount = 1, byte @type = 14)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SlideNoticeRef.GetRequiredSize(message);
+            var packet = new SlideNoticeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.LoopCount = @loopCount;
+            packet.LoopDelay = @loopDelay;
+            packet.Color = @color;
+            packet.Speed = @speed;
             packet.Message = @message;
 
             return packet.Header.Length;
@@ -4740,6 +4866,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ItemCraftingPreviewExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mixType">The number of the crafting which matches the items, which is also sent by the client to execute it. 0, if the items don't match any crafting.</param>
+    /// <param name="successRate">The success rate in percent, including the crafting bonus of the character.</param>
+    /// <param name="price">The price in zen, without the tax of the chaos machine.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the items of the crafting dialog changed, e.g. at the chaos machine.
+    /// Causes reaction on client side: The game client shows the success rate and the price of the crafting which matches the items, as they are calculated by the server, instead of calculating them by itself.
+    /// </remarks>
+    public static async ValueTask SendItemCraftingPreviewExtendedAsync(this IConnection? connection, byte @mixType, byte @successRate, uint @price)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCraftingPreviewExtendedRef.Length;
+            var packet = new ItemCraftingPreviewExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.MixType = @mixType;
+            packet.SuccessRate = @successRate;
+            packet.Price = @price;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="LegacyQuestStateDialog" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -5285,6 +5443,260 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="CrywolfInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="occupation">The occupation state. It must be Peace or Occupied in the state End, otherwise the client shows no result.</param>
+    /// <param name="state">The state of the event.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of the crywolf event changed, or the player entered the crywolf map. It should only be sent to players on the crywolf map, because the client loads the terrain of the occupation state for its current map.
+    /// Causes reaction on client side: The client shows the event window in the states Ready, Start and End, plays the intro in the state Notify2, shows the result in the state End, and loads the terrain and light of the occupation state.
+    /// </remarks>
+    public static async ValueTask SendCrywolfInfoAsync(this IConnection? connection, CrywolfInfo.OccupationState @occupation, CrywolfInfo.CrywolfState @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfInfoRef.Length;
+            var packet = new CrywolfInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.Occupation = @occupation;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfStatueAndAltarInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="statueHealthPercent">The shield of the statue in percent, from 0 to 100.</param>
+    /// <param name="altar1State">The state of the first altar (205). The high nibble is the altar state (1 = contracted), the low nibble the number of remaining contracts.</param>
+    /// <param name="altar2State">The state of the second altar (206), like Altar1State.</param>
+    /// <param name="altar3State">The state of the third altar (207), like Altar1State.</param>
+    /// <param name="altar4State">The state of the fourth altar (208), like Altar1State.</param>
+    /// <param name="altar5State">The state of the fifth altar (209), like Altar1State.</param>
+    /// <remarks>
+    /// Is sent by the server when: Every two seconds while the altars can be contracted and during the battle.
+    /// Causes reaction on client side: The client shows the shield of the statue and the states of the altars.
+    /// </remarks>
+    public static async ValueTask SendCrywolfStatueAndAltarInfoAsync(this IConnection? connection, uint @statueHealthPercent, byte @altar1State, byte @altar2State, byte @altar3State, byte @altar4State, byte @altar5State)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfStatueAndAltarInfoRef.Length;
+            var packet = new CrywolfStatueAndAltarInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.StatueHealthPercent = @statueHealthPercent;
+            packet.Altar1State = @altar1State;
+            packet.Altar2State = @altar2State;
+            packet.Altar3State = @altar3State;
+            packet.Altar4State = @altar4State;
+            packet.Altar5State = @altar5State;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfContractResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.</param>
+    /// <param name="altarState">The new state of the altar, like in the CrywolfStatueAndAltarInfo.</param>
+    /// <param name="altarKey">The key of the altar. The client uses the key minus 317 as index into its five altar states without checking the range, so it must be 317 plus the index of the altar (0 to 4).</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to contract an altar.
+    /// Causes reaction on client side: On success, the client shows that the player is a guardian of the altar, and lets the character pray. Otherwise, it shows why the contract failed.
+    /// </remarks>
+    public static async ValueTask SendCrywolfContractResultAsync(this IConnection? connection, byte @result, byte @altarState, ushort @altarKey)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfContractResultRef.Length;
+            var packet = new CrywolfContractResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.AltarState = @altarState;
+            packet.AltarKey = @altarKey;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfLeftTime" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="hours">The remaining hours. The client doesn't show them.</param>
+    /// <param name="minutes">The remaining minutes.</param>
+    /// <remarks>
+    /// Is sent by the server when: Every 20 seconds during the battle.
+    /// Causes reaction on client side: The client shows the remaining minutes and counts down the seconds by itself. It expects this packet every 20 seconds: when the minute is the same as before, it assumes that 40 or 20 seconds of the minute are left.
+    /// </remarks>
+    public static async ValueTask SendCrywolfLeftTimeAsync(this IConnection? connection, byte @hours, byte @minutes)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfLeftTimeRef.Length;
+            var packet = new CrywolfLeftTimeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Hours = @hours;
+            packet.Minutes = @minutes;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfBossMonsterInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="balgassHealthPercent">The health of Balgass in percent, or -1, when Balgass is not alive.</param>
+    /// <param name="darkElfCount">The number of alive Dark Elves. The client shows it as count of 12.</param>
+    /// <remarks>
+    /// Is sent by the server when: Every five seconds during the battle.
+    /// Causes reaction on client side: The client shows the health of Balgass and the number of Dark Elves.
+    /// </remarks>
+    public static async ValueTask SendCrywolfBossMonsterInfoAsync(this IConnection? connection, uint @balgassHealthPercent, byte @darkElfCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfBossMonsterInfoRef.Length;
+            var packet = new CrywolfBossMonsterInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.BalgassHealthPercent = @balgassHealthPercent;
+            packet.DarkElfCount = @darkElfCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfPersonalRank" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="rank">The rank of the player.</param>
+    /// <param name="experience">The rewarded experience. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The crywolf event ended, after the CrywolfInfo with the state End.
+    /// Causes reaction on client side: The client shows the rank and the experience of the player in the result.
+    /// </remarks>
+    public static async ValueTask SendCrywolfPersonalRankAsync(this IConnection? connection, CrywolfPersonalRank.CrywolfRank @rank, uint @experience)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfPersonalRankRef.Length;
+            var packet = new CrywolfPersonalRankRef(connection.Output.GetSpan(length)[..length]);
+            packet.Rank = @rank;
+            packet.Experience = @experience;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfBenefitPlusChaosRate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="plusChaosRate">The additional success rate in percent.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player opened a crafting dialog and requested the chaos rate benefit of the crywolf event.
+    /// Causes reaction on client side: The client shows the additional success rate of the crafting.
+    /// </remarks>
+    public static async ValueTask SendCrywolfBenefitPlusChaosRateAsync(this IConnection? connection, byte @plusChaosRate)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfBenefitPlusChaosRateRef.Length;
+            var packet = new CrywolfBenefitPlusChaosRateRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlusChaosRate = @plusChaosRate;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CrywolfRegionMonsterAttack" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="monsterNumber">The number of the monster. The client ignores it.</param>
+    /// <param name="sourceX">The x coordinate of the ballista.</param>
+    /// <param name="sourceY">The y coordinate of the ballista. The client ignores it.</param>
+    /// <param name="targetX">The x coordinate of the target point.</param>
+    /// <param name="targetY">The y coordinate of the target point.</param>
+    /// <remarks>
+    /// Is sent by the server when: A ballista of the crywolf event attacks an area.
+    /// Causes reaction on client side: The client shows an arrow which hits the target point. The direction of the arrow depends on the x coordinate of the ballista.
+    /// </remarks>
+    public static async ValueTask SendCrywolfRegionMonsterAttackAsync(this IConnection? connection, ushort @monsterNumber, byte @sourceX, byte @sourceY, byte @targetX, byte @targetY)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CrywolfRegionMonsterAttackRef.Length;
+            var packet = new CrywolfRegionMonsterAttackRef(connection.Output.GetSpan(length)[..length]);
+            packet.MonsterNumber = @monsterNumber;
+            packet.SourceX = @sourceX;
+            packet.SourceY = @sourceY;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="IllusionTempleEnterResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -5495,6 +5907,180 @@ public static class ConnectionExtensions
             var packet = new IllusionTempleSkillEndRef(connection.Output.GetSpan(length)[..length]);
             packet.TempleNumber = @templeNumber;
             packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the doppelganger event through the NPC Lugard.
+    /// Causes reaction on client side: On failure, the client locks the enter button of the doppelganger entry dialog and may show a message.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerEnterResultAsync(this IConnection? connection, DoppelgangerEnterResult.EnterResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerEnterResultRef.Length;
+            var packet = new DoppelgangerEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerMonsterPosition" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="position">The position index on the path, between 0 (start) and 22 (magic circle).</param>
+    /// <remarks>
+    /// Is sent by the server when: The position of the most advanced monster on the path to the magic circle changed during the doppelganger event.
+    /// Causes reaction on client side: The client updates the monster progress bar of the doppelganger frame.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerMonsterPositionAsync(this IConnection? connection, byte @position)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerMonsterPositionRef.Length;
+            var packet = new DoppelgangerMonsterPositionRef(connection.Output.GetSpan(length)[..length]);
+            packet.Position = @position;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerStateUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of the doppelganger event changed.
+    /// Causes reaction on client side: When the event starts (state Playing), the client shows the doppelganger frame and a message box with the failure conditions.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerStateUpdateAsync(this IConnection? connection, DoppelgangerStateUpdate.DoppelgangerState @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerStateUpdateRef.Length;
+            var packet = new DoppelgangerStateUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerIceWalkerState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="position">The position index of the ice walker on the path, between 0 (start) and 22 (magic circle).</param>
+    /// <remarks>
+    /// Is sent by the server when: The ice walker appeared on or disappeared from the path during the doppelganger event.
+    /// Causes reaction on client side: The client shows or hides the ice walker icon on the progress bar of the doppelganger frame.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerIceWalkerStateAsync(this IConnection? connection, DoppelgangerIceWalkerState.IceWalkerState @state, byte @position)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerIceWalkerStateRef.Length;
+            var packet = new DoppelgangerIceWalkerStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.Position = @position;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="rewardExperience">The experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The doppelganger event ended for the player.
+    /// Causes reaction on client side: The client stops the timer and the event music, and shows a message box with the result.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerResultAsync(this IConnection? connection, DoppelgangerResult.ResultType @result, uint @rewardExperience)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerResultRef.Length;
+            var packet = new DoppelgangerResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RewardExperience = @rewardExperience;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerMonsterGoal" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="maximumGoalCount">The number of monsters which may reach the magic circle until the event fails.</param>
+    /// <param name="goalCount">The number of monsters which reached the magic circle.</param>
+    /// <remarks>
+    /// Is sent by the server when: A monster reached the magic circle during the doppelganger event.
+    /// Causes reaction on client side: The client updates the counter of monsters which passed the magic circle.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerMonsterGoalAsync(this IConnection? connection, byte @maximumGoalCount, byte @goalCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerMonsterGoalRef.Length;
+            var packet = new DoppelgangerMonsterGoalRef(connection.Output.GetSpan(length)[..length]);
+            packet.MaximumGoalCount = @maximumGoalCount;
+            packet.GoalCount = @goalCount;
 
             return packet.Header.Length;
         }
@@ -6039,6 +6625,128 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="GensJoinResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="gensType">The gens type.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to join a gens at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result. When the player joined, the client assigns the gens to the own character.
+    /// </remarks>
+    public static async ValueTask SendGensJoinResponseAsync(this IConnection? connection, GensJoinResponse.GensJoinResult @result, GensType @gensType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensJoinResponseRef.Length;
+            var packet = new GensJoinResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.GensType = @gensType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensLeaveResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to leave the gens at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result. When the player left, the client removes the gens of the own character.
+    /// </remarks>
+    public static async ValueTask SendGensLeaveResponseAsync(this IConnection? connection, GensLeaveResponse.GensLeaveResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensLeaveResponseRef.Length;
+            var packet = new GensLeaveResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gensType">The gens type.</param>
+    /// <param name="rankingPosition">The ranking position.</param>
+    /// <param name="rank">The rank.</param>
+    /// <param name="contributionPoints">The contribution points.</param>
+    /// <param name="nextRankContributionPoints">The next rank contribution points.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player entered the game world, joined or left a gens, or requested the gens ranking.
+    /// Causes reaction on client side: The client shows the gens mark and rank of the own character, and the gens info window shows the ranking and contribution.
+    /// </remarks>
+    public static async ValueTask SendGensInfoAsync(this IConnection? connection, GensType @gensType, uint @rankingPosition, uint @rank, uint @contributionPoints, uint @nextRankContributionPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensInfoRef.Length;
+            var packet = new GensInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.GensType = @gensType;
+            packet.RankingPosition = @rankingPosition;
+            packet.Rank = @rank;
+            packet.ContributionPoints = @contributionPoints;
+            packet.NextRankContributionPoints = @nextRankContributionPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensRewardResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the gens ranking reward at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result.
+    /// </remarks>
+    public static async ValueTask SendGensRewardResponseAsync(this IConnection? connection, GensRewardResponse.GensRewardResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensRewardResponseRef.Length;
+            var packet = new GensRewardResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="DevilSquareEnterResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -6137,7 +6845,7 @@ public static class ConnectionExtensions
     /// <param name="totalScore">The total score.</param>
     /// <param name="bonusExperience">The bonus experience.</param>
     /// <param name="bonusMoney">The bonus money.</param>
-    /// <param name="type">The type.</param>
+    /// <param name="type">Identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.</param>
     /// <remarks>
     /// Is sent by the server when: The blood castle mini game ended and the score of the player is sent to the player.
     /// Causes reaction on client side: The score is shown at the client.
@@ -6159,6 +6867,44 @@ public static class ConnectionExtensions
             packet.TotalScore = @totalScore;
             packet.BonusExperience = @bonusExperience;
             packet.BonusMoney = @bonusMoney;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleScore" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="success">If the player won the chaos castle.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <param name="monsterKillCount">The monster kill count.</param>
+    /// <param name="bonusExperience">The bonus experience.</param>
+    /// <param name="playerKillCount">The player kill count.</param>
+    /// <param name="type">Identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.</param>
+    /// <remarks>
+    /// Is sent by the server when: The chaos castle mini game ended and the score of the player is sent to the player.
+    /// Causes reaction on client side: The client shows the experience and the killed monsters and players.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleScoreAsync(this IConnection? connection, bool @success, string @playerName, uint @monsterKillCount, uint @bonusExperience, uint @playerKillCount, byte @type = 0xFE)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleScoreRef.Length;
+            var packet = new ChaosCastleScoreRef(connection.Output.GetSpan(length)[..length]);
+            packet.Success = @success;
+            packet.Type = @type;
+            packet.PlayerName = @playerName;
+            packet.MonsterKillCount = @monsterKillCount;
+            packet.BonusExperience = @bonusExperience;
+            packet.PlayerKillCount = @playerKillCount;
 
             return packet.Header.Length;
         }
@@ -6283,6 +7029,116 @@ public static class ConnectionExtensions
             var packet = new MapEventStateRef(connection.Output.GetSpan(length)[..length]);
             packet.Enable = @enable;
             packet.Event = @event;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordIntegrationInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isAccountLinked">Defines if the account is linked to a Discord user.</param>
+    /// <param name="isGuildChatBridged">Defines if the chat of the guild of the character is mirrored to a Discord channel.</param>
+    /// <param name="isAllianceChatBridged">Defines if the chat of the alliance of the character is mirrored to a Discord channel.</param>
+    /// <param name="isWorldChatBridged">Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.</param>
+    /// <param name="richPresenceApplicationId">The id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none.</param>
+    /// <param name="richPresenceLargeImageKey">The key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
+    /// <param name="richPresenceSmallImageKey">The key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
+    /// <param name="inviteUrl">The invite link to the Discord server of the game server, e.g. 'https://discord.gg/abc123'. Empty, if the server has none.</param>
+    /// <param name="linkedUserName">The name of the Discord user which the account is linked to. Empty, if the account isn't linked.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested the Discord integration info, and after the player unlinked the account.
+    /// Causes reaction on client side: The client configures its Discord features with it: the Rich Presence, a button which opens the invite, the account link dialog and the notice that the chat is mirrored.
+    /// </remarks>
+    public static async ValueTask SendDiscordIntegrationInfoAsync(this IConnection? connection, bool @isAccountLinked, bool @isGuildChatBridged, bool @isAllianceChatBridged, bool @isWorldChatBridged, string @richPresenceApplicationId, string @richPresenceLargeImageKey, string @richPresenceSmallImageKey, string @inviteUrl, string @linkedUserName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordIntegrationInfoRef.Length;
+            var packet = new DiscordIntegrationInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsAccountLinked = @isAccountLinked;
+            packet.IsGuildChatBridged = @isGuildChatBridged;
+            packet.IsAllianceChatBridged = @isAllianceChatBridged;
+            packet.IsWorldChatBridged = @isWorldChatBridged;
+            packet.RichPresenceApplicationId = @richPresenceApplicationId;
+            packet.RichPresenceLargeImageKey = @richPresenceLargeImageKey;
+            packet.RichPresenceSmallImageKey = @richPresenceSmallImageKey;
+            packet.InviteUrl = @inviteUrl;
+            packet.LinkedUserName = @linkedUserName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordLinkCode" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="linkCode">The one-time code, e.g. 'ABCD-EFGH'. The player enters it in Discord with '/link'.</param>
+    /// <param name="validMinutes">The number of minutes the code is valid.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested a code to link the account to a Discord user.
+    /// Causes reaction on client side: The client shows the code, so that the player can enter it in Discord.
+    /// </remarks>
+    public static async ValueTask SendDiscordLinkCodeAsync(this IConnection? connection, DiscordLinkCode.DiscordLinkCodeResult @result, string @linkCode, byte @validMinutes)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordLinkCodeRef.Length;
+            var packet = new DiscordLinkCodeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LinkCode = @linkCode;
+            packet.ValidMinutes = @validMinutes;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ExternalChatMessage" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="scope">The scope.</param>
+    /// <param name="senderName">The name of the sender, without a prefix. It's not a character name, so it can't be whispered.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the server when: A message was written outside of the game, e.g. in a Discord channel which is bound to the chat of a guild, an alliance or the world chat. It's only sent to clients which requested the DiscordIntegrationInfo before; other clients get it as normal chat message, with a prefix in front of the sender.
+    /// Causes reaction on client side: The client shows the message in the chat of its scope, marked with its source, so that it can't be mistaken for a message of a character.
+    /// </remarks>
+    public static async ValueTask SendExternalChatMessageAsync(this IConnection? connection, ExternalChatMessage.ExternalChatSource @source, ExternalChatMessage.ExternalChatScope @scope, string @senderName, string @message)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ExternalChatMessageRef.GetRequiredSize(message);
+            var packet = new ExternalChatMessageRef(connection.Output.GetSpan(length)[..length]);
+            packet.Source = @source;
+            packet.Scope = @scope;
+            packet.SenderName = @senderName;
+            packet.Message = @message;
 
             return packet.Header.Length;
         }
@@ -7601,6 +8457,596 @@ public static class ConnectionExtensions
             var packet = new KanturuMonsterUserCountRef(connection.Output.GetSpan(length)[..length]);
             packet.MonsterCount = @monsterCount;
             packet.UserCount = @userCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionStateInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</param>
+    /// <param name="canEnter">It is not used by the client.</param>
+    /// <param name="remainingSeconds">It is not used by the client. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested the state of the raklion event.
+    /// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+    /// </remarks>
+    public static async ValueTask SendRaklionStateInfoAsync(this IConnection? connection, RaklionStateInfo.RaklionState @state, byte @detailState, bool @canEnter, uint @remainingSeconds)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionStateInfoRef.Length;
+            var packet = new RaklionStateInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+            packet.CanEnter = @canEnter;
+            packet.RemainingSeconds = @remainingSeconds;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionCurrentState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player entered one of the raklion maps.
+    /// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+    /// </remarks>
+    public static async ValueTask SendRaklionCurrentStateAsync(this IConnection? connection, RaklionCurrentState.RaklionState @state, byte @detailState)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionCurrentStateRef.Length;
+            var packet = new RaklionCurrentStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionStateChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of the raklion event or of Selupan changed.
+    /// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+    /// </remarks>
+    public static async ValueTask SendRaklionStateChangeAsync(this IConnection? connection, RaklionStateChange.RaklionState @state, byte @detailState)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionStateChangeRef.Length;
+            var packet = new RaklionStateChangeRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionBattleResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The battle against Selupan ended.
+    /// Causes reaction on client side: None, the client ignores it.
+    /// </remarks>
+    public static async ValueTask SendRaklionBattleResultAsync(this IConnection? connection, RaklionBattleResult.BattleResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionBattleResultRef.Length;
+            var packet = new RaklionBattleResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MonsterSkillAnimation" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillNumber">The number of the monster skill of the client, e.g. 34 to 42 for the skills of Selupan.</param>
+    /// <param name="attackerId">The id of the monster. The field is aligned to 2 bytes, because the client structure is not packed.</param>
+    /// <param name="targetId">The id of the target. The highest bit is set, if the skill has been applied successfully.</param>
+    /// <remarks>
+    /// Is sent by the server when: A monster performs a special skill, e.g. Selupan.
+    /// Causes reaction on client side: The client shows the animation of the monster skill.
+    /// </remarks>
+    public static async ValueTask SendMonsterSkillAnimationAsync(this IConnection? connection, ushort @skillNumber, ushort @attackerId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MonsterSkillAnimationRef.Length;
+            var packet = new MonsterSkillAnimationRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillNumber = @skillNumber;
+            packet.AttackerId = @attackerId;
+            packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ImperialGuardianEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result of the request.</param>
+    /// <param name="day">The day of the week, from 1 (monday) to 7 (sunday). The client shows it as the round.</param>
+    /// <param name="zone">The zone, starting at 1.</param>
+    /// <param name="weather">The weather of the map.</param>
+    /// <param name="remainingMilliseconds">The remaining time in milliseconds. When the result is NotOpen, the client shows the minutes until the event can be entered. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the imperial guardian event, or entered the next zone of it.
+    /// Causes reaction on client side: The client shows a message when entering failed. On success, it remembers the day and zone for the timer and the result, and sets the weather of the map.
+    /// </remarks>
+    public static async ValueTask SendImperialGuardianEnterResultAsync(this IConnection? connection, ImperialGuardianEnterResult.EnterResult @result, byte @day, byte @zone, ImperialGuardianEnterResult.WeatherType @weather, uint @remainingMilliseconds)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ImperialGuardianEnterResultRef.Length;
+            var packet = new ImperialGuardianEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Day = @day;
+            packet.Zone = @zone;
+            packet.Weather = @weather;
+            packet.RemainingMilliseconds = @remainingMilliseconds;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ImperialGuardianTimer" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type of the timer.</param>
+    /// <param name="remainingMilliseconds">The remaining time in milliseconds. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <param name="monsterCount">The number of remaining monsters.</param>
+    /// <remarks>
+    /// Is sent by the server when: Every second during the imperial guardian event.
+    /// Causes reaction on client side: The client shows the timer with the remaining time and the number of remaining monsters. The client doesn't count down the time by itself.
+    /// </remarks>
+    public static async ValueTask SendImperialGuardianTimerAsync(this IConnection? connection, ImperialGuardianTimer.TimerType @type, uint @remainingMilliseconds, byte @monsterCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ImperialGuardianTimerRef.Length;
+            var packet = new ImperialGuardianTimerRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.RemainingMilliseconds = @remainingMilliseconds;
+            packet.MonsterCount = @monsterCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ImperialGuardianResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="experience">The rewarded experience, when the event has been completed. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: A zone of the imperial guardian event has been cleared, or the event ended.
+    /// Causes reaction on client side: The client shows the result and hides the timer.
+    /// </remarks>
+    public static async ValueTask SendImperialGuardianResultAsync(this IConnection? connection, ImperialGuardianResult.ResultType @result, uint @experience)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ImperialGuardianResultRef.Length;
+            var packet = new ImperialGuardianResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Experience = @experience;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopPointInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="viewType">It is stored, but not used by the client.</param>
+    /// <param name="totalCash">The sum of WCoin (C) and WCoin (P). It is stored, but not shown by the client.</param>
+    /// <param name="wCoinC">The available WCoin (C), originally named "cash credit".</param>
+    /// <param name="wCoinP">The available WCoin (P), originally named "cash prepaid".</param>
+    /// <param name="totalPoints">It is stored, but not shown by the client.</param>
+    /// <param name="goblinPoints">The available Goblin Points, originally named "mileage".</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested the cash shop point information (CashShopPointInfoRequest).
+    /// Causes reaction on client side: The client shows the available WCoin (C), WCoin (P) and Goblin Points in the cash shop dialog.
+    /// </remarks>
+    public static async ValueTask SendCashShopPointInfoAsync(this IConnection? connection, byte @viewType, double @totalCash, double @wCoinC, double @wCoinP, double @totalPoints, double @goblinPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopPointInfoRef.Length;
+            var packet = new CashShopPointInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.ViewType = @viewType;
+            packet.TotalCash = @totalCash;
+            packet.WCoinC = @wCoinC;
+            packet.WCoinP = @wCoinP;
+            packet.TotalPoints = @totalPoints;
+            packet.GoblinPoints = @goblinPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopOpenStateResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isAllowed">The is allowed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to open the cash shop dialog (CashShopOpenState).
+    /// Causes reaction on client side: If the opening is allowed, the client requests the point information and the first storage page, and shows the cash shop dialog. Otherwise, nothing happens.
+    /// </remarks>
+    public static async ValueTask SendCashShopOpenStateResponseAsync(this IConnection? connection, bool @isAllowed)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopOpenStateResponseRef.Length;
+            var packet = new CashShopOpenStateResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsAllowed = @isAllowed;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemBuyResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="leftCount">The number of items which are left for sale, if the number is limited. It's not used by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to buy an item in the cash shop (CashShopItemBuyRequest).
+    /// Causes reaction on client side: The client shows a message with the result. If the item was bought, it requests the point information and the first storage page again.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemBuyResultAsync(this IConnection? connection, CashShopItemBuyResult.CashShopBuyResult @result, uint @leftCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemBuyResultRef.Length;
+            var packet = new CashShopItemBuyResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LeftCount = @leftCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemGiftResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="leftCount">The number of items which are left for sale, if the number is limited. It's not used by the client.</param>
+    /// <param name="limitedCash">It's not used by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to send an item of the cash shop as gift (CashShopItemGiftRequest).
+    /// Causes reaction on client side: The client shows a message with the result. If the gift was sent, it requests the point information again.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemGiftResultAsync(this IConnection? connection, CashShopItemGiftResult.CashShopGiftResult @result, uint @leftCount, double @limitedCash)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemGiftResultRef.Length;
+            var packet = new CashShopItemGiftResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LeftCount = @leftCount;
+            packet.LimitedCash = @limitedCash;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopStorageItemConsumeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to use an item of the cash shop storage (CashShopStorageItemConsumeRequest).
+    /// Causes reaction on client side: The client shows a message with the result. If the item was used, it requests the shown storage page again.
+    /// </remarks>
+    public static async ValueTask SendCashShopStorageItemConsumeResultAsync(this IConnection? connection, CashShopStorageItemConsumeResult.CashShopConsumeResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopStorageItemConsumeResultRef.Length;
+            var packet = new CashShopStorageItemConsumeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopStorageListResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="totalItemCount">The total item count.</param>
+    /// <param name="pageItemCount">The number of items on the requested page. The client shows up to 9 items per page.</param>
+    /// <param name="pageIndex">The one-based index of the page.</param>
+    /// <param name="totalPages">The total pages.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested a page of the cash shop storage or gift storage (CashShopStorageListRequest).
+    /// Causes reaction on client side: The client clears the storage list and expects the items of the page with the following CashShopStorageItem or CashShopGiftStorageItem messages.
+    /// </remarks>
+    public static async ValueTask SendCashShopStorageListResponseAsync(this IConnection? connection, ushort @totalItemCount, ushort @pageItemCount, ushort @pageIndex, ushort @totalPages)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopStorageListResponseRef.Length;
+            var packet = new CashShopStorageListResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.TotalItemCount = @totalItemCount;
+            packet.PageItemCount = @pageItemCount;
+            packet.PageIndex = @pageIndex;
+            packet.TotalPages = @totalPages;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopScriptVersion" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="saleZone">The sale zone.</param>
+    /// <param name="year">The year.</param>
+    /// <param name="yearId">The year id.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player entered the game.
+    /// Causes reaction on client side: The client remembers the version of the cash shop script (product catalog) and unlocks the cash shop. When the dialog is opened, the client loads the script of this version from 'Data\InGameShopScript\[SaleZone].[Year].[YearId]'.
+    /// </remarks>
+    public static async ValueTask SendCashShopScriptVersionAsync(this IConnection? connection, ushort @saleZone, ushort @year, ushort @yearId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopScriptVersionRef.Length;
+            var packet = new CashShopScriptVersionRef(connection.Output.GetSpan(length)[..length]);
+            packet.SaleZone = @saleZone;
+            packet.Year = @year;
+            packet.YearId = @yearId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopStorageItem" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storageIndex">The index of the item in the storage. The client sends it back when the item should be used.</param>
+    /// <param name="itemSequence">The client sends it back when the item should be used.</param>
+    /// <param name="storageGroupCode">It is stored, but not used by the client.</param>
+    /// <param name="productSequence">The product sequence number of the cash shop script.</param>
+    /// <param name="priceSequence">The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</param>
+    /// <param name="cashPoints">The amount of WCoin, if the item type is Cash.</param>
+    /// <param name="itemType">The item type.</param>
+    /// <remarks>
+    /// Is sent by the server when: After CashShopStorageListResponse of the normal storage, for each item of the requested page.
+    /// Causes reaction on client side: The client adds the item to the shown storage list. Name, quantity and period are looked up in the cash shop script by the product and price sequence numbers.
+    /// </remarks>
+    public static async ValueTask SendCashShopStorageItemAsync(this IConnection? connection, uint @storageIndex, uint @itemSequence, uint @storageGroupCode, uint @productSequence, uint @priceSequence, double @cashPoints, CashShopStorageItem.CashShopStorageItemType @itemType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopStorageItemRef.Length;
+            var packet = new CashShopStorageItemRef(connection.Output.GetSpan(length)[..length]);
+            packet.StorageIndex = @storageIndex;
+            packet.ItemSequence = @itemSequence;
+            packet.StorageGroupCode = @storageGroupCode;
+            packet.ProductSequence = @productSequence;
+            packet.PriceSequence = @priceSequence;
+            packet.CashPoints = @cashPoints;
+            packet.ItemType = @itemType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopGiftStorageItem" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storageIndex">The index of the item in the storage. The client sends it back when the item should be used.</param>
+    /// <param name="itemSequence">The client sends it back when the item should be used.</param>
+    /// <param name="storageGroupCode">It is stored, but not used by the client.</param>
+    /// <param name="productSequence">The product sequence number of the cash shop script.</param>
+    /// <param name="priceSequence">The price sequence number of the cash shop script. If it's 0, the client takes the data of the first entry of the product.</param>
+    /// <param name="cashPoints">The amount of WCoin, if the item type is Cash.</param>
+    /// <param name="itemType">The item type.</param>
+    /// <param name="senderName">The sender name.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the server when: After CashShopStorageListResponse of the gift storage, for each item of the requested page.
+    /// Causes reaction on client side: The client adds the item to the shown gift storage list, together with the sender and the message.
+    /// </remarks>
+    public static async ValueTask SendCashShopGiftStorageItemAsync(this IConnection? connection, uint @storageIndex, uint @itemSequence, uint @storageGroupCode, uint @productSequence, uint @priceSequence, double @cashPoints, CashShopGiftStorageItem.CashShopStorageItemType @itemType, string @senderName, string @message)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopGiftStorageItemRef.Length;
+            var packet = new CashShopGiftStorageItemRef(connection.Output.GetSpan(length)[..length]);
+            packet.StorageIndex = @storageIndex;
+            packet.ItemSequence = @itemSequence;
+            packet.StorageGroupCode = @storageGroupCode;
+            packet.ProductSequence = @productSequence;
+            packet.PriceSequence = @priceSequence;
+            packet.CashPoints = @cashPoints;
+            packet.ItemType = @itemType;
+            packet.SenderName = @senderName;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopBannerVersion" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="saleZone">The sale zone.</param>
+    /// <param name="year">The year.</param>
+    /// <param name="yearId">The year id.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player entered the game.
+    /// Causes reaction on client side: The client remembers the version of the cash shop banner. When the dialog is opened, the client loads the banner of this version from 'Data\InGameShopBanner\[SaleZone].[Year].[YearId]'.
+    /// </remarks>
+    public static async ValueTask SendCashShopBannerVersionAsync(this IConnection? connection, ushort @saleZone, ushort @year, ushort @yearId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopBannerVersionRef.Length;
+            var packet = new CashShopBannerVersionRef(connection.Output.GetSpan(length)[..length]);
+            packet.SaleZone = @saleZone;
+            packet.Year = @year;
+            packet.YearId = @yearId;
 
             return packet.Header.Length;
         }

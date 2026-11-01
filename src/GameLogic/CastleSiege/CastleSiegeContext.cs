@@ -40,7 +40,7 @@ public class CastleSiegeContext : IEventStateProvider
         this._gameContext = gameContext;
         this._timeProvider = timeProvider ?? TimeProvider.System;
         this.Configuration = configuration;
-        this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule);
+        this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule, gameContext.ServerTimeZone);
         this.NpcController = new CastleSiegeNpcController(this);
     }
 
@@ -75,9 +75,14 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeGuildRegistration> RegisteredGuilds { get; } = new();
 
     /// <summary>
-    /// Gets the selected guilds keyed by their runtime guild identifier.
+    /// Gets the selected guilds keyed by their persistent guild identifier.
     /// </summary>
-    public System.Collections.Concurrent.ConcurrentDictionary<uint, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
+    /// <remarks>
+    /// The runtime guild identifier changes when a guild is loaded again by the guild server, e.g. after all members
+    /// were offline. Keying by the persistent identifier keeps a guild in this list while its runtime identifier
+    /// is updated, so concurrent readers never miss it. Use <see cref="GetFinalGuild"/> to find a guild by its runtime identifier.
+    /// </remarks>
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
 
     /// <summary>
     /// Gets the assigned join sides keyed by persistent character identifier.
@@ -90,9 +95,13 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
-    /// Gets or sets the runtime identifier of the guild which currently owns the castle during the battle.
+    /// Gets or sets the persistent identifier of the guild which currently owns the castle during the battle.
     /// </summary>
-    public uint? MiddleOwnerGuildId { get; set; }
+    /// <remarks>
+    /// This is the persistent and not the runtime guild identifier, because the runtime identifier
+    /// of a guild changes when it is loaded again by the guild server, e.g. after all members were offline.
+    /// </remarks>
+    public Guid? MiddleOwnerGuildId { get; set; }
 
     /// <summary>
     /// Gets the active Castle Siege NPCs.
@@ -115,11 +124,6 @@ public class CastleSiegeContext : IEventStateProvider
     public Player?[] SwitchUsers { get; } = new Player?[2];
 
     /// <summary>
-    /// Gets a snapshot of the Life Stones which are currently placed by participating guilds.
-    /// </summary>
-    internal IReadOnlyCollection<CastleSiegeLifeStone> LifeStones => this._lifeStones.Values.ToArray();
-
-    /// <summary>
     /// Gets or sets the accumulated Crown operation time.
     /// </summary>
     public TimeSpan CrownAccumulatedTime { get; set; }
@@ -135,7 +139,12 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the remaining time of the current state.
     /// </summary>
-    public TimeSpan RemainingTime => this.GetRemainingTime(DateTime.UtcNow);
+    public TimeSpan RemainingTime => this.GetRemainingTime(this._timeProvider.GetUtcNow().UtcDateTime);
+
+    /// <summary>
+    /// Gets a snapshot of the Life Stones which are currently placed by participating guilds.
+    /// </summary>
+    internal IReadOnlyCollection<CastleSiegeLifeStone> LifeStones => this._lifeStones.Values.ToArray();
 
     /// <summary>
     /// Gets or sets the player whose active Crown attempt was announced to the client.
@@ -166,6 +175,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets the game context.
     /// </summary>
     internal IGameContext GameContext => this._gameContext;
+
+    /// <summary>
+    /// Gets the clock used by Castle Siege runtime operations.
+    /// </summary>
+    internal TimeProvider TimeProvider => this._timeProvider;
 
     /// <summary>
     /// Gets the configured weekly schedule.
@@ -203,6 +217,11 @@ public class CastleSiegeContext : IEventStateProvider
     internal DateTime NextParticipantUpdateUtc { get; set; } = DateTime.MaxValue;
 
     /// <summary>
+    /// Gets or sets the next mini-map broadcast time.
+    /// </summary>
+    internal DateTime NextMiniMapUpdateUtc { get; set; } = DateTime.MaxValue;
+
+    /// <summary>
     /// Gets the Ready-state countdown values which have already been sent.
     /// </summary>
     internal HashSet<int> SentReadyCountdownMinutes { get; } = new();
@@ -211,27 +230,6 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets or sets the last force-state request processed by this context.
     /// </summary>
     internal int LastForceRequestVersion { get; set; }
-
-    /// <summary>
-    /// Requests a state transition for this game context on its next periodic task tick.
-    /// </summary>
-    /// <param name="state">The requested state.</param>
-    internal void RequestState(CastleSiegeState state)
-    {
-        Interlocked.Exchange(ref this._requestedState, (int)state);
-    }
-
-    /// <summary>
-    /// Gets and clears a context-specific pending state request.
-    /// </summary>
-    /// <param name="state">The requested state when a request was pending.</param>
-    /// <returns>A value indicating whether a request was pending.</returns>
-    internal bool TryTakeRequestedState(out CastleSiegeState state)
-    {
-        var requestedState = Interlocked.Exchange(ref this._requestedState, -1);
-        state = (CastleSiegeState)requestedState;
-        return requestedState >= 0;
-    }
 
     /// <inheritdoc />
     public bool IsSpawnWaveActive(byte waveNumber) => false;
@@ -249,6 +247,47 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         return this.GetTrackedPlayerJoinSide(player);
+    }
+
+    /// <summary>
+    /// Determines whether two players fight on opposing sides of the running battle.
+    /// </summary>
+    /// <param name="player">The one player.</param>
+    /// <param name="otherPlayer">The other player.</param>
+    /// <returns><see langword="true"/> if both are on the Castle Siege map during the battle, and on different sides.</returns>
+    /// <remarks>
+    /// The attacking sides fight each other as well as the defenders, so any two different sides are enemies.
+    /// </remarks>
+    public bool AreOnOpposingSides(Player player, Player otherPlayer)
+    {
+        if (this.CurrentState != CastleSiegeState.Start)
+        {
+            return false;
+        }
+
+        var side = this.GetPlayerJoinSide(player);
+        var otherSide = this.GetPlayerJoinSide(otherPlayer);
+        return side != CastleSiegeJoinSide.None
+               && otherSide != CastleSiegeJoinSide.None
+               && side != otherSide;
+    }
+
+    /// <summary>
+    /// Determines whether two players fight on the same side of the running battle.
+    /// </summary>
+    /// <param name="player">The one player.</param>
+    /// <param name="otherPlayer">The other player.</param>
+    /// <returns><see langword="true"/> if both are on the Castle Siege map during the battle, and on the same side.</returns>
+    public bool AreOnSameSide(Player player, Player otherPlayer)
+    {
+        if (this.CurrentState != CastleSiegeState.Start)
+        {
+            return false;
+        }
+
+        var side = this.GetPlayerJoinSide(player);
+        return side != CastleSiegeJoinSide.None
+               && side == this.GetPlayerJoinSide(otherPlayer);
     }
 
     /// <summary>
@@ -285,6 +324,161 @@ public class CastleSiegeContext : IEventStateProvider
         {
             this.PlayerJoinSides.TryRemove(characterId, out _);
         }
+    }
+
+    /// <summary>
+    /// Loads the persistent Castle Siege state and registrations.
+    /// </summary>
+    public async ValueTask LoadAsync()
+    {
+        this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
+        this.NpcController.InitializePersistentStructures();
+        await this.LoadRegistrationsAsync().ConfigureAwait(false);
+        await this.LoadFinalGuildListAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Saves the persistent Castle Siege owner and economy state.
+    /// </summary>
+    public async ValueTask SaveOwnerAsync()
+    {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
+        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
+
+        CopyScalarState(this.SiegeData, persistentData);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        this.IsEconomyPersistencePending = false;
+    }
+
+    /// <summary>
+    /// Replaces the persistent selected-guild list with the current runtime snapshot.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous save operation.</returns>
+    public async ValueTask SaveFinalGuildListAsync()
+    {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            this._gameContext.Configuration);
+        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
+
+        foreach (var oldGuild in persistentData.Guilds.ToList())
+        {
+            await context.DeleteAsync(oldGuild).ConfigureAwait(false);
+        }
+
+        persistentData.Guilds.Clear();
+        foreach (var guild in CastleSiegeGuildSelector.OrderFinalGuilds(this.FinalGuildList.Values))
+        {
+            var persistentGuild = context.CreateNew<CastleSiegeGuild>();
+            persistentGuild.GuildId = guild.PersistentGuildId;
+            persistentGuild.GuildName = guild.GuildName;
+            persistentGuild.Side = guild.Side;
+            persistentGuild.Score = guild.Score;
+            persistentGuild.IsAllianceMaster = guild.IsAllianceMaster;
+            persistentData.Guilds.Add(persistentGuild);
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Updates the persistent NPC states from a complete runtime snapshot.
+    /// </summary>
+    public async ValueTask SaveNpcStatesAsync()
+    {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
+        this.NpcController.SynchronizeNpcStates();
+        var persistedNpcs = this.NpcController.GetRuntimeSnapshot()
+            .Where(npc => npc.Definition.IsPersistedToDatabase)
+            .ToList();
+        if (persistedNpcs.Count == 0 || persistedNpcs.Any(npc => npc.PersistedState is null))
+        {
+            return;
+        }
+
+        var statesToSave = persistedNpcs
+            .Select(npc => npc.PersistedState!)
+            .ToDictionary(GetNpcKey);
+
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
+        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
+
+        foreach (var target in persistentData.NpcStates.ToList())
+        {
+            if (statesToSave.Remove(GetNpcKey(target), out var source))
+            {
+                CopyNpcState(source, target);
+            }
+            else
+            {
+                await context.DeleteAsync(target).ConfigureAwait(false);
+                persistentData.NpcStates.Remove(target);
+            }
+        }
+
+        foreach (var source in statesToSave.Values)
+        {
+            var target = context.CreateNew<CastleSiegeNpcState>();
+            CopyNpcState(source, target);
+            persistentData.NpcStates.Add(target);
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Deletes all guild registrations of the completed cycle.
+    /// </summary>
+    public async ValueTask ClearRegistrationsAsync()
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeGuildRegistration), false, this._gameContext.Configuration);
+        foreach (var registration in (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).ToList())
+        {
+            await context.DeleteAsync(registration).ConfigureAwait(false);
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        this.RegisteredGuilds.Clear();
+    }
+
+    /// <summary>
+    /// Requests a state transition for this game context on its next periodic task tick.
+    /// </summary>
+    /// <param name="state">The requested state.</param>
+    internal void RequestState(CastleSiegeState state)
+    {
+        Interlocked.Exchange(ref this._requestedState, (int)state);
+    }
+
+    /// <summary>
+    /// Gets and clears a context-specific pending state request.
+    /// </summary>
+    /// <param name="state">The requested state when a request was pending.</param>
+    /// <returns>A value indicating whether a request was pending.</returns>
+    internal bool TryTakeRequestedState(out CastleSiegeState state)
+    {
+        var requestedState = Interlocked.Exchange(ref this._requestedState, -1);
+        state = (CastleSiegeState)requestedState;
+        return requestedState >= 0;
     }
 
     /// <summary>
@@ -398,135 +592,6 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
-    /// Loads the persistent Castle Siege state and registrations.
-    /// </summary>
-    public async ValueTask LoadAsync()
-    {
-        this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
-            ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
-        this.NpcController.InitializePersistentStructures();
-        await this.LoadRegistrationsAsync().ConfigureAwait(false);
-        await this.LoadFinalGuildListAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Saves the persistent Castle Siege owner and economy state.
-    /// </summary>
-    public async ValueTask SaveOwnerAsync()
-    {
-        if (this.SiegeData is null)
-        {
-            return;
-        }
-
-        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
-        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
-            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
-
-        CopyScalarState(this.SiegeData, persistentData);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-        this.IsEconomyPersistencePending = false;
-    }
-
-    /// <summary>
-    /// Replaces the persistent selected-guild list with the current runtime snapshot.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous save operation.</returns>
-    public async ValueTask SaveFinalGuildListAsync()
-    {
-        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
-            typeof(CastleSiegeData),
-            false,
-            this._gameContext.Configuration);
-        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
-            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
-
-        foreach (var oldGuild in persistentData.Guilds.ToList())
-        {
-            await context.DeleteAsync(oldGuild).ConfigureAwait(false);
-        }
-
-        persistentData.Guilds.Clear();
-        foreach (var guild in CastleSiegeGuildSelector.OrderFinalGuilds(this.FinalGuildList.Values))
-        {
-            var persistentGuild = context.CreateNew<CastleSiegeGuild>();
-            persistentGuild.GuildId = guild.PersistentGuildId;
-            persistentGuild.GuildName = guild.GuildName;
-            persistentGuild.Side = guild.Side;
-            persistentGuild.Score = guild.Score;
-            persistentGuild.IsAllianceMaster = guild.IsAllianceMaster;
-            persistentData.Guilds.Add(persistentGuild);
-        }
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Updates the persistent NPC states from a complete runtime snapshot.
-    /// </summary>
-    public async ValueTask SaveNpcStatesAsync()
-    {
-        if (this.SiegeData is null)
-        {
-            return;
-        }
-
-        this.NpcController.SynchronizeNpcStates();
-        var persistedNpcs = this.NpcController.GetRuntimeSnapshot()
-            .Where(npc => npc.Definition.IsPersistedToDatabase)
-            .ToList();
-        if (persistedNpcs.Count == 0 || persistedNpcs.Any(npc => npc.PersistedState is null))
-        {
-            return;
-        }
-
-        var statesToSave = persistedNpcs
-            .Select(npc => npc.PersistedState!)
-            .ToDictionary(GetNpcKey);
-
-        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
-        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
-            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
-
-        foreach (var target in persistentData.NpcStates.ToList())
-        {
-            if (statesToSave.Remove(GetNpcKey(target), out var source))
-            {
-                CopyNpcState(source, target);
-            }
-            else
-            {
-                await context.DeleteAsync(target).ConfigureAwait(false);
-                persistentData.NpcStates.Remove(target);
-            }
-        }
-
-        foreach (var source in statesToSave.Values)
-        {
-            var target = context.CreateNew<CastleSiegeNpcState>();
-            CopyNpcState(source, target);
-            persistentData.NpcStates.Add(target);
-        }
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Deletes all guild registrations of the completed cycle.
-    /// </summary>
-    public async ValueTask ClearRegistrationsAsync()
-    {
-        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeGuildRegistration), false, this._gameContext.Configuration);
-        foreach (var registration in (await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false)).ToList())
-        {
-            await context.DeleteAsync(registration).ConfigureAwait(false);
-        }
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
-        this.RegisteredGuilds.Clear();
-    }
-
-    /// <summary>
     /// Tracks a player after a map entry operation.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -561,10 +626,34 @@ public class CastleSiegeContext : IEventStateProvider
         this.MiddleOwnerGuildId = this.FinalGuildList.Values
                                       .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense
                                                                && guild.PersistentGuildId == this.SiegeData.OwnerGuildId)
-                                      ?.GuildId
+                                      ?.PersistentGuildId
                                   ?? this.FinalGuildList.Values
                                       .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
-                                      ?.GuildId;
+                                      ?.PersistentGuildId;
+    }
+
+    /// <summary>
+    /// Gets the selected guild which currently owns the castle during the battle.
+    /// </summary>
+    /// <returns>The current battle owner, or <see langword="null"/> if there is none or it is not selected.</returns>
+    internal CastleSiegeGuildParticipant? GetBattleOwner()
+    {
+        return this.MiddleOwnerGuildId is { } ownerGuildId
+            ? this.FinalGuildList.GetValueOrDefault(ownerGuildId)
+            : null;
+    }
+
+    /// <summary>
+    /// Gets the selected guild with the specified runtime identifier.
+    /// </summary>
+    /// <param name="runtimeGuildId">The runtime guild identifier, e.g. of <see cref="Player.GuildStatus"/>.</param>
+    /// <returns>The selected guild, or <see langword="null"/> if no selected guild has this runtime identifier.</returns>
+    /// <remarks>
+    /// A linear search is sufficient, because only a few guilds are selected for a battle.
+    /// </remarks>
+    internal CastleSiegeGuildParticipant? GetFinalGuild(uint runtimeGuildId)
+    {
+        return this.FinalGuildList.Values.FirstOrDefault(guild => guild.GuildId == runtimeGuildId);
     }
 
     /// <summary>
@@ -581,9 +670,38 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         return player.GuildStatus is { } guildStatus
-               && this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participatingGuild)
+               && this.GetFinalGuild(guildStatus.GuildId) is { } participatingGuild
             ? participatingGuild.Side
             : CastleSiegeJoinSide.None;
+    }
+
+    /// <summary>
+    /// Gets the gate at which players of a side are spawned during the battle.
+    /// </summary>
+    /// <param name="side">The side.</param>
+    /// <returns>The gate of the side's respawn area, or <see langword="null"/> if the side has none.</returns>
+    internal ExitGate? GetRespawnGate(CastleSiegeJoinSide side)
+    {
+        var area = side switch
+        {
+            CastleSiegeJoinSide.Defense => this.Configuration.DefenseRespawnArea,
+            CastleSiegeJoinSide.Attack1 or CastleSiegeJoinSide.Attack2 or CastleSiegeJoinSide.Attack3 => this.Configuration.AttackRespawnArea,
+            _ => null,
+        };
+        if (area is null || this.Configuration.CastleSiegeMapDefinition is not { } siegeMap)
+        {
+            return null;
+        }
+
+        return new ExitGate
+        {
+            Map = siegeMap,
+            X1 = area.X1,
+            Y1 = area.Y1,
+            X2 = area.X2,
+            Y2 = area.Y2,
+            Direction = Direction.South,
+        };
     }
 
     /// <summary>
@@ -820,9 +938,8 @@ public class CastleSiegeContext : IEventStateProvider
     private static async ValueTask SetJoinSideMagicEffectAsync(Player player, CastleSiegeJoinSide side)
     {
         var expectedEffectNumber = GetMagicEffectNumber(side);
-        var activeSideEffects = (await player.MagicEffectList
-                .GetActiveEffectsSnapshotAsync()
-                .ConfigureAwait(false))
+        var activeSideEffects = player.MagicEffectList
+            .GetActiveEffectsSnapshot()
             .Where(effect => IsJoinSideEffect(effect.Id))
             .ToList();
         foreach (var effect in activeSideEffects)
@@ -910,7 +1027,7 @@ public class CastleSiegeContext : IEventStateProvider
                 continue;
             }
 
-            this.FinalGuildList[runtimeGuildId] = new CastleSiegeGuildParticipant
+            this.FinalGuildList[guild.GuildId] = new CastleSiegeGuildParticipant
             {
                 GuildId = runtimeGuildId,
                 PersistentGuildId = guild.GuildId,
@@ -931,7 +1048,7 @@ public class CastleSiegeContext : IEventStateProvider
             return CastleSiegeJoinSide.None;
         }
 
-        if (this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var runtimeGuild))
+        if (this.GetFinalGuild(guildStatus.GuildId) is { } runtimeGuild)
         {
             return runtimeGuild.Side;
         }
@@ -944,16 +1061,13 @@ public class CastleSiegeContext : IEventStateProvider
             return CastleSiegeJoinSide.None;
         }
 
-        var persistedEntry = this.FinalGuildList.FirstOrDefault(
-            entry => entry.Value.PersistentGuildId == persistentGuildId);
-        if (persistedEntry.Value is null)
+        if (!this.FinalGuildList.TryGetValue(persistentGuildId, out var persistedGuild))
         {
             return CastleSiegeJoinSide.None;
         }
 
-        this.FinalGuildList.TryRemove(persistedEntry.Key, out _);
-        persistedEntry.Value.GuildId = guildStatus.GuildId;
-        this.FinalGuildList[guildStatus.GuildId] = persistedEntry.Value;
-        return persistedEntry.Value.Side;
+        // The guild got a new runtime identifier. It stays in the list, so concurrent readers don't miss it.
+        persistedGuild.GuildId = guildStatus.GuildId;
+        return persistedGuild.Side;
     }
 }

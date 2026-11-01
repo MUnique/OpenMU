@@ -43,6 +43,12 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     }
 
     /// <inheritdoc/>
+    public async ValueTask<bool> CharacterExistsAsync(string characterName)
+    {
+        return await this.GetCharacterIdByNameAsync(characterName).ConfigureAwait(false) is not null;
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<Interfaces.Friend?> GetFriendByNamesAsync(string characterName, string friendName)
     {
         return await this.FindItems(characterName, friendName).FirstOrDefaultAsync().ConfigureAwait(false);
@@ -52,6 +58,7 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     public async ValueTask<IEnumerable<FriendViewItem>> GetFriendsAsync(Guid characterId)
     {
         return await (from friend in this.Context.Set<Model.Friend>()
+                      where friend.CharacterId == characterId
                       join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
                       join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
                       select new FriendViewItem(character.Name, friendCharacter.Name)

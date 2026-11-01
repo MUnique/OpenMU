@@ -5,14 +5,11 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
@@ -20,12 +17,37 @@ using MUnique.OpenMU.PlugIns;
 /// A feature plugin that provides configuration and acts as a trigger control for speedhack anti-cheat checks.
 /// </summary>
 [PlugIn]
-[Display(Name = "Speedhack Anti-Cheat", Description = "Detects and prevents player walk and attack speedhacking.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectPlugIn_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("A95A8D2F-A0C3-442E-995C-005B5C1B42D2")]
-public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration<SpeedHackDetectConfiguration>, ISupportDefaultCustomConfiguration, ISpeedHackCheatCheckPlugIn
+public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration<SpeedHackDetectConfiguration>, ISupportDefaultCustomConfiguration, ISpeedHackCheatCheckPlugIn, IAttackSpeedCheckPlugIn, IPingCheckPlugIn, IWalkRequestValidationPlugIn, IWalkStepPlugIn, IMovementStateResetPlugIn
 {
-    private const int NormalStepDelayMs = 300;
     private readonly ConditionalWeakTable<Player, SpeedHackState> _playerStates = new();
+    private readonly TimeProvider _timeProvider;
+    private readonly WalkSpeedCheck _walkCheck;
+    private readonly AttackSpeedCheck _attackCheck;
+    private readonly PingCheck _pingCheck;
+    private readonly SpeedHackViolationRecorder _violationRecorder;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpeedHackDetectPlugIn"/> class.
+    /// </summary>
+    public SpeedHackDetectPlugIn()
+        : this(TimeProvider.System)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpeedHackDetectPlugIn"/> class.
+    /// </summary>
+    /// <param name="timeProvider">The time provider.</param>
+    internal SpeedHackDetectPlugIn(TimeProvider timeProvider)
+    {
+        this._timeProvider = timeProvider;
+        this._walkCheck = new WalkSpeedCheck(timeProvider);
+        this._attackCheck = new AttackSpeedCheck(timeProvider);
+        this._pingCheck = new PingCheck(timeProvider);
+        this._violationRecorder = new SpeedHackViolationRecorder(timeProvider);
+    }
 
     /// <inheritdoc/>
     public SpeedHackDetectConfiguration? Configuration { get; set; }
@@ -34,6 +56,39 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     public object CreateDefaultConfig() => new SpeedHackDetectConfiguration();
 
     /// <inheritdoc/>
+    public async ValueTask ValidateWalkRequestAsync(Player player, Memory<WalkingStep> steps, WalkRequestValidationArgs eventArgs)
+    {
+        var speedHackArgs = new SpeedHackCheckEventArgs();
+        await this.WalkCheatCheckAsync(player, steps, speedHackArgs).ConfigureAwait(false);
+
+        // Soft violations are only recorded; just a Reject blocks the walk.
+        eventArgs.IsWalkAllowed = speedHackArgs.Severity is not SpeedHackViolationSeverity.Reject;
+    }
+
+    /// <inheritdoc/>
+    public ValueTask ResetMovementStateAsync(Player player)
+    {
+        this._walkCheck.Reset(this.GetState(player));
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public void WalkStepPerformed(Player player, WalkingStep step, TimeSpan stepDelay)
+    {
+        if (IsServerControlled(player) || this.Configuration is not { } config)
+        {
+            return;
+        }
+
+        this._walkCheck.RecordStep(player, this.GetState(player), config, step, stepDelay);
+    }
+
+    /// <summary>
+    /// Checks the walk speed and records a violation, if the walk has to be rejected.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="steps">The steps requested by the player.</param>
+    /// <param name="eventArgs">The event args to mark a violation.</param>
     public async ValueTask WalkCheatCheckAsync(Player player, Memory<WalkingStep> steps, SpeedHackCheckEventArgs eventArgs)
     {
         if (steps.IsEmpty || IsServerControlled(player))
@@ -47,99 +102,48 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             return;
         }
 
-        bool isSafezone = player.IsAtSafezone();
-        bool shouldRecordViolation = false;
-        var startPoint = steps.Span[0].From;
         var state = this.GetState(player);
-
+        var violationSeverity = SpeedHackViolationSeverity.None;
+        var positionMismatchSeverity = SpeedHackViolationSeverity.None;
+        var startPoint = steps.Span[0].From;
         lock (state.Lock)
         {
-            if (isSafezone)
+            if (player.IsAtSafezone())
             {
-                state.RecentWalks.Clear();
-                state.LastWalkStartTime = DateTime.MinValue;
+                state.ResetWalk();
             }
             else
             {
-                var now = DateTime.UtcNow;
-                if (state.LastWalkStartTime > DateTime.MinValue)
+                var walkEvaluation = this._walkCheck.Evaluate(player, config, state, this._timeProvider.GetTimestamp());
+                violationSeverity = walkEvaluation.Severity;
+                if (!walkEvaluation.IsViolation)
                 {
-                    if (now - state.LastWalkStartTime > TimeSpan.FromSeconds(2))
-                    {
-                        state.RecentWalks.Clear();
-                    }
-                }
-
-                state.RecentWalks.Enqueue(new WalkHistoryEntry { Time = now, StartPoint = startPoint });
-                state.LastWalkStartTime = now;
-
-                while (state.RecentWalks.Count > 5)
-                {
-                    state.RecentWalks.Dequeue();
-                }
-
-                if (state.RecentWalks.Count >= 3)
-                {
-                    var first = state.RecentWalks.Peek();
-                    var elapsed = now - first.Time;
-
-                    // Compute cumulative Chebyshev path length between consecutive start positions.
-                    var cumulativeTiles = 0;
-                    Point? prevPoint = null;
-                    foreach (var entry in state.RecentWalks)
-                    {
-                        if (prevPoint.HasValue)
-                        {
-                            cumulativeTiles += Math.Max(
-                                Math.Abs((int)entry.StartPoint.X - prevPoint.Value.X),
-                                Math.Abs((int)entry.StartPoint.Y - prevPoint.Value.Y));
-                        }
-
-                        prevPoint = entry.StartPoint;
-                    }
-
-                    if (cumulativeTiles > 0)
-                    {
-                        double stepDelayMs = player.StepDelay.TotalMilliseconds;
-                        double scalingFactor = stepDelayMs / NormalStepDelayMs;
-
-                        const double BaseStepDelayMarginMs = 50.0;
-                        const double MinStepDelayMs = 50.0;
-                        double stepDelayMarginMs = BaseStepDelayMarginMs * scalingFactor;
-                        double checkStepDelayMs = Math.Max(Math.Min(MinStepDelayMs, stepDelayMs), stepDelayMs - stepDelayMarginMs);
-                        var expectedTime = TimeSpan.FromMilliseconds(cumulativeTiles * checkStepDelayMs);
-                        var deficit = expectedTime - elapsed;
-                        var tolerance = TimeSpan.FromMilliseconds(config.WalkSpeedToleranceMs * scalingFactor);
-
-                        if (deficit > tolerance)
-                        {
-                            player.Logger.LogWarning(
-                                "Speedhack detected on walk for player {0}: traveled {1} tiles in {2}ms (expected at least {3}ms). Deficit: {4}ms.",
-                                player.Name,
-                                cumulativeTiles,
-                                elapsed.TotalMilliseconds,
-                                expectedTime.TotalMilliseconds,
-                                deficit.TotalMilliseconds);
-                            shouldRecordViolation = true;
-                            state.RecentWalks.Clear(); // Clear to avoid double triggers
-                            state.LastWalkStartTime = DateTime.MinValue; // Reset tracker
-                        }
-                    }
+                    positionMismatchSeverity = this._walkCheck.PenalizePositionMismatch(player, config, state, startPoint.EuclideanDistanceTo(player.Position));
                 }
             }
         }
 
-        if (shouldRecordViolation)
+        if (violationSeverity is not SpeedHackViolationSeverity.None)
         {
-            eventArgs.IsCheatDetected = true;
-            await this.RecordViolationAsync(player, state, config).ConfigureAwait(false);
+            eventArgs.Severity = violationSeverity;
+            await this._violationRecorder.RecordAsync(player, state, config, violationSeverity).ConfigureAwait(false);
+        }
+        else if (positionMismatchSeverity is not SpeedHackViolationSeverity.None)
+        {
+            // PlayerMovement validates the offset independently and resynchronizes the client
+            // when it's too large. The mismatch still contributes to warnings and punishments.
+            await this._violationRecorder.RecordAsync(player, state, config, positionMismatchSeverity).ConfigureAwait(false);
+        }
+        else
+        {
+            // Neither the walk pace check nor the position mismatch recorded a violation.
         }
     }
 
     /// <inheritdoc/>
-    public async ValueTask AttackCheatCheckAsync(Player player, SpeedHackCheckEventArgs eventArgs)
+    public async ValueTask AttackCheatCheckAsync(Player player, Skill? skill, SpeedHackCheckEventArgs eventArgs)
     {
-        if (player.Attributes is not { } attributes || IsServerControlled(player))
+        if (player.Attributes is null || IsServerControlled(player))
         {
             return;
         }
@@ -150,54 +154,30 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             return;
         }
 
-        var attackSpeed = attributes[Stats.AttackSpeed];
-        var now = DateTime.UtcNow;
-
-        var minIntervalMs = Math.Max(config.AttackSpeedMinIntervalMs, config.AttackSpeedBaseDelayMs - (attackSpeed * config.AttackSpeedScalingFactor));
         var state = this.GetState(player);
-        bool shouldRecordViolation = false;
-
-        lock (state.Lock)
+        var severity = this._attackCheck.Evaluate(player, config, state, skill);
+        if (severity is SpeedHackViolationSeverity.None)
         {
-            if (state.LastAttackTokenUpdateTime == DateTime.MinValue)
-            {
-                state.LastAttackTokenUpdateTime = now;
-                state.AttackTokens = config.MaxAttackTokens - 1.0;
-                return;
-            }
-
-            var elapsedMs = (now - state.LastAttackTokenUpdateTime).TotalMilliseconds;
-            state.LastAttackTokenUpdateTime = now;
-
-            var regen = elapsedMs / minIntervalMs;
-            state.AttackTokens = Math.Min(config.MaxAttackTokens, state.AttackTokens + regen);
-
-            if (state.AttackTokens >= 1.0)
-            {
-                state.AttackTokens -= 1.0;
-                return;
-            }
-
-            shouldRecordViolation = true;
+            return;
         }
 
-        if (shouldRecordViolation)
-        {
-            eventArgs.IsCheatDetected = true;
-            await this.RecordViolationAsync(player, state, config).ConfigureAwait(false);
-        }
+        eventArgs.Severity = severity;
+        await this._violationRecorder.RecordAsync(player, state, config, severity).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ResetMovementStateAsync(Player player)
+    public ValueTask AttackCheatCheckAsync(Player player, SpeedHackCheckEventArgs eventArgs) =>
+        this.AttackCheatCheckAsync(player, null, eventArgs);
+
+    /// <inheritdoc/>
+    public ValueTask PingCheatCheckAsync(Player player, uint tickCount, ushort attackSpeed)
     {
-        var state = this.GetState(player);
-        lock (state.Lock)
+        if (IsServerControlled(player) || this.Configuration is not { } config)
         {
-            state.LastWalkStartTime = DateTime.MinValue;
-            state.RecentWalks.Clear();
+            return ValueTask.CompletedTask;
         }
 
+        this._pingCheck.Evaluate(player, config, this.GetState(player), tickCount, attackSpeed);
         return ValueTask.CompletedTask;
     }
 
@@ -206,26 +186,25 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// </summary>
     /// <param name="player">The player.</param>
     /// <returns>The warning count.</returns>
-    public int GetWarningCount(Player player)
-    {
-        var state = this.GetState(player);
-        lock (state.Lock)
-        {
-            return state.AlertTimes.Count;
-        }
-    }
+    public int GetWarningCount(Player player) => this._violationRecorder.GetWarningCount(this.GetState(player));
 
     /// <summary>
-    /// Sets the last alert time for the player (used in diagnostics/testing).
+    /// Clears the alert debounce for the player (used in diagnostics/testing).
     /// </summary>
     /// <param name="player">The player.</param>
-    /// <param name="time">The time to set.</param>
-    public void SetLastAlertTime(Player player, DateTime time)
+    public void ResetAlertDebounce(Player player) => this._violationRecorder.ResetDebounce(this.GetState(player));
+
+    /// <summary>
+    /// Gets the current violation score for the player (used in diagnostics/testing).
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The current violation score.</returns>
+    internal double GetViolationScore(Player player)
     {
         var state = this.GetState(player);
         lock (state.Lock)
         {
-            state.LastAlertTime = time;
+            return state.ViolationScore;
         }
     }
 
@@ -245,105 +224,5 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     private SpeedHackState GetState(Player player)
     {
         return this._playerStates.GetValue(player, p => new SpeedHackState(this.Configuration?.MaxAttackTokens ?? 5.0));
-    }
-
-    private async ValueTask RecordViolationAsync(Player player, SpeedHackState state, SpeedHackDetectConfiguration config)
-    {
-        var now = DateTime.UtcNow;
-        bool shouldBan = false;
-        bool shouldWarn = false;
-        bool shouldDisconnect = false;
-
-        lock (state.Lock)
-        {
-            if (now - state.LastAlertTime < TimeSpan.FromSeconds(config.AlertDebounceSeconds))
-            {
-                return;
-            }
-
-            state.LastAlertTime = now;
-            state.AlertTimes.Enqueue(now);
-
-            while (state.AlertTimes.Count > 0 && now - state.AlertTimes.Peek() > TimeSpan.FromHours(config.WarningHistoryHours))
-            {
-                state.AlertTimes.Dequeue();
-            }
-
-            player.Logger.LogWarning("Speedhack warning issued for player {0}. Total warnings in last hour: {1}", player.Name, state.AlertTimes.Count);
-
-            if (state.AlertTimes.Count > config.MaxWarnings)
-            {
-                if (config.AutoBan)
-                {
-                    player.Logger.LogError("Player {0} exceeded speedhack warning limit. Banning account {1} and disconnecting.", player.Name, player.Account?.LoginName);
-                    if (player.Account is { } account)
-                    {
-                        account.State = AccountState.Banned;
-                        shouldBan = true;
-                    }
-                }
-
-                if (config.DisconnectOnViolation)
-                {
-                    shouldDisconnect = true;
-                }
-
-                if (!shouldBan && !shouldDisconnect)
-                {
-                    shouldWarn = true;
-                }
-            }
-            else
-            {
-                shouldWarn = true;
-            }
-        }
-
-        if (shouldBan)
-        {
-            await player.SaveProgressAsync().ConfigureAwait(false);
-        }
-
-        if (shouldBan || shouldDisconnect)
-        {
-            await player.DisconnectAsync().ConfigureAwait(false);
-        }
-        else if (shouldWarn)
-        {
-            await player.ShowBlueMessageAsync("Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction.").ConfigureAwait(false);
-        }
-        else
-        {
-            // Do nothing if no actions are required.
-        }
-    }
-
-    private readonly record struct WalkHistoryEntry
-    {
-        public DateTime Time { get; init; }
-
-        public Point StartPoint { get; init; }
-    }
-
-    private class SpeedHackState
-    {
-        public SpeedHackState(double maxAttackTokens)
-        {
-            this.AttackTokens = maxAttackTokens;
-        }
-
-        public object Lock { get; } = new();
-
-        public double AttackTokens { get; set; }
-
-        public DateTime LastAttackTokenUpdateTime { get; set; } = DateTime.MinValue;
-
-        public DateTime LastAlertTime { get; set; } = DateTime.MinValue;
-
-        public Queue<DateTime> AlertTimes { get; } = new();
-
-        public Queue<WalkHistoryEntry> RecentWalks { get; } = new();
-
-        public DateTime LastWalkStartTime { get; set; } = DateTime.MinValue;
     }
 }

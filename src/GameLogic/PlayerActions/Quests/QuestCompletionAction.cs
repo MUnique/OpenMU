@@ -68,6 +68,12 @@ public class QuestCompletionAction
             return;
         }
 
+        if (activeQuest.EvolvesIntoInactiveClass(player))
+        {
+            player.Logger.LogDebug("Failed, the quest evolves into the inactive class {0}.", player.SelectedCharacter?.CharacterClass?.NextGenerationClass);
+            return;
+        }
+
         questState!.LastFinishedQuest = activeQuest;
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
@@ -123,9 +129,13 @@ public class QuestCompletionAction
                 {
                     await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
                 }
+                else if (player.CurrentMap is { } currentMap)
+                {
+                    await currentMap.AddAsync(new DroppedItem(item, player.Position, currentMap, player, player.GetAsEnumerable())).ConfigureAwait(false);
+                }
                 else
                 {
-                    player.CurrentMap?.AddAsync(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
+                    player.Logger.LogWarning("Quest reward item {Item} of player {Player} is lost: the inventory is full and the player is on no map.", item, player);
                 }
 
                 break;

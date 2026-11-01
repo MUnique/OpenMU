@@ -47,6 +47,21 @@ public class MiniGamePlayerRegistryTests
     }
 
     /// <summary>
+    /// Tests that entering works while closed when entering while playing is allowed,
+    /// for the instant start which passes through the closed state in milliseconds.
+    /// </summary>
+    [Test]
+    public async Task EnterWhileClosedSucceedsWhenAllowedAsync()
+    {
+        var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
+        await registry.SetStateAsync(MiniGameState.Closed).ConfigureAwait(false);
+
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), () => true).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(EnterResult.Success));
+    }
+
+    /// <summary>
     /// Tests that entering fails when the game is full with other players.
     /// </summary>
     [Test]
@@ -58,6 +73,49 @@ public class MiniGamePlayerRegistryTests
         var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true)).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(EnterResult.Full));
+    }
+
+    /// <summary>
+    /// Tests that entering while the game runs is rejected by default.
+    /// </summary>
+    [Test]
+    public async Task EnterWhilePlayingIsRejectedByDefaultAsync()
+    {
+        var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
+        await registry.SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
+
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true)).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(EnterResult.NotOpen));
+    }
+
+    /// <summary>
+    /// Tests that entering while the game runs succeeds when late entering is allowed,
+    /// e.g. to rejoin an ongoing event.
+    /// </summary>
+    [Test]
+    public async Task EnterWhilePlayingWithFlagSucceedsAsync()
+    {
+        var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
+        await registry.SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
+
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), allowEnterWhilePlaying: () => true).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(EnterResult.Success));
+    }
+
+    /// <summary>
+    /// Tests that the late entering flag doesn't open ended games.
+    /// </summary>
+    [Test]
+    public async Task EnterWhenEndedWithFlagIsRejectedAsync()
+    {
+        var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
+        await registry.SetStateAsync(MiniGameState.Ended).ConfigureAwait(false);
+
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), allowEnterWhilePlaying: () => true).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(EnterResult.NotOpen));
     }
 
     private static Player CreatePlayer()

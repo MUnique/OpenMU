@@ -21,7 +21,7 @@ using static MUnique.OpenMU.Persistence.Initialization.CharacterClasses.Characte
 /// This adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixAttackSpeedCalculationUpdate_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixAttackSpeedCalculationUpdate_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("F9977AA7-F52A-4F42-BD6C-98DE700B5980")]
 public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
 {
@@ -104,9 +104,6 @@ public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
         { 17, 2 }, // Dark Phoenix Boots
         { 20, 2 }, // Thunder Hawk Boots
     };
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixAttackSpeedCalculation;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

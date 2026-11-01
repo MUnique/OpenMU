@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 using MUnique.OpenMU.Interfaces;
@@ -27,6 +28,7 @@ public class StoreItemListRequestAction
         }
 
         player.LastRequestedPlayerStore = new WeakReference<Player>(requestedPlayer);
+        await player.ShowAllowedPricesAsync().ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(requestedPlayer, false)).ConfigureAwait(false);
     }
 }

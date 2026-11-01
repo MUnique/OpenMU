@@ -75,7 +75,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
 
-        using (await this._pickupLock.LockAsync())
+        using (await this._pickupLock.LockAsync().ConfigureAwait(false))
         {
             if (!this._availableToPick)
             {
@@ -90,7 +90,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         {
             // Nobody got the money, so the drop is released again. Keeping it claimed would leave it
             // lying on the map, unpickable for everyone until it expires - and then lost.
-            using (await this._pickupLock.LockAsync())
+            using (await this._pickupLock.LockAsync().ConfigureAwait(false))
             {
                 this._availableToPick = true;
             }
@@ -152,12 +152,18 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         // only apply when the party which picks it up is the one which earned it; then the money
         // follows the experience. For anyone else there is no experience to follow, so it is split
         // equally between the picking party, just like money without any shares (e.g. an item box).
-        var earnedByThisParty = this._shares.Any(share => party.IsEligibleForMoney(share.Player, player));
+        // The picking player is always eligible, even when standing in a safezone: the safezone rule
+        // keeps members who idle in town out of the split, but whoever picks the money up is right
+        // there. Otherwise a party member picking up money in a safezone, with nobody else eligible,
+        // could never take it.
+        bool IsEligible(Player member) => member == player || party.IsEligibleForMoney(member, player);
+
+        var earnedByThisParty = this._shares.Any(share => IsEligible(share.Player));
         var shares = earnedByThisParty
             ? this._shares
             : MoneyDistribution.CreateEqualShares(this.Amount, party.PartyList.OfType<Player>().ToList());
 
-        var received = MoneyDistribution.TryPayShares(shares, member => party.IsEligibleForMoney(member, player));
+        var received = MoneyDistribution.TryPayShares(shares, IsEligible);
         if (!received)
         {
             player.Logger.LogDebug("No party member could take the money, Player {0}, Money {1}", player, this);

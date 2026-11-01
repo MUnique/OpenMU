@@ -111,11 +111,11 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         var existingServerDefinitions = (await persistenceContext.GetAsync<GameServerDefinition>(cancellationToken).ConfigureAwait(false)).ToList();
 
         var nextServerId = 0;
-        var networkPort = 55901;
+        var networkPort = 45901;
         if (existingServerDefinitions.Count > 0)
         {
             nextServerId = existingServerDefinitions.Max(s => s.ServerID) + 1;
-            networkPort = existingServerDefinitions.Max(s => s.Endpoints.FirstOrDefault()?.NetworkPort ?? 55900) + 1;
+            networkPort = existingServerDefinitions.Max(s => s.Endpoints.FirstOrDefault()?.NetworkPort ?? 45900) + 1;
         }
 
         this._viewModel = new GameServerViewModel
@@ -206,11 +206,13 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         /// <summary>
         /// Gets or sets the server identifier.
         /// </summary>
+        [Display(Name = nameof(Resources.CreateGameServer_ServerId), ResourceType = typeof(Resources))]
         public byte ServerId { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
+        [Display(Name = nameof(Resources.CreateGameServer_Description), ResourceType = typeof(Resources))]
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
@@ -220,29 +222,34 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         /// The experience rate.
         /// </value>
         [Range(0, float.MaxValue)]
+        [Display(Name = nameof(Resources.CreateGameServer_ExperienceRate), ResourceType = typeof(Resources))]
         public float ExperienceRate { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether PVP is enabled on this server.
         /// </summary>
+        [Display(Name = nameof(Resources.CreateGameServer_PvpEnabled), ResourceType = typeof(Resources))]
         public bool PvpEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the server configuration.
         /// </summary>
         [Required]
+        [Display(Name = nameof(Resources.CreateGameServer_ServerConfiguration), ResourceType = typeof(Resources))]
         public GameServerConfiguration? ServerConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the client which is expected to connect.
         /// </summary>
         [Required]
+        [Display(Name = nameof(Resources.CreateGameServer_Client), ResourceType = typeof(Resources))]
         public GameClientDefinition? Client { get; set; }
 
         /// <summary>
         /// Gets or sets the network port on which the server is listening.
         /// </summary>
         [Range(1, ushort.MaxValue)]
+        [Display(Name = nameof(Resources.CreateGameServer_NetworkPort), ResourceType = typeof(Resources))]
         public int NetworkPort { get; set; }
     }
 }

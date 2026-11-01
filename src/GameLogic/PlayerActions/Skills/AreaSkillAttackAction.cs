@@ -4,11 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -19,10 +17,7 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public class AreaSkillAttackAction
 {
-    private const int UndefinedTarget = 0xFFFF;
     private const short ElectricSpikeSkillId = 65;
-
-    private static readonly ConcurrentDictionary<AreaSkillSettings, FrustumBasedTargetFilter> FrustumFilters = new();
 
     /// <summary>
     /// Performs the skill by the player at the specified area. Additionally, to the target area, a target object can be specified.
@@ -41,17 +36,9 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration)
+        if (!await AttackActionValidator.CanAttackAsync(player, skill).ConfigureAwait(false))
         {
-            if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
-            {
-                var eventArgs = new SpeedHackCheckEventArgs();
-                await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
-                if (eventArgs.IsCheatDetected)
-                {
-                    return;
-                }
-            }
+            return;
         }
 
         if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
@@ -59,14 +46,19 @@ public class AreaSkillAttackAction
             return;
         }
 
+        if (skill.SkillType is SkillType.AreaSkillExplicitHits)
+        {
+            player.SkillHitValidator.RegisterArea((ushort)skill.Number, skill, player.Position, targetAreaCenter);
+        }
+
+        await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
+
         if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.Buff
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
-            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, rotation).ConfigureAwait(false);
         }
-
-        await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
     }
 
     private static bool AreaSkillSettingsAreDefault([NotNullWhen(true)] AreaSkillSettings? settings)
@@ -85,125 +77,93 @@ public class AreaSkillAttackAction
                && Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) <= 0.00001f;
     }
 
-    private static IEnumerable<IAttackable> GetTargets(Player player, Point targetAreaCenter, Skill skill, byte rotation, ushort extraTargetId)
+    /// <summary>
+    /// Determines whether the specified target can be scheduled for a hit.
+    /// </summary>
+    /// <param name="target">The potential target.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="filter">The projectile filter, if multiple projectiles are used.</param>
+    /// <param name="rotation">The rotation of the attack.</param>
+    /// <param name="projectileIndex">The index of the current projectile.</param>
+    /// <param name="extraProjectiles">The number of extra projectiles.</param>
+    /// <returns><c>true</c> if the target can be scheduled.</returns>
+    private static bool IsTargetAvailable(IAttackable target, ILocateable attacker, FrustumBasedTargetFilter? filter, byte rotation, int projectileIndex, int extraProjectiles)
     {
-        var isExtraTargetDefined = extraTargetId != UndefinedTarget;
-        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
-
-        player.Logger.LogDebug(
-            "GetTargets: skill={Skill}, extraTargetId={ExtraTargetId}, extraTarget={ExtraTarget}", skill.Name, extraTargetId, extraTarget?.ToString() ?? "null");
-
-        if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
+        // Skip targets that have died in previous rounds.
+        if (!target.IsAlive)
         {
-            if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
-                && player.IsInRange(extraTarget.Position, skill.Range + 2)
-                && !extraTarget.IsAtSafezone())
-            {
-                yield return extraTarget;
-            }
-
-            yield break;
+            return false;
         }
 
-        // Include the explicit extra target if it's valid and in range
-        if (extraTarget is not null
-            && extraTarget.CheckSkillTargetRestrictions(player, skill)
-            && player.IsInRange(extraTarget.Position, skill.Range + 2)
-            && !extraTarget.IsAtSafezone())
-        {
-            yield return extraTarget;
-        }
-
-        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation))
-        {
-            // Skip the extra target if we already yielded it
-            if (target.Id == extraTargetId)
-            {
-                continue;
-            }
-
-            yield return target;
-        }
+        // For multiple projectiles, only the projectile covering the target can hit it.
+        return filter is null || filter.IsTargetWithinBounds(attacker, target, rotation, projectileIndex, extraProjectiles);
     }
 
-    private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
+    /// <summary>
+    /// Rolls whether an attack round hits a target at the specified distance.
+    /// The first <see cref="AreaSkillSettings.MinimumNumberOfHitsPerTarget"/> hits
+    /// are guaranteed; further hits get less likely with distance.
+    /// </summary>
+    /// <param name="settings">The area skill settings.</param>
+    /// <param name="distance">The distance between attacker and target.</param>
+    /// <param name="attackRound">The current attack round.</param>
+    /// <param name="attackCount">The number of scheduled attacks so far.</param>
+    /// <param name="minAttacks">The number of attacks after which the hit chance drops.</param>
+    /// <returns><c>true</c> if the hit proceeds.</returns>
+    private static bool RollHitChance(AreaSkillSettings settings, double distance, int attackRound, int attackCount, int minAttacks)
     {
-        var range = skill.AreaSkillSettings?.EffectRange > 0 ? skill.AreaSkillSettings.EffectRange : skill.Range;
-        var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(targetAreaCenter, range)
-                    .Where(a => a != player)
-                    .Where(a => !a.IsAtSafezone())
-                    .Where(a => a.IsActive())
-            ?? [];
-
-        if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
+        double hitChance;
+        if (attackRound >= settings.MinimumNumberOfHitsPerTarget)
         {
-            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount > 0 ? s.ProjectileCount : 1));
-            targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
+            hitChance = Math.Pow(settings.HitChancePerDistanceMultiplier, distance);
+        }
+        else if (attackCount >= minAttacks)
+        {
+            hitChance = 0.5;
+        }
+        else
+        {
+            hitChance = 1.0;
         }
 
-        if (skill.AreaSkillSettings is { UseTargetAreaFilter: true })
+        return hitChance >= 1.0 || Rand.NextRandomBool(hitChance);
+    }
+
+    /// <summary>
+    /// Applies the party costs of Electric Spike: nearby party members lose
+    /// some health and mana when the skill hits.
+    /// </summary>
+    /// <param name="player">The player who performed the skill.</param>
+    /// <param name="attackCount">The number of scheduled attacks.</param>
+    private static void ApplyElectricSpikePartyCost(Player player, int attackCount)
+    {
+        if (attackCount == 0 || player.Attributes![Stats.NearbyPartyMemberCount] <= 0)
         {
-            targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < skill.AreaSkillSettings.TargetAreaDiameter * 0.5f);
+            return;
         }
 
-        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
+        foreach (var partyMember in player.Party?.PartyList.OfType<Player>().Where(m => m.Observers.Contains(player)) ?? [])
         {
-            targetsInRange = targetsInRange.Where(a => a is not Player);
+            if (partyMember.Attributes is { } memberAttributes)
+            {
+                memberAttributes[Stats.CurrentHealth] *= 0.8f;
+                memberAttributes[Stats.CurrentMana] *= 0.95f;
+            }
         }
-
-        // Exclude summoned monsters from implicit area attacks
-        targetsInRange = targetsInRange.Where(target => target is not Monster { SummonedBy: not null });
-
-        targetsInRange = targetsInRange.Where(target => target.CheckSkillTargetRestrictions(player, skill));
-
-        return targetsInRange;
     }
 
     private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, byte rotation)
     {
-        if (player.Attributes is not { } attributes)
-        {
-            return;
-        }
-
-        if (attributes[Stats.IsStunned] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in stunned state", player);
-            return;
-        }
-
-        if (attributes[Stats.IsAsleep] > 0)
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in sleep state", player);
-            return;
-        }
-
-        if (player.IsAtSafezone())
-        {
-            player.Logger.LogWarning("Probably Hacker - player {player} is attacking from safezone", player);
-            return;
-        }
-
-        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
-        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
-        {
-            return;
-        }
-
-        if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
-        {
-            return;
-        }
-
         bool isCombo = false;
         if (player.ComboState is { } comboState)
         {
             isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
         }
 
+        var effectiveRotation = AreaSkillTargetSelector.CorrectRotationForLockedTarget(player, skill, extraTargetId, rotation);
+
         IAttackable? extraTarget = null;
-        var targets = GetTargets(player, targetAreaCenter, skill, rotation, extraTargetId);
+        var targets = AreaSkillTargetSelector.GetTargets(player, targetAreaCenter, skill, effectiveRotation, extraTargetId);
         if (skill.AreaSkillSettings is not { } areaSkillSettings
             || AreaSkillSettingsAreDefault(areaSkillSettings))
         {
@@ -220,7 +180,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, effectiveRotation, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -231,6 +191,8 @@ public class AreaSkillAttackAction
 
     private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, byte rotation, bool isCombo)
     {
+        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill!;
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
@@ -239,16 +201,16 @@ public class AreaSkillAttackAction
 
         var orderedTargets = targets.ToList();
         FrustumBasedTargetFilter? filter = null;
-        var extraProjectiles = 0;
+        var extraProjectiles = DeferredHitScheduler.GetExtraProjectiles(player, skillEntry, areaSkillSettings);
         var projectileCount = 1;
         var attackRounds = areaSkillSettings.MaximumNumberOfHitsPerTarget;
+        var effectiveRotation = rotation;
 
         if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
         {
             // Order targets by distance to process nearest targets first
             orderedTargets.Sort((a, b) => player.GetDistanceTo(a).CompareTo(player.GetDistanceTo(b)));
-            filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
-            extraProjectiles += (int)player.Attributes![Stats.ExtraProjectiles];
+            filter = AreaSkillTargetSelector.GetLaneFilter(areaSkillSettings);
             projectileCount = areaSkillSettings.ProjectileCount + extraProjectiles;
             attackRounds = 1; // One attack round per projectile
             maxAttacks = projectileCount;
@@ -260,9 +222,12 @@ public class AreaSkillAttackAction
                 // In this case we just calculate the angle on server side, so that lags
                 // or desynced positions may not have such a big impact
                 var angle = (float)player.Position.GetAngleDegreeTo(extraTarget.Position);
-                rotation = (byte)((angle / 360.0f) * 256.0f);
+                effectiveRotation = AreaSkillTargetSelector.ConvertAngleToRotation(angle);
             }
         }
+
+        ValueTask ApplyToTargetAsync(IAttackable target) => this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo);
+        var scheduler = new DeferredHitScheduler(player, skillEntry, skill, areaSkillSettings, targetAreaCenter, effectiveRotation, extraTargetId, extraProjectiles, ApplyToTargetAsync);
 
         // Process each projectile separately
         for (int projectileIndex = 0; projectileIndex < projectileCount; projectileIndex++)
@@ -272,6 +237,7 @@ public class AreaSkillAttackAction
                 break;
             }
 
+            var consideredIds = new HashSet<ushort>();
             for (int attackRound = 0; attackRound < attackRounds; attackRound++)
             {
                 if (attackCount >= maxAttacks)
@@ -291,62 +257,23 @@ public class AreaSkillAttackAction
                         extraTarget = target;
                     }
 
-                    // Skip targets that have died in previous rounds
-                    if (!target.IsAlive)
+                    if (!IsTargetAvailable(target, player, filter, effectiveRotation, projectileIndex, extraProjectiles))
                     {
                         continue;
                     }
 
-                    // For multiple projectiles, check if this specific projectile can hit the target
-                    if (filter != null && !filter.IsTargetWithinBounds(player, target, rotation, projectileIndex, extraProjectiles))
-                    {
-                        continue; // This projectile cannot hit this target
-                    }
-
-                    double hitChance;
-                    if (attackRound >= areaSkillSettings.MinimumNumberOfHitsPerTarget)
-                    {
-                        hitChance = Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target));
-                    }
-                    else if (attackCount >= minAttacks)
-                    {
-                        hitChance = 0.5;
-                    }
-                    else
-                    {
-                        hitChance = 1.0;
-                    }
-
-                    if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
+                    var distance = player.GetDistanceTo(target);
+                    consideredIds.Add(target.Id);
+                    if (!RollHitChance(areaSkillSettings, distance, attackRound, attackCount, minAttacks))
                     {
                         continue;
                     }
 
-                    var distanceDelay = areaSkillSettings.DelayPerOneDistance * player.GetDistanceTo(target);
+                    var distanceDelay = areaSkillSettings.DelayPerOneDistance * distance;
                     var attackDelay = currentDelay + distanceDelay;
                     attackCount++;
 
-                    if (attackDelay == TimeSpan.Zero)
-                    {
-                        // Check if target is still alive and in valid state before attacking
-                        if (!target.IsAtSafezone() && target.IsActive())
-                        {
-                            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
-                        // The most pragmatic approach is just spawning a Task for each hit.
-                        // We have to see, how this works out in terms of performance.
-                        _ = Task.Run(async () =>
-                        {
-                            await Task.Delay(attackDelay).ConfigureAwait(false);
-                            if (!target.IsAtSafezone() && target.IsActive())
-                            {
-                                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
-                            }
-                        });
-                    }
+                    await scheduler.DeliverHitAsync(target, attackDelay, projectileIndex).ConfigureAwait(false);
 
                     if (filter != null)
                     {
@@ -354,20 +281,18 @@ public class AreaSkillAttackAction
                     }
                 }
 
+                if (areaSkillSettings.UseDeferredHits && filter is null)
+                {
+                    scheduler.ScheduleWavefrontSweeps(new HashSet<ushort>(consideredIds), attackRound, maxAttacks - attackCount, currentDelay);
+                }
+
                 currentDelay += areaSkillSettings.DelayBetweenHits;
             }
         }
 
-        if (skillEntry.Skill?.Number == ElectricSpikeSkillId && attackCount > 0 && player.Attributes![Stats.NearbyPartyMemberCount] > 0)
+        if (skillEntry.Skill?.Number == ElectricSpikeSkillId)
         {
-            foreach (var partyMember in player.Party?.PartyList.OfType<Player>().Where(m => m.Observers.Contains(player)) ?? [])
-            {
-                if (partyMember.Attributes is { } memberAttributes)
-                {
-                    memberAttributes[Stats.CurrentHealth] *= 0.8f;
-                    memberAttributes[Stats.CurrentMana] *= 0.95f;
-                }
-            }
+            ApplyElectricSpikePartyCost(player, attackCount);
         }
 
         return extraTarget;
@@ -385,11 +310,18 @@ public class AreaSkillAttackAction
         }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
-        await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
+        var success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
 
         for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
         {
             await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+        }
+
+        if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+        {
+            // The hit generated a different skill (e.g. ice) than the one originally casted.
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, hitInfo.Value.SkillEntry.Skill, success), true).ConfigureAwait(false);
+            return;
         }
 
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)

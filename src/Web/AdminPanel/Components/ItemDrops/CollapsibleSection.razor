@@ -1,0 +1,72 @@
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center collapsible-section__header" role="button"
+         aria-expanded="@this._isExpanded" @onclick="this.Toggle">
+        <span class="oi @(this._isExpanded ? "oi-chevron-bottom" : "oi-chevron-right") me-2" aria-hidden="true"></span>
+        <h5 class="mb-0 flex-grow-1">@this.Title</h5>
+        @if (this.Badge is not null)
+        {
+            <span class="badge bg-secondary">@this.Badge</span>
+        }
+    </div>
+    @if (this._isExpanded)
+    {
+        <div class="card-body">
+            @if (!string.IsNullOrWhiteSpace(this.Description))
+            {
+                <p class="text-muted small">@this.Description</p>
+            }
+            @this.ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isExpanded;
+    private bool _initialized;
+
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the description which is shown above the content.
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the badge text which is shown in the header, e.g. the number of entries.
+    /// </summary>
+    [Parameter]
+    public string? Badge { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the section is expanded initially.
+    /// </summary>
+    [Parameter]
+    public bool InitiallyExpanded { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (!this._initialized)
+        {
+            this._isExpanded = this.InitiallyExpanded;
+            this._initialized = true;
+        }
+    }
+
+    private void Toggle()
+    {
+        this._isExpanded = !this._isExpanded;
+    }
+}

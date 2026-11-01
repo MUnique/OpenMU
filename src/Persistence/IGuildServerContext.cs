@@ -1,9 +1,10 @@
-﻿// <copyright file="IGuildServerContext.cs" company="MUnique">
+// <copyright file="IGuildServerContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Threading;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -41,9 +42,63 @@ public interface IGuildServerContext : IContext
     ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId);
 
     /// <summary>
+    /// Gets the names of the guild masters of all guilds.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The names of the guild masters by the identifiers of their guilds.</returns>
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the guild membership of a character.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>The membership; or <c>null</c>, if the character isn't a member of a guild.</returns>
+    ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName);
+
+    /// <summary>
     /// Gets the alliances of a guild.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <returns>The ids of the alliances of a guild.</returns>
     ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId);
+
+    /// <summary>
+    /// Gets a page of guilds, ordered by name, without loading the whole guild table into memory.
+    /// </summary>
+    /// <param name="skip">The number of guilds to skip.</param>
+    /// <param name="count">The maximum number of guilds to return.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The requested page of guilds, including alliance and member information.</returns>
+    ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetGuildsOrderedByNameAsync(int skip, int count, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Searches guilds by name and returns a page of the matching results, without loading the whole guild table into memory.
+    /// </summary>
+    /// <param name="searchTerm">The case-insensitive search term which is matched against the guild name.</param>
+    /// <param name="skip">The number of matching guilds to skip.</param>
+    /// <param name="count">The maximum number of guilds to return.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The requested page of matching guilds, including alliance and member information.</returns>
+    ValueTask<IReadOnlyList<DataModel.Entities.Guild>> SearchGuildsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Of the given guild identifiers, returns the ones which are the master of an alliance
+    /// (i.e. at least one other guild points to them as their <see cref="Interfaces.Guild.AllianceGuild"/>).
+    /// </summary>
+    /// <param name="guildIds">The guild identifiers to check. Kept small (e.g. one page) to avoid a full table scan.</param>
+    /// <returns>The subset of <paramref name="guildIds"/> which are alliance masters.</returns>
+    ValueTask<IReadOnlyCollection<Guid>> GetAllianceMasterIdsAsync(IReadOnlyCollection<Guid> guildIds);
+
+    /// <summary>Counts guilds matching a case-insensitive name search.</summary>
+    /// <param name="text">The search term.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of matches.</returns>
+    ValueTask<int> CountGuildsAsync(string text, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets statistics about the guilds.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The statistics about the guilds.</returns>
+    ValueTask<GuildStatistics> GetGuildStatisticsAsync(CancellationToken cancellationToken = default);
 }

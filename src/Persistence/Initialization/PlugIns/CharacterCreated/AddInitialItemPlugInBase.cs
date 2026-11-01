@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns;
 
 /// <summary>
@@ -39,22 +38,22 @@ public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
     }
 
     /// <inheritdoc/>
-    public void CharacterCreated(Player player, Character createdCharacter)
+    public void CharacterCreated(Account account, Character createdCharacter, IContext persistenceContext, GameConfiguration gameConfiguration, ILogger logger)
     {
-        using var logScope = player.Logger.BeginScope(this.GetType());
+        using var logScope = logger.BeginScope(this.GetType());
         if (this._characterClassNumber.HasValue && this._characterClassNumber != createdCharacter.CharacterClass?.Number)
         {
-            player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass?.Number, this._characterClassNumber);
+            logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass?.Number, this._characterClassNumber);
             return;
         }
 
         if (createdCharacter.Inventory!.Items.FirstOrDefault(i => i.ItemSlot == this._itemSlot) is { } existingItem)
         {
-            player.Logger.LogError("Item slot {0} already contains an item ({1}).", this._itemSlot, existingItem);
+            logger.LogError("Item slot {0} already contains an item ({1}).", this._itemSlot, existingItem);
             return;
         }
 
-        if (this.CreateItem(player, createdCharacter) is { } item)
+        if (this.CreateItem(persistenceContext, gameConfiguration, logger) is { } item)
         {
             createdCharacter.Inventory!.Items.Add(item);
         }
@@ -64,16 +63,17 @@ public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
     /// Creates the item.
     /// Can be overwritten to modify the default.
     /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="createdCharacter">The created character.</param>
+    /// <param name="persistenceContext">The persistence context which creates the item.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="logger">The logger.</param>
     /// <returns>The created item.</returns>
-    protected virtual Item? CreateItem(Player player, Character createdCharacter)
+    protected virtual Item? CreateItem(IContext persistenceContext, GameConfiguration gameConfiguration, ILogger logger)
     {
-        if (player.GameContext.Configuration.Items
+        if (gameConfiguration.Items
                 .FirstOrDefault(def => def.Group == this._itemGroup && def.Number == this._itemNumber)
             is { } itemDefinition)
         {
-            var item = player.PersistenceContext.CreateNew<Item>();
+            var item = persistenceContext.CreateNew<Item>();
 
             item.Definition = itemDefinition;
             item.Durability = item.Definition.Durability;
@@ -82,7 +82,7 @@ public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
             return item;
         }
 
-        player.Logger.LogWarning($"Unknown item, group {this._itemGroup}, number {this._itemNumber}.");
+        logger.LogWarning($"Unknown item, group {this._itemGroup}, number {this._itemNumber}.");
         return null;
     }
 }

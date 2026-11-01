@@ -50,7 +50,7 @@ main one, plus older versions such as 0.75 and 0.95d.
 A slider from 1 to 10. This only creates the **configuration** of that many game
 servers; whether they are actually started is decided on the
 [Servers page](servers.md). Each game server gets its own network port, starting
-at 55901.
+at 45901.
 
 ### 3. Test accounts
 
@@ -65,6 +65,10 @@ have game master rights and their password is identical to their user name.
 Then click **Install** and wait. When the installation is finished, the page says
 so.
 
+If installation fails, the page shows an error instead. Check the server logs,
+correct the problem, and retry; the selected version and test account option stay
+selected.
+
 :::warning[All players are disconnected]
 The installation button is disabled while players are connected — the page shows
 *"First close all connections to the server"*. An installation **drops the
@@ -73,7 +77,7 @@ existing data**, so every account, character and configuration change is lost.
 
 :::note[Distributed deployment]
 In a [distributed deployment](../deployment/distributed.md) you have to restart
-the connect server and game server containers after the installation has
+the central server and game server containers after the installation has
 finished. The panel reminds you of that.
 :::
 
@@ -91,6 +95,9 @@ PostgreSQL database first if you care about it.
 
 If the running OpenMU version needs a newer database schema, the page offers
 **Update**. This migrates the schema; it does not touch your accounts.
+
+If a schema update fails, the page shows an error. Check the server logs, restore
+the database connection if needed, reload the page, and retry **Update**.
 
 Schema updates are separate from **configuration** updates — new drop tables,
 fixed monster stats or new plugin configurations are applied on the

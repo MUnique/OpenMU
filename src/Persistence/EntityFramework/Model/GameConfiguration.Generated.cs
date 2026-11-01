@@ -92,6 +92,24 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable> ItemLevelBonusTables => base.ItemLevelBonusTables ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable, ItemLevelBonusTable>(this.RawItemLevelBonusTables);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="ItemStatProfiles" />.
+    /// </summary>
+    public ICollection<ItemStatProfile> RawItemStatProfiles { get; } = new EntityFramework.List<ItemStatProfile>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile> ItemStatProfiles => base.ItemStatProfiles ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile, ItemStatProfile>(this.RawItemStatProfiles);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="ItemPriceDefinitions" />.
+    /// </summary>
+    public ICollection<ItemPriceDefinition> RawItemPriceDefinitions { get; } = new EntityFramework.List<ItemPriceDefinition>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition> ItemPriceDefinitions => base.ItemPriceDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition, ItemPriceDefinition>(this.RawItemPriceDefinitions);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemSlotTypes" />.
     /// </summary>
     public ICollection<ItemSlotType> RawItemSlotTypes { get; } = new EntityFramework.List<ItemSlotType>();
@@ -266,6 +284,32 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
         {
             base.CastleSiegeConfiguration = value;
             this.CastleSiegeConfigurationId = this.RawCastleSiegeConfiguration?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CashShopConfiguration"/>.
+    /// </summary>
+    public Guid? CashShopConfigurationId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CashShopConfiguration" />.
+    /// </summary>
+    [ForeignKey(nameof(CashShopConfigurationId))]
+    public CashShopConfiguration RawCashShopConfiguration
+    {
+        get => base.CashShopConfiguration as CashShopConfiguration;
+        set => base.CashShopConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.CashShopConfiguration CashShopConfiguration
+    {
+        get => base.CashShopConfiguration;set
+        {
+            base.CashShopConfiguration = value;
+            this.CashShopConfigurationId = this.RawCashShopConfiguration?.Id;
         }
     }
 

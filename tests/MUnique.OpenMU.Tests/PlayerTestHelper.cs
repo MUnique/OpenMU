@@ -28,6 +28,20 @@ public static class PlayerTestHelper
     /// <returns>The test player.</returns>
     public static async ValueTask<Player> CreatePlayerAsync()
     {
+        var gameConfiguration = CreateGameConfiguration();
+        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(gameConfiguration, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        return await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a minimal game configuration with one map with the number 0, which is sufficient for test players.
+    /// </summary>
+    /// <returns>The game configuration.</returns>
+    public static GameConfiguration CreateGameConfiguration()
+    {
         var gameConfig = new Mock<GameConfiguration>();
         gameConfig.SetupAllProperties();
         gameConfig.Setup(c => c.Maps).Returns(new List<GameMapDefinition>());
@@ -48,12 +62,7 @@ public static class PlayerTestHelper
         map.Object.TerrainData = new byte[ushort.MaxValue + 3];
         gameConfig.Object.RecoveryInterval = int.MaxValue;
         gameConfig.Object.Maps.Add(map.Object);
-
-        var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameContext.PlugInManager;
-        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
-        return await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        return gameConfig.Object;
     }
 
     /// <summary>
@@ -62,6 +71,18 @@ public static class PlayerTestHelper
     /// <param name="gameContext">The game context.</param>
     /// <returns>The test player.</returns>
     public static async ValueTask<Player> CreatePlayerAsync(IGameContext gameContext)
+    {
+        var player = new TestPlayer(gameContext);
+        await EnterWorldAsync(player, CreateCharacter(gameContext)).ConfigureAwait(false);
+        return player;
+    }
+
+    /// <summary>
+    /// Creates a character of a minimal character class on the map with the number 0, which is sufficient for test players.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The character.</returns>
+    public static Character CreateCharacter(IGameContext gameContext)
     {
         var characterMock = new Mock<Character>();
         characterMock.SetupAllProperties();
@@ -131,16 +152,24 @@ public static class PlayerTestHelper
             character.Attributes.Add(new StatAttribute(attributeDef.Attribute!, attributeDef.BaseValue));
         }
 
+        return character;
+    }
+
+    /// <summary>
+    /// Logs the player in with a new account and lets it enter the world with the character.
+    /// </summary>
+    /// <param name="player">The player, e.g. a remote player whose packets are tested.</param>
+    /// <param name="character">The character, see <see cref="CreateCharacter"/>.</param>
+    public static async ValueTask EnterWorldAsync(Player player, Character character)
+    {
         var accountMock = new Mock<Account>();
         accountMock.Setup(mock => mock.Attributes).Returns(new List<StatAttribute>());
         accountMock.Setup(mock => mock.UnlockedCharacterClasses).Returns(new List<CharacterClass>());
-        var player = new TestPlayer(gameContext) { Account = accountMock.Object };
+        player.Account = accountMock.Object;
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
         await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
-
-        return player;
     }
 
     /// <summary>

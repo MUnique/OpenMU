@@ -182,6 +182,18 @@ public interface IGuildServer
     ValueTask ChangeGuildMemberPositionAsync(uint guildId, Guid characterId, GuildPosition role);
 
     /// <summary>
+    /// Updates the guild member position, resolved by character name.
+    /// Unlike character-based lookups on a single game server, this also reaches members
+    /// which are online on another game server or offline.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="role">The role. Only normal member, battle master and assistant master are accepted.</param>
+    /// <param name="masterTotalLevel">The combined normal and master level of the guild master, used for the battle master limit.</param>
+    /// <returns><c>true</c> if the member was found and the position was changed; otherwise, <c>false</c>.</returns>
+    ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role, int masterTotalLevel);
+
+    /// <summary>
     /// Notifies the guild server that a player (potential guild member) entered the game.
     /// </summary>
     /// <param name="characterId">The character identifier.</param>

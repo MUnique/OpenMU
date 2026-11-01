@@ -41,6 +41,20 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
             case MiniGameType.ChaosCastle:
                 await this._player.Connection.SendChaosCastleEnterResultAsync(enterResult.ToChaosCastleEnterResult()).ConfigureAwait(false);
                 break;
+            case MiniGameType.Doppelganger:
+                await this._player.Connection.SendDoppelgangerEnterResultAsync(enterResult.ToDoppelgangerEnterResult()).ConfigureAwait(false);
+                break;
+            case MiniGameType.ImperialGuardian:
+                if (enterResult != EnterResult.Success)
+                {
+                    // On success, the game shows the zone when the player entered its map.
+                    await this._player.Connection.SendImperialGuardianEnterResultAsync(enterResult.ToImperialGuardianEnterResult(), 0, 0, ImperialGuardianEnterResult.WeatherType.Sun, 0).ConfigureAwait(false);
+                }
+
+                break;
+            case MiniGameType.Kanturu:
+                await this._player.Connection.SendKanturuEnterResultAsync(enterResult.ToKanturuEnterResult()).ConfigureAwait(false);
+                break;
             case MiniGameType.Undefined:
                 throw new ArgumentException("undefined game type", nameof(miniGameType));
             default:

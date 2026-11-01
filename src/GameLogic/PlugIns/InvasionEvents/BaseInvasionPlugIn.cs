@@ -1,4 +1,4 @@
-// <copyright file="BaseInvasionPlugIn.cs" company="MUnique">
+﻿// <copyright file="BaseInvasionPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -152,7 +152,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     protected override async ValueTask OnPrepareEventAsync(InvasionGameServerState state)
     {
         var config = this.Configuration;
-        if (config?.Mobs is not { Count: > 0 } mobs)
+        if (config is null || this.GetActiveMobs(state.Context) is not { Count: > 0 } mobs)
         {
             return;
         }
@@ -248,11 +248,21 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     protected override async ValueTask OnStartedAsync(InvasionGameServerState state)
     {
         await this.SpawnMobsOnMapsAsync(state).ConfigureAwait(false);
+
+        var maps = GetAnnouncedMapDefinitions(state);
+        await state.Context.PlugInManager.NotifyPlugInsAsync<IInvasionStartedPlugIn>(
+            p => p.InvasionStartedAsync(state.Context, this, maps),
+            state.Context.LoggerFactory.CreateLogger(this.GetType())).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnFinishedAsync(InvasionGameServerState state)
     {
+        var maps = GetAnnouncedMapDefinitions(state);
+        await state.Context.PlugInManager.NotifyPlugInsAsync<IInvasionEndedPlugIn>(
+            p => p.InvasionEndedAsync(state.Context, this, maps),
+            state.Context.LoggerFactory.CreateLogger(this.GetType())).ConfigureAwait(false);
+
         await state.Context.ForEachPlayerAsync(p => this.TrySendEndMessageAsync(p, state)).ConfigureAwait(false);
 
         if (this.EventType is not null)
@@ -270,8 +280,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <param name="state">The state.</param>
     protected virtual async ValueTask SpawnMobsOnMapsAsync(InvasionGameServerState state)
     {
-        var config = this.Configuration;
-        if (config?.Mobs is not { Count: > 0 } spawns)
+        if (this.GetActiveMobs(state.Context) is not { Count: > 0 } spawns)
         {
             return;
         }
@@ -296,6 +305,18 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
                 // This indicates an unexpected state or configuration mismatch.
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the definitions of the maps which are announced to the players as invaded.
+    /// </summary>
+    /// <param name="state">The current invasion state.</param>
+    /// <returns>The definitions of the announced maps.</returns>
+    private static List<GameMapDefinition> GetAnnouncedMapDefinitions(InvasionGameServerState state)
+    {
+        return state.Context.Configuration.Maps
+            .Where(map => state.AnnouncedMapIds.Contains((ushort)map.Number))
+            .ToList();
     }
 
     /// <summary>
@@ -473,10 +494,34 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
 
         // AllMaps: the monster spawns on every configured map, so name them all.
-        var mob = this.Configuration?.Mobs.FirstOrDefault(m => m.MonsterId == monsterId);
+        var mob = this.GetActiveMobs(state.Context).FirstOrDefault(m => m.MonsterId == monsterId);
         return mob is { IsSpawnOnAllMaps: true, MapIds.Count: > 0 }
             ? mob.MapIds.ToArray()
             : [];
+    }
+
+    /// <summary>
+    /// Gets the configured mobs which can be spawned: mobs of inactive monsters are left out,
+    /// as well as the inactive maps (<see cref="GameMapDefinition.IsActive"/>) of the mobs.
+    /// Mobs without any active map are left out, too.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The mobs which can be spawned.</returns>
+    private IList<InvasionSpawnConfiguration> GetActiveMobs(IGameContext gameContext)
+    {
+        var gameConfiguration = gameContext.Configuration;
+        return (this.Configuration?.Mobs ?? [])
+            .Where(mob => !gameConfiguration.Monsters.Any(m => m.Number == mob.MonsterId && !m.IsActive))
+            .Select(mob => new InvasionSpawnConfiguration(
+                mob.MonsterId,
+                mob.Count,
+                mob.MapIds.Where(mapId => gameConfiguration.Maps.Any(m => m.Number == mapId && m.IsActive)).ToList(),
+                mob.MapStrategy,
+                mob.X,
+                mob.Y,
+                mob.AnnounceDeath))
+            .Where(mob => mob.MapIds.Count > 0)
+            .ToList();
     }
 
     private bool IsPlayerOnRelevantMap(Player player, InvasionGameServerState state)

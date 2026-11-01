@@ -26,6 +26,7 @@ public class AdminUserManagementService
     private readonly AdminUserAvailabilityService _userAvailability;
     private readonly IModalService _modalService;
     private readonly IToastService _toastService;
+    private readonly AdminPanelSetupMode _setupMode;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AdminUserManagementService"/> class.
@@ -36,13 +37,15 @@ public class AdminUserManagementService
     /// <param name="userAvailability">The service which knows whether any user exists.</param>
     /// <param name="modalService">The modal service.</param>
     /// <param name="toastService">The toast service.</param>
+    /// <param name="setupMode">The setup mode, whose API keys the first user disables.</param>
     public AdminUserManagementService(
         UserManager<AdminUser> userManager,
         IAdminUserRepository repository,
         AuthenticatorSetupService authenticatorSetupService,
         AdminUserAvailabilityService userAvailability,
         IModalService modalService,
-        IToastService toastService)
+        IToastService toastService,
+        AdminPanelSetupMode setupMode)
     {
         this._userManager = userManager;
         this._repository = repository;
@@ -50,6 +53,7 @@ public class AdminUserManagementService
         this._userAvailability = userAvailability;
         this._modalService = modalService;
         this._toastService = toastService;
+        this._setupMode = setupMode;
     }
 
     /// <summary>
@@ -65,6 +69,10 @@ public class AdminUserManagementService
     /// Creates a new user, asking for its data in a modal dialog.
     /// </summary>
     /// <returns><c>true</c>, if a user has been created; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    /// The first user ends the setup mode, in which anybody who reached the admin panel could
+    /// create API keys. So it disables the keys which exist at that time.
+    /// </remarks>
     public async Task<bool> CreateNewInModalDialogAsync()
     {
         var input = new UserCreationParameters();
@@ -83,6 +91,7 @@ public class AdminUserManagementService
             Roles = input.Role.ToString(),
         };
 
+        var endsSetupMode = await this._setupMode.IsActiveAsync().ConfigureAwait(false);
         var identityResult = await this._userManager.CreateAsync(user, input.Password).ConfigureAwait(false);
         if (!identityResult.Succeeded)
         {
@@ -90,8 +99,13 @@ public class AdminUserManagementService
             return false;
         }
 
-        this._userAvailability.Invalidate();
+        this._userAvailability.NotifyUserCreated();
         this._toastService.ShowSuccess(Resources.UserCreated);
+        if (endsSetupMode && await this._setupMode.DisableApiKeysAsync().ConfigureAwait(false) is var disabledKeys and > 0)
+        {
+            this._toastService.ShowWarning(string.Format(Resources.ApiKeysOfSetupModeDisabled, disabledKeys));
+        }
+
         return true;
     }
 

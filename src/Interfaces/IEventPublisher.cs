@@ -44,10 +44,23 @@ public interface IEventPublisher
     ValueTask AllianceMessageAsync(uint guildId, string sender, string message);
 
     /// <summary>
+    /// Notifies the game servers that a message was sent to the world chat, which all players of all game servers can read.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="message">The message.</param>
+    ValueTask WorldChatMessageAsync(string sender, string message);
+
+    /// <summary>
     /// Notifies that a client tried to log into an already logged-in account.
     /// The connected player can be notified about that.
     /// </summary>
     /// <param name="serverId">The identifier of the server on which the client tried to enter.</param>
     /// <param name="loginName">The login name.</param>
     ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName);
+
+    /// <summary>
+    /// Publishes an event of the game to the whole server, e.g. to notify external systems like Discord.
+    /// </summary>
+    /// <param name="gameEvent">The game event.</param>
+    ValueTask GameEventAsync(GameEvent gameEvent);
 }

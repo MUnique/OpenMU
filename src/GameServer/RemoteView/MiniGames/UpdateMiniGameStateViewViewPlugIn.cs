@@ -72,6 +72,12 @@ public class UpdateMiniGameStateViewViewPlugIn : IUpdateMiniGameStateViewPlugIn
             case (MiniGameType.ChaosCastle, MiniGameState.Ended):
                 miniGameState = UpdateMiniGameState.MiniGameTypeState.ChaosCastleFinished;
                 break;
+            case (MiniGameType.Doppelganger, MiniGameState.Closed):
+                miniGameState = UpdateMiniGameState.MiniGameTypeState.DoppelgangerStarting;
+                break;
+            case (MiniGameType.Doppelganger, MiniGameState.Ended):
+                miniGameState = UpdateMiniGameState.MiniGameTypeState.DoppelgangerEnding;
+                break;
             default:
                 miniGameState = default;
                 return false;

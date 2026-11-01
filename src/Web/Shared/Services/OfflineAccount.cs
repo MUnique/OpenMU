@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 /// <param name="ServerId">The server identifier.</param>
 /// <param name="StartedAt">The start timestamp of the offline session.</param>
 /// <param name="CharacterName">The character which keeps leveling.</param>
+/// <param name="GuildName">The guild of the character, if any.</param>
 /// <param name="PartyMaster">The character name of the party master, if the player is in a party.</param>
 /// <param name="PartySize">The number of party members, if the player is in a party.</param>
-public record OfflineAccount(string LoginName, byte ServerId, DateTime StartedAt, string? CharacterName = null, string? PartyMaster = null, int PartySize = 0) : IPartyGroupedAccount;
+public record OfflineAccount(string LoginName, byte ServerId, DateTime StartedAt, string? CharacterName = null, string? GuildName = null, string? PartyMaster = null, int PartySize = 0) : IPartyGroupedAccount;

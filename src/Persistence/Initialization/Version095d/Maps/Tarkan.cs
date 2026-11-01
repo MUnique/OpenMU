@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -28,7 +30,7 @@ internal class Tarkan : BaseMapInitializer
     protected override byte MapNumber => 8;
 
     /// <inheritdoc/>
-    protected override string MapName => "Tarkan";
+    protected override LocalizedString MapName => LocalizedString.FromResource(() => MapNames.Tarkan);
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -259,7 +261,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 57;
-            monster.Designation = "Iron Wheel";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IronWheel);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -291,7 +293,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 58;
-            monster.Designation = "Tantallos";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Tantallos);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -324,7 +326,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 59;
-            monster.Designation = "Zaikan";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Zaikan);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -357,7 +359,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 60;
-            monster.Designation = "Bloody Wolf";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodyWolf);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -389,7 +391,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 61;
-            monster.Designation = "Beam Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BeamKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -422,7 +424,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 62;
-            monster.Designation = "Mutant";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Mutant);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -454,7 +456,7 @@ internal class Tarkan : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 63;
-            monster.Designation = "Death Beam Knight";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathBeamKnight);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;

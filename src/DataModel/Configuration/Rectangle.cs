@@ -40,6 +40,6 @@ public partial class Rectangle
             return $"{this.X1} / {this.Y1}";
         }
 
-        return $"{this.X1} / {this.Y1} to {this.X2} / {this.Y2}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.RectangleSummary, this.X1, this.Y1, this.X2, this.Y2);
     }
 }

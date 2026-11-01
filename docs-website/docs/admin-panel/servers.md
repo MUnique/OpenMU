@@ -17,12 +17,27 @@ game servers and the chat server — and is where you start and stop them.
 |---|---|
 | (icon) | For game servers: a link which opens the [live map](live-map.md) of that server |
 | Server name | The description of the server. Clicking it opens the server's configuration |
-| Player count | Current connections / maximum connections (`∞` when unlimited) |
+| Player count | Current connections / maximum connections (`∞` when unlimited). For game servers, these are the logged in players and the *Maximum Players* of the server configuration |
 | Current state | `Stopped`, `Starting`, `Started`, `Stopping`, … |
 | Action | Start, stop and remove buttons |
 
 The footer of the table shows the **total** number of online players over all
 game servers.
+
+A game server counts a player once it has logged in, until it disconnects.
+Clients which are still at the login screen don't take a place, so they can't
+fill up the server. When all places are taken, a login is refused with the
+"server is full" message, and the game server logs that at the *Information*
+level. The server list of the clients shows the same number as the load of the
+server.
+
+Clients which didn't log in yet are limited to the same number: when as many
+connections wait for their login as players may log in, the game server refuses
+further connections right away, and logs that at the *Information* level, too.
+This way, connections which never log in can't use up the memory of the server.
+To disconnect clients which stay at the login screen for too long, activate the
+*Login Timeout* [plugin](plugins.md); it's disabled by default, and its timeout
+can be configured.
 
 ### Starting and stopping
 
@@ -64,11 +79,35 @@ Clicking the name of a server opens its configuration:
 
 * **Game server** → the generic edit page of its `GameServerDefinition`:
   experience rate, PvP, the game maps it hosts, its endpoints (port and expected
-  client), the maximum number of players, and so on.
+  client), the maximum number of players, the
+  [join requirements](#restricting-who-can-join-a-game-server), and so on.
 * **Connect server** → the connect server configuration: the client it serves,
   its port, timeouts, the maximum number of connections, and the limits which
   protect it against connection floods.
 * **Chat server** → its endpoints and settings.
+
+### Restricting who can join a game server
+
+The **Join Requirements** of a game server restrict it to accounts which have a
+certain attribute, e.g. a *VIP* or *Gold* server. Each requirement names an
+attribute and its minimum value. Without requirements, every account can join.
+
+The requirements are checked when the player logs in, before a character is
+selected. That's why only the attributes of the **account** count: its permanent
+**Attributes** and its valid **Attribute Grants** (see
+[Accounts](accounts.md#granting-attributes-for-a-limited-time-eg-vip)). Attributes
+of characters, like the level, don't count.
+
+* An account which never had the attribute gets the message that there is no
+  payment information.
+* An account whose grant of the attribute has expired gets the message that its
+  subscription term is over.
+* Game master accounts can join every game server.
+
+The connect server still lists the server for everyone; the check happens when
+the player logs in. A player who is already in the game stays on the server when
+the grant expires, but can't log in there again. Like the experience rate, the
+requirements are loaded when the game server starts.
 
 ## Adding a server
 
@@ -84,10 +123,36 @@ The **+ Game server** button opens a small form:
 | PvP enabled | Whether players can attack each other on this server |
 | Server configuration | Which `GameServerConfiguration` to use — this defines the maps the server hosts |
 | Client | The `GameClientDefinition` which is expected to connect |
-| Network port | The TCP port of the listener, e.g. 55907 |
+| Network port | The TCP port of the listener, e.g. 45907 |
 
 After saving, the new server appears in the list, stopped, and can be started
 right away.
+
+### Share a map between game servers
+
+A map can be shared by several game servers, so that their players meet on the
+same map — for example for an event which takes place for all of them at once.
+A map is shared when only some game servers host it:
+
+1. Give the game servers which should **not** host the map a server configuration
+   whose maps don't include it.
+2. Keep the map in the server configuration of the game server which should host
+   it.
+
+A player whose game server doesn't host the map then enters it on a game server
+which does. When several game servers host it, the one with the lowest server id
+is used. The player stays connected to its own game server: the game client
+doesn't reconnect, and the player still counts towards its own game server.
+
+When the hosting game server is stopped, its guests are warped to their safezone.
+When no started game server hosts the map, players are warped to the home map of
+their character class instead.
+
+:::note[Only in the all-in-one deployment]
+Sharing maps currently only works when all game servers run in the same process.
+In a distributed deployment, the game client would have to switch to the hosting
+game server, which is not supported yet.
+:::
 
 ### Add a connect server
 
@@ -102,12 +167,18 @@ forward it in your router or docker compose file. See [Ports](../reference/ports
 
 ## Global messages
 
-The card at the top of the page sends a message to the players — the golden
-message in the centre of the screen.
+The card at the top of the page sends a message to the players.
 
 1. Type the text.
-2. Choose the target: *All game servers*, or one specific started game server.
-3. Click **Send**.
+2. Choose the message type:
+   * *Golden (center)*: the golden message in the centre of the screen, like
+     `/goldnotice`.
+   * *Blue (system)*: a blue system message in the chat.
+   * *Slide (top band)*: a notice which scrolls once through the band at the
+     top of the screen, like `/slidenotice`. Clients older than season 1 don't
+     have this band and get the golden message instead.
+3. Choose the target: *All game servers*, or one specific started game server.
+4. Click **Send**.
 
 Only started game servers can be targeted. If the target stopped in the meantime,
 the panel keeps your text so you can pick another target and retry.

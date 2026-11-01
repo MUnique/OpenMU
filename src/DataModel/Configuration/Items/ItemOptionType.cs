@@ -78,7 +78,7 @@ public partial class ItemOptionType
     /// </returns>
     public override string ToString()
     {
-        return this.Name;
+        return this.Name.ToString() ?? string.Empty;
     }
 
     /// <summary>

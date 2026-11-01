@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -14,6 +16,17 @@ using MUnique.OpenMU.Pathfinding;
 public class WarpGateAction
 {
     /// <summary>
+    /// The number of tiles by which the position of the player may be outside of the area of an enter gate.
+    /// </summary>
+    /// <remarks>
+    /// The position known by the server and the one of the client can differ a bit, so some inaccuracy is allowed.
+    /// It's independent of <see cref="DataModel.Configuration.GameConfiguration.InfoRange"/>, which is the view range:
+    /// raising it for wider screens or zoomed out cameras should not allow entering gates from further away.
+    /// 12 is the default info range, which was used here before.
+    /// </remarks>
+    internal const byte GateEntryTolerance = 12;
+
+    /// <summary>
     /// Enters the gate.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -22,6 +35,20 @@ public class WarpGateAction
     {
         if (await this.IsWarpLegitAsync(player, gate).ConfigureAwait(false))
         {
+            var eventArgs = new CancelEventArgs();
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.WarpGateEnteringAsync(player, gate.TargetGate!, eventArgs).ConfigureAwait(false);
+            }
+
+            if (eventArgs.Cancel)
+            {
+                // Like the original game, the player is warped to its current position.
+                // The game client shows its loading screen until a map change is completed.
+                await this.WarpToCurrentPositionAsync(player).ConfigureAwait(false);
+                return;
+            }
+
             await player.WarpToAsync(gate.TargetGate!).ConfigureAwait(false);
         }
         else
@@ -56,15 +83,30 @@ public class WarpGateAction
         }
 
         var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
-        var inaccuracy = player.GameContext.Configuration.InfoRange;
         if (player.CurrentMap!.Definition.EnterGates.Contains(enterGate)
-            && !(this.IsXInRange(currentPosition, enterGate, inaccuracy)
-                 && this.IsYInRange(currentPosition, enterGate, inaccuracy)))
+            && !(this.IsXInRange(currentPosition, enterGate, GateEntryTolerance)
+                 && this.IsYInRange(currentPosition, enterGate, GateEntryTolerance)))
         {
             return false;
         }
 
         return true;
+    }
+
+    private async ValueTask WarpToCurrentPositionAsync(Player player)
+    {
+        var position = player.IsWalking ? player.WalkTarget : player.Position;
+        var currentPosition = new ExitGate
+        {
+            Map = player.CurrentMap!.Definition,
+            X1 = position.X,
+            X2 = position.X,
+            Y1 = position.Y,
+            Y2 = position.Y,
+            Direction = player.Rotation,
+        };
+
+        await player.WarpToAsync(currentPosition).ConfigureAwait(false);
     }
 
     private bool IsXInRange(Point currentPosition, Gate gate, byte inaccuracy) => currentPosition.X >= gate.X1 - inaccuracy

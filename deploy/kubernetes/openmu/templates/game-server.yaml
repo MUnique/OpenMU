@@ -1,0 +1,109 @@
+{{- $component := "game-server" }}
+{{- $gs := .Values.gameServer }}
+# Each game server has a stable, unique Dapr app id for confirmed live administration.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+{{- $root := . }}
+{{- range $index := until (int $gs.replicas) }}
+{{- $id := add (int $gs.idOffset) $index }}
+{{- if or (lt $id 0) (gt $id 255) }}
+{{- fail "Game server ids must be between 0 and 255" }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openmu.fullname" $root }}-{{ $component }}-{{ $id }}
+  labels:
+    {{- include "openmu.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+spec:
+  serviceName: {{ include "openmu.fullname" $root }}-{{ $component }}
+  replicas: 1
+  # The game servers don't depend on each other, so they can start and stop in parallel.
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      {{- include "openmu.selectorLabels" (dict "root" $root "component" $component) | nindent 6 }}
+      openmu/game-server-id: {{ $id | quote }}
+  template:
+    metadata:
+      labels:
+        {{- include "openmu.selectorLabels" (dict "root" $root "component" $component) | nindent 8 }}
+        openmu/game-server-id: {{ $id | quote }}
+      annotations:
+        dapr.io/app-token-secret: {{ include "openmu.gameServerAppTokenSecret" $root | quote }}
+        {{- /* The game server saves and disconnects its players on shutdown, and logs them off at the
+               central server through its sidecar, so the sidecar has to stay up meanwhile. The game
+               server keeps answering its health endpoint until it's done. */}}
+        {{- include "openmu.daprAnnotations" (dict "root" $root "appId" (printf "game-server-%d" (int $id)) "blockShutdownDuration" (printf "%ds" (sub (int $gs.terminationGracePeriodSeconds) 5))) | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "openmu.fullname" $root }}
+      terminationGracePeriodSeconds: {{ $gs.terminationGracePeriodSeconds }}
+      {{- with $root.Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: game-server
+          image: {{ include "openmu.image" (dict "root" $root "image" $gs.image) }}
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          env:
+            {{- include "openmu.commonEnv" $root | nindent 12 }}
+            - name: APP_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openmu.gameServerAppTokenSecret" $root }}
+                  key: token
+            - name: GS_ID
+              value: {{ $id | quote }}
+            - name: GS_LISTENER_PORT
+              value: {{ $gs.listenerPort | quote }}
+            - name: RESOLVE_IP
+            {{- if eq $gs.resolveIp "hostIP" }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            {{- else }}
+              value: {{ $gs.resolveIp | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+            {{- range $index := until (int $gs.clientVersions) }}
+            - name: game-{{ $index }}
+              containerPort: {{ add $gs.listenerPort $index }}
+              {{- if eq $gs.exposure "hostPort" }}
+              hostPort: {{ add $gs.listenerPort $index }}
+              {{- end }}
+            {{- end }}
+          {{- include "openmu.probes" $root | nindent 10 }}
+          {{- with $gs.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $gs.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $gs.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $gs.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

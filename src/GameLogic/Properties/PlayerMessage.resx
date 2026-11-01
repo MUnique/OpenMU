@@ -442,10 +442,10 @@
     <value>NIGHTMARE has appeared! Defeat him to claim victory!</value>
   </data>
   <data name="KanturuNightmareTeleport2" xml:space="preserve">
-    <value>Nightmare has teleported! He recovers his full strength!</value>
+    <value>Nightmare has teleported! Don't let him escape!</value>
   </data>
   <data name="KanturuNightmareTeleport3" xml:space="preserve">
-    <value>Nightmare teleports again! He is more powerful than ever!</value>
+    <value>Nightmare teleports again! Keep up the attack!</value>
   </data>
   <data name="KanturuNightmareTeleport4" xml:space="preserve">
     <value>Nightmare is at his last stand! Finish him!</value>
@@ -503,6 +503,9 @@
   </data>
   <data name="MiniGameForceStartInitiatedFormat" xml:space="preserve">
     <value>{0} will start soon.</value>
+  </data>
+  <data name="MiniGameForceStartUnavailableFormat" xml:space="preserve">
+    <value>The {0} event is not available on this game server.</value>
   </data>
   <data name="KillAllMonstersFormat" xml:space="preserve">
     <value>Killed {0} monster(s).</value>
@@ -578,6 +581,24 @@
   </data>
   <data name="ItemIsBoundToInventoryOfCharacter" xml:space="preserve">
     <value>This item is bound to the inventory of this character.</value>
+  </data>
+  <data name="ItemCannotBeDropped" xml:space="preserve">
+    <value>This item can't be dropped.</value>
+  </data>
+  <data name="ItemCannotBeRepaired" xml:space="preserve">
+    <value>This item can't be repaired.</value>
+  </data>
+  <data name="ItemCannotBeSoldInPersonalStore" xml:space="preserve">
+    <value>This item can't be sold in a personal store.</value>
+  </data>
+  <data name="ItemCannotBeSoldToNpc" xml:space="preserve">
+    <value>This item can't be sold.</value>
+  </data>
+  <data name="ItemCannotBeStored" xml:space="preserve">
+    <value>This item can't be stored in the vault.</value>
+  </data>
+  <data name="ItemCannotBeTraded" xml:space="preserve">
+    <value>This item can't be traded.</value>
   </data>
   <data name="NotEnoughMoneyToSendLetter" xml:space="preserve">
     <value>Not enough Zen to send a letter.</value>
@@ -738,6 +759,9 @@
   <data name="OfflineLevelingNotOnMap" xml:space="preserve">
     <value>You must be on a map to start offline leveling.</value>
   </data>
+  <data name="OfflineLevelingInMiniGame" xml:space="preserve">
+    <value>You can not start offline leveling during an event.</value>
+  </data>
   <data name="OfflineLevelingNoCharacterSelected" xml:space="preserve">
     <value>No character is selected.</value>
   </data>
@@ -791,5 +815,315 @@
   </data>
   <data name="CharacterNotStrongEnoughMessage" xml:space="preserve">
     <value>You are not strong enough for this yet.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerAppeared" xml:space="preserve">
+    <value>The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerEscaped" xml:space="preserve">
+    <value>The Ice Walker escaped! The following monsters are stronger.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerKilled" xml:space="preserve">
+    <value>The Ice Walker has been defeated!</value>
+  </data>
+  <data name="RaklionSelupanAppeared" xml:space="preserve">
+    <value>Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s).</value>
+  </data>
+  <data name="RaklionHatcheryClosed" xml:space="preserve">
+    <value>The Hatchery Gate is closed.</value>
+  </data>
+  <data name="RaklionHatcheryOpensIn" xml:space="preserve">
+    <value>The Hatchery Gates will open in {0}.</value>
+  </data>
+  <data name="RaklionHatcheryIsClosed" xml:space="preserve">
+    <value>The Hatchery Gate is closed, you cannot enter.</value>
+  </data>
+  <data name="RaklionHatcheryOpened" xml:space="preserve">
+    <value>The Hatchery Gate is opened.</value>
+  </data>
+  <data name="RaklionSelupanDefeated" xml:space="preserve">
+    <value>{0} defeated Selupan! The Hatchery Gates will open in {1}.</value>
+  </data>
+  <data name="RaklionBattleFailed" xml:space="preserve">
+    <value>The battle against Selupan has failed. The Hatchery Gates will open in {0}.</value>
+  </data>
+  <data name="RaklionDurationHoursMinutes" xml:space="preserve">
+    <value>{0} hour(s) {1} minute(s)</value>
+  </data>
+  <data name="RaklionDurationMinutes" xml:space="preserve">
+    <value>{0} minute(s)</value>
+  </data>
+  <data name="ImperialGuardianLevelTooLow" xml:space="preserve">
+    <value>You need at least level {0} to enter the Fortress of Imperial Guardian.</value>
+  </data>
+  <data name="GensBattleZoneMembersOnly" xml:space="preserve">
+    <value>Only members of a gens can enter the battle zone.</value>
+  </data>
+  <data name="GensContributionGainedFormat" xml:space="preserve">
+    <value>You gained {0} contribution points.</value>
+  </data>
+  <data name="GensContributionLostFormat" xml:space="preserve">
+    <value>You lost {0} contribution points.</value>
+  </data>
+  <data name="GensKillAbuseWarningFormat" xml:space="preserve">
+    <value>You killed {0} {1} times recently. From {2} kills, you get no contribution points for {0} anymore.</value>
+  </data>
+  <data name="GensKillAbuseLimitFormat" xml:space="preserve">
+    <value>You killed {0} too often recently, so you get no contribution points for it.</value>
+  </data>
+  <data name="GensNoPartyWithOtherGens" xml:space="preserve">
+    <value>You cannot form a party with a member of the opposing gens.</value>
+  </data>
+  <data name="GensNoPartyInBattleZone" xml:space="preserve">
+    <value>You cannot form a party within a battle zone.</value>
+  </data>
+  <data name="GensPartyLeftInBattleZone" xml:space="preserve">
+    <value>Parties are not activated within a battle zone, so you left your party.</value>
+  </data>
+  <data name="GensRequiredToCreateGuild" xml:space="preserve">
+    <value>You have to be a member of a gens to create a guild.</value>
+  </data>
+  <data name="EquipmentHasChangedMessage" xml:space="preserve">
+    <value>The equipment has been changed.</value>
+  </data>
+  <data name="SpeedHackWarning" xml:space="preserve">
+    <value>Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction.</value>
+  </data>
+  <data name="SummonPartyCountdownFormat" xml:space="preserve">
+    <value>Summoning in {0} second(s)...</value>
+  </data>
+  <data name="SummonPartyCanceled" xml:space="preserve">
+    <value>Summoning canceled.</value>
+  </data>
+  <data name="CharacterInfoAccountNameFormat" xml:space="preserve">
+    <value>Account Name: {0}</value>
+  </data>
+  <data name="CharacterInfoFormat" xml:space="preserve">
+    <value>Id: {0}
+Name: {1}
+Class: {2}
+Slot: {3}
+Create Date: {4}
+Exp: {5}
+Level Up Points: {6}
+Master Exp: {7}
+Master Lv Up Points: {8}
+Location: {9}({10}, {11})
+Kill Count: {12}
+State Remaining Seconds: {13}
+State: {14}
+Status: {15}
+Used Fruit Points: {16}
+Used Neg Fruit Points: {17}
+Inventory Extensions: {18}</value>
+  </data>
+  <data name="CrywolfNotify1" xml:space="preserve">
+    <value>Balgass has joined forces with Kundun's army and is preparing to attack the Crywolf Fortress.</value>
+  </data>
+  <data name="CrywolfNotify2" xml:space="preserve">
+    <value>The army of Balgass is ready to attack the Crywolf Fortress.</value>
+  </data>
+  <data name="CrywolfReady" xml:space="preserve">
+    <value>The army of Balgass is marching towards the Crywolf Fortress.</value>
+  </data>
+  <data name="CrywolfStart" xml:space="preserve">
+    <value>The army of Balgass attacks the Crywolf Fortress!</value>
+  </data>
+  <data name="CrywolfContractsStartInMinutes" xml:space="preserve">
+    <value>The contracts of the wolf altars begin in {0} minute(s).</value>
+  </data>
+  <data name="CrywolfContractsStartInSeconds" xml:space="preserve">
+    <value>The contracts of the wolf altars begin in {0} second(s).</value>
+  </data>
+  <data name="CrywolfAttackStartsInMinutes" xml:space="preserve">
+    <value>The army of Balgass attacks in {0} minute(s).</value>
+  </data>
+  <data name="CrywolfAttackStartsInSeconds" xml:space="preserve">
+    <value>The army of Balgass attacks in {0} second(s).</value>
+  </data>
+  <data name="CrywolfNoAltarContracted" xml:space="preserve">
+    <value>Without the protection of the Muses, the statue of the holy wolf will be stolen.</value>
+  </data>
+  <data name="CrywolfStatueAttack" xml:space="preserve">
+    <value>The army of Balgass starts attacking the statue of the holy wolf!</value>
+  </data>
+  <data name="CrywolfBalgassAppeared" xml:space="preserve">
+    <value>Balgass is coming! Protect the statue of the holy wolf!</value>
+  </data>
+  <data name="CrywolfBalgassDefeated" xml:space="preserve">
+    <value>Balgass has been defeated with the help of the heroes!</value>
+  </data>
+  <data name="CrywolfBalgassAlive" xml:space="preserve">
+    <value>Balgass stayed alive until the end of the battle.</value>
+  </data>
+  <data name="CrywolfDefenseSucceeded" xml:space="preserve">
+    <value>Defending has been successful! The statue of the holy wolf has been protected.</value>
+  </data>
+  <data name="CrywolfDefenseFailed" xml:space="preserve">
+    <value>Defending has failed! The statue of the holy wolf has been taken over by Balgass.</value>
+  </data>
+  <data name="CrywolfRankResult" xml:space="preserve">
+    <value>Your MvP rank is {0}. You received {1} experience points.</value>
+  </data>
+  <data name="CrywolfCurrentScore" xml:space="preserve">
+    <value>Your current MvP score is {0}.</value>
+  </data>
+  <data name="CrywolfBalgassKilled" xml:space="preserve">
+    <value>Balgass has been killed by {0}!</value>
+  </data>
+  <data name="CrywolfDarkElfKilled" xml:space="preserve">
+    <value>The Dark Elf leader ({0}) of the army of Balgass has been killed by {1}!</value>
+  </data>
+  <data name="CrywolfContractAttempt" xml:space="preserve">
+    <value>{0} is trying to contract the altar ({1})!</value>
+  </data>
+  <data name="CrywolfContractAttemptInfo" xml:space="preserve">
+    <value>The contract is valid in {0} seconds. Do not move until it is completed.</value>
+  </data>
+  <data name="CrywolfContractValid" xml:space="preserve">
+    <value>You are connected to the altar ({0}) of the holy wolf.</value>
+  </data>
+  <data name="CrywolfContractValidToOthers" xml:space="preserve">
+    <value>{0} connected the Muse to the altar ({1}) of the holy wolf.</value>
+  </data>
+  <data name="CrywolfContractCancelled" xml:space="preserve">
+    <value>The connection to the altar ({0}) has been cancelled.</value>
+  </data>
+  <data name="CrywolfAltarCooldown" xml:space="preserve">
+    <value>The altar ({0}) of the holy wolf can not be contracted yet.</value>
+  </data>
+  <data name="CrywolfContractWrongPosition" xml:space="preserve">
+    <value>You have to stand on the altar ({0}) of the holy wolf to contract it.</value>
+  </data>
+  <data name="CrywolfContractRequirement" xml:space="preserve">
+    <value>Contracting an altar requires a Muse of level {0} or higher.</value>
+  </data>
+  <data name="CrywolfBarrierCreated" xml:space="preserve">
+    <value>The barrier of the statue of the holy wolf has been created.</value>
+  </data>
+  <data name="CrywolfBarrierDisappeared" xml:space="preserve">
+    <value>The barrier of the statue of the holy wolf has disappeared.</value>
+  </data>
+  <data name="CrywolfBarrierStatus" xml:space="preserve">
+    <value>Muses protecting the statue of the holy wolf: {0}, barrier: {1}%.</value>
+  </data>
+  <data name="CrywolfBattleOnOtherServer" xml:space="preserve">
+    <value>The battle of the Crywolf Fortress takes place on another server.</value>
+  </data>
+  <data name="CrywolfRunsOnOtherServer" xml:space="preserve">
+    <value>The crywolf event runs on the game server {0}.</value>
+  </data>
+  <data name="CrywolfNotActive" xml:space="preserve">
+    <value>The crywolf event is not active.</value>
+  </data>
+  <data name="CrywolfProceeds" xml:space="preserve">
+    <value>The crywolf event proceeds from the state {0}.</value>
+  </data>
+  <data name="CrywolfAltarNotAvailable" xml:space="preserve">
+    <value>The altar ({0}) of the holy wolf can not be contracted now.</value>
+  </data>
+  <data name="CrywolfContractMounted" xml:space="preserve">
+    <value>An altar can not be contracted on a mount.</value>
+  </data>
+  <data name="GoblinPointsForPlayTime" xml:space="preserve">
+    <value>You received {0} Goblin Points for your play time.</value>
+  </data>
+  <data name="CashShopVaultExtended" xml:space="preserve">
+    <value>Your vault has been extended.</value>
+  </data>
+  <data name="CashShopInventoryExtended" xml:space="preserve">
+    <value>Your inventory has been extended. Select your character again to use the new space.</value>
+  </data>
+  <data name="CashShopCharacterClassUnlocked" xml:space="preserve">
+    <value>You can now create a character of the class {0}.</value>
+  </data>
+  <data name="ShopCurrencyZen" xml:space="preserve">
+    <value>Zen</value>
+  </data>
+  <data name="ShopCurrencyWCoinC" xml:space="preserve">
+    <value>WCoin (C)</value>
+  </data>
+  <data name="ShopCurrencyWCoinP" xml:space="preserve">
+    <value>WCoin (P)</value>
+  </data>
+  <data name="ShopCurrencyGoblinPoints" xml:space="preserve">
+    <value>Goblin Points</value>
+  </data>
+  <data name="PlayerShopCurrencyNotAllowed" xml:space="preserve">
+    <value>Prices in {0} are not allowed in personal stores.</value>
+  </data>
+  <data name="PlayerShopPriceTooHigh" xml:space="preserve">
+    <value>The price can be at most {0} {1}.</value>
+  </data>
+  <data name="PlayerShopNotEnoughCurrency" xml:space="preserve">
+    <value>You need {0} {1} to buy this item.</value>
+  </data>
+  <data name="PlayerShopItemPriceNotPayableExactly" xml:space="preserve">
+    <value>Your items can't pay exactly {0} {1}. Bundles are not split, and there is no change.</value>
+  </data>
+  <data name="PlayerShopCoinsReceived" xml:space="preserve">
+    <value>You received {0} {1} for an item of your store.</value>
+  </data>
+  <data name="PlayerShopCoinsPaid" xml:space="preserve">
+    <value>You paid {0} {1}.</value>
+  </data>
+  <data name="PlayerShopPriceCommandUsage" xml:space="preserve">
+    <value>Usage: {0} [position 1-32] [amount] [currency]. Without arguments, the prices of your store are listed.</value>
+  </data>
+  <data name="PlayerShopUnknownCurrency" xml:space="preserve">
+    <value>Unknown currency '{0}'. Available: {1}.</value>
+  </data>
+  <data name="PlayerShopCloseToChangePrices" xml:space="preserve">
+    <value>Close your store to change its prices.</value>
+  </data>
+  <data name="PlayerShopPriceSet" xml:space="preserve">
+    <value>The price of the item at position {0} is now {1} {2}.</value>
+  </data>
+  <data name="PlayerShopPriceRemoved" xml:space="preserve">
+    <value>The price of the item at position {0} has been removed.</value>
+  </data>
+  <data name="PlayerShopPriceItemNotFound" xml:space="preserve">
+    <value>There is no item at position {0} of your store.</value>
+  </data>
+  <data name="PlayerShopPriceLevelTooLow" xml:space="preserve">
+    <value>Your character level is too low to sell items in a personal store.</value>
+  </data>
+  <data name="PlayerShopIsEmpty" xml:space="preserve">
+    <value>Your store is empty.</value>
+  </data>
+  <data name="PlayerShopPriceListEntry" xml:space="preserve">
+    <value>#{0} {1} - {2} {3}</value>
+  </data>
+  <data name="PlayerShopPriceListEntryWithoutPrice" xml:space="preserve">
+    <value>#{0} {1} - no price</value>
+  </data>
+  <data name="ItemBoxRequiresLevel" xml:space="preserve">
+    <value>You need to be level {0} to open this box.</value>
+  </data>
+  <data name="DiscordLinkCode" xml:space="preserve">
+    <value>Your code to link Discord is {0}. In Discord, choose the command /link of the bot from the list and enter the code within {1} minutes.</value>
+  </data>
+  <data name="DiscordLinked" xml:space="preserve">
+    <value>Your account is linked to the Discord user {0}, who appears as {1}. Use /discord unlink to remove the link.</value>
+  </data>
+  <data name="DiscordNotLinked" xml:space="preserve">
+    <value>Your account isn't linked to Discord. Use /discord link to get a code for linking.</value>
+  </data>
+  <data name="DiscordUnlinked" xml:space="preserve">
+    <value>Your account isn't linked to Discord anymore.</value>
+  </data>
+  <data name="WorldChatMessage" xml:space="preserve">
+    <value>[World] {0}: {1}</value>
+  </data>
+  <data name="GuildChatMirrored" xml:space="preserve">
+    <value>The chat of your guild is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
+  </data>
+  <data name="AllianceChatMirrored" xml:space="preserve">
+    <value>The chat of your alliance is mirrored to Discord. Members who linked their Discord user can read and write it there.</value>
+  </data>
+  <data name="DiscordNotifications" xml:space="preserve">
+    <value>Direct messages in Discord about: {0}. Turn them on or off with /discord notify login, letter or friend.</value>
+  </data>
+  <data name="MapIsNotActive" xml:space="preserve">
+    <value>This map is not available.</value>
   </data>
 </root>

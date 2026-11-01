@@ -33,8 +33,10 @@ public class EnterMiniGameAction
             throw new InvalidOperationException("Character not selected or initialized.");
         }
 
+        // The availability includes the entrance map, independently of the map requirements
+        // below, which a running game may waive for rejoining players.
         var miniGameDefinition = player.GameContext.Configuration.MiniGameDefinitions
-            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel);
+            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel && def.IsAvailable());
         if (miniGameDefinition is null
             || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
             || player.CurrentMiniGame is not null)
@@ -61,9 +63,11 @@ public class EnterMiniGameAction
         }
 
         // The mini game entrance warps the player directly, so the requirements of the map
-        // are not checked by the usual warp actions. Kanturu, for example, requires an
-        // equipped Moonstone Pendant.
+        // are not checked by the usual warp actions. Some maps require equipped items.
+        // A running game may waive them for rejoining players.
+        var liveGame = player.GameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null);
         if (miniGameDefinition.Entrance?.Map is { } entranceMap
+            && liveGame?.SkipMapEntryRequirements is not true
             && entranceMap.TryGetRequirementError(player, out var requirementError))
         {
             await player.ShowBlueMessageAsync(requirementError).ConfigureAwait(false);
@@ -100,7 +104,8 @@ public class EnterMiniGameAction
         {
             var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);
             if (miniGameStrategy is not null
-                && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero)
+                && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero
+                && !IsJoinableRunningGame(player, miniGameDefinition))
             {
                 await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotOpen)).ConfigureAwait(false);
                 return;
@@ -149,6 +154,18 @@ public class EnterMiniGameAction
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, enterResult)).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Determines whether a running game of the definition exists which players may
+    /// still join, e.g. to rejoin an ongoing event.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="miniGameDefinition">The mini game definition.</param>
+    /// <returns><c>true</c> if a joinable game is running; otherwise, <c>false</c>.</returns>
+    private static bool IsJoinableRunningGame(Player player, MiniGameDefinition miniGameDefinition)
+    {
+        return player.GameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null)?.IsJoinable is true;
     }
 
     private bool CheckPlayerKillState(MiniGameDefinition miniGameDefinition, Player player)

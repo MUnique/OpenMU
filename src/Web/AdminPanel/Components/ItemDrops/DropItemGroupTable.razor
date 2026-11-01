@@ -1,0 +1,152 @@
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration.Items
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@if (this.Groups.Count == 0)
+{
+    <p class="text-muted fst-italic">@Resources.NoDropItemGroups</p>
+    return;
+}
+
+<div class="table-responsive">
+<table class="table table-sm table-hover align-middle drop-group-table">
+    <thead>
+    <tr>
+        <th class="description-column">@Resources.Description</th>
+        <th>@Resources.ItemType</th>
+        <th title="@Resources.ChanceHint">@Resources.ChancePercent</th>
+        @if (this.IsItemBoxDrop)
+        {
+            <th title="@Resources.SourceItemLevelHint">@Resources.SourceItemLevel</th>
+            <th>@Resources.MinimumItemLevel</th>
+            <th>@Resources.MaximumItemLevel</th>
+            <th>@Resources.MoneyAmount</th>
+            <th>@Resources.RequiredCharacterLevel</th>
+            <th>@Resources.DropEffect</th>
+        }
+        else
+        {
+            <th title="@Resources.ItemLevelHint">@Resources.ItemLevel</th>
+            <th>@Resources.MinimumMonsterLevel</th>
+            <th>@Resources.MaximumMonsterLevel</th>
+        }
+        @if (this.UsageProvider is not null)
+        {
+            <th>@Resources.UsedBy</th>
+        }
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var group in this.Groups)
+    {
+        var isExpanded = this._expandedGroups.Contains(group);
+        var boxGroup = group as ItemDropItemGroup;
+        <tr @key="group" class="group-row">
+            <td class="description-column">
+                <input type="text" class="form-control form-control-sm" value="@group.Description.ValueInNeutralLanguage"
+                       @onchange="@(e => SetDescription(group, e.Value?.ToString()))" />
+            </td>
+            <td>
+                <select class="form-select form-select-sm type-select" @bind="group.ItemType">
+                    @foreach (var itemType in Enum.GetValues<SpecialItemType>())
+                    {
+                        <option value="@itemType">@itemType</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <input type="number" class="form-control form-control-sm number-input" step="any" min="0" max="100"
+                       @bind:get="ToPercent(group.Chance)" @bind:set="@(value => group.Chance = FromPercent(value))" />
+            </td>
+            @if (this.IsItemBoxDrop && boxGroup is not null)
+            {
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" max="15" @bind="boxGroup.SourceItemLevel" /></td>
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" max="15" @bind="boxGroup.MinimumLevel" /></td>
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" max="15" @bind="boxGroup.MaximumLevel" /></td>
+                <td><input type="number" class="form-control form-control-sm money-input" min="0" @bind="boxGroup.MoneyAmount" disabled="@(boxGroup.ItemType != SpecialItemType.Money)" /></td>
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" @bind="boxGroup.RequiredCharacterLevel" /></td>
+                <td>
+                    <select class="form-select form-select-sm type-select" @bind="boxGroup.DropEffect">
+                        @foreach (var effect in Enum.GetValues<ItemDropEffect>())
+                        {
+                            <option value="@effect">@effect</option>
+                        }
+                    </select>
+                </td>
+            }
+            else
+            {
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" max="15" @bind="group.ItemLevel" /></td>
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" max="255" @bind="group.MinimumMonsterLevel" /></td>
+                <td><input type="number" class="form-control form-control-sm number-input" min="0" max="255" @bind="group.MaximumMonsterLevel" /></td>
+            }
+            @if (this.UsageProvider is not null)
+            {
+                <td class="small">@this.UsageProvider(group)</td>
+            }
+            <td class="text-nowrap">
+                <button type="button" class="btn btn-sm btn-outline-secondary" title="@Resources.EditDetails" @onclick="() => this.ToggleExpanded(group)">
+                    <span class="oi @(isExpanded ? "oi-chevron-top" : "oi-chevron-bottom")" aria-hidden="true"></span>
+                </button>
+                @if (this.OnRemove.HasDelegate)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-danger" title="@(this.RemoveTitle ?? Resources.Delete)" @onclick="() => this.OnRemove.InvokeAsync(group)">
+                        <span class="oi oi-trash" aria-hidden="true"></span>
+                    </button>
+                }
+            </td>
+        </tr>
+        <tr @key="(group, nameof(group.PossibleItems))" class="items-row">
+            <td colspan="@this.ColumnCount">
+                <span class="text-muted">@Resources.PossibleItems:</span> @GetItemsSummary(group)
+            </td>
+        </tr>
+        @if (isExpanded)
+        {
+            var possibleItems = this.GetPossibleItems(group);
+            var assignedMaps = this.Maps is null ? null : this.GetAssignedMaps(group);
+            <tr @key="(group, true)" class="details-row">
+                <td colspan="@this.ColumnCount">
+                    <CascadingValue Value="this.GetEditContext(group)" IsFixed="true">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="form-label fw-semibold">@Resources.PossibleItems</label>
+                                <MultiLookupField TObject="ItemDefinition"
+                                                  Value="@possibleItems"
+                                                  ValueExpression="@(() => possibleItems)"
+                                                  ValueChanged="@(_ => this.StateHasChanged())" />
+                                <small class="text-muted">@Resources.PossibleItemsHint</small>
+                            </div>
+                            @if (assignedMaps is not null)
+                            {
+                                <div class="col-lg-6">
+                                    <label class="form-label fw-semibold">@Resources.AssignedMaps</label>
+                                    <MultiLookupField TObject="GameMapDefinition"
+                                                      Value="@assignedMaps"
+                                                      ValueExpression="@(() => assignedMaps)"
+                                                      ValueChanged="@(_ => this.OnMapsChanged.InvokeAsync())" />
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" @onclick="() => this.AssignToAllMapsAsync(group)">@Resources.AssignToAllMaps</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => this.RemoveFromAllMapsAsync(group)">@Resources.RemoveFromAllMaps</button>
+                                </div>
+                            }
+                            @if (this.ShowMonsterRestriction && !this.IsItemBoxDrop)
+                            {
+                                <div class="col-lg-6">
+                                    <label class="form-label fw-semibold">@Resources.OnlyForMonster</label>
+                                    <LookupField TObject="MonsterDefinition"
+                                                 Value="@group.Monster"
+                                                 ValueExpression="@(() => group.Monster)"
+                                                 ValueChanged="@(monster => group.Monster = monster)" />
+                                </div>
+                            }
+                        </div>
+                    </CascadingValue>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+</div>

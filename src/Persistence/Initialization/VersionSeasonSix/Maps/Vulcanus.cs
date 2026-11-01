@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Exile map.
@@ -19,11 +21,6 @@ internal class Vulcanus : BaseMapInitializer
     internal const byte Number = 63;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Vulcanus";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Vulcanus"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class Vulcanus : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Vulcanus);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -309,7 +311,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 480;
-            monster.Designation = "Zombie Fighter";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ZombieFighter);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -340,7 +342,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 481;
-            monster.Designation = "Zombie Fighter";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ZombieFighter481);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -371,7 +373,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 482;
-            monster.Designation = "Resurrected Gladiator";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ResurrectedGladiator);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -402,7 +404,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 483;
-            monster.Designation = "Resurrected Gladiator";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ResurrectedGladiator483);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -433,7 +435,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 484;
-            monster.Designation = "Ash Slaughterer";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.AshSlaughterer);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -464,7 +466,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 485;
-            monster.Designation = "Ash Slaughterer";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.AshSlaughterer485);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -495,7 +497,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 486;
-            monster.Designation = "Blood Assassin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodAssassin);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -526,7 +528,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 487;
-            monster.Designation = "Cruel Blood Assassin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CruelBloodAssassin);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -557,7 +559,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 488;
-            monster.Designation = "Cruel Blood Assassin";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CruelBloodAssassin488);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -588,7 +590,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 489;
-            monster.Designation = "Burning Lava Giant";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BurningLavaGiant);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -619,7 +621,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 490;
-            monster.Designation = "Ruthless Lava Giant";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.RuthlessLavaGiant);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -650,7 +652,7 @@ internal class Vulcanus : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 491;
-            monster.Designation = "Ruthless Lava Giant";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.RuthlessLavaGiant491);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;

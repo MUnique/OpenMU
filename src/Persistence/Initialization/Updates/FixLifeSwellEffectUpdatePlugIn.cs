@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update sets the right settings for the life swell effect.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixLifeSwellEffectUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixLifeSwellEffectUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("FD521A61-D5B4-4CF2-B203-6FFF12C80E51")]
 public class FixLifeSwellEffectUpdatePlugIn : UpdatePlugInBase
 {
@@ -33,9 +33,6 @@ public class FixLifeSwellEffectUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixLifeSwellEffect;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

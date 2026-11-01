@@ -1,4 +1,3 @@
-"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -962,6 +961,13 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                         this.lastLabelObjectId = null;
                     }
                     mesh.dispose();
+                };
+                World.prototype.clear = function () {
+                    this.hideLastLabel();
+                    for (var _i = 0, _a = Object.keys(this.objects); _i < _a.length; _i++) {
+                        var objectId = _a[_i];
+                        this.removeObject(Number(objectId));
+                    }
                 };
                 World.prototype.getObjectById = function (objectId) {
                     return this.objects[objectId];

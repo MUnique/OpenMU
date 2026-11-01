@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
@@ -45,7 +46,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 238;
-            def.Designation = "Chaos Goblin";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.ChaosGoblin);
             def.NpcWindow = NpcWindow.ChaosMachine;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
@@ -55,7 +56,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 239;
-            def.Designation = "Arena Guard";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.ArenaGuard);
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
@@ -64,7 +65,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 240;
-            def.Designation = "Baz The Vault Keeper";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.BazTheVaultKeeper);
             def.NpcWindow = NpcWindow.VaultStorage;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
@@ -74,7 +75,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 241;
-            def.Designation = "Guild Master";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.GuildMaster);
             def.NpcWindow = NpcWindow.GuildMaster;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
@@ -84,7 +85,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 242;
-            def.Designation = "Elf Lala";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.ElfLala);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateElfLalaStore(def.Number);
@@ -95,7 +96,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 243;
-            def.Designation = "Eo the Craftsman";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.EoTheCraftsman);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateEoTheCraftsmanStore(def.Number);
@@ -106,7 +107,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 244;
-            def.Designation = "Caren the Barmaid";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.CarenTheBarmaid);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateCarenTheBarmaidStore(def.Number);
@@ -117,7 +118,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 245;
-            def.Designation = "Izabel The Wizard";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.IzabelTheWizard);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateIzabelTheWizardStore(def.Number);
@@ -128,7 +129,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 246;
-            def.Designation = "Zienna The Weapons Merchant";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.ZiennaTheWeaponsMerchant);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateZiennaStore(def.Number);
@@ -139,7 +140,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 247;
-            def.Designation = "Crossbow Guard";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.CrossbowGuard);
             def.ObjectKind = NpcObjectKind.Guard;
             def.MoveRange = 3;
             def.AttackRange = 5;
@@ -168,7 +169,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 248;
-            def.Designation = "Wandering Merchant Martin";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.WanderingMerchantMartin);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateWanderingMerchant(def.Number);
@@ -179,7 +180,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 249;
-            def.Designation = "Berdysh Guard";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.BerdyshGuard);
             def.ObjectKind = NpcObjectKind.Guard;
             def.MoveRange = 3;
             def.AttackRange = 2;
@@ -208,7 +209,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 250;
-            def.Designation = "Wandering Merchant Harold";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.WanderingMerchantHarold);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateWanderingMerchant(def.Number);
@@ -219,7 +220,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 251;
-            def.Designation = "Hanzo The Blacksmith";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.HanzoTheBlacksmith);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateHanzoTheBlacksmith(def.Number);
@@ -230,7 +231,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 253;
-            def.Designation = "Potion Girl Amy";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.PotionGirlAmy);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
@@ -241,7 +242,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 254;
-            def.Designation = "Pasi The Mage";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.PasiTheMage);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreatePasiTheMageStore(def.Number);
@@ -252,7 +253,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 255;
-            def.Designation = "Lumen the Barmaid";
+            def.Designation = LocalizedString.FromResource(() => MerchantNames.LumenTheBarmaid);
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreateLumenTheBarmaidStore(def.Number);
@@ -263,7 +264,7 @@ internal partial class NpcInitialization : InitializerBase
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 200;
-            def.Designation = "Soccerball";
+            def.Designation = LocalizedString.FromResource(() => MonsterNames.Soccerball);
             def.ObjectKind = NpcObjectKind.SoccerBall;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);

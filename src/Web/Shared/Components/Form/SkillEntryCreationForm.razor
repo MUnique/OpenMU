@@ -72,7 +72,8 @@
         }
 
         this._lastCharacterClass = characterClass;
-        var skills = this.GameConfigurationSource.GetAll<Skill>();
+        // Master skills are added through the master skill tree of the SkillListField.
+        var skills = this.GameConfigurationSource.GetAll<Skill>().Where(s => s.MasterDefinition is null);
         if (characterClass is not null)
         {
             skills = skills.Where(s => s.QualifiedCharacters.Contains(characterClass));

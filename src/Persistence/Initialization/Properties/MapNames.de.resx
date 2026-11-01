@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Dungeon" xml:space="preserve">
+    <value>Verlies</value>
+  </data>
+  <data name="LostTower" xml:space="preserve">
+    <value>Verlorener Turm</value>
+  </data>
+  <data name="Icarus" xml:space="preserve">
+    <value>Ikarus</value>
+  </data>
+  <data name="BloodCastle1" xml:space="preserve">
+    <value>Blutburg 1</value>
+  </data>
+  <data name="BloodCastle2" xml:space="preserve">
+    <value>Blutburg 2</value>
+  </data>
+  <data name="BloodCastle3" xml:space="preserve">
+    <value>Blutburg 3</value>
+  </data>
+  <data name="BloodCastle4" xml:space="preserve">
+    <value>Blutburg 4</value>
+  </data>
+  <data name="BloodCastle5" xml:space="preserve">
+    <value>Blutburg 5</value>
+  </data>
+  <data name="BloodCastle6" xml:space="preserve">
+    <value>Blutburg 6</value>
+  </data>
+  <data name="BloodCastle7" xml:space="preserve">
+    <value>Blutburg 7</value>
+  </data>
+  <data name="ValleyOfLoren" xml:space="preserve">
+    <value>Tal von Loren</value>
+  </data>
+  <data name="LandOfTrials" xml:space="preserve">
+    <value>Land der Prüfungen</value>
+  </data>
+  <data name="CrywolfFortress" xml:space="preserve">
+    <value>Crywolf-Festung</value>
+  </data>
+  <data name="KanturuI" xml:space="preserve">
+    <value>Kanturu I</value>
+  </data>
+  <data name="KanturuIII" xml:space="preserve">
+    <value>Kanturu III</value>
+  </data>
+  <data name="BarracksOfBalgass" xml:space="preserve">
+    <value>Balgass-Kaserne</value>
+  </data>
+  <data name="BalgassRefuge" xml:space="preserve">
+    <value>Balgass’ Ruhestätte</value>
+  </data>
+  <data name="IllusionTemple1" xml:space="preserve">
+    <value>Illusionstempel 1</value>
+  </data>
+  <data name="IllusionTemple2" xml:space="preserve">
+    <value>Illusionstempel 2</value>
+  </data>
+  <data name="IllusionTemple3" xml:space="preserve">
+    <value>Illusionstempel 3</value>
+  </data>
+  <data name="IllusionTemple4" xml:space="preserve">
+    <value>Illusionstempel 4</value>
+  </data>
+  <data name="IllusionTemple5" xml:space="preserve">
+    <value>Illusionstempel 5</value>
+  </data>
+  <data name="IllusionTemple6" xml:space="preserve">
+    <value>Illusionstempel 6</value>
+  </data>
+  <data name="Elvenland" xml:space="preserve">
+    <value>Elfenland</value>
+  </data>
+  <data name="BloodCastle8" xml:space="preserve">
+    <value>Blutburg 8</value>
+  </data>
+  <data name="SwampOfCalmness" xml:space="preserve">
+    <value>Sumpf des Friedens</value>
+  </data>
+  <data name="LaCleon" xml:space="preserve">
+    <value>La Cleon</value>
+  </data>
+  <data name="LaCleonBoss" xml:space="preserve">
+    <value>La Cleon (Boss)</value>
+  </data>
+  <data name="Vulcanus" xml:space="preserve">
+    <value>Vulkanus</value>
+  </data>
+  <data name="DuelArena" xml:space="preserve">
+    <value>Kolosseum</value>
+  </data>
+  <data name="Doppelgaenger1" xml:space="preserve">
+    <value>Doppelgänger 1</value>
+  </data>
+  <data name="Doppelgaenger2" xml:space="preserve">
+    <value>Doppelgänger 2</value>
+  </data>
+  <data name="Doppelgaenger3" xml:space="preserve">
+    <value>Doppelgänger 3</value>
+  </data>
+  <data name="Doppelgaenger4" xml:space="preserve">
+    <value>Doppelgänger 4</value>
+  </data>
+  <data name="FortressOfImperialGuardian1" xml:space="preserve">
+    <value>Festung der Kaiserlichen Wächter 1</value>
+  </data>
+  <data name="FortressOfImperialGuardian2" xml:space="preserve">
+    <value>Festung der Kaiserlichen Wächter 2</value>
+  </data>
+  <data name="FortressOfImperialGuardian3" xml:space="preserve">
+    <value>Festung der Kaiserlichen Wächter 3</value>
+  </data>
+  <data name="FortressOfImperialGuardian4" xml:space="preserve">
+    <value>Festung der Kaiserlichen Wächter 4</value>
+  </data>
+  <data name="LorenMarket" xml:space="preserve">
+    <value>Loren-Markt</value>
+  </data>
+</root>

@@ -35,6 +35,6 @@ public partial class CastleSiegeZoneDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.X1} / {this.Y1} to {this.X2} / {this.Y2}";
+        return string.Format(Properties.Resources.CastleSiegeZoneSummary, this.X1, this.Y1, this.X2, this.Y2);
     }
 }

@@ -22,7 +22,7 @@ public class CloseStoreAction
             return;
         }
 
-        using (await player.ShopStorage.StoreLock.LockAsync())
+        using (await player.ShopStorage.StoreLock.LockAsync().ConfigureAwait(false))
         {
             player.ShopStorage.StoreOpen = false;
         }

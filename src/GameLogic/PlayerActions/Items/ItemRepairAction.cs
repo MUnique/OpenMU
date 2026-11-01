@@ -35,6 +35,16 @@ public class ItemRepairAction
             return;
         }
 
+        if (!item.CanBeRepaired())
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to repair {1}, which its item definition doesn't allow. The client item data may differ from the server.",
+                player,
+                item);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCannotBeRepaired)).ConfigureAwait(false);
+            return;
+        }
+
         if ((byte)item.Durability == item.GetMaximumDurabilityOfOnePiece())
         {
             return;
@@ -42,7 +52,13 @@ public class ItemRepairAction
 
         if (IsMoneySufficient(player, item))
         {
+            var previousFactor = item.GetCurrentDurabilityFactor();
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
+            if (player.Inventory!.EquippedItems.Contains(item) && previousFactor != item.GetCurrentDurabilityFactor())
+            {
+                await player.Inventory.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+            }
+
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
         }
         else
@@ -72,12 +88,12 @@ public class ItemRepairAction
         {
             if (i == InventoryConstants.PetSlot)
             {
-                // Pets are repaired due pet trainer
+                // Pets are repaired in pet trainer
                 continue;
             }
 
             var item = player.Inventory?.GetItem(i);
-            if (item is null)
+            if (item is null || !item.CanBeRepaired())
             {
                 continue;
             }
@@ -89,7 +105,13 @@ public class ItemRepairAction
 
             if (IsMoneySufficient(player, item))
             {
+                var previousFactor = item.GetCurrentDurabilityFactor();
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                if (previousFactor != item.GetCurrentDurabilityFactor())
+                {
+                    await player.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+                }
+
                 await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
             }
             else

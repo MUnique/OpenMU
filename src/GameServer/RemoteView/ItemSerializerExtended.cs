@@ -55,12 +55,22 @@ public class ItemSerializerExtended : IItemSerializer
         targetStruct.Durability = item.Durability();
         targetStruct.Options = this.GetOptionFlags(item);
 
-        if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } itemOption)
+        if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option && !o.ItemOption.IsFixedOption()) is { } itemOption)
         {
             targetStruct.OptionLevel = (byte)(itemOption.Level & 0xF);
 
             // Some items (wings) can have different options (3rd wings up to 3!)
             targetStruct.OptionType = (byte)((itemOption.ItemOption?.Number ?? 0) & 0xF);
+        }
+        else
+        {
+            // Fixed options (e.g. of the dinorant) are coded as bits in the item option level.
+            var fixedOptionBits = item.GetFixedOptionBits();
+            if (fixedOptionBits != 0)
+            {
+                targetStruct.OptionLevel = (byte)(fixedOptionBits & 0xF);
+                targetStruct.OptionType = 0;
+            }
         }
 
         if (targetStruct.Options.HasFlag(OptionFlags.HasExcellent))
@@ -219,8 +229,8 @@ public class ItemSerializerExtended : IItemSerializer
     ///     HasSkill
     ///     HasExc
     ///     HasAnc
-    ///     HasGuardian
     ///     HasHarmony
+    ///     HasGuardian
     ///     HasSockets
     ///   Optional, depending on Flags:
     ///     Opt_Lvl 4 bit

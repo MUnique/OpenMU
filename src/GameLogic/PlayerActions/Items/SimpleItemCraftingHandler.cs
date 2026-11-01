@@ -108,7 +108,9 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
 
         if (totalCraftingPrice > 0)
         {
-            rate = (byte)(totalCraftingPrice / this._settings.NpcPriceDivisor);
+            // The rate is a byte; an expensive item (e.g. an excellent weapon with options) can be worth more
+            // than 255 times the divisor, which wrapped the rate around to a small value instead of capping it.
+            rate = (byte)Math.Min(byte.MaxValue, totalCraftingPrice / this._settings.NpcPriceDivisor);
         }
 
         if (this._settings.MaximumSuccessPercent > 0)
@@ -268,12 +270,13 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             resultItem.Level = resultItem.Definition.Group == ItemConstants.Fruits.Group && resultItem.Definition.Number == ItemConstants.Fruits.Number
                 ? (byte)new List<int> { 0, 1, 2, 3, 4 }.SelectWeightedRandom([30, 25, 20, 20, 5])
                 : (byte)Rand.NextInt(craftingResultItem.RandomMinimumLevel, craftingResultItem.RandomMaximumLevel + 1);
-            resultItem.Durability = craftingResultItem.Durability ?? resultItem.GetMaximumDurabilityOfOnePiece();
 
             this.AddRandomLuckOption(resultItem, player, successRate);
             this.AddRandomItemOption(resultItem, player, successRate);
             this.AddRandomSkill(resultItem, successRate);
             this.AddRandomExcellentOptions(resultItem, player);
+
+            resultItem.Durability = craftingResultItem.Durability ?? resultItem.GetMaximumDurabilityOfOnePiece();
 
             await player.TemporaryStorage!.AddItemAsync(resultItem).ConfigureAwait(false);
             resultList.Add(resultItem);

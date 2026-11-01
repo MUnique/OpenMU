@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// This adds the items required to enter the kalima map.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDrainLifeSkillUpdate_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDrainLifeSkillUpdate_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A8827A3C-7F52-47CF-9EA5-562A9C06B986")]
 public class FixDrainLifeSkillUpdate : UpdatePlugInBase
 {
@@ -28,9 +28,6 @@ public class FixDrainLifeSkillUpdate : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "Updates the attributes of the summoner's Drain Life skill to make it work properly.";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDrainLifeSkill;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

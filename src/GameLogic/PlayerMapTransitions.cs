@@ -145,7 +145,21 @@ internal sealed class PlayerMapTransitions
     public async ValueTask WarpToAsync(ExitGate gate)
     {
         var player = this._player;
+        if (player.PlayerState.CurrentState.IsDisconnectedOrFinished() || player.SelectedCharacter is null)
+        {
+            return;
+        }
+
         var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
+
+        // A common guard for all warps, because an instance of the map may still exist after the map got deactivated.
+        if (!isRespawnOnSameMap && gate.Map is { IsActive: false } inactiveMap)
+        {
+            player.Logger.LogWarning("Player {player} can't be warped to the inactive map {map}.", player, inactiveMap);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapIsNotActive)).ConfigureAwait(false);
+            return;
+        }
+
         if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;
@@ -196,7 +210,7 @@ internal sealed class PlayerMapTransitions
         {
             // Older clients use a separate packet for the respawn, while newer don't.
             // It requires a slightly different logic.
-            player.CurrentMap = await player.GameContext.GetMapAsync(player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned()).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
+            player.CurrentMap = await this.GetMapToEnterAsync(player.SelectedCharacter!.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
             await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
             await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
             player.IsAlive = true;
@@ -241,13 +255,25 @@ internal sealed class PlayerMapTransitions
         {
             player.CurrentMap = currentMiniGame.Map;
         }
+        else if (await this.GetMapToEnterAsync(player.SelectedCharacter.CurrentMap).ConfigureAwait(false) is { } map)
+        {
+            player.CurrentMap = map;
+        }
         else
         {
-            player.CurrentMap = await player.GameContext.GetMapAsync(player.SelectedCharacter!.CurrentMap.Number.ToUnsigned()).ConfigureAwait(false);
+            // The warp starts another map change, which ends up here again when it completed.
+            await this.WarpToHomeMapAsync().ConfigureAwait(false);
+            return;
         }
 
         await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
         player.IsAlive = true;
+
+        if (player.CurrentMiniGame?.GetEntrySpawnPosition(player) is { } spawnPosition)
+        {
+            player.SelectedCharacter.PositionX = spawnPosition.X;
+            player.SelectedCharacter.PositionY = spawnPosition.Y;
+        }
 
         await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
         if (!player.CurrentMap.Terrain.WalkMap[player.SelectedCharacter.PositionX, player.SelectedCharacter.PositionY]
@@ -283,7 +309,12 @@ internal sealed class PlayerMapTransitions
     public async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
     {
         var player = this._player;
-        if (player.CurrentMap is null)
+
+        // While a map change waits for the client's acknowledgement (F3 12), CurrentMap is null;
+        // the character's map is then the one being entered. A disconnect or the end of a mini game
+        // in that moment still needs the spawn gate.
+        var currentMapDefinition = player.CurrentMap?.Definition ?? player.SelectedCharacter?.CurrentMap;
+        if (currentMapDefinition is null)
         {
             throw new InvalidOperationException("CurrentMap is not set. Can't determine spawn gate.");
         }
@@ -298,11 +329,89 @@ internal sealed class PlayerMapTransitions
             }
         }
 
-        var spawnTargetMapDefinition = player.CurrentMap.Definition.SafezoneMap ?? player.CurrentMap.Definition;
+        // Usually the safezone map or the current map, but never an inactive map, as long as there is an active one.
+        var spawnTargetMapDefinition = player.GameContext.Configuration.GetActiveSpawnMap(
+                                           currentMapDefinition.SafezoneMap,
+                                           currentMapDefinition,
+                                           player.SelectedCharacter?.CharacterClass?.HomeMap)
+                                       ?? currentMapDefinition;
         var targetMap = await player.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false).ConfigureAwait(false);
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()
                ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
+    }
+
+    /// <summary>
+    /// Places the player (and its summon) at the specified gate.
+    /// </summary>
+    /// <param name="gate">The gate.</param>
+    internal async ValueTask PlaceAtGateAsync(ExitGate gate)
+    {
+        var player = this._player;
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        var landingPoint = gate.GetRandomPoint();
+        character.PositionX = landingPoint.X;
+        character.PositionY = landingPoint.Y;
+        character.CurrentMap = gate.Map;
+        player.Rotation = gate.Direction;
+
+        await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
+
+        this._summon.PlaceAtGate(gate);
+    }
+
+    /// <summary>
+    /// Gets the instance of the map which the player enters. Usually, it's hosted by the own game
+    /// server of the player. If not, the player enters it on another game server which hosts it,
+    /// see <see cref="IMapHostLocator"/>.
+    /// </summary>
+    /// <param name="mapDefinition">The definition of the map.</param>
+    /// <returns>The map instance; or <c>null</c>, if no available game server hosts the map.</returns>
+    private async ValueTask<GameMap?> GetMapToEnterAsync(GameMapDefinition mapDefinition)
+    {
+        var player = this._player;
+        var mapNumber = mapDefinition.Number.ToUnsigned();
+        if (await player.GameContext.GetMapAsync(mapNumber).ConfigureAwait(false) is { } hostedMap)
+        {
+            return hostedMap;
+        }
+
+        if (player.GameContext is not IGameServerContext { MapHostLocator: { } locator } serverContext
+            || await locator.LocateAsync(serverContext, mapNumber).ConfigureAwait(false) is not { } host)
+        {
+            return null;
+        }
+
+        if (host.Map is null)
+        {
+            player.Logger.LogWarning("Map {0} is hosted by game server {1} of another process, which player {2} can't switch to yet.", mapDefinition, host.ServerId, player);
+        }
+
+        return host.Map;
+    }
+
+    /// <summary>
+    /// Warps the player to the safezone of its home map, because no available game server hosts the
+    /// map which it should enter. That happens, when the map is only hosted by a game server which
+    /// is currently stopped.
+    /// </summary>
+    private async ValueTask WarpToHomeMapAsync()
+    {
+        var player = this._player;
+        var unavailableMap = player.SelectedCharacter!.CurrentMap!;
+        if (player.SelectedCharacter.CharacterClass?.HomeMap is not { IsActive: true } homeMap
+            || homeMap == unavailableMap
+            || homeMap.GetSafezoneGate() is not { } homeGate)
+        {
+            throw new InvalidOperationException($"Map {unavailableMap} is not hosted by any available game server.");
+        }
+
+        player.Logger.LogWarning("Map {0} is not hosted by any available game server, warping player {1} to its home map {2}.", unavailableMap, player, homeMap);
+        await this.WarpToAsync(homeGate).ConfigureAwait(false);
     }
 
     private async ValueTask<bool> TryRemoveFromCurrentMapAsync(bool willRespawnOnSameMap)
@@ -330,23 +439,6 @@ internal sealed class PlayerMapTransitions
         await this._summon.RemoveFromMapAsync(currentMap).ConfigureAwait(false);
 
         return true;
-    }
-
-    /// <summary>
-    /// Places the player (and its summon) at the specified gate.
-    /// </summary>
-    /// <param name="gate">The gate.</param>
-    internal async ValueTask PlaceAtGateAsync(ExitGate gate)
-    {
-        var player = this._player;
-        player.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
-        player.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
-        player.SelectedCharacter.CurrentMap = gate.Map;
-        player.Rotation = gate.Direction;
-
-        await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
-
-        this._summon.PlaceAtGate(gate);
     }
 
     /// <summary>

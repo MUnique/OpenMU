@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishElfMasterTreePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishElfMasterTreePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D1E2F3A4-B5C6-7D8E-9F0A-1B2C3D4E5F6A")]
 public class FinishElfMasterTreePlugIn : UpdatePlugInBase
 {
@@ -32,9 +32,6 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishElfMasterTree;
 
     /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
@@ -123,7 +120,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.SummonedMonsterStr2)?.MasterDefinition is { } summonedMonsterStr2)
         {
             summonedMonsterStr2.ValueFormula = SkillsInitializer.Formula6020Value;
-            summonedMonsterStr2.Root = gameConfiguration.MasterSkillRoots.First(s => s.Name == "Middle Root");
+            summonedMonsterStr2.Root = gameConfiguration.MasterSkillRoots.First(s => s.Name.ValueInNeutralLanguage == "Middle Root");
             summonedMonsterStr2.Rank = 3;
         }
 

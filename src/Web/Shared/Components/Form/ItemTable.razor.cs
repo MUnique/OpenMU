@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Web.Shared.Components.Form;
 
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.AspNetCore.Components;
@@ -22,6 +24,17 @@ using MUnique.OpenMU.Web.Shared.Components.Modal;
 public partial class ItemTable<TItem>
     where TItem : class
 {
+    /// <summary>
+    /// The properties of <typeparamref name="TItem"/> which are shown as additional columns,
+    /// because their <see cref="DisplayAttribute"/> has <see cref="DisplayAttribute.AutoGenerateField"/> set to <c>true</c>.
+    /// </summary>
+    private static readonly PropertyInfo[] AdditionalColumns = typeof(TItem).GetProperties()
+        .Select(p => (Property: p, Display: (DisplayAttribute?)Attribute.GetCustomAttribute(p, typeof(DisplayAttribute), true)))
+        .Where(c => c.Display?.GetAutoGenerateField() == true)
+        .OrderBy(c => c.Display!.GetOrder() ?? 0)
+        .Select(c => c.Property)
+        .ToArray();
+
     private readonly int _searchThreshold = 10;
 
     private bool _isEditable;
@@ -97,6 +110,17 @@ public partial class ItemTable<TItem>
         throw new NotImplementedException();
     }
 
+    private static string GetColumnValue(PropertyInfo column, TItem item)
+    {
+        return column.GetValue(item) switch
+        {
+            null => string.Empty,
+            IFormattable formattable => formattable.ToString(null, CultureInfo.CurrentCulture),
+            string text => text,
+            var value => value.GetName(),
+        };
+    }
+
     private void OnToggleCollapseClick()
     {
         this._isCollapsed = !this._isCollapsed;
@@ -107,7 +131,7 @@ public partial class ItemTable<TItem>
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
 
-        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
+        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.SelectType, typeof(TItem).GetTypeCaption()), parameters);
         var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled || result.Data is not IList<TItem> items)
         {
@@ -150,7 +174,7 @@ public partial class ItemTable<TItem>
             DisableBackgroundCancel = true,
         };
 
-        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).GetTypeCaption()}", parameters, options);
+        var modal = this._modal.Show<ModalCreateNew<TItem>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.CreateType, typeof(TItem).GetTypeCaption()), parameters, options);
         var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled)
         {

@@ -42,6 +42,7 @@ to its code with the details; this page is the map.
 | `DataModel` | The entities and the configuration classes — this is what the admin panel edits |
 | `Persistence` | The persistence abstractions (contexts, repositories) — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Persistence/Readme.md) |
 | `Persistence/EntityFramework` | The EF Core + PostgreSQL implementation — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Persistence/EntityFramework/Readme.md) |
+| `Persistence.Generators` | Source generators for the persistent data classes, e.g. the json converters which load the data of the EF Core implementation |
 | `Persistence/Initialization` | The data initialization per game version — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Persistence/Initialization/Readme.md) |
 
 ## Web
@@ -73,6 +74,11 @@ The tests are in the `tests/` folder, one project per area
 ```bash
 dotnet test
 ```
+
+`dotnet test` builds before it runs the tests. If you run several test projects
+or filters without changing code, build once with
+`dotnet build src/MUnique.OpenMU.sln` and add `--no-build` to the later runs,
+keeping the same `-c` configuration.
 
 See also
 [Packet structure tests](https://github.com/MUnique/OpenMU/blob/master/docs/PacketStructureTests.md).

@@ -214,6 +214,11 @@ internal static class BotShoppingHandler
                 continue; // equipped, or an archer's arrows - selling those would disarm the bow.
             }
 
+            if (!definition.IsSellableToNpc)
+            {
+                continue; // the merchant refuses it, and as unsold junk it would be destroyed under slot pressure.
+            }
+
             var identifier = new ItemIdentifier(definition.Number, definition.Group);
             if (HealingHandler.HealthPotionPriority.Contains(identifier)
                 || HealingHandler.ManaPotionPriority.Contains(identifier))
@@ -360,6 +365,7 @@ internal static class BotShoppingHandler
             }
 
             if (inventory.GetItem(slot) is { } item
+                && item.CanBeRepaired()
                 && item.Durability() < item.GetMaximumDurabilityOfOnePiece())
             {
                 damaged.Add((slot, PriceCalculator.CalculateRepairPrice(item, true)));

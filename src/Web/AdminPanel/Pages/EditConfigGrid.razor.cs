@@ -193,7 +193,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     {
         try
         {
-            var dialogResult = await this.ModalService.ShowQuestionAsync("Are you sure?", $"You're about to delete '{viewModel.Name}. Are you sure?").ConfigureAwait(true);
+            var dialogResult = await this.ModalService.ShowQuestionAsync(Resources.ConfirmDelete, string.Format(Resources.ConfirmDeleteEntry, viewModel.Name)).ConfigureAwait(true);
             if (!dialogResult)
             {
                 return;
@@ -212,7 +212,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             await deleteContext.DeleteAsync(toDelete).ConfigureAwait(false);
             await deleteContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
-            this.ToastService.ShowSuccess($"Deleted '{viewModel.Name}' successfully.");
+            this.ToastService.ShowSuccess(string.Format(Resources.DeletedSuccessfully, viewModel.Name));
             this._viewModels = null;
             this._loadTask = Task.Run(() => this.LoadDataAsync(cancellationToken), cancellationToken);
         }
@@ -234,7 +234,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
             var session = new CreationSession
             {
-                Title = $"Create {this.Type!.GetTypeCaption()}",
+                Title = string.Format(Resources.CreateEntry, this.Type!.GetTypeCaption()),
                 Item = newObject,
                 ItemType = this.Type!,
                 Context = creationContext,
@@ -303,7 +303,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
                 var duplicatedName = viewModel.Name;
                 var session = new CreationSession
                 {
-                    Title = $"Duplicate '{duplicatedName}'",
+                    Title = string.Format(Resources.DuplicateEntry, duplicatedName),
                     Item = newObject,
                     ItemType = this.Type!,
                     Context = context,
@@ -378,7 +378,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
         if (cloneMethod is null || !this.Type.IsAssignableFrom(cloneMethod.ReturnType))
         {
-            this.ToastService.ShowError($"Type '{this.Type.Name}' must have a Clone method that takes '{nameof(GameConfiguration)}' and returns '{this.Type.Name}'.");
+            this.ToastService.ShowError(string.Format(Resources.InvalidCloneMethod, this.Type.Name, nameof(GameConfiguration)));
             return null;
         }
 
@@ -488,6 +488,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         /// <summary>
         /// Gets or sets the name of the object.
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Display(Name = nameof(Resources.ConfigurationEntryName), ResourceType = typeof(Resources))]
         public string Name { get; set; }
     }
 }
