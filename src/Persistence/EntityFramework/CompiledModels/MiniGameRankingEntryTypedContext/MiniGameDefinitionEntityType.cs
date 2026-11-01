@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition),
                 baseEntityType,
-                propertyCount: 24,
+                propertyCount: 25,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -167,6 +167,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetField("<MinimumCharacterLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             minimumCharacterLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var minimumPlayerCount = runtimeEntityType.AddProperty(
+                "MinimumPlayerCount",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetProperty("MinimumPlayerCount", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetField("<MinimumPlayerCount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            minimumPlayerCount.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var minimumSpecialCharacterLevel = runtimeEntityType.AddProperty(
                 "MinimumSpecialCharacterLevel",

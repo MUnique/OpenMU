@@ -1126,4 +1126,46 @@ Extensões de inventário: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Este mapa não está disponível.</value>
   </data>
+  <data name="IllusionTempleBattleStartedMessage" xml:space="preserve">
+    <value>A batalha começou!</value>
+  </data>
+  <data name="IllusionTempleRelicDroppedFormat" xml:space="preserve">
+    <value>{0} deixou cair a relíquia sagrada!</value>
+  </data>
+  <data name="IllusionTempleRelicPickedUpFormat" xml:space="preserve">
+    <value>{0} pegou a relíquia sagrada!</value>
+  </data>
+  <data name="IllusionTempleScoreFormat" xml:space="preserve">
+    <value>Placar - Allied Forces: {0} | Illusion Forces: {1}</value>
+  </data>
+  <data name="IllusionTempleStatueSpawnedMessage" xml:space="preserve">
+    <value>Uma nova relíquia sagrada apareceu!</value>
+  </data>
+  <data name="MiniGameCharacterLevelTooHighFormat" xml:space="preserve">
+    <value>Seu nível é alto demais. Você precisa estar no máximo no nível {0} para entrar neste evento.</value>
+  </data>
+  <data name="MiniGameCharacterLevelTooLowFormat" xml:space="preserve">
+    <value>Seu nível é baixo demais. Você precisa estar pelo menos no nível {0} para entrar neste evento.</value>
+  </data>
+  <data name="MiniGameEnterFailed" xml:space="preserve">
+    <value>Você não pode entrar neste evento.</value>
+  </data>
+  <data name="MiniGameEntranceFeeRequiredFormat" xml:space="preserve">
+    <value>Você precisa de {0} zen para entrar neste evento.</value>
+  </data>
+  <data name="MiniGameNotConfigured" xml:space="preserve">
+    <value>Este evento não está configurado neste servidor e não pode ser iniciado.</value>
+  </data>
+  <data name="MiniGameNotDuringGuildWar" xml:space="preserve">
+    <value>Você não pode entrar neste evento durante uma guerra de guilds.</value>
+  </data>
+  <data name="MiniGameNotOpenFormat" xml:space="preserve">
+    <value>{0} não está aberto no momento.</value>
+  </data>
+  <data name="MiniGamePlayerKillersCantEnter" xml:space="preserve">
+    <value>Jogadores PK não podem entrar!</value>
+  </data>
+  <data name="MiniGameTicketRequired" xml:space="preserve">
+    <value>Você precisa de um ingresso para entrar neste evento.</value>
+  </data>
 </root>
