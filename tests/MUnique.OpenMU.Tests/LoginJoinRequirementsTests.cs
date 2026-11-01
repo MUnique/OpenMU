@@ -156,7 +156,7 @@ public class LoginJoinRequirementsTests
         var persistence = new Mock<IPersistenceContextProvider> { DefaultValue = DefaultValue.Mock };
         persistence.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Returns(this._playerContext.Object);
         var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var serverDefinition = new Persistence.BasicModel.GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration() };
+        var serverDefinition = new Persistence.BasicModel.GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration { MaximumPlayers = 10 } };
         if (this._hasRequirement)
         {
             serverDefinition.JoinRequirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = Vip, MinimumValue = RequiredValue });

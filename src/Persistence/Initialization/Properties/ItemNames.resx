@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -2093,5 +2093,8 @@
   </data>
   <data name="OldJewelleryCase" xml:space="preserve">
     <value>Old Jewellery Case</value>
+  </data>
+  <data name="CursedCastleWater" xml:space="preserve">
+    <value>Cursed Castle Water</value>
   </data>
 </root>

@@ -363,5 +363,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Freeze", resourceCulture);
             }
         }
+
+        /// <summary>Gets IllusionTempleOrderOfProtection from the configuration name resources.</summary>
+        public static string IllusionTempleOrderOfProtection {
+            get {
+                return ResourceManager.GetString("IllusionTempleOrderOfProtection", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTempleRestraint from the configuration name resources.</summary>
+        public static string IllusionTempleRestraint {
+            get {
+                return ResourceManager.GetString("IllusionTempleRestraint", resourceCulture);
+            }
+        }
     }
 }

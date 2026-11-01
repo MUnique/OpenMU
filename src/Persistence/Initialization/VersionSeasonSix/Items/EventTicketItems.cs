@@ -37,8 +37,11 @@ internal class EventTicketItems : InitializerBase
 
         // Illusion Temple:
         this.CreateEventItem(49, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.OldScroll), false, 6, 66, 72, 78, 84, 90, 96);
-        this.CreateEventItem(50, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
-        this.CreateEventItem(51, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
+        this.CreateEventItem(51, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
+        this.CreateEventItem(50, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
+
+        // The sacred relic, which the client knows as ITEM_CURSED_CASTLE_WATER.
+        this.CreateEventItem(64, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.CursedCastleWater), false);
 
         // Doppelganger:
         if (this.CreateDoppelgangerItems() is { } signOfDimensionsDropGroup)
