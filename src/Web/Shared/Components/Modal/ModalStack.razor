@@ -1,0 +1,146 @@
+@using MUnique.OpenMU.Web.Shared.Services
+@inject ModalService ModalService
+@implements IDisposable
+
+@* Renders the opened modals of the ModalContainer. *@
+@{
+    var states = this.ModalService.States;
+    for (var i = 0; i < states.Count; i++)
+    {
+        var state = states[i];
+
+        // The key keeps each stacked modal's component state (e.g. the parent's
+        // edited form) alive while a child modal is pushed on top or removed.
+        <div @key="state.Instance" class="modal-stack-entry">
+            @* backdrop before modal so modal stacks on top by default *@
+            @* z-index stays inline: it is data (the stack depth), not static styling. *@
+            <div class="modal-backdrop fade show" style="z-index: @GetBackdropZIndex(i)" @onclick="HandleBackdropClickAsync"></div>
+            <div class="modal fade d-block show" tabindex="-1" role="dialog" style="z-index: @GetModalZIndex(i)" @ref="_modalRef">
+                <div class="modal-dialog @GetSizeClass(state)" role="document">
+                    <div class="modal-content">
+                        @if (state.Options?.HideHeader != true)
+                        {
+                            <div class="modal-header">
+                                <h5 class="modal-title">@state.Title</h5>
+                                @if (state.Options?.HideCloseButton != true)
+                                {
+                                    <button type="button" class="btn-close" @onclick="() => DismissAsync(state.Instance)"></button>
+                                }
+                            </div>
+                        }
+                        <div class="modal-body">
+                            <DynamicComponent Type="state.ComponentType" Parameters="@GetParameters(state)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    // Matches the Bootstrap defaults (backdrop 1050, modal 1055), so the first
+    // modal renders exactly as before and each stacked level stays on top.
+    private const int BaseBackdropZIndex = 1050;
+
+    private const int BaseModalZIndex = 1055;
+
+    private const int StackZIndexStep = 10;
+
+    // All stacked modals share one field, so after each render it references the
+    // topmost modal, which is the one that should receive focus.
+    private ElementReference _modalRef;
+    private int _visibleCount;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        this.ModalService.StateChanged += this.OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        this.InvokeAsync(this.StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var visibleCount = this.ModalService.States.Count;
+        if (visibleCount > 0 && visibleCount > this._visibleCount)
+        {
+            await this._modalRef.FocusAsync();
+        }
+
+        this._visibleCount = visibleCount;
+    }
+
+    private static string GetSizeClass(ModalService.ModalState state)
+    {
+        return state.Options?.Size switch
+        {
+            ModalSize.Small => "modal-sm",
+            ModalSize.Large => "modal-lg",
+            ModalSize.ExtraLarge => "modal-xl",
+            _ => string.Empty,
+        };
+    }
+
+    private static int GetBackdropZIndex(int stackIndex)
+    {
+        return BaseBackdropZIndex + (stackIndex * StackZIndexStep);
+    }
+
+    private static int GetModalZIndex(int stackIndex)
+    {
+        return BaseModalZIndex + (stackIndex * StackZIndexStep);
+    }
+
+    private static Dictionary<string, object?> GetParameters(ModalService.ModalState state)
+    {
+        var result = new Dictionary<string, object?>();
+        if (state.Parameters is not null)
+        {
+            foreach (var kvp in state.Parameters)
+            {
+                result[kvp.Key] = kvp.Value;
+            }
+        }
+
+        // Only supply the Modal instance to content components that actually declare
+        // a matching parameter (e.g. ModalQuestion). Passing it to a component that
+        // doesn't - like the plain ModalMessage - makes Blazor throw "does not have a
+        // property matching the name 'Modal'". This keeps simple modals boilerplate-free.
+        var modalProperty = state.ComponentType.GetProperty("Modal");
+        if (modalProperty is not null && modalProperty.PropertyType.IsAssignableFrom(typeof(ModalInstance)))
+        {
+            result["Modal"] = state.Instance;
+        }
+        return result;
+    }
+
+    private Task HandleBackdropClickAsync()
+    {
+        if (this.ModalService.Current?.Options?.DisableBackgroundCancel != true)
+        {
+            return this.DismissAsync(this.ModalService.Current?.Instance);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task DismissAsync(ModalInstance? instance)
+    {
+        if (instance is not null)
+        {
+            this.ModalService.Dismiss(instance);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.ModalService.StateChanged -= this.OnStateChanged;
+    }
+}
