@@ -143,6 +143,15 @@ public class LoginAction
                     player.SetLoginServerRegistration(username);
                 }
 
+                // Checked before the offline session is stopped, so that it keeps running when the account is rejected.
+                if (offlinePlayer.Account is { } runningAccount
+                    && !await this.CheckJoinRequirementsAsync(player, runningAccount, gameServerContext).ConfigureAwait(false))
+                {
+                    await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+                    context.Allowed = false;
+                    return (false, null);
+                }
+
                 var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
                 if (offlineAccount is null)
                 {
@@ -179,6 +188,13 @@ public class LoginAction
                 return (false, null);
             }
 
+            if (!await this.CheckJoinRequirementsAsync(player, loadedAccount, gameServerContext).ConfigureAwait(false))
+            {
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+                context.Allowed = false;
+                return (false, null);
+            }
+
             if (loadedAccount.IsTemplate)
             {
                 // Template accounts may be logged in several times at once, so they never hold the reservation.
@@ -203,6 +219,37 @@ public class LoginAction
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return (false, null);
         }
+    }
+
+    /// <summary>
+    /// Checks if the account fulfills the <see cref="IGameServerContext.JoinRequirements"/> of the game server,
+    /// and shows the login result to the player if it doesn't.
+    /// </summary>
+    /// <remarks>
+    /// Game masters can join every game server, so that they can look after the players.
+    /// </remarks>
+    /// <returns><c>true</c>, if the account may join the game server.</returns>
+    private async ValueTask<bool> CheckJoinRequirementsAsync(Player player, Account account, IGameServerContext gameServerContext)
+    {
+        if (account.State is AccountState.GameMaster or AccountState.GameMasterInvisible)
+        {
+            return true;
+        }
+
+        if (account.GetFirstUnfulfilledRequirement(gameServerContext.JoinRequirements, DateTime.UtcNow) is not { } requirement)
+        {
+            return true;
+        }
+
+        player.Logger.LogInformation("Account {Username} doesn't fulfill the join requirement [{Requirement}] of game server {ServerId}.", account.LoginName, requirement, gameServerContext.Id);
+
+        // When the account has an expired grant of the attribute, its subscription is over.
+        // Without any grant of the attribute, the account never had a subscription.
+        var result = account.AttributeGrants?.Any(grant => grant.Attribute == requirement.Attribute) is true
+            ? LoginResult.SubscriptionTermOver
+            : LoginResult.NoChargeInfo;
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(result)).ConfigureAwait(false);
+        return false;
     }
 
     private async ValueTask<Account?> HandleOfflineSessionHandoverAsync(Player player, string username)

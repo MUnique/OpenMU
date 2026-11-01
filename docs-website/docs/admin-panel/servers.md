@@ -64,11 +64,35 @@ Clicking the name of a server opens its configuration:
 
 * **Game server** → the generic edit page of its `GameServerDefinition`:
   experience rate, PvP, the game maps it hosts, its endpoints (port and expected
-  client), the maximum number of players, and so on.
+  client), the maximum number of players, the
+  [join requirements](#restricting-who-can-join-a-game-server), and so on.
 * **Connect server** → the connect server configuration: the client it serves,
   its port, timeouts, the maximum number of connections, and the limits which
   protect it against connection floods.
 * **Chat server** → its endpoints and settings.
+
+### Restricting who can join a game server
+
+The **Join Requirements** of a game server restrict it to accounts which have a
+certain attribute, e.g. a *VIP* or *Gold* server. Each requirement names an
+attribute and its minimum value. Without requirements, every account can join.
+
+The requirements are checked when the player logs in, before a character is
+selected. That's why only the attributes of the **account** count: its permanent
+**Attributes** and its valid **Attribute Grants** (see
+[Accounts](accounts.md#granting-attributes-for-a-limited-time-eg-vip)). Attributes
+of characters, like the level, don't count.
+
+* An account which never had the attribute gets the message that there is no
+  payment information.
+* An account whose grant of the attribute has expired gets the message that its
+  subscription term is over.
+* Game master accounts can join every game server.
+
+The connect server still lists the server for everyone; the check happens when
+the player logs in. A player who is already in the game stays on the server when
+the grant expires, but can't log in there again. Like the experience rate, the
+requirements are loaded when the game server starts.
 
 ## Adding a server
 

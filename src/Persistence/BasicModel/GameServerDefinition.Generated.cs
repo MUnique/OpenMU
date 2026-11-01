@@ -47,6 +47,27 @@ public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="JoinRequirements" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("joinRequirements")]
+    public ICollection<AttributeRequirement> RawJoinRequirements { get; } = new List<AttributeRequirement>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> JoinRequirements
+    {
+        get => base.JoinRequirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawJoinRequirements);
+        protected set
+        {
+            this.JoinRequirements.Clear();
+            foreach (var item in value)
+            {
+                this.JoinRequirements.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="ServerConfiguration" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("serverConfiguration")]
