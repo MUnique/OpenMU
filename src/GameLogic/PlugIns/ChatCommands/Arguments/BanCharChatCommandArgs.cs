@@ -13,5 +13,6 @@ public class BanCharChatCommandArgs : ArgumentsBase
     /// Gets or sets the character name.
     /// </summary>
     [Argument("char")]
+    [ValueReference(ChatCommandValueReference.CharacterName)]
     public string? CharacterName { get; set; }
 }

@@ -29,7 +29,7 @@ The client adds the command to its list of known commands, so that it can offer 
 
 Describes one parameter of a chat command, so that a user interface can offer an input for it.
 
-Length: 102 Bytes
+Length: 152 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
@@ -38,6 +38,11 @@ Length: 102 Bytes
 | 2 | 32 | String |  | Name |
 | 34 | 20 | String |  | ShortName; The short name which is used in the 'shortName=value' notation. It's empty when the parameter can only be passed by its position. |
 | 54 | 48 | String |  | ValidValues; The accepted values, separated by a pipe. It's empty when the parameter isn't limited to a set of values. |
+| 102 | 1 | ChatCommandValueReference |  | ValueReference; The kind of object which the value refers to, so that a fitting picker can be offered. It's a hint, never a constraint: a raw value can always be entered, because the data of the client may not match the configuration of the server. |
+| 103 | 1 | Boolean |  | HasRange; Defines if the parameter is numeric and the fields Minimum and Maximum describe its accepted range. |
+| 104 | 8 | LongLittleEndian |  | Minimum; The smallest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement). |
+| 112 | 8 | LongLittleEndian |  | Maximum; The largest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement). |
+| 120 | 32 | String |  | ValueReferenceGroupWith; The name of the other parameter which identifies the referenced object together with this one, e.g. the item group for the item number, so that one picker can fill both. It's empty when the value identifies the object on its own. |
 
 ### ChatCommandParameterType Enum
 
@@ -48,6 +53,26 @@ The kind of value which a chat command parameter expects.
 | 0 | Text | The parameter expects a text. |
 | 1 | Number | The parameter expects a number. |
 | 2 | Boolean | The parameter expects a 0 or a 1. |
+
+### ChatCommandValueReference Enum
+
+The kind of object which the value of a chat command parameter refers to.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | None | The value doesn't refer to any known kind of object. |
+| 1 | CharacterName | The value is the name of a character. |
+| 2 | AccountName | The value is the login name of an account. |
+| 3 | GuildName | The value is the name of a guild. |
+| 4 | Map | The value is the number or the name of a map. |
+| 5 | MapCoordinateX | The value is a x-coordinate on a map. |
+| 6 | MapCoordinateY | The value is a y-coordinate on a map. |
+| 7 | ItemGroup | The value is the group of an item. |
+| 8 | ItemNumber | The value is the number of an item within its group. |
+| 9 | MonsterNumber | The value is the number of a monster, which also identifies its model. |
+| 10 | ObjectId | The value is the id of an object which is currently in the scope of the player. |
+| 11 | SkillNumber | The value is the number of a skill. |
+| 12 | LanguageIsoCode | The value is the ISO 639-1 code of a language, e.g. 'en'. |
 
 ### CharacterStatus Enum
 
