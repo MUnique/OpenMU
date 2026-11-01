@@ -621,7 +621,8 @@ public class GameServerFullTests
     /// </summary>
     private static async ValueTask<(DefaultTcpGameServerListener Listener, int Port)> StartListenerOnFreePortAsync(GameServerContext gameContext, ILoggerFactory? loggerFactory = null)
     {
-        for (var attempt = 1; ; attempt++)
+        const int attempts = 5;
+        for (var attempt = 1; attempt <= attempts; attempt++)
         {
             var port = GetFreePort();
             var listener = CreateListener(gameContext, port, loggerFactory: loggerFactory);
@@ -630,11 +631,13 @@ public class GameServerFullTests
                 await listener.StartAsync().ConfigureAwait(false);
                 return (listener, port);
             }
-            catch (System.Net.Sockets.SocketException ex) when (ex.SocketErrorCode == System.Net.Sockets.SocketError.AddressAlreadyInUse && attempt < 5)
+            catch (System.Net.Sockets.SocketException ex) when (ex.SocketErrorCode == System.Net.Sockets.SocketError.AddressAlreadyInUse)
             {
                 listener.Stop();
             }
         }
+
+        throw new InvalidOperationException($"Another process took the free port in each of {attempts} attempts.");
     }
 
     private static int GetFreePort()
