@@ -119,7 +119,7 @@ public class AccountAttributeGrantPowerUpsTest
         public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
         {
             var timer = new ManualTimer(this, callback, state);
-            timer.Change(dueTime, period);
+            ((ITimer)timer).Change(dueTime, period);
             this._timers.Add(timer);
             return timer;
         }
@@ -138,6 +138,7 @@ public class AccountAttributeGrantPowerUpsTest
             private readonly ManualTimeProvider _provider;
             private readonly TimerCallback _callback;
             private readonly object? _state;
+            private TimeSpan _period = Timeout.InfiniteTimeSpan;
 
             public ManualTimer(ManualTimeProvider provider, TimerCallback callback, object? state)
             {
@@ -148,15 +149,16 @@ public class AccountAttributeGrantPowerUpsTest
 
             public DateTimeOffset? DueAt { get; private set; }
 
-            public bool Change(TimeSpan dueTime, TimeSpan period)
+            bool ITimer.Change(TimeSpan dueTime, TimeSpan period)
             {
+                this._period = period;
                 this.DueAt = dueTime == Timeout.InfiniteTimeSpan ? null : this._provider._utcNow + dueTime;
                 return true;
             }
 
             public void Fire()
             {
-                this.DueAt = null;
+                this.DueAt = this._period == Timeout.InfiniteTimeSpan ? null : this._provider._utcNow + this._period;
                 this._callback(this._state);
             }
 

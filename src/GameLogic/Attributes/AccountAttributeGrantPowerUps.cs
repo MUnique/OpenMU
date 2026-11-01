@@ -87,7 +87,7 @@ internal sealed class AccountAttributeGrantPowerUps : IDisposable
         this.Remove();
     }
 
-    private void OnExpirationTimerElapsed(object? state)
+    private void OnExpirationTimerElapsed()
     {
         lock (this._powerUps)
         {
@@ -125,17 +125,8 @@ internal sealed class AccountAttributeGrantPowerUps : IDisposable
             return;
         }
 
-        var dueTime = expiration - utcNow;
-        if (dueTime < TimeSpan.Zero)
-        {
-            dueTime = TimeSpan.Zero;
-        }
-        else if (dueTime > MaximumTimerDueTime)
-        {
-            dueTime = MaximumTimerDueTime;
-        }
-
-        this._expirationTimer = this._timeProvider.CreateTimer(this.OnExpirationTimerElapsed, null, dueTime, Timeout.InfiniteTimeSpan);
+        var dueTime = TimeSpan.FromTicks(Math.Clamp((expiration - utcNow).Ticks, 0, MaximumTimerDueTime.Ticks));
+        this._expirationTimer = this._timeProvider.CreateTimer(_ => this.OnExpirationTimerElapsed(), null, dueTime, Timeout.InfiniteTimeSpan);
     }
 
     private void RemoveWithinLock()

@@ -243,8 +243,8 @@ public class LoginAction
 
         player.Logger.LogInformation("Account {Username} doesn't fulfill the join requirement [{Requirement}] of game server {ServerId}.", account.LoginName, requirement, gameServerContext.Id);
 
-        // A grant of the attribute which is not valid anymore means that the subscription is over;
-        // otherwise, the account never had it.
+        // When the account has an expired grant of the attribute, its subscription is over.
+        // Without any grant of the attribute, the account never had a subscription.
         var result = account.AttributeGrants?.Any(grant => grant.Attribute == requirement.Attribute) is true
             ? LoginResult.SubscriptionTermOver
             : LoginResult.NoChargeInfo;
