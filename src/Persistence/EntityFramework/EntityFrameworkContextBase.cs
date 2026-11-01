@@ -425,6 +425,8 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             }
             catch (Exception exception) when (IsRejectedSave(exception))
             {
+                this.LogConcurrencyConflicts(exception);
+
                 // Classify only explicit server rejections, never a lost connection during commit.
                 throw new PersistenceConflictException(exception);
             }
@@ -433,21 +435,6 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             {
                 await this.OnSavedChangesAsync(sender, args).ConfigureAwait(false);
             }
-        }
-        catch (DbUpdateConcurrencyException exception)
-        {
-            foreach (var entry in exception.Entries)
-            {
-                var key = entry.Metadata.FindPrimaryKey()?.Properties
-                    .Select(property => $"{property.Name}={entry.Property(property.Name).CurrentValue}");
-                this._logger.LogWarning(
-                    "Save conflict for {EntityType} ({EntityKey}), state {EntityState}.",
-                    entry.Metadata.ClrType.Name,
-                    key is null ? "unknown" : string.Join(", ", key),
-                    entry.State);
-            }
-
-            throw;
         }
         finally
         {
@@ -460,6 +447,32 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
         {
             sender = s;
             args = e;
+        }
+    }
+
+    private void LogConcurrencyConflicts(Exception exception)
+    {
+        // The entries of a concurrency conflict name the entity which was saved with an unexpected
+        // state, e.g. a DELETE for a row which was never inserted. Npgsql may wrap the exception.
+        for (Exception? error = exception; error is not null; error = error.InnerException)
+        {
+            if (error is not DbUpdateConcurrencyException concurrencyException)
+            {
+                continue;
+            }
+
+            foreach (var entry in concurrencyException.Entries)
+            {
+                var key = entry.Metadata.FindPrimaryKey()?.Properties
+                    .Select(property => $"{property.Name}={entry.Property(property.Name).CurrentValue}");
+                this._logger.LogWarning(
+                    "Save conflict for {EntityType} ({EntityKey}), state {EntityState}.",
+                    entry.Metadata.ClrType.Name,
+                    key is null ? "unknown" : string.Join(", ", key),
+                    entry.State);
+            }
+
+            return;
         }
     }
 
