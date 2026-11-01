@@ -17,12 +17,27 @@ game servers and the chat server — and is where you start and stop them.
 |---|---|
 | (icon) | For game servers: a link which opens the [live map](live-map.md) of that server |
 | Server name | The description of the server. Clicking it opens the server's configuration |
-| Player count | Current connections / maximum connections (`∞` when unlimited) |
+| Player count | Current connections / maximum connections (`∞` when unlimited). For game servers, these are the logged in players and the *Maximum Players* of the server configuration |
 | Current state | `Stopped`, `Starting`, `Started`, `Stopping`, … |
 | Action | Start, stop and remove buttons |
 
 The footer of the table shows the **total** number of online players over all
 game servers.
+
+A game server counts a player once it has logged in, until it disconnects.
+Clients which are still at the login screen don't take a place, so they can't
+fill up the server. When all places are taken, a login is refused with the
+"server is full" message, and the game server logs that at the *Information*
+level. The server list of the clients shows the same number as the load of the
+server.
+
+Clients which didn't log in yet are limited to the same number: when as many
+connections wait for their login as players may log in, the game server refuses
+further connections right away, and logs that at the *Information* level, too.
+This way, connections which never log in can't use up the memory of the server.
+To disconnect clients which stay at the login screen for too long, activate the
+*Login Timeout* [plugin](plugins.md); it's disabled by default, and its timeout
+can be configured.
 
 ### Starting and stopping
 

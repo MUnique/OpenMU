@@ -4435,6 +4435,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Description text.</summary>
         public static string MaximumConnectionsPerIpPlugIn_Description => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized LoginTimeoutPlugIn_Name text.</summary>
+        public static string LoginTimeoutPlugIn_Name => ResourceManager.GetString("LoginTimeoutPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LoginTimeoutPlugIn_Description text.</summary>
+        public static string LoginTimeoutPlugIn_Description => ResourceManager.GetString("LoginTimeoutPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized SpeedHackDetectPlugIn_Name text.</summary>
         public static string SpeedHackDetectPlugIn_Name => ResourceManager.GetString("SpeedHackDetectPlugIn_Name", resourceCulture)!;
 
@@ -4620,6 +4626,9 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption text.</summary>
         public static string MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption => ResourceManager.GetString("MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized LoginTimeoutPlugInConfiguration_Timeout_Caption text.</summary>
+        public static string LoginTimeoutPlugInConfiguration_Timeout_Caption => ResourceManager.GetString("LoginTimeoutPlugInConfiguration_Timeout_Caption", resourceCulture)!;
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption", resourceCulture)!;

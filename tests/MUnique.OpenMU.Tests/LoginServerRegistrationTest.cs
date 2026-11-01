@@ -25,6 +25,23 @@ public class LoginServerRegistrationTest
     private const string LoginName = "owner";
     private const string Password = "password";
 
+    private readonly List<GameServerContext> _contexts = new();
+
+    /// <summary>
+    /// Disposes the game server contexts of the test, which stops their timers.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        foreach (var context in this._contexts)
+        {
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        this._contexts.Clear();
+    }
+
     /// <summary>
     /// Tests that a player which disconnects after the login server accepted its login, but before
     /// the account was assigned, still has its registration, so that it's logged off.
@@ -45,8 +62,8 @@ public class LoginServerRegistrationTest
                 disconnect = Task.Run(() => player!.DisconnectAsync().AsTask());
                 return Task.FromResult(true);
             });
-        var gameContext = await CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
-        player = new TestPlayer(gameContext);
+        var gameContext = await this.CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
+        player = new LoginTestPlayer(gameContext);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         string? releasedAtDisconnect = null;
         player.PlayerDisconnected += disconnectedPlayer =>
@@ -70,7 +87,7 @@ public class LoginServerRegistrationTest
     {
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(server => server.TryLoginAsync(LoginName, It.IsAny<byte>())).ReturnsAsync(true);
-        var gameContext = await CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
+        var gameContext = await this.CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
         var player = new FailingLoginPlayer(gameContext);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
@@ -80,7 +97,7 @@ public class LoginServerRegistrationTest
         Assert.That(player.ReleaseLoginServerRegistration(), Is.Null);
     }
 
-    private static async ValueTask<GameServerContext> CreateGameServerContextAsync(ILoginServer loginServer)
+    private async ValueTask<GameServerContext> CreateGameServerContextAsync(ILoginServer loginServer)
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();
         using (var context = persistenceContextProvider.CreateNewContext())
@@ -91,49 +108,15 @@ public class LoginServerRegistrationTest
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        var gameConfiguration = new BasicModel.GameConfiguration();
-        var map = new BasicModel.GameMapDefinition { TerrainData = new byte[ushort.MaxValue + 3] };
-        gameConfiguration.Maps.Add(map);
-        var plugInManager = new PlugInManager([], NullLoggerFactory.Instance, null, null);
-        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameServerContext = new GameServerContext(
-            new BasicModel.GameServerDefinition
-            {
-                GameConfiguration = gameConfiguration,
-                ServerConfiguration = new BasicModel.GameServerConfiguration(),
-            },
-            new Mock<IGuildServer>().Object,
-            new Mock<IEventPublisher>().Object,
-            loginServer,
-            new Mock<IFriendServer>().Object,
-            persistenceContextProvider,
-            mapInitializer,
-            NullLoggerFactory.Instance,
-            plugInManager,
-            NullDropGenerator.Instance,
-            new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameServerContext.PlugInManager;
-        mapInitializer.PathFinderPool = gameServerContext.PathFinderPool;
+        var gameServerContext = LoginTestSetup.CreateGameServerContext(persistenceContextProvider, loginServer);
+        this._contexts.Add(gameServerContext);
         return gameServerContext;
-    }
-
-    private class TestPlayer : Player
-    {
-        public TestPlayer(IGameContext gameContext)
-            : base(gameContext)
-        {
-        }
-
-        protected override ICustomPlugInContainer<GameLogic.Views.IViewPlugIn> CreateViewPlugInContainer()
-        {
-            return new MockViewPlugInContainer();
-        }
     }
 
     /// <summary>
     /// A player whose login fails after the login server accepted it, because assigning the account fails.
     /// </summary>
-    private sealed class FailingLoginPlayer : TestPlayer
+    private sealed class FailingLoginPlayer : LoginTestPlayer
     {
         public FailingLoginPlayer(IGameContext gameContext)
             : base(gameContext)
