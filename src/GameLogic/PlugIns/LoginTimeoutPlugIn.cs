@@ -32,7 +32,8 @@ public class LoginTimeoutPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigurati
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        var timeout = (this.Configuration ??= CreateDefaultConfiguration()).Timeout;
+        this.Configuration ??= CreateDefaultConfiguration();
+        var timeout = this.Configuration.Timeout;
         var now = DateTime.UtcNow;
         foreach (var player in await gameContext.GetPlayersAsync().ConfigureAwait(false))
         {

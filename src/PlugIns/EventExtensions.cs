@@ -101,7 +101,8 @@ public static class EventExtensions
             }
             catch (Exception ex)
             {
-                (exceptions ??= new()).Add(ex);
+                exceptions ??= new();
+                exceptions.Add(ex);
             }
         }
 
@@ -119,7 +120,8 @@ public static class EventExtensions
             }
             catch (Exception ex)
             {
-                (exceptions ??= new()).Add(ex);
+                exceptions ??= new();
+                exceptions.Add(ex);
             }
         }
 
