@@ -2049,4 +2049,7 @@
   <data name="OldJewelleryCase" xml:space="preserve">
     <value>Alte Schmuckschatulle</value>
   </data>
+  <data name="CursedCastleWater" xml:space="preserve">
+    <value>Verfluchtes Burgwasser</value>
+  </data>
 </root>

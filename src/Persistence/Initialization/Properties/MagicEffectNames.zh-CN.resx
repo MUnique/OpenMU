@@ -147,4 +147,10 @@
   <data name="Freeze" xml:space="preserve">
     <value>冻结</value>
   </data>
+  <data name="IllusionTempleOrderOfProtection" xml:space="preserve">
+    <value>幻影寺院 - 守护之令</value>
+  </data>
+  <data name="IllusionTempleRestraint" xml:space="preserve">
+    <value>幻影寺院 - 束缚</value>
+  </data>
 </root>
