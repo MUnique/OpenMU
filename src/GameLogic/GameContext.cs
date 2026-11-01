@@ -646,14 +646,16 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <param name="waiting">If set to <c>true</c>, the player waits for its login.</param>
     private void SetWaitingForLogin(Player player, bool waiting)
     {
-        if (waiting && this._waitingPlayers.Add(player))
+        if (waiting)
         {
-            this._waitingForLoginCount++;
+            this._waitingPlayers.Add(player);
         }
-        else if (!waiting && this._waitingPlayers.Remove(player))
+        else
         {
-            this._waitingForLoginCount--;
+            this._waitingPlayers.Remove(player);
         }
+
+        this._waitingForLoginCount = this._waitingPlayers.Count;
     }
 
     /// <summary>

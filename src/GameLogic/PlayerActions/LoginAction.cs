@@ -247,7 +247,8 @@ public class LoginAction
                 // Template accounts may be logged in several times at once, so they never hold the reservation.
                 await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
             }
-            else if (!reserved)
+
+            if (!reserved && !loadedAccount.IsTemplate)
             {
                 context.Allowed = false;
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
