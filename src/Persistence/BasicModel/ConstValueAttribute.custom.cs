@@ -10,7 +10,7 @@ using MUnique.OpenMU.AttributeSystem;
 /// <summary>
 /// A plain implementation of <see cref="MUnique.OpenMU.AttributeSystem.ConstValueAttribute"/>.
 /// </summary>
-public partial class ConstValueAttribute
+public partial class ConstValueAttribute : MUnique.OpenMU.DataModel.IAssignable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class
@@ -52,4 +52,19 @@ public partial class ConstValueAttribute
     /// </remarks>
     [JsonIgnore]
     public new float Value => base.Value;
+
+    /// <inheritdoc />
+    public void AssignValuesOf(object other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        if (other is not MUnique.OpenMU.AttributeSystem.ConstValueAttribute value)
+        {
+            throw new ArgumentException("Expected a constant attribute.", nameof(other));
+        }
+
+        var definition = gameConfiguration.Attributes.SingleOrDefault(a => a.Id == value.Definition.Id)
+            ?? throw new ArgumentException("The attribute definition must belong to the target configuration.", nameof(gameConfiguration));
+        this.Definition = definition;
+        base.Value = value.Value;
+        this.AggregateType = value.AggregateType;
+    }
 }

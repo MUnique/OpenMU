@@ -262,6 +262,28 @@ public class GensActionsTest
     }
 
     /// <summary>
+    /// Tests that an inactive reward item isn't given.
+    /// </summary>
+    [Test]
+    public async Task InactiveRewardItemIsNotGivenAsync()
+    {
+        var configuration = CreateWholeMonthRewardConfiguration();
+        configuration.Rewards = new List<GensRankReward> { new() { Rank = 1, ItemGroup = 14, ItemNumber = 141, Count = 3 } };
+        var player = await CreatePlayerAsync(DuprianNpcNumber, configuration).ConfigureAwait(false);
+        AddRewardItemDefinition(player);
+        player.GameContext.Configuration.Items.Single(item => item is { Group: 14, Number: 141 }).IsActive = false;
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IGensViewPlugIn>()!);
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+        player.GensMember!.Rank = 1;
+
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.NotEligible), Times.Once);
+        Assert.That(player.Inventory!.Items.Any(item => item.Definition is { Group: 14, Number: 141 }), Is.False);
+        Assert.That(player.GensMember.RewardClaimedAt, Is.Null);
+    }
+
+    /// <summary>
     /// Tests that the reward is only given in the reward period, and only when the inventory has enough space.
     /// </summary>
     [Test]

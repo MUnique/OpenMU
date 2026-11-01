@@ -46,7 +46,7 @@ public abstract class FixJeweleryPetsDamageCalcsPlugInBase : UpdatePlugInBase
         var isPetSkeletionEquipped = context.CreateNew<AttributeDefinition>(Stats.IsPetSkeletonEquipped.Id, Stats.IsPetSkeletonEquipped.Designation, Stats.IsPetSkeletonEquipped.Description);
         gameConfiguration.Attributes.Add(isPetSkeletionEquipped);
 
-        var resistancesTable = gameConfiguration.ItemLevelBonusTables.First(t => t.Name == "Elemental resistances (Jewelery)");
+        var resistancesTable = gameConfiguration.ItemLevelBonusTables.First(t => t.Name.ValueInNeutralLanguage == "Elemental resistances (Jewelery)");
         resistancesTable.Description = "Defines the elemental resistances for jewelery. It's 1 per item level.";
 
         float[] resistanceIncreaseByLevel = [0, 1, 2, 3, 4];

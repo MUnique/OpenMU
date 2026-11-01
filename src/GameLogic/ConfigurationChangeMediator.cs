@@ -143,8 +143,15 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
     {
         if (this._registrations.Remove(id, out var registration))
         {
-            await registration.RaiseOnDeleteAsync().ConfigureAwait(false);
-            registration.Dispose();
+            try
+            {
+                await registration.RaiseOnDeleteAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                // Also when a subscriber failed; its exception is thrown after all subscribers ran.
+                registration.Dispose();
+            }
         }
     }
 

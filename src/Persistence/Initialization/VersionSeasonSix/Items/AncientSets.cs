@@ -33,6 +33,15 @@ public class AncientSets : InitializerBase
     {
         this._ancientBonusOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientBonus);
         this._ancientOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientOption);
+
+        // When sets are added to an existing configuration by an update, reuse its bonus options.
+        foreach (var option in this.GameConfiguration.ItemOptions.SelectMany(o => o.PossibleOptions).Where(o => o.OptionType == this._ancientBonusOptionType))
+        {
+            if (option.PowerUpDefinition?.TargetAttribute is { } attribute)
+            {
+                this._bonusOptions.TryAdd(attribute, option);
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -685,6 +694,52 @@ public class AncientSets : InitializerBase
             (40, ItemGroups.Gloves, Stats.TotalVitality, 2),
             (40, ItemGroups.Armor, Stats.TotalVitality, 2),
             (40, ItemGroups.Helm, Stats.TotalVitality, 2));
+
+        this.AddRageFighterSets();
+    }
+
+    /// <summary>
+    /// Adds the ancient sets of the rage fighter's Sacred items, as the season 6 client defines them
+    /// (<c>ItemSetType.bmd</c>, <c>ItemSetOption.bmd</c>): Vega and Chamer.
+    /// </summary>
+    internal void AddRageFighterSets()
+    {
+        var vega = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Vega),
+            LocalizedString.FromResource(() => ItemOptionNames.VegaAncientSet), // Sacred
+            37,
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 50.0f, AggregateType.AddRaw),
+            (Stats.MaximumPhysBaseDmg, 30.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw));
+        vega.SetGuid(59, 1);
+        this.AddItems(
+            vega,
+            (32, ItemGroups.Swords, Stats.TotalStrength, 1), // Sacred Glove
+            (59, ItemGroups.Helm, Stats.TotalAgility, 1),
+            (59, ItemGroups.Armor, Stats.TotalStrength, 1),
+            (59, ItemGroups.Pants, Stats.TotalAgility, 1));
+
+        var chamer = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Chamer),
+            LocalizedString.FromResource(() => ItemOptionNames.ChamerAncientSet), // Sacred
+            38,
+            (Stats.DefenseBase, 50.0f, AggregateType.AddFinal),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.FinalDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        chamer.SetGuid(59, 2);
+        this.AddItems(
+            chamer,
+            (32, ItemGroups.Swords, Stats.TotalStrength, 2), // Sacred Glove
+            (59, ItemGroups.Armor, Stats.TotalStrength, 2),
+            (59, ItemGroups.Pants, Stats.TotalAgility, 2),
+            (59, ItemGroups.Boots, Stats.TotalAgility, 1));
     }
 
     private void AddItems(ItemSetGroup set, params (short Number, ItemGroups Group, AttributeDefinition? BonusOption, int Discriminator)[] items)

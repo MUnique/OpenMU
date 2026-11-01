@@ -30,6 +30,9 @@
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
         <hr class="dropdown-divider"/>
+        <NavLink class="dropdown-item" href="content-activation" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-circle-check" aria-hidden="true"></span> @Resources.ContentActivation
+        </NavLink>
         <NavLink class="dropdown-item" href="plugins" @onclick="() => NavigationHistory.Clear()">
             <span class="oi oi-puzzle-piece" aria-hidden="true"></span> @Resources.Plugins
         </NavLink>
@@ -38,6 +41,9 @@
         </NavLink>
         <NavLink class="dropdown-item" href="map-editor" @onclick="() => NavigationHistory.Clear()">
             <span class="oi oi-globe" aria-hidden="true"></span> @Resources.MapEditor
+        </NavLink>
+        <NavLink class="dropdown-item" href="terrain-editor" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-brush" aria-hidden="true"></span> @Resources.TerrainEditor
         </NavLink>
         <hr class="dropdown-divider"/>
         <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">

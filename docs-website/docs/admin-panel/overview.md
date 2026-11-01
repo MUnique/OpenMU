@@ -47,17 +47,20 @@ with `-adminpanel:disabled`.
 
 | Page | Purpose |
 |---|---|
+| [Dashboard](#dashboard) | The start page: statistics about the servers, players, accounts and guilds |
 | [Setup](setup.md) | Create, reinstall and update the database; choose the game version |
 | [Configuration updates](configuration-updates.md) | Apply configuration data updates which come with new OpenMU versions |
 | [Servers](servers.md) | Start/stop listeners, player counts, add servers, global messages |
 | [Accounts](accounts.md) | Search, create, ban and edit accounts |
 | [Online accounts](online-accounts.md) | Who is logged in, disconnect players, offline sessions |
+| [Leaderboards](#leaderboards) | The best characters of Blood Castle, Devil Square, Chaos Castle and the other mini games |
 | [Game configuration](game-configuration.md) | Everything about the game world: system settings, items, monsters, skills, maps, drops, … |
 | [Plugins](plugins.md) | Activate, deactivate and configure plugins |
 | [Chat commands](chat-commands.md) | Which in-game commands exist and who may use them |
-| [Map editor](map-editor.md) | Edit monster spawn areas and gates graphically |
+| [Map editor](map-editor.md) | Edit monster spawn areas, gates and the [terrain](map-editor.md#terrain-editor) graphically |
 | [Live map](live-map.md) | Watch what happens on a map in real time |
 | [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana with logs, metrics and traces |
+| [Discord](../server-features/discord.md#setting-up) | Set up the Discord bot and notifications, step by step |
 | [Users](users.md) | The users which may log into the admin panel |
 | [API keys](authentication.md#api-keys-for-external-applications) | The keys with which external applications use the public API |
 
@@ -76,6 +79,49 @@ example the [server-side AI bots](../server-features/bots.md).
 * **Language selector** — the panel's texts come from resource files. English is
   included; further languages can be added as satellite resource files and appear
   in this selector automatically.
+
+## Dashboard
+
+The start page shows the state of the server at a glance, as cards:
+
+* **Players online** — the players on the running game servers, and how many
+  can be online on them.
+* **Servers running** — how many of the servers are started. Servers which
+  aren't are highlighted.
+* **Accounts** — the number of accounts, how many were registered in the last
+  7 days and how many are banned. Bot and template accounts are not counted.
+* **Guilds** — the number of guilds and alliances, and the number of characters.
+* **Players online in the last 24 hours** — a chart which is updated every
+  5 minutes. The history is kept in memory, so it starts over when the admin
+  panel is restarted.
+* **Servers** — every server with its player count and state. The page
+  updates itself when a server starts or stops or players log in or out.
+* **Quick actions** — send a [global message](servers.md#global-messages) and
+  links to frequently used pages.
+
+Administrators additionally see the state of the castle siege,
+the uptime and memory usage of the process, the version, whether the database is
+reachable, and the number of available [configuration updates](configuration-updates.md).
+
+The numbers of accounts, guilds and characters are counted when the page is
+opened; reload the page to update them.
+
+## Leaderboards
+
+The *Leaderboards* page ranks the characters by their results in the mini games,
+like Blood Castle, Devil Square and Chaos Castle. There is a tab for each mini
+game type, and all levels of a type (e.g. Blood Castle 1 to 8) are combined.
+
+For each character it shows the sum of the scores, the best score of a single
+game and the number of played games, ordered by the sum of the scores. The
+period can be limited to the last 7 or 30 days. The 100 best characters are
+shown; characters of bots and template accounts are not ranked.
+
+A mini game only has a leaderboard when it saves its results: enable
+*Save Ranking Statistics* of the mini game definition in the
+[game configuration](game-configuration.md). In a freshly initialized database,
+this is the case for Blood Castle, Devil Square and Chaos Castle. Agents read
+the same leaderboards with the `minigames_leaderboard` [MCP tool](mcp.md).
 
 ## A note about the edit pages
 
@@ -99,7 +145,8 @@ Some parts of the panel depend on how the server is hosted:
 |---|---|---|
 | Logs | [Log files page](logs-and-monitoring.md#log-files-all-in-one) inside the panel | Links to Grafana for logs, metrics and traces |
 | Live map | Rendered by the panel itself | Reverse-proxied from the game server container |
-| Auto start / auto schema update | Applies | Ignored — listeners always start, schema updates are started manually |
+| Dashboard | Shows the castle siege and the global message | Without the castle siege and the global message; uptime and memory are the ones of the admin panel container |
+| Auto start / auto schema update | Applies | Ignored — listeners always start, schema and mandatory configuration updates are started manually |
 | After an installation | Ready immediately | The connect server and game server containers have to be restarted |
 
 ## Planned

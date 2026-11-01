@@ -328,6 +328,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Kanturu Refinery Tower event configuration.</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>Standardize event entrance duration</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>This update raises the entrance duration of the events with a shared entrance, like Blood Castle, Devil Square and Kanturu, to the five minutes which every event entrance announces.</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>Fix Drain Life Skill</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>Updates the attributes of the summoner's Drain Life skill to make it work properly.</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Rage Fighter Master Tree PlugIn</value></data>
@@ -368,10 +370,14 @@
   <data name="AddGensRewardItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the jewellery cases (14/141 to 14/144), which the gens members get as monthly reward.</value></data>
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Name" xml:space="preserve"><value>Fix Vulcanus warp index</value></data>
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the index of the warp entry of Vulcanus to 42, which the season 6 game client requests.</value></data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Fire Scream requirements</value></data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the energy and leadership requirements of the fire scream skill to 150 and 70. They were swapped, so a dark lord with less than 150 leadership could learn the skill but not use it.</value></data>
   <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve"><value>Add Crywolf event</value></data>
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the monsters of the crywolf event and their spawns, lets the statue and the altars of the fortress always be on the map, adds the warp entry of the fortress and the terrains of the occupation states.</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve"><value>Add small wings and capes</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior's Cloak. Existing items with the same numbers are left unchanged.</value></data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve"><value>Set the game versions of the content</value></data>
+  <data name="SetIntroducedGameVersionsPlugInBase_Description" xml:space="preserve"><value>This update sets in which version of the original game the maps, character classes, monsters, items and mini games were introduced. It allows to activate or deactivate the content of certain game versions in batches. Versions which were already set are kept.</value></data>
   <data name="FixDinorantOptionNumbersPlugIn_Name" xml:space="preserve"><value>Fix Dinorant option numbers</value></data>
   <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve"><value>This update gives each Dinorant option a distinct number, which is its bit in the option field the client expects.</value></data>
   <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve"><value>Configure NPCs of talk plugins</value></data>
@@ -384,4 +390,22 @@
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Description" xml:space="preserve"><value>This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly.</value></data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Name" xml:space="preserve"><value>Fix transformation ring rules</value></data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve"><value>Requires character level 50 for transformation ring levels 3 to 5 and adds the Death Cow ring's 20% maximum-health bonus.</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>Add Rage Fighter Ancient Sets</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add item stat profiles</value>
+  </data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Adds the item stat profiles, which hold the item formulas (how requirements grow, what excellent and ancient items get more) as data, and gives each item the profile of its kind. The values the game computes stay the same; profiles which exist and items which have a profile are kept.</value>
+  </data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>Add crafting bonus percentage attribute</value></data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>Adds the attribute which defines the percentage points which are added to the success rate of item craftings.</value></data>
+  <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Fix maximum item level of seed spheres</value></data>
+  <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>This update sets the maximum item level of the seed spheres to the highest option number of their element. The item level of a seed sphere defines its option, so seed spheres with other options than the first one could not be created, e.g. with the item chat command.</value></data>
+  <data name="AddItemPriceDefinitionsPlugIn_Name" xml:space="preserve"><value>Add item price definitions</value></data>
+  <data name="AddItemPriceDefinitionsPlugIn_Description" xml:space="preserve"><value>This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment.</value></data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve"><value>Add Crystal Sword Ice Chance</value></data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve"><value>Adds the Crystal Sword ice chance, which turns an attack into an ice skill instead.</value></data>
 </root>

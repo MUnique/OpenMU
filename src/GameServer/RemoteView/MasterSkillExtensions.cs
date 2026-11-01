@@ -210,7 +210,7 @@ public static class MasterSkillExtensions
                 { 486, 49 },
                 { 487, 50 },
                 { 488, 51 },
-                { 489, 53 },
+                { 489, 55 },
                 { 490, 54 },
             }
         },

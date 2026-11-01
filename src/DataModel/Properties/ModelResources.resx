@@ -628,6 +628,18 @@
   <data name="CharacterClass_Name_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="CharacterClass_IsActive_Caption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="CharacterClass_IsActive_Description" xml:space="preserve">
+    <value>Whether this character class is available in the game. Inactive character classes stay in the configuration, e.g. to restrict the game to the content of a certain game version.</value>
+  </data>
+  <data name="CharacterClass_IntroducedIn_Caption" xml:space="preserve">
+    <value>Introduced In</value>
+  </data>
+  <data name="CharacterClass_IntroducedIn_Description" xml:space="preserve">
+    <value>The version of the original game which introduced this character class. It is informational and allows to activate or deactivate the content of a game version in batches.</value>
+  </data>
   <data name="CharacterClass_CanGetCreated_Caption" xml:space="preserve">
     <value>Can Get Created</value>
   </data>
@@ -1651,6 +1663,12 @@
   <data name="GameConfiguration_ItemLevelBonusTables_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="GameConfiguration_ItemPriceDefinitions_Caption" xml:space="preserve">
+    <value>Item Price Definitions</value>
+  </data>
+  <data name="GameConfiguration_ItemPriceDefinitions_Description" xml:space="preserve">
+    <value>The definitions of item prices, which are referenced by the item definitions.</value>
+  </data>
   <data name="GameConfiguration_ItemSlotTypes_Caption" xml:space="preserve">
     <value>Item Slot Types</value>
   </data>
@@ -1752,6 +1770,18 @@
   </data>
   <data name="GameMapDefinition_Name_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="GameMapDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="GameMapDefinition_IsActive_Description" xml:space="preserve">
+    <value>Whether this map is available in the game. Inactive maps stay in the configuration, e.g. to restrict the game to the content of a certain game version.</value>
+  </data>
+  <data name="GameMapDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Introduced In</value>
+  </data>
+  <data name="GameMapDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>The version of the original game which introduced this map. It is informational and allows to activate or deactivate the content of a game version in batches.</value>
   </data>
   <data name="GameMapDefinition_TerrainData_Caption" xml:space="preserve">
     <value>Terrain Data</value>
@@ -1904,6 +1934,234 @@
     <value>Alternative Published Port</value>
   </data>
   <data name="GameServerEndpoint_AlternativePublishedPort_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_TypeCaption" xml:space="preserve">
+    <value>Game Version</value>
+  </data>
+  <data name="GameVersion_TypeDescription" xml:space="preserve">
+    <value>A version of the original game, e.g. a version number like 0.97d, or a season and its episode.</value>
+  </data>
+  <data name="GameVersion_Unknown_Caption" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="GameVersion_Unknown_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version029_Caption" xml:space="preserve">
+    <value>0.29</value>
+  </data>
+  <data name="GameVersion_Version029_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version034_Caption" xml:space="preserve">
+    <value>0.34</value>
+  </data>
+  <data name="GameVersion_Version034_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version043_Caption" xml:space="preserve">
+    <value>0.43</value>
+  </data>
+  <data name="GameVersion_Version043_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version045_Caption" xml:space="preserve">
+    <value>0.45</value>
+  </data>
+  <data name="GameVersion_Version045_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version048_Caption" xml:space="preserve">
+    <value>0.48</value>
+  </data>
+  <data name="GameVersion_Version048_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version060_Caption" xml:space="preserve">
+    <value>0.60</value>
+  </data>
+  <data name="GameVersion_Version060_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version064_Caption" xml:space="preserve">
+    <value>0.64</value>
+  </data>
+  <data name="GameVersion_Version064_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version066_Caption" xml:space="preserve">
+    <value>0.66</value>
+  </data>
+  <data name="GameVersion_Version066_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version068_Caption" xml:space="preserve">
+    <value>0.68</value>
+  </data>
+  <data name="GameVersion_Version068_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version075_Caption" xml:space="preserve">
+    <value>0.75</value>
+  </data>
+  <data name="GameVersion_Version075_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version084_Caption" xml:space="preserve">
+    <value>0.84</value>
+  </data>
+  <data name="GameVersion_Version084_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version089c_Caption" xml:space="preserve">
+    <value>0.89c</value>
+  </data>
+  <data name="GameVersion_Version089c_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version094b_Caption" xml:space="preserve">
+    <value>0.94b</value>
+  </data>
+  <data name="GameVersion_Version094b_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version095d_Caption" xml:space="preserve">
+    <value>0.95d</value>
+  </data>
+  <data name="GameVersion_Version095d_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version095k_Caption" xml:space="preserve">
+    <value>0.95k</value>
+  </data>
+  <data name="GameVersion_Version095k_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version096y_Caption" xml:space="preserve">
+    <value>0.96y</value>
+  </data>
+  <data name="GameVersion_Version096y_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version097d_Caption" xml:space="preserve">
+    <value>0.97d</value>
+  </data>
+  <data name="GameVersion_Version097d_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version097p_Caption" xml:space="preserve">
+    <value>0.97p</value>
+  </data>
+  <data name="GameVersion_Version097p_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version097r_Caption" xml:space="preserve">
+    <value>0.97r</value>
+  </data>
+  <data name="GameVersion_Version097r_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version098r_Caption" xml:space="preserve">
+    <value>0.98r</value>
+  </data>
+  <data name="GameVersion_Version098r_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version099_Caption" xml:space="preserve">
+    <value>0.99</value>
+  </data>
+  <data name="GameVersion_Version099_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version099GPlus_Caption" xml:space="preserve">
+    <value>0.99G+</value>
+  </data>
+  <data name="GameVersion_Version099GPlus_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Version100s_Caption" xml:space="preserve">
+    <value>1.00s</value>
+  </data>
+  <data name="GameVersion_Version100s_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season1_Caption" xml:space="preserve">
+    <value>Season 1</value>
+  </data>
+  <data name="GameVersion_Season1_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season2_Caption" xml:space="preserve">
+    <value>Season 2</value>
+  </data>
+  <data name="GameVersion_Season2_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season3Episode1_Caption" xml:space="preserve">
+    <value>Season 3 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season3Episode1_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season3Episode2_Caption" xml:space="preserve">
+    <value>Season 3 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season3Episode2_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season4Episode1_Caption" xml:space="preserve">
+    <value>Season 4 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season4Episode1_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season4Episode2_Caption" xml:space="preserve">
+    <value>Season 4 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season4Episode2_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season5Episode1_Caption" xml:space="preserve">
+    <value>Season 5 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season5Episode1_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season5Episode2_Caption" xml:space="preserve">
+    <value>Season 5 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season5Episode2_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season5Episode3_Caption" xml:space="preserve">
+    <value>Season 5 Episode 3</value>
+  </data>
+  <data name="GameVersion_Season5Episode3_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season5Episode4_Caption" xml:space="preserve">
+    <value>Season 5 Episode 4</value>
+  </data>
+  <data name="GameVersion_Season5Episode4_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season6Episode1_Caption" xml:space="preserve">
+    <value>Season 6 Episode 1</value>
+  </data>
+  <data name="GameVersion_Season6Episode1_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season6Episode2_Caption" xml:space="preserve">
+    <value>Season 6 Episode 2</value>
+  </data>
+  <data name="GameVersion_Season6Episode2_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameVersion_Season6Episode3_Caption" xml:space="preserve">
+    <value>Season 6 Episode 3</value>
+  </data>
+  <data name="GameVersion_Season6Episode3_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="Gate_TypeCaption" xml:space="preserve">
@@ -2467,6 +2725,18 @@
   <data name="ItemDefinition_Name_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="ItemDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ItemDefinition_IsActive_Description" xml:space="preserve">
+    <value>Whether this item is available in the game. Inactive items stay in the configuration, e.g. to restrict the game to the content of a certain game version.</value>
+  </data>
+  <data name="ItemDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Introduced In</value>
+  </data>
+  <data name="ItemDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>The version of the original game which introduced this item. It is informational and allows to activate or deactivate the content of a game version in batches.</value>
+  </data>
   <data name="ItemDefinition_DropLevel_Caption" xml:space="preserve">
     <value>Drop Level</value>
   </data>
@@ -2508,6 +2778,12 @@
   </data>
   <data name="ItemDefinition_PetExperienceFormula_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="ItemDefinition_PriceDefinition_Caption" xml:space="preserve">
+    <value>Price Definition</value>
+  </data>
+  <data name="ItemDefinition_PriceDefinition_Description" xml:space="preserve">
+    <value>Defines how the price of this item is calculated. Without it, the item gets the automatic price of equipment.</value>
   </data>
   <data name="ItemDefinition_ConsumeEffect_Caption" xml:space="preserve">
     <value>Consume Effect</value>
@@ -3553,6 +3829,18 @@
   <data name="MiniGameDefinition_Name_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MiniGameDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="MiniGameDefinition_IsActive_Description" xml:space="preserve">
+    <value>Whether this mini game is available in the game. Inactive mini games stay in the configuration, e.g. to restrict the game to the content of a certain game version.</value>
+  </data>
+  <data name="MiniGameDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Introduced In</value>
+  </data>
+  <data name="MiniGameDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>The version of the original game which introduced this mini game. It is informational and allows to activate or deactivate the content of a game version in batches.</value>
+  </data>
   <data name="MiniGameDefinition_Description_Caption" xml:space="preserve">
     <value>Description</value>
   </data>
@@ -4119,6 +4407,18 @@
   </data>
   <data name="MonsterDefinition_Designation_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="MonsterDefinition_IsActive_Caption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="MonsterDefinition_IsActive_Description" xml:space="preserve">
+    <value>Whether this monster is available in the game. Inactive monsters stay in the configuration, e.g. to restrict the game to the content of a certain game version.</value>
+  </data>
+  <data name="MonsterDefinition_IntroducedIn_Caption" xml:space="preserve">
+    <value>Introduced In</value>
+  </data>
+  <data name="MonsterDefinition_IntroducedIn_Description" xml:space="preserve">
+    <value>The version of the original game which introduced this monster. It is informational and allows to activate or deactivate the content of a game version in batches.</value>
   </data>
   <data name="MonsterDefinition_MoveRange_Caption" xml:space="preserve">
     <value>Move Range</value>
@@ -5814,5 +6114,395 @@
   </data>
   <data name="AttributeRequirement_MinimumItemLevel_Description" xml:space="preserve">
     <value>The item level at which this requirement starts to apply. Leave unset to always apply the requirement.</value>
+  </data>
+  <data name="GameConfiguration_ExcellentDropLevelBonus_Caption" xml:space="preserve">
+    <value>Excellent Drop Level Bonus</value>
+  </data>
+  <data name="GameConfiguration_ExcellentDropLevelBonus_Description" xml:space="preserve">
+    <value>What the item formulas add to the drop level of an excellent item: for its requirements when it isn't ancient, and for its price. It isn't about which items drop as excellent. Default: 25, as in the game client.</value>
+  </data>
+  <data name="GameConfiguration_AncientDropLevelBonus_Caption" xml:space="preserve">
+    <value>Ancient Drop Level Bonus</value>
+  </data>
+  <data name="GameConfiguration_AncientDropLevelBonus_Description" xml:space="preserve">
+    <value>What the item formulas add to the drop level of an ancient item: for its requirements, and for its ancient bonus values. Default: 30, as in the game client.</value>
+  </data>
+  <data name="GameConfiguration_ItemStatProfiles_Caption" xml:space="preserve">
+    <value>Item Stat Profiles</value>
+  </data>
+  <data name="GameConfiguration_ItemStatProfiles_Description" xml:space="preserve">
+    <value>Named item formulas: what an item's level, excellent options, ancient set and option level add to its stats and requirements. The profile 'default' writes every part, the others only what differs from it.</value>
+  </data>
+  <data name="ItemDefinition_StatProfile_Caption" xml:space="preserve">
+    <value>Stat Profile</value>
+  </data>
+  <data name="ItemDefinition_StatProfile_Description" xml:space="preserve">
+    <value>The item formulas of this item. Without one, the item has those of the profile 'default'. A new configuration gives each item the profile of its kind.</value>
+  </data>
+  <data name="ItemDefinition_ExcellentBonus_Caption" xml:space="preserve">
+    <value>Fixed Excellent Bonus</value>
+  </data>
+  <data name="ItemDefinition_ExcellentBonus_Description" xml:space="preserve">
+    <value>A fixed bonus which an excellent item of this kind gets on its damage and magic power, instead of the excellent part of its stat profile. 0: the excellent part applies.</value>
+  </data>
+  <data name="ItemDefinition_ExcellentRaisesLevel_Caption" xml:space="preserve">
+    <value>Excellent Raises Level Requirement</value>
+  </data>
+  <data name="ItemDefinition_ExcellentRaisesLevel_Description" xml:space="preserve">
+    <value>Whether an excellent item of this kind needs a higher level, by the 'excellent level requirement add' of its stat profile.</value>
+  </data>
+  <data name="ItemStatProfile_TypeCaption" xml:space="preserve">
+    <value>Item Stat Profile</value>
+  </data>
+  <data name="ItemStatProfile_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Stat Profiles</value>
+  </data>
+  <data name="ItemStatProfile_TypeDescription" xml:space="preserve">
+    <value>Named item formulas. The profile 'default' writes every part; another profile writes only what differs from it.</value>
+  </data>
+  <data name="ItemStatProfile_Name_Caption" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ItemStatProfile_Name_Description" xml:space="preserve">
+    <value>Unique in the configuration. 'default' is the profile which writes every part. The names are the same as in the game client's item stat file.</value>
+  </data>
+  <data name="ItemStatProfile_LevelPerItemLevel_Caption" xml:space="preserve">
+    <value>Level Requirement Per Item Level</value>
+  </data>
+  <data name="ItemStatProfile_LevelPerItemLevel_Description" xml:space="preserve">
+    <value>What each item level adds to the level requirement. Empty: as in the profile 'default'.</value>
+  </data>
+  <data name="ItemStatProfile_ExcellentLevelAdd_Caption" xml:space="preserve">
+    <value>Excellent Level Requirement Add</value>
+  </data>
+  <data name="ItemStatProfile_ExcellentLevelAdd_Description" xml:space="preserve">
+    <value>What an excellent item needs more as level requirement, if excellent raises its level requirement. Empty: as in the profile 'default'.</value>
+  </data>
+  <data name="ItemStatProfile_StrengthPerOptionLevel_Caption" xml:space="preserve">
+    <value>Strength Requirement Per Option Level</value>
+  </data>
+  <data name="ItemStatProfile_StrengthPerOptionLevel_Description" xml:space="preserve">
+    <value>What each option level adds to the strength requirement. Empty: as in the profile 'default'.</value>
+  </data>
+  <data name="ItemStatProfile_StatTerms_Caption" xml:space="preserve">
+    <value>Stat Terms</value>
+  </data>
+  <data name="ItemStatProfile_StatTerms_Description" xml:space="preserve">
+    <value>One entry for each stat which the profile writes.</value>
+  </data>
+  <data name="ItemStatProfile_RequirementFormulas_Caption" xml:space="preserve">
+    <value>Requirement Formulas</value>
+  </data>
+  <data name="ItemStatProfile_RequirementFormulas_Description" xml:space="preserve">
+    <value>One entry for each stat requirement which the profile writes.</value>
+  </data>
+  <data name="ItemStatTerms_TypeCaption" xml:space="preserve">
+    <value>Item Stat Terms</value>
+  </data>
+  <data name="ItemStatTerms_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Stat Terms</value>
+  </data>
+  <data name="ItemStatTerms_TypeDescription" xml:space="preserve">
+    <value>The level bonus table of a stat, and what an excellent and an ancient item get more.</value>
+  </data>
+  <data name="ItemStatTerms_TableState_Caption" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="ItemStatTerms_TableState_Description" xml:space="preserve">
+    <value>Not written: as in the profile 'default'. None: the stat has no level bonus table. Values: the level bonus table below.</value>
+  </data>
+  <data name="ItemStatTerms_Table_Caption" xml:space="preserve">
+    <value>Level Bonus Table</value>
+  </data>
+  <data name="ItemStatTerms_Table_Description" xml:space="preserve">
+    <value>What each item level adds to the stat.</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentState_Caption" xml:space="preserve">
+    <value>Excellent</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentState_Description" xml:space="preserve">
+    <value>Not written: as in the profile 'default'. None: excellent items get nothing more. Values: base × times ÷ drop level + add + drop level ÷ divisor.</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentTimes_Caption" xml:space="preserve">
+    <value>Excellent Times</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentTimes_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemStatTerms_ExcellentAdd_Caption" xml:space="preserve">
+    <value>Excellent Add</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentAdd_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemStatTerms_ExcellentDropLevelDivisor_Caption" xml:space="preserve">
+    <value>Excellent Drop Level Divisor</value>
+  </data>
+  <data name="ItemStatTerms_ExcellentDropLevelDivisor_Description" xml:space="preserve">
+    <value>0 leaves this part out.</value>
+  </data>
+  <data name="ItemStatTerms_AncientState_Caption" xml:space="preserve">
+    <value>Ancient</value>
+  </data>
+  <data name="ItemStatTerms_AncientState_Description" xml:space="preserve">
+    <value>Not written: as in the profile 'default'. None: ancient items get nothing more. Values: value × times ÷ d + add + d ÷ divisor, where d is the drop level plus the ancient drop level bonus.</value>
+  </data>
+  <data name="ItemStatTerms_AncientTimes_Caption" xml:space="preserve">
+    <value>Ancient Times</value>
+  </data>
+  <data name="ItemStatTerms_AncientTimes_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemStatTerms_AncientAdd_Caption" xml:space="preserve">
+    <value>Ancient Add</value>
+  </data>
+  <data name="ItemStatTerms_AncientAdd_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemStatTerms_AncientDropLevelDivisor_Caption" xml:space="preserve">
+    <value>Ancient Drop Level Divisor</value>
+  </data>
+  <data name="ItemStatTerms_AncientDropLevelDivisor_Description" xml:space="preserve">
+    <value>0 leaves this part out.</value>
+  </data>
+  <data name="ItemStatTerms_AncientAfterLevelBonus_Caption" xml:space="preserve">
+    <value>Ancient After Level Bonus</value>
+  </data>
+  <data name="ItemStatTerms_AncientAfterLevelBonus_Description" xml:space="preserve">
+    <value>Whether the value of the ancient part includes the level bonus.</value>
+  </data>
+  <data name="ItemStatTerms_PerLevelAfterHalving_Caption" xml:space="preserve">
+    <value>Per Level After Halving</value>
+  </data>
+  <data name="ItemStatTerms_PerLevelAfterHalving_Description" xml:space="preserve">
+    <value>Magic power only: what each item level adds after the magic power is halved. Empty: as in the profile 'default'.</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeCaption" xml:space="preserve">
+    <value>Item Requirement Formula</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Requirement Formulas</value>
+  </data>
+  <data name="ItemRequirementFormula_TypeDescription" xml:space="preserve">
+    <value>How a stat requirement grows: add + base × (drop level + item level × level weight) × percent ÷ 100. A base value of 0 stays 0.</value>
+  </data>
+  <data name="ItemRequirementFormula_KeepBase_Caption" xml:space="preserve">
+    <value>Keep Base Value</value>
+  </data>
+  <data name="ItemRequirementFormula_KeepBase_Description" xml:space="preserve">
+    <value>Whether the requirement keeps its base value, instead of growing by the formula.</value>
+  </data>
+  <data name="ItemRequirementFormula_Add_Caption" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="ItemRequirementFormula_Add_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemRequirementFormula_LevelWeight_Caption" xml:space="preserve">
+    <value>Level Weight</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelWeight_Description" xml:space="preserve">
+    <value>The factor of the item level, which is added to the drop level.</value>
+  </data>
+  <data name="ItemRequirementFormula_Percent_Caption" xml:space="preserve">
+    <value>Percent</value>
+  </data>
+  <data name="ItemRequirementFormula_Percent_Description" xml:space="preserve">
+    <value>The percent of the base value which each drop level adds.</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelRequirementBasis_Caption" xml:space="preserve">
+    <value>Level Requirement Basis</value>
+  </data>
+  <data name="ItemRequirementFormula_LevelRequirementBasis_Description" xml:space="preserve">
+    <value>Whether the formula takes the item's level requirement instead of the drop level (without the level weight), when the item has one.</value>
+  </data>
+  <data name="ItemStatTermState_TypeCaption" xml:space="preserve">
+    <value>Item Stat Term State</value>
+  </data>
+  <data name="ItemStatTermState_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemStatTermState_NotWritten_Caption" xml:space="preserve">
+    <value>Not Written</value>
+  </data>
+  <data name="ItemStatTermState_None_Caption" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ItemStatTermState_Values_Caption" xml:space="preserve">
+    <value>Values</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="ItemStatTerms_Attribute_Description" xml:space="preserve">
+    <value>The attribute of the item's base power-ups which these terms are for. The excellent and the ancient part of the minimum physical damage also apply to the maximum physical damage.</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
+    <value>The attribute of the item requirements which this formula is for.</value>
+  </data>
+  <data name="ItemPriceDefinition_TypeCaption" xml:space="preserve">
+    <value>Item Price Definition</value>
+  </data>
+  <data name="ItemPriceDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Price Definitions</value>
+  </data>
+  <data name="ItemPriceDefinition_TypeDescription" xml:space="preserve">
+    <value>Defines how the price of an item is calculated, if it differs from the automatic price of equipment.</value>
+  </data>
+  <data name="ItemPriceDefinition_Name_Caption" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ItemPriceDefinition_Name_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceDefinition_BasePriceFormula_Caption" xml:space="preserve">
+    <value>Base Price Formula</value>
+  </data>
+  <data name="ItemPriceDefinition_BasePriceFormula_Description" xml:space="preserve">
+    <value>The formula for the price of one unit, e.g. "(level + 1) * 200000". Variables: level, durability, maxDurability, value, dropLevel, optionLevel, optionCount, healthRecoveryOptionLevel and automaticPrice. Without a formula, the automatic price of equipment is used.</value>
+  </data>
+  <data name="ItemPriceDefinition_PricePerLevel_Caption" xml:space="preserve">
+    <value>Price Per Level</value>
+  </data>
+  <data name="ItemPriceDefinition_PricePerLevel_Description" xml:space="preserve">
+    <value>Fixed prices for specific item levels. They take precedence over the formula.</value>
+  </data>
+  <data name="ItemPriceDefinition_QuantityScaling_Caption" xml:space="preserve">
+    <value>Quantity Scaling</value>
+  </data>
+  <data name="ItemPriceDefinition_QuantityScaling_Description" xml:space="preserve">
+    <value>How the quantity (durability) of the item scales the price.</value>
+  </data>
+  <data name="ItemPriceDefinition_Modifiers_Caption" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="ItemPriceDefinition_Modifiers_Description" xml:space="preserve">
+    <value>The options which increase the price, like for equipment.</value>
+  </data>
+  <data name="ItemPriceDefinition_SellingPriceRounding_Caption" xml:space="preserve">
+    <value>Selling Price Rounding</value>
+  </data>
+  <data name="ItemPriceDefinition_SellingPriceRounding_Description" xml:space="preserve">
+    <value>How the selling price is rounded.</value>
+  </data>
+  <data name="ItemPriceDefinition_CraftingReferencePrice_Caption" xml:space="preserve">
+    <value>Crafting Reference Price</value>
+  </data>
+  <data name="ItemPriceDefinition_CraftingReferencePrice_Description" xml:space="preserve">
+    <value>The price which is used for the success rate of crafting instead of the buying price. Empty means that the buying price is used.</value>
+  </data>
+  <data name="ItemLevelPrice_TypeCaption" xml:space="preserve">
+    <value>Item Level Price</value>
+  </data>
+  <data name="ItemLevelPrice_TypeCaptionPlural" xml:space="preserve">
+    <value>Item Level Prices</value>
+  </data>
+  <data name="ItemLevelPrice_TypeDescription" xml:space="preserve">
+    <value>A fixed price of an item at a specific item level.</value>
+  </data>
+  <data name="ItemLevelPrice_Level_Caption" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="ItemLevelPrice_Level_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemLevelPrice_Price_Caption" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="ItemLevelPrice_Price_Description" xml:space="preserve">
+    <value>The price of one unit at this level.</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_TypeCaption" xml:space="preserve">
+    <value>Item Price Quantity Scaling</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceQuantityScaling_None_Caption" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_None_Description" xml:space="preserve">
+    <value>The quantity doesn't affect the price.</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_PerPiece_Caption" xml:space="preserve">
+    <value>Per Piece</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_PerPiece_Description" xml:space="preserve">
+    <value>The price is multiplied by the number of pieces, e.g. for potions.</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_ByFillRatio_Caption" xml:space="preserve">
+    <value>By Fill Ratio</value>
+  </data>
+  <data name="ItemPriceQuantityScaling_ByFillRatio_Description" xml:space="preserve">
+    <value>The price is multiplied by the durability and divided by the maximum durability, e.g. for arrows.</value>
+  </data>
+  <data name="ItemPriceModifiers_TypeCaption" xml:space="preserve">
+    <value>Item Price Modifiers</value>
+  </data>
+  <data name="ItemPriceModifiers_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceModifiers_None_Caption" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ItemPriceModifiers_None_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceModifiers_Skill_Caption" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="ItemPriceModifiers_Skill_Description" xml:space="preserve">
+    <value>The skill increases the price by 150 percent.</value>
+  </data>
+  <data name="ItemPriceModifiers_Luck_Caption" xml:space="preserve">
+    <value>Luck</value>
+  </data>
+  <data name="ItemPriceModifiers_Luck_Description" xml:space="preserve">
+    <value>The luck option increases the price by 25 percent.</value>
+  </data>
+  <data name="ItemPriceModifiers_Option_Caption" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="ItemPriceModifiers_Option_Description" xml:space="preserve">
+    <value>The normal option increases the price, depending on its level.</value>
+  </data>
+  <data name="ItemPriceModifiers_WingOption_Caption" xml:space="preserve">
+    <value>Wing Option</value>
+  </data>
+  <data name="ItemPriceModifiers_WingOption_Description" xml:space="preserve">
+    <value>Each wing option increases the price by 25 percent.</value>
+  </data>
+  <data name="ItemPriceModifiers_Excellent_Caption" xml:space="preserve">
+    <value>Excellent</value>
+  </data>
+  <data name="ItemPriceModifiers_Excellent_Description" xml:space="preserve">
+    <value>Each excellent option doubles the price.</value>
+  </data>
+  <data name="ItemPriceModifiers_All_Caption" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ItemPriceModifiers_All_Description" xml:space="preserve">
+    <value>All modifiers are applied, like for equipment.</value>
+  </data>
+  <data name="ItemPriceRounding_TypeCaption" xml:space="preserve">
+    <value>Item Price Rounding</value>
+  </data>
+  <data name="ItemPriceRounding_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemPriceRounding_Default_Caption" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="ItemPriceRounding_Default_Description" xml:space="preserve">
+    <value>Rounded down to a multiple of 100 from 1,000, and to a multiple of 10 from 100. The durability reduces the price.</value>
+  </data>
+  <data name="ItemPriceRounding_Tens_Caption" xml:space="preserve">
+    <value>Tens</value>
+  </data>
+  <data name="ItemPriceRounding_Tens_Description" xml:space="preserve">
+    <value>Rounded down to a multiple of 10, and the durability doesn't reduce the price, e.g. for potions.</value>
   </data>
 </root>

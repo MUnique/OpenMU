@@ -510,6 +510,12 @@ public class Stats
     public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", string.Empty);
 
     /// <summary>
+    /// Gets the crystal sword ice chance.
+    /// </summary>
+    /// <remarks>On every attack, the ice skill may replace that hit by this chance.</remarks>
+    public static AttributeDefinition CrystalSwordIceChance { get; } = new(new Guid("A1B2C3D4-E5F6-47A8-B9C0-D1E2F3A4B5C6"), "Crystal Sword Ice Chance", string.Empty);
+
+    /// <summary>
     /// Gets the is a bow equipped.
     /// </summary>
     public static AttributeDefinition IsBowEquipped { get; } = new(new Guid("8B1135B7-C323-4822-9B98-1A56C802BB6A"), "Is Bow Equipped", string.Empty);
@@ -1532,6 +1538,15 @@ public class Stats
     /// Gets the <see cref="NearbyPartyMemberCount"/> attribute which defines how many party members are nearby.
     /// </summary>
     public static AttributeDefinition NearbyPartyMemberCount { get; } = new(new Guid("585CB9C8-FA23-4995-ABA9-3327321A6F44"), "Nearby party member count", "Defines how many party members are currently nearby.");
+
+    /// <summary>
+    /// Gets the <see cref="CraftingBonusPercentage"/> attribute which defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine.
+    /// </summary>
+    /// <remarks>
+    /// It can be defined globally (<see cref="GameConfiguration.GlobalBaseAttributeValues"/>), per map, per account or per character,
+    /// e.g. for an event or a premium subscription. A negative value decreases the success rate.
+    /// </remarks>
+    public static AttributeDefinition CraftingBonusPercentage { get; } = new(new Guid("A1B714D3-AF71-446A-8C8B-227FAB856D58"), "Crafting bonus percentage", "Defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine. A negative value decreases it.");
 
     /// <summary>
     /// Gets the <see cref="SkillLevel"/> attribute which defines the level of a skill.

@@ -69,6 +69,19 @@ internal class GuildContainer
     }
 
     /// <summary>
+    /// Updates the cached name of the member, e.g. after the character was renamed while the guild was loaded.
+    /// </summary>
+    /// <param name="memberId">Id of the member.</param>
+    /// <param name="playerName">The current name of the character.</param>
+    public void SetPlayerName(Guid memberId, string playerName)
+    {
+        if (this.Members.TryGetValue(memberId, out var listEntry) && !string.IsNullOrEmpty(playerName))
+        {
+            listEntry.PlayerName = playerName;
+        }
+    }
+
+    /// <summary>
     /// Loads the member names from the database.
     /// </summary>
     public async ValueTask LoadMemberNamesAsync()

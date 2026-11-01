@@ -1388,6 +1388,44 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MapChangedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="positionX">The position x.</param>
+    /// <param name="positionY">The position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="mapDiscriminator">The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7). It's appended after the 15 bytes of MapChanged, so a client can tell by the packet length whether it was sent.</param>
+    /// <param name="isMapChange">If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</param>
+    /// <remarks>
+    /// Is sent by the server when: The map was changed on the server side.
+    /// Causes reaction on client side: The game client changes to the specified map and coordinates, and to the variant of the map with the specified discriminator.
+    /// </remarks>
+    public static async ValueTask SendMapChangedExtendedAsync(this IConnection? connection, ushort @mapNumber, byte @positionX, byte @positionY, byte @rotation, byte @mapDiscriminator, bool @isMapChange = true)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapChangedExtendedRef.Length;
+            var packet = new MapChangedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsMapChange = @isMapChange;
+            packet.MapNumber = @mapNumber;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.Rotation = @rotation;
+            packet.MapDiscriminator = @mapDiscriminator;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MapChanged075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3434,11 +3472,12 @@ public static class ConnectionExtensions
     /// <param name="maximumAttackSpeed">The maximum attack speed.</param>
     /// <param name="inventoryExtensions">The inventory extensions.</param>
     /// <param name="resets">The resets.</param>
+    /// <param name="mapDiscriminator">The discriminator of the map, which tells maps with the same number apart, e.g. the stage of Devil Square (1 to 7), which a character enters again after losing its connection. It's appended after the 92 bytes the packet had before, so a client can tell by the packet length whether it was sent.</param>
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets)
+    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets, byte @mapDiscriminator)
     {
         if (connection is null)
         {
@@ -3480,6 +3519,7 @@ public static class ConnectionExtensions
             packet.MaximumAttackSpeed = @maximumAttackSpeed;
             packet.InventoryExtensions = @inventoryExtensions;
             packet.Resets = @resets;
+            packet.MapDiscriminator = @mapDiscriminator;
 
             return packet.Header.Length;
         }
@@ -4136,6 +4176,44 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="SlideNotice" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="loopDelay">The delay between the loops, in seconds.</param>
+    /// <param name="color">The color of the text, as 0xAABBGGRR.</param>
+    /// <param name="speed">The scroll speed, multiplied by 10. 0 means the default speed.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="loopCount">How often the message is shown. The client ignores messages with more than 30 loops.</param>
+    /// <param name="type">The band and queueing of the message. 10 to 12 use the help band, 13 to 15 the notice band. Within a band, the first value drops the message when it could not be shown within a minute, the second one queues it, and the third one puts it in front of the queue, ignoring the loop delay.</param>
+    /// <remarks>
+    /// Is sent by the server when: A game master or the server sends a notice which should scroll across the top of the screen.
+    /// Causes reaction on client side: The client scrolls the message through the band at the top of the screen, as often as the loop count says.
+    /// </remarks>
+    public static async ValueTask SendSlideNoticeAsync(this IConnection? connection, ushort @loopDelay, uint @color, byte @speed, string @message, byte @loopCount = 1, byte @type = 14)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SlideNoticeRef.GetRequiredSize(message);
+            var packet = new SlideNoticeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.LoopCount = @loopCount;
+            packet.LoopDelay = @loopDelay;
+            packet.Color = @color;
+            packet.Speed = @speed;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GuildJoinRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -4781,6 +4859,38 @@ public static class ConnectionExtensions
         {
             var length = CraftingDialogClosed075Ref.Length;
             var packet = new CraftingDialogClosed075Ref(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemCraftingPreviewExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mixType">The number of the crafting which matches the items, which is also sent by the client to execute it. 0, if the items don't match any crafting.</param>
+    /// <param name="successRate">The success rate in percent, including the crafting bonus of the character.</param>
+    /// <param name="price">The price in zen, without the tax of the chaos machine.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the items of the crafting dialog changed, e.g. at the chaos machine.
+    /// Causes reaction on client side: The game client shows the success rate and the price of the crafting which matches the items, as they are calculated by the server, instead of calculating them by itself.
+    /// </remarks>
+    public static async ValueTask SendItemCraftingPreviewExtendedAsync(this IConnection? connection, byte @mixType, byte @successRate, uint @price)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCraftingPreviewExtendedRef.Length;
+            var packet = new ItemCraftingPreviewExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.MixType = @mixType;
+            packet.SuccessRate = @successRate;
+            packet.Price = @price;
+
             return packet.Header.Length;
         }
 
@@ -6949,6 +7059,116 @@ public static class ConnectionExtensions
             var packet = new MapEventStateRef(connection.Output.GetSpan(length)[..length]);
             packet.Enable = @enable;
             packet.Event = @event;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordIntegrationInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isAccountLinked">Defines if the account is linked to a Discord user.</param>
+    /// <param name="isGuildChatBridged">Defines if the chat of the guild of the character is mirrored to a Discord channel.</param>
+    /// <param name="isAllianceChatBridged">Defines if the chat of the alliance of the character is mirrored to a Discord channel.</param>
+    /// <param name="isWorldChatBridged">Defines if the world chat leaves the game for Discord: the server publishes it, so a Discord bot with a world chat channel mirrors it. The server can't tell whether the bot has such a channel.</param>
+    /// <param name="richPresenceApplicationId">The id of the Discord application which the client uses for the Rich Presence. Empty, if the server has none.</param>
+    /// <param name="richPresenceLargeImageKey">The key of the large image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
+    /// <param name="richPresenceSmallImageKey">The key of the small image of the Rich Presence, as uploaded to the Discord application. Empty for no image.</param>
+    /// <param name="inviteUrl">The invite link to the Discord server of the game server, e.g. 'https://discord.gg/abc123'. Empty, if the server has none.</param>
+    /// <param name="linkedUserName">The name of the Discord user which the account is linked to. Empty, if the account isn't linked.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested the Discord integration info, and after the player unlinked the account.
+    /// Causes reaction on client side: The client configures its Discord features with it: the Rich Presence, a button which opens the invite, the account link dialog and the notice that the chat is mirrored.
+    /// </remarks>
+    public static async ValueTask SendDiscordIntegrationInfoAsync(this IConnection? connection, bool @isAccountLinked, bool @isGuildChatBridged, bool @isAllianceChatBridged, bool @isWorldChatBridged, string @richPresenceApplicationId, string @richPresenceLargeImageKey, string @richPresenceSmallImageKey, string @inviteUrl, string @linkedUserName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordIntegrationInfoRef.Length;
+            var packet = new DiscordIntegrationInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsAccountLinked = @isAccountLinked;
+            packet.IsGuildChatBridged = @isGuildChatBridged;
+            packet.IsAllianceChatBridged = @isAllianceChatBridged;
+            packet.IsWorldChatBridged = @isWorldChatBridged;
+            packet.RichPresenceApplicationId = @richPresenceApplicationId;
+            packet.RichPresenceLargeImageKey = @richPresenceLargeImageKey;
+            packet.RichPresenceSmallImageKey = @richPresenceSmallImageKey;
+            packet.InviteUrl = @inviteUrl;
+            packet.LinkedUserName = @linkedUserName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DiscordLinkCode" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="linkCode">The one-time code, e.g. 'ABCD-EFGH'. The player enters it in Discord with '/link'.</param>
+    /// <param name="validMinutes">The number of minutes the code is valid.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested a code to link the account to a Discord user.
+    /// Causes reaction on client side: The client shows the code, so that the player can enter it in Discord.
+    /// </remarks>
+    public static async ValueTask SendDiscordLinkCodeAsync(this IConnection? connection, DiscordLinkCode.DiscordLinkCodeResult @result, string @linkCode, byte @validMinutes)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DiscordLinkCodeRef.Length;
+            var packet = new DiscordLinkCodeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.LinkCode = @linkCode;
+            packet.ValidMinutes = @validMinutes;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ExternalChatMessage" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="scope">The scope.</param>
+    /// <param name="senderName">The name of the sender, without a prefix. It's not a character name, so it can't be whispered.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the server when: A message was written outside of the game, e.g. in a Discord channel which is bound to the chat of a guild, an alliance or the world chat. It's only sent to clients which requested the DiscordIntegrationInfo before; other clients get it as normal chat message, with a prefix in front of the sender.
+    /// Causes reaction on client side: The client shows the message in the chat of its scope, marked with its source, so that it can't be mistaken for a message of a character.
+    /// </remarks>
+    public static async ValueTask SendExternalChatMessageAsync(this IConnection? connection, ExternalChatMessage.ExternalChatSource @source, ExternalChatMessage.ExternalChatScope @scope, string @senderName, string @message)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ExternalChatMessageRef.GetRequiredSize(message);
+            var packet = new ExternalChatMessageRef(connection.Output.GetSpan(length)[..length]);
+            packet.Source = @source;
+            packet.Scope = @scope;
+            packet.SenderName = @senderName;
+            packet.Message = @message;
 
             return packet.Header.Length;
         }

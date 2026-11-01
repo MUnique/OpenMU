@@ -523,4 +523,97 @@ Stufe: {2} - {3}</value>
   <data name="CharacterCreatedPlugInsFailed" xml:space="preserve">
     <value>Der Charakter wurde erstellt, aber die "Charakter erstellt"-Plugins sind fehlgeschlagen, daher fehlen ihm eventuell Startgegenstände oder -fertigkeiten: {0}</value>
   </data>
+  <data name="TerrainEditorTerrain" xml:space="preserve">
+    <value>Terrain</value>
+  </data>
+  <data name="DefaultTerrain" xml:space="preserve">
+    <value>Standard-Terrain</value>
+  </data>
+  <data name="TerrainTool" xml:space="preserve">
+    <value>Werkzeug</value>
+  </data>
+  <data name="TerrainToolBrush" xml:space="preserve">
+    <value>Pinsel</value>
+  </data>
+  <data name="TerrainToolRectangle" xml:space="preserve">
+    <value>Rechteck</value>
+  </data>
+  <data name="TerrainToolFill" xml:space="preserve">
+    <value>Füllen</value>
+  </data>
+  <data name="TerrainBrushSize" xml:space="preserve">
+    <value>Pinselgröße</value>
+  </data>
+  <data name="TerrainEditMode" xml:space="preserve">
+    <value>Modus</value>
+  </data>
+  <data name="TerrainEditModeAdd" xml:space="preserve">
+    <value>Attribute hinzufügen</value>
+  </data>
+  <data name="TerrainEditModeRemove" xml:space="preserve">
+    <value>Attribute entfernen</value>
+  </data>
+  <data name="TerrainEditModeReplace" xml:space="preserve">
+    <value>Alle Attribute ersetzen</value>
+  </data>
+  <data name="TerrainAttributes" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="TerrainWalkable" xml:space="preserve">
+    <value>Begehbar</value>
+  </data>
+  <data name="TerrainOtherAttributes" xml:space="preserve">
+    <value>Andere Attribute</value>
+  </data>
+  <data name="TerrainLegend" xml:space="preserve">
+    <value>Legende</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="ImportTerrain" xml:space="preserve">
+    <value>Terrain-Datei importieren</value>
+  </data>
+  <data name="ImportTerrainHint" xml:space="preserve">
+    <value>Akzeptiert die *.att-Datei des Servers und die EncTerrain*.att-Datei des Clients.</value>
+  </data>
+  <data name="DownloadServerTerrain" xml:space="preserve">
+    <value>Server-Terrain-Datei</value>
+  </data>
+  <data name="DownloadServerTerrainHint" xml:space="preserve">
+    <value>Lädt das Terrain im *.att-Format des Original-Servers herunter.</value>
+  </data>
+  <data name="DownloadClientTerrain" xml:space="preserve">
+    <value>Client-Terrain-Datei</value>
+  </data>
+  <data name="DownloadClientTerrainHint" xml:space="preserve">
+    <value>Lädt die verschlüsselte Terrain-Datei des Spiel-Clients herunter. Lege sie im Client als Data\World{0}\EncTerrain{0}.att ab.</value>
+  </data>
+  <data name="InvalidTerrainFile" xml:space="preserve">
+    <value>Die Datei ist weder eine Terrain-Datei des Servers noch des Clients.</value>
+  </data>
+  <data name="TerrainImported" xml:space="preserve">
+    <value>Die Terrain-Datei wurde importiert. Speichere, um sie zu übernehmen.</value>
+  </data>
+  <data name="TerrainEditorShortcutPaint" xml:space="preserve">
+    <value>Linksklick, um die Felder mit dem gewählten Werkzeug zu bearbeiten</value>
+  </data>
+  <data name="TerrainEditorShortcutPan" xml:space="preserve">
+    <value>Rechtsklick und ziehen, um das Terrain zu verschieben</value>
+  </data>
+  <data name="TerrainEditorShortcutZoom" xml:space="preserve">
+    <value>Mausrad zum Zoomen</value>
+  </data>
+  <data name="TerrainEditorRestartHint" xml:space="preserve">
+    <value>Geänderte Terrains werden nach einem Neustart der Spielserver übernommen. Spieler benötigen zusätzlich die Client-Terrain-Datei, um die Änderung zu sehen.</value>
+  </data>
+  <data name="TerrainTransferFailed" xml:space="preserve">
+    <value>Das bearbeitete Terrain konnte nicht übertragen werden: {0}</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>Vergrößern</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>Verkleinern</value>
+  </data>
 </root>

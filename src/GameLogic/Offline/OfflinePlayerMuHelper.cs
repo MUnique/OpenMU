@@ -50,8 +50,8 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
 
         this._buffHandler = new BuffHandler(player, config);
         this._healingHandler = new HealingHandler(player, config);
-        this._itemPickupHandler = new ItemPickupHandler(player, config);
         this._movementHandler = new MovementHandler(player, config);
+        this._itemPickupHandler = new ItemPickupHandler(player, config, this._movementHandler);
         this._combatHandler = new CombatHandler(player, config, this._movementHandler);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);

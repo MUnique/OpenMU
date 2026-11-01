@@ -174,9 +174,12 @@ public sealed class CastleSiegeNpcController
     /// </summary>
     /// <param name="runtime">The structure runtime.</param>
     /// <returns>A task that represents the asynchronous respawn operation.</returns>
-    public ValueTask RespawnAsync(CastleSiegeNpcRuntime runtime)
+    public async ValueTask RespawnAsync(CastleSiegeNpcRuntime runtime)
     {
-        return this.EnsureSpawnedAsync(runtime);
+        await this.EnsureSpawnedAsync(runtime).ConfigureAwait(false);
+
+        // A re-purchased gate is a new object, so its lever has to point to it again.
+        this.AssociateLevers();
     }
 
     /// <summary>
@@ -206,6 +209,76 @@ public sealed class CastleSiegeNpcController
         lock (this._runtimeLock)
         {
             this._context.ActiveNpcs.RemoveAll(runtime => !runtime.Definition.IsPersistedToDatabase);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the straight line between two points crosses the area of a closed gate.
+    /// </summary>
+    /// <param name="from">The start point.</param>
+    /// <param name="to">The end point.</param>
+    /// <returns><see langword="true"/> if a tile on the line is blocked by a closed gate.</returns>
+    /// <remarks>
+    /// The line runs between the tile centers and visits every tile it touches (supercover), so the result
+    /// doesn't depend on its direction. Where it passes exactly through a tile corner, both tiles beside the
+    /// corner count as touched, so it can't slip diagonally between two blocked tiles.
+    /// </remarks>
+    internal bool IsLineBlockedByClosedGate(Point from, Point to)
+    {
+        lock (this._gateTerrainLock)
+        {
+            if (this._gateTerrain.Count == 0)
+            {
+                return false;
+            }
+
+            var x = (int)from.X;
+            var y = (int)from.Y;
+            var distanceX = Math.Abs(to.X - from.X);
+            var distanceY = Math.Abs(to.Y - from.Y);
+            var stepX = Math.Sign(to.X - from.X);
+            var stepY = Math.Sign(to.Y - from.Y);
+            if (this.IsClosedGateTile(x, y))
+            {
+                return true;
+            }
+
+            var crossedX = 0;
+            var crossedY = 0;
+            while (crossedX < distanceX || crossedY < distanceY)
+            {
+                // Compares where the line crosses the next vertical and the next horizontal tile border.
+                var decision = ((1 + (2 * crossedX)) * distanceY) - ((1 + (2 * crossedY)) * distanceX);
+                if (decision == 0)
+                {
+                    if (this.IsClosedGateTile(x + stepX, y) || this.IsClosedGateTile(x, y + stepY))
+                    {
+                        return true;
+                    }
+
+                    x += stepX;
+                    y += stepY;
+                    crossedX++;
+                    crossedY++;
+                }
+                else if (decision < 0)
+                {
+                    x += stepX;
+                    crossedX++;
+                }
+                else
+                {
+                    y += stepY;
+                    crossedY++;
+                }
+
+                if (this.IsClosedGateTile(x, y))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -342,6 +415,31 @@ public sealed class CastleSiegeNpcController
         }
     }
 
+    /// <summary>
+    /// Gets the configured defense structures of one type, in management-index order.
+    /// </summary>
+    /// <param name="monsterNumber">The gate or Guardian Statue monster number.</param>
+    /// <returns>The matching defense-structure runtimes.</returns>
+    /// <remarks>
+    /// Unlike <see cref="GetDefenseStructureSnapshotAsync"/>, this only takes the <see cref="_runtimeLock"/>
+    /// monitor (via <see cref="GetRuntimeSnapshot"/>) and not <see cref="CastleSiegeContext.ExecutionLock"/>,
+    /// so it is safe to call while the caller already holds that lock.
+    /// </remarks>
+    internal List<CastleSiegeNpcRuntime> GetDefenseStructures(short monsterNumber)
+    {
+        if (monsterNumber != CastleSiegeGate.MonsterNumber
+            && monsterNumber != CastleSiegeStatue.MonsterNumber)
+        {
+            return [];
+        }
+
+        return this.GetRuntimeSnapshot()
+            .Where(runtime => runtime.Definition.IsPersistedToDatabase
+                              && runtime.Definition.MonsterDefinition?.Number == monsterNumber)
+            .OrderBy(runtime => runtime.Definition.InstanceId)
+            .ToList();
+    }
+
     private static bool IsMachine(CastleSiegeNpcDefinition definition)
     {
         var monsterNumber = definition.MonsterDefinition?.Number;
@@ -383,19 +481,10 @@ public sealed class CastleSiegeNpcController
         runtime.IsAlive = runtime.PersistedState is { CurrentHp: > 0 };
     }
 
-    private List<CastleSiegeNpcRuntime> GetDefenseStructures(short monsterNumber)
+    // Requires the lock of the gate terrain. The coordinates stay between the two byte points of the line.
+    private bool IsClosedGateTile(int x, int y)
     {
-        if (monsterNumber != CastleSiegeGate.MonsterNumber
-            && monsterNumber != CastleSiegeStatue.MonsterNumber)
-        {
-            return [];
-        }
-
-        return this.GetRuntimeSnapshot()
-            .Where(runtime => runtime.Definition.IsPersistedToDatabase
-                              && runtime.Definition.MonsterDefinition?.Number == monsterNumber)
-            .OrderBy(runtime => runtime.Definition.InstanceId)
-            .ToList();
+        return this._gateTerrain.ContainsKey(new Point((byte)x, (byte)y));
     }
 
     private CastleSiegeNpcInfo CreateInfo(CastleSiegeNpcRuntime runtime)

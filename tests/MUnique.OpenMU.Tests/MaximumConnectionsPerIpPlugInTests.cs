@@ -117,6 +117,40 @@ public class MaximumConnectionsPerIpPlugInTests
     }
 
     /// <summary>
+    /// Tests that a player of the same IP address which is disconnecting doesn't count anymore,
+    /// like for the maximum players of the game server.
+    /// </summary>
+    [Test]
+    public async ValueTask DisconnectingPlayerDoesNotCountAsync()
+    {
+        // Arrange
+        for (var i = 0; i < 3; i++)
+        {
+            var player = new TestPlayer(this._gameContext);
+            player.SetIpAddress("127.0.0.1");
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+            await this._gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+            if (i == 0)
+            {
+                await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+            }
+        }
+
+        var joiningPlayer = new TestPlayer(this._gameContext);
+        joiningPlayer.SetIpAddress("127.0.0.1");
+        await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+
+        var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
+
+        // Act
+        await this._plugin.PlayerStateChangingAsync(joiningPlayer, eventArgs).ConfigureAwait(false);
+
+        // Assert
+        Assert.That(eventArgs.Cancel, Is.False);
+    }
+
+    /// <summary>
     /// Tests that players with a different IP address don't count toward the connection limit.
     /// </summary>
     [Test]

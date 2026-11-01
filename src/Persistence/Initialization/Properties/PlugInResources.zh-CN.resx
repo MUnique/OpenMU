@@ -287,6 +287,8 @@
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>添加新的系统配置。</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>添加坎特鲁副本数据</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>添加坎特鲁提炼之塔副本配置。</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Name" xml:space="preserve"><value>统一活动入口持续时间</value></data>
+  <data name="StandardizeEventEnterDurationPlugInBase_Description" xml:space="preserve"><value>此更新将共用入口的活动（如血色城堡、恶魔广场和坎特鲁）的入口持续时间统一为所有活动入口公告的五分钟。</value></data>
   <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>修正摄魂咒</value></data>
   <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>更新召唤术师摄魂咒的属性，使其正常工作。</value></data>
   <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>补全格斗家大师技能树</value></data>
@@ -339,6 +341,12 @@
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve">
     <value>将囚禁之岛传送条目的索引修正为Season 6客户端请求的42。</value>
   </data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Name" xml:space="preserve">
+    <value>修正火舞旋风需求</value>
+  </data>
+  <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve">
+    <value>将火舞旋风技能的智力和统率需求修正为150和70。此前两者被互换，导致统率低于150的圣导师可以学习该技能却无法使用。</value>
+  </data>
   <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve">
     <value>添加狼魂要塞活动</value>
   </data>
@@ -368,5 +376,31 @@
   </data>
   <data name="FixTransformationRingRulesUpdatePlugIn_Description" xml:space="preserve">
     <value>变身戒指等级 3 至 5 需要角色等级达到 50，并为死亡牛戒指增加 20% 最大生命值加成。</value>
+  </data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Name" xml:space="preserve"><value>添加格斗家古代套装</value></data>
+  <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>此更新添加圣火装备的古代套装：维加和卡默。</value></data>
+  <data name="AddCashShopUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加商城</value>
+  </data>
+  <data name="AddCashShopUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加商城配置，包含游戏客户端商城脚本 512.2012.084 中的商品包，以及从商城保管箱使用时生效的物品（角色卡、仓库和背包扩展道具）。</value>
+  </data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战守卫</value></data>
+  <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>攻城战地图桥边的守卫打开报名窗口，魔炼之地入口的守卫变为被动NPC，并打开魔炼之地对话框。</value></data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加物品属性配置</value>
+  </data>
+  <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加以数据形式保存物品公式（需求如何增长、卓越和远古物品额外获得的值）的物品属性配置，并为每个物品指定其类型的配置。游戏计算的数值保持不变；已有的配置和已有配置的物品保持不变。</value>
+  </data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>添加合成成功率加成属性</value></data>
+  <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>添加用于定义物品合成成功率额外增加的百分点的属性。</value></data>
+  <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>
+  <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>将种子球的最大物品等级设置为其元素的最高选项编号。种子球的物品等级决定其选项，因此此前无法创建第一个选项以外的种子球，例如通过物品聊天命令。</value></data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加玄冰剑冰冻概率</value>
+  </data>
+  <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
 </root>

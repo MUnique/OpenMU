@@ -1,4 +1,4 @@
-// <copyright file="PeriodicTaskBasePlugIn.cs" company="MUnique">
+﻿// <copyright file="PeriodicTaskBasePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <typeparam name="TConfiguration">Configuration type.</typeparam>
 /// <typeparam name="TState">State type.</typeparam>
-public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodicTaskPlugIn, ISupportCustomConfiguration<TConfiguration>
+public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodicTaskPlugIn, ISupportCustomConfiguration<TConfiguration>, IScheduledPlugIn
     where TConfiguration : PeriodicTaskConfiguration
     where TState : PeriodicTaskGameServerState
 {
@@ -27,6 +27,12 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     /// Gets or sets configuration for periodic invasion.
     /// </summary>
     public TConfiguration? Configuration { get; set; }
+
+    /// <inheritdoc />
+    public DateTime? GetNextStartUtc(DateTime utcNow, TimeZoneInfo serverTimeZone)
+    {
+        return this.Configuration?.GetNextStartUtc(utcNow, serverTimeZone);
+    }
 
     /// <summary>
     /// Forces the task to start on the next start check of the game server which

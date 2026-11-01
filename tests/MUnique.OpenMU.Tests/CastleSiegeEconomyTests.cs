@@ -346,6 +346,44 @@ public class CastleSiegeEconomyTests
         });
     }
 
+    /// <summary>
+    /// Verifies zero, maximum, and out-of-range rates without mutating the other tax types.
+    /// </summary>
+    /// <param name="taxType">The tax being changed.</param>
+    /// <param name="rate">The requested rate or fee.</param>
+    /// <param name="allowed">Whether the request is valid.</param>
+    [TestCase(CastleSiegeTaxType.ChaosMachine, 0u, true)]
+    [TestCase(CastleSiegeTaxType.ChaosMachine, 3u, true)]
+    [TestCase(CastleSiegeTaxType.ChaosMachine, 4u, false)]
+    [TestCase(CastleSiegeTaxType.Store, 0u, true)]
+    [TestCase(CastleSiegeTaxType.Store, 3u, true)]
+    [TestCase(CastleSiegeTaxType.Store, 4u, false)]
+    [TestCase(CastleSiegeTaxType.HuntZone, 0u, true)]
+    [TestCase(CastleSiegeTaxType.HuntZone, 300_000u, true)]
+    [TestCase(CastleSiegeTaxType.HuntZone, 300_001u, false)]
+    [TestCase(CastleSiegeTaxType.HuntZone, uint.MaxValue, false)]
+    [TestCase((CastleSiegeTaxType)byte.MaxValue, 0u, false)]
+    public async ValueTask TaxRateChangesHonorBoundariesAsync(CastleSiegeTaxType taxType, uint rate, bool allowed)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Context.CurrentState = CastleSiegeState.End;
+        fixture.Context.SiegeData.TaxChaos = 1;
+        fixture.Context.SiegeData.TaxStore = 2;
+        fixture.Context.SiegeData.TaxHunt = 100;
+        fixture.Context.SiegeData.TributeMoney = 500;
+
+        var result = await new CastleSiegeTaxRateChangeAction().ChangeAsync(fixture.Owner, fixture.Context, taxType, rate).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(allowed));
+            Assert.That(fixture.Context.SiegeData.TaxChaos, Is.EqualTo(allowed && taxType == CastleSiegeTaxType.ChaosMachine ? rate : 1u));
+            Assert.That(fixture.Context.SiegeData.TaxStore, Is.EqualTo(allowed && taxType == CastleSiegeTaxType.Store ? rate : 2u));
+            Assert.That(fixture.Context.SiegeData.TaxHunt, Is.EqualTo(allowed && taxType == CastleSiegeTaxType.HuntZone ? rate : 100u));
+            Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(500));
+        });
+    }
+
     private static async ValueTask<TestFixture> CreateFixtureAsync()
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();

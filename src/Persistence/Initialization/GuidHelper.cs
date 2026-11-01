@@ -63,6 +63,8 @@ internal static class GuidHelper
         TypeIds.Add(typeof(LevelBonus), 0x91);
         TypeIds.Add(typeof(ItemSetGroup), 0x92);
         TypeIds.Add(typeof(ItemOfItemSet), 0x93);
+        TypeIds.Add(typeof(ItemPriceDefinition), 0x94);
+        TypeIds.Add(typeof(ItemLevelPrice), 0x95);
 
         TypeIds.Add(typeof(ItemCrafting), 0x100);
         TypeIds.Add(typeof(ItemCraftingRequiredItem), 0x101);

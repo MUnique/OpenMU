@@ -143,7 +143,7 @@ or behind a firewall) and you want to use it within your computer or private net
 		<value>Auto Update Database Schema</value>
 	</data>
 	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
-		<value>Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema when the server process starts. In a distributed deployment, the user must start the update manually over the admin panel.</value>
+		<value>Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema and applies the mandatory configuration updates when the server process starts. In a distributed deployment, the user must start the updates manually over the admin panel.</value>
 	</data>
     <data name="Slot" xml:space="preserve">
       <value>Slot</value>
@@ -248,4 +248,7 @@ or behind a firewall) and you want to use it within your computer or private net
   <data name="TerrainWithoutClientUpdate" xml:space="preserve"><value>without client update</value></data>
   <data name="ChatServerSummary" xml:space="preserve"><value>[ChatServerDefinition ServerID={0}, Description={1}]</value></data>
   <data name="ServerEndpointSummary" xml:space="preserve"><value>Client: {0}; Port: {1}</value></data>
+  <data name="ItemRequirementFormulaSummary" xml:space="preserve"><value>{0}: {1} + base × (drop level + level × {2}) × {3} / 100</value></data>
+  <data name="ItemRequirementFormulaKeptBaseSummary" xml:space="preserve"><value>{0}: base value</value></data>
+  <data name="ItemRequirementFormulaLevelBasisSummary" xml:space="preserve"><value>{0}: {1} + base × (level requirement, or else drop level + level × {2}) × {3} / 100</value></data>
 </root>

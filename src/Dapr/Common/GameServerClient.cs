@@ -15,16 +15,18 @@ using MUnique.OpenMU.ServerClients;
 /// <remarks>
 /// It's created by the <see cref="ManagableServerRegistry"/> when a game server publishes its state,
 /// so that e.g. the admin panel can disconnect a player or send a global message.
-/// The calls aren't addressed to the dapr app id of the game server, so game servers don't need a
-/// unique app id. Calls which concern a player are handled by the game server which hosts the player,
+/// Legacy notifications use pub/sub. Live administration uses service invocation with the unique
+/// app id <c>game-server-{id}</c>. Calls which concern a player are handled by the game server which hosts the player,
 /// the other calls carry the id of the game server, and the other game servers ignore them.
 /// </remarks>
-public sealed class GameServerClient : ManageableServerClient, IGameServer
+public sealed partial class GameServerClient : ManageableServerClient, IGameServer
 {
     /// <summary>
     /// The topic of the <see cref="RestartAsync"/> command.
     /// </summary>
+#pragma warning disable S2339 // Topic and HttpPost attribute arguments require a compile-time constant.
     public const string RestartTopic = "RestartAsync";
+#pragma warning restore S2339
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerClient"/> class.
@@ -63,6 +65,10 @@ public sealed class GameServerClient : ManageableServerClient, IGameServer
     /// <inheritdoc />
     public ValueTask AllianceChatMessageAsync(uint guildId, string sender, string message)
         => this.PublishAsync(nameof(this.AllianceChatMessageAsync), new GuildMessageArguments(guildId, sender, message));
+
+    /// <inheritdoc />
+    public ValueTask WorldChatMessageAsync(string sender, string message)
+        => this.PublishAsync(nameof(this.WorldChatMessageAsync), new WorldChatMessageArguments(sender, message));
 
     /// <inheritdoc />
     public ValueTask SendGlobalMessageAsync(string message, MessageType messageType)

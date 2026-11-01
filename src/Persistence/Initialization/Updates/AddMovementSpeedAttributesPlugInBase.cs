@@ -197,7 +197,7 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
 
     private ItemLevelBonusTable GetOrCreateRunningMovementSpeedTable(IContext context, GameConfiguration gameConfiguration)
     {
-        if (gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name == RunningMovementSpeedTableName) is { } existingTable)
+        if (gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name.ValueInNeutralLanguage == RunningMovementSpeedTableName) is { } existingTable)
         {
             return existingTable;
         }

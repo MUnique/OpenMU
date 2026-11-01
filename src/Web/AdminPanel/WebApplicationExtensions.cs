@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +23,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Telemetry;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
@@ -67,9 +69,7 @@ public static class WebApplicationExtensions
             AdminPanelEnvironment.IsGrafanaAvailable = builder.Configuration.IsOtlpExportConfigured();
         }
 
-        services.AddControllers()
-            .ConfigureApplicationPartManager(setup =>
-                setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
+        services.AddAdminPanelControllers();
 
         services.AddToasts();
 
@@ -85,7 +85,12 @@ public static class WebApplicationExtensions
         services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();
         services.AddSingleton<ConfigurationSearchIndexCache>();
+        services.AddScoped<IAdminReadModel, AdminReadModel>();
+        services.AddAdminReadOperations();
+        services.AddSingleton(new AdminLogAccess { LocalFilesAvailable = includeMapApp });
         services.AddSingleton<SetupService>();
+        services.AddSingleton(new LoggingConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")));
+        services.AddSingleton(provider => new DiscordConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"), provider.GetRequiredService<IConfiguration>()));
         services.AddScoped<DataUpdateService>();
         services.AddScoped<ConfigurationCaptionService>();
         services.AddScoped<AccountService>();
@@ -100,6 +105,8 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<AdminUserManagementService>();
         services.AddScoped<CastleSiegeManagementService>();
+        services.AddSingleton<OnlinePlayerHistory>();
+        services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<OnlinePlayerHistory>());
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
 
         // The analyzers are only created when the network analyzer page is actually used,
@@ -163,5 +170,21 @@ public static class WebApplicationExtensions
         AdminPanelEnvironment.IsHostingEmbedded = true;
 
         return app;
+    }
+
+    /// <summary>
+    /// Adds the controllers of the admin panel, e.g. its API and the downloads, with their conventions.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The builder of the controllers.</returns>
+    internal static IMvcBuilder AddAdminPanelControllers(this IServiceCollection services)
+    {
+        return services.AddControllers(options =>
+            {
+                options.Filters.Add<MUnique.OpenMU.Web.AdminPanel.API.AdminOperationExceptionFilter>();
+                options.Conventions.Add(new MUnique.OpenMU.Web.AdminPanel.API.AccountDownloadAuthorizationConvention());
+            })
+            .ConfigureApplicationPartManager(setup =>
+                setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
     }
 }

@@ -20,7 +20,7 @@ lets Kubernetes and Dapr do what the compose file does by hand:
 |---|---|---|
 | Central server (connect servers, login, guild, friend, chat server) | StatefulSet | Exactly one |
 | Admin panel | StatefulSet | One |
-| Game servers | StatefulSet | `gameServer.replicas` |
+| Game servers | One StatefulSet per game server | `gameServer.replicas` servers, one pod each |
 
 All of them are StatefulSets, because the names of their pods have to be stable:
 each pod gets its own queues in RabbitMQ, which are named after the pod. For the
@@ -33,15 +33,14 @@ chart.
 
 ## Game servers
 
-All game servers are one StatefulSet:
+The chart creates one single-replica StatefulSet per game server:
 
-* **Pod N runs the game server with the id `gameServer.idOffset` + N.** It takes
-  the id from the number at the end of its host name (see
-  [`GS_ID`](distributed.md#gs_id)). A game server definition has to exist for
-  each id, e.g. created by the setup.
-* **They share one Dapr app id.** Nothing addresses a game server by its app id:
-  the calls to game servers are published to all of them, and each one only
-  handles what concerns it.
+* **Server N has id `gameServer.idOffset` + N.** The chart sets `GS_ID`
+  explicitly. A game server definition must exist for each id.
+* **Each server has Dapr app id `game-server-{id}`.** Live administration uses
+  request/response calls to that exact server; existing notifications still use
+  pub/sub. StatefulSet names include the server id and keep RabbitMQ queue
+  identities stable.
 * **They listen on the same ports,** `gameServer.listenerPort` and the following
   ones, one per client version (see
   [`GS_LISTENER_PORT`](distributed.md#gs_listener_port)). The chat server,
@@ -49,6 +48,12 @@ All game servers are one StatefulSet:
   match `centralServer.service.chatServerPort` — see
   [upgrading an existing installation](../reference/ports.md#upgrading-an-existing-installation)
   if your database was initialized by an older version.
+
+When upgrading a chart which used one shared game-server StatefulSet, first
+scale that old StatefulSet to zero and wait for all players to be saved and
+logged off. Then upgrade the chart. This avoids running old and new pods with
+the same game server ids simultaneously. Server ids remain unchanged in the
+database.
 
 The game clients connect to the game servers directly, so they must be reachable
 from outside the cluster. With `gameServer.exposure: hostPort` (the default),
@@ -117,3 +122,15 @@ for all settings.
 * **No live map** through the ingress: it's served by each game server under
   `/gameServer/<id>/`, which would need a route per pod.
 * Observability: set `otlpEndpoint` to the OTLP endpoint of your collector.
+
+The chart protects each game server's internal administration routes with Dapr's
+app API token (`dapr.io/app-token-secret`). It creates and reuses a random Secret
+across upgrades. To manage rotation yourself, set `gameServer.appTokenSecret` to
+an existing Secret containing the `token` key. The application and its sidecar
+must receive the same token; restart both after rotating it. Unauthenticated
+requests to the pod's administration routes are rejected.
+
+The chart reuses its generated Secret through Helm's `lookup`, which returns
+nothing when a tool renders the chart with `helm template` (for example Argo CD).
+There, a new token would be generated on every sync. In such GitOps setups,
+create the Secret yourself and set `gameServer.appTokenSecret`.

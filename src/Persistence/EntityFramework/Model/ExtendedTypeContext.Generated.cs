@@ -26,6 +26,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     {
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AccountAttributeGrant>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AccountExternalLink>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CashShopCoinGrant>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CashShopStorageItem>();
@@ -40,6 +42,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensAbuse>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildChatBinding>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Item>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemAppearance>();
@@ -109,14 +112,19 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelPrice>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemPriceDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemRequirementFormula>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatProfile>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemStatTerms>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem>();
@@ -136,6 +144,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Account>().HasOne(entity => entity.RawVault).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawCharacters).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributeGrants).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<AppearanceData>().HasMany(entity => entity.RawEquippedItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CastleSiegeData>().HasMany(entity => entity.RawNpcStates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CastleSiegeData>().HasMany(entity => entity.RawGuilds).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -179,6 +188,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawCharacterClasses).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemLevelBonusTables).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemStatProfiles).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemPriceDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemSlotTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemOptionTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -203,6 +214,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawMapRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawCharacterPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameServerDefinition>().HasMany(entity => entity.RawEndpoints).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameServerDefinition>().HasMany(entity => entity.RawJoinRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasOne(entity => entity.RawChance).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasOne(entity => entity.RawChancePvp).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasOne(entity => entity.RawDuration).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -241,7 +253,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<ItemOptionCombinationBonus>().HasOne(entity => entity.RawBonus).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionDefinition>().HasMany(entity => entity.RawPossibleOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionOfLevel>().HasOne(entity => entity.RawPowerUpDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ItemPriceDefinition>().HasMany(entity => entity.RawPricePerLevel).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ItemStatProfile>().HasMany(entity => entity.RawStatTerms).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ItemStatProfile>().HasMany(entity => entity.RawRequirementFormulas).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemCrafting>().HasOne(entity => entity.RawSimpleCraftingSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SimpleCraftingSettings>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SimpleCraftingSettings>().HasMany(entity => entity.RawResultItems).WithOne().OnDelete(DeleteBehavior.Cascade);

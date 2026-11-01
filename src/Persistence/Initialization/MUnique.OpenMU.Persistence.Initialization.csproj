@@ -373,6 +373,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LevelBonusDescriptions.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Update="Properties\ItemPriceDefinitionNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemPriceDefinitionNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\ItemPriceDefinitionNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemPriceDefinitionNames.resx</DependentUpon>
+    </Compile>
     <EmbeddedResource Update="Properties\LevelBonusNames.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>LevelBonusNames.Designer.cs</LastGenOutput>
@@ -444,6 +453,17 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>WarpNames.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\CashShopPackageNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CashShopPackageNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\CashShopPackageNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CashShopPackageNames.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

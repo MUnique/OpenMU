@@ -40,14 +40,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Web\AdminPanel.Mcp\MUnique.OpenMU.Web.AdminPanel.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Web\Shared\MUnique.OpenMU.Web.Shared.csproj" />
     <ProjectReference Include="..\..\src\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\..\src\Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
     <ProjectReference Include="..\..\src\Web\Map\MUnique.OpenMU.Web.Map.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
     <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
     <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Mcp/tools.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Mcp/operations-tools.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

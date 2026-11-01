@@ -565,6 +565,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        if (this._timer is { } timer)
+        {
+            this._timer = null;
+            await timer.DisposeAsync().ConfigureAwait(false);
+        }
+
         await this._cts.CancelAsync().ConfigureAwait(false);
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
@@ -697,7 +703,8 @@ internal sealed class BotNavigator : AsyncDisposable
         if (cancellationToken.IsCancellationRequested
             || this._player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || !this._player.IsAlive
-            || this._player.CurrentMap is not { } map)
+            || this._player.CurrentMap is not { } map
+            || this._player.SelectedCharacter is null)
         {
             return;
         }
@@ -1437,6 +1444,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <returns>True, if a warp was performed.</returns>
     private async ValueTask<bool> TryWarpToBetterMapAsync()
     {
+        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld
+            || this._player.SelectedCharacter is null)
+        {
+            return false;
+        }
+
         var botLevel = this.GetBotLevel();
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
 

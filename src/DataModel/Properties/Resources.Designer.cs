@@ -124,7 +124,7 @@ namespace MUnique.OpenMU.DataModel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema when the server process starts. In a distributed deployment, the user must start the update manually over the admin panel..
+        ///   Looks up a localized string similar to Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema and applies the mandatory configuration updates when the server process starts. In a distributed deployment, the user must start the updates manually over the admin panel..
         /// </summary>
         public static string SystemConfiguration_AutoUpdateSchema_Description {
             get {
@@ -435,6 +435,15 @@ namespace MUnique.OpenMU.DataModel.Properties {
 
         /// <summary>Gets the localized ServerEndpointSummary text.</summary>
         public static string ServerEndpointSummary => ResourceManager.GetString("ServerEndpointSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemRequirementFormulaSummary text.</summary>
+        public static string ItemRequirementFormulaSummary => ResourceManager.GetString("ItemRequirementFormulaSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemRequirementFormulaKeptBaseSummary text.</summary>
+        public static string ItemRequirementFormulaKeptBaseSummary => ResourceManager.GetString("ItemRequirementFormulaKeptBaseSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemRequirementFormulaLevelBasisSummary text.</summary>
+        public static string ItemRequirementFormulaLevelBasisSummary => ResourceManager.GetString("ItemRequirementFormulaLevelBasisSummary", resourceCulture)!;
 
     }
 }

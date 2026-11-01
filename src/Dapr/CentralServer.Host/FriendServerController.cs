@@ -52,6 +52,17 @@ public class FriendServerController : ControllerBase
     }
 
     /// <summary>
+    /// Gets the identifier of the game server on which the character is online.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>The identifier of the game server; or <see langword="null"/>, if the character is offline or invisible.</returns>
+    [HttpPost(nameof(IFriendServer.GetOnlineServerIdAsync))]
+    public async Task<byte?> GetOnlineServerIdAsync([FromBody] string characterName)
+    {
+        return await this._friendServer.GetOnlineServerIdAsync(characterName).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Determines whether two players are friends.
     /// </summary>
     /// <param name="data">The data.</param>

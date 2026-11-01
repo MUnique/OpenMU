@@ -372,7 +372,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         if (Interlocked.CompareExchange(ref this._gameLoopStarted, 1, 0) == 0)
         {
-            _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
+            var cancellationToken = this.GameEndedToken;
+
+            // The detached loop must acquire player persistence locks instead of inheriting
+            // the admitting request's reentrancy flag through its execution context.
+            using (ExecutionContext.SuppressFlow())
+            {
+                _ = Task.Run(() => this.RunGameAsync(cancellationToken), cancellationToken);
+            }
         }
     }
 

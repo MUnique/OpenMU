@@ -30,7 +30,7 @@ public class TownPortalScrollConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     {
         if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
-            var targetMapDef = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass!.HomeMap;
+            var targetMapDef = player.GameContext.Configuration.GetActiveSpawnMap(player.CurrentMap!.Definition.SafezoneMap, player.SelectedCharacter!.CharacterClass!.HomeMap);
             if (targetMapDef is { }
                 && await player.GameContext.GetMapAsync((ushort)targetMapDef.Number).ConfigureAwait(false) is { SafeZoneSpawnGate: { } spawnGate })
             {

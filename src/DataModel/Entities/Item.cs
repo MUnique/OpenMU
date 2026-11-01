@@ -126,7 +126,7 @@ public partial class Item
         var ancientSet = this.ItemSetGroups.FirstOrDefault(s => s.AncientSetDiscriminator != 0)?.ItemSetGroup;
         if (ancientSet != null)
         {
-            stringBuilder.Append(ancientSet.Name).Append(" ");
+            stringBuilder.Append(ancientSet.Name.ToString()).Append(" ");
         }
 
         var itemName = this.Definition?.GetNameForLevel(this.Level);

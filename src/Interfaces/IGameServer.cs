@@ -54,6 +54,11 @@ public enum MessageType
     /// The message is a guild notice (green center).
     /// </summary>
     GuildNotice = 2,
+
+    /// <summary>
+    /// The message scrolls in bold across the top of the screen (slide notice).
+    /// </summary>
+    SlideNotice = 3,
 }
 
 /// <summary>
@@ -88,6 +93,13 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// <param name="sender">The sender character name.</param>
     /// <param name="message">The message.</param>
     ValueTask AllianceChatMessageAsync(uint guildId, string sender, string message);
+
+    /// <summary>
+    /// Sends a message of the world chat to all connected players.
+    /// </summary>
+    /// <param name="sender">The sender, e.g. the character name.</param>
+    /// <param name="message">The message.</param>
+    ValueTask WorldChatMessageAsync(string sender, string message);
 
     /// <summary>
     /// Sends a global message to all connected players with the specified message type.
@@ -150,9 +162,9 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// Notifies the game server that the hostility between two guilds (or alliances) has changed.
     /// </summary>
     /// <param name="guildIdA">The identifier of the first guild.</param>
-    /// <param name="allianceGuildIdsA">All guild IDs in the alliance of guild A (or just [guildIdA] if not in an alliance).</param>
+    /// <param name="allianceGuildIdsA">The affected guild IDs on the first side, including all alliance members for a direct hostility change.</param>
     /// <param name="guildIdB">The identifier of the second guild.</param>
-    /// <param name="allianceGuildIdsB">All guild IDs in the alliance of guild B (or just [guildIdB] if not in an alliance).</param>
+    /// <param name="allianceGuildIdsB">The affected guild IDs on the second side. Membership reconciliation may send a single changed pair.</param>
     /// <param name="created"><c>true</c> if hostility was created; <c>false</c> if it was removed.</param>
     ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created);
 }

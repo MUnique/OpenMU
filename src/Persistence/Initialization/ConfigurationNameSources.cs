@@ -20,6 +20,7 @@ public static class ConfigurationNameSources
     /// </summary>
     public static void Register()
     {
+        RegisterIfNeeded(nameof(CashShopPackageNames), CashShopPackageNames.ResourceManager);
         RegisterIfNeeded(nameof(CharacterClassNames), CharacterClassNames.ResourceManager);
         RegisterIfNeeded(nameof(MapNames), MapNames.ResourceManager);
         RegisterIfNeeded(nameof(MerchantNames), MerchantNames.ResourceManager);
@@ -36,6 +37,7 @@ public static class ConfigurationNameSources
         RegisterIfNeeded(nameof(CraftingNames), CraftingNames.ResourceManager);
         RegisterIfNeeded(nameof(DropGroupDescriptions), DropGroupDescriptions.ResourceManager);
         RegisterIfNeeded(nameof(ItemDropDescriptions), ItemDropDescriptions.ResourceManager);
+        RegisterIfNeeded(nameof(ItemPriceDefinitionNames), ItemPriceDefinitionNames.ResourceManager);
         RegisterIfNeeded(nameof(ItemSlotNames), ItemSlotNames.ResourceManager);
         RegisterIfNeeded(nameof(LevelBonusDescriptions), LevelBonusDescriptions.ResourceManager);
         RegisterIfNeeded(nameof(LevelBonusNames), LevelBonusNames.ResourceManager);

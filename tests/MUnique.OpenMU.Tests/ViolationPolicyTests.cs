@@ -101,7 +101,7 @@ public class ViolationPolicyTests
     public void DecideSanction_WithinLimit_WarnsOnly()
     {
         var config = new SpeedHackDetectConfiguration { MaxWarnings = 3 };
-        Assert.That(ViolationPolicy.DecideSanction(config, 3, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: true, DisconnectPlayer: false, BanAccount: false)));
+        Assert.That(ViolationPolicy.DecideSanction(config, 3, true, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: true, DisconnectPlayer: false, BanAccount: false)));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public class ViolationPolicyTests
     public void DecideSanction_OverLimitWithAutoBanAndAccount_Bans()
     {
         var config = new SpeedHackDetectConfiguration { MaxWarnings = 3, AutoBan = true, DisconnectOnViolation = true };
-        Assert.That(ViolationPolicy.DecideSanction(config, 4, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: false, DisconnectPlayer: true, BanAccount: true)));
+        Assert.That(ViolationPolicy.DecideSanction(config, 4, true, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: false, DisconnectPlayer: true, BanAccount: true)));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class ViolationPolicyTests
     public void DecideSanction_OverLimitWithoutAccount_DisconnectsWithoutBan()
     {
         var config = new SpeedHackDetectConfiguration { MaxWarnings = 3, AutoBan = true, DisconnectOnViolation = true };
-        Assert.That(ViolationPolicy.DecideSanction(config, 4, false), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: false, DisconnectPlayer: true, BanAccount: false)));
+        Assert.That(ViolationPolicy.DecideSanction(config, 4, true, false), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: false, DisconnectPlayer: true, BanAccount: false)));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public class ViolationPolicyTests
     public void DecideSanction_OverLimitWithDisconnectOnly_Disconnects()
     {
         var config = new SpeedHackDetectConfiguration { MaxWarnings = 3, AutoBan = false, DisconnectOnViolation = true };
-        Assert.That(ViolationPolicy.DecideSanction(config, 4, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: false, DisconnectPlayer: true, BanAccount: false)));
+        Assert.That(ViolationPolicy.DecideSanction(config, 4, true, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: false, DisconnectPlayer: true, BanAccount: false)));
     }
 
     /// <summary>
@@ -141,6 +141,16 @@ public class ViolationPolicyTests
     public void DecideSanction_OverLimitWithoutBanOrDisconnect_Warns()
     {
         var config = new SpeedHackDetectConfiguration { MaxWarnings = 3, AutoBan = false, DisconnectOnViolation = false };
-        Assert.That(ViolationPolicy.DecideSanction(config, 4, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: true, DisconnectPlayer: false, BanAccount: false)));
+        Assert.That(ViolationPolicy.DecideSanction(config, 4, true, true), Is.EqualTo(new ViolationPolicy.Sanction(WarnPlayer: true, DisconnectPlayer: false, BanAccount: false)));
+    }
+
+    /// <summary>
+    /// Tests that exempt players are not punished at all, even when exceeding the limit.
+    /// </summary>
+    [Test]
+    public void DecideSanction_ExemptPlayer_DoesNothing()
+    {
+        var config = new SpeedHackDetectConfiguration { MaxWarnings = 3, AutoBan = true, DisconnectOnViolation = true };
+        Assert.That(ViolationPolicy.DecideSanction(config, 4, false, true), Is.EqualTo(default(ViolationPolicy.Sanction)));
     }
 }

@@ -16,13 +16,13 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "81:8080"
+      - "127.0.0.1:81:8080"
 
   gameServer1:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "82:8080"
+      - "127.0.0.1:82:8080"
 
   centralServer:
     environment:
@@ -32,4 +32,4 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "88:8080"
+      - "127.0.0.1:88:8080"

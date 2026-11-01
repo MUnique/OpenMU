@@ -55,7 +55,7 @@
                 @foreach (var column in this.MasterSkillTree)
                 {
                     <div class="master-skill-root">
-                        <div class="master-skill-root-header">@column.Root.Name</div>
+                        <div class="master-skill-root-header">@column.Root.Name.ToString()</div>
                         @foreach (var row in column.Ranks)
                         {
                             <div class="master-skill-rank">

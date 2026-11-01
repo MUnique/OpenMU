@@ -324,18 +324,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
         /// </summary>
-        public static string CastleSiegeGuardsmanTalkPlugIn_Description {
+        public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Description {
             get {
-                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Guardsman.
+        ///   Looks up a localized string similar to Castle Siege Land of Trials guard.
         /// </summary>
-        public static string CastleSiegeGuardsmanTalkPlugIn_Name {
+        public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Name {
             get {
-                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Name", resourceCulture);
             }
         }
         
@@ -408,6 +408,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CastleSiegePlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Castle Siege registration window, which shows the Castle Siege status, when a player talks to a guardsman on the Castle Siege map..
+        /// </summary>
+        public static string CastleSiegeRegistrationGuardsmanTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationGuardsmanTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege registration guardsman.
+        /// </summary>
+        public static string CastleSiegeRegistrationGuardsmanTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationGuardsmanTalkPlugIn_Name", resourceCulture);
             }
         }
         
@@ -682,6 +700,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Links the account to a Discord user: &apos;/discord link&apos; creates a code which is entered in Discord, &apos;/discord unlink&apos; removes the link, &apos;/discord notify letter&apos; turns direct messages about letters on or off (also &apos;login&apos; and &apos;friend&apos;)..
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord command.
+        /// </summary>
+        public static string DiscordChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers..
         /// </summary>
         public static string DoppelgangerFeaturePlugIn_Description {
@@ -880,6 +916,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Boss monster numbers.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_BossMonsterNumbers_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_BossMonsterNumbers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_LevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_LevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_MasterLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_MasterLevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish ancient item drops.
         /// </summary>
         public static string GameEventPublisherConfiguration_PublishAncientItemDrops_Name {
@@ -889,11 +952,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publish boss kills.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishBossKills_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishBossKills_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish castle siege events.
         /// </summary>
         public static string GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name {
             get {
                 return ResourceManager.GetString("GameEventPublisherConfiguration_PublishCastleSiegeEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish guild, alliance and world chat.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishChatMessages_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishChatMessages_Name", resourceCulture);
             }
         }
         
@@ -921,6 +1002,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GameEventPublisherConfiguration_PublishInvasionEvents_Name {
             get {
                 return ResourceManager.GetString("GameEventPublisherConfiguration_PublishInvasionEvents_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish level milestones.
+        /// </summary>
+        public static string GameEventPublisherConfiguration_PublishLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventPublisherConfiguration_PublishLevelMilestones_Name", resourceCulture);
             }
         }
         
@@ -1236,6 +1326,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GuildBattleSoccerChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("GuildBattleSoccerChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells players when they enter the game, if the chat of their guild or alliance is mirrored to Discord..
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice about the chat bridge.
+        /// </summary>
+        public static string GuildChatBridgeNoticePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildChatBridgeNoticePlugIn_Name", resourceCulture);
             }
         }
         
@@ -2898,6 +3006,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The time between one announcement and the next. The minimum is 10 seconds..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interval.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Interval_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The announcements, in the order in which they are shown. After the last one, it starts over with the first one..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Announcements.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Messages_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Messages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Text_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Text_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How the announcement is shown, e.g. as golden message in the center of the screen or as blue system message..
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message Type.
+        /// </summary>
+        public static string ServerAnnouncementsConfiguration_Type_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsConfiguration_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows a configured list of announcements to all players of a game server, one after another in a fixed interval..
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server announcements.
+        /// </summary>
+        public static string ServerAnnouncementsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ServerAnnouncementsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets level of a player. Usage: /setlevel (level) (optional:character).
         /// </summary>
         public static string SetLevelChatCommandPlugIn_Description {
@@ -3218,6 +3407,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SkipMiniGameWaitChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/slidenotice message&apos;. Sends a global notice to all players of the game which scrolls across the top of their screen..
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide notice chat command.
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4102,6 +4309,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends a message to the world chat, which all players of all game servers can read, e.g. &apos;/world Hello!&apos;. It can be bridged to Discord..
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World chat command.
+        /// </summary>
+        public static string WorldChatChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
 
         /// <summary>
         ///   Looks up a localized string similar to Consumes Life Stones after they are successfully placed during Castle Siege.
@@ -4227,6 +4452,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Description text.</summary>
         public static string MaximumConnectionsPerIpPlugIn_Description => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LoginTimeoutPlugIn_Name text.</summary>
+        public static string LoginTimeoutPlugIn_Name => ResourceManager.GetString("LoginTimeoutPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LoginTimeoutPlugIn_Description text.</summary>
+        public static string LoginTimeoutPlugIn_Description => ResourceManager.GetString("LoginTimeoutPlugIn_Description", resourceCulture)!;
 
         /// <summary>Gets the localized SpeedHackDetectPlugIn_Name text.</summary>
         public static string SpeedHackDetectPlugIn_Name => ResourceManager.GetString("SpeedHackDetectPlugIn_Name", resourceCulture)!;
@@ -4414,6 +4645,9 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption text.</summary>
         public static string MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption => ResourceManager.GetString("MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption", resourceCulture)!;
 
+        /// <summary>Gets the localized LoginTimeoutPlugInConfiguration_Timeout_Caption text.</summary>
+        public static string LoginTimeoutPlugInConfiguration_Timeout_Caption => ResourceManager.GetString("LoginTimeoutPlugInConfiguration_Timeout_Caption", resourceCulture)!;
+
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption", resourceCulture)!;
 
@@ -4428,6 +4662,21 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption", resourceCulture)!;
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption", resourceCulture)!;
@@ -4455,6 +4704,51 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
         public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_PingClockToleranceMs_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_PingClockToleranceMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_PingClockToleranceMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption text.</summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedProfiles_Description text.</summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Description => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_SkillId_Caption text.</summary>
+        public static string AttackSpeedProfile_SkillId_Caption => ResourceManager.GetString("AttackSpeedProfile_SkillId_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_SpeedSource_Caption text.</summary>
+        public static string AttackSpeedProfile_SpeedSource_Caption => ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_SpeedSource_Description text.</summary>
+        public static string AttackSpeedProfile_SpeedSource_Description => ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_BaseDelayMs_Caption text.</summary>
+        public static string AttackSpeedProfile_BaseDelayMs_Caption => ResourceManager.GetString("AttackSpeedProfile_BaseDelayMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_ScalingFactor_Caption text.</summary>
+        public static string AttackSpeedProfile_ScalingFactor_Caption => ResourceManager.GetString("AttackSpeedProfile_ScalingFactor_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedProfile_MinimumIntervalMs_Caption text.</summary>
+        public static string AttackSpeedProfile_MinimumIntervalMs_Caption => ResourceManager.GetString("AttackSpeedProfile_MinimumIntervalMs_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedSource_AttackSpeed text.</summary>
+        public static string AttackSpeedSource_AttackSpeed => ResourceManager.GetString("AttackSpeedSource_AttackSpeed", resourceCulture)!;
+
+        /// <summary>Gets the localized AttackSpeedSource_MagicSpeed text.</summary>
+        public static string AttackSpeedSource_MagicSpeed => ResourceManager.GetString("AttackSpeedSource_MagicSpeed", resourceCulture)!;
 
         /// <summary>Gets the localized InvasionSpawnConfiguration_Y_Caption text.</summary>
         public static string InvasionSpawnConfiguration_Y_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_Y_Caption", resourceCulture)!;
@@ -4551,5 +4845,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
         public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration of the client.
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such..
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

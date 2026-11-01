@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
@@ -14,6 +15,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
@@ -36,6 +38,8 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
+    private const int IceSkillNumber = 7;
+
     private static readonly MagicEffectDefinition GMEffect = new GameMasterMagicEffectDefinition
     {
         InformObservers = true,
@@ -82,6 +86,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
     private readonly MapPowerUps _mapPowerUps = new();
+
+    private readonly AccountAttributeGrantPowerUps _accountAttributeGrantPowerUps = new();
 
     private CancellationTokenSource? _respawnAfterDeathCts;
 
@@ -137,7 +143,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.MagicEffectList = new MagicEffectsList(this);
         this._appearanceData = new PlayerAppearanceData(this);
-        this.PlayerState.StateChanged += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        this.PlayerState.StateChanged += async args =>
+        {
+            // The game context counts its players first, so that the plugins already see the new numbers.
+            this.GameContext.OnPlayerStateChanged(this, args.PreviousState, args.CurrentStateState);
+            await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        };
         this.PlayerState.StateChanges += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChangingAsync(this, args) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
         this._muHelperLazy = new Lazy<MuHelper.MuHelper>(() => new MuHelper.MuHelper(this));
@@ -218,7 +229,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
-    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger, this.GameContext.PlugInManager);
+    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(
+        this.Logger,
+        this.GameContext.PlugInManager,
+        configuration: this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration);
 
     /// <inheritdoc/>
     public int Money
@@ -779,7 +793,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        if (this.IsAttackBlockedBySafezone(attacker))
+        if (this.IsAttackBlockedBySafezone(attacker)
+            || this.IsAttackPreventedByPlugIns(attacker))
         {
             return null;
         }
@@ -788,6 +803,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.CurrentMiniGame?.AllowPlayerKilling is false)
         {
             return null;
+        }
+
+        if (Rand.NextRandomBool(attacker.Attributes[Stats.CrystalSwordIceChance])
+            && this.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == IceSkillNumber) is { } ice)
+        {
+            skill = new SkillEntry { Skill = ice };
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
@@ -828,7 +849,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         bool isPvpDamage = attacker is Player or IPlayerSurrogate;
         float damage = isPvpDamage ? hitInfo.TotalDamage : attacker.Attributes[Stats.MinimumPhysBaseDmg];
-        await this.DecreaseItemDurabilityAfterHitAsync(damage, isPvpDamage, skill).ConfigureAwait(false);
+        await this.DecreaseItemDurabilityAfterHitAsync(damage, isPvpDamage, skill, hitInfo.PetDamage).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
@@ -1180,6 +1201,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Determines whether the player complies with the <see cref="Skill.Requirements"/> of a skill, so that it can use it.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if the player complies with the requirements; Otherwise, <c>false</c>.</returns>
+    public bool CompliesRequirements(Skill skill)
+    {
+        return !skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]);
+    }
+
+    /// <summary>
     /// Tries to consume the <see cref="Skill.ConsumeRequirements"/> of a skill.
     /// </summary>
     /// <param name="skillEntry">The skill entry of the skill which should get performed.</param>
@@ -1194,7 +1225,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
+        if (!this.CompliesRequirements(skill))
         {
             return false;
         }
@@ -1495,6 +1526,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     internal ValueTask ClearObservingObjectsListAsync()
     {
         return this._observerToWorldViewAdapter.ClearObservingObjectsListAsync();
+    }
+
+    /// <summary>
+    /// Gets the gate at which the player is spawned, e.g. after its death.
+    /// </summary>
+    /// <returns>The spawn gate.</returns>
+    internal ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
+    {
+        return this._mapTransitions.GetSpawnGateOfCurrentMapAsync();
     }
 
     /// <inheritdoc />
@@ -1879,6 +1919,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Moves the character to an active map, if its current map is inactive, so that
+    /// it doesn't enter a map which is not available in the game anymore.
+    /// The target is the safezone map of the inactive map, or the home map of the character class,
+    /// or any other active map, see <see cref="GameMapDefinitionExtensions.GetActiveSpawnMap"/>.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void MoveOutOfInactiveMap(Character character)
+    {
+        if (character.CurrentMap is not { IsActive: false } inactiveMap)
+        {
+            return;
+        }
+
+        var targetMap = this.GameContext.Configuration.GetActiveSpawnMap(inactiveMap.SafezoneMap, character.CharacterClass?.HomeMap);
+        if (targetMap?.GetSafezoneGate() is not { } spawnGate)
+        {
+            this.Logger.LogWarning("Character {character} is on the inactive map {map}, but there is no active map to move it to.", character, inactiveMap);
+            return;
+        }
+
+        this.Logger.LogInformation("Character {character} is on the inactive map {map}, moving it to {targetMap}.", character, inactiveMap, targetMap);
+        character.CurrentMap = targetMap;
+        character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2 + 1);
+        character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2 + 1);
+    }
+
+    /// <summary>
     /// Releases the attribute system of the character which was in the game.
     /// </summary>
     /// <remarks>
@@ -1889,6 +1956,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void ReleaseAttributeSystem()
     {
         this._mapPowerUps.Remove();
+        this._accountAttributeGrantPowerUps.Remove();
         if (this.Attributes is { } attributes)
         {
             // The ammunition amount of some classes is a stat attribute, which belongs to the character.
@@ -2010,12 +2078,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
+        this.MoveOutOfInactiveMap(selectedCharacter);
         await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
         this.AddMissingStatAttributes();
 
         // The previous character of this connection may still hold its attribute system.
         this.ReleaseAttributeSystem();
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
+        this._accountAttributeGrantPowerUps.Apply(this.Account!, this.Attributes);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
@@ -2089,6 +2159,25 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Determines whether a plugin prevents the attacking player, or the owner of the attacking pet, from damaging this player.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><c>true</c>, if the attack is prevented; otherwise, <c>false</c>.</returns>
+    private bool IsAttackPreventedByPlugIns(IAttacker attacker)
+    {
+        if ((attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner) is not { } attackerPlayer
+            || attackerPlayer == this
+            || this.GameContext.PlugInManager.GetPlugInPoint<IPlayerAttackRestrictionPlugIn>() is not { } plugInPoint)
+        {
+            return false;
+        }
+
+        var eventArgs = new CancelEventArgs();
+        plugInPoint.CheckAttack(attackerPlayer, this, eventArgs);
+        return eventArgs.Cancel;
+    }
+
+    /// <summary>
     /// Sets the reclaimable attributes before a character enters the game.
     /// Current shield and mana are set to their maximum values.
     /// Current ability starts at the half of the maximum (as at the original server).
@@ -2157,7 +2246,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask DecreaseItemDurabilityAfterHitAsync(float damage, bool isPvpDamage, SkillEntry? skill)
+    private async ValueTask DecreaseItemDurabilityAfterHitAsync(float damage, bool isPvpDamage, SkillEntry? skill, float petDamage)
     {
         if (!isPvpDamage)
         {
@@ -2191,7 +2280,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: > 0.0 } pet)
         {
-            await this.DecreasePetDurabilityAsync(pet, damage).ConfigureAwait(false);
+            await this.DecreasePetDurabilityAsync(pet, petDamage).ConfigureAwait(false);
         }
     }
 

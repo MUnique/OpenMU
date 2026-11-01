@@ -32,6 +32,7 @@ Defines the kind of npc window which should be shown on the client.
 | 7 | PetTrainer | The pet trainer window. |
 | 9 | Lahap | The lahap window. |
 | 12 | CastleSeniorNPC | The castle senior window. |
+| 13 | CastleSiegeGuardsman | The castle siege guardsman window. The client requests the castle siege status (C1 B2 00) when it opens. |
 | 17 | ElphisRefinery | The elphis refinery window. |
 | 18 | RefineStoneMaking | The refine stone making window. |
 | 19 | RemoveJohOption | The jewel of harmony option removal window. |

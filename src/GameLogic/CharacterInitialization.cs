@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Text.RegularExpressions;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -25,8 +26,25 @@ public static class CharacterInitialization
     /// <returns><c>true</c>, if the name is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValidCharacterName(this GameConfiguration configuration, string name)
     {
-        return string.IsNullOrWhiteSpace(configuration.CharacterNameRegex)
-               || Regex.IsMatch(name, configuration.CharacterNameRegex);
+        return IsValidCharacterName(name, configuration.CharacterNameRegex);
+    }
+
+    /// <summary>
+    /// Determines whether the name is valid for a character, according to a regular expression.
+    /// The prefix of bridged chat senders is never allowed, whatever the regular expression allows,
+    /// so that a character can't be mistaken for a Discord user.
+    /// </summary>
+    /// <param name="name">The name of the character.</param>
+    /// <param name="nameRegex">The regular expression, see <see cref="GameConfiguration.CharacterNameRegex"/>.</param>
+    /// <returns><c>true</c>, if the name is valid; otherwise, <c>false</c>.</returns>
+    public static bool IsValidCharacterName(string name, string? nameRegex)
+    {
+        if (!BridgedChatSender.IsAllowedInCharacterName(name))
+        {
+            return false;
+        }
+
+        return string.IsNullOrWhiteSpace(nameRegex) || Regex.IsMatch(name, nameRegex);
     }
 
     /// <summary>

@@ -1,0 +1,59 @@
+@using MUnique.OpenMU.GameLogic.CastleSiege
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+@if (this._snapshot is { } snapshot)
+{
+    <section class="card h-100">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 class="h6 mb-0">@Resources.CastleSiege</h2>
+            <a href="castle-siege" class="small">@Resources.DashboardOpen</a>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-5 fw-normal text-body-secondary">@Resources.CastleSiegeState</dt>
+                <dd class="col-7 fw-semibold">@snapshot.State</dd>
+                <dt class="col-5 fw-normal text-body-secondary">@Resources.CastleSiegeEndsUtc</dt>
+                <dd class="col-7">@snapshot.StateEndTimeUtc.ToString("u")</dd>
+                <dt class="col-5 fw-normal text-body-secondary">@Resources.CastleSiegeOwner</dt>
+                <dd class="col-7">@(snapshot.IsOccupied ? snapshot.OwnerGuildName ?? snapshot.OwnerGuildId?.ToString() : Resources.CastleSiegeUnoccupied)</dd>
+                <dt class="col-5 fw-normal text-body-secondary">@Resources.CastleSiegeRegistrations</dt>
+                <dd class="col-7 mb-0">@snapshot.Registrations.Count</dd>
+            </dl>
+        </div>
+    </section>
+}
+
+@code {
+    private CastleSiegeAdministrationSnapshot? _snapshot;
+
+    /// <summary>
+    /// Gets or sets the castle siege management service.
+    /// </summary>
+    [Inject]
+    public CastleSiegeManagementService CastleSiegeService { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(true);
+
+        // The castle siege runs on one game server, so we show the first one which provides it.
+        foreach (var server in this.CastleSiegeService.AvailableGameServers)
+        {
+            try
+            {
+                var result = await this.CastleSiegeService.GetSnapshotAsync(server.Id).ConfigureAwait(true);
+                if (result.Snapshot is { } snapshot)
+                {
+                    this._snapshot = snapshot;
+                    return;
+                }
+            }
+            catch
+            {
+                // The server may not be started; try the next one.
+            }
+        }
+    }
+}

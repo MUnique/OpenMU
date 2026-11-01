@@ -15,9 +15,12 @@ public class AreaSkillHitAction
     /// <param name="player">The player who is performing the skill.</param>
     /// <param name="target">The target.</param>
     /// <param name="skill">The skill.</param>
-    public async ValueTask AttackTargetAsync(Player player, IAttackable target, SkillEntry skill)
+    /// <param name="animationCounter">The animation counter of the hit, if the client sends one.</param>
+    public async ValueTask AttackTargetAsync(Player player, IAttackable target, SkillEntry skill, byte animationCounter = 0)
     {
-        if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
+        if (skill.Skill is not { } usedSkill
+            || usedSkill.SkillType != SkillType.AreaSkillExplicitHits
+            || player.IsAtSafezone()
             || !target.IsAlive
             || target.IsAtSafezone()
             || (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer))
@@ -25,13 +28,12 @@ public class AreaSkillHitAction
             return;
         }
 
-        if (player.IsAtSafezone())
+        if (!player.SkillHitValidator.IsTargetInArea((ushort)usedSkill.Number, target.Position, animationCounter))
         {
-            // It's possible, when the player did some area skill (Evil Spirit), and walked into the safezone.
-            // We don't log it as hacker attempt, since the AreaSkillAttackAction already does handle this.
+            return;
         }
 
-        if (target.CheckSkillTargetRestrictions(player, skill.Skill))
+        if (target.CheckSkillTargetRestrictions(player, usedSkill))
         {
             var hitInfo = await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
             await target.TryApplyElementalEffectsAsync(player, skill, hitInfo).ConfigureAwait(false);

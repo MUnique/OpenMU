@@ -22,6 +22,7 @@ internal class ConfigurationNameResourcesTests
     private static readonly (string Name, ResourceManager ResourceManager)[] Sources =
     [
         (nameof(CharacterClassNames), CharacterClassNames.ResourceManager),
+        (nameof(CashShopPackageNames), CashShopPackageNames.ResourceManager),
         (nameof(MapNames), MapNames.ResourceManager),
         (nameof(MerchantNames), MerchantNames.ResourceManager),
         (nameof(MonsterNames), MonsterNames.ResourceManager),
@@ -36,6 +37,7 @@ internal class ConfigurationNameResourcesTests
         (nameof(CraftingNames), CraftingNames.ResourceManager),
         (nameof(DropGroupDescriptions), DropGroupDescriptions.ResourceManager),
         (nameof(ItemDropDescriptions), ItemDropDescriptions.ResourceManager),
+        (nameof(ItemPriceDefinitionNames), ItemPriceDefinitionNames.ResourceManager),
         (nameof(ItemSlotNames), ItemSlotNames.ResourceManager),
         (nameof(LevelBonusDescriptions), LevelBonusDescriptions.ResourceManager),
         (nameof(LevelBonusNames), LevelBonusNames.ResourceManager),

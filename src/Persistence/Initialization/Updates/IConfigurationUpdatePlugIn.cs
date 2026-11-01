@@ -51,6 +51,14 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<Guid>
     DateTime UpdatedAt => CreatedAt;
 
     /// <summary>
+    /// Gets a value indicating whether the update is applied when a new database is initialized.
+    /// The data initialization of this version already contains the changes of the updates of OpenMU itself, so it
+    /// only marks them as installed. An update whose changes aren't part of it, e.g. one of a plugin which adds its
+    /// own items, returns <c>true</c>.
+    /// </summary>
+    bool RunsOnNewDatabase => false;
+
+    /// <summary>
     /// Gets the version of the update. Increase it when an already released
     /// update is changed, so that databases which installed a previous version
     /// are offered the update again. The <see cref="Type.GUID"/> of the

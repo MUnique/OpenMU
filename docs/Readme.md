@@ -39,6 +39,9 @@ can be searched and navigated.
 * [Packet structure tests](PacketStructureTests.md): how the packet structures
   are verified
 
+* [Castle Siege testing strategy](CastleSiegeTesting.md): regression coverage,
+  test boundaries, execution commands and the client/server smoke checklist
+
 * [Progress](Progress.md): the implementation progress of the packet handlers.
   See also the [normal skill progress](https://github.com/MUnique/OpenMU/projects/9)
   and the [master skill progress](https://github.com/MUnique/OpenMU/projects/10)
@@ -48,6 +51,10 @@ can be searched and navigated.
 
 * [Cash shop](CashShop.md): the design and implementation of the in-game cash
   shop, the facts about the game client it's based on, and what's left to do
+
+* [Item price rules concept](ItemPriceRulesConcept.md): the concept for
+  data-driven item price rules
+  ([#75](https://github.com/MUnique/OpenMU/issues/75))
 
 * [architecture overview.png](architecture%20overview.png): the big picture,
   explained on the

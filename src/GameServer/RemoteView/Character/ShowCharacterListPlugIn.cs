@@ -53,6 +53,7 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
     {
         byte aggregatedFlags = 0;
         var result = account.UnlockedCharacterClasses?
+            .Where(c => c.IsActive)
             .Select(c => c.CreationAllowedFlag)
             .Aggregate(aggregatedFlags, (current, flag) => (byte)(current | flag)) ?? 0;
         return (CharacterCreationUnlockFlags)result;
@@ -60,9 +61,11 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
 
     private async ValueTask SendCharacterListAsync(IConnection connection, Account account, CharacterCreationUnlockFlags unlockFlags)
     {
-        var guildPositions = new GuildPosition?[account.Characters.Count];
+        // The positions are written by index, so both loops go through the same list in slot order.
+        var characters = account.Characters.OrderBy(c => c.CharacterSlot).ToList();
+        var guildPositions = new GuildPosition?[characters.Count];
         int i = 0;
-        foreach (var character in account.Characters)
+        foreach (var character in characters)
         {
             guildPositions[i] = await this._player.GameServerContext.GuildServer.GetGuildPositionAsync(character.Id).ConfigureAwait(false);
             i++;
@@ -81,7 +84,7 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
             };
 
             var j = 0;
-            foreach (var character in account.Characters.OrderBy(c => c.CharacterSlot))
+            foreach (var character in characters)
             {
                 var characterData = packet[j];
                 characterData.SlotIndex = character.CharacterSlot;

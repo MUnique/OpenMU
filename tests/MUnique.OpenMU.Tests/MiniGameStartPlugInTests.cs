@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -324,6 +326,25 @@ public class MiniGameStartPlugInTests
     }
 
     /// <summary>
+    /// Tests that the start doesn't create a game whose entrance map is inactive,
+    /// even though the mini game itself is active.
+    /// </summary>
+    [Test]
+    public async Task InactiveEntranceMapCreatesNoGameAsync()
+    {
+        var definition = this.CreateDefinition(TimeSpan.FromMinutes(2));
+        definition.Entrance!.Map!.IsActive = false;
+        var (fakeContext, manager, notifications) = this.CreateAnnouncingContext(definition);
+        var state = new PeriodicTaskGameServerState(fakeContext.Object);
+
+        // The fake manager throws when asked to create a game.
+        await this._plugIn.StartForTestAsync(state).ConfigureAwait(false);
+
+        Assert.That(manager.Games, Is.Empty);
+        Assert.That(notifications, Is.Empty);
+    }
+
+    /// <summary>
     /// Tests that games with a non-shared map creation policy never drive the
     /// global entrance countdown.
     /// </summary>
@@ -356,6 +377,9 @@ public class MiniGameStartPlugInTests
         var notifications = new List<string>();
         contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<string>()))
             .Callback<string>(notifications.Add)
+            .Returns(ValueTask.CompletedTask);
+        contextMock.Setup(c => c.SendGlobalNotificationAsync(It.IsAny<LocalizedString>(), It.IsAny<object?[]>()))
+            .Callback<LocalizedString, object?[]>((message, arguments) => notifications.Add(string.Format(CultureInfo.InvariantCulture, message.ValueInNeutralLanguage, arguments)))
             .Returns(ValueTask.CompletedTask);
         var configurationMock = new Mock<GameConfiguration>();
         configurationMock.SetupGet(c => c.MiniGameDefinitions).Returns(new List<MiniGameDefinition> { definition });

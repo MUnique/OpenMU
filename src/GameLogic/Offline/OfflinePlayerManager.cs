@@ -113,6 +113,19 @@ public sealed class OfflinePlayerManager
     public bool TryGetPlayer(string loginName, out OfflinePlayer? player)
         => this._activePlayers.TryGetValue(loginName, out player);
 
+    /// <summary>
+    /// Adds an offline player session which was started outside of the manager.
+    /// </summary>
+    /// <param name="loginName">The account login name.</param>
+    /// <param name="offlinePlayer">The offline player.</param>
+    /// <returns><c>true</c> if the account had no active session yet.</returns>
+    /// <remarks>
+    /// For tests: a session which is started by <see cref="StartAsync"/> needs a player in the game,
+    /// with its account and character loaded.
+    /// </remarks>
+    internal bool TryAdd(string loginName, OfflinePlayer offlinePlayer)
+        => this._activePlayers.TryAdd(loginName, offlinePlayer);
+
     private async ValueTask TransitionToOfflineAsync(Player realPlayer)
     {
         await this.LogOffFromLoginServerAsync(realPlayer).ConfigureAwait(false);

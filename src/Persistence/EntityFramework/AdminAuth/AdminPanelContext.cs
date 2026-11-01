@@ -30,6 +30,9 @@ public class AdminPanelContext : DbContext
     /// </summary>
     public DbSet<ApiKey> ApiKeys { get; set; } = null!;
 
+    /// <summary>Gets or sets the administrative audit trail.</summary>
+    public DbSet<AdminAuditEntry> AdminAuditEntries { get; set; } = null!;
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -69,6 +72,21 @@ public class AdminPanelContext : DbContext
             entity.HasIndex(k => k.KeyHash).IsUnique();
             entity.Property(k => k.KeyPrefix).IsRequired().HasMaxLength(16);
             entity.Property(k => k.Roles).IsRequired().HasMaxLength(200);
+            entity.Property(k => k.AllowedToolGroups).IsRequired().HasMaxLength(1000).HasDefaultValue(string.Empty);
+        });
+
+        modelBuilder.Entity<AdminAuditEntry>(entity =>
+        {
+            entity.ToTable(nameof(AdminAuditEntry), SchemaNames.AdminPanel);
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.PrincipalId).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.PrincipalName).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Frontend).IsRequired().HasMaxLength(16);
+            entity.Property(e => e.Operation).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.ArgumentsJson).IsRequired().HasMaxLength(16384);
+            entity.Property(e => e.ResultJson).IsRequired().HasMaxLength(16384);
+            entity.Property(e => e.Outcome).IsRequired().HasMaxLength(32);
+            entity.HasIndex(e => new { e.StartedAt, e.Id });
         });
     }
 }

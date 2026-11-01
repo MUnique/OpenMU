@@ -13,7 +13,7 @@ services:
     image: munique/openmu
     container_name: openmu-startup
     ports:
-      - "8080"
+      - "127.0.0.1::8080"
       - "45901:45901"
       - "45902:45902"
       - "45903:45903"

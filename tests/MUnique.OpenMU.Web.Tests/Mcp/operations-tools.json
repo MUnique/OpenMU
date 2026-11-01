@@ -1,0 +1,2281 @@
+[
+  {
+    "Name": "accounts_create",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Printable ASCII login name, 3-10 characters.",
+          "type": "string"
+        },
+        "password": {
+          "description": "Initial printable ASCII password, 3-20 characters; keep it out of conversation history.",
+          "type": "string"
+        },
+        "email": {
+          "description": "Optional valid email address.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "loginName",
+        "password"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "accounts_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact account login name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "accounts_reset_password",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact offline account login name.",
+          "type": "string"
+        },
+        "password": {
+          "description": "New printable ASCII password, 3-20 characters.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName",
+        "password",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "accounts_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive text to match.",
+          "type": "string",
+          "default": ""
+        },
+        "state": {
+          "description": "Optional account state.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Normal",
+            "Spectator",
+            "GameMaster",
+            "GameMasterInvisible",
+            "Banned",
+            "TemporarilyBanned",
+            null
+          ],
+          "default": null
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "accounts_set_state",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact offline account login name.",
+          "type": "string"
+        },
+        "state": {
+          "description": "New account state.",
+          "type": "string",
+          "enum": [
+            "Normal",
+            "Spectator",
+            "GameMaster",
+            "GameMasterInvisible",
+            "Banned",
+            "TemporarilyBanned"
+          ]
+        },
+        "reason": {
+          "description": "Mandatory audit reason, 1-1000 characters.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName",
+        "state",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "audit_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "description": "Number of records to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum number of records, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "audit_revert",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "auditId": {
+          "description": "Successful configuration update audit identifier.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "auditId"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "cashshop_get_balance",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact account login name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "cashshop_grant",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact account login name.",
+          "type": "string"
+        },
+        "coinType": {
+          "description": "Cash shop coin type.",
+          "type": "string",
+          "enum": [
+            "WCoinC",
+            "WCoinP",
+            "GoblinPoints"
+          ]
+        },
+        "amount": {
+          "description": "Nonzero signed grant amount; negative amounts debit without going below zero.",
+          "type": "integer"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        },
+        "reference": {
+          "description": "Unique idempotency reference, at most 100 characters; reuse only with identical arguments.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName",
+        "coinType",
+        "amount",
+        "reason",
+        "reference"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "castle_siege_clear_tribute",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serverId",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "castle_siege_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "castle_siege_remove_registration",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer"
+        },
+        "guildId": {
+          "description": "Persistent guild identifier from castle_siege_get.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serverId",
+        "guildId",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "castle_siege_reset_cycle",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serverId",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "castle_siege_set_owner",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer"
+        },
+        "guildName": {
+          "description": "Exact guild name, treated as data.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serverId",
+        "guildName",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "castle_siege_set_state",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer"
+        },
+        "state": {
+          "description": "Requested Castle Siege state.",
+          "type": "string",
+          "enum": [
+            "Idle1",
+            "RegisterGuild",
+            "Idle2",
+            "RegisterMark",
+            "Idle3",
+            "Notify",
+            "Ready",
+            "Start",
+            "End",
+            "EndCycle"
+          ]
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serverId",
+        "state",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "castle_siege_set_taxes",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Game server identifier.",
+          "type": "integer"
+        },
+        "chaosTax": {
+          "description": "Chaos Machine tax percentage.",
+          "type": "integer"
+        },
+        "storeTax": {
+          "description": "Personal store tax percentage.",
+          "type": "integer"
+        },
+        "huntTax": {
+          "description": "Land of Trials entrance fee.",
+          "type": "integer"
+        },
+        "reason": {
+          "description": "Mandatory audit reason.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serverId",
+        "chaosTax",
+        "storeTax",
+        "huntTax",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "characters_add_item",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact offline character name.",
+          "type": "string"
+        },
+        "itemId": {
+          "description": "Item definition identifier from config_query.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "level": {
+          "description": "Item level, bounded by the definition.",
+          "type": "integer",
+          "default": 0
+        },
+        "vault": {
+          "description": "Use the account vault; otherwise use the base bag.",
+          "type": "boolean",
+          "default": false
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "itemId"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "characters_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact character name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "characters_update",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact offline character name.",
+          "type": "string"
+        },
+        "patch": {
+          "description": "JSON object: level, masterLevel, resets, strength, agility, vitality, energy, leadership, money, mapNumber, x, y.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "patch"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "config_create",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "parentType": {
+          "description": "Parent configuration type.",
+          "type": "string"
+        },
+        "parentId": {
+          "description": "Parent object identifier.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "collection": {
+          "description": "Aggregate collection property name.",
+          "type": "string"
+        },
+        "values": {
+          "description": "JSON object containing initial scalar fields and explicit references.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "parentType",
+        "parentId",
+        "collection",
+        "values"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "config_delete",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "parentType": {
+          "description": "Owning parent type.",
+          "type": "string"
+        },
+        "parentId": {
+          "description": "Owning parent identifier.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "collection": {
+          "description": "Owning aggregate collection field.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Child identifier to remove.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "parentType",
+        "parentId",
+        "collection",
+        "id"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "config_describe",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant type name from config_types.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant type name from config_types.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Persistent identifier from config_query.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "depth": {
+          "description": "Nested object depth (0 to 2).",
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_query",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant type name from config_types.",
+          "type": "string"
+        },
+        "field": {
+          "description": "Optional scalar filter field.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "op": {
+          "description": "Comparison: eq, ne, contains, gt, ge, lt or le.",
+          "type": "string",
+          "default": "eq"
+        },
+        "value": {
+          "description": "Comparison value in invariant format; null matches null.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "fields": {
+          "description": "Optional comma-separated fields from config_describe.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive text to find.",
+          "type": "string"
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "text"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_types",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "config_update",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Invariant configuration type from config_types.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Object identifier from config_get.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "patch": {
+          "description": "JSON merge patch of scalar fields and references as {\"$ref\":\"id\"}; exact field names from config_describe.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "patch"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "content_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Content type.",
+          "type": "string",
+          "enum": [
+            "Maps",
+            "CharacterClasses",
+            "Monsters",
+            "Items",
+            "MiniGames"
+          ]
+        },
+        "isActive": {
+          "description": "Optional active state to filter by.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "text": {
+          "description": "Case-insensitive text which the key, name or version must contain.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching entries to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum entries, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "content_restrict_to_version",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "description": "Target version of the original game.",
+          "type": "string",
+          "enum": [
+            "Unknown",
+            "Version029",
+            "Version034",
+            "Version043",
+            "Version045",
+            "Version048",
+            "Version060",
+            "Version064",
+            "Version066",
+            "Version068",
+            "Version075",
+            "Version084",
+            "Version089c",
+            "Version094b",
+            "Version095d",
+            "Version095k",
+            "Version096y",
+            "Version097d",
+            "Version097p",
+            "Version097r",
+            "Version098r",
+            "Version099",
+            "Version099GPlus",
+            "Version100s",
+            "Season1",
+            "Season2",
+            "Season3Episode1",
+            "Season3Episode2",
+            "Season4Episode1",
+            "Season4Episode2",
+            "Season5Episode1",
+            "Season5Episode2",
+            "Season5Episode3",
+            "Season5Episode4",
+            "Season6Episode1",
+            "Season6Episode2",
+            "Season6Episode3"
+          ]
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "target"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "content_set_active",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "activateIds": {
+          "description": "Identifiers from content_list to activate.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": null
+        },
+        "deactivateIds": {
+          "description": "Identifiers from content_list to deactivate.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": null
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "diagnostics_check",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "drops_explain",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "monsterNumber": {
+          "description": "Monster number.",
+          "type": "integer"
+        },
+        "mapNumber": {
+          "description": "Map number.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Number of groups to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum groups, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "monsterNumber",
+        "mapNumber"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "drops_update",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "description": "Drop group identifier from drops_explain or config_query.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "chance": {
+          "description": "Probability from zero to one.",
+          "type": "number"
+        },
+        "addItemId": {
+          "description": "Optional item definition to add to the group.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid",
+          "default": null
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "groupId",
+        "chance"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "events_schedule",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "events_start",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "eventType": {
+          "description": "Invariant type from events_schedule.",
+          "type": "string"
+        },
+        "restart": {
+          "description": "Explicitly allow removal of a running event before restarting it.",
+          "type": "boolean",
+          "default": false
+        },
+        "apply": {
+          "description": "Apply only after approving the event preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "serverId",
+        "eventType"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "guilds_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Exact guild name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "guilds_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive guild name text.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "logs_get_level",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "logs_search",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Case-insensitive substring such as a character or account name; at most 200 characters.",
+          "type": "string",
+          "default": ""
+        },
+        "since": {
+          "description": "Inclusive lower bound; defaults to the last day.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "default": null
+        },
+        "until": {
+          "description": "Inclusive upper bound; range must not exceed 30 days.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "default": null
+        },
+        "level": {
+          "description": "Optional exact Serilog level.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "limit": {
+          "description": "Maximum lines including context, 1-100.",
+          "type": "integer",
+          "default": 50
+        },
+        "contextLines": {
+          "description": "Preceding and following context lines, 0-3.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "logs_set_level",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "description": "Verbose, Debug, Information, Warning, Error or Fatal.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "level"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "minigames_leaderboard",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "miniGameType": {
+          "description": "Optional mini game type; empty for the first type which has a leaderboard.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Undefined",
+            "DevilSquare",
+            "BloodCastle",
+            "ChaosCastle",
+            "IllusionTemple",
+            "Doppelganger",
+            "Kanturu",
+            "ImperialGuardian",
+            null
+          ],
+          "default": null
+        },
+        "days": {
+          "description": "Optional number of past days (1 to 3650) of which finished games are counted; empty for all time.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_ban",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact live character name.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Mandatory audit reason, 1-1000 characters.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName",
+        "reason"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "players_disconnect",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "description": "Exact account login name from players_list.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loginName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "players_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "characterName"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_give_item",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        },
+        "item": {
+          "description": "Item group, number, level and configured options.",
+          "type": "object",
+          "properties": {
+            "group": {
+              "type": "integer"
+            },
+            "number": {
+              "type": "integer"
+            },
+            "level": {
+              "type": "integer",
+              "default": 0
+            },
+            "skill": {
+              "type": "boolean",
+              "default": false
+            },
+            "luck": {
+              "type": "boolean",
+              "default": false
+            },
+            "optionLevel": {
+              "type": "integer",
+              "default": 0
+            },
+            "excellentOptions": {
+              "type": "integer",
+              "default": 0
+            },
+            "ancientSet": {
+              "type": "integer",
+              "default": 0
+            },
+            "ancientBonusLevel": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          "required": [
+            "group",
+            "number"
+          ]
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "item"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "players_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Optional game server identifier.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "mapNumber": {
+          "description": "Optional map number; requires live data.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "guildName": {
+          "description": "Optional exact guild name; requires live data.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "players_set_level",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        },
+        "level": {
+          "description": "Requested level within the configured maximum.",
+          "type": "integer"
+        },
+        "master": {
+          "description": "Set master level instead of regular level.",
+          "type": "boolean",
+          "default": false
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "level"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "players_teleport",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "characterName": {
+          "description": "Exact online character name.",
+          "type": "string"
+        },
+        "mapNumber": {
+          "description": "Hosted target map number.",
+          "type": "integer"
+        },
+        "x": {
+          "description": "Target horizontal coordinate.",
+          "type": "integer"
+        },
+        "y": {
+          "description": "Target vertical coordinate.",
+          "type": "integer"
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "characterName",
+        "mapNumber",
+        "x",
+        "y"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "plugin_operations_execute",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "plugInId": {
+          "description": "Plugin type identifier from plugin_operations_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Exact operation name from the catalog.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "JSON object matching the contributed input schema.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "Apply only after approving the preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the identical preview.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "serverId",
+        "plugInId",
+        "name",
+        "arguments"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "plugin_operations_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer",
+          "default": 0
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugin_operations_read",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Actual game server identifier.",
+          "type": "integer"
+        },
+        "plugInId": {
+          "description": "Plugin type identifier from plugin_operations_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Exact operation name from the catalog.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "JSON object matching the contributed input schema.",
+          "type": "string",
+          "default": "{}"
+        }
+      },
+      "required": [
+        "serverId",
+        "plugInId",
+        "name"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugins_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Optional case-insensitive name filter.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching rows to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum rows (1 to 100).",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "plugins_set_active",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "description": "Plugin type identifier from plugins_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "active": {
+          "description": "Requested active state.",
+          "type": "boolean"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pluginId",
+        "active"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "plugins_update_configuration",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "description": "Installed plugin type identifier.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "patch": {
+          "description": "JSON merge patch with exact custom setting property names.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pluginId",
+        "patch"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "rates_get",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "rates_set",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "rate": {
+          "description": "experience, masterExperience or money; masterExperience and money are global.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Finite nonnegative multiplier.",
+          "type": "number"
+        },
+        "serverId": {
+          "description": "Game server numeric identifier, or null for the global multiplier.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "rate",
+        "value"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "server_overview",
+    "InputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "server_send_message",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Announcement text, 1-512 characters.",
+          "type": "string"
+        },
+        "messageType": {
+          "description": "GoldenCenter, BlueNormal or SlideNotice.",
+          "type": "string",
+          "enum": [
+            "GoldenCenter",
+            "BlueNormal",
+            "GuildNotice",
+            "SlideNotice"
+          ],
+          "default": "GoldenCenter"
+        },
+        "serverId": {
+          "description": "Game server identifier, or null for all game servers.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "message"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "server_start",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Stable server identifier, never its dictionary position.",
+          "type": "integer"
+        },
+        "serverType": {
+          "description": "Server type; identifiers are unique within each type.",
+          "type": "string",
+          "enum": [
+            "Undefined",
+            "GameServer",
+            "ConnectServer",
+            "ChatServer",
+            "Discord"
+          ]
+        }
+      },
+      "required": [
+        "serverId",
+        "serverType"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "server_statistics",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "newAccountDays": {
+          "description": "Count accounts registered in this many days (1 to 365).",
+          "type": "integer",
+          "default": 7
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "server_stop",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "description": "Stable server identifier.",
+          "type": "integer"
+        },
+        "serverType": {
+          "description": "Server type from server_overview.",
+          "type": "string",
+          "enum": [
+            "Undefined",
+            "GameServer",
+            "ConnectServer",
+            "ChatServer",
+            "Discord"
+          ]
+        }
+      },
+      "required": [
+        "serverId",
+        "serverType"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
+    "Name": "spawns_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "mapNumber": {
+          "description": "Map number.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Number of spawns to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum spawns, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "required": [
+        "mapNumber"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "spawns_update",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "spawnId": {
+          "description": "Spawn identifier from spawns_list.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "patch": {
+          "description": "JSON merge patch using exact MonsterSpawnArea field names from config_describe.",
+          "type": "string"
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "spawnId",
+        "patch"
+      ]
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  }
+]

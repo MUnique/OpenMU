@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
@@ -107,6 +108,9 @@ public class GameServerContext : GameContext, IGameServerContext
 
     /// <inheritdoc/>
     public IMapHostLocator? MapHostLocator { get; }
+
+    /// <inheritdoc/>
+    public IEnumerable<AttributeRequirement> JoinRequirements => this._gameServerDefinition.JoinRequirements ?? Enumerable.Empty<AttributeRequirement>();
 
     /// <inheritdoc />
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
@@ -265,6 +269,9 @@ public class GameServerContext : GameContext, IGameServerContext
             }
 
             await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name).ConfigureAwait(false);
+
+            // E.g. the Discord bot can notify the friends of the player.
+            await this.EventPublisher.GameEventAsync(new PlayerEnteredGameEvent(this.Id, DateTime.UtcNow, selectedCharacter.Id, selectedCharacter.Name)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

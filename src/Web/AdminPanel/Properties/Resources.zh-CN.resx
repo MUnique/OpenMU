@@ -903,6 +903,18 @@
   <data name="ApiKeyShownOnceDescription" xml:space="preserve">
     <value>密钥仅显示一次，请立即复制并妥善保存。系统只保存密钥的哈希值，无法找回原始密钥。若密钥遗失，请删除后重新创建。</value>
   </data>
+  <data name="ApiKeyNeedsAUser" xml:space="preserve">
+    <value>请先创建第一个后台用户，再创建 API 密钥：在此之前，任何能访问管理后台的人都能创建密钥，且该密钥之后仍然有效。</value>
+  </data>
+  <data name="ApiKeyCreatedBeforeFirstUser" xml:space="preserve">
+    <value>在第一个用户之前创建</value>
+  </data>
+  <data name="ApiKeysCreatedBeforeFirstUserHint" xml:space="preserve">
+    <value>标记为“在第一个用户之前创建”的密钥是在管理后台还没有用户时创建的，当时任何能访问管理后台的人都能创建密钥。这些密钥已被停用一次。只有当密钥是你自己创建的时才重新启用它；更好的做法是替换它：创建一个新密钥，在应用程序中改用新密钥，然后删除旧密钥。</value>
+  </data>
+  <data name="ApiKeysOfSetupModeDisabled" xml:space="preserve">
+    <value>已停用 {0} 个 API 密钥：它们是在管理后台还没有用户时创建的，当时任何能访问管理后台的人都能创建密钥。请在 API 密钥页面只重新启用你自己创建的密钥。</value>
+  </data>
   <data name="NoApiKeys" xml:space="preserve">
     <value>尚未创建任何 API 密钥。</value>
   </data>
@@ -1785,5 +1797,974 @@
   </data>
   <data name="GameMap" xml:space="preserve">
     <value>地图</value>
+  </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>地形编辑器</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>仪表板</value>
+  </data>
+  <data name="DashboardPlayersOnline" xml:space="preserve">
+    <value>在线玩家</value>
+  </data>
+  <data name="DashboardPlayerCapacity" xml:space="preserve">
+    <value>运行中的游戏服务器共 {0} 个名额</value>
+  </data>
+  <data name="DashboardServersRunning" xml:space="preserve">
+    <value>运行中的服务器</value>
+  </data>
+  <data name="DashboardServersNotRunning" xml:space="preserve">
+    <value>{0} 个未运行</value>
+  </data>
+  <data name="DashboardAllServersRunning" xml:space="preserve">
+    <value>所有服务器均在运行</value>
+  </data>
+  <data name="DashboardNewAccounts" xml:space="preserve">
+    <value>最近 7 天新注册 +{0}</value>
+  </data>
+  <data name="DashboardBannedAccounts" xml:space="preserve">
+    <value>{0} 个已封禁</value>
+  </data>
+  <data name="DashboardAlliances" xml:space="preserve">
+    <value>{0} 个联盟</value>
+  </data>
+  <data name="DashboardCharacters" xml:space="preserve">
+    <value>{0} 个角色</value>
+  </data>
+  <data name="DashboardNotAvailable" xml:space="preserve">
+    <value>不可用</value>
+  </data>
+  <data name="DashboardOnlineHistory" xml:space="preserve">
+    <value>最近 24 小时在线玩家</value>
+  </data>
+  <data name="DashboardOnlineHistoryDescription" xml:space="preserve">
+    <value>最近 24 小时在线玩家图表。当前 {0}，峰值 {1}，最低值 {2}。</value>
+  </data>
+  <data name="DashboardSampleInterval" xml:space="preserve">
+    <value>每 {0} 分钟采样一次</value>
+  </data>
+  <data name="DashboardCollectingData" xml:space="preserve">
+    <value>正在收集数据。历史记录从管理面板启动时开始。</value>
+  </data>
+  <data name="DashboardHoursAgo" xml:space="preserve">
+    <value>{0} 小时前</value>
+  </data>
+  <data name="DashboardNow" xml:space="preserve">
+    <value>现在</value>
+  </data>
+  <data name="DashboardCurrent" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="DashboardPeak" xml:space="preserve">
+    <value>峰值</value>
+  </data>
+  <data name="DashboardLow" xml:space="preserve">
+    <value>最低值</value>
+  </data>
+  <data name="DashboardManageServers" xml:space="preserve">
+    <value>管理服务器</value>
+  </data>
+  <data name="DashboardConnections" xml:space="preserve">
+    <value>{0} 个连接</value>
+  </data>
+  <data name="DashboardAdministratorsOnly" xml:space="preserve">
+    <value>仅限管理员</value>
+  </data>
+  <data name="DashboardUptime" xml:space="preserve">
+    <value>运行时间</value>
+  </data>
+  <data name="DashboardUptimeValue" xml:space="preserve">
+    <value>{0} 天 {1} 小时 {2} 分钟</value>
+  </data>
+  <data name="DashboardMemory" xml:space="preserve">
+    <value>内存</value>
+  </data>
+  <data name="DashboardMemoryValue" xml:space="preserve">
+    <value>工作集 {0:N0} MB</value>
+  </data>
+  <data name="DashboardVersion" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="DashboardDatabase" xml:space="preserve">
+    <value>数据库</value>
+  </data>
+  <data name="DashboardDatabaseConnected" xml:space="preserve">
+    <value>已连接</value>
+  </data>
+  <data name="DashboardDatabaseNotReachable" xml:space="preserve">
+    <value>无法连接</value>
+  </data>
+  <data name="DashboardConfigurationUpdates" xml:space="preserve">
+    <value>配置更新</value>
+  </data>
+  <data name="DashboardUpdatesAvailable" xml:space="preserve">
+    <value>个更新可用于您的游戏配置。</value>
+  </data>
+  <data name="DashboardNoUpdates" xml:space="preserve">
+    <value>您的游戏配置已是最新。</value>
+  </data>
+  <data name="DashboardReviewUpdates" xml:space="preserve">
+    <value>查看更新</value>
+  </data>
+  <data name="DashboardQuickActions" xml:space="preserve">
+    <value>快捷操作</value>
+  </data>
+  <data name="DashboardOpen" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="RoleCashShop" xml:space="preserve">
+    <value>仅管理商城币</value>
+  </data>
+  <data name="CashShopCoinsOf" xml:space="preserve">
+    <value>{0} 的商城币</value>
+  </data>
+  <data name="CashShopCoinsDescription" xml:space="preserve">
+    <value>这里显示的是最近一次保存的余额。发放的商城币会暂时处于待生效状态，游戏服务器将在玩家下次打开商城时应用。</value>
+  </data>
+  <data name="CashShopCoinsAccountNotFound" xml:space="preserve">
+    <value>该账号不存在。</value>
+  </data>
+  <data name="CashShopGrantCoins" xml:space="preserve">
+    <value>发放商城币</value>
+  </data>
+  <data name="CashShopCoinType" xml:space="preserve">
+    <value>币种</value>
+  </data>
+  <data name="CashShopAmount" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="CashShopGrants" xml:space="preserve">
+    <value>发放记录</value>
+  </data>
+  <data name="CashShopGrantedBy" xml:space="preserve">
+    <value>发放人</value>
+  </data>
+  <data name="CashShopReference" xml:space="preserve">
+    <value>关联编号</value>
+  </data>
+  <data name="CashShopAppliedAt" xml:space="preserve">
+    <value>生效时间</value>
+  </data>
+  <data name="CashShopPending" xml:space="preserve">
+    <value>待生效</value>
+  </data>
+  <data name="CashShopPendingAmount" xml:space="preserve">
+    <value>{0} 待生效</value>
+  </data>
+  <data name="CashShopNoGrants" xml:space="preserve">
+    <value>暂无商城币发放记录。</value>
+  </data>
+  <data name="CashShopAmountMustNotBeZero" xml:space="preserve">
+    <value>数量不能为零。输入负数可扣除商城币。</value>
+  </data>
+  <data name="CashShopCoinsGranted" xml:space="preserve">
+    <value>商城币发放记录已创建。</value>
+  </data>
+  <data name="CashShopCoins" xml:space="preserve">
+    <value>商城币</value>
+  </data>
+  <data name="CashShopCatalog" xml:space="preserve">
+    <value>商城商品目录</value>
+  </data>
+  <data name="CashShopCatalogDescription" xml:space="preserve">
+    <value>游戏客户端使用自身的商城脚本显示商品包、名称、价格和有效期。此处编辑的是服务端配置：哪些商品包上架、发放哪些物品，以及实际收取的价格。商品包和商品通过客户端脚本中的编号识别，请确保编号与所配置版本的脚本一致；仅修改此处的价格不会改变客户端显示的价格。</value>
+  </data>
+  <data name="CashShopNotConfigured" xml:space="preserve">
+    <value>商城尚未配置。请安装“添加商城”配置更新，导入游戏客户端的商品目录。</value>
+  </data>
+  <data name="CashShopVersions" xml:space="preserve">
+    <value>客户端脚本版本</value>
+  </data>
+  <data name="CashShopScriptVersion" xml:space="preserve">
+    <value>商城脚本</value>
+  </data>
+  <data name="CashShopBannerVersion" xml:space="preserve">
+    <value>商城横幅</value>
+  </data>
+  <data name="CashShopSaleZone" xml:space="preserve">
+    <value>销售区域</value>
+  </data>
+  <data name="CashShopYear" xml:space="preserve">
+    <value>年份</value>
+  </data>
+  <data name="CashShopYearId" xml:space="preserve">
+    <value>年内版本编号</value>
+  </data>
+  <data name="CashShopPackages" xml:space="preserve">
+    <value>商品包</value>
+  </data>
+  <data name="CashShopOnlyForSale" xml:space="preserve">
+    <value>仅显示已上架商品包</value>
+  </data>
+  <data name="CashShopPackageSequence" xml:space="preserve">
+    <value>商品包编号</value>
+  </data>
+  <data name="CashShopProductSequence" xml:space="preserve">
+    <value>商品编号</value>
+  </data>
+  <data name="CashShopPriceSequence" xml:space="preserve">
+    <value>价格编号</value>
+  </data>
+  <data name="CashShopPrice" xml:space="preserve">
+    <value>价格</value>
+  </data>
+  <data name="CashShopBundlePrice" xml:space="preserve">
+    <value>组合售价</value>
+  </data>
+  <data name="CashShopForSale" xml:space="preserve">
+    <value>已上架</value>
+  </data>
+  <data name="CashShopGiftable" xml:space="preserve">
+    <value>允许赠送</value>
+  </data>
+  <data name="CashShopBundle" xml:space="preserve">
+    <value>组合销售</value>
+  </data>
+  <data name="CashShopSellable" xml:space="preserve">
+    <value>可售状态</value>
+  </data>
+  <data name="CashShopProducts" xml:space="preserve">
+    <value>商品</value>
+  </data>
+  <data name="CashShopBundleProductsDescription" xml:space="preserve">
+    <value>组合销售时，按组合售价收取费用，并发放其中的全部商品。</value>
+  </data>
+  <data name="CashShopPriceOptionsDescription" xml:space="preserve">
+    <value>各商品代表一种购买选项，玩家选择其中一种并按其价格购买。</value>
+  </data>
+  <data name="CashShopItem" xml:space="preserve">
+    <value>物品</value>
+  </data>
+  <data name="CashShopItemLevel" xml:space="preserve">
+    <value>物品等级</value>
+  </data>
+  <data name="CashShopQuantity" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="CashShopDurationHours" xml:space="preserve">
+    <value>有效期（小时）</value>
+  </data>
+  <data name="CashShopAddPackage" xml:space="preserve">
+    <value>添加商品包</value>
+  </data>
+  <data name="CashShopAddProduct" xml:space="preserve">
+    <value>添加商品</value>
+  </data>
+  <data name="CashShopDeletePackage" xml:space="preserve">
+    <value>删除商品包</value>
+  </data>
+  <data name="CashShopDeletePackageQuestion" xml:space="preserve">
+    <value>确定要删除此商品包吗？</value>
+  </data>
+  <data name="CashShopIssueNoProducts" xml:space="preserve">
+    <value>商品包中没有商品。</value>
+  </data>
+  <data name="CashShopIssueDuplicatePackageSequence" xml:space="preserve">
+    <value>已有其他商品包使用编号 {0}。</value>
+  </data>
+  <data name="CashShopIssueDuplicatePriceSequence" xml:space="preserve">
+    <value>多个商品使用了相同的价格编号 {0}。</value>
+  </data>
+  <data name="CashShopIssueMissingItem" xml:space="preserve">
+    <value>商品 {0} 未配置物品。</value>
+  </data>
+  <data name="CashShopIssueTimeLimited" xml:space="preserve">
+    <value>商品 {0} 为限时商品，目前尚不支持。</value>
+  </data>
+  <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
+    <value>组合售价不能为负数。</value>
+  </data>
+  <data name="CashShopIssueNegativePrice" xml:space="preserve">
+    <value>商品 {0} 的价格不能为负数。</value>
+  </data>
+  <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
+    <value>商品 {0} 的数量不能小于 1。</value>
+  </data>
+  <data name="Leaderboards" xml:space="preserve">
+    <value>排行榜</value>
+  </data>
+  <data name="LeaderboardsDescription" xml:space="preserve">
+    <value>保存排名统计的小游戏中的最佳角色，按其分数总和排名。不包括机器人。</value>
+  </data>
+  <data name="LeaderboardsNoMiniGames" xml:space="preserve">
+    <value>没有小游戏保存其排名统计。为小游戏启用 "Save Ranking Statistics" 以查看其排行榜。</value>
+  </data>
+  <data name="LeaderboardNoEntries" xml:space="preserve">
+    <value>暂无已完成的游戏。</value>
+  </data>
+  <data name="LeaderboardPeriod" xml:space="preserve">
+    <value>时间段</value>
+  </data>
+  <data name="LeaderboardPeriodAllTime" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="LeaderboardPeriodLast30Days" xml:space="preserve">
+    <value>最近30天</value>
+  </data>
+  <data name="LeaderboardPeriodLast7Days" xml:space="preserve">
+    <value>最近7天</value>
+  </data>
+  <data name="LeaderboardTotalScore" xml:space="preserve">
+    <value>总分</value>
+  </data>
+  <data name="LeaderboardBestScore" xml:space="preserve">
+    <value>最高分</value>
+  </data>
+  <data name="LeaderboardGames" xml:space="preserve">
+    <value>场次</value>
+  </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>此编辑器打开期间配置已更改。请先复制未保存的修改，再使用刷新加载当前数据后保存。</value>
+  </data>
+  <data name="AuditHistory" xml:space="preserve">
+    <value>操作审计</value>
+  </data>
+  <data name="AuditPendingExplanation" xml:space="preserve">
+    <value>状态为 Pending（结果未确认）的记录，其操作结果尚不明确。重试操作前，请先检查当前状态。</value>
+  </data>
+  <data name="AuditUnavailable" xml:space="preserve">
+    <value>无法加载操作审计记录，请检查管理数据库连接。</value>
+  </data>
+  <data name="AuditTime" xml:space="preserve">
+    <value>时间（UTC）</value>
+  </data>
+  <data name="AuditPrincipal" xml:space="preserve">
+    <value>操作人</value>
+  </data>
+  <data name="AuditFrontend" xml:space="preserve">
+    <value>操作来源</value>
+  </data>
+  <data name="AuditOperation" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="AuditArguments" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="AuditOutcome" xml:space="preserve">
+    <value>执行结果</value>
+  </data>
+  <data name="AuditPrevious" xml:space="preserve">
+    <value>上一页</value>
+  </data>
+  <data name="AuditNext" xml:space="preserve">
+    <value>下一页</value>
+  </data>
+  <data name="ContentActivation" xml:space="preserve">
+    <value>内容启用</value>
+  </data>
+  <data name="ContentActivationDescription" xml:space="preserve">
+    <value>启用或停用地图、角色职业、怪物、物品和小游戏，例如将游戏内容限制在某个赛季范围内。停用的条目仍保留在配置中，但在游戏中不可用。已生成的怪物会保留到游戏服务器重启。</value>
+  </data>
+  <data name="ContentActivationConfirmFormat" xml:space="preserve">
+    <value>将启用 {0} 个条目并停用 {1} 个条目。是否继续？</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>内容类型</value>
+  </data>
+  <data name="ActivateAllShown" xml:space="preserve">
+    <value>启用所有显示的条目</value>
+  </data>
+  <data name="DeactivateAllShown" xml:space="preserve">
+    <value>停用所有显示的条目</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="ActiveCountFormat" xml:space="preserve">
+    <value>已启用 {0} 个，共 {1} 个</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="OnlyActive" xml:space="preserve">
+    <value>仅显示已启用</value>
+  </data>
+  <data name="OnlyInactive" xml:space="preserve">
+    <value>仅显示已停用</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>按游戏版本限制内容</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>启用所选游戏版本及此前引入的全部内容，停用后续版本引入的内容。版本未知的内容保持不变。修改将在保存后写入。</value>
+  </data>
+  <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
+    <value>请先保存或放弃尚未保存的修改。</value>
+  </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>引入版本</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>版本 {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>第 {0} 季</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>第 {0} 季第 {1} 章</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>编号</value>
+  </data>
+  <data name="Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="DiscordDescription" xml:space="preserve">
+    <value>将游戏接入你的 Discord 服务器，提供事件通知、支持斜杠命令的机器人、账号绑定和聊天互通。请从上到下依次完成设置。配置保存在 {0} 中，Discord 集成将立即使用新配置重新启动。</value>
+  </data>
+  <data name="DiscordNotAvailable" xml:space="preserve">
+    <value>仅当管理后台与游戏服务器运行在同一进程中时，此页面才可用。在分布式部署中，Discord 集成运行在独立容器内，通过环境变量配置，详情请参阅文档。</value>
+  </data>
+  <data name="DiscordLoadError" xml:space="preserve">
+    <value>无法从 {0} 加载配置：{1}</value>
+  </data>
+  <data name="DiscordSaveError" xml:space="preserve">
+    <value>无法保存配置：{0}</value>
+  </data>
+  <data name="DiscordSaved" xml:space="preserve">
+    <value>配置已保存并应用。请测试消息发送，确认目标频道可用。</value>
+  </data>
+  <data name="DiscordInvalidId" xml:space="preserve">
+    <value>“{0}”不是有效的 Discord ID。</value>
+  </data>
+  <data name="DiscordDefinedElsewhere" xml:space="preserve">
+    <value>此项由环境变量或其他配置来源设置，其优先级高于本页面。</value>
+  </data>
+  <data name="DiscordSecretSet" xml:space="preserve">
+    <value>已设置，留空可保留现有值</value>
+  </data>
+  <data name="DiscordStatus" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="DiscordStatusNotConfigured" xml:space="preserve">
+    <value>尚未配置机器人，请从第 1 步开始。</value>
+  </data>
+  <data name="DiscordStatusConnected" xml:space="preserve">
+    <value>机器人已以 {0} 的身份连接，并已加入 {1} 个 Discord 服务器。</value>
+  </data>
+  <data name="DiscordStatusConnecting" xml:space="preserve">
+    <value>机器人正在连接 Discord……</value>
+  </data>
+  <data name="DiscordStatusStopped" xml:space="preserve">
+    <value>机器人未运行，可在服务器页面启动。</value>
+  </data>
+  <data name="DiscordProblemTokenRejected" xml:space="preserve">
+    <value>Discord 拒绝了此 Token。请从开发者门户重新复制（Bot → Reset Token）。</value>
+  </data>
+  <data name="DiscordProblemIntentNotEnabled" xml:space="preserve">
+    <value>Discord 不允许机器人读取消息。请在开发者门户的 Bot → Privileged Gateway Intents 中启用 Message Content，或关闭第 5 步中的消息读取功能。</value>
+  </data>
+  <data name="DiscordProblemStartFailed" xml:space="preserve">
+    <value>无法启动机器人，具体原因请查看日志文件。</value>
+  </data>
+  <data name="DiscordSettingsError" xml:space="preserve">
+    <value>无法应用配置：{0}</value>
+  </data>
+  <data name="DiscordWebhooksOnly" xml:space="preserve">
+    <value>不使用机器人时，通知将通过第 4 步配置的 Webhook 发送。</value>
+  </data>
+  <data name="DiscordPublisherInactive" xml:space="preserve">
+    <value>游戏事件发布器（Game Event Publisher）插件未启用，因此游戏内事件不会发布到 Discord。</value>
+  </data>
+  <data name="DiscordPublisherActive" xml:space="preserve">
+    <value>游戏事件发布器（Game Event Publisher）插件已启用。可在插件页面选择要发布的内容。</value>
+  </data>
+  <data name="DiscordStep1Title" xml:space="preserve">
+    <value>1. 创建机器人</value>
+  </data>
+  <data name="DiscordStep1Text" xml:space="preserve">
+    <value>在 Discord 开发者门户中，使用你的服务器名称创建新应用（New Application）。在 Bot 页面点击 Reset Token，然后将 Token 粘贴到这里。请像保护密码一样保护它：它保存在服务器配置文件中，而非数据库中。</value>
+  </data>
+  <data name="DiscordOpenDeveloperPortal" xml:space="preserve">
+    <value>打开 Discord 开发者门户</value>
+  </data>
+  <data name="DiscordToken" xml:space="preserve">
+    <value>机器人 Token</value>
+  </data>
+  <data name="DiscordSkipBot" xml:space="preserve">
+    <value>可以跳过机器人设置，仅使用 Webhook 发送通知，参见第 4 步。</value>
+  </data>
+  <data name="DiscordStep2Title" xml:space="preserve">
+    <value>2. 邀请机器人</value>
+  </data>
+  <data name="DiscordStep2Text" xml:space="preserve">
+    <value>将机器人邀请到你的 Discord 服务器。邀请链接会请求机器人所需的权限。</value>
+  </data>
+  <data name="DiscordInviteBot" xml:space="preserve">
+    <value>邀请机器人</value>
+  </data>
+  <data name="DiscordInviteNeedsToken" xml:space="preserve">
+    <value>请先输入 Token。</value>
+  </data>
+  <data name="DiscordStep3Title" xml:space="preserve">
+    <value>3. 设置 Discord 服务器</value>
+  </data>
+  <data name="DiscordStep3Text" xml:space="preserve">
+    <value>选择用于接收通知和状态消息的 Discord 服务器。机器人的命令将在该服务器中立即可用。</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord 服务器</value>
+  </data>
+  <data name="DiscordServerNone" xml:space="preserve">
+    <value>（机器人所在的唯一服务器）</value>
+  </data>
+  <data name="DiscordServerId" xml:space="preserve">
+    <value>Discord 服务器 ID</value>
+  </data>
+  <data name="DiscordServerIdHint" xml:space="preserve">
+    <value>机器人连接后，可在此选择 Discord 服务器。否则，请在 Discord 的高级设置中启用开发者模式，右键点击服务器并选择“复制服务器 ID”。</value>
+  </data>
+  <data name="DiscordSetUpServer" xml:space="preserve">
+    <value>创建频道和身份组</value>
+  </data>
+  <data name="DiscordSetUpServerText" xml:space="preserve">
+    <value>创建机器人使用的身份组、分类和频道，与 Discord 中的 /openmu setup 命令相同。已有内容会保留，可随时重复执行。机器人需要“管理频道”和“管理身份组”权限。</value>
+  </data>
+  <data name="DiscordSetUpServerNeedsBot" xml:space="preserve">
+    <value>机器人必须已连接并加入该 Discord 服务器。</value>
+  </data>
+  <data name="DiscordSetUpCreated" xml:space="preserve">
+    <value>已创建：{0}</value>
+  </data>
+  <data name="DiscordSetUpAdopted" xml:space="preserve">
+    <value>已存在：{0}</value>
+  </data>
+  <data name="DiscordSetUpFailed" xml:space="preserve">
+    <value>失败：{0}</value>
+  </data>
+  <data name="DiscordSetUpPublic" xml:space="preserve">
+    <value>由于缺少所需身份组，以下内容对所有人可见：{0}</value>
+  </data>
+  <data name="DiscordSetUpRoleHint" xml:space="preserve">
+    <value>在 Discord 服务器的身份组列表中，将机器人的身份组移到 Linked Player 上方，以便机器人能为已绑定的玩家分配该身份组。</value>
+  </data>
+  <data name="DiscordStep4Title" xml:space="preserve">
+    <value>4. 通知</value>
+  </data>
+  <data name="DiscordStep4Text" xml:space="preserve">
+    <value>按名称选择频道。留空时使用频道布局中的默认设置；机器人连接时，优先使用已配置的机器人频道，而非 Webhook。</value>
+  </data>
+  <data name="DiscordCategory" xml:space="preserve">
+    <value>类别</value>
+  </data>
+  <data name="DiscordChannelId" xml:space="preserve">
+    <value>机器人频道</value>
+  </data>
+  <data name="DiscordWebhookUrl" xml:space="preserve">
+    <value>Webhook URL</value>
+  </data>
+  <data name="DiscordCategory_Events" xml:space="preserve">
+    <value>小游戏、入侵活动及其获胜者</value>
+  </data>
+  <data name="DiscordCategory_CastleSiege" xml:space="preserve">
+    <value>攻城战</value>
+  </data>
+  <data name="DiscordCategory_WorldNews" xml:space="preserve">
+    <value>Boss 击杀、稀有掉落和等级里程碑</value>
+  </data>
+  <data name="DiscordCategory_Notices" xml:space="preserve">
+    <value>GM 公告</value>
+  </data>
+  <data name="DiscordCategory_StaffAlerts" xml:space="preserve">
+    <value>GM 在 Discord 中执行的命令</value>
+  </data>
+  <data name="DiscordLanguage" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="DiscordEventAnnouncingServers" xml:space="preserve">
+    <value>发布活动通知的游戏服务器</value>
+  </data>
+  <data name="DiscordEventAnnouncingServersHint" xml:space="preserve">
+    <value>填写服务器 ID，多个 ID 用逗号分隔，留空表示全部。当多个游戏服务器运行相同活动时，可只选择其中一个，避免重复发送消息。</value>
+  </data>
+  <data name="DiscordStep5Title" xml:space="preserve">
+    <value>5. 聊天互通（可选）</value>
+  </data>
+  <data name="DiscordStep5Text" xml:space="preserve">
+    <value>选择允许绑定战盟聊天的位置，以及是否将 Discord 消息转发到游戏。要将游戏消息转发到 Discord，请启用下方的游戏聊天发布功能。</value>
+  </data>
+  <data name="DiscordBindingMode" xml:space="preserve">
+    <value>允许战盟绑定聊天的位置</value>
+  </data>
+  <data name="DiscordBindingMode_Both" xml:space="preserve">
+    <value>你的 Discord 服务器和战盟自己的 Discord 服务器</value>
+  </data>
+  <data name="DiscordBindingMode_HostedOnly" xml:space="preserve">
+    <value>仅你的 Discord 服务器</value>
+  </data>
+  <data name="DiscordBindingMode_GuildOwnedOnly" xml:space="preserve">
+    <value>仅战盟自己的 Discord 服务器</value>
+  </data>
+  <data name="DiscordAllowedServers" xml:space="preserve">
+    <value>允许使用的战盟 Discord 服务器</value>
+  </data>
+  <data name="DiscordAllowedServersHint" xml:space="preserve">
+    <value>填写服务器 ID，多个 ID 用逗号分隔，留空表示全部。</value>
+  </data>
+  <data name="DiscordReadMessages" xml:space="preserve">
+    <value>读取消息</value>
+  </data>
+  <data name="DiscordReadMessagesHint" xml:space="preserve">
+    <value>将已绑定频道中的普通消息发送到游戏。此功能需要启用 Message Content 特权意图（开发者门户 → Bot → Privileged Gateway Intents）。未启用时，玩家可通过 /say 发送消息。</value>
+  </data>
+  <data name="DiscordMaximumMessageLength" xml:space="preserve">
+    <value>Discord 消息的最大长度</value>
+  </data>
+  <data name="DiscordMaximumMessagesPerMinute" xml:space="preserve">
+    <value>每位 Discord 用户每分钟最多发送的消息数</value>
+  </data>
+  <data name="DiscordStep6Title" xml:space="preserve">
+    <value>高级设置</value>
+  </data>
+  <data name="DiscordStatusChannelId" xml:space="preserve">
+    <value>状态消息频道</value>
+  </data>
+  <data name="DiscordStatusUpdateInterval" xml:space="preserve">
+    <value>状态更新间隔（秒）</value>
+  </data>
+  <data name="DiscordLayoutFile" xml:space="preserve">
+    <value>频道布局文件</value>
+  </data>
+  <data name="DiscordLayoutFilePlaceholder" xml:space="preserve">
+    <value>默认布局</value>
+  </data>
+  <data name="DiscordCreateScheduledEvents" xml:space="preserve">
+    <value>为下一次攻城战创建 Discord 活动</value>
+  </data>
+  <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
+    <value>每个频道最多排队等待的消息数</value>
+  </data>
+  <data name="DiscordTest" xml:space="preserve">
+    <value>发送测试消息</value>
+  </data>
+  <data name="DiscordTestHint" xml:space="preserve">
+    <value>使用已保存的配置发送测试消息，发送方式与该类别的通知相同：通过机器人发送到其频道，否则使用 Webhook。请先保存修改。</value>
+  </data>
+  <data name="DiscordTest_SentByBot" xml:space="preserve">
+    <value>已通过机器人发送到 {0}。</value>
+  </data>
+  <data name="DiscordTest_SentByWebhook" xml:space="preserve">
+    <value>已通过 Webhook 发送。</value>
+  </data>
+  <data name="DiscordTest_NoChannel" xml:space="preserve">
+    <value>未发送：未配置机器人频道或 Webhook。</value>
+  </data>
+  <data name="DiscordTest_ChannelUnavailable" xml:space="preserve">
+    <value>机器人无法访问频道 {0}。该频道是否已被删除？</value>
+  </data>
+  <data name="DiscordTest_MissingPermissions" xml:space="preserve">
+    <value>机器人无权向 {0} 发送消息，请检查频道权限。</value>
+  </data>
+  <data name="DiscordTest_WebhookInvalid" xml:space="preserve">
+    <value>Discord 无法识别此 Webhook，请重新复制其 URL。</value>
+  </data>
+  <data name="DiscordTest_Failed" xml:space="preserve">
+    <value>失败：{0}</value>
+  </data>
+  <data name="DiscordCheckServer" xml:space="preserve">
+    <value>检查权限和频道</value>
+  </data>
+  <data name="DiscordCheckServerText" xml:space="preserve">
+    <value>使用已保存的配置，检查所选 Discord 服务器中的机器人权限、已绑定玩家的身份组和频道。</value>
+  </data>
+  <data name="DiscordCheckServerNeedsServer" xml:space="preserve">
+    <value>机器人必须已连接，且已选择并保存 Discord 服务器。</value>
+  </data>
+  <data name="DiscordCheckServerName" xml:space="preserve">
+    <value>Discord 服务器 {0}：</value>
+  </data>
+  <data name="DiscordCheckPermissionsOk" xml:space="preserve">
+    <value>机器人已具备所需的全部权限。</value>
+  </data>
+  <data name="DiscordCheckPermissionsMissing" xml:space="preserve">
+    <value>机器人缺少以下权限：{0}。请使用第 2 步的链接重新邀请机器人，或为其身份组授予这些权限。</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Assignable" xml:space="preserve">
+    <value>机器人可以分配已绑定玩家的身份组。</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Missing" xml:space="preserve">
+    <value>已绑定玩家的身份组不存在，请创建频道和身份组。</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_AboveBot" xml:space="preserve">
+    <value>已绑定玩家的身份组位于机器人身份组上方，机器人无法分配它。请在身份组列表中将机器人的身份组移到其上方。</value>
+  </data>
+  <data name="DiscordCheckChannelsOk" xml:space="preserve">
+    <value>每个通知类别都已配置机器人频道。</value>
+  </data>
+  <data name="DiscordCheckChannelsMissing" xml:space="preserve">
+    <value>以下类别未配置机器人频道：{0}。它们只能通过 Webhook 发送。</value>
+  </data>
+  <data name="DiscordCheckStatusChannelOk" xml:space="preserve">
+    <value>机器人会在状态频道中显示服务器状态。</value>
+  </data>
+  <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
+    <value>未配置状态频道，机器人不会显示服务器状态。</value>
+  </data>
+  <data name="DiscordPublisherActivated" xml:space="preserve">
+    <value>游戏事件发布器已启用。可在插件页面选择要发布的内容。</value>
+  </data>
+  <data name="DiscordPublisherSwitch" xml:space="preserve">
+    <value>发布游戏事件（Game Event Publisher 插件）</value>
+  </data>
+  <data name="DiscordPublisherDeactivated" xml:space="preserve">
+    <value>游戏事件发布器已停用，游戏内容将不再发布到 Discord。</value>
+  </data>
+  <data name="DiscordDefaultChannel" xml:space="preserve">
+    <value>默认：#{0}</value>
+  </data>
+  <data name="DiscordNoDefaultChannel" xml:space="preserve">
+    <value>不发送</value>
+  </data>
+  <data name="DiscordStep4WebhookText" xml:space="preserve">
+    <value>不使用机器人时，各类别通过对应频道的 Webhook 发送通知：在 Discord 中打开频道设置，进入“整合 → Webhooks”，创建 Webhook 并将其 URL 粘贴到这里。请像保护密码一样保护它。</value>
+  </data>
+  <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
+    <value>Webhook 仅用于发送未配置机器人频道的通知类别。使用机器人时无需配置 Webhook，也可以将其移除。</value>
+  </data>
+  <data name="DiscordStepDone" xml:space="preserve">
+    <value>已验证</value>
+  </data>
+  <data name="DiscordStepProblem" xml:space="preserve">
+    <value>需要检查</value>
+  </data>
+  <data name="DiscordUnsavedChanges" xml:space="preserve">
+    <value>存在未保存的修改。请先保存：消息测试和 Discord 服务器设置操作均使用已保存的配置。</value>
+  </data>
+  <data name="DiscordTestAll" xml:space="preserve">
+    <value>为已启用的类别发送测试消息</value>
+  </data>
+  <data name="DiscordLayoutPreview" xml:space="preserve">
+    <value>将创建的内容</value>
+  </data>
+  <data name="DiscordLayoutRoles" xml:space="preserve">
+    <value>身份组：{0}</value>
+  </data>
+  <data name="DiscordLayoutVisibleTo" xml:space="preserve">
+    <value>仅 {0} 可见</value>
+  </data>
+  <data name="DiscordChatBindings" xml:space="preserve">
+    <value>已绑定的聊天</value>
+  </data>
+  <data name="DiscordChatBindingsNone" xml:space="preserve">
+    <value>尚未绑定任何战盟或联盟聊天。</value>
+  </data>
+  <data name="DiscordChatBindingsNeedBot" xml:space="preserve">
+    <value>机器人连接后，将显示已绑定的聊天。</value>
+  </data>
+  <data name="DiscordChatBindingGuild" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="DiscordChatBindingChannel" xml:space="preserve">
+    <value>频道</value>
+  </data>
+  <data name="DiscordChatBindingBoundBy" xml:space="preserve">
+    <value>绑定者</value>
+  </data>
+  <data name="DiscordChatBindingUnknownChannel" xml:space="preserve">
+    <value>未知频道 {0}</value>
+  </data>
+  <data name="DiscordChatBindingRemoved" xml:space="preserve">
+    <value>已解除绑定，Discord 频道将保留。</value>
+  </data>
+  <data name="DiscordScope_Guild" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="DiscordScope_Alliance" xml:space="preserve">
+    <value>联盟</value>
+  </data>
+  <data name="DiscordOverview" xml:space="preserve">
+    <value>设置 Discord 通知、账号绑定和聊天互通。检查消息发送前，请先保存并应用修改。</value>
+  </data>
+  <data name="DiscordConfigurationSource" xml:space="preserve">
+    <value>配置来源</value>
+  </data>
+  <data name="DiscordConfigurationSourcesHint" xml:space="preserve">
+    <value>可在此编辑文件中的配置。环境变量及其他优先级更高的配置仍需在外部管理，敏感值会保持隐藏。</value>
+  </data>
+  <data name="DiscordMode" xml:space="preserve">
+    <value>接入模式</value>
+  </data>
+  <data name="DiscordModeBot" xml:space="preserve">
+    <value>Discord 机器人：通知、命令和聊天</value>
+  </data>
+  <data name="DiscordModeWebhooks" xml:space="preserve">
+    <value>Webhook：仅通知</value>
+  </data>
+  <data name="DiscordModeHint" xml:space="preserve">
+    <value>选择所需功能。保存为仅 Webhook 模式后，机器人会停止运行，但其 Token 会保留以供后续使用。</value>
+  </data>
+  <data name="DiscordWebhooksModeReady" xml:space="preserve">
+    <value>Webhook 模式：无需连接机器人，请在下方配置发送目标。</value>
+  </data>
+  <data name="DiscordConfigured" xml:space="preserve">
+    <value>已配置 · 未验证</value>
+  </data>
+  <data name="DiscordApplying" xml:space="preserve">
+    <value>正在应用修改……</value>
+  </data>
+  <data name="DiscordApplied" xml:space="preserve">
+    <value>配置已应用，请测试消息发送以验证配置。</value>
+  </data>
+  <data name="DiscordSaveApply" xml:space="preserve">
+    <value>保存并应用</value>
+  </data>
+  <data name="DiscordDiscardChanges" xml:space="preserve">
+    <value>放弃修改</value>
+  </data>
+  <data name="DiscordKeepEditing" xml:space="preserve">
+    <value>继续编辑</value>
+  </data>
+  <data name="DiscordConfirmDiscard" xml:space="preserve">
+    <value>是否放弃此页面上所有未保存的配置？</value>
+  </data>
+  <data name="DiscordNavigationBlocked" xml:space="preserve">
+    <value>离开此页面前，请先保存或放弃修改。</value>
+  </data>
+  <data name="DiscordPublisherStaged" xml:space="preserve">
+    <value>游戏事件发布设置将在点击“保存并应用”后生效。可在各通知类别旁选择要发布的事件。</value>
+  </data>
+  <data name="DiscordPublisherMissing" xml:space="preserve">
+    <value>缺少游戏事件发布器的配置，请前往插件页面配置。</value>
+  </data>
+  <data name="DiscordSecretStaged" xml:space="preserve">
+    <value>留空可保留已保存的 Token。替换或移除将在保存后生效。</value>
+  </data>
+  <data name="DiscordProvisioningChanges" xml:space="preserve">
+    <value>按名称沿用已有频道和身份组，可能会更新其访问权限，不会删除任何内容。如果缺少所需身份组或权限，将跳过私密的管理频道。</value>
+  </data>
+  <data name="DiscordShowWebhookFallbacks" xml:space="preserve">
+    <value>显示可选的 Webhook 发送目标</value>
+  </data>
+  <data name="DiscordSourceEvents" xml:space="preserve">
+    <value>要发布的游戏事件</value>
+  </data>
+  <data name="DiscordOff" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="DiscordRouteBot" xml:space="preserve">
+    <value>机器人 → #{0}</value>
+  </data>
+  <data name="DiscordRouteWebhook" xml:space="preserve">
+    <value>已配置 Webhook</value>
+  </data>
+  <data name="DiscordRouteNone" xml:space="preserve">
+    <value>无可用发送目标</value>
+  </data>
+  <data name="DiscordCategoryName_Events" xml:space="preserve">
+    <value>活动</value>
+  </data>
+  <data name="DiscordCategoryName_CastleSiege" xml:space="preserve">
+    <value>攻城战</value>
+  </data>
+  <data name="DiscordCategoryName_WorldNews" xml:space="preserve">
+    <value>世界消息</value>
+  </data>
+  <data name="DiscordCategoryName_Notices" xml:space="preserve">
+    <value>GM 公告</value>
+  </data>
+  <data name="DiscordCategoryName_StaffAlerts" xml:space="preserve">
+    <value>管理操作审计日志</value>
+  </data>
+  <data name="DiscordDeliveryOnly" xml:space="preserve">
+    <value>此操作会向 Discord 发送消息，仅用于验证消息能否送达，不代表游戏事件发布功能已启用。</value>
+  </data>
+  <data name="DiscordLastChecked" xml:space="preserve">
+    <value>上次检查时间：{0}（UTC）</value>
+  </data>
+  <data name="DiscordEventFilters" xml:space="preserve">
+    <value>Boss 和等级里程碑筛选</value>
+  </data>
+  <data name="DiscordFilterHint" xml:space="preserve">
+    <value>输入编号或等级数值，多个值用逗号分隔。Boss 列表为空时不发布 Boss 击杀通知；里程碑列表为空时不发布等级里程碑通知。</value>
+  </data>
+  <data name="DiscordChatSetup" xml:space="preserve">
+    <value>先在游戏中申请绑定账号，再在 Discord 中输入绑定码；如有需要，使用 /character 选择你的战盟盟主角色。在主 Discord 服务器中使用 /guildchat create，或在战盟自己的 Discord 服务器中选择你管理的频道并使用 /guildchat bind。</value>
+  </data>
+  <data name="DiscordForwardNormalMessages" xml:space="preserve">
+    <value>将频道中的普通消息转发到游戏（否则使用 /say）</value>
+  </data>
+  <data name="DiscordBindingRemovalImmediate" xml:space="preserve">
+    <value>解除绑定会立即生效，并停止转发聊天消息。Discord 频道将保留。</value>
+  </data>
+  <data name="DiscordConfirmUnbind" xml:space="preserve">
+    <value>是否立即停止转发此战盟或联盟的聊天消息？频道及其消息将保留。</value>
+  </data>
+  <data name="DiscordUnbindChat" xml:space="preserve">
+    <value>立即解除聊天绑定</value>
+  </data>
+  <data name="DiscordManagedKey" xml:space="preserve">
+    <value>由外部管理。配置键：{0}</value>
+  </data>
+  <data name="DiscordMinimum" xml:space="preserve">
+    <value>请输入不小于 {0} 的值。</value>
+  </data>
+  <data name="DiscordSavedConnectionFailed" xml:space="preserve">
+    <value>配置已保存，但机器人无法连接。请解决上方显示的连接问题。</value>
+  </data>
+  <data name="DiscordNotConfigured" xml:space="preserve">
+    <value>未配置</value>
+  </data>
+  <data name="DiscordChooseServer" xml:space="preserve">
+    <value>选择 Discord 服务器</value>
+  </data>
+  <data name="DiscordStaffPrivacy" xml:space="preserve">
+    <value>请选择私密的管理频道，GM 审计消息可能包含敏感信息。</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>自动创建战盟频道</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>战盟盟主绑定账号后，机器人会在你的 Discord 服务器的 GUILDS 分类中创建该战盟的频道，并绑定战盟聊天。只有已绑定账号的战盟成员可见，盟主可管理频道消息。已绑定聊天的战盟会保留现有频道。新战盟和新盟主通常会在约十分钟内被识别。</value>
+  </data>
+  <data name="LoggingConfiguration" xml:space="preserve">
+    <value>日志配置</value>
+  </data>
+  <data name="LoggingConfigurationDescription" xml:space="preserve">
+    <value>服务器的日志配置保存在文件 {0} 中。保存后，日志级别的修改立即生效；新增或删除日志来源，以及其他配置修改，需要重启服务器后才能生效。</value>
+  </data>
+  <data name="LoggingConfigurationNotAvailable" xml:space="preserve">
+    <value>仅当管理后台与服务器运行在同一进程中（一体化部署）时，才能编辑日志配置。</value>
+  </data>
+  <data name="LogLevels" xml:space="preserve">
+    <value>日志级别</value>
+  </data>
+  <data name="DefaultLogLevel" xml:space="preserve">
+    <value>默认日志级别</value>
+  </data>
+  <data name="LogLevelOverrides" xml:space="preserve">
+    <value>按来源设置日志级别</value>
+  </data>
+  <data name="LogLevelOverridesDescription" xml:space="preserve">
+    <value>日志来源是日志记录器的名称，通常为类的完整名称，也可以是包含多个日志记录器的命名空间。匹配时，范围最具体的来源规则优先。</value>
+  </data>
+  <data name="LogSource" xml:space="preserve">
+    <value>日志来源</value>
+  </data>
+  <data name="AdvancedJson" xml:space="preserve">
+    <value>高级（JSON）</value>
+  </data>
+  <data name="AdvancedLoggingJsonDescription" xml:space="preserve">
+    <value>在此可编辑配置文件中的整个 Serilog 配置节，例如添加日志输出目标或过滤器。可用配置项请参阅 Serilog 文档。</value>
+  </data>
+  <data name="LoggingConfigurationSaved" xml:space="preserve">
+    <value>日志配置已保存。</value>
+  </data>
+  <data name="LoggingConfigurationLoadError" xml:space="preserve">
+    <value>无法加载日志配置：{0}</value>
+  </data>
+  <data name="LoggingConfigurationSaveError" xml:space="preserve">
+    <value>无法保存日志配置：{0}</value>
+  </data>
+  <data name="LoggingConfigurationInvalidJson" xml:space="preserve">
+    <value>JSON 格式无效：{0}</value>
+  </data>
+  <data name="LogLevelOverridesInvalid" xml:space="preserve">
+    <value>每个日志来源都必须填写名称，且名称不能重复。</value>
   </data>
 </root>

@@ -108,7 +108,7 @@
             : NetworkAnalyzer.PlayerRoute;
 
         var maps = await context.GetMapsAsync();
-        this._mapName = maps.FirstOrDefault(m => m.Id == this.MapId)?.Definition.Name;
+        this._mapName = maps.FirstOrDefault(m => m.Id == this.MapId)?.Definition.Name.ToString();
 
         var uri = new Uri(this.NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);

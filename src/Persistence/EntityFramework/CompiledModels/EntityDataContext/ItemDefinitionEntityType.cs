@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -25,10 +26,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition),
                 baseEntityType,
-                propertyCount: 28,
-                navigationCount: 9,
-                foreignKeyCount: 4,
-                unnamedIndexCount: 4,
+                propertyCount: 34,
+                navigationCount: 11,
+                foreignKeyCount: 6,
+                unnamedIndexCount: 6,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -74,6 +75,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 sentinel: (byte)0);
             durability.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var excellentBonus = runtimeEntityType.AddProperty(
+                "ExcellentBonus",
+                typeof(byte),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("ExcellentBonus", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<ExcellentBonus>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: (byte)0);
+            excellentBonus.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentRaisesLevel = runtimeEntityType.AddProperty(
+                "ExcellentRaisesLevel",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("ExcellentRaisesLevel", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<ExcellentRaisesLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            excellentRaisesLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var gameConfigurationId = runtimeEntityType.AddProperty(
                 "GameConfigurationId",
                 typeof(Guid?),
@@ -95,6 +112,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<Height>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: (byte)0);
             height.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var introducedIn = runtimeEntityType.AddProperty(
+                "IntroducedIn",
+                typeof(MUnique.OpenMU.DataModel.Configuration.GameVersion),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("IntroducedIn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<IntroducedIn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            introducedIn.SetSentinelFromProviderValue(0);
+            introducedIn.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var isActive = runtimeEntityType.AddProperty(
+                "IsActive",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetProperty("IsActive", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition).GetField("<IsActive>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            isActive.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var isAmmunition = runtimeEntityType.AddProperty(
                 "IsAmmunition",
@@ -227,6 +260,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             petExperienceFormula.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var priceDefinitionId = runtimeEntityType.AddProperty(
+                "PriceDefinitionId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("PriceDefinitionId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetField("<PriceDefinitionId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            priceDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var skillId = runtimeEntityType.AddProperty(
                 "SkillId",
                 typeof(Guid?),
@@ -234,6 +275,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetField("<SkillId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             skillId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var statProfileId = runtimeEntityType.AddProperty(
+                "StatProfileId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("StatProfileId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetField("<StatProfileId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            statProfileId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var storageLimitPerCharacter = runtimeEntityType.AddProperty(
                 "StorageLimitPerCharacter",
@@ -273,7 +322,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 new[] { itemSlotId });
 
             var index2 = runtimeEntityType.AddIndex(
+                new[] { priceDefinitionId });
+
+            var index3 = runtimeEntityType.AddIndex(
                 new[] { skillId });
+
+            var index4 = runtimeEntityType.AddIndex(
+                new[] { statProfileId });
 
             return runtimeEntityType;
         }
@@ -327,6 +382,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
         public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("PriceDefinitionId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawPriceDefinition = declaringEntityType.AddNavigation("RawPriceDefinition",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemPriceDefinition),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("RawPriceDefinition", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("SkillId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
                 principalEntityType);
@@ -336,6 +406,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 onDependent: true,
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Skill),
                 propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("RawSkill", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey6(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("StatProfileId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Restrict);
+
+            var rawStatProfile = declaringEntityType.AddNavigation("RawStatProfile",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStatProfile),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition).GetProperty("RawStatProfile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }
