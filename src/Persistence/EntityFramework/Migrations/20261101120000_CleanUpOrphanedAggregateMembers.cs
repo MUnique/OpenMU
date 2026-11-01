@@ -1,4 +1,4 @@
-// <copyright file="20260922183000_CleanUpOrphanedAggregateMembers.cs" company="MUnique">
+// <copyright file="20261101120000_CleanUpOrphanedAggregateMembers.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
     /// <inheritdoc />
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20260922183000_CleanUpOrphanedAggregateMembers")]
+    [Migration("20261101120000_CleanUpOrphanedAggregateMembers")]
     public partial class CleanUpOrphanedAggregateMembers : Migration
     {
         /// <inheritdoc />
@@ -41,7 +41,7 @@ begin
                 ('config', 'BattleZoneDefinition', '{}'::text[]),
                 ('config', 'CastleSiegeConfiguration', array['CastleSiegeNpcDefinition', 'CastleSiegeStateScheduleEntry', 'CastleSiegeUpgradeDefinition', 'CastleSiegeZoneDefinition']::text[]),
                 ('config', 'DuelConfiguration', array['DuelArea']::text[]),
-                ('config', 'MasterSkillDefinition', '{}'::text[]),
+                ('config', 'MasterSkillDefinition', array['PowerUpDefinition']::text[]),
                 ('config', 'PowerUpDefinitionValue', array['AttributeRelationship']::text[]),
                 ('config', 'Rectangle', '{}'::text[]),
                 ('config', 'SimpleCraftingSettings', array['ItemCraftingRequiredItem', 'ItemCraftingResultItem']::text[]),
