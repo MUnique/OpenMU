@@ -379,7 +379,7 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <inheritdoc />
-    public IDisposable? TryReserveLoginPlace(int maximumPlayers, Player? replacedPlayer, out int occupiedPlaces)
+    public (IDisposable? Reservation, int OccupiedPlaces) TryReserveLoginPlace(int maximumPlayers, Player? replacedPlayer)
     {
         lock (this._loginStateLock)
         {
@@ -391,10 +391,10 @@ public class GameContext : AsyncDisposable, IGameContext
 
             // A login adds itself to the logged in players before it releases its reservation, and the
             // logged in players only get fewer otherwise. So, this sum never misses a login which passed.
-            occupiedPlaces = this._loggedInPlayerCount + this._reservedLoginPlaces - (takesOver ? 1 : 0);
+            var occupiedPlaces = this._loggedInPlayerCount + this._reservedLoginPlaces - (takesOver ? 1 : 0);
             if (occupiedPlaces >= maximumPlayers)
             {
-                return null;
+                return (null, occupiedPlaces);
             }
 
             if (takesOver)
@@ -402,13 +402,12 @@ public class GameContext : AsyncDisposable, IGameContext
                 // It takes a place of its own when the replaced player isn't logged in anymore, see RemoveLoggedInPlayer.
                 var takeover = new LoginPlaceReservation(this, replacedPlayer);
                 this._takeovers.Add(replacedPlayer!, takeover);
-                return takeover;
+                return (takeover, occupiedPlaces);
             }
 
             this._reservedLoginPlaces++;
+            return (new LoginPlaceReservation(this, null), occupiedPlaces);
         }
-
-        return new LoginPlaceReservation(this, null);
     }
 
     /// <inheritdoc />

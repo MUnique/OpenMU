@@ -86,7 +86,8 @@ public class LoginAction
     private static IDisposable? TryReservePlace(Player player, IGameServerContext gameServerContext, string username, Player? replacedPlayer)
     {
         var maximumPlayers = gameServerContext.ServerConfiguration.MaximumPlayers;
-        if (gameServerContext.TryReserveLoginPlace(maximumPlayers, replacedPlayer, out var occupiedPlaces) is { } reservation)
+        var (reservation, occupiedPlaces) = gameServerContext.TryReserveLoginPlace(maximumPlayers, replacedPlayer);
+        if (reservation is not null)
         {
             return reservation;
         }

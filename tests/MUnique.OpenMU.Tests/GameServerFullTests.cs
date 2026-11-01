@@ -177,7 +177,7 @@ public class GameServerFullTests
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
         var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
 
-        var otherLogin = gameContext.TryReserveLoginPlace(1, null, out _);
+        var otherLogin = gameContext.TryReserveLoginPlace(1, null).Reservation;
         Assert.That(otherLogin, Is.Not.Null);
         await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
         VerifyLoginResult(player, LoginResult.ServerIsFull);
@@ -201,9 +201,10 @@ public class GameServerFullTests
 
         await first.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
 
-        using var reservation = gameContext.TryReserveLoginPlace(1, null, out var occupiedPlaces);
+        var result = gameContext.TryReserveLoginPlace(1, null);
+        using var reservation = result.Reservation;
         Assert.That(reservation, Is.Not.Null);
-        Assert.That(occupiedPlaces, Is.EqualTo(0));
+        Assert.That(result.OccupiedPlaces, Is.EqualTo(0));
     }
 
     /// <summary>
@@ -218,16 +219,16 @@ public class GameServerFullTests
         var other = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
         await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
 
-        using (var takeover = gameContext.TryReserveLoginPlace(1, replaced, out _))
+        using (var takeover = gameContext.TryReserveLoginPlace(1, replaced).Reservation)
         {
             Assert.That(takeover, Is.Not.Null);
-            Assert.That(gameContext.TryReserveLoginPlace(1, null, out _), Is.Null, "The place of the replaced player is reserved.");
+            Assert.That(gameContext.TryReserveLoginPlace(1, null).Reservation, Is.Null, "The place of the replaced player is reserved.");
         }
 
         // The replaced player left, and another player took the place in the meantime.
         await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
         await other.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
-        Assert.That(gameContext.TryReserveLoginPlace(1, replaced, out _), Is.Null);
+        Assert.That(gameContext.TryReserveLoginPlace(1, replaced).Reservation, Is.Null);
     }
 
     /// <summary>
@@ -241,20 +242,23 @@ public class GameServerFullTests
         var replaced = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
         await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
 
-        using var takeover = gameContext.TryReserveLoginPlace(2, replaced, out _);
-        using var otherLogin = gameContext.TryReserveLoginPlace(2, null, out var occupiedPlaces);
-        Assert.That(otherLogin, Is.Not.Null, "The second place is free.");
-        Assert.That(occupiedPlaces, Is.EqualTo(1));
+        using var takeover = gameContext.TryReserveLoginPlace(2, replaced).Reservation;
+        var otherLogin = gameContext.TryReserveLoginPlace(2, null);
+        using var otherLoginPlace = otherLogin.Reservation;
+        Assert.That(otherLoginPlace, Is.Not.Null, "The second place is free.");
+        Assert.That(otherLogin.OccupiedPlaces, Is.EqualTo(1));
 
         // The offline session is stopped: the takeover takes the place of its own now.
         await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
-        Assert.That(gameContext.TryReserveLoginPlace(2, null, out occupiedPlaces), Is.Null);
-        Assert.That(occupiedPlaces, Is.EqualTo(2));
+        var whileTakenOver = gameContext.TryReserveLoginPlace(2, null);
+        Assert.That(whileTakenOver.Reservation, Is.Null);
+        Assert.That(whileTakenOver.OccupiedPlaces, Is.EqualTo(2));
 
         takeover!.Dispose();
-        using var afterTakeover = gameContext.TryReserveLoginPlace(2, null, out occupiedPlaces);
-        Assert.That(afterTakeover, Is.Not.Null);
-        Assert.That(occupiedPlaces, Is.EqualTo(1));
+        var afterTakeover = gameContext.TryReserveLoginPlace(2, null);
+        using var afterTakeoverPlace = afterTakeover.Reservation;
+        Assert.That(afterTakeoverPlace, Is.Not.Null);
+        Assert.That(afterTakeover.OccupiedPlaces, Is.EqualTo(1));
     }
 
     /// <summary>
