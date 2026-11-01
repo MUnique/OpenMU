@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
@@ -510,8 +511,14 @@ public class GameServerFullTests
     public async ValueTask ListenerLogsTheFirstRefusalOnlyAtInformationLevelAsync()
     {
         var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
-        var loggerFactory = new CapturingLoggerFactory();
-        var (listener, port) = await StartListenerOnFreePortAsync(gameContext, loggerFactory).ConfigureAwait(false);
+        var entries = new ConcurrentQueue<(LogLevel Level, string Message)>();
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(invocation => entries.Enqueue(((LogLevel)invocation.Arguments[0], invocation.Arguments[2].ToString()!))));
+        var loggerFactory = new Mock<ILoggerFactory>();
+        loggerFactory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var (listener, port) = await StartListenerOnFreePortAsync(gameContext, loggerFactory.Object).ConfigureAwait(false);
         try
         {
             var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
@@ -528,7 +535,7 @@ public class GameServerFullTests
             listener.Stop();
         }
 
-        var information = loggerFactory.Entries.Where(e => e.Level == LogLevel.Information).Select(e => e.Message).ToList();
+        var information = entries.Where(e => e.Level == LogLevel.Information).Select(e => e.Message).ToList();
         Assert.That(information.Count(m => m.StartsWith("Connection of", StringComparison.Ordinal)), Is.EqualTo(1));
         Assert.That(information.Count(m => m.StartsWith("Connections are accepted again, after 3 were refused", StringComparison.Ordinal)), Is.EqualTo(1));
     }
