@@ -7,6 +7,11 @@ jobs:
   publish:
     name: Publish packages to nuget
     runs-on: ubuntu-latest
+    permissions:
+      # Trusted publishing: the job's OIDC token is exchanged for a temporary nuget.org API key.
+      id-token: write
+      # The packets step pushes a v* tag for each new version.
+      contents: write
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core
@@ -14,12 +19,21 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Needs a trusted publishing policy on nuget.org for this workflow file, and the
+      # nuget.org profile name (not the email address) in the NUGET_USER secret.
+      # The API key it returns is valid for one hour.
+      - name: Log in to nuget.org
+        uses: NuGet/login@v1
+        id: nuget_login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: publish MUnique.OpenMU.PlugIns on version change
         uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93
         with:
           PROJECT_FILE_PATH: src/PlugIns/MUnique.OpenMU.PlugIns.csproj
           TAG_COMMIT: false
-          NUGET_KEY: ${{secrets.NUGET_KEY}}
+          NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
           PACKAGE_NAME: munique.openmu.plugins
 
       - name: publish MUnique.OpenMU.Network on version change
@@ -27,7 +41,7 @@ jobs:
         with:
           PROJECT_FILE_PATH: src/Network/MUnique.OpenMU.Network.csproj
           TAG_COMMIT: false
-          NUGET_KEY: ${{secrets.NUGET_KEY}}
+          NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
           PACKAGE_NAME: munique.openmu.network
 
       - name: publish MUnique.OpenMU.Network.Packets on version change
@@ -36,5 +50,5 @@ jobs:
           PROJECT_FILE_PATH: src/Network/Packets/MUnique.OpenMU.Network.Packets.csproj
           TAG_COMMIT: true
           TAG_FORMAT: v*
-          NUGET_KEY: ${{secrets.NUGET_KEY}}
+          NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
           PACKAGE_NAME: munique.openmu.network.packets
