@@ -24,6 +24,20 @@ using Nito.Disposables;
 /// </summary>
 internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 {
+    /// <summary>
+    /// The types whose objects are held by a collection of the <see cref="GameConfiguration"/>.
+    /// Such an object is a root of its own and shared between its owners - a magic effect definition
+    /// is used by a buff, a skill and an item definition alike - so deleting one of its owners must
+    /// not walk into it and take its members along.
+    /// </summary>
+    private static readonly IReadOnlySet<Type> SharedConfigurationTypes = typeof(GameConfiguration)
+        .GetProperties()
+        .Select(property => property.PropertyType)
+        .Select(GetCollectionInterface)
+        .Where(collectionInterface => collectionInterface is not null)
+        .Select(collectionInterface => collectionInterface!.GetGenericArguments()[0])
+        .ToHashSet();
+
     private static readonly ConcurrentDictionary<IEntityType, IProperty?> PropertyToParentByEntityType = new();
 
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> AggregatePropertiesByType = new();
@@ -193,12 +207,17 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
                 // Removing the parent cascades to its children and detaches Added entries.
                 // Remember their states first: removing such a child again would reattach it
                 // as Deleted, issuing a DELETE for a row which has never been inserted.
+                // The whole aggregate is collected, but not the shared configuration objects: deleting a
+                // monster definition must not take the magic effect definition of its buffs with it.
                 var aggregates = new List<(EntityEntry Entry, EntityState State)>();
-                this.ForEachAggregate(obj, a =>
-                {
-                    var aggregateEntry = this.Context.Entry(a);
-                    aggregates.Add((aggregateEntry, aggregateEntry.State));
-                });
+                this.ForEachAggregate(
+                    obj,
+                    a =>
+                    {
+                        var aggregateEntry = this.Context.Entry(a);
+                        aggregates.Add((aggregateEntry, aggregateEntry.State));
+                    },
+                    stopAtSharedConfiguration: true);
                 this.Context.Remove(obj);
                 foreach (var aggregate in aggregates)
                 {
@@ -473,9 +492,19 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 
         var previousState = entry.State;
         entry.State = EntityState.Detached;
-        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
+
+        // ForEachAggregate goes through the whole aggregate, so the action must not recurse itself.
+        this.ForEachAggregate(item, this.DetachSingle, stopAtSharedConfiguration: false);
 
         return previousState != EntityState.Added;
+    }
+
+    private void DetachSingle(object item)
+    {
+        if (this.Context.Entry(item) is { } entry)
+        {
+            entry.State = EntityState.Detached;
+        }
     }
 
     private IRepository<T> GetRepository<T>()
@@ -499,7 +528,28 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
         throw new RepositoryNotFoundException(type);
     }
 
-    private void ForEachAggregate(object obj, Action<object> action)
+    /// <summary>
+    /// Executes the given action for every member of the aggregate of the given object, including
+    /// the members of these members.
+    /// </summary>
+    /// <param name="obj">The aggregate root.</param>
+    /// <param name="action">The action to execute for each member.</param>
+    /// <param name="stopAtSharedConfiguration">
+    /// If set to <c>true</c>, the members of a <see cref="SharedConfigurationTypes">shared configuration
+    /// object</see> are left alone. Required when deleting, not when detaching.
+    /// </param>
+    /// <remarks>
+    /// The recursion matters for the deletion: a member which is referenced BY its owner (e.g. the
+    /// inventory of a character) holds its foreign key at the owner, so no delete cascade of the
+    /// database ever reaches it. Deleting an account removed its characters, but their inventories -
+    /// and every item lying in them - stayed in the database as unreachable rows.
+    /// </remarks>
+    private void ForEachAggregate(object obj, Action<object> action, bool stopAtSharedConfiguration)
+    {
+        this.ForEachAggregate(obj, action, stopAtSharedConfiguration, true, new HashSet<object>(ReferenceEqualityComparer.Instance));
+    }
+
+    private void ForEachAggregate(object obj, Action<object> action, bool stopAtSharedConfiguration, bool areDirectMembers, HashSet<object> handledMembers)
     {
         var aggregateProperties = AggregatePropertiesByType.GetOrAdd(
             obj.GetType(),
@@ -515,14 +565,60 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             {
                 foreach (var value in enumerable)
                 {
-                    action(value);
+                    this.HandleAggregateMember(value, action, stopAtSharedConfiguration, areDirectMembers, handledMembers);
                 }
             }
             else if (propertyValue is { })
             {
-                action(propertyValue);
+                this.HandleAggregateMember(propertyValue, action, stopAtSharedConfiguration, areDirectMembers, handledMembers);
             }
         }
+    }
+
+    private void HandleAggregateMember(object member, Action<object> action, bool stopAtSharedConfiguration, bool isDirectMember, HashSet<object> handledMembers)
+    {
+        // By reference: the entities compare equal by their id, and freshly created ones share the
+        // default id. Handling a member twice would be wrong anyway, and a graph which references
+        // itself would recurse forever.
+        if (!handledMembers.Add(member))
+        {
+            return;
+        }
+
+        if (stopAtSharedConfiguration && !isDirectMember && IsSharedConfiguration(member))
+        {
+            // Reached through the aggregate of a member, e.g. the magic effect definition of a buff
+            // of a monster definition - which a skill and an item definition may use as well. The
+            // direct members are left as they were: only the recursion is new here.
+            return;
+        }
+
+        action(member);
+        this.ForEachAggregate(member, action, stopAtSharedConfiguration, false, handledMembers);
+    }
+
+    private static Type? GetCollectionInterface(Type type)
+    {
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>))
+        {
+            return type;
+        }
+
+        return type.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>));
+    }
+
+    private static bool IsSharedConfiguration(object member)
+    {
+        for (Type? type = member.GetType(); type is not null; type = type.BaseType)
+        {
+            if (SharedConfigurationTypes.Contains(type))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
