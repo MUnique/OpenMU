@@ -4913,5 +4913,47 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("CursedCastleWater", resourceCulture);
             }
         }
+
+        /// <summary>Gets SilverKey from the configuration name resources.</summary>
+        public static string SilverKey {
+            get {
+                return ResourceManager.GetString("SilverKey", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldKey from the configuration name resources.</summary>
+        public static string GoldKey {
+            get {
+                return ResourceManager.GetString("GoldKey", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SealedGoldenBox from the configuration name resources.</summary>
+        public static string SealedGoldenBox {
+            get {
+                return ResourceManager.GetString("SealedGoldenBox", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SealedSilverBox from the configuration name resources.</summary>
+        public static string SealedSilverBox {
+            get {
+                return ResourceManager.GetString("SealedSilverBox", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenBox from the configuration name resources.</summary>
+        public static string GoldenBox {
+            get {
+                return ResourceManager.GetString("GoldenBox", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SilverBox from the configuration name resources.</summary>
+        public static string SilverBox {
+            get {
+                return ResourceManager.GetString("SilverBox", resourceCulture);
+            }
+        }
     }
 }

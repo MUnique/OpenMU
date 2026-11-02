@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 /// <summary>
 /// Initializer for chaos mixes.
@@ -65,6 +66,7 @@ public class ChaosMixes : InitializerBase
         chaosGoblin.ItemCraftings.Add(this.ThirdWingsStage2Crafting());
         chaosGoblin.ItemCraftings.Add(this.Level380OptionCrafting());
         chaosGoblin.ItemCraftings.Add(this.SecromiconCrafting());
+        new GoblinBoxItems(this.Context, this.GameConfiguration).AddCraftings();
 
         var elphis = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ElphisRefinery);
         elphis.ItemCraftings.Add(this.GemstoneRefinery());

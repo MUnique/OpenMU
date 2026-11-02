@@ -403,4 +403,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加金箱和银箱</value>
+  </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充金钥匙和银钥匙、可在混沌哥布林处用钥匙打开的封印的金箱和封印的银箱，以及丢弃后会获得物品或金币的金箱和银箱。包含钥匙的游戏商城礼包将开始出售。</value>
+  </data>
 </root>

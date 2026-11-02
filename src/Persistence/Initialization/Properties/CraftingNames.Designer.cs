@@ -321,5 +321,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GemstoneRefinery", resourceCulture);
             }
         }
+
+        /// <summary>Gets GoldenBoxCombination from the configuration name resources.</summary>
+        public static string GoldenBoxCombination {
+            get {
+                return ResourceManager.GetString("GoldenBoxCombination", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SilverBoxCombination from the configuration name resources.</summary>
+        public static string SilverBoxCombination {
+            get {
+                return ResourceManager.GetString("SilverBoxCombination", resourceCulture);
+            }
+        }
     }
 }

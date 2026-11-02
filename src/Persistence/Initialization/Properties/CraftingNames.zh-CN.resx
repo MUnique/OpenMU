@@ -129,4 +129,10 @@
   <data name="GemstoneRefinery" xml:space="preserve">
     <value>原石提炼</value>
   </data>
+  <data name="GoldenBoxCombination" xml:space="preserve">
+    <value>金箱合成</value>
+  </data>
+  <data name="SilverBoxCombination" xml:space="preserve">
+    <value>银箱合成</value>
+  </data>
 </root>

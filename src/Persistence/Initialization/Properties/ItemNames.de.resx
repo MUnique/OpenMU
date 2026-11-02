@@ -2052,4 +2052,22 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Verfluchtes Burgwasser</value>
   </data>
+  <data name="SilverKey" xml:space="preserve">
+    <value>Silberschlüssel</value>
+  </data>
+  <data name="GoldKey" xml:space="preserve">
+    <value>Goldschlüssel</value>
+  </data>
+  <data name="SealedGoldenBox" xml:space="preserve">
+    <value>Versiegelte goldene Box</value>
+  </data>
+  <data name="SealedSilverBox" xml:space="preserve">
+    <value>Versiegelte silberne Box</value>
+  </data>
+  <data name="GoldenBox" xml:space="preserve">
+    <value>Goldene Box</value>
+  </data>
+  <data name="SilverBox" xml:space="preserve">
+    <value>Silberne Box</value>
+  </data>
 </root>

@@ -2097,4 +2097,22 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>诅咒城堡之水</value>
   </data>
+  <data name="SilverKey" xml:space="preserve">
+    <value>银钥匙</value>
+  </data>
+  <data name="GoldKey" xml:space="preserve">
+    <value>金钥匙</value>
+  </data>
+  <data name="SealedGoldenBox" xml:space="preserve">
+    <value>封印的金箱</value>
+  </data>
+  <data name="SealedSilverBox" xml:space="preserve">
+    <value>封印的银箱</value>
+  </data>
+  <data name="GoldenBox" xml:space="preserve">
+    <value>金箱</value>
+  </data>
+  <data name="SilverBox" xml:space="preserve">
+    <value>银箱</value>
+  </data>
 </root>

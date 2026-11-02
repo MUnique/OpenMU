@@ -129,4 +129,10 @@
   <data name="GemstoneRefinery" xml:space="preserve">
     <value>Gemstone Refinery</value>
   </data>
+  <data name="GoldenBoxCombination" xml:space="preserve">
+    <value>Golden Box Combination</value>
+  </data>
+  <data name="SilverBoxCombination" xml:space="preserve">
+    <value>Silver Box Combination</value>
+  </data>
 </root>

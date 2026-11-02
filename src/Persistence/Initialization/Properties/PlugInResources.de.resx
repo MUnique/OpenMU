@@ -850,4 +850,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>Fügt die Eis-Chance des Kristallschwerts hinzu, durch die ein Angriff stattdessen zu einer Eis-Fähigkeit wird.</value>
   </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Goldene und silberne Boxen hinzufügen</value>
+  </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Goldschlüssel und den Silberschlüssel, die versiegelte goldene und silberne Box, die mit den Schlüsseln beim Chaos-Goblin geöffnet werden, sowie die goldene und silberne Box hinzu, die beim Fallenlassen einen Gegenstand oder Geld geben. Die Pakete des Item-Shops, die die Schlüssel enthalten, werden zum Verkauf angeboten.</value>
+  </data>
 </root>
