@@ -121,6 +121,20 @@ inventory, with the item level and quantity of the product. If the inventory
 doesn't have space for all of them, nothing is added and the item stays in the
 storage.
 
+### Reset fruits
+
+The reset fruits of strength, agility, vitality, energy and command (the last one
+only for Dark Lords) take back invested points of their stat and return them as
+level up points. Each durability of a fruit takes back 10 points, so a fruit of
+the catalog takes back 10 points, but never below the base value of the
+character class. The fruit is used up, even if fewer points were invested. All
+items have to be unequipped, and the points don't count towards the maximum of
+the usual fruits which remove points.
+
+Existing databases get the fruits with the configuration update *Add reset fruits*.
+Each fruit is handled by its own plugin, for example *Reset Fruit of Strength
+Consume Handler*, which can be deactivated on the **Plugins** page.
+
 ### Special items
 
 Some items aren't put into the inventory. A plugin applies them when the player

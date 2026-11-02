@@ -28,7 +28,7 @@ public class FruitConsumptionResultPlugIn : IFruitConsumptionResponsePlugIn
     public FruitConsumptionResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowResponseAsync(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute)
+    public async ValueTask ShowResponseAsync(FruitConsumptionResult result, ushort statPoints, AttributeDefinition statAttribute)
     {
         await this._player.Connection.SendFruitConsumptionResponseAsync(Convert(result), statPoints, Convert(statAttribute)).ConfigureAwait(false);
     }
