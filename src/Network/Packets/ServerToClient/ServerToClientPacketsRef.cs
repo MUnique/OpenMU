@@ -6485,7 +6485,7 @@ public readonly ref struct ObjectHitExtendedRef
     }
 
     /// <summary>
-    /// Gets or sets gets or sets the status of the remaining health in fractions of 1/250.
+    /// Gets or sets the status of the remaining health in fractions of 1/250.
     /// </summary>
     public byte HealthStatus
     {
@@ -6494,7 +6494,7 @@ public readonly ref struct ObjectHitExtendedRef
     }
 
     /// <summary>
-    /// Gets or sets gets or sets the status of the remaining shield in fractions of 1/250.
+    /// Gets or sets the status of the remaining shield in fractions of 1/250.
     /// </summary>
     public byte ShieldStatus
     {
