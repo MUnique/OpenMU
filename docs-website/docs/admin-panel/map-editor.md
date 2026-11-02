@@ -111,7 +111,9 @@ database.
   original server.
 * **Client terrain file** downloads the encrypted terrain file of the game
   client. The client loads it from `Data\World<N>\EncTerrain<N>.att`, where
-  `<N>` is the map number plus one.
+  `<N>` is the map number plus one. The terrain of some maps (e.g. Atlans,
+  Icarus and Valley of Loren) has a few tiles with the highest bit set, which the
+  client refuses as a corrupted file, so this bit is left out.
 
 :::warning[The client needs the terrain, too]
 The game servers use a changed terrain after they reloaded their configuration.
