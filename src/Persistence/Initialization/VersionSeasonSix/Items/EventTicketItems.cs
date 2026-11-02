@@ -54,6 +54,9 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(18, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSKey), false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(19, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSInvitation), false, 7);
 
+        // Free tickets of the in-game shop, which allow to enter an event of any level:
+        this.CreateFreeTicketItems();
+
         // Imperial Guardian
         var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SuspiciousScrapOfPaper), false, 0, 32);
         scrapOfPaper.Durability = 5;
@@ -130,6 +133,30 @@ internal class EventTicketItems : InitializerBase
         dropItemGroup.PossibleItems.Add(signOfDimensions);
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
         return dropItemGroup;
+    }
+
+    /// <summary>
+    /// Creates the free tickets of the in-game shop, which don't exist yet. They allow to enter
+    /// Devil Square, Blood Castle, Illusion Temple and Chaos Castle of any level, instead of their
+    /// regular tickets. Their durability is the number of entries.
+    /// </summary>
+    /// <returns>The created items.</returns>
+    internal IReadOnlyList<ItemDefinition> CreateFreeTicketItems()
+    {
+        var createdItems = new List<ItemDefinition>();
+        void CreateIfMissing(byte number, LocalizedString name)
+        {
+            if (!this.GameConfiguration.Items.Any(item => item.Group == 13 && item.Number == number))
+            {
+                createdItems.Add(this.CreateEventItem(number, 13, 1, 1, name, false));
+            }
+        }
+
+        CreateIfMissing(46, LocalizedString.FromResource(() => ItemNames.DevilSquareFreeTicket));
+        CreateIfMissing(47, LocalizedString.FromResource(() => ItemNames.BloodCastleFreeTicket));
+        CreateIfMissing(61, LocalizedString.FromResource(() => ItemNames.IllusionTempleFreeTicket));
+        CreateIfMissing(121, LocalizedString.FromResource(() => ItemNames.ChaosCastleFreeTicket));
+        return createdItems;
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)

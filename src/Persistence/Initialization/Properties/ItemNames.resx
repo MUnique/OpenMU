@@ -2079,6 +2079,18 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>Doppelganger Free Ticket</value>
   </data>
+  <data name="DevilSquareFreeTicket" xml:space="preserve">
+    <value>Devil Square Ticket</value>
+  </data>
+  <data name="BloodCastleFreeTicket" xml:space="preserve">
+    <value>Blood Castle Ticket</value>
+  </data>
+  <data name="IllusionTempleFreeTicket" xml:space="preserve">
+    <value>Illusion Temple Ticket</value>
+  </data>
+  <data name="ChaosCastleFreeTicket" xml:space="preserve">
+    <value>Open Access Ticket to Chaos Castle</value>
+  </data>
   <data name="MirrorOfDimensions" xml:space="preserve">
     <value>Mirror of Dimensions</value>
   </data>
