@@ -48,7 +48,7 @@ internal class ResetFruitsDataTest
         foreach (var package in gameConfiguration.CashShopConfiguration!.Packages.Where(p => FruitPackages.Contains(p.PackageSequence)))
         {
             package.IsForSale = false;
-            package.Products.ToList().ForEach(product => product.ItemDefinition = null);
+            package.Products.ToList().ForEach(product => (product.ItemDefinition, product.Quantity) = (null, 1));
         }
 
         gameConfiguration.Items.Where(IsFruit).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
@@ -66,12 +66,12 @@ internal class ResetFruitsDataTest
     {
         var fruits = gameConfiguration.Items.Where(IsFruit).ToList();
         Assert.That(fruits.Select(item => item.Number), Is.EquivalentTo(FruitNumbers));
-        Assert.That(fruits, Has.All.Matches<ItemDefinition>(item => item.Durability == 1 && item.Name.ValueInNeutralLanguage.Length > 0));
+        Assert.That(fruits, Has.All.Matches<ItemDefinition>(item => item.Durability == 100 && !item.IsTradable && !item.IsSellableToNpc && item.Name.ValueInNeutralLanguage.Length > 0));
 
         var packages = gameConfiguration.CashShopConfiguration!.Packages.Where(p => FruitPackages.Contains(p.PackageSequence)).ToList();
         Assert.That(packages, Has.Count.EqualTo(FruitPackages.Length));
         Assert.That(packages, Has.All.Matches<CashShopPackage>(p => p.IsForSale));
-        Assert.That(packages.SelectMany(p => p.Products), Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is { } item && IsFruit(item)));
+        Assert.That(packages.SelectMany(p => p.Products), Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is { } item && IsFruit(item) && product.Quantity == 100));
     }
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()

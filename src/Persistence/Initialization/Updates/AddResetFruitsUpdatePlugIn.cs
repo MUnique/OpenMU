@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CashShop;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -57,9 +58,16 @@ public class AddResetFruitsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 02, 14, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>
+    /// The fruits get the item rule flags, so these have to exist first.
+    /// </remarks>
+    public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddItemRuleFlagsPlugIn).GUID];
+
+    /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        new CashShopItems(context, gameConfiguration).CreateResetFruits();
+        var addedItems = new CashShopItems(context, gameConfiguration).CreateResetFruits();
+        ItemRules.Apply(addedItems);
         AssignCashShopProducts(gameConfiguration);
         return ValueTask.CompletedTask;
     }
@@ -84,6 +92,7 @@ public class AddResetFruitsUpdatePlugIn : UpdatePlugInBase
                     && gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == number) is { } item)
                 {
                     product.ItemDefinition = item;
+                    product.Quantity = CashShopInitializer.ResetFruitDurability;
                     assigned = true;
                 }
             }

@@ -125,11 +125,11 @@ storage.
 
 The reset fruits of strength, agility, vitality, energy and command (the last one
 only for Dark Lords) take back invested points of their stat and return them as
-level up points. Each durability of a fruit takes back 10 points, so a fruit of
-the catalog takes back 10 points, but never below the base value of the
-character class. The fruit is used up, even if fewer points were invested. All
+level up points. Each durability of a fruit takes back 10 points, and a bought
+fruit has a durability of 100, like in the game client, so it takes back up to
+1000 points, but never below the base value of the character class. The fruit is used up, even if fewer points were invested. All
 items have to be unequipped, and the points don't count towards the maximum of
-the usual fruits which remove points.
+the usual fruits which remove points. The fruits can't be traded, dropped or sold.
 
 Existing databases get the fruits with the configuration update *Add reset fruits*.
 Each fruit is handled by its own plugin, for example *Reset Fruit of Strength

@@ -41,13 +41,15 @@ internal class CashShopItems : InitializerBase
 
     /// <summary>
     /// Creates the reset fruits, which don't exist yet. A reset fruit takes back invested points of one stat
-    /// and returns them as level up points. Each durability takes back ten points.
+    /// and returns them as level up points. Each durability takes back ten points, and like in the client,
+    /// a fruit has a durability of up to 100.
+    /// The rules which block trading and selling them are applied by the <see cref="ItemRules"/>.
     /// </summary>
     /// <returns>The created items.</returns>
     internal IReadOnlyList<ItemDefinition> CreateResetFruits()
     {
         const byte group = 13;
-        return new[]
+        var fruits = new[]
             {
                 this.CreateItem(group, 54, LocalizedString.FromResource(() => ItemNames.ResetFruitStrength)),
                 this.CreateItem(group, 55, LocalizedString.FromResource(() => ItemNames.ResetFruitAgility)),
@@ -57,6 +59,8 @@ internal class CashShopItems : InitializerBase
             }
             .OfType<ItemDefinition>()
             .ToList();
+        fruits.ForEach(fruit => fruit.Durability = CashShopInitializer.ResetFruitDurability);
+        return fruits;
     }
 
     private ItemDefinition? CreateItem(byte group, short number, LocalizedString name)
