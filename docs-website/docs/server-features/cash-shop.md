@@ -144,3 +144,23 @@ sell the card.
 
 While the plugin of a special item is deactivated, its packages can't be bought,
 and bought items stay in the storage until the plugin is active again.
+
+### Lucky item tickets
+
+The ten lucky item tickets (1st and 2nd Lucky Armor, Pants, Helm, Gloves and
+Boots Ticket) are put into the inventory like other items. The player exchanges
+a ticket at David in Elveland, in the *Exchange Lucky Item* window: he gives the
+lucky armor of the ticket's tier and kind which the character class can wear.
+The 1st tickets give the Scale, Silk, Sphinx and Violent Wind sets (level 1),
+the 2nd tickets the Adamantine, Dragon, Guardian, Legendary, Red Wing, Atlans
+and Storm Jahad sets (level 150). When more than one set fits the class, the
+one made for the fewest classes is given, for example the Atlans Armor for a
+Magic Gladiator. A ticket without an armor for the class, like a helm ticket for
+a Magic Gladiator, isn't accepted.
+
+Lucky armors can't be traded, dropped, stored, sold in a personal store,
+repaired or upgraded with jewels. The exchange is configured as the crafting
+*Lucky Item Exchange* of David. Existing databases get the items, the exchange
+and the ticket packages with the configuration update *Add lucky items*. The
+refinery window of David, and the Jewel of Extension and Jewel of Elevation,
+don't have a function yet.

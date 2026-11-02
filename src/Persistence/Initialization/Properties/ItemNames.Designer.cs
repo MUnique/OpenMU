@@ -4913,5 +4913,187 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("CursedCastleWater", resourceCulture);
             }
         }
+
+        /// <summary>Gets SphinxHelm from the configuration name resources.</summary>
+        public static string SphinxHelm {
+            get {
+                return ResourceManager.GetString("SphinxHelm", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ViolentWindHelm from the configuration name resources.</summary>
+        public static string ViolentWindHelm {
+            get {
+                return ResourceManager.GetString("ViolentWindHelm", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ViolentWindArmor from the configuration name resources.</summary>
+        public static string ViolentWindArmor {
+            get {
+                return ResourceManager.GetString("ViolentWindArmor", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ViolentWindPants from the configuration name resources.</summary>
+        public static string ViolentWindPants {
+            get {
+                return ResourceManager.GetString("ViolentWindPants", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ViolentWindGloves from the configuration name resources.</summary>
+        public static string ViolentWindGloves {
+            get {
+                return ResourceManager.GetString("ViolentWindGloves", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ViolentWindBoots from the configuration name resources.</summary>
+        public static string ViolentWindBoots {
+            get {
+                return ResourceManager.GetString("ViolentWindBoots", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansArmor from the configuration name resources.</summary>
+        public static string AtlansArmor {
+            get {
+                return ResourceManager.GetString("AtlansArmor", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansPants from the configuration name resources.</summary>
+        public static string AtlansPants {
+            get {
+                return ResourceManager.GetString("AtlansPants", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansGloves from the configuration name resources.</summary>
+        public static string AtlansGloves {
+            get {
+                return ResourceManager.GetString("AtlansGloves", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansBoots from the configuration name resources.</summary>
+        public static string AtlansBoots {
+            get {
+                return ResourceManager.GetString("AtlansBoots", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets StormJahadHelm from the configuration name resources.</summary>
+        public static string StormJahadHelm {
+            get {
+                return ResourceManager.GetString("StormJahadHelm", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets StormJahadArmor from the configuration name resources.</summary>
+        public static string StormJahadArmor {
+            get {
+                return ResourceManager.GetString("StormJahadArmor", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets StormJahadPants from the configuration name resources.</summary>
+        public static string StormJahadPants {
+            get {
+                return ResourceManager.GetString("StormJahadPants", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets StormJahadBoots from the configuration name resources.</summary>
+        public static string StormJahadBoots {
+            get {
+                return ResourceManager.GetString("StormJahadBoots", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FirstLuckyArmorTicket from the configuration name resources.</summary>
+        public static string FirstLuckyArmorTicket {
+            get {
+                return ResourceManager.GetString("FirstLuckyArmorTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FirstLuckyPantsTicket from the configuration name resources.</summary>
+        public static string FirstLuckyPantsTicket {
+            get {
+                return ResourceManager.GetString("FirstLuckyPantsTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FirstLuckyHelmTicket from the configuration name resources.</summary>
+        public static string FirstLuckyHelmTicket {
+            get {
+                return ResourceManager.GetString("FirstLuckyHelmTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FirstLuckyGlovesTicket from the configuration name resources.</summary>
+        public static string FirstLuckyGlovesTicket {
+            get {
+                return ResourceManager.GetString("FirstLuckyGlovesTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FirstLuckyBootsTicket from the configuration name resources.</summary>
+        public static string FirstLuckyBootsTicket {
+            get {
+                return ResourceManager.GetString("FirstLuckyBootsTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SecondLuckyArmorTicket from the configuration name resources.</summary>
+        public static string SecondLuckyArmorTicket {
+            get {
+                return ResourceManager.GetString("SecondLuckyArmorTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SecondLuckyPantsTicket from the configuration name resources.</summary>
+        public static string SecondLuckyPantsTicket {
+            get {
+                return ResourceManager.GetString("SecondLuckyPantsTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SecondLuckyHelmTicket from the configuration name resources.</summary>
+        public static string SecondLuckyHelmTicket {
+            get {
+                return ResourceManager.GetString("SecondLuckyHelmTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SecondLuckyGlovesTicket from the configuration name resources.</summary>
+        public static string SecondLuckyGlovesTicket {
+            get {
+                return ResourceManager.GetString("SecondLuckyGlovesTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SecondLuckyBootsTicket from the configuration name resources.</summary>
+        public static string SecondLuckyBootsTicket {
+            get {
+                return ResourceManager.GetString("SecondLuckyBootsTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets JewelOfExtension from the configuration name resources.</summary>
+        public static string JewelOfExtension {
+            get {
+                return ResourceManager.GetString("JewelOfExtension", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets JewelOfElevation from the configuration name resources.</summary>
+        public static string JewelOfElevation {
+            get {
+                return ResourceManager.GetString("JewelOfElevation", resourceCulture);
+            }
+        }
     }
 }

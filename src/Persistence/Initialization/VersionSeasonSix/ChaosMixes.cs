@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 /// <summary>
 /// Initializer for chaos mixes.
@@ -81,6 +82,9 @@ public class ChaosMixes : InitializerBase
 
         var cherryBlossomSpirit = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CherryBlossomBranchesAssembly);
         cherryBlossomSpirit.ItemCraftings.Add(this.CherryBlossomEventCrafting());
+
+        var david = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CombineLuckyItem);
+        david.ItemCraftings.Add(new LuckyItems(this.Context, this.GameConfiguration).CreateTicketExchangeCrafting());
     }
 
     private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel)

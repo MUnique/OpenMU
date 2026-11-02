@@ -403,4 +403,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加幸运装备</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加幸运套装、幸运装备兑换券以及延长宝石和提升宝石。精灵之地的大卫可将兑换券兑换为适合角色职业的幸运装备。包含兑换券的游戏商城礼包将开始出售。</value>
+  </data>
 </root>

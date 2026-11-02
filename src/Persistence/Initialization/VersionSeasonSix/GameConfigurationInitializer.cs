@@ -67,6 +67,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new HarmonyOptions(this.Context, this.GameConfiguration).Initialize();
         new GuardianOptions(this.Context, this.GameConfiguration).Initialize();
         new Armors(this.Context, this.GameConfiguration).Initialize();
+        new LuckyItems(this.Context, this.GameConfiguration).Initialize();
         new Weapons(this.Context, this.GameConfiguration).Initialize();
         new Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewels(this.Context, this.GameConfiguration).Initialize();

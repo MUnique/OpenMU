@@ -2097,4 +2097,82 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>诅咒城堡之水</value>
   </data>
+  <data name="SphinxHelm" xml:space="preserve">
+    <value>魔王之盔</value>
+  </data>
+  <data name="ViolentWindHelm" xml:space="preserve">
+    <value>飓风之盔</value>
+  </data>
+  <data name="ViolentWindArmor" xml:space="preserve">
+    <value>飓风之铠</value>
+  </data>
+  <data name="ViolentWindPants" xml:space="preserve">
+    <value>飓风之护腿</value>
+  </data>
+  <data name="ViolentWindGloves" xml:space="preserve">
+    <value>飓风之护手</value>
+  </data>
+  <data name="ViolentWindBoots" xml:space="preserve">
+    <value>飓风之靴</value>
+  </data>
+  <data name="AtlansArmor" xml:space="preserve">
+    <value>亚特兰蒂斯之铠</value>
+  </data>
+  <data name="AtlansPants" xml:space="preserve">
+    <value>亚特兰蒂斯之护腿</value>
+  </data>
+  <data name="AtlansGloves" xml:space="preserve">
+    <value>亚特兰蒂斯之护手</value>
+  </data>
+  <data name="AtlansBoots" xml:space="preserve">
+    <value>亚特兰蒂斯之靴</value>
+  </data>
+  <data name="StormJahadHelm" xml:space="preserve">
+    <value>暴风扎哈德之盔</value>
+  </data>
+  <data name="StormJahadArmor" xml:space="preserve">
+    <value>暴风扎哈德之铠</value>
+  </data>
+  <data name="StormJahadPants" xml:space="preserve">
+    <value>暴风扎哈德之护腿</value>
+  </data>
+  <data name="StormJahadBoots" xml:space="preserve">
+    <value>暴风扎哈德之靴</value>
+  </data>
+  <data name="FirstLuckyArmorTicket" xml:space="preserve">
+    <value>一阶幸运铠甲券</value>
+  </data>
+  <data name="FirstLuckyPantsTicket" xml:space="preserve">
+    <value>一阶幸运护腿券</value>
+  </data>
+  <data name="FirstLuckyHelmTicket" xml:space="preserve">
+    <value>一阶幸运头盔券</value>
+  </data>
+  <data name="FirstLuckyGlovesTicket" xml:space="preserve">
+    <value>一阶幸运护手券</value>
+  </data>
+  <data name="FirstLuckyBootsTicket" xml:space="preserve">
+    <value>一阶幸运靴子券</value>
+  </data>
+  <data name="SecondLuckyArmorTicket" xml:space="preserve">
+    <value>二阶幸运铠甲券</value>
+  </data>
+  <data name="SecondLuckyPantsTicket" xml:space="preserve">
+    <value>二阶幸运护腿券</value>
+  </data>
+  <data name="SecondLuckyHelmTicket" xml:space="preserve">
+    <value>二阶幸运头盔券</value>
+  </data>
+  <data name="SecondLuckyGlovesTicket" xml:space="preserve">
+    <value>二阶幸运护手券</value>
+  </data>
+  <data name="SecondLuckyBootsTicket" xml:space="preserve">
+    <value>二阶幸运靴子券</value>
+  </data>
+  <data name="JewelOfExtension" xml:space="preserve">
+    <value>延长宝石</value>
+  </data>
+  <data name="JewelOfElevation" xml:space="preserve">
+    <value>提升宝石</value>
+  </data>
 </root>
