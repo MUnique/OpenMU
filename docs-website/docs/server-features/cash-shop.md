@@ -121,6 +121,28 @@ inventory, with the item level and quantity of the product. If the inventory
 doesn't have space for all of them, nothing is added and the item stays in the
 storage.
 
+### Rings and necklaces
+
+The rings and necklaces of the shop are defined as items with fixed bonuses, like
+the game client shows them. They can't be upgraded, traded, dropped, sold or
+repaired.
+
+| Item | Bonus |
+|---|---|
+| Lethal Wizard's Ring | damage +15%, wizardry damage +15%, attack speed +10 |
+| Sapphire Ring | automatic HP recovery 3%, maximum mana +4% |
+| Ruby Ring | automatic HP recovery 3%, maximum HP +4% |
+| Topaz Ring | automatic HP recovery 3%, zen from monsters +30% |
+| Amethyst Ring | automatic HP recovery 3%, damage decrease 4% |
+| Ruby Necklace | automatic HP recovery 3%, excellent damage rate +10% |
+| Emerald Necklace | automatic HP recovery 3%, attack speed +7 |
+| Sapphire Necklace | automatic HP recovery 3%, mana after hunting monsters +mana/8 |
+
+The shop sells them only for a limited time, so their packages can't be sold yet
+(see [product catalog](#product-catalog)). An administrator can still give them to
+a character. Existing databases get them with the configuration update
+*Add cash shop rings and necklaces*.
+
 ### Special items
 
 Some items aren't put into the inventory. A plugin applies them when the player

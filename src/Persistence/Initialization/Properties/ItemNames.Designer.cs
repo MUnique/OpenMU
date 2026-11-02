@@ -4032,6 +4032,62 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets LethalWizardsRing from the configuration name resources.</summary>
+        public static string LethalWizardsRing {
+            get {
+                return ResourceManager.GetString("LethalWizardsRing", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SapphireRing from the configuration name resources.</summary>
+        public static string SapphireRing {
+            get {
+                return ResourceManager.GetString("SapphireRing", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets RubyRing from the configuration name resources.</summary>
+        public static string RubyRing {
+            get {
+                return ResourceManager.GetString("RubyRing", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets TopazRing from the configuration name resources.</summary>
+        public static string TopazRing {
+            get {
+                return ResourceManager.GetString("TopazRing", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AmethystRing from the configuration name resources.</summary>
+        public static string AmethystRing {
+            get {
+                return ResourceManager.GetString("AmethystRing", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets RubyNecklace from the configuration name resources.</summary>
+        public static string RubyNecklace {
+            get {
+                return ResourceManager.GetString("RubyNecklace", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EmeraldNecklace from the configuration name resources.</summary>
+        public static string EmeraldNecklace {
+            get {
+                return ResourceManager.GetString("EmeraldNecklace", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SapphireNecklace from the configuration name resources.</summary>
+        public static string SapphireNecklace {
+            get {
+                return ResourceManager.GetString("SapphireNecklace", resourceCulture);
+            }
+        }
+
         /// <summary>Gets PetPanda from the configuration name resources.</summary>
         public static string PetPanda {
             get {

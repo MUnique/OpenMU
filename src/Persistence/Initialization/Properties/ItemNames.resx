@@ -1719,6 +1719,30 @@
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>Panda Transformation Ring</value>
   </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>Lethal Wizard's Ring</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>Sapphire Ring</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>Ruby Ring</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>Topaz Ring</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>Amethyst Ring</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>Ruby Necklace</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>Emerald Necklace</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>Sapphire Necklace</value>
+  </data>
   <data name="PetPanda" xml:space="preserve">
     <value>Pet Panda</value>
   </data>
