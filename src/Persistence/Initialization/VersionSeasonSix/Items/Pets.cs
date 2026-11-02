@@ -52,12 +52,14 @@ public class Pets : InitializerBase
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(2, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, true, true,
+            (Stats.IsUniriaEquipped, 1, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, LocalizedString.FromResource(() => ItemNames.HornOfDinorant), 110, false, true,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
+            (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
