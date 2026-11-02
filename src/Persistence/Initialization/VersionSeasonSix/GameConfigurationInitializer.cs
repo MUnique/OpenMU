@@ -97,6 +97,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
         new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
         new CashShopItems(this.Context, this.GameConfiguration).Initialize();
+        new BuffItems(this.Context, this.GameConfiguration).Initialize();
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();

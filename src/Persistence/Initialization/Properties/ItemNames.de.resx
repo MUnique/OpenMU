@@ -2052,4 +2052,73 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Verfluchtes Burgwasser</value>
   </data>
+  <data name="SealOfAscension" xml:space="preserve">
+    <value>Siegel des Aufstiegs</value>
+  </data>
+  <data name="SealOfWealth" xml:space="preserve">
+    <value>Siegel des Wohlstands</value>
+  </data>
+  <data name="SealOfSustenance" xml:space="preserve">
+    <value>Siegel der Erhaltung</value>
+  </data>
+  <data name="SealOfHealing" xml:space="preserve">
+    <value>Siegel der Heilung</value>
+  </data>
+  <data name="SealOfDivinity" xml:space="preserve">
+    <value>Siegel der Göttlichkeit</value>
+  </data>
+  <data name="MasterSealOfAscension" xml:space="preserve">
+    <value>Meistersiegel des Aufstiegs</value>
+  </data>
+  <data name="MasterSealOfWealth" xml:space="preserve">
+    <value>Meistersiegel des Wohlstands</value>
+  </data>
+  <data name="MaxAgBoostAura" xml:space="preserve">
+    <value>Aura: Max. AG-Erhöhung</value>
+  </data>
+  <data name="MaxSdBoostAura" xml:space="preserve">
+    <value>Aura: Max. SD-Erhöhung</value>
+  </data>
+  <data name="ScrollOfQuickness" xml:space="preserve">
+    <value>Schriftrolle der Schnelligkeit</value>
+  </data>
+  <data name="ScrollOfDefense" xml:space="preserve">
+    <value>Schriftrolle der Verteidigung</value>
+  </data>
+  <data name="ScrollOfWrath" xml:space="preserve">
+    <value>Schriftrolle des Zorns</value>
+  </data>
+  <data name="ScrollOfWizardry" xml:space="preserve">
+    <value>Schriftrolle der Zauberkraft</value>
+  </data>
+  <data name="ScrollOfHealth" xml:space="preserve">
+    <value>Schriftrolle des Lebens</value>
+  </data>
+  <data name="ScrollOfMana" xml:space="preserve">
+    <value>Schriftrolle des Manas</value>
+  </data>
+  <data name="ElixirOfStrength" xml:space="preserve">
+    <value>Elixier der Stärke</value>
+  </data>
+  <data name="ElixirOfAgility" xml:space="preserve">
+    <value>Elixier der Beweglichkeit</value>
+  </data>
+  <data name="ElixirOfHealth" xml:space="preserve">
+    <value>Elixier der Vitalität</value>
+  </data>
+  <data name="ElixirOfEnergy" xml:space="preserve">
+    <value>Elixier der Energie</value>
+  </data>
+  <data name="ElixirOfControl" xml:space="preserve">
+    <value>Elixier der Führung</value>
+  </data>
+  <data name="ScrollOfBattle" xml:space="preserve">
+    <value>Schriftrolle des Kampfes</value>
+  </data>
+  <data name="ScrollOfStrength" xml:space="preserve">
+    <value>Schriftrolle der Stärke</value>
+  </data>
+  <data name="ScrollOfHealing" xml:space="preserve">
+    <value>Schriftrolle der Heilung</value>
+  </data>
 </root>

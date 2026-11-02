@@ -850,4 +850,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>Fügt die Eis-Chance des Kristallschwerts hinzu, durch die ein Angriff stattdessen zu einer Eis-Fähigkeit wird.</value>
   </data>
+  <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Buff-Gegenstände hinzufügen</value>
+  </data>
+  <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Siegel, Schriftrollen, Elixiere und Auren des In-Game-Shops hinzu, die bei Benutzung einen zeitlich begrenzten Effekt anwenden. Vorhandene Gegenstände mit denselben Nummern bleiben unverändert.</value>
+  </data>
 </root>

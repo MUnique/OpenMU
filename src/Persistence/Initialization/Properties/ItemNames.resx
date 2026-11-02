@@ -2097,4 +2097,73 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Cursed Castle Water</value>
   </data>
+  <data name="SealOfAscension" xml:space="preserve">
+    <value>Seal of Ascension</value>
+  </data>
+  <data name="SealOfWealth" xml:space="preserve">
+    <value>Seal of Wealth</value>
+  </data>
+  <data name="SealOfSustenance" xml:space="preserve">
+    <value>Seal of Sustenance</value>
+  </data>
+  <data name="SealOfHealing" xml:space="preserve">
+    <value>Seal of Healing</value>
+  </data>
+  <data name="SealOfDivinity" xml:space="preserve">
+    <value>Seal of Divinity</value>
+  </data>
+  <data name="MasterSealOfAscension" xml:space="preserve">
+    <value>Master Seal of Ascension</value>
+  </data>
+  <data name="MasterSealOfWealth" xml:space="preserve">
+    <value>Master Seal of Wealth</value>
+  </data>
+  <data name="MaxAgBoostAura" xml:space="preserve">
+    <value>Max AG Boost Aura</value>
+  </data>
+  <data name="MaxSdBoostAura" xml:space="preserve">
+    <value>Max SD Boost Aura</value>
+  </data>
+  <data name="ScrollOfQuickness" xml:space="preserve">
+    <value>Scroll of Quickness</value>
+  </data>
+  <data name="ScrollOfDefense" xml:space="preserve">
+    <value>Scroll of Defense</value>
+  </data>
+  <data name="ScrollOfWrath" xml:space="preserve">
+    <value>Scroll of Wrath</value>
+  </data>
+  <data name="ScrollOfWizardry" xml:space="preserve">
+    <value>Scroll of Wizardry</value>
+  </data>
+  <data name="ScrollOfHealth" xml:space="preserve">
+    <value>Scroll of Health</value>
+  </data>
+  <data name="ScrollOfMana" xml:space="preserve">
+    <value>Scroll of Mana</value>
+  </data>
+  <data name="ElixirOfStrength" xml:space="preserve">
+    <value>Elixir of Strength</value>
+  </data>
+  <data name="ElixirOfAgility" xml:space="preserve">
+    <value>Elixir of Agility</value>
+  </data>
+  <data name="ElixirOfHealth" xml:space="preserve">
+    <value>Elixir of Health</value>
+  </data>
+  <data name="ElixirOfEnergy" xml:space="preserve">
+    <value>Elixir of Energy</value>
+  </data>
+  <data name="ElixirOfControl" xml:space="preserve">
+    <value>Elixir of Control</value>
+  </data>
+  <data name="ScrollOfBattle" xml:space="preserve">
+    <value>Scroll of Battle</value>
+  </data>
+  <data name="ScrollOfStrength" xml:space="preserve">
+    <value>Scroll of Strength</value>
+  </data>
+  <data name="ScrollOfHealing" xml:space="preserve">
+    <value>Scroll of Healing</value>
+  </data>
 </root>

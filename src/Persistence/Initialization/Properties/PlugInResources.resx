@@ -408,4 +408,6 @@
   <data name="AddItemPriceDefinitionsPlugIn_Description" xml:space="preserve"><value>This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment.</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve"><value>Add Crystal Sword Ice Chance</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve"><value>Adds the Crystal Sword ice chance, which turns an attack into an ice skill instead.</value></data>
+  <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add buff items</value></data>
+  <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the seals, scrolls, elixirs and auras of the in-game shop, which apply a timed effect when they are used. Existing items with the same numbers are left unchanged.</value></data>
 </root>
