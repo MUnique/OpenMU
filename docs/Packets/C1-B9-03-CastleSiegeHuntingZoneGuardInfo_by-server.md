@@ -13,11 +13,11 @@ The client shows the hunting zone entrance configuration.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   18   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   20   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB9  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x03  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | Result |
 | 5 | 1 | Boolean |  | IsEnabled |
-| 6 | 4 | IntegerLittleEndian |  | CurrentPrice |
-| 10 | 4 | IntegerLittleEndian |  | MaxPrice |
-| 14 | 4 | IntegerLittleEndian |  | UnitPrice |
+| 8 | 4 | IntegerLittleEndian |  | CurrentPrice |
+| 12 | 4 | IntegerLittleEndian |  | MaxPrice |
+| 16 | 4 | IntegerLittleEndian |  | UnitPrice |
