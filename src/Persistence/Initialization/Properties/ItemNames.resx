@@ -2079,6 +2079,9 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>Doppelganger Free Ticket</value>
   </data>
+  <data name="InvitationToSantaVillage" xml:space="preserve">
+    <value>Invitation to Santa Village</value>
+  </data>
   <data name="MirrorOfDimensions" xml:space="preserve">
     <value>Mirror of Dimensions</value>
   </data>

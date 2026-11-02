@@ -2079,6 +2079,9 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>生魂广场自由入场券</value>
   </data>
+  <data name="InvitationToSantaVillage" xml:space="preserve">
+    <value>圣诞村邀请函</value>
+  </data>
   <data name="MirrorOfDimensions" xml:space="preserve">
     <value>次元魔镜</value>
   </data>

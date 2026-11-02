@@ -399,6 +399,12 @@
   <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the summoning orb consumption.</value>
   </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Invitation to Santa Village Consume Handler</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the invitation to the santa village, which warps the player to the santa village.</value>
+  </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Town Portal Scroll Consume Handler</value>
   </data>

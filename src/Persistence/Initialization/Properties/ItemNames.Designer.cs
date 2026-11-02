@@ -4872,6 +4872,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets InvitationToSantaVillage from the configuration name resources.</summary>
+        public static string InvitationToSantaVillage {
+            get {
+                return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
+            }
+        }
+
         /// <summary>Gets MirrorOfDimensions from the configuration name resources.</summary>
         public static string MirrorOfDimensions {
             get {

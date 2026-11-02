@@ -55,6 +55,11 @@ public class ItemConstants
     public static ItemIdentifier Fenrir => new(37, 13);
 
     /// <summary>
+    /// Gets the identifier for the invitation to the santa village.
+    /// </summary>
+    public static ItemIdentifier InvitationToSantaVillage => new(66, 13);
+
+    /// <summary>
     /// Gets the identifier for the demon.
     /// </summary>
     public static ItemIdentifier Demon => new(64, 13);

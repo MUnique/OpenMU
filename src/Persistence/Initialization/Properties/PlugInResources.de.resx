@@ -776,6 +776,12 @@
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Monster des Crywolf-Events und ihre Spawns hinzu, lässt die Statue und die Altäre der Festung immer auf der Karte, und fügt den Warp-Eintrag der Festung und die Geländevarianten der Besetzungszustände hinzu.</value>
   </data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
+  </data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Einladung ins Dorf des Weihnachtsmanns hinzu, die den Spieler ins Dorf des Weihnachtsmanns teleportiert, sowie ein Spawn-Tor im Dorf des Weihnachtsmanns.</value>
+  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>Kleine Flügel und Umhänge hinzufügen</value>
   </data>

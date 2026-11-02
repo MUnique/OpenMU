@@ -374,6 +374,8 @@
   <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the energy and leadership requirements of the fire scream skill to 150 and 70. They were swapped, so a dark lord with less than 150 leadership could learn the skill but not use it.</value></data>
   <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve"><value>Add Crywolf event</value></data>
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the monsters of the crywolf event and their spawns, lets the statue and the altars of the fortress always be on the map, adds the warp entry of the fortress and the terrains of the occupation states.</value></data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve"><value>Add invitation to santa village</value></data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the invitation to the santa village, which warps the player to the santa village, and a spawn gate to the santa village.</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve"><value>Add small wings and capes</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior's Cloak. Existing items with the same numbers are left unchanged.</value></data>
   <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve"><value>Set the game versions of the content</value></data>

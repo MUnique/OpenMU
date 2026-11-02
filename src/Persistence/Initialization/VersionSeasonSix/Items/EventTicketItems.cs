@@ -54,6 +54,9 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(18, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSKey), false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(19, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSInvitation), false, 7);
 
+        // Santa Village:
+        this.CreateSantaVillageInvitation();
+
         // Imperial Guardian
         var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SuspiciousScrapOfPaper), false, 0, 32);
         scrapOfPaper.Durability = 5;
@@ -130,6 +133,23 @@ internal class EventTicketItems : InitializerBase
         dropItemGroup.PossibleItems.Add(signOfDimensions);
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
         return dropItemGroup;
+    }
+
+    /// <summary>
+    /// Creates the invitation to the santa village, if it doesn't exist yet. It warps the player to the
+    /// santa village, and like in the client, its durability is the number of usages, up to ten.
+    /// </summary>
+    /// <returns>The created item, if it was created.</returns>
+    internal ItemDefinition? CreateSantaVillageInvitation()
+    {
+        if (this.GameConfiguration.Items.Any(item => item is { Group: 13, Number: 66 }))
+        {
+            return null;
+        }
+
+        var invitation = this.CreateEventItem(66, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.InvitationToSantaVillage), false);
+        invitation.Durability = 10;
+        return invitation;
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)

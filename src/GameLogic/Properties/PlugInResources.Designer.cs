@@ -3825,6 +3825,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the invitation to the santa village, which warps the player to the santa village..
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invitation to Santa Village Consume Handler.
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the town portal scroll consumption..
         /// </summary>
         public static string TownPortalScrollConsumeHandlerPlugIn_Description {
