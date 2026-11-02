@@ -850,4 +850,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>Fügt die Eis-Chance des Kristallschwerts hinzu, durch die ein Angriff stattdessen zu einer Eis-Fähigkeit wird.</value>
   </data>
+  <data name="AddElitePotionsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Elite-Tränke hinzufügen</value>
+  </data>
+  <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Elite-Heil-, Mana- und SD-Tränke des Item-Shops hinzu, die Lebenspunkte, Mana oder Schild sofort wiederherstellen. Die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
 </root>

@@ -4291,6 +4291,34 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets EliteHealingPotion from the configuration name resources.</summary>
+        public static string EliteHealingPotion {
+            get {
+                return ResourceManager.GetString("EliteHealingPotion", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteManaPotion from the configuration name resources.</summary>
+        public static string EliteManaPotion {
+            get {
+                return ResourceManager.GetString("EliteManaPotion", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MediumEliteHealingPotion from the configuration name resources.</summary>
+        public static string MediumEliteHealingPotion {
+            get {
+                return ResourceManager.GetString("MediumEliteHealingPotion", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteShieldPotion from the configuration name resources.</summary>
+        public static string EliteShieldPotion {
+            get {
+                return ResourceManager.GetString("EliteShieldPotion", resourceCulture);
+            }
+        }
+
         /// <summary>Gets SmallComplexPotion from the configuration name resources.</summary>
         public static string SmallComplexPotion {
             get {

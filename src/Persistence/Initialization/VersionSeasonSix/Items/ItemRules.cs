@@ -191,11 +191,14 @@ public class ItemRules : InitializerBase
         Rule(14, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Hell-Miner Horn
         Rule(14, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Dark Phoenix Feather
         Rule(14, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Abyssal Eye
+        Rule(14, 70, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite Healing Potion
+        Rule(14, 71, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite Mana Potion
         Rule(14, 84, Blocked.Repair), // Cherry Blossom Play-Box
         Rule(14, 85, Blocked.Repair), // Cherry Blossom Wine
         Rule(14, 86, Blocked.Repair), // Cherry Blossom Rice Cake
         Rule(14, 87, Blocked.Repair), // Cherry Blossom Flower Petal
         Rule(14, 90, Blocked.Repair), // Golden Cherry Blossom Branch
+        Rule(14, 94, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Medium Elite Healing Potion
         Rule(14, 99, Blocked.Repair), // Christmas Firecracker
         Rule(14, 101, Blocked.Repair), // Suspicious Scrap of Paper
         Rule(14, 102, Blocked.Repair), // Gaion's Order
@@ -206,6 +209,7 @@ public class ItemRules : InitializerBase
         Rule(14, 107, Blocked.Repair), // Fifth Secromicon Fragment
         Rule(14, 108, Blocked.Repair), // Sixth Secromicon Fragment
         Rule(14, 109, Blocked.Repair), // Complete Secromicon
+        Rule(14, 133, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite SD Potion
         Rule(15, 0, Blocked.Repair), // Scroll of Poison
         Rule(15, 1, Blocked.Repair), // Scroll of Meteorite
         Rule(15, 2, Blocked.Repair), // Scroll of Lighting

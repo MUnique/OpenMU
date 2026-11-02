@@ -1830,6 +1830,18 @@
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>SD恢复药水（大）</value>
   </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>精华治疗药水</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>精华魔力药水</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>中瓶精华治疗药水</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>精华SD药水</value>
+  </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>小瓶复合药水</value>
   </data>
