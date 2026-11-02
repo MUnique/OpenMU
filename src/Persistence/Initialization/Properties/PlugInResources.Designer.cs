@@ -977,5 +977,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddItemPriceDefinitionsPlugIn_Description text.</summary>
         public static string AddItemPriceDefinitionsPlugIn_Description => ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddHitShockSettingsPlugIn_Name text.</summary>
+        public static string AddHitShockSettingsPlugIn_Name => ResourceManager.GetString("AddHitShockSettingsPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddHitShockSettingsPlugIn_Description text.</summary>
+        public static string AddHitShockSettingsPlugIn_Description => ResourceManager.GetString("AddHitShockSettingsPlugIn_Description", resourceCulture)!;
+
     }
 }

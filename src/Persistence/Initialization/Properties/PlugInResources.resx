@@ -408,4 +408,6 @@
   <data name="AddItemPriceDefinitionsPlugIn_Description" xml:space="preserve"><value>This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment.</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve"><value>Add Crystal Sword Ice Chance</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve"><value>Adds the Crystal Sword ice chance, which turns an attack into an ice skill instead.</value></data>
+  <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve"><value>Add hit-shock settings</value></data>
+  <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>Adds the Uniria marker to the game configuration so Uniria-equipped players are excluded from hit shock.</value></data>
 </root>

@@ -116,7 +116,7 @@ public class Pets : InitializerBase
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
             (Stats.BonusExperienceRate, 0.3f, AggregateType.AddRaw),
             (Stats.IsPetSkeletonEquipped, 1, AggregateType.AddRaw));
-#pragma warning restore SA1011
+#pragma warning restore SA1117
 
         // Items which are required for crafting:
         this.CreateSpirit();

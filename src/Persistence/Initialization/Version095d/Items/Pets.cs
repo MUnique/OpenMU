@@ -54,7 +54,7 @@ public class Pets : InitializerBase
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
-#pragma warning restore SA1011
+#pragma warning restore SA1117
     }
 
     private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, LocalizedString name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, params (AttributeDefinition, float, AggregateType)[] basePowerUps)

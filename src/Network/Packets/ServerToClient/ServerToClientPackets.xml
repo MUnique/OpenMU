@@ -2356,6 +2356,7 @@
           <Index>3</Index>
           <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
+          <Description>The object ID; its most significant bit indicates whether the target receives a hit shock.</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -2446,18 +2447,19 @@
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>ObjectId</Name>
+          <Description>The object ID; its most significant bit indicates whether the target receives a hit shock.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>HealthStatus</Name>
-          <Description>Gets or sets the status of the remaining health in fractions of 1/250.</Description>
+          <Description>The status of the remaining health in fractions of 1/250.</Description>
         </Field>
         <Field>
           <Index>7</Index>
           <Type>Byte</Type>
           <Name>ShieldStatus</Name>
-          <Description>Gets or sets the status of the remaining shield in fractions of 1/250.</Description>
+          <Description>The status of the remaining shield in fractions of 1/250.</Description>
         </Field>
         <Field>
           <Index>8</Index>

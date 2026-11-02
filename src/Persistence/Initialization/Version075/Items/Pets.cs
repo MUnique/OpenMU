@@ -44,7 +44,7 @@ public class Pets : InitializerBase
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
-#pragma warning restore SA1011
+#pragma warning restore SA1117
     }
 
     private ItemDefinition CreatePet(byte number, LocalizedString name, int dropLevelAndLevelRequirement, params (AttributeDefinition, float, AggregateType)[] basePowerUps)

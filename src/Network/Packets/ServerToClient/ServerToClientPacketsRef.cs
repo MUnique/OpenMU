@@ -6289,7 +6289,7 @@ public readonly ref struct ObjectHitRef
     }
 
     /// <summary>
-    /// Gets or sets the object id. The first bit codifies for a "hit shock".
+    /// Gets or sets the object ID; its most significant bit indicates whether the target receives a hit shock.
     /// </summary>
     public ushort ObjectId
     {
@@ -6476,7 +6476,7 @@ public readonly ref struct ObjectHitExtendedRef
     }
 
     /// <summary>
-    /// Gets or sets the object id. The first bit codifies for a "hit shock".
+    /// Gets or sets the object ID; its most significant bit indicates whether the target receives a hit shock.
     /// </summary>
     public ushort ObjectId
     {
