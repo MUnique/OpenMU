@@ -263,7 +263,9 @@ public class EnterMiniGameAction
             }
         }
 
-        return false;
+        // The regular ticket is preferred, because the free ticket is usually bought.
+        ticketItem = FreeTicketItems.Find(player, miniGameDefinition.Type, gameTicketInventoryIndex);
+        return ticketItem is not null;
     }
 
     private bool IsValidTicket(Item? ticketItem, ItemDefinition requiredItemDefinition, MiniGameDefinition miniGameDefinition)

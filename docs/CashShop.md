@@ -287,10 +287,19 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 21 packages for sale: jewel bundles, Kundun boxes and Cherry Blossom
-items for Goblin Points, and the character cards, the Magic Backpack and the
-Vault Expansion Certificate for WCoin (C) and (P). Most cash shop items, like
+That leaves 27 packages for sale: jewel bundles, Kundun boxes and Cherry Blossom
+items for Goblin Points, and the character cards, the Magic Backpack, the
+Vault Expansion Certificate and the free tickets of Devil Square, Blood Castle
+and Illusion Temple for WCoin (C) and (P). Most cash shop items, like
 seals, scrolls and talismans, aren't defined in the item configuration yet.
+
+The free tickets (13/46 Devil Square, 13/47 Blood Castle, 13/61 Illusion Temple
+and 13/121 Chaos Castle, which isn't in the catalog) are created by
+`EventTicketItems`. They allow to enter the event of any level, instead of its
+regular ticket, which is preferred when the player has both. Each entry costs one
+durability. The package with ten tickets delivers ten tickets with one durability.
+The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing configuration
+and puts their packages on sale.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those
