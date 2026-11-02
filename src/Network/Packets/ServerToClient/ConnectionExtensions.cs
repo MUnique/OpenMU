@@ -2948,12 +2948,13 @@ public static class ConnectionExtensions
     /// <param name="skillIndex">The skill index.</param>
     /// <param name="skillNumber">The skill number.</param>
     /// <param name="skillLevel">The skill level.</param>
+    /// <param name="listType">0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</param>
     /// <param name="flag">The flag.</param>
     /// <remarks>
     /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
     /// Causes reaction on client side: The skill is added to the skill list on client side.
     /// </remarks>
-    public static async ValueTask SendSkillAddedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @skillLevel, byte @flag = 0xFE)
+    public static async ValueTask SendSkillAddedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @skillLevel, byte @listType = 0, byte @flag = 0xFE)
     {
         if (connection is null)
         {
@@ -2965,6 +2966,7 @@ public static class ConnectionExtensions
             var length = SkillAddedRef.Length;
             var packet = new SkillAddedRef(connection.Output.GetSpan(length)[..length]);
             packet.Flag = @flag;
+            packet.ListType = @listType;
             packet.SkillIndex = @skillIndex;
             packet.SkillNumber = @skillNumber;
             packet.SkillLevel = @skillLevel;
@@ -2981,12 +2983,13 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="skillIndex">The skill index.</param>
     /// <param name="skillNumber">The skill number.</param>
+    /// <param name="listType">0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</param>
     /// <param name="flag">The flag.</param>
     /// <remarks>
     /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
     /// Causes reaction on client side: The skill is added to the skill list on client side.
     /// </remarks>
-    public static async ValueTask SendSkillRemovedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @flag = 0xFF)
+    public static async ValueTask SendSkillRemovedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @listType = 0, byte @flag = 0xFF)
     {
         if (connection is null)
         {
@@ -2998,6 +3001,7 @@ public static class ConnectionExtensions
             var length = SkillRemovedRef.Length;
             var packet = new SkillRemovedRef(connection.Output.GetSpan(length)[..length]);
             packet.Flag = @flag;
+            packet.ListType = @listType;
             packet.SkillIndex = @skillIndex;
             packet.SkillNumber = @skillNumber;
 
@@ -3342,11 +3346,12 @@ public static class ConnectionExtensions
     /// <param name="usedNegativeFruitPoints">The used negative fruit points.</param>
     /// <param name="maxNegativeFruitPoints">The max negative fruit points.</param>
     /// <param name="inventoryExtensions">The inventory extensions.</param>
+    /// <param name="direction">The direction the character faces (the client rotates by (Direction - 1) * 45 degrees).</param>
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions)
+    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, byte @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions, byte @direction = 0)
     {
         if (connection is null)
         {
@@ -3360,6 +3365,7 @@ public static class ConnectionExtensions
             packet.X = @x;
             packet.Y = @y;
             packet.MapId = @mapId;
+            packet.Direction = @direction;
             packet.CurrentExperience = @currentExperience;
             packet.ExperienceForNextLevel = @experienceForNextLevel;
             packet.LevelUpPoints = @levelUpPoints;
@@ -5303,11 +5309,12 @@ public static class ConnectionExtensions
     /// Sends a <see cref="DuelHealthBarInit" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="flag">The client resets the health and shield bars only if this is 0.</param>
     /// <remarks>
     /// Is sent by the server when: When the duel starts, after the DuelInit message.
     /// Causes reaction on client side: The client updates the displayed health and shield bars.
     /// </remarks>
-    public static async ValueTask SendDuelHealthBarInitAsync(this IConnection? connection)
+    public static async ValueTask SendDuelHealthBarInitAsync(this IConnection? connection, byte @flag = 0)
     {
         if (connection is null)
         {
@@ -5318,6 +5325,8 @@ public static class ConnectionExtensions
         {
             var length = DuelHealthBarInitRef.Length;
             var packet = new DuelHealthBarInitRef(connection.Output.GetSpan(length)[..length]);
+            packet.Flag = @flag;
+
             return packet.Header.Length;
         }
 
@@ -7182,12 +7191,14 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
     /// <param name="registeredCount">The registered count.</param>
-    /// <param name="remainingInventoryCount">The remaining inventory count.</param>
+    /// <param name="remainingInventoryCount">For the Lena event (Result = 1), the client interprets this as the first lottery (muto) number.</param>
+    /// <param name="mutoNumber2">The second lottery (muto) number for the Lena event; -1 if not available.</param>
+    /// <param name="mutoNumber3">The third lottery (muto) number for the Lena event; -1 if not available.</param>
     /// <remarks>
     /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
     /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
     /// </remarks>
-    public static async ValueTask SendEventChipRegistrationResultAsync(this IConnection? connection, byte @result, uint @registeredCount, ushort @remainingInventoryCount)
+    public static async ValueTask SendEventChipRegistrationResultAsync(this IConnection? connection, byte @result, uint @registeredCount, ushort @remainingInventoryCount, ushort @mutoNumber2 = 0xFFFF, ushort @mutoNumber3 = 0xFFFF)
     {
         if (connection is null)
         {
@@ -7201,6 +7212,8 @@ public static class ConnectionExtensions
             packet.Result = @result;
             packet.RegisteredCount = @registeredCount;
             packet.RemainingInventoryCount = @remainingInventoryCount;
+            packet.MutoNumber2 = @mutoNumber2;
+            packet.MutoNumber3 = @mutoNumber3;
 
             return packet.Header.Length;
         }

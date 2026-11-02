@@ -13,8 +13,8 @@ The player additional gets authentication data sent to his game client. It then 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   19   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   20   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xCB  | Packet header - packet type identifier |
 | 3 | 10 | String |  | FriendName |
-| 13 | 2 | ShortBigEndian |  | RoomId |
-| 15 | 4 | IntegerBigEndian |  | RequestId |
+| 14 | 2 | ShortLittleEndian |  | RoomId |
+| 16 | 4 | IntegerLittleEndian |  | RequestId |

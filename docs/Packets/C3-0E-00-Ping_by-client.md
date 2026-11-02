@@ -18,3 +18,4 @@ By the original server this is used to detect speed hacks.
 | 3 | 1 |    Byte   | 0x00  | Packet header - sub packet type identifier |
 | 4 | 4 | IntegerLittleEndian |  | TickCount |
 | 8 | 2 | ShortLittleEndian |  | AttackSpeed |
+| 10 | 2 | ShortLittleEndian |  | MagicSpeed |

@@ -14701,6 +14701,7 @@ public readonly ref struct SkillAddedRef
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
             this.Flag = 0xFE;
+            this.ListType = 0;
         }
     }
 
@@ -14737,6 +14738,15 @@ public readonly ref struct SkillAddedRef
     {
         get => this._data[4];
         set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.
+    /// </summary>
+    public byte ListType
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
     }
 
     /// <summary>
@@ -14815,6 +14825,7 @@ public readonly ref struct SkillRemovedRef
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
             this.Flag = 0xFF;
+            this.ListType = 0;
         }
     }
 
@@ -14851,6 +14862,15 @@ public readonly ref struct SkillRemovedRef
     {
         get => this._data[4];
         set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.
+    /// </summary>
+    public byte ListType
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
     }
 
     /// <summary>
@@ -14919,6 +14939,7 @@ public readonly ref struct SkillListUpdateRef
             header.Code = Code;
             header.Length = (byte)data.Length;
             header.SubCode = SubCode;
+            this.ListType = 0;
         }
     }
 
@@ -14950,6 +14971,15 @@ public readonly ref struct SkillListUpdateRef
     {
         get => this._data[4];
         set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.
+    /// </summary>
+    public byte ListType
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
     }
 
     /// <summary>
@@ -16208,6 +16238,7 @@ public readonly ref struct CharacterInformationRef
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
+            this.Direction = 0;
         }
     }
 
@@ -16258,10 +16289,19 @@ public readonly ref struct CharacterInformationRef
     /// <summary>
     /// Gets or sets the map id.
     /// </summary>
-    public ushort MapId
+    public byte MapId
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the direction the character faces (the client rotates by (Direction - 1) * 45 degrees).
+    /// </summary>
+    public byte Direction
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
     }
 
     /// <summary>
@@ -17872,7 +17912,7 @@ public readonly ref struct GuildSoccerTimeUpdateRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 6;
+    public static int Length => 8;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -17884,8 +17924,8 @@ public readonly ref struct GuildSoccerTimeUpdateRef
     /// </summary>
     public ushort Seconds
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
     }
 
     /// <summary>
@@ -21589,6 +21629,24 @@ public readonly ref struct GuildMemberRelationRef
     }
 
     /// <summary>
+    /// Gets or sets the guild type.
+    /// </summary>
+    public byte GuildType
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the relationship (union/rival) of the guild to the guild of the receiving player.
+    /// </summary>
+    public byte GuildRelationship
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
     /// Gets or sets the is player appearing new.
     /// </summary>
     public bool IsPlayerAppearingNew
@@ -23661,8 +23719,8 @@ public readonly ref struct DuelStartRequestRef
     /// </summary>
     public ushort RequesterId
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data[4..]);
+        set => WriteUInt16BigEndian(this._data[4..], value);
     }
 
     /// <summary>
@@ -24343,6 +24401,7 @@ public readonly ref struct DuelHealthBarInitRef
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
+            this.Flag = 0;
         }
     }
 
@@ -24365,12 +24424,21 @@ public readonly ref struct DuelHealthBarInitRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 5;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the client resets the health and shield bars only if this is 0.
+    /// </summary>
+    public byte Flag
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="DuelHealthBarInit"/>.
@@ -24838,8 +24906,8 @@ public readonly ref struct SkillStageUpdateRef
     /// </summary>
     public ushort ObjectId
     {
-        get => ReadUInt16LittleEndian(this._data[3..]);
-        set => WriteUInt16LittleEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data[3..]);
+        set => WriteUInt16BigEndian(this._data[3..], value);
     }
 
     /// <summary>
@@ -26206,7 +26274,7 @@ public readonly ref struct IllusionTempleSkillUsageResultRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 11;
+    public static int Length => 12;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -26236,8 +26304,8 @@ public readonly ref struct IllusionTempleSkillUsageResultRef
     /// </summary>
     public ushort SourceObjectId
     {
-        get => ReadUInt16LittleEndian(this._data[7..]);
-        set => WriteUInt16LittleEndian(this._data[7..], value);
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
     }
 
     /// <summary>
@@ -26245,8 +26313,8 @@ public readonly ref struct IllusionTempleSkillUsageResultRef
     /// </summary>
     public ushort TargetObjectId
     {
-        get => ReadUInt16LittleEndian(this._data[9..]);
-        set => WriteUInt16LittleEndian(this._data[9..], value);
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
     }
 
     /// <summary>
@@ -29688,6 +29756,15 @@ public readonly ref struct QuestProgressRef
     }
 
     /// <summary>
+    /// Gets or sets the random reward count.
+    /// </summary>
+    public byte RandomRewardCount
+    {
+        get => this._data[10];
+        set => this._data[10] = value;
+    }
+
+    /// <summary>
     /// Gets the <see cref="QuestConditionRef"/> of the specified index.
     /// </summary>
     public QuestConditionRef GetQuestCondition(int index) => new (this._data[(11 + index * QuestConditionRef.Length)..]);
@@ -32792,6 +32869,8 @@ public readonly ref struct EventChipRegistrationResultRef
             header.Type = HeaderType;
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
+            this.MutoNumber2 = 0xFFFF;
+            this.MutoNumber3 = 0xFFFF;
         }
     }
 
@@ -32808,7 +32887,7 @@ public readonly ref struct EventChipRegistrationResultRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 10;
+    public static int Length => 14;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -32834,12 +32913,30 @@ public readonly ref struct EventChipRegistrationResultRef
     }
 
     /// <summary>
-    /// Gets or sets the remaining inventory count.
+    /// Gets or sets for the Lena event (Result = 1), the client interprets this as the first lottery (muto) number.
     /// </summary>
     public ushort RemainingInventoryCount
     {
         get => ReadUInt16LittleEndian(this._data[8..]);
         set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the second lottery (muto) number for the Lena event; -1 if not available.
+    /// </summary>
+    public ushort MutoNumber2
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the third lottery (muto) number for the Lena event; -1 if not available.
+    /// </summary>
+    public ushort MutoNumber3
+    {
+        get => ReadUInt16LittleEndian(this._data[12..]);
+        set => WriteUInt16LittleEndian(this._data[12..], value);
     }
 
     /// <summary>

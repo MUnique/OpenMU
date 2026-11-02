@@ -15542,6 +15542,7 @@ public readonly struct SkillAdded
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
             this.Flag = 0xFE;
+            this.ListType = 0;
         }
     }
 
@@ -15578,6 +15579,15 @@ public readonly struct SkillAdded
     {
         get => this._data.Span[4];
         set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.
+    /// </summary>
+    public byte ListType
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -15656,6 +15666,7 @@ public readonly struct SkillRemoved
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
             this.Flag = 0xFF;
+            this.ListType = 0;
         }
     }
 
@@ -15692,6 +15703,15 @@ public readonly struct SkillRemoved
     {
         get => this._data.Span[4];
         set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.
+    /// </summary>
+    public byte ListType
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -15760,6 +15780,7 @@ public readonly struct SkillListUpdate
             header.Code = Code;
             header.Length = (byte)data.Length;
             header.SubCode = SubCode;
+            this.ListType = 0;
         }
     }
 
@@ -15791,6 +15812,15 @@ public readonly struct SkillListUpdate
     {
         get => this._data.Span[4];
         set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.
+    /// </summary>
+    public byte ListType
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -17070,6 +17100,7 @@ public readonly struct CharacterInformation
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
+            this.Direction = 0;
         }
     }
 
@@ -17120,10 +17151,19 @@ public readonly struct CharacterInformation
     /// <summary>
     /// Gets or sets the map id.
     /// </summary>
-    public ushort MapId
+    public byte MapId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[6..]);
-        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the direction the character faces (the client rotates by (Direction - 1) * 45 degrees).
+    /// </summary>
+    public byte Direction
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
@@ -18734,7 +18774,7 @@ public readonly struct GuildSoccerTimeUpdate
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 6;
+    public static int Length => 8;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -18746,8 +18786,8 @@ public readonly struct GuildSoccerTimeUpdate
     /// </summary>
     public ushort Seconds
     {
-        get => ReadUInt16LittleEndian(this._data.Span[4..]);
-        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -22763,6 +22803,24 @@ public readonly struct GuildMemberRelation
     }
 
     /// <summary>
+    /// Gets or sets the guild type.
+    /// </summary>
+    public byte GuildType
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the relationship (union/rival) of the guild to the guild of the receiving player.
+    /// </summary>
+    public byte GuildRelationship
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
     /// Gets or sets the is player appearing new.
     /// </summary>
     public bool IsPlayerAppearingNew
@@ -25020,8 +25078,8 @@ public readonly struct DuelStartRequest
     /// </summary>
     public ushort RequesterId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[4..]);
-        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -25702,6 +25760,7 @@ public readonly struct DuelHealthBarInit
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
+            this.Flag = 0;
         }
     }
 
@@ -25724,12 +25783,21 @@ public readonly struct DuelHealthBarInit
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 5;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the client resets the health and shield bars only if this is 0.
+    /// </summary>
+    public byte Flag
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="DuelHealthBarInit"/>.
@@ -26197,8 +26265,8 @@ public readonly struct SkillStageUpdate
     /// </summary>
     public ushort ObjectId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[3..]);
-        set => WriteUInt16LittleEndian(this._data.Span[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
@@ -27658,7 +27726,7 @@ public readonly struct IllusionTempleSkillUsageResult
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 11;
+    public static int Length => 12;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -27688,8 +27756,8 @@ public readonly struct IllusionTempleSkillUsageResult
     /// </summary>
     public ushort SourceObjectId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[7..]);
-        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -27697,8 +27765,8 @@ public readonly struct IllusionTempleSkillUsageResult
     /// </summary>
     public ushort TargetObjectId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[9..]);
-        set => WriteUInt16LittleEndian(this._data.Span[9..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
     }
 
     /// <summary>
@@ -31317,6 +31385,15 @@ public readonly struct QuestProgress
     }
 
     /// <summary>
+    /// Gets or sets the random reward count.
+    /// </summary>
+    public byte RandomRewardCount
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
     /// Gets the <see cref="QuestCondition"/> of the specified index.
     /// </summary>
     public QuestCondition GetQuestCondition(int index) => new (this._data.Slice(11 + index * QuestConditionRef.Length));
@@ -34853,6 +34930,8 @@ public readonly struct EventChipRegistrationResult
             header.Type = HeaderType;
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
+            this.MutoNumber2 = 0xFFFF;
+            this.MutoNumber3 = 0xFFFF;
         }
     }
 
@@ -34869,7 +34948,7 @@ public readonly struct EventChipRegistrationResult
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 10;
+    public static int Length => 14;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -34895,12 +34974,30 @@ public readonly struct EventChipRegistrationResult
     }
 
     /// <summary>
-    /// Gets or sets the remaining inventory count.
+    /// Gets or sets for the Lena event (Result = 1), the client interprets this as the first lottery (muto) number.
     /// </summary>
     public ushort RemainingInventoryCount
     {
         get => ReadUInt16LittleEndian(this._data.Span[8..]);
         set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the second lottery (muto) number for the Lena event; -1 if not available.
+    /// </summary>
+    public ushort MutoNumber2
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the third lottery (muto) number for the Lena event; -1 if not available.
+    /// </summary>
+    public ushort MutoNumber3
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[12..]);
+        set => WriteUInt16LittleEndian(this._data.Span[12..], value);
     }
 
     /// <summary>

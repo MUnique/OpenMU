@@ -2975,6 +2975,10 @@ public class PacketStructureTests
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Flag' exceeds packet boundary");
         
+        // Validate field 'ListType' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ListType' exceeds packet boundary");
+        
         // Validate field 'SkillIndex' boundary
         Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'SkillIndex' exceeds packet boundary");
@@ -3005,6 +3009,10 @@ public class PacketStructureTests
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Flag' exceeds packet boundary");
         
+        // Validate field 'ListType' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ListType' exceeds packet boundary");
+        
         // Validate field 'SkillIndex' boundary
         Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'SkillIndex' exceeds packet boundary");
@@ -3026,6 +3034,10 @@ public class PacketStructureTests
         // Field 'Count' starts at index 4 with size 1
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'Count' has invalid negative index");
+        
+        // Field 'ListType' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ListType' has invalid negative index");
     }
 
     /// <summary>
@@ -3330,8 +3342,12 @@ public class PacketStructureTests
             "Field 'Y' exceeds packet boundary");
         
         // Validate field 'MapId' boundary
-        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'MapId' exceeds packet boundary");
+        
+        // Validate field 'Direction' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Direction' exceeds packet boundary");
         
         // Validate field 'CurrentExperience' boundary
         Assert.That(8 + 8, Is.LessThanOrEqualTo(expectedLength), 
@@ -3869,14 +3885,14 @@ public class PacketStructureTests
     public void GuildSoccerTimeUpdate_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 6;
+        const int expectedLength = 8;
         var actualLength = GuildSoccerTimeUpdateRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
         
         // Validate field 'Seconds' boundary
-        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Seconds' exceeds packet boundary");
     }
 
@@ -5365,11 +5381,15 @@ public class PacketStructureTests
     public void DuelHealthBarInit_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 4;
+        const int expectedLength = 5;
         var actualLength = DuelHealthBarInitRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Flag' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Flag' exceeds packet boundary");
     }
 
     /// <summary>
@@ -5759,7 +5779,7 @@ public class PacketStructureTests
     public void IllusionTempleSkillUsageResult_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 11;
+        const int expectedLength = 12;
         var actualLength = IllusionTempleSkillUsageResultRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -5774,11 +5794,11 @@ public class PacketStructureTests
             "Field 'SkillNumber' exceeds packet boundary");
         
         // Validate field 'SourceObjectId' boundary
-        Assert.That(7 + 2, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'SourceObjectId' exceeds packet boundary");
         
         // Validate field 'TargetObjectId' boundary
-        Assert.That(9 + 2, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(10 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'TargetObjectId' exceeds packet boundary");
     }
 
@@ -6506,6 +6526,10 @@ public class PacketStructureTests
         // Validate field 'RewardCount' boundary
         Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'RewardCount' exceeds packet boundary");
+        
+        // Validate field 'RandomRewardCount' boundary
+        Assert.That(10 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RandomRewardCount' exceeds packet boundary");
     }
 
     /// <summary>
@@ -7193,7 +7217,7 @@ public class PacketStructureTests
     public void EventChipRegistrationResult_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 10;
+        const int expectedLength = 14;
         var actualLength = EventChipRegistrationResultRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -7210,6 +7234,14 @@ public class PacketStructureTests
         // Validate field 'RemainingInventoryCount' boundary
         Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'RemainingInventoryCount' exceeds packet boundary");
+        
+        // Validate field 'MutoNumber2' boundary
+        Assert.That(10 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MutoNumber2' exceeds packet boundary");
+        
+        // Validate field 'MutoNumber3' boundary
+        Assert.That(12 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MutoNumber3' exceeds packet boundary");
     }
 
     /// <summary>

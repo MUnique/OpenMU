@@ -5825,6 +5825,13 @@
           <DefaultValue>0xFE</DefaultValue>
         </Field>
         <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ListType</Name>
+          <Description>0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>SkillIndex</Name>
@@ -5858,6 +5865,13 @@
           <DefaultValue>0xFF</DefaultValue>
         </Field>
         <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ListType</Name>
+          <Description>0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>SkillIndex</Name>
@@ -5883,6 +5897,13 @@
           <Type>Byte</Type>
           <Name>Count</Name>
           <Description>Mixed usage: Skill list count (when list). 0xFE when adding a skill, 0xFF when removing a Skill.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ListType</Name>
+          <Description>0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</Description>
+          <DefaultValue>0</DefaultValue>
         </Field>
         <Field>
           <Index>6</Index>
@@ -6298,8 +6319,15 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>Byte</Type>
           <Name>MapId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Direction</Name>
+          <Description>The direction the character faces (the client rotates by (Direction - 1) * 45 degrees).</Description>
+          <DefaultValue>0</DefaultValue>
         </Field>
         <Field>
           <Index>8</Index>
@@ -6957,13 +6985,13 @@
       <Code>F3</Code>
       <SubCode>22</SubCode>
       <Name>GuildSoccerTimeUpdate</Name>
-      <Length>6</Length>
+      <Length>8</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>Every second during a guild soccer match.</SentWhen>
       <CausedReaction>The time is updated on the user interface.</CausedReaction>
       <Fields>
         <Field>
-          <Index>4</Index>
+          <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>Seconds</Name>
         </Field>
@@ -8405,6 +8433,17 @@
               <Name>Role</Name>
             </Field>
             <Field>
+              <Index>5</Index>
+              <Type>Byte</Type>
+              <Name>GuildType</Name>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>Byte</Type>
+              <Name>GuildRelationship</Name>
+              <Description>The relationship (union/rival) of the guild to the guild of the receiving player.</Description>
+            </Field>
+            <Field>
               <Index>7</Index>
               <LeftShifted>7</LeftShifted>
               <Type>Boolean</Type>
@@ -9252,7 +9291,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>RequesterId</Name>
         </Field>
         <Field>
@@ -9465,11 +9504,18 @@
       <Code>AA</Code>
       <SubCode>0D</SubCode>
       <Name>DuelHealthBarInit</Name>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>When the duel starts, after the DuelInit message.</SentWhen>
       <CausedReaction>The client updates the displayed health and shield bars.</CausedReaction>
       <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <Description>The client resets the health and shield bars only if this is 0.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -9582,7 +9628,7 @@
 			<Fields>
 				<Field>
 					<Index>3</Index>
-					<Type>ShortLittleEndian</Type>
+					<Type>ShortBigEndian</Type>
 					<Name>ObjectId</Name>
 				</Field>
 				<Field>
@@ -10099,7 +10145,7 @@
       <Code>BF</Code>
       <SubCode>02</SubCode>
       <Name>IllusionTempleSkillUsageResult</Name>
-      <Length>11</Length>
+      <Length>12</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>A player requested to use a specific skill in the illusion temple event.</SentWhen>
       <CausedReaction>The client shows the result.</CausedReaction>
@@ -10115,12 +10161,12 @@
           <Name>SkillNumber</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>8</Index>
           <Type>ShortLittleEndian</Type>
           <Name>SourceObjectId</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>10</Index>
           <Type>ShortLittleEndian</Type>
           <Name>TargetObjectId</Name>
         </Field>
@@ -11275,6 +11321,11 @@
           <Index>9</Index>
           <Type>Byte</Type>
           <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>RandomRewardCount</Name>
         </Field>
         <Field>
           <Index>11</Index>
@@ -12744,7 +12795,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>
-      <Length>10</Length>
+      <Length>14</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.</SentWhen>
       <CausedReaction>The client updates the Golden Archer interface with total registered count and remaining count in inventory.</CausedReaction>
@@ -12763,6 +12814,21 @@
           <Index>8</Index>
           <Type>ShortLittleEndian</Type>
           <Name>RemainingInventoryCount</Name>
+          <Description>For the Lena event (Result = 1), the client interprets this as the first lottery (muto) number.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MutoNumber2</Name>
+          <Description>The second lottery (muto) number for the Lena event; -1 if not available.</Description>
+          <DefaultValue>0xFFFF</DefaultValue>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MutoNumber3</Name>
+          <Description>The third lottery (muto) number for the Lena event; -1 if not available.</Description>
+          <DefaultValue>0xFFFF</DefaultValue>
         </Field>
       </Fields>
     </Packet>
