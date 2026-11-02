@@ -5681,4 +5681,145 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterRenameRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="oldName">The old name.</param>
+    /// <param name="newName">The new name.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to rename a character in the character selection.
+    /// Causes reaction on server side: The server renames the character and answers with CharacterRenameResult (F3 16).
+    /// </remarks>
+    public static async ValueTask SendCharacterRenameRequestAsync(this IConnection? connection, string @oldName, string @newName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterRenameRequestRef.Length;
+            var packet = new CharacterRenameRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.OldName = @oldName;
+            packet.NewName = @newName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="InventoryItemEquipRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="inventorySlot">The inventory slot.</param>
+    /// <param name="value">The value.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player (un)equips an item which is used inside the inventory.
+    /// Causes reaction on server side: The server answers with InventoryItemEquipResult (BF 20).
+    /// </remarks>
+    public static async ValueTask SendInventoryItemEquipRequestAsync(this IConnection? connection, byte @inventorySlot, byte @value)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = InventoryItemEquipRequestRef.Length;
+            var packet = new InventoryItemEquipRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.InventorySlot = @inventorySlot;
+            packet.Value = @value;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RequestD000" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: Sent by the 1.04d client; its purpose is not identified yet.
+    /// Causes reaction on server side: Unknown.
+    /// </remarks>
+    public static async ValueTask SendRequestD000Async(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RequestD000Ref.Length;
+            var packet = new RequestD000Ref(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GameServerChannelRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="value">The value.</param>
+    /// <remarks>
+    /// Is sent by the client when: Sent when the player confirms the game server channel message box.
+    /// Causes reaction on server side: The server answers with GameServerChannelResult (F1 06).
+    /// </remarks>
+    public static async ValueTask SendGameServerChannelRequestAsync(this IConnection? connection, byte @value)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GameServerChannelRequestRef.Length;
+            var packet = new GameServerChannelRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Value = @value;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GameGuardAuthResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="data">The data.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client answers the GameGuardAuthRequest (C3 73).
+    /// Causes reaction on server side: The server can verify the GameGuard answer.
+    /// </remarks>
+    public static async ValueTask SendGameGuardAuthResponseAsync(this IConnection? connection, Memory<byte> @data)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GameGuardAuthResponseRef.Length;
+            var packet = new GameGuardAuthResponseRef(connection.Output.GetSpan(length)[..length]);
+            @data.Span.CopyTo(packet.Data);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

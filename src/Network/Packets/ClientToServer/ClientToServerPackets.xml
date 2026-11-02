@@ -4337,6 +4337,98 @@
       <CausedReaction>The server removes the link and sends an updated DiscordIntegrationInfo message.</CausedReaction>
       <Fields />
     </Packet>
+  <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>16</SubCode>
+      <Name>CharacterRenameRequest</Name>
+      <Length>24</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to rename a character in the character selection.</SentWhen>
+      <CausedReaction>The server renames the character and answers with CharacterRenameResult (F3 16).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>OldName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>String</Type>
+          <Name>NewName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>20</SubCode>
+      <Name>InventoryItemEquipRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player (un)equips an item which is used inside the inventory.</SentWhen>
+      <CausedReaction>The server answers with InventoryItemEquipResult (BF 20).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Value</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D0</Code>
+      <SubCode>00</SubCode>
+      <Name>RequestD000</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>Sent by the 1.04d client; its purpose is not identified yet.</SentWhen>
+      <CausedReaction>Unknown.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>06</SubCode>
+      <Name>GameServerChannelRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>Sent when the player confirms the game server channel message box.</SentWhen>
+      <CausedReaction>The server answers with GameServerChannelResult (F1 06).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Value</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>73</Code>
+      <SubCode>00</SubCode>
+      <Name>GameGuardAuthResponse</Name>
+      <Length>20</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client answers the GameGuardAuthRequest (C3 73).</SentWhen>
+      <CausedReaction>The server can verify the GameGuard answer.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Data</Name>
+          <Length>16</Length>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

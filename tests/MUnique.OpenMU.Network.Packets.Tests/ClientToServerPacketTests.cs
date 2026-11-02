@@ -3991,4 +3991,98 @@ public class PacketStructureTests
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for CharacterRenameRequest.
+    /// </summary>
+    [Test]
+    public void CharacterRenameRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 24;
+        var actualLength = CharacterRenameRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'OldName' boundary
+        Assert.That(4 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'OldName' exceeds packet boundary");
+        
+        // Validate field 'NewName' boundary
+        Assert.That(14 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'NewName' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for InventoryItemEquipRequest.
+    /// </summary>
+    [Test]
+    public void InventoryItemEquipRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = InventoryItemEquipRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'InventorySlot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'InventorySlot' exceeds packet boundary");
+        
+        // Validate field 'Value' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Value' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for RequestD000.
+    /// </summary>
+    [Test]
+    public void RequestD000_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = RequestD000Ref.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for GameServerChannelRequest.
+    /// </summary>
+    [Test]
+    public void GameServerChannelRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = GameServerChannelRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Value' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Value' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for GameGuardAuthResponse.
+    /// </summary>
+    [Test]
+    public void GameGuardAuthResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 20;
+        var actualLength = GameGuardAuthResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Data' boundary
+        Assert.That(4 + 16, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Data' exceeds packet boundary");
+    }
 }
