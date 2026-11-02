@@ -55,9 +55,16 @@ public class AddFreeTicketItemsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 02, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>
+    /// The tickets get the item rule flags, so these have to exist first.
+    /// </remarks>
+    public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddItemRuleFlagsPlugIn).GUID];
+
+    /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        new EventTicketItems(context, gameConfiguration).CreateFreeTicketItems();
+        var addedItems = new EventTicketItems(context, gameConfiguration).CreateFreeTicketItems();
+        ItemRules.Apply(addedItems);
         AssignCashShopProducts(gameConfiguration);
         return ValueTask.CompletedTask;
     }

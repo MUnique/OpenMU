@@ -139,6 +139,7 @@ internal class EventTicketItems : InitializerBase
     /// Creates the free tickets of the in-game shop, which don't exist yet. They allow to enter
     /// Devil Square, Blood Castle, Illusion Temple and Chaos Castle of any level, instead of their
     /// regular tickets. Their durability is the number of entries.
+    /// The rules which block trading and selling them are applied by the <see cref="ItemRules"/>.
     /// </summary>
     /// <returns>The created items.</returns>
     internal IReadOnlyList<ItemDefinition> CreateFreeTicketItems()
@@ -148,7 +149,11 @@ internal class EventTicketItems : InitializerBase
         {
             if (!this.GameConfiguration.Items.Any(item => item.Group == 13 && item.Number == number))
             {
-                createdItems.Add(this.CreateEventItem(number, 13, 1, 1, name, false));
+                // Like in the client, a ticket holds up to ten entries. The in-game shop delivers
+                // the package of ten tickets as one ticket with ten entries.
+                var ticket = this.CreateEventItem(number, 13, 1, 1, name, false);
+                ticket.Durability = 10;
+                createdItems.Add(ticket);
             }
         }
 

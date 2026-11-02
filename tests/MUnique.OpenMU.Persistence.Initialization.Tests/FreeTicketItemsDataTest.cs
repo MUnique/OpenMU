@@ -66,7 +66,7 @@ internal class FreeTicketItemsDataTest
     {
         var tickets = gameConfiguration.Items.Where(IsTicket).ToList();
         Assert.That(tickets.Select(item => item.Number), Is.EquivalentTo(TicketNumbers));
-        Assert.That(tickets, Has.All.Matches<ItemDefinition>(item => item.Durability == 1 && !item.DropsFromMonsters && item.Name.ValueInNeutralLanguage.Length > 0));
+        Assert.That(tickets, Has.All.Matches<ItemDefinition>(item => item.Durability == 10 && !item.DropsFromMonsters && !item.IsTradable && !item.IsSellableToNpc && item.Name.ValueInNeutralLanguage.Length > 0));
 
         var packages = gameConfiguration.CashShopConfiguration!.Packages.Where(p => TicketPackages.Contains(p.PackageSequence)).ToList();
         Assert.That(packages, Has.Count.EqualTo(TicketPackages.Length));

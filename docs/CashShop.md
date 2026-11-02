@@ -297,7 +297,9 @@ The free tickets (13/46 Devil Square, 13/47 Blood Castle, 13/61 Illusion Temple
 and 13/121 Chaos Castle, which isn't in the catalog) are created by
 `EventTicketItems`. They allow to enter the event of any level, instead of its
 regular ticket, which is preferred when the player has both. Each entry costs one
-durability. The package with ten tickets delivers ten tickets with one durability.
+durability, and a ticket holds up to ten entries, like in the client. The package
+with ten tickets delivers one ticket with ten entries. The tickets can't be traded,
+dropped or sold.
 The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing configuration
 and puts their packages on sale.
 
