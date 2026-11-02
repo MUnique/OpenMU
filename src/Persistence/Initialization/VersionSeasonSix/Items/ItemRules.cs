@@ -126,6 +126,7 @@ public class ItemRules : InitializerBase
         Rule(13, 40, Blocked.Repair), // Jack Olantern Ring
         Rule(13, 41, Blocked.Repair), // Transfer Christmas Ring
         Rule(13, 42, Blocked.Repair), // Ring of GM
+        Rule(13, 48, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Kalima Ticket
         Rule(13, 49, Blocked.Repair), // Old Scroll
         Rule(13, 50, Blocked.Repair), // Illusion Sorcerer Covenant
         Rule(13, 51, Blocked.Repair), // Scroll of Blood

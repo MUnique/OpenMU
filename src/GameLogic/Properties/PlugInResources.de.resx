@@ -1710,6 +1710,18 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>Die Regeln der Gens für Partys, Gilden und Allianzen: keine Party zwischen verschiedenen Gens und in der Kampfzone, Gilden und Allianzen nur innerhalb einer Gens.</value>
   </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauchs-Handler für Kalima-Tickets</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Öffnet ein Tor zu der Kalima-Stufe, die zum Level des Charakters passt. Jede Benutzung verbraucht eine der Benutzungen des Tickets.</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>Mindestlevel der Kalima-Stufen</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>Mindestlevel der Kalima-Stufen für Spezialcharaktere</value>
+  </data>
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>Effektnummer von Potion of Bless</value>
   </data>

@@ -899,6 +899,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddCrywolfEventUpdatePlugIn_Description text.</summary>
         public static string AddCrywolfEventUpdatePlugIn_Description => ResourceManager.GetString("AddCrywolfEventUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddKalimaTicketUpdatePlugIn_Name text.</summary>
+        public static string AddKalimaTicketUpdatePlugIn_Name => ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKalimaTicketUpdatePlugIn_Description text.</summary>
+        public static string AddKalimaTicketUpdatePlugIn_Description => ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSmallWingsUpdatePlugIn_Name text.</summary>
         public static string AddSmallWingsUpdatePlugIn_Name => ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Name", resourceCulture)!;
 

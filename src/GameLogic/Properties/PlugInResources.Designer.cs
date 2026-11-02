@@ -4780,6 +4780,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption text.</summary>
         public static string BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption => ResourceManager.GetString("BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption", resourceCulture)!;
 
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerPlugIn_Name text.</summary>
+        public static string KalimaTicketConsumeHandlerPlugIn_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerPlugIn_Description text.</summary>
+        public static string KalimaTicketConsumeHandlerPlugIn_Description => ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name text.</summary>
+        public static string KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name text.</summary>
+        public static string KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name", resourceCulture)!;
+
         /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name text.</summary>
         public static string SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name", resourceCulture)!;
 

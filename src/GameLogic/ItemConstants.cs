@@ -1,4 +1,4 @@
-// <copyright file="ItemConstants.cs" company="MUnique">
+﻿// <copyright file="ItemConstants.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -113,6 +113,11 @@ public class ItemConstants
     /// Gets the identifier for the antidote.
     /// </summary>
     public static ItemIdentifier Antidote => new(8, 14);
+
+    /// <summary>
+    /// Gets the identifier for the kalima ticket.
+    /// </summary>
+    public static ItemIdentifier KalimaTicket => new(48, 13);
 
     /// <summary>
     /// Gets the identifier for the town portal scroll.
