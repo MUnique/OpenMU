@@ -538,6 +538,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddCrystalSwordIceChanceUpdatePlugIn_Description text.</summary>
         public static string AddCrystalSwordIceChanceUpdatePlugIn_Description => ResourceManager.GetString("AddCrystalSwordIceChanceUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCraftingTalismansUpdatePlugIn_Name text.</summary>
+        public static string AddCraftingTalismansUpdatePlugIn_Name => ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCraftingTalismansUpdatePlugIn_Description text.</summary>
+        public static string AddCraftingTalismansUpdatePlugIn_Description => ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Description", resourceCulture)!;
         
         /// <summary>Gets the localized FixSummonerCurseSkillsPlugIn_Name text.</summary>
         public static string FixSummonerCurseSkillsPlugIn_Name => ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Name", resourceCulture)!;

@@ -121,6 +121,27 @@ inventory, with the item level and quantity of the product. If the inventory
 doesn't have space for all of them, nothing is added and the item stays in the
 storage.
 
+### Crafting talismans
+
+The **Talisman of Luck** and the **Talisman of Chaos Assembly** are put into the
+chaos machine together with the items of a crafting:
+
+* The Talisman of Luck increases the success rate by its durability in percent
+  (1, 5 or 10, depending on the bought product). Several talismans can be put in,
+  up to a total durability of 10, and the rate never exceeds the maximum rate of
+  the crafting. It's accepted by the +10 to +15 item upgrades, the fruits, the
+  wings, capes and 3rd wings, the Fenrir stages, the shield potions, and the Dark
+  Horse and Dark Raven of the pet trainer. The craftings of the event tickets and
+  the Fenrir upgrade don't accept it yet.
+* The Talisman of Chaos Assembly keeps the item of a +10 to +15 item upgrade when
+  the upgrade fails. Only one can be put in.
+
+Both are used up by the crafting, whether it succeeds or fails. In the admin panel,
+they are optional required items of the craftings: the Talisman of Luck adds its
+percentage per durability (*Add Percentage*), and the Talisman of Chaos Assembly
+has the fail result *Disappear And Protect Referenced Items*. Existing databases
+get them with the configuration update *Add crafting talismans*.
+
 ### Special items
 
 Some items aren't put into the inventory. A plugin applies them when the player

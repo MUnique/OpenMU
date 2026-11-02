@@ -2097,4 +2097,10 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>诅咒城堡之水</value>
   </data>
+  <data name="TalismanOfLuck" xml:space="preserve">
+    <value>幸运符咒</value>
+  </data>
+  <data name="TalismanOfChaosAssembly" xml:space="preserve">
+    <value>混沌合成符咒</value>
+  </data>
 </root>

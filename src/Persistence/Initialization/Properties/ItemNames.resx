@@ -2097,4 +2097,10 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Cursed Castle Water</value>
   </data>
+  <data name="TalismanOfLuck" xml:space="preserve">
+    <value>Talisman of Luck</value>
+  </data>
+  <data name="TalismanOfChaosAssembly" xml:space="preserve">
+    <value>Talisman of Chaos Assembly</value>
+  </data>
 </root>

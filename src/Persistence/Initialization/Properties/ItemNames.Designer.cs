@@ -4913,5 +4913,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("CursedCastleWater", resourceCulture);
             }
         }
+
+        /// <summary>Gets TalismanOfLuck from the configuration name resources.</summary>
+        public static string TalismanOfLuck {
+            get {
+                return ResourceManager.GetString("TalismanOfLuck", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets TalismanOfChaosAssembly from the configuration name resources.</summary>
+        public static string TalismanOfChaosAssembly {
+            get {
+                return ResourceManager.GetString("TalismanOfChaosAssembly", resourceCulture);
+            }
+        }
     }
 }

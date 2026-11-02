@@ -186,6 +186,7 @@ public class ItemRules : InitializerBase
         Rule(14, 50, Blocked.Repair), // Jack O'Lantern Drink
         Rule(14, 51, Blocked.Repair), // Chistmas Star
         Rule(14, 52, Blocked.Trade, Blocked.Repair), // GM Gift
+        Rule(14, 53, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Luck
         Rule(14, 63, Blocked.Repair), // Firecracker
         Rule(14, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Death-beam Knight Flame
         Rule(14, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Hell-Miner Horn
@@ -196,6 +197,7 @@ public class ItemRules : InitializerBase
         Rule(14, 86, Blocked.Repair), // Cherry Blossom Rice Cake
         Rule(14, 87, Blocked.Repair), // Cherry Blossom Flower Petal
         Rule(14, 90, Blocked.Repair), // Golden Cherry Blossom Branch
+        Rule(14, 96, Blocked.Trade, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Chaos Assembly
         Rule(14, 99, Blocked.Repair), // Christmas Firecracker
         Rule(14, 101, Blocked.Repair), // Suspicious Scrap of Paper
         Rule(14, 102, Blocked.Repair), // Gaion's Order
