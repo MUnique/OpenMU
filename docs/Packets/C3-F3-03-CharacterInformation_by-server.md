@@ -18,7 +18,8 @@ The characters enters the game world.
 | 3 | 1 |    Byte   | 0x03  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | X |
 | 5 | 1 | Byte |  | Y |
-| 6 | 2 | ShortLittleEndian |  | MapId |
+| 6 | 1 | Byte |  | MapId |
+| 7 | 1 | Byte | 0 | Direction; The direction the character faces (the client rotates by (Direction - 1) * 45 degrees). |
 | 8 | 8 | LongBigEndian |  | CurrentExperience |
 | 16 | 8 | LongBigEndian |  | ExperienceForNextLevel |
 | 24 | 2 | ShortLittleEndian |  | LevelUpPoints |

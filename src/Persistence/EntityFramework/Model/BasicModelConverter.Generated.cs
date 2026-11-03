@@ -2656,6 +2656,7 @@ internal sealed class BasicModelConverter
         target.AllowParty = source.AllowParty;
         target.Entrance = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Entrance)!;
         target.TicketItem = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.TicketItem)!;
+        target.FreeTicketItem = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.FreeTicketItem)!;
         if (source.Rewards is { } rewardsItems)
         {
             foreach (var item in rewardsItems)
