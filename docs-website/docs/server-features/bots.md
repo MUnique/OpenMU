@@ -238,12 +238,20 @@ town instead. While the shop dialog visibly occupies it, the bot sells its junk,
 repairs its gear — which is what earns the NPC's discount — and buys potions and,
 where a shop offers them, jewels.
 
-Only Jewels of Bless, Soul and Life are collected, and only up to the configured
-stock: a bot cannot trade or craft, so any other kind would be a backpack slot it
-never gets back. They are spent on its own equipment through the regular consume
-action, with the same success rates and failure penalties a player faces, and
-with the caution a player shows: a Soul is only risked where a failure cannot
-destroy the item's level.
+Only Jewels of Bless, Soul, Life and Chaos are collected, and only up to the
+configured stock: a bot does not trade and uses no other crafting, so any other
+kind would be a backpack slot it never gets back. Bless, Soul and Life are spent
+on its own equipment through the regular consume action, with the same success
+rates and failure penalties a player faces, and with the caution a player shows:
+a Soul is only risked where a failure cannot destroy the item's level.
+
+From +9 on, a bot takes its worn weapon, shield and armor pieces to the Chaos
+Goblin — warping to a map where one stands, Noria in Season 6, and paying the
+fare — and mixes them up to +15, one level at a time, as the goblin's +10 to +15
+combinations configure it, with their jewels, price and success rate. Like most
+players, it only puts pieces with luck into the machine. A failure costs it the
+piece, as it costs a player: the bot goes without until it finds another one.
+Wings, pets and jewelry never go in.
 
 A bot which reaches the server's maximum inventory money can no longer sell
 anything — the money simply does not fit. What it cannot sell it keeps, and

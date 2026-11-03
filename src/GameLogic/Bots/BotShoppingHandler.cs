@@ -545,8 +545,8 @@ internal static class BotShoppingHandler
     /// <summary>
     /// A jewel which reached the junk list: either a kind the bot can never spend, or the part of a
     /// usable kind above its stock limit. Unlike a piece of gear it has no second life - the bot cannot
-    /// wear it, craft with it or trade it - so when the money limit refuses the sale there is nothing
-    /// left to wait for.
+    /// wear it or trade it, and what it mixes with is covered by the stock - so when the money limit
+    /// refuses the sale there is nothing left to wait for.
     /// </summary>
     private static bool IsDeadWeight(Item item)
     {

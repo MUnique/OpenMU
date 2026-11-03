@@ -171,7 +171,10 @@ internal static class BotGearPlanner
     /// Whether the item is gear whose stat requirements the planner looks at: weapons, armor pieces and -
     /// if asked for - shields; never ammunition.
     /// </summary>
-    private static bool IsPlannedGear(ItemDefinition definition, bool includeShields)
+    /// <param name="definition">The item definition.</param>
+    /// <param name="includeShields">Whether shields count as well.</param>
+    /// <returns><c>True</c>, if the item is planned gear.</returns>
+    internal static bool IsPlannedGear(ItemDefinition definition, bool includeShields)
     {
         return definition.ItemSlot is { ItemSlots.Count: > 0 }
                && !definition.IsAmmunition

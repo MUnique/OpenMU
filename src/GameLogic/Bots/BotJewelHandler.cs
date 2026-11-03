@@ -25,24 +25,25 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 internal static class BotJewelHandler
 {
     /// <summary>
-    /// The jewels a bot has a use for: it upgrades its own gear with them (see the policy above).
-    /// Everything else - Chaos, Creation, Guardian, Gemstone, Harmony, the refine stones - is only
-    /// spendable by trading or crafting, which a bot does neither of.
+    /// The jewels a bot has a use for: it upgrades its own gear with Bless, Soul and Life (see the policy
+    /// above), and spends Chaos together with Bless and Soul on the +10 ... +15 mixes at the chaos machine
+    /// (see <see cref="BotChaosMachineHandler"/>). Everything else - Creation, Guardian, Gemstone, Harmony,
+    /// the refine stones - is only spendable by trading or by other craftings, which a bot does not do.
     /// </summary>
     internal static readonly ItemIdentifier[] UsableJewels =
     [
         ItemConstants.JewelOfBless,
         ItemConstants.JewelOfSoul,
         ItemConstants.JewelOfLife,
+        ItemConstants.JewelOfChaos,
     ];
 
     /// <summary>
-    /// Jewels a bot may still be carrying from before but can never spend: it neither trades nor crafts.
+    /// Jewels a bot may still be carrying from before but can never spend (see <see cref="UsableJewels"/>).
     /// They are not picked up anymore, so this is about clearing out what is already in the backpack.
     /// </summary>
     internal static readonly ItemIdentifier[] UnusableJewels =
     [
-        ItemConstants.JewelOfChaos,
         ItemConstants.JewelOfCreation,
         ItemConstants.JewelOfGuardian,
         ItemConstants.Gemstone,
