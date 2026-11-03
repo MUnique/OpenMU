@@ -952,6 +952,114 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of strength, which takes back invested strength points and returns them as level up points..
+        /// </summary>
+        public static string StrengthResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StrengthResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Strength Consume Handler.
+        /// </summary>
+        public static string StrengthResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StrengthResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of agility, which takes back invested agility points and returns them as level up points..
+        /// </summary>
+        public static string AgilityResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AgilityResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Agility Consume Handler.
+        /// </summary>
+        public static string AgilityResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AgilityResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of vitality, which takes back invested vitality points and returns them as level up points..
+        /// </summary>
+        public static string VitalityResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("VitalityResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Vitality Consume Handler.
+        /// </summary>
+        public static string VitalityResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("VitalityResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of energy, which takes back invested energy points and returns them as level up points..
+        /// </summary>
+        public static string EnergyResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EnergyResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Energy Consume Handler.
+        /// </summary>
+        public static string EnergyResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EnergyResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of command, which takes back invested command points and returns them as level up points..
+        /// </summary>
+        public static string CommandResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CommandResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points per durability.
+        /// </summary>
+        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name {
+            get {
+                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of stat points which one durability of a reset fruit takes back..
+        /// </summary>
+        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description {
+            get {
+                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Command Consume Handler.
+        /// </summary>
+        public static string CommandResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CommandResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the fruit consumption..
         /// </summary>
         public static string FruitConsumeHandlerPlugIn_Description {

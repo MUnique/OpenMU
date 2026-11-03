@@ -4900,6 +4900,41 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets ResetFruitStrength from the configuration name resources.</summary>
+        public static string ResetFruitStrength {
+            get {
+                return ResourceManager.GetString("ResetFruitStrength", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitAgility from the configuration name resources.</summary>
+        public static string ResetFruitAgility {
+            get {
+                return ResourceManager.GetString("ResetFruitAgility", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitVitality from the configuration name resources.</summary>
+        public static string ResetFruitVitality {
+            get {
+                return ResourceManager.GetString("ResetFruitVitality", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitEnergy from the configuration name resources.</summary>
+        public static string ResetFruitEnergy {
+            get {
+                return ResourceManager.GetString("ResetFruitEnergy", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitCommand from the configuration name resources.</summary>
+        public static string ResetFruitCommand {
+            get {
+                return ResourceManager.GetString("ResetFruitCommand", resourceCulture);
+            }
+        }
+
         /// <summary>Gets DevilSquareFreeTicket from the configuration name resources.</summary>
         public static string DevilSquareFreeTicket {
             get {
