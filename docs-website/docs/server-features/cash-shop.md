@@ -133,12 +133,13 @@ independent of the character level, as the game client describes them:
 | Medium Elite Healing Potion | 65% health |
 | Elite SD Potion | 65% shield |
 
-They share the cooldown of the usual potions, stack up to 50 pieces, and can't be
-traded, dropped or sold. The percentage and the cooldown can be changed in the
-configuration of their consume handler plugins, for example *Elite Healing Potion
-Consume Handler*, on the **Plugins** page.
+They share the cooldown of the usual potions, stack up to 50 pieces, and can't
+be traded, dropped or sold. The percentage and the cooldown can be changed in
+the configuration of their consume handler plugins, for example *Elite Healing
+Potion Consume Handler*, on the **Plugins** page.
 
-Existing databases get the potions with the configuration update *Add elite potions*.
+Existing databases get the potions with the configuration update *Add elite
+potions*.
 
 ### Special items
 
