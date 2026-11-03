@@ -288,9 +288,10 @@ reach the inventory: a delivery plugin applies them, or they stay in the storage
 
 Packages with a product that can't be delivered are initialized as not for sale.
 That leaves 31 packages for sale: jewel bundles, Kundun boxes and Cherry Blossom
-items for Goblin Points, and the character cards, the Magic Backpack, the
-Vault Expansion Certificate and the reset fruits for WCoin (C) and (P). Most cash shop items, like
-seals, scrolls and talismans, aren't defined in the item configuration yet.
+items for Goblin Points, and the character cards, the Magic Backpack, the Vault
+Expansion Certificate and the reset fruits for WCoin (C) and (P). Most cash shop
+items, like seals, scrolls and talismans, aren't defined in the item
+configuration yet.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those

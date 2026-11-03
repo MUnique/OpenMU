@@ -57,7 +57,8 @@ public abstract class ResetFruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn,
             return false;
         }
 
-        var pointsPerDurability = (this.Configuration ??= new ResetFruitConsumeHandlerConfiguration()).PointsPerDurability;
+        this.Configuration ??= new ResetFruitConsumeHandlerConfiguration();
+        var pointsPerDurability = this.Configuration.PointsPerDurability;
         var points = (ushort)Math.Clamp((int)item.Durability * pointsPerDurability, 0, Math.Min(investedPoints, ushort.MaxValue));
         attributes[statAttribute] -= points;
         character.LevelUpPoints += points;
