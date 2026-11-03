@@ -77,9 +77,9 @@ Some packages can't be sold, and the server refuses them even if they're marked
 for sale:
 
 * packages with items which aren't defined in the game configuration — most
-  special cash shop items, like seals, scrolls and talismans;
-* packages with time-limited items (for example pets for 1 day), because items
-  can't expire yet;
+  special cash shop items, like talismans;
+* packages with time-limited items (for example pets or seals for 1 day),
+  because items can't expire yet;
 * packages with a [special item](#special-items) whose plugin is deactivated.
 
 ### Editing the catalog
@@ -137,6 +137,70 @@ reset fruits*, which also puts their packages on sale. Each fruit is handled by 
 Strength Consume Handler*, which can be deactivated on the **Plugins** page. Its
 configuration there also sets the *Points per durability* (10 by default).
 
+### Elite potions
+
+The elite potions recover a percentage of the maximum value immediately,
+independent of the character level, as the game client describes them:
+
+| Potion | Recovers |
+|---|---|
+| Elite Healing Potion | 100% health |
+| Elite Mana Potion | 100% mana |
+| Medium Elite Healing Potion | 65% health |
+| Elite SD Potion | 65% shield |
+
+They share the cooldown of the usual potions, stack up to 50 pieces, and can't
+be traded, dropped or sold. The percentage and the cooldown can be changed in
+the configuration of their consume handler plugins, for example *Elite Healing
+Potion Consume Handler*, on the **Plugins** page.
+
+Existing databases get the potions with the configuration update *Add elite
+potions*.
+
+### Rings and necklaces
+
+The rings and necklaces of the shop are defined as items with fixed bonuses,
+like the game client shows them. They can't be upgraded, traded, dropped or
+repaired. A player can sell them to an NPC, for example to get rid of one which
+wore out.
+
+| Item | Bonus |
+|---|---|
+| Lethal Wizard's Ring | damage +15%, wizardry damage +15%, attack speed +10 |
+| Sapphire Ring | automatic HP recovery 3%, maximum mana +4% |
+| Ruby Ring | automatic HP recovery 3%, maximum HP +4% |
+| Topaz Ring | automatic HP recovery 3%, zen from monsters +30% |
+| Amethyst Ring | automatic HP recovery 3%, damage decrease 4% |
+| Ruby Necklace | automatic HP recovery 3%, excellent damage rate +10% |
+| Emerald Necklace | automatic HP recovery 3%, attack speed +7 |
+| Sapphire Necklace | automatic HP recovery 3%, mana after hunting monsters +mana/8 |
+
+The shop sells them only for a limited time, so their packages can't be sold yet
+(see [product catalog](#product-catalog)). An administrator can still give them
+to a character. Existing databases get them with the configuration update *Add
+cash shop rings and necklaces*.
+
+### Crafting talismans
+
+The **Talisman of Luck** and the **Talisman of Chaos Assembly** are put into the
+chaos machine together with the items of a crafting:
+
+* The Talisman of Luck increases the success rate by its durability in percent
+  (1, 5 or 10, depending on the bought product). Several talismans can be put
+  in, up to a total durability of 10, and the rate never exceeds the maximum
+  rate of the crafting. It's accepted by the +10 to +15 item upgrades, the
+  fruits, the wings, capes and 3rd wings, the Fenrir stages, the shield potions,
+  and the Dark Horse and Dark Raven of the pet trainer. The craftings of the
+  event tickets and the Fenrir upgrade don't accept it yet.
+* The Talisman of Chaos Assembly keeps the item of a +10 to +15 item upgrade
+  when the upgrade fails. Only one can be put in.
+
+Both are used up by the crafting, whether it succeeds or fails. In the admin
+panel, they are optional required items of the craftings: the Talisman of Luck
+adds its percentage per durability (*Add Percentage*), and the Talisman of Chaos
+Assembly has the fail result *Disappear And Protect Referenced Items*. Existing
+databases get them with the configuration update *Add crafting talismans*.
+
 ### Special items
 
 Some items aren't put into the inventory. A plugin applies them when the player
@@ -160,3 +224,84 @@ sell the card.
 
 While the plugin of a special item is deactivated, its packages can't be bought,
 and bought items stay in the storage until the plugin is active again.
+
+### Lucky item tickets
+
+The ten lucky item tickets (1st and 2nd Lucky Armor, Pants, Helm, Gloves and
+Boots Ticket) are put into the inventory like other items. The player exchanges
+a ticket at David in Elveland, in the *Exchange Lucky Item* window: he gives the
+lucky armor of the ticket's tier and kind which the character class can wear.
+The 1st tickets give the Scale, Silk, Sphinx and Violent Wind sets (level 1),
+the 2nd tickets the Adamantine, Dragon, Guardian, Legendary, Red Wing, Atlans
+and Storm Jahad sets (level 150). When more than one set fits the class, the
+one made for the fewest classes is given, for example the Atlans Armor for a
+Magic Gladiator. A ticket without an armor for the class, like a helm ticket for
+a Magic Gladiator, isn't accepted.
+
+Lucky armors can't be traded, dropped, stored, sold in a personal store,
+repaired or upgraded with jewels. The exchange is configured as the crafting
+*Lucky Item Exchange* of David. Existing databases get the items, the exchange
+and the ticket packages with the configuration update *Add lucky items*. The
+refinery window of David, and the Jewel of Extension and Jewel of Elevation,
+don't have a function yet.
+
+### Buff items
+
+Seals, scrolls, elixirs and auras are put into the inventory. When a player uses
+one, it's consumed and gives a buff for a limited time. The values, durations and
+buff icons are the ones which the game client shows for these items:
+
+| Item | Effect | Duration |
+|---|---|---|
+| Seal of Ascension | experience ×1.5 | 30 minutes |
+| Seal of Wealth | experience ×2 | 30 minutes |
+| Seal of Sustenance | no experience (also no master or bonus experience) | 30 minutes |
+| Seal of Healing | experience ×1.5, automatic life recovery +5% | 30 minutes |
+| Seal of Divinity | automatic mana recovery +5% | 30 minutes |
+| Master Seal of Ascension | master experience ×1.5 | 30 minutes |
+| Master Seal of Wealth | master experience ×2 | 30 minutes |
+| Max AG Boost Aura | maximum AG + character level | 30 minutes |
+| Max SD Boost Aura | maximum SD + character level × 10 | 30 minutes |
+| Scroll of Quickness | attack speed +15 | 30 minutes |
+| Scroll of Defense | defense +60 | 30 minutes |
+| Scroll of Wrath | physical damage +30 | 30 minutes |
+| Scroll of Wizardry | wizardry damage +30 | 30 minutes |
+| Scroll of Health | maximum life +200 | 30 minutes |
+| Scroll of Mana | maximum mana +300 | 30 minutes |
+| Scroll of Battle | critical damage chance +20% | 30 minutes |
+| Scroll of Strength | excellent damage chance +20% | 30 minutes |
+| Scroll of Healing | automatic life recovery +3%, maximum life +100 | 30 minutes |
+| Elixir of Strength, Agility, Health, Energy, Control | the stat +50 | 10 days |
+
+Only one seal of experience (Ascension, Wealth, Sustenance, Healing and the
+master seals) and one elixir is active at the same time; using another one
+replaces it. The same applies to the Scrolls of Battle and Strength. The Seal of
+Sustenance also blocks the bonus experience of pets and rings. The buffs of
+seals, elixirs and auras stay when the character dies, the buffs of scrolls end.
+All of these buffs end when the character leaves the game.
+
+:::note
+Not implemented yet: the higher item drop rate of the Seals of Wealth and
+Divinity, the Seal of Mobility, the Party EXP Scroll and the second Seal of
+Wealth (13/116), which only raises the item drop rate.
+:::
+
+The items and their packages exist in a new Season 6 database. Existing
+databases get the items with the configuration update *Add buff items*. Their
+packages in the cash shop are time-limited, so they can't be sold until items
+can expire. An administrator can still give the items to players, for example
+in a merchant store.
+
+### Kalima Ticket
+
+The Kalima Ticket can be used ten times. A right click outside of the safezone
+opens a gate to Kalima for the player and its party, like a Lost Map. The level
+of Kalima is the highest one whose minimum character level the character
+reached. The minimum levels are the ones the game client shows: 40, 131, 181,
+231, 281, 331 and 350, and 20, 111, 161, 211, 261, 311 and 350 for Magic
+Gladiators, Dark Lords and Rage Fighters. They can be changed in the
+configuration of the plugin *Kalima Ticket Consume Handler* on the **Plugins**
+page. The ticket isn't used up when no gate can be opened.
+
+The optional update *Add kalima ticket* adds the ticket to an existing
+configuration and puts its packages on sale. Deselect it to keep them off sale.

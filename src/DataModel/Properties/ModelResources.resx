@@ -4357,6 +4357,12 @@
   <data name="MixResult_ThirdWingsDowngradedRandom_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MixResult_DisappearAndProtectReferencedItems_Caption" xml:space="preserve">
+    <value>Disappear And Protect Referenced Items</value>
+  </data>
+  <data name="MixResult_DisappearAndProtectReferencedItems_Description" xml:space="preserve">
+    <value>The item disappears. When the crafting fails, the referenced items (e.g. the item of an item upgrade) stay as they are.</value>
+  </data>
   <data name="ModelResourceProvider_TypeCaption" xml:space="preserve">
     <value>Model Resource Provider</value>
   </data>

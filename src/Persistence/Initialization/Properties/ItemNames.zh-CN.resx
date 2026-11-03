@@ -1689,6 +1689,9 @@
   <data name="GameMasterTransformationRing" xml:space="preserve">
     <value>GM变身指环</value>
   </data>
+  <data name="KalimaTicket" xml:space="preserve">
+    <value>卡利玛门票</value>
+  </data>
   <data name="OldScroll" xml:space="preserve">
     <value>旧卷纸</value>
   </data>
@@ -1718,6 +1721,30 @@
   </data>
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>熊猫变身指环</value>
+  </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>巫师致命指环</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>蓝宝石指环</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>红宝石指环</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>黄宝石指环</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>紫水晶指环</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>红宝石项链</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>绿宝石项链</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>蓝宝石项链</value>
   </data>
   <data name="PetPanda" xml:space="preserve">
     <value>熊猫</value>
@@ -1829,6 +1856,18 @@
   </data>
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>SD恢复药水（大）</value>
+  </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>精华治疗药水</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>精华魔力药水</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>中瓶精华治疗药水</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>精华SD药水</value>
   </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>小瓶复合药水</value>
@@ -2123,5 +2162,158 @@
   </data>
   <data name="CursedCastleWater" xml:space="preserve">
     <value>诅咒城堡之水</value>
+  </data>
+  <data name="SphinxHelm" xml:space="preserve">
+    <value>魔王之盔</value>
+  </data>
+  <data name="ViolentWindHelm" xml:space="preserve">
+    <value>飓风之盔</value>
+  </data>
+  <data name="ViolentWindArmor" xml:space="preserve">
+    <value>飓风之铠</value>
+  </data>
+  <data name="ViolentWindPants" xml:space="preserve">
+    <value>飓风之护腿</value>
+  </data>
+  <data name="ViolentWindGloves" xml:space="preserve">
+    <value>飓风之护手</value>
+  </data>
+  <data name="ViolentWindBoots" xml:space="preserve">
+    <value>飓风之靴</value>
+  </data>
+  <data name="AtlansArmor" xml:space="preserve">
+    <value>亚特兰蒂斯之铠</value>
+  </data>
+  <data name="AtlansPants" xml:space="preserve">
+    <value>亚特兰蒂斯之护腿</value>
+  </data>
+  <data name="AtlansGloves" xml:space="preserve">
+    <value>亚特兰蒂斯之护手</value>
+  </data>
+  <data name="AtlansBoots" xml:space="preserve">
+    <value>亚特兰蒂斯之靴</value>
+  </data>
+  <data name="StormJahadHelm" xml:space="preserve">
+    <value>暴风扎哈德之盔</value>
+  </data>
+  <data name="StormJahadArmor" xml:space="preserve">
+    <value>暴风扎哈德之铠</value>
+  </data>
+  <data name="StormJahadPants" xml:space="preserve">
+    <value>暴风扎哈德之护腿</value>
+  </data>
+  <data name="StormJahadBoots" xml:space="preserve">
+    <value>暴风扎哈德之靴</value>
+  </data>
+  <data name="FirstLuckyArmorTicket" xml:space="preserve">
+    <value>一阶幸运铠甲券</value>
+  </data>
+  <data name="FirstLuckyPantsTicket" xml:space="preserve">
+    <value>一阶幸运护腿券</value>
+  </data>
+  <data name="FirstLuckyHelmTicket" xml:space="preserve">
+    <value>一阶幸运头盔券</value>
+  </data>
+  <data name="FirstLuckyGlovesTicket" xml:space="preserve">
+    <value>一阶幸运护手券</value>
+  </data>
+  <data name="FirstLuckyBootsTicket" xml:space="preserve">
+    <value>一阶幸运靴子券</value>
+  </data>
+  <data name="SecondLuckyArmorTicket" xml:space="preserve">
+    <value>二阶幸运铠甲券</value>
+  </data>
+  <data name="SecondLuckyPantsTicket" xml:space="preserve">
+    <value>二阶幸运护腿券</value>
+  </data>
+  <data name="SecondLuckyHelmTicket" xml:space="preserve">
+    <value>二阶幸运头盔券</value>
+  </data>
+  <data name="SecondLuckyGlovesTicket" xml:space="preserve">
+    <value>二阶幸运护手券</value>
+  </data>
+  <data name="SecondLuckyBootsTicket" xml:space="preserve">
+    <value>二阶幸运靴子券</value>
+  </data>
+  <data name="JewelOfExtension" xml:space="preserve">
+    <value>延长宝石</value>
+  </data>
+  <data name="JewelOfElevation" xml:space="preserve">
+    <value>提升宝石</value>
+  </data>
+  <data name="SealOfAscension" xml:space="preserve">
+    <value>晋升之印</value>
+  </data>
+  <data name="SealOfWealth" xml:space="preserve">
+    <value>财富之印</value>
+  </data>
+  <data name="SealOfSustenance" xml:space="preserve">
+    <value>维持之印</value>
+  </data>
+  <data name="SealOfHealing" xml:space="preserve">
+    <value>治愈之印</value>
+  </data>
+  <data name="SealOfDivinity" xml:space="preserve">
+    <value>神圣之印</value>
+  </data>
+  <data name="MasterSealOfAscension" xml:space="preserve">
+    <value>大师晋升之印</value>
+  </data>
+  <data name="MasterSealOfWealth" xml:space="preserve">
+    <value>大师财富之印</value>
+  </data>
+  <data name="MaxAgBoostAura" xml:space="preserve">
+    <value>最大AG提升光环</value>
+  </data>
+  <data name="MaxSdBoostAura" xml:space="preserve">
+    <value>最大SD提升光环</value>
+  </data>
+  <data name="ScrollOfQuickness" xml:space="preserve">
+    <value>迅捷卷轴</value>
+  </data>
+  <data name="ScrollOfDefense" xml:space="preserve">
+    <value>防御卷轴</value>
+  </data>
+  <data name="ScrollOfWrath" xml:space="preserve">
+    <value>愤怒卷轴</value>
+  </data>
+  <data name="ScrollOfWizardry" xml:space="preserve">
+    <value>魔力卷轴</value>
+  </data>
+  <data name="ScrollOfHealth" xml:space="preserve">
+    <value>生命卷轴</value>
+  </data>
+  <data name="ScrollOfMana" xml:space="preserve">
+    <value>法力卷轴</value>
+  </data>
+  <data name="ElixirOfStrength" xml:space="preserve">
+    <value>力量秘药</value>
+  </data>
+  <data name="ElixirOfAgility" xml:space="preserve">
+    <value>敏捷秘药</value>
+  </data>
+  <data name="ElixirOfHealth" xml:space="preserve">
+    <value>体力秘药</value>
+  </data>
+  <data name="ElixirOfEnergy" xml:space="preserve">
+    <value>智力秘药</value>
+  </data>
+  <data name="ElixirOfControl" xml:space="preserve">
+    <value>统率秘药</value>
+  </data>
+  <data name="ScrollOfBattle" xml:space="preserve">
+    <value>战斗卷轴</value>
+  </data>
+  <data name="ScrollOfStrength" xml:space="preserve">
+    <value>强化卷轴</value>
+  </data>
+  <data name="ScrollOfHealing" xml:space="preserve">
+    <value>治疗卷轴</value>
+  </data>
+  <data name="TalismanOfLuck" xml:space="preserve">
+    <value>幸运符咒</value>
+  </data>
+  <data name="TalismanOfChaosAssembly" xml:space="preserve">
+    <value>混沌合成符咒</value>
   </data>
 </root>
