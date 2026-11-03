@@ -5156,6 +5156,164 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string JewelOfElevation {
             get {
                 return ResourceManager.GetString("JewelOfElevation", resourceCulture);
+        /// <summary>Gets SealOfAscension from the configuration name resources.</summary>
+        public static string SealOfAscension {
+            get {
+                return ResourceManager.GetString("SealOfAscension", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SealOfWealth from the configuration name resources.</summary>
+        public static string SealOfWealth {
+            get {
+                return ResourceManager.GetString("SealOfWealth", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SealOfSustenance from the configuration name resources.</summary>
+        public static string SealOfSustenance {
+            get {
+                return ResourceManager.GetString("SealOfSustenance", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SealOfHealing from the configuration name resources.</summary>
+        public static string SealOfHealing {
+            get {
+                return ResourceManager.GetString("SealOfHealing", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SealOfDivinity from the configuration name resources.</summary>
+        public static string SealOfDivinity {
+            get {
+                return ResourceManager.GetString("SealOfDivinity", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MasterSealOfAscension from the configuration name resources.</summary>
+        public static string MasterSealOfAscension {
+            get {
+                return ResourceManager.GetString("MasterSealOfAscension", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MasterSealOfWealth from the configuration name resources.</summary>
+        public static string MasterSealOfWealth {
+            get {
+                return ResourceManager.GetString("MasterSealOfWealth", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MaxAgBoostAura from the configuration name resources.</summary>
+        public static string MaxAgBoostAura {
+            get {
+                return ResourceManager.GetString("MaxAgBoostAura", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MaxSdBoostAura from the configuration name resources.</summary>
+        public static string MaxSdBoostAura {
+            get {
+                return ResourceManager.GetString("MaxSdBoostAura", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfQuickness from the configuration name resources.</summary>
+        public static string ScrollOfQuickness {
+            get {
+                return ResourceManager.GetString("ScrollOfQuickness", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfDefense from the configuration name resources.</summary>
+        public static string ScrollOfDefense {
+            get {
+                return ResourceManager.GetString("ScrollOfDefense", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfWrath from the configuration name resources.</summary>
+        public static string ScrollOfWrath {
+            get {
+                return ResourceManager.GetString("ScrollOfWrath", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfWizardry from the configuration name resources.</summary>
+        public static string ScrollOfWizardry {
+            get {
+                return ResourceManager.GetString("ScrollOfWizardry", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfHealth from the configuration name resources.</summary>
+        public static string ScrollOfHealth {
+            get {
+                return ResourceManager.GetString("ScrollOfHealth", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfMana from the configuration name resources.</summary>
+        public static string ScrollOfMana {
+            get {
+                return ResourceManager.GetString("ScrollOfMana", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElixirOfStrength from the configuration name resources.</summary>
+        public static string ElixirOfStrength {
+            get {
+                return ResourceManager.GetString("ElixirOfStrength", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElixirOfAgility from the configuration name resources.</summary>
+        public static string ElixirOfAgility {
+            get {
+                return ResourceManager.GetString("ElixirOfAgility", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElixirOfHealth from the configuration name resources.</summary>
+        public static string ElixirOfHealth {
+            get {
+                return ResourceManager.GetString("ElixirOfHealth", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElixirOfEnergy from the configuration name resources.</summary>
+        public static string ElixirOfEnergy {
+            get {
+                return ResourceManager.GetString("ElixirOfEnergy", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ElixirOfControl from the configuration name resources.</summary>
+        public static string ElixirOfControl {
+            get {
+                return ResourceManager.GetString("ElixirOfControl", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfBattle from the configuration name resources.</summary>
+        public static string ScrollOfBattle {
+            get {
+                return ResourceManager.GetString("ScrollOfBattle", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfStrength from the configuration name resources.</summary>
+        public static string ScrollOfStrength {
+            get {
+                return ResourceManager.GetString("ScrollOfStrength", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScrollOfHealing from the configuration name resources.</summary>
+        public static string ScrollOfHealing {
+            get {
+                return ResourceManager.GetString("ScrollOfHealing", resourceCulture);
             }
         }
     }

@@ -868,4 +868,10 @@
   <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Glücksrüstungen, die Glückstickets und die Juwelen der Erweiterung und der Erhebung hinzu. David in Elbenland tauscht ein Ticket gegen eine Glücksrüstung, die zur Charakterklasse passt. Die Pakete des Item-Shops, die die Tickets enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Buff-Gegenstände hinzufügen</value>
+  </data>
+  <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Siegel, Schriftrollen, Elixiere und Auren des In-Game-Shops hinzu, die bei Benutzung einen zeitlich begrenzten Effekt anwenden. Vorhandene Gegenstände mit denselben Nummern bleiben unverändert.</value>
+  </data>
 </root>

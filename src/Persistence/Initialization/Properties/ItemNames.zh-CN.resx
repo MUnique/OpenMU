@@ -2202,4 +2202,73 @@
   <data name="JewelOfElevation" xml:space="preserve">
     <value>提升宝石</value>
   </data>
+  <data name="SealOfAscension" xml:space="preserve">
+    <value>晋升之印</value>
+  </data>
+  <data name="SealOfWealth" xml:space="preserve">
+    <value>财富之印</value>
+  </data>
+  <data name="SealOfSustenance" xml:space="preserve">
+    <value>维持之印</value>
+  </data>
+  <data name="SealOfHealing" xml:space="preserve">
+    <value>治愈之印</value>
+  </data>
+  <data name="SealOfDivinity" xml:space="preserve">
+    <value>神圣之印</value>
+  </data>
+  <data name="MasterSealOfAscension" xml:space="preserve">
+    <value>大师晋升之印</value>
+  </data>
+  <data name="MasterSealOfWealth" xml:space="preserve">
+    <value>大师财富之印</value>
+  </data>
+  <data name="MaxAgBoostAura" xml:space="preserve">
+    <value>最大AG提升光环</value>
+  </data>
+  <data name="MaxSdBoostAura" xml:space="preserve">
+    <value>最大SD提升光环</value>
+  </data>
+  <data name="ScrollOfQuickness" xml:space="preserve">
+    <value>迅捷卷轴</value>
+  </data>
+  <data name="ScrollOfDefense" xml:space="preserve">
+    <value>防御卷轴</value>
+  </data>
+  <data name="ScrollOfWrath" xml:space="preserve">
+    <value>愤怒卷轴</value>
+  </data>
+  <data name="ScrollOfWizardry" xml:space="preserve">
+    <value>魔力卷轴</value>
+  </data>
+  <data name="ScrollOfHealth" xml:space="preserve">
+    <value>生命卷轴</value>
+  </data>
+  <data name="ScrollOfMana" xml:space="preserve">
+    <value>法力卷轴</value>
+  </data>
+  <data name="ElixirOfStrength" xml:space="preserve">
+    <value>力量秘药</value>
+  </data>
+  <data name="ElixirOfAgility" xml:space="preserve">
+    <value>敏捷秘药</value>
+  </data>
+  <data name="ElixirOfHealth" xml:space="preserve">
+    <value>体力秘药</value>
+  </data>
+  <data name="ElixirOfEnergy" xml:space="preserve">
+    <value>智力秘药</value>
+  </data>
+  <data name="ElixirOfControl" xml:space="preserve">
+    <value>统率秘药</value>
+  </data>
+  <data name="ScrollOfBattle" xml:space="preserve">
+    <value>战斗卷轴</value>
+  </data>
+  <data name="ScrollOfStrength" xml:space="preserve">
+    <value>强化卷轴</value>
+  </data>
+  <data name="ScrollOfHealing" xml:space="preserve">
+    <value>治疗卷轴</value>
+  </data>
 </root>

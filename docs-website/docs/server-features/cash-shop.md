@@ -77,9 +77,9 @@ Some packages can't be sold, and the server refuses them even if they're marked
 for sale:
 
 * packages with items which aren't defined in the game configuration — most
-  special cash shop items, like seals, scrolls and talismans;
-* packages with time-limited items (for example pets for 1 day), because items
-  can't expire yet;
+  special cash shop items, like talismans;
+* packages with time-limited items (for example pets or seals for 1 day),
+  because items can't expire yet;
 * packages with a [special item](#special-items) whose plugin is deactivated.
 
 ### Editing the catalog
@@ -180,3 +180,49 @@ repaired or upgraded with jewels. The exchange is configured as the crafting
 and the ticket packages with the configuration update *Add lucky items*. The
 refinery window of David, and the Jewel of Extension and Jewel of Elevation,
 don't have a function yet.
+### Buff items
+
+Seals, scrolls, elixirs and auras are put into the inventory. When a player uses
+one, it's consumed and gives a buff for a limited time. The values, durations and
+buff icons are the ones which the game client shows for these items:
+
+| Item | Effect | Duration |
+|---|---|---|
+| Seal of Ascension | experience ×1.5 | 30 minutes |
+| Seal of Wealth | experience ×2 | 30 minutes |
+| Seal of Sustenance | no experience (also no master or bonus experience) | 30 minutes |
+| Seal of Healing | experience ×1.5, automatic life recovery +5% | 30 minutes |
+| Seal of Divinity | automatic mana recovery +5% | 30 minutes |
+| Master Seal of Ascension | master experience ×1.5 | 30 minutes |
+| Master Seal of Wealth | master experience ×2 | 30 minutes |
+| Max AG Boost Aura | maximum AG + character level | 30 minutes |
+| Max SD Boost Aura | maximum SD + character level × 10 | 30 minutes |
+| Scroll of Quickness | attack speed +15 | 30 minutes |
+| Scroll of Defense | defense +60 | 30 minutes |
+| Scroll of Wrath | physical damage +30 | 30 minutes |
+| Scroll of Wizardry | wizardry damage +30 | 30 minutes |
+| Scroll of Health | maximum life +200 | 30 minutes |
+| Scroll of Mana | maximum mana +300 | 30 minutes |
+| Scroll of Battle | critical damage chance +20% | 30 minutes |
+| Scroll of Strength | excellent damage chance +20% | 30 minutes |
+| Scroll of Healing | automatic life recovery +3%, maximum life +100 | 30 minutes |
+| Elixir of Strength, Agility, Health, Energy, Control | the stat +50 | 10 days |
+
+Only one seal of experience (Ascension, Wealth, Sustenance, Healing and the
+master seals) and one elixir is active at the same time; using another one
+replaces it. The same applies to the Scrolls of Battle and Strength. The Seal of
+Sustenance also blocks the bonus experience of pets and rings. The buffs of
+seals, elixirs and auras stay when the character dies, the buffs of scrolls end.
+All of these buffs end when the character leaves the game.
+
+:::note
+Not implemented yet: the higher item drop rate of the Seals of Wealth and
+Divinity, the Seal of Mobility, the Party EXP Scroll and the second Seal of
+Wealth (13/116), which only raises the item drop rate.
+:::
+
+The items and their packages exist in a new Season 6 database. Existing
+databases get the items with the configuration update *Add buff items*. Their
+packages in the cash shop are time-limited, so they can't be sold until items
+can expire. An administrator can still give the items to players, for example
+in a merchant store.
