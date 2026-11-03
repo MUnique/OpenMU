@@ -287,12 +287,12 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 30 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
+That leaves 40 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
 items and the Talisman of Luck 10% for Goblin Points, and the character cards,
 the Magic Backpack, the Vault Expansion Certificate, the free tickets of Devil
-Square, Blood Castle and Illusion Temple and the Talisman of Luck for WCoin (C)
-and (P). Most cash shop items, like seals, scrolls and most talismans, aren't
-defined in the item configuration yet.
+Square, Blood Castle and Illusion Temple, the reset fruits and the Talisman of
+Luck for WCoin (C) and (P). Most cash shop items, like seals, scrolls and most
+talismans, aren't defined in the item configuration yet.
 
 The products of the Talisman of Luck have a rate property (1, 5 or 10 %) instead
 of a quantity. The rate is the durability of the delivered talisman, so it's

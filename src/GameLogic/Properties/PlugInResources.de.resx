@@ -282,6 +282,42 @@
   <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch von Früchten verarbeitet.</value>
   </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Rücksetzfrucht (Stärke)</value>
+  </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das die Rücksetzfrucht (Stärke) verarbeitet, die investierte Punkte zurücknimmt und als Level-Up-Punkte zurückgibt.</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Rücksetzfrucht (Beweglichkeit)</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das die Rücksetzfrucht (Beweglichkeit) verarbeitet, die investierte Punkte zurücknimmt und als Level-Up-Punkte zurückgibt.</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Rücksetzfrucht (Vitalität)</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das die Rücksetzfrucht (Vitalität) verarbeitet, die investierte Punkte zurücknimmt und als Level-Up-Punkte zurückgibt.</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Rücksetzfrucht (Energie)</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das die Rücksetzfrucht (Energie) verarbeitet, die investierte Punkte zurücknimmt und als Level-Up-Punkte zurückgibt.</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Rücksetzfrucht (Kommando)</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das die Rücksetzfrucht (Kommando) verarbeitet, die investierte Punkte zurücknimmt und als Level-Up-Punkte zurückgibt.</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>Punkte pro Haltbarkeit</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>Die Anzahl der Statuspunkte, die eine Haltbarkeit einer Rücksetzfrucht zurücknimmt.</value>
+  </data>
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Verbrauch des Juwels der Harmonie</value>
   </data>
