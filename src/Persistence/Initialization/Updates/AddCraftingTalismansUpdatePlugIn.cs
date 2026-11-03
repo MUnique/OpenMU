@@ -50,7 +50,11 @@ public class AddCraftingTalismansUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override bool IsMandatory => true;
+    /// <remarks>
+    /// The update puts packages of the in-game shop on sale, which a server owner may want to keep off sale,
+    /// so it can be deselected.
+    /// </remarks>
+    public override bool IsMandatory => false;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 02, 20, 0, 0, DateTimeKind.Utc);
