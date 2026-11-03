@@ -319,6 +319,13 @@ internal sealed class BotGenerator
         var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
 
+        long InvestedOf(AttributeDefinition stat)
+        {
+            var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
+            var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            return attribute is null ? 0 : (long)attribute.Value - (long)(classBase?.BaseValue ?? 0f);
+        }
+
         long CapacityOf(AttributeDefinition stat)
         {
             var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
@@ -336,14 +343,13 @@ internal sealed class BotGenerator
 
             if (vitalityTarget is { } target && stat == Stats.BaseVitality)
             {
-                var invested = (long)attribute.Value - (long)(classBase?.BaseValue ?? 0f);
-                capacity = Math.Min(capacity, target - invested);
+                capacity = Math.Min(capacity, target - InvestedOf(stat));
             }
 
             return capacity;
         }
 
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf))
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf))
         {
             var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
             if (attribute is not null)

@@ -173,6 +173,12 @@ servers keep the guide's plain vitality percentage. Classes with two viable
 archetypes (a warrior or a wizard Magic Gladiator, a pure or an energy Blade
 Knight, an archer or a supporter Elf) roll one per bot, and a stat which hits a
 server's maximum overflows into the rest of the build.
+The build's proportions apply to everything a character has invested, not to
+each level-up's handful of points on its own, so the small shares — a wizard's
+strength, a supporter's agility — grow over the levels too, and a character
+which is off its build (from before this rule, or from a reset which keeps the
+stats) is evened out over its next level-ups: its stats above their share wait
+until the others caught up.
 
 Bots evolve like players do. The second-generation class change happens at level
 200 — the same assignment the class-change quest performs — and the master class

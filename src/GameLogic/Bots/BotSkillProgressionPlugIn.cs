@@ -120,6 +120,12 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
 
+        long InvestedOf(AttributeDefinition stat)
+        {
+            var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            return (long)(player.Attributes?[stat] ?? 0f) - (long)(classBase?.BaseValue ?? 0f);
+        }
+
         // Mirrors the capacity checks of the stat-increase action (a stat's configured maximum on fun
         // servers), plus the bot's personal vitality target on reset-meta servers: a full stat drops
         // out of the split, so its share flows into the rest of the build instead of getting lost.
@@ -135,14 +141,15 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 
             if (vitalityTarget is { } target && stat == Stats.BaseVitality)
             {
-                var invested = current - (long)(classBase?.BaseValue ?? 0f);
-                capacity = Math.Min(capacity, target - invested);
+                capacity = Math.Min(capacity, target - InvestedOf(stat));
             }
 
             return capacity;
         }
 
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf))
+        // The invested points make the split aim at the build's proportions over the whole career,
+        // so the few points of a single level-up don't round the small-weight stats down to nothing.
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf))
         {
             if (amount > 0)
             {

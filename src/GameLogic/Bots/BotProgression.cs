@@ -118,8 +118,7 @@ internal static class BotProgression
     /// (knight agility/PK, gladiator warrior/mage, elf archer/supporter) each bot picks one
     /// deterministically from its character name, so the population is diverse but every bot keeps
     /// the same build across sessions and re-invests consistently after each reset. The first entry
-    /// is always the build's primary stat - it absorbs rounding remainders and overflow from capped
-    /// stats.
+    /// is always the build's primary stat - it wins a leftover point on a tie (see <see cref="SplitPoints"/>).
     /// The weights are the same on every server; only the vitality a bot actually receives differs -
     /// the callers cap it at the bot's personal <see cref="GetVitalityTarget"/> on reset servers
     /// (shield and agility-based defense tank there, so vitality is left near its base), while classic
@@ -174,79 +173,135 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// Splits the given points proportionally to the class's stat weights, returning whole-point
-    /// amounts which sum up to <paramref name="points"/> - unless capacities cut it short. The
-    /// optional <paramref name="capacityOf"/> callback limits how many points a stat may still take
+    /// Splits the given points over the class's stat weights, returning whole-point amounts which
+    /// sum up to <paramref name="points"/> - unless capacities cut it short.
+    /// </summary>
+    /// <remarks>
+    /// The split aims at the build's proportions of everything invested so far, not of the new points
+    /// alone: each stat is topped up towards its weighted share of the total (already invested plus
+    /// new points), the most-lacking stat first. A level-up grants only 5 to 7 points, and splitting
+    /// just those rounded every share below 1 point down to 0 - on every level - so the small-weight
+    /// stats (strength of a caster, agility of a supporter elf) stayed at the class base forever and
+    /// the bot couldn't wear its armor anymore once it took it off. With the invested points as part
+    /// of the total, the fraction a level-up leaves over is still owed at the next one, so a bot which
+    /// levels one by one ends up with the same build as one which gets all points at once (a reset or
+    /// a generated character). For the same reason a bot whose stats are off the proportions - from
+    /// before this rule, or from a reset which keeps the stats - is evened out over its next level-ups
+    /// instead of the skew being carried along: a stat above its share gets nothing until the others
+    /// caught up.
+    /// The optional <paramref name="capacityOf"/> callback limits how many points a stat may still take
     /// (its <see cref="AttributeDefinition.MaximumValue"/> on fun servers, the vitality target on
     /// reset-meta servers); a filled stat drops out of the split and its share flows to the remaining
-    /// stats over subsequent rounds. When every stat is full, the rest of the points stay unassigned,
-    /// like for a maxed-out human character.
-    /// </summary>
+    /// stats. When every stat is full, the rest of the points stay unassigned, like for a maxed-out
+    /// human character. A leftover point which no share covers goes to the stat which lacks the most
+    /// of its share; on a tie to the one listed first, so the primary stat wins.
+    /// </remarks>
     /// <param name="points">The number of points to split.</param>
     /// <param name="weights">The stat weights of the class.</param>
     /// <param name="capacityOf">Optionally resolves how many more points a stat can take; null means unlimited.</param>
+    /// <param name="investedOf">Optionally resolves how many points are already invested into a stat (its value above the class base); null means nothing.</param>
     public static IEnumerable<(AttributeDefinition Stat, int Amount)> SplitPoints(
         int points,
         IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights,
-        Func<AttributeDefinition, long>? capacityOf = null)
+        Func<AttributeDefinition, long>? capacityOf = null,
+        Func<AttributeDefinition, long>? investedOf = null)
     {
         if (points <= 0 || weights.Count == 0)
         {
             yield break;
         }
 
-        var allocated = new int[weights.Count];
+        var allocated = new long[weights.Count];
         var capacity = new long[weights.Count];
+        var invested = new long[weights.Count];
         for (var i = 0; i < weights.Count; i++)
         {
             capacity[i] = Math.Max(0, capacityOf?.Invoke(weights[i].Stat) ?? long.MaxValue);
+            invested[i] = Math.Max(0, investedOf?.Invoke(weights[i].Stat) ?? 0);
         }
 
-        var remaining = points;
+        var active = new bool[weights.Count];
+        long remaining = points;
         while (remaining > 0)
         {
-            var activeTotalWeight = 0;
-            var firstActive = -1;
             for (var i = 0; i < weights.Count; i++)
             {
-                if (weights[i].Weight > 0 && allocated[i] < capacity[i])
+                active[i] = weights[i].Weight > 0 && allocated[i] < capacity[i];
+            }
+
+            // The total to share is what the active stats already have plus what is left to give.
+            // A stat already above its share of that total is taken out and the total recomputed
+            // without it - otherwise the others' shares would add up to more than the points left.
+            long totalWeight;
+            long total;
+            bool removedAny;
+            do
+            {
+                totalWeight = 0;
+                total = remaining;
+                for (var i = 0; i < weights.Count; i++)
                 {
-                    activeTotalWeight += weights[i].Weight;
-                    if (firstActive < 0)
+                    if (active[i])
                     {
-                        firstActive = i;
+                        totalWeight += weights[i].Weight;
+                        total += invested[i] + allocated[i];
+                    }
+                }
+
+                removedAny = false;
+                for (var i = 0; i < weights.Count && totalWeight > 0; i++)
+                {
+                    if (active[i] && (invested[i] + allocated[i]) * totalWeight > total * weights[i].Weight)
+                    {
+                        active[i] = false;
+                        removedAny = true;
                     }
                 }
             }
+            while (removedAny);
 
-            if (activeTotalWeight <= 0)
+            if (totalWeight <= 0)
             {
                 break; // every stat is at its capacity - the rest stays unspent.
             }
 
-            var assignedThisRound = 0;
+            var assignedThisRound = 0L;
             for (var i = 0; i < weights.Count; i++)
             {
-                if (weights[i].Weight <= 0 || allocated[i] >= capacity[i])
+                if (!active[i])
                 {
                     continue;
                 }
 
-                var share = (int)Math.Min((long)remaining * weights[i].Weight / activeTotalWeight, capacity[i] - allocated[i]);
+                var share = (total * weights[i].Weight / totalWeight) - invested[i] - allocated[i];
+                share = Math.Clamp(share, 0, capacity[i] - allocated[i]);
                 allocated[i] += share;
                 assignedThisRound += share;
             }
 
             if (assignedThisRound == 0)
             {
-                // Rounding tail (fewer points left than active stats): the primary stat takes it.
-                var tail = (int)Math.Min(remaining, capacity[firstActive] - allocated[firstActive]);
-                allocated[firstActive] += tail;
-                assignedThisRound = tail;
-                if (assignedThisRound == 0)
+                // Fewer points left than the floored shares cover: one point to the stat which
+                // lacks the most of its exact share; the strict comparison keeps the first on a tie.
+                var neediest = -1;
+                var neediestLack = long.MinValue;
+                for (var i = 0; i < weights.Count; i++)
                 {
-                    break;
+                    if (!active[i])
+                    {
+                        continue;
+                    }
+
+                    var lack = (total * weights[i].Weight) - ((invested[i] + allocated[i]) * totalWeight);
+                    if (lack > neediestLack)
+                    {
+                        neediest = i;
+                        neediestLack = lack;
+                    }
                 }
+
+                allocated[neediest]++;
+                assignedThisRound = 1;
             }
 
             remaining -= assignedThisRound;
@@ -256,7 +311,7 @@ internal static class BotProgression
         {
             if (allocated[i] > 0)
             {
-                yield return (weights[i].Stat, allocated[i]);
+                yield return (weights[i].Stat, (int)allocated[i]);
             }
         }
     }
