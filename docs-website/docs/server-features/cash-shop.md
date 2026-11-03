@@ -123,9 +123,9 @@ storage.
 
 ### Rings and necklaces
 
-The rings and necklaces of the shop are defined as items with fixed bonuses, like
-the game client shows them. They can't be upgraded, traded, dropped, sold or
-repaired.
+The rings and necklaces of the shop are defined as items with fixed bonuses,
+like the game client shows them. They can't be upgraded, traded, dropped, sold
+or repaired.
 
 | Item | Bonus |
 |---|---|
@@ -139,9 +139,9 @@ repaired.
 | Sapphire Necklace | automatic HP recovery 3%, mana after hunting monsters +mana/8 |
 
 The shop sells them only for a limited time, so their packages can't be sold yet
-(see [product catalog](#product-catalog)). An administrator can still give them to
-a character. Existing databases get them with the configuration update
-*Add cash shop rings and necklaces*.
+(see [product catalog](#product-catalog)). An administrator can still give them
+to a character. Existing databases get them with the configuration update *Add
+cash shop rings and necklaces*.
 
 ### Special items
 
