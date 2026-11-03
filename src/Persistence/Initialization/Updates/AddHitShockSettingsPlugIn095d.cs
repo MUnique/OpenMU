@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddHitShockSettingsPlugIn_Name), Description = nameof(PlugInResources.AddHitShockSettingsPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("528462F0-E79C-4D89-94FC-A087BBA70E6F")]
-public class AddHitShockSettingsPlugIn095d : AddHitShockSettingsPlugInBase
+public class AddHitShockSettingsPlugIn095D : AddHitShockSettingsPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;

@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
-/// Adds the Uniria marker to the game configuration so Uniria-equipped players are excluded from hit shock.
+/// Adds the <see cref="Stats.IsUniriaEquipped"/> to the game configuration so Uniria-equipped players are excluded from hit shock.
 /// </summary>
 public abstract class AddHitShockSettingsPlugInBase : UpdatePlugInBase
 {
