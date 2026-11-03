@@ -16,10 +16,8 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 /// Initializer for chaos mixes.
 /// </summary>
 /// <remarks>
-/// Currently, there are no Talisman of Luck supported. If someone wants to add them, you'd have to do the following steps:
-///   - The <see cref="ItemDefinition"/> for the TOL needs to be created somewhere.
-///   - The created item definition needs to be added as <see cref="ItemCraftingRequiredItem"/>
-///     to the corresponding <see cref="ItemCrafting"/>s with MinimumAmount of 0, Maximum of 1, AddPercentage of 25.
+/// The Talisman of Luck and the Talisman of Chaos Assembly are added to the craftings which accept them
+/// by the <see cref="Items.CraftingTalismans"/>.
 /// </remarks>
 public class ChaosMixes : InitializerBase
 {

@@ -2307,4 +2307,10 @@
   <data name="ScrollOfHealing" xml:space="preserve">
     <value>Scroll of Healing</value>
   </data>
+  <data name="TalismanOfLuck" xml:space="preserve">
+    <value>Talisman of Luck</value>
+  </data>
+  <data name="TalismanOfChaosAssembly" xml:space="preserve">
+    <value>Talisman of Chaos Assembly</value>
+  </data>
 </root>

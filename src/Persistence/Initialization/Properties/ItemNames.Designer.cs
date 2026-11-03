@@ -4032,62 +4032,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
-        /// <summary>Gets LethalWizardsRing from the configuration name resources.</summary>
-        public static string LethalWizardsRing {
-            get {
-                return ResourceManager.GetString("LethalWizardsRing", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SapphireRing from the configuration name resources.</summary>
-        public static string SapphireRing {
-            get {
-                return ResourceManager.GetString("SapphireRing", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets RubyRing from the configuration name resources.</summary>
-        public static string RubyRing {
-            get {
-                return ResourceManager.GetString("RubyRing", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets TopazRing from the configuration name resources.</summary>
-        public static string TopazRing {
-            get {
-                return ResourceManager.GetString("TopazRing", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets AmethystRing from the configuration name resources.</summary>
-        public static string AmethystRing {
-            get {
-                return ResourceManager.GetString("AmethystRing", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets RubyNecklace from the configuration name resources.</summary>
-        public static string RubyNecklace {
-            get {
-                return ResourceManager.GetString("RubyNecklace", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets EmeraldNecklace from the configuration name resources.</summary>
-        public static string EmeraldNecklace {
-            get {
-                return ResourceManager.GetString("EmeraldNecklace", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SapphireNecklace from the configuration name resources.</summary>
-        public static string SapphireNecklace {
-            get {
-                return ResourceManager.GetString("SapphireNecklace", resourceCulture);
-            }
-        }
-
         /// <summary>Gets PetPanda from the configuration name resources.</summary>
         public static string PetPanda {
             get {
@@ -4344,34 +4288,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string LargeShieldPotion {
             get {
                 return ResourceManager.GetString("LargeShieldPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets EliteHealingPotion from the configuration name resources.</summary>
-        public static string EliteHealingPotion {
-            get {
-                return ResourceManager.GetString("EliteHealingPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets EliteManaPotion from the configuration name resources.</summary>
-        public static string EliteManaPotion {
-            get {
-                return ResourceManager.GetString("EliteManaPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets MediumEliteHealingPotion from the configuration name resources.</summary>
-        public static string MediumEliteHealingPotion {
-            get {
-                return ResourceManager.GetString("MediumEliteHealingPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets EliteShieldPotion from the configuration name resources.</summary>
-        public static string EliteShieldPotion {
-            get {
-                return ResourceManager.GetString("EliteShieldPotion", resourceCulture);
             }
         }
 
@@ -5061,343 +4977,382 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets LethalWizardsRing from the configuration name resources.</summary>
+        public static string LethalWizardsRing {
+            get {
+                return ResourceManager.GetString("LethalWizardsRing", resourceCulture);
+            }
+        }
+        /// <summary>Gets SapphireRing from the configuration name resources.</summary>
+        public static string SapphireRing {
+            get {
+                return ResourceManager.GetString("SapphireRing", resourceCulture);
+            }
+        }
+        /// <summary>Gets RubyRing from the configuration name resources.</summary>
+        public static string RubyRing {
+            get {
+                return ResourceManager.GetString("RubyRing", resourceCulture);
+            }
+        }
+        /// <summary>Gets TopazRing from the configuration name resources.</summary>
+        public static string TopazRing {
+            get {
+                return ResourceManager.GetString("TopazRing", resourceCulture);
+            }
+        }
+        /// <summary>Gets AmethystRing from the configuration name resources.</summary>
+        public static string AmethystRing {
+            get {
+                return ResourceManager.GetString("AmethystRing", resourceCulture);
+            }
+        }
+        /// <summary>Gets RubyNecklace from the configuration name resources.</summary>
+        public static string RubyNecklace {
+            get {
+                return ResourceManager.GetString("RubyNecklace", resourceCulture);
+            }
+        }
+        /// <summary>Gets EmeraldNecklace from the configuration name resources.</summary>
+        public static string EmeraldNecklace {
+            get {
+                return ResourceManager.GetString("EmeraldNecklace", resourceCulture);
+            }
+        }
+        /// <summary>Gets SapphireNecklace from the configuration name resources.</summary>
+        public static string SapphireNecklace {
+            get {
+                return ResourceManager.GetString("SapphireNecklace", resourceCulture);
+            }
+        }
+        /// <summary>Gets EliteHealingPotion from the configuration name resources.</summary>
+        public static string EliteHealingPotion {
+            get {
+                return ResourceManager.GetString("EliteHealingPotion", resourceCulture);
+            }
+        }
+        /// <summary>Gets EliteManaPotion from the configuration name resources.</summary>
+        public static string EliteManaPotion {
+            get {
+                return ResourceManager.GetString("EliteManaPotion", resourceCulture);
+            }
+        }
+        /// <summary>Gets MediumEliteHealingPotion from the configuration name resources.</summary>
+        public static string MediumEliteHealingPotion {
+            get {
+                return ResourceManager.GetString("MediumEliteHealingPotion", resourceCulture);
+            }
+        }
+        /// <summary>Gets EliteShieldPotion from the configuration name resources.</summary>
+        public static string EliteShieldPotion {
+            get {
+                return ResourceManager.GetString("EliteShieldPotion", resourceCulture);
+            }
+        }
         /// <summary>Gets SphinxHelm from the configuration name resources.</summary>
         public static string SphinxHelm {
             get {
                 return ResourceManager.GetString("SphinxHelm", resourceCulture);
             }
         }
-
         /// <summary>Gets ViolentWindHelm from the configuration name resources.</summary>
         public static string ViolentWindHelm {
             get {
                 return ResourceManager.GetString("ViolentWindHelm", resourceCulture);
             }
         }
-
         /// <summary>Gets ViolentWindArmor from the configuration name resources.</summary>
         public static string ViolentWindArmor {
             get {
                 return ResourceManager.GetString("ViolentWindArmor", resourceCulture);
             }
         }
-
         /// <summary>Gets ViolentWindPants from the configuration name resources.</summary>
         public static string ViolentWindPants {
             get {
                 return ResourceManager.GetString("ViolentWindPants", resourceCulture);
             }
         }
-
         /// <summary>Gets ViolentWindGloves from the configuration name resources.</summary>
         public static string ViolentWindGloves {
             get {
                 return ResourceManager.GetString("ViolentWindGloves", resourceCulture);
             }
         }
-
         /// <summary>Gets ViolentWindBoots from the configuration name resources.</summary>
         public static string ViolentWindBoots {
             get {
                 return ResourceManager.GetString("ViolentWindBoots", resourceCulture);
             }
         }
-
         /// <summary>Gets AtlansArmor from the configuration name resources.</summary>
         public static string AtlansArmor {
             get {
                 return ResourceManager.GetString("AtlansArmor", resourceCulture);
             }
         }
-
         /// <summary>Gets AtlansPants from the configuration name resources.</summary>
         public static string AtlansPants {
             get {
                 return ResourceManager.GetString("AtlansPants", resourceCulture);
             }
         }
-
         /// <summary>Gets AtlansGloves from the configuration name resources.</summary>
         public static string AtlansGloves {
             get {
                 return ResourceManager.GetString("AtlansGloves", resourceCulture);
             }
         }
-
         /// <summary>Gets AtlansBoots from the configuration name resources.</summary>
         public static string AtlansBoots {
             get {
                 return ResourceManager.GetString("AtlansBoots", resourceCulture);
             }
         }
-
         /// <summary>Gets StormJahadHelm from the configuration name resources.</summary>
         public static string StormJahadHelm {
             get {
                 return ResourceManager.GetString("StormJahadHelm", resourceCulture);
             }
         }
-
         /// <summary>Gets StormJahadArmor from the configuration name resources.</summary>
         public static string StormJahadArmor {
             get {
                 return ResourceManager.GetString("StormJahadArmor", resourceCulture);
             }
         }
-
         /// <summary>Gets StormJahadPants from the configuration name resources.</summary>
         public static string StormJahadPants {
             get {
                 return ResourceManager.GetString("StormJahadPants", resourceCulture);
             }
         }
-
         /// <summary>Gets StormJahadBoots from the configuration name resources.</summary>
         public static string StormJahadBoots {
             get {
                 return ResourceManager.GetString("StormJahadBoots", resourceCulture);
             }
         }
-
         /// <summary>Gets FirstLuckyArmorTicket from the configuration name resources.</summary>
         public static string FirstLuckyArmorTicket {
             get {
                 return ResourceManager.GetString("FirstLuckyArmorTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets FirstLuckyPantsTicket from the configuration name resources.</summary>
         public static string FirstLuckyPantsTicket {
             get {
                 return ResourceManager.GetString("FirstLuckyPantsTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets FirstLuckyHelmTicket from the configuration name resources.</summary>
         public static string FirstLuckyHelmTicket {
             get {
                 return ResourceManager.GetString("FirstLuckyHelmTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets FirstLuckyGlovesTicket from the configuration name resources.</summary>
         public static string FirstLuckyGlovesTicket {
             get {
                 return ResourceManager.GetString("FirstLuckyGlovesTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets FirstLuckyBootsTicket from the configuration name resources.</summary>
         public static string FirstLuckyBootsTicket {
             get {
                 return ResourceManager.GetString("FirstLuckyBootsTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets SecondLuckyArmorTicket from the configuration name resources.</summary>
         public static string SecondLuckyArmorTicket {
             get {
                 return ResourceManager.GetString("SecondLuckyArmorTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets SecondLuckyPantsTicket from the configuration name resources.</summary>
         public static string SecondLuckyPantsTicket {
             get {
                 return ResourceManager.GetString("SecondLuckyPantsTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets SecondLuckyHelmTicket from the configuration name resources.</summary>
         public static string SecondLuckyHelmTicket {
             get {
                 return ResourceManager.GetString("SecondLuckyHelmTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets SecondLuckyGlovesTicket from the configuration name resources.</summary>
         public static string SecondLuckyGlovesTicket {
             get {
                 return ResourceManager.GetString("SecondLuckyGlovesTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets SecondLuckyBootsTicket from the configuration name resources.</summary>
         public static string SecondLuckyBootsTicket {
             get {
                 return ResourceManager.GetString("SecondLuckyBootsTicket", resourceCulture);
             }
         }
-
         /// <summary>Gets JewelOfExtension from the configuration name resources.</summary>
         public static string JewelOfExtension {
             get {
                 return ResourceManager.GetString("JewelOfExtension", resourceCulture);
             }
         }
-
         /// <summary>Gets JewelOfElevation from the configuration name resources.</summary>
         public static string JewelOfElevation {
             get {
                 return ResourceManager.GetString("JewelOfElevation", resourceCulture);
+            }
+        }
         /// <summary>Gets SealOfAscension from the configuration name resources.</summary>
         public static string SealOfAscension {
             get {
                 return ResourceManager.GetString("SealOfAscension", resourceCulture);
             }
         }
-
         /// <summary>Gets SealOfWealth from the configuration name resources.</summary>
         public static string SealOfWealth {
             get {
                 return ResourceManager.GetString("SealOfWealth", resourceCulture);
             }
         }
-
         /// <summary>Gets SealOfSustenance from the configuration name resources.</summary>
         public static string SealOfSustenance {
             get {
                 return ResourceManager.GetString("SealOfSustenance", resourceCulture);
             }
         }
-
         /// <summary>Gets SealOfHealing from the configuration name resources.</summary>
         public static string SealOfHealing {
             get {
                 return ResourceManager.GetString("SealOfHealing", resourceCulture);
             }
         }
-
         /// <summary>Gets SealOfDivinity from the configuration name resources.</summary>
         public static string SealOfDivinity {
             get {
                 return ResourceManager.GetString("SealOfDivinity", resourceCulture);
             }
         }
-
         /// <summary>Gets MasterSealOfAscension from the configuration name resources.</summary>
         public static string MasterSealOfAscension {
             get {
                 return ResourceManager.GetString("MasterSealOfAscension", resourceCulture);
             }
         }
-
         /// <summary>Gets MasterSealOfWealth from the configuration name resources.</summary>
         public static string MasterSealOfWealth {
             get {
                 return ResourceManager.GetString("MasterSealOfWealth", resourceCulture);
             }
         }
-
         /// <summary>Gets MaxAgBoostAura from the configuration name resources.</summary>
         public static string MaxAgBoostAura {
             get {
                 return ResourceManager.GetString("MaxAgBoostAura", resourceCulture);
             }
         }
-
         /// <summary>Gets MaxSdBoostAura from the configuration name resources.</summary>
         public static string MaxSdBoostAura {
             get {
                 return ResourceManager.GetString("MaxSdBoostAura", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfQuickness from the configuration name resources.</summary>
         public static string ScrollOfQuickness {
             get {
                 return ResourceManager.GetString("ScrollOfQuickness", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfDefense from the configuration name resources.</summary>
         public static string ScrollOfDefense {
             get {
                 return ResourceManager.GetString("ScrollOfDefense", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfWrath from the configuration name resources.</summary>
         public static string ScrollOfWrath {
             get {
                 return ResourceManager.GetString("ScrollOfWrath", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfWizardry from the configuration name resources.</summary>
         public static string ScrollOfWizardry {
             get {
                 return ResourceManager.GetString("ScrollOfWizardry", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfHealth from the configuration name resources.</summary>
         public static string ScrollOfHealth {
             get {
                 return ResourceManager.GetString("ScrollOfHealth", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfMana from the configuration name resources.</summary>
         public static string ScrollOfMana {
             get {
                 return ResourceManager.GetString("ScrollOfMana", resourceCulture);
             }
         }
-
         /// <summary>Gets ElixirOfStrength from the configuration name resources.</summary>
         public static string ElixirOfStrength {
             get {
                 return ResourceManager.GetString("ElixirOfStrength", resourceCulture);
             }
         }
-
         /// <summary>Gets ElixirOfAgility from the configuration name resources.</summary>
         public static string ElixirOfAgility {
             get {
                 return ResourceManager.GetString("ElixirOfAgility", resourceCulture);
             }
         }
-
         /// <summary>Gets ElixirOfHealth from the configuration name resources.</summary>
         public static string ElixirOfHealth {
             get {
                 return ResourceManager.GetString("ElixirOfHealth", resourceCulture);
             }
         }
-
         /// <summary>Gets ElixirOfEnergy from the configuration name resources.</summary>
         public static string ElixirOfEnergy {
             get {
                 return ResourceManager.GetString("ElixirOfEnergy", resourceCulture);
             }
         }
-
         /// <summary>Gets ElixirOfControl from the configuration name resources.</summary>
         public static string ElixirOfControl {
             get {
                 return ResourceManager.GetString("ElixirOfControl", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfBattle from the configuration name resources.</summary>
         public static string ScrollOfBattle {
             get {
                 return ResourceManager.GetString("ScrollOfBattle", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfStrength from the configuration name resources.</summary>
         public static string ScrollOfStrength {
             get {
                 return ResourceManager.GetString("ScrollOfStrength", resourceCulture);
             }
         }
-
         /// <summary>Gets ScrollOfHealing from the configuration name resources.</summary>
         public static string ScrollOfHealing {
             get {
                 return ResourceManager.GetString("ScrollOfHealing", resourceCulture);
+            }
+        }
+        /// <summary>Gets TalismanOfLuck from the configuration name resources.</summary>
+        public static string TalismanOfLuck {
+            get {
+                return ResourceManager.GetString("TalismanOfLuck", resourceCulture);
+            }
+        }
+        /// <summary>Gets TalismanOfChaosAssembly from the configuration name resources.</summary>
+        public static string TalismanOfChaosAssembly {
+            get {
+                return ResourceManager.GetString("TalismanOfChaosAssembly", resourceCulture);
             }
         }
     }

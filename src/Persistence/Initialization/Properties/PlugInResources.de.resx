@@ -886,4 +886,10 @@
   <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Elite-Heil-, Mana- und SD-Tränke des Item-Shops hinzu, die Lebenspunkte, Mana oder Schild sofort wiederherstellen. Die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>Kombinations-Talismane hinzufügen</value>
+  </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
 </root>

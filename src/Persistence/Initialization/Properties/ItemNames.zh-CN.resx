@@ -2307,4 +2307,10 @@
   <data name="ScrollOfHealing" xml:space="preserve">
     <value>治疗卷轴</value>
   </data>
+  <data name="TalismanOfLuck" xml:space="preserve">
+    <value>幸运符咒</value>
+  </data>
+  <data name="TalismanOfChaosAssembly" xml:space="preserve">
+    <value>混沌合成符咒</value>
+  </data>
 </root>

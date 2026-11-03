@@ -538,12 +538,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddCrystalSwordIceChanceUpdatePlugIn_Description text.</summary>
         public static string AddCrystalSwordIceChanceUpdatePlugIn_Description => ResourceManager.GetString("AddCrystalSwordIceChanceUpdatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized AddBuffItemsUpdatePlugIn_Name text.</summary>
-        public static string AddBuffItemsUpdatePlugIn_Name => ResourceManager.GetString("AddBuffItemsUpdatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized AddBuffItemsUpdatePlugIn_Description text.</summary>
-        public static string AddBuffItemsUpdatePlugIn_Description => ResourceManager.GetString("AddBuffItemsUpdatePlugIn_Description", resourceCulture)!;
         
         /// <summary>Gets the localized FixSummonerCurseSkillsPlugIn_Name text.</summary>
         public static string FixSummonerCurseSkillsPlugIn_Name => ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Name", resourceCulture)!;
@@ -916,11 +910,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddFreeTicketItemsUpdatePlugIn_Description text.</summary>
         public static string AddFreeTicketItemsUpdatePlugIn_Description => ResourceManager.GetString("AddFreeTicketItemsUpdatePlugIn_Description", resourceCulture)!;
-        /// <summary>Gets the localized AddElitePotionsUpdatePlugIn_Name text.</summary>
-        public static string AddElitePotionsUpdatePlugIn_Name => ResourceManager.GetString("AddElitePotionsUpdatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized AddElitePotionsUpdatePlugIn_Description text.</summary>
-        public static string AddElitePotionsUpdatePlugIn_Description => ResourceManager.GetString("AddElitePotionsUpdatePlugIn_Description", resourceCulture)!;
 
         /// <summary>Gets the localized AddSmallWingsUpdatePlugIn_Name text.</summary>
         public static string AddSmallWingsUpdatePlugIn_Name => ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Name", resourceCulture)!;
@@ -982,12 +971,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddItemStatProfilesUpdatePlugIn_Description text.</summary>
         public static string AddItemStatProfilesUpdatePlugIn_Description => ResourceManager.GetString("AddItemStatProfilesUpdatePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized AddCashShopJeweleryUpdatePlugIn_Name text.</summary>
-        public static string AddCashShopJeweleryUpdatePlugIn_Name => ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized AddCashShopJeweleryUpdatePlugIn_Description text.</summary>
-        public static string AddCashShopJeweleryUpdatePlugIn_Description => ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Description", resourceCulture)!;
-
         /// <summary>Gets the localized AddCraftingBonusPercentageAttributePlugInBase_Name text.</summary>
         public static string AddCraftingBonusPercentageAttributePlugInBase_Name => ResourceManager.GetString("AddCraftingBonusPercentageAttributePlugInBase_Name", resourceCulture)!;
 
@@ -1006,11 +989,47 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddItemPriceDefinitionsPlugIn_Description text.</summary>
         public static string AddItemPriceDefinitionsPlugIn_Description => ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized Name1 text.</summary>
+        public static string Name1 => ResourceManager.GetString("Name1", resourceCulture)!;
+
+        /// <summary>Gets the localized Color1 text.</summary>
+        public static string Color1 => ResourceManager.GetString("Color1", resourceCulture)!;
+
+        /// <summary>Gets the localized Bitmap1 text.</summary>
+        public static string Bitmap1 => ResourceManager.GetString("Bitmap1", resourceCulture)!;
+
+        /// <summary>Gets the localized Icon1 text.</summary>
+        public static string Icon1 => ResourceManager.GetString("Icon1", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCashShopJeweleryUpdatePlugIn_Name text.</summary>
+        public static string AddCashShopJeweleryUpdatePlugIn_Name => ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCashShopJeweleryUpdatePlugIn_Description text.</summary>
+        public static string AddCashShopJeweleryUpdatePlugIn_Description => ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddLuckyItemsUpdatePlugIn_Name text.</summary>
         public static string AddLuckyItemsUpdatePlugIn_Name => ResourceManager.GetString("AddLuckyItemsUpdatePlugIn_Name", resourceCulture)!;
 
         /// <summary>Gets the localized AddLuckyItemsUpdatePlugIn_Description text.</summary>
         public static string AddLuckyItemsUpdatePlugIn_Description => ResourceManager.GetString("AddLuckyItemsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddBuffItemsUpdatePlugIn_Name text.</summary>
+        public static string AddBuffItemsUpdatePlugIn_Name => ResourceManager.GetString("AddBuffItemsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddBuffItemsUpdatePlugIn_Description text.</summary>
+        public static string AddBuffItemsUpdatePlugIn_Description => ResourceManager.GetString("AddBuffItemsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddElitePotionsUpdatePlugIn_Name text.</summary>
+        public static string AddElitePotionsUpdatePlugIn_Name => ResourceManager.GetString("AddElitePotionsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddElitePotionsUpdatePlugIn_Description text.</summary>
+        public static string AddElitePotionsUpdatePlugIn_Description => ResourceManager.GetString("AddElitePotionsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCraftingTalismansUpdatePlugIn_Name text.</summary>
+        public static string AddCraftingTalismansUpdatePlugIn_Name => ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCraftingTalismansUpdatePlugIn_Description text.</summary>
+        public static string AddCraftingTalismansUpdatePlugIn_Description => ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Description", resourceCulture)!;
 
     }
 }

@@ -85,6 +85,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         this.WireRenaDropToEventMaps();
         new SocketSystem(this.Context, this.GameConfiguration).Initialize();
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
+        new CraftingTalismans(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new Quest(this.Context, this.GameConfiguration).Initialize();
         new Quests(this.Context, this.GameConfiguration).Initialize();

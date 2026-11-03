@@ -439,4 +439,10 @@
   <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve">
     <value>补充游戏商城的精华治疗、魔力和SD药水，可立即恢复生命值、魔力值或SD值。包含这些药水的游戏商城礼包将开始出售。</value>
   </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加合成符咒</value>
+  </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加幸运符咒（按其耐久度的百分比提高合成成功率）和混沌合成符咒（+10 至 +15 物品强化失败时保留物品）。它们会被加入可使用它们的合成中，包含它们的游戏商城礼包将开始出售。</value>
+  </data>
 </root>
