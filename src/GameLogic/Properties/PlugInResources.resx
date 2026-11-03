@@ -1573,6 +1573,18 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
   </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Kalima Ticket Consume Handler</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Opens a gate to the level of Kalima which fits the level of the character. Each use takes one of the ticket's usages.</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>Minimum levels of the Kalima levels</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>Minimum levels of the Kalima levels for special characters</value>
+  </data>
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>Potion of Bless effect number</value>
   </data>

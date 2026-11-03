@@ -1689,6 +1689,9 @@
   <data name="GameMasterTransformationRing" xml:space="preserve">
     <value>GM变身指环</value>
   </data>
+  <data name="KalimaTicket" xml:space="preserve">
+    <value>卡利玛门票</value>
+  </data>
   <data name="OldScroll" xml:space="preserve">
     <value>旧卷纸</value>
   </data>

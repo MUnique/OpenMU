@@ -1689,6 +1689,9 @@
   <data name="GameMasterTransformationRing" xml:space="preserve">
     <value>Game Master Transformation Ring</value>
   </data>
+  <data name="KalimaTicket" xml:space="preserve">
+    <value>Kalima Ticket</value>
+  </data>
   <data name="OldScroll" xml:space="preserve">
     <value>Old Scroll</value>
   </data>

@@ -40,6 +40,9 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(51, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
         this.CreateEventItem(50, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
 
+        // Kalima:
+        this.CreateKalimaTicket();
+
         // The sacred relic, which the client knows as ITEM_CURSED_CASTLE_WATER.
         this.CreateEventItem(64, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.CursedCastleWater), false);
 
@@ -133,6 +136,23 @@ internal class EventTicketItems : InitializerBase
         dropItemGroup.PossibleItems.Add(signOfDimensions);
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
         return dropItemGroup;
+    }
+
+    /// <summary>
+    /// Creates the kalima ticket, which opens a gate to Kalima, if it doesn't exist yet.
+    /// Like in the client, it can be used ten times, which is its durability.
+    /// </summary>
+    /// <returns>The created kalima ticket, or <c>null</c> if it already existed.</returns>
+    internal ItemDefinition? CreateKalimaTicket()
+    {
+        if (this.GameConfiguration.Items.Any(item => item is { Group: 13, Number: 48 }))
+        {
+            return null;
+        }
+
+        var ticket = this.CreateEventItem(48, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.KalimaTicket), false);
+        ticket.Durability = 10;
+        return ticket;
     }
 
     /// <summary>

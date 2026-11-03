@@ -1001,6 +1001,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized Icon1 text.</summary>
         public static string Icon1 => ResourceManager.GetString("Icon1", resourceCulture)!;
 
+        /// <summary>Gets the localized AddKalimaTicketUpdatePlugIn_Name text.</summary>
+        public static string AddKalimaTicketUpdatePlugIn_Name => ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKalimaTicketUpdatePlugIn_Description text.</summary>
+        public static string AddKalimaTicketUpdatePlugIn_Description => ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddCashShopJeweleryUpdatePlugIn_Name text.</summary>
         public static string AddCashShopJeweleryUpdatePlugIn_Name => ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Name", resourceCulture)!;
 

@@ -291,3 +291,17 @@ databases get the items with the configuration update *Add buff items*. Their
 packages in the cash shop are time-limited, so they can't be sold until items
 can expire. An administrator can still give the items to players, for example
 in a merchant store.
+
+### Kalima Ticket
+
+The Kalima Ticket can be used ten times. A right click outside of the safezone
+opens a gate to Kalima for the player and its party, like a Lost Map. The level
+of Kalima is the highest one whose minimum character level the character
+reached. The minimum levels are the ones the game client shows: 40, 131, 181,
+231, 281, 331 and 350, and 20, 111, 161, 211, 261, 311 and 350 for Magic
+Gladiators, Dark Lords and Rage Fighters. They can be changed in the
+configuration of the plugin *Kalima Ticket Consume Handler* on the **Plugins**
+page. The ticket isn't used up when no gate can be opened.
+
+The optional update *Add kalima ticket* adds the ticket to an existing
+configuration and puts its packages on sale. Deselect it to keep them off sale.

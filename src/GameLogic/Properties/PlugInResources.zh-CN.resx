@@ -1658,6 +1658,18 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>规定家族对组队、战盟和同盟的限制：不同家族之间以及纷争区域内禁止组队；战盟和同盟成员必须属于同一家族。</value>
   </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>卡利玛门票使用处理器</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>打开通往与角色等级相符的卡利玛层级的传送门。每次使用消耗门票的一次使用次数。</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>卡利玛各层级的最低等级</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>特殊角色的卡利玛各层级最低等级</value>
+  </data>
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>祝福药水效果编号</value>
   </data>

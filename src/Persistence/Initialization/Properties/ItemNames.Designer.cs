@@ -3962,6 +3962,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets KalimaTicket from the configuration name resources.</summary>
+        public static string KalimaTicket {
+            get {
+                return ResourceManager.GetString("KalimaTicket", resourceCulture);
+            }
+        }
+
         /// <summary>Gets OldScroll from the configuration name resources.</summary>
         public static string OldScroll {
             get {
