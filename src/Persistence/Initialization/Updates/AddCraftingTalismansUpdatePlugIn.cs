@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CashShop;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -49,7 +50,11 @@ public class AddCraftingTalismansUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override bool IsMandatory => true;
+    /// <remarks>
+    /// The update puts packages of the in-game shop on sale, which a server owner may want to keep off sale,
+    /// so it can be deselected.
+    /// </remarks>
+    public override bool IsMandatory => false;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 02, 20, 0, 0, DateTimeKind.Utc);
@@ -74,10 +79,13 @@ public class AddCraftingTalismansUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// Assigns the Talisman of Luck to the products of the in-game shop, which were created without it.
     /// Their packages were initialized as not for sale then, so they're put on sale.
+    /// The price sequences only identify these products in the script which comes with the game client,
+    /// so a configuration which uses a custom script stays untouched.
     /// </summary>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration)
     {
         if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration)
             || gameConfiguration.Items.FirstOrDefault(item => item.Group == CraftingTalismans.Group && item.Number == CraftingTalismans.TalismanOfLuckNumber) is not { } talismanOfLuck)
         {
             return;
