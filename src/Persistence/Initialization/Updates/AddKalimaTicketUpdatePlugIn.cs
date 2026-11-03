@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CashShop;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -73,10 +74,13 @@ public class AddKalimaTicketUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// Assigns the ticket to the products of the in-game shop, which were created without it.
     /// Their packages were initialized as not for sale then, so they're put on sale.
+    /// The product sequence only identifies these products in the script which comes with the game client,
+    /// so a configuration which uses a custom script stays untouched.
     /// </summary>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration)
     {
         if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration)
             || gameConfiguration.Items.FirstOrDefault(item => item is { Group: 13, Number: 48 }) is not { } ticket)
         {
             return;
