@@ -868,4 +868,40 @@
   <data name="AddGoblinBoxesUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt den Goldschlüssel und den Silberschlüssel, die versiegelte goldene und silberne Box, die mit den Schlüsseln beim Chaos-Goblin geöffnet werden, sowie die goldene und silberne Box hinzu, die beim Fallenlassen einen Gegenstand oder Geld geben. Die Pakete des Item-Shops, die die Schlüssel enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
+    <value>Kalima-Ticket hinzufügen</value>
+  </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt das Kalima-Ticket hinzu, das ein Tor zu der Kalima-Stufe öffnet, die zum Level des Charakters passt. Die Pakete des In-Game-Shops, die es enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>Ringe und Halsketten des Item-Shops hinzufügen</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Ring des tödlichen Zauberers, den Saphir-, Rubin-, Topas- und Amethystring sowie die Rubin-, Smaragd- und Saphirhalskette des Item-Shops mit ihren festen Boni hinzu. Ihre Pakete werden nicht zum Verkauf angeboten, weil der Shop sie zeitlich begrenzt verkauft, was noch nicht unterstützt wird.</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Glücksgegenstände hinzufügen</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Glücksrüstungen, die Glückstickets und die Juwelen der Erweiterung und der Erhebung hinzu. David in Elbenland tauscht ein Ticket gegen eine Glücksrüstung, die zur Charakterklasse passt. Die Pakete des Item-Shops, die die Tickets enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Buff-Gegenstände hinzufügen</value>
+  </data>
+  <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Siegel, Schriftrollen, Elixiere und Auren des In-Game-Shops hinzu, die bei Benutzung einen zeitlich begrenzten Effekt anwenden. Vorhandene Gegenstände mit denselben Nummern bleiben unverändert.</value>
+  </data>
+  <data name="AddElitePotionsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Elite-Tränke hinzufügen</value>
+  </data>
+  <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die Elite-Heil-, Mana- und SD-Tränke des Item-Shops hinzu, die Lebenspunkte, Mana oder Schild sofort wiederherstellen. Die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>Kombinations-Talismane hinzufügen</value>
+  </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
 </root>

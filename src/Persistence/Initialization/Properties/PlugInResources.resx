@@ -414,4 +414,20 @@
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the free tickets of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which allow to enter the event of any level. The packages of the in-game shop which contain them are put on sale.</value></data>
   <data name="AddGoblinBoxesUpdatePlugIn_Name" xml:space="preserve"><value>Add golden and silver boxes</value></data>
   <data name="AddGoblinBoxesUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Gold Key and Silver Key, the Sealed Golden Box and Sealed Silver Box, which the keys open at the chaos goblin, and the Golden Box and Silver Box, which give an item or money when they're dropped. The packages of the in-game shop which contain the keys are put on sale.</value></data>
+  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve"><value>Add kalima ticket</value></data>
+  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the kalima ticket, which opens a gate to the level of Kalima which fits the level of the character. The packages of the in-game shop which contain it are put on sale.</value></data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add cash shop rings and necklaces</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Lethal Wizard's Ring, the Sapphire, Ruby, Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces of the in-game shop, with their fixed bonuses. Their packages stay not for sale, because the shop sells them for a limited time, which isn't supported yet.</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add lucky items</value></data>
+  <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class. The packages of the in-game shop which contain the tickets are put on sale.</value></data>
+  <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add buff items</value></data>
+  <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the seals, scrolls, elixirs and auras of the in-game shop, which apply a timed effect when they are used. Existing items with the same numbers are left unchanged.</value></data>
+  <data name="AddElitePotionsUpdatePlugIn_Name" xml:space="preserve"><value>Add elite potions</value></data>
+  <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the elite healing, mana and SD potions of the in-game shop, which recover health, mana or shield immediately. The packages of the in-game shop which contain them are put on sale.</value></data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve"><value>Add crafting talismans</value></data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Luck, which increases the success rate of a crafting by its durability in percent, and the Talisman of Chaos Assembly, which keeps the item of a failed +10 to +15 item upgrade. They are added to the craftings which accept them, and the packages of the in-game shop which contain them are put on sale.</value></data>
 </root>

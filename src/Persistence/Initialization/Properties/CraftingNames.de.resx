@@ -132,4 +132,7 @@
   <data name="SilverBoxCombination" xml:space="preserve">
     <value>Silberne-Box-Kombination</value>
   </data>
+  <data name="LuckyItemExchange" xml:space="preserve">
+    <value>Glücksgegenstand-Tausch</value>
+  </data>
 </root>

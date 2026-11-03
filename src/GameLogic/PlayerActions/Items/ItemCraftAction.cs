@@ -46,11 +46,17 @@ public class ItemCraftAction
 
         var itemList = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
         await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(result.Item1, itemList.Count > 1 ? null : result.Item2)).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
-            p => p.ShowMerchantStoreItemListAsync(
-                itemList,
-                npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
-            .ConfigureAwait(false);
+        if (npcStats!.NpcWindow != NpcWindow.CombineLuckyItem)
+        {
+            // The lucky item dialog gets its result item with the crafting result. The item list would put the
+            // items into the chaos machine dialog of the client instead.
+            await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
+                p => p.ShowMerchantStoreItemListAsync(
+                    itemList,
+                    npcStats.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
+                .ConfigureAwait(false);
+        }
+
         await this.ShowCraftingPreviewAsync(player).ConfigureAwait(false);
     }
 

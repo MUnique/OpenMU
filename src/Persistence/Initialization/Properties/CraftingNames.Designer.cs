@@ -335,5 +335,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SilverBoxCombination", resourceCulture);
             }
         }
+
+        /// <summary>Gets LuckyItemExchange from the configuration name resources.</summary>
+        public static string LuckyItemExchange {
+            get {
+                return ResourceManager.GetString("LuckyItemExchange", resourceCulture);
+            }
+        }
     }
 }

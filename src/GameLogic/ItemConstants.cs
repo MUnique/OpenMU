@@ -1,4 +1,4 @@
-// <copyright file="ItemConstants.cs" company="MUnique">
+﻿// <copyright file="ItemConstants.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -140,6 +140,11 @@ public class ItemConstants
     public static ItemIdentifier Antidote => new(8, 14);
 
     /// <summary>
+    /// Gets the identifier for the kalima ticket.
+    /// </summary>
+    public static ItemIdentifier KalimaTicket => new(48, 13);
+
+    /// <summary>
     /// Gets the identifier for the town portal scroll.
     /// </summary>
     public static ItemIdentifier TownPortalScroll => new(10, 14);
@@ -193,6 +198,26 @@ public class ItemConstants
     /// Gets the identifier for the large shield potion.
     /// </summary>
     public static ItemIdentifier LargeShieldPotion => new(37, 14);
+
+    /// <summary>
+    /// Gets the identifier for the elite healing potion of the in-game shop, which recovers the health instantly.
+    /// </summary>
+    public static ItemIdentifier EliteHealingPotion => new(70, 14);
+
+    /// <summary>
+    /// Gets the identifier for the elite mana potion of the in-game shop, which recovers the mana instantly.
+    /// </summary>
+    public static ItemIdentifier EliteManaPotion => new(71, 14);
+
+    /// <summary>
+    /// Gets the identifier for the medium elite healing potion of the in-game shop, which recovers a part of the health instantly.
+    /// </summary>
+    public static ItemIdentifier MediumEliteHealingPotion => new(94, 14);
+
+    /// <summary>
+    /// Gets the identifier for the elite shield (SD) potion of the in-game shop, which recovers a part of the shield instantly.
+    /// </summary>
+    public static ItemIdentifier EliteShieldPotion => new(133, 14);
 
     /// <summary>
     /// Gets the identifier for the small complex potion.
