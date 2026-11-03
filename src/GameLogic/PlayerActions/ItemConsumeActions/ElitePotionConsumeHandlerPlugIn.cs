@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 /// immediately, without steps, and independent of the character level, as the client describes them
 /// (e.g. "Restores HP by 100% immediately.").
 /// </remarks>
-public abstract class ElitePotionConsumeHandlerPlugIn : RecoverConsumeHandlerPlugIn, IItemConsumeHandlerPlugIn
+public abstract class ElitePotionConsumeHandlerPlugIn : RecoverConsumeHandlerPlugIn
 {
     /// <summary>
     /// Gets the default percentage of the maximum value which is recovered.

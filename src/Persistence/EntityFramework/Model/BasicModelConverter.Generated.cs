@@ -2644,6 +2644,7 @@ internal sealed class BasicModelConverter
         target.GameDuration = source.GameDuration;
         target.ExitDuration = source.ExitDuration;
         target.MaximumPlayerCount = source.MaximumPlayerCount;
+        target.MinimumPlayerCount = source.MinimumPlayerCount;
         target.SaveRankingStatistics = source.SaveRankingStatistics;
         target.RequiresMasterClass = source.RequiresMasterClass;
         target.MinimumCharacterLevel = source.MinimumCharacterLevel;

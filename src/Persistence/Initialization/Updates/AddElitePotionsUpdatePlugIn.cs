@@ -16,20 +16,10 @@ using MUnique.OpenMU.PlugIns;
 /// which contain them on sale.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddElitePotionsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddElitePotionsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
+[Display(Name = nameof(PlugInResources.AddElitePotionsUpdatePlugIn_Name), Description = nameof(PlugInResources.AddElitePotionsUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("EFDD272F-C359-4953-86FB-9703C3067A8D")]
 public class AddElitePotionsUpdatePlugIn : UpdatePlugInBase
 {
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add elite potions";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update adds the elite healing, mana and SD potions of the in-game shop, which recover health, mana or shield immediately. The packages of the in-game shop which contain them are put on sale.";
-
     /// <summary>
     /// The item numbers (of group 14) of the products of the in-game shop, by their product sequence.
     /// </summary>
@@ -45,10 +35,10 @@ public class AddElitePotionsUpdatePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => PlugInResources.AddElitePotionsUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => PlugInResources.AddElitePotionsUpdatePlugIn_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
