@@ -13,9 +13,7 @@ const NAME_SEPARATOR = " - Id:";
  * @param data - The data of the object.
  * @returns The name without the appended id and position.
  */
-export function getDisplayName(data: ObjectData): string {
-    return data.name.split(NAME_SEPARATOR)[NAME_INDEX];
-}
+export const getDisplayName = (data: ObjectData): string => data.name.split(NAME_SEPARATOR)[NAME_INDEX];
 
 export class Attackable<TData extends ObjectData> extends THREE.Mesh implements GameObject {
     public data: TData;

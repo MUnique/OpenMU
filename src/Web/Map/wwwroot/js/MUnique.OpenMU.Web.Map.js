@@ -371,12 +371,8 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
 });
 System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
     "use strict";
-    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, Attackable, attackableAlphaMapTexture;
+    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, getDisplayName, Attackable, attackableAlphaMapTexture;
     var __moduleName = context_6 && context_6.id;
-    function getDisplayName(data) {
-        return data.name.split(NAME_SEPARATOR)[NAME_INDEX];
-    }
-    exports_6("getDisplayName", getDisplayName);
     return {
         setters: [
             function (THREE_3) {
@@ -393,6 +389,7 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
             NAME_LABEL_Z_POSITION = 200;
             NAME_INDEX = 0;
             NAME_SEPARATOR = " - Id:";
+            exports_6("getDisplayName", getDisplayName = function (data) { return data.name.split(NAME_SEPARATOR)[NAME_INDEX]; });
             Attackable = (function (_super) {
                 __extends(Attackable, _super);
                 function Attackable(data, geometry, material) {
@@ -1117,11 +1114,12 @@ System.register("WorldObjectPicker", ["three"], function (exports_12, context_12
                     return visibleIntersection ? this.extractObjectData(visibleIntersection) : null;
                 };
                 WorldObjectPicker.prototype.isVisible = function (obj) {
-                    while (obj) {
-                        if (!obj.visible) {
+                    var current = obj;
+                    while (current) {
+                        if (!current.visible) {
                             return false;
                         }
-                        obj = obj.parent;
+                        current = current.parent;
                     }
                     return true;
                 };

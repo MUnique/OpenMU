@@ -87,12 +87,13 @@ export class WorldObjectPicker {
         return visibleIntersection ? this.extractObjectData(visibleIntersection) : null;
     }
 
-    private isVisible(obj: THREE.Object3D | null): boolean {
-        while (obj) {
-            if (!obj.visible) {
+    private isVisible(obj: THREE.Object3D): boolean {
+        let current: THREE.Object3D | null = obj;
+        while (current) {
+            if (!current.visible) {
                 return false;
             }
-            obj = obj.parent;
+            current = current.parent;
         }
         return true;
     }

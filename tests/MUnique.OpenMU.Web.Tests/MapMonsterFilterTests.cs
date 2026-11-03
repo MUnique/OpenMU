@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests;
 
+using System.Globalization;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,7 +83,7 @@ public class MapMonsterFilterTests
         var filter = this.RenderFilter();
 
         filter.Find("input.monster-filter-text").Input("gold");
-        filter.Find("select.monster-filter-mode").Change(((int)mode).ToString());
+        filter.Find("select.monster-filter-mode").Change(((int)mode).ToString(CultureInfo.InvariantCulture));
 
         this.AssertLastFilter(mode, "gold");
     }
