@@ -28,6 +28,8 @@ Length: 12 Bytes
 |-------|--------|-----------|-------|-------------|
 | 0 | 4 | IntegerLittleEndian |  | GuildId |
 | 4 | 1 | GuildMemberRole |  | Role |
+| 5 | 1 | Byte |  | GuildType |
+| 6 | 1 | Byte |  | GuildRelationship; The relationship (union/rival) of the guild to the guild of the receiving player. |
 | 7 << 7 | 1 bit | Boolean |  | IsPlayerAppearingNew |
 | 7 | 2 | ShortBigEndian |  | PlayerId |
 

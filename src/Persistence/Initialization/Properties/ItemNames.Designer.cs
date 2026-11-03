@@ -4872,6 +4872,34 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets DevilSquareFreeTicket from the configuration name resources.</summary>
+        public static string DevilSquareFreeTicket {
+            get {
+                return ResourceManager.GetString("DevilSquareFreeTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodCastleFreeTicket from the configuration name resources.</summary>
+        public static string BloodCastleFreeTicket {
+            get {
+                return ResourceManager.GetString("BloodCastleFreeTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTempleFreeTicket from the configuration name resources.</summary>
+        public static string IllusionTempleFreeTicket {
+            get {
+                return ResourceManager.GetString("IllusionTempleFreeTicket", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ChaosCastleFreeTicket from the configuration name resources.</summary>
+        public static string ChaosCastleFreeTicket {
+            get {
+                return ResourceManager.GetString("ChaosCastleFreeTicket", resourceCulture);
+            }
+        }
+
         /// <summary>Gets MirrorOfDimensions from the configuration name resources.</summary>
         public static string MirrorOfDimensions {
             get {
