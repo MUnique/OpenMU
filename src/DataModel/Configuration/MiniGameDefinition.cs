@@ -153,6 +153,12 @@ public partial class MiniGameDefinition
     public virtual ItemDefinition? TicketItem { get; set; }
 
     /// <summary>
+    /// Gets or sets the free ticket item, which allows to enter the mini game of any level, instead of the <see cref="TicketItem"/>.
+    /// Its durability is the number of entries. It's usually sold in the in-game shop.
+    /// </summary>
+    public virtual ItemDefinition? FreeTicketItem { get; set; }
+
+    /// <summary>
     /// Gets or sets the rewards which are given to the player when the game has been finished successfully.
     /// Multiple awards per players are possible.
     /// </summary>

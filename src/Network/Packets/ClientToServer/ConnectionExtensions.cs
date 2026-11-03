@@ -34,11 +34,12 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="tickCount">The tick count.</param>
     /// <param name="attackSpeed">The attack speed.</param>
+    /// <param name="magicSpeed">The magic speed.</param>
     /// <remarks>
     /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
     /// Causes reaction on server side: By the original server this is used to detect speed hacks.
     /// </remarks>
-    public static async ValueTask SendPingAsync(this IConnection? connection, uint @tickCount, ushort @attackSpeed)
+    public static async ValueTask SendPingAsync(this IConnection? connection, uint @tickCount, ushort @attackSpeed, ushort @magicSpeed)
     {
         if (connection is null)
         {
@@ -51,6 +52,7 @@ public static class ConnectionExtensions
             var packet = new PingRef(connection.Output.GetSpan(length)[..length]);
             packet.TickCount = @tickCount;
             packet.AttackSpeed = @attackSpeed;
+            packet.MagicSpeed = @magicSpeed;
 
             return packet.Header.Length;
         }
@@ -2251,11 +2253,12 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="pin">The pin.</param>
+    /// <param name="password">The password.</param>
     /// <remarks>
     /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
     /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
     /// </remarks>
-    public static async ValueTask SendUnlockVaultAsync(this IConnection? connection, ushort @pin)
+    public static async ValueTask SendUnlockVaultAsync(this IConnection? connection, ushort @pin, string @password)
     {
         if (connection is null)
         {
@@ -2267,6 +2270,7 @@ public static class ConnectionExtensions
             var length = UnlockVaultRef.Length;
             var packet = new UnlockVaultRef(connection.Output.GetSpan(length)[..length]);
             packet.Pin = @pin;
+            packet.Password = @password;
 
             return packet.Header.Length;
         }
@@ -2727,7 +2731,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="name">The name of the character which should be deleted.</param>
-    /// <param name="securityCode">A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.</param>
+    /// <param name="securityCode">A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes. The 1.04d client always sends 20 bytes.</param>
     /// <remarks>
     /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
     /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
@@ -2918,7 +2922,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="AddMasterSkillPoint" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="skillId">The skill id.</param>
+    /// <param name="skillId">The client sends the skill id as 32-bit value; the upper 16 bits are 0.</param>
     /// <remarks>
     /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
     /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
@@ -4009,11 +4013,12 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="inventoryItemSlot">The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</param>
+    /// <param name="isSelfRepair">The is self repair.</param>
     /// <remarks>
     /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
     /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
     /// </remarks>
-    public static async ValueTask SendItemRepairAsync(this IConnection? connection, byte @inventoryItemSlot)
+    public static async ValueTask SendItemRepairAsync(this IConnection? connection, byte @inventoryItemSlot, bool @isSelfRepair)
     {
         if (connection is null)
         {
@@ -4025,6 +4030,7 @@ public static class ConnectionExtensions
             var length = ItemRepairRef.Length;
             var packet = new ItemRepairRef(connection.Output.GetSpan(length)[..length]);
             packet.InventoryItemSlot = @inventoryItemSlot;
+            packet.IsSelfRepair = @isSelfRepair;
 
             return packet.Header.Length;
         }
@@ -4446,7 +4452,7 @@ public static class ConnectionExtensions
     /// Is sent by the client when: The player is in the illusion temple event and wants to perform a special skill (210 - 213), Order of Protection, Restraint, Tracking or Weaken.
     /// Causes reaction on server side: The server checks if the player is inside the event etc. and performs the skills accordingly.
     /// </remarks>
-    public static async ValueTask SendIllusionTempleSkillRequestAsync(this IConnection? connection, ushort @skillNumber, byte @targetObjectIndex, byte @distance)
+    public static async ValueTask SendIllusionTempleSkillRequestAsync(this IConnection? connection, ushort @skillNumber, ushort @targetObjectIndex, byte @distance)
     {
         if (connection is null)
         {
@@ -5562,11 +5568,12 @@ public static class ConnectionExtensions
     /// Sends a <see cref="DuelChannelQuitRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="channelId">The channel id.</param>
     /// <remarks>
     /// Is sent by the client when: A player requested to quit the duel as a spectator.
     /// Causes reaction on server side: The server will remove the player as spectator.
     /// </remarks>
-    public static async ValueTask SendDuelChannelQuitRequestAsync(this IConnection? connection)
+    public static async ValueTask SendDuelChannelQuitRequestAsync(this IConnection? connection, byte @channelId)
     {
         if (connection is null)
         {
@@ -5577,6 +5584,8 @@ public static class ConnectionExtensions
         {
             var length = DuelChannelQuitRequestRef.Length;
             var packet = new DuelChannelQuitRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.ChannelId = @channelId;
+
             return packet.Header.Length;
         }
 
@@ -5677,6 +5686,147 @@ public static class ConnectionExtensions
         {
             var length = DiscordUnlinkRequestRef.Length;
             var packet = new DiscordUnlinkRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterRenameRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="oldName">The old name.</param>
+    /// <param name="newName">The new name.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to rename a character in the character selection.
+    /// Causes reaction on server side: The server renames the character and answers with CharacterRenameResult (F3 16).
+    /// </remarks>
+    public static async ValueTask SendCharacterRenameRequestAsync(this IConnection? connection, string @oldName, string @newName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterRenameRequestRef.Length;
+            var packet = new CharacterRenameRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.OldName = @oldName;
+            packet.NewName = @newName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="InventoryItemEquipRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="inventorySlot">The inventory slot.</param>
+    /// <param name="value">The value.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player (un)equips an item which is used inside the inventory.
+    /// Causes reaction on server side: The server answers with InventoryItemEquipResult (BF 20).
+    /// </remarks>
+    public static async ValueTask SendInventoryItemEquipRequestAsync(this IConnection? connection, byte @inventorySlot, byte @value)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = InventoryItemEquipRequestRef.Length;
+            var packet = new InventoryItemEquipRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.InventorySlot = @inventorySlot;
+            packet.Value = @value;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RequestD000" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: Sent by the 1.04d client; its purpose is not identified yet.
+    /// Causes reaction on server side: Unknown.
+    /// </remarks>
+    public static async ValueTask SendRequestD000Async(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RequestD000Ref.Length;
+            var packet = new RequestD000Ref(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GameServerChannelRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="value">The value.</param>
+    /// <remarks>
+    /// Is sent by the client when: Sent when the player confirms the game server channel message box.
+    /// Causes reaction on server side: The server answers with GameServerChannelResult (F1 06).
+    /// </remarks>
+    public static async ValueTask SendGameServerChannelRequestAsync(this IConnection? connection, byte @value)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GameServerChannelRequestRef.Length;
+            var packet = new GameServerChannelRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Value = @value;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GameGuardAuthResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="data">The data.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client answers the GameGuardAuthRequest (C3 73).
+    /// Causes reaction on server side: The server can verify the GameGuard answer.
+    /// </remarks>
+    public static async ValueTask SendGameGuardAuthResponseAsync(this IConnection? connection, Memory<byte> @data)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GameGuardAuthResponseRef.Length;
+            var packet = new GameGuardAuthResponseRef(connection.Output.GetSpan(length)[..length]);
+            @data.Span.CopyTo(packet.Data);
+
             return packet.Header.Length;
         }
 

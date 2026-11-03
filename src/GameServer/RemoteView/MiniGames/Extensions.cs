@@ -94,13 +94,20 @@ public static class Extensions
     /// <param name="enterResult">The enter result.</param>
     /// <returns>The converted result.</returns>
     /// <remarks>
-    /// Unlike the other mini games, the illusion temple result is an undocumented plain byte, so there is no
-    /// generated enum to map to. Only the success value (0) is known for sure, because it's consistent over
-    /// all other mini games; every failure is reported as 1 until the client's distinct failure codes are known.
+    /// The client uses distinct result bytes for admission and ticket failures (3), a full event (4),
+    /// and a player-killer rejection (7). Preserve these messages instead of collapsing every failure
+    /// into the not-open result (1).
     /// </remarks>
     public static byte ToIllusionTempleEnterResult(this EnterResult enterResult)
     {
-        return enterResult == EnterResult.Success ? (byte)0 : (byte)1;
+        return enterResult switch
+        {
+            EnterResult.Success => 0,
+            EnterResult.NotOpen => 1,
+            EnterResult.Full => 4,
+            EnterResult.PlayerKillerCantEnter => 7,
+            _ => 3,
+        };
     }
 
     /// <summary>
