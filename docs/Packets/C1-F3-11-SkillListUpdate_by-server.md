@@ -17,6 +17,7 @@ The skill list gets initialized.
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x11  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | Count; Mixed usage: Skill list count (when list). 0xFE when adding a skill, 0xFF when removing a Skill. |
+| 5 | 1 | Byte | 0 | ListType; 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added. |
 | 6 | SkillEntry.Length * Count | Array of SkillEntry |  | Skills |
 
 ### SkillEntry Structure

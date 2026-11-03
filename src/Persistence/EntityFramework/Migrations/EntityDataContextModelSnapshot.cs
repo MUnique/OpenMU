@@ -3611,6 +3611,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<TimeSpan>("ExitDuration")
                         .HasColumnType("interval");
 
+                    b.Property<Guid?>("FreeTicketItemId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
@@ -3669,6 +3672,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EntranceId");
+
+                    b.HasIndex("FreeTicketItemId");
 
                     b.HasIndex("GameConfigurationId");
 
@@ -6116,6 +6121,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("EntranceId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawFreeTicketItem")
+                        .WithMany()
+                        .HasForeignKey("FreeTicketItemId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMiniGameDefinitions")
                         .HasForeignKey("GameConfigurationId")
@@ -6126,6 +6135,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("TicketItemId");
 
                     b.Navigation("RawEntrance");
+
+                    b.Navigation("RawFreeTicketItem");
 
                     b.Navigation("RawTicketItem");
                 });

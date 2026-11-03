@@ -13,7 +13,7 @@ Adds or increases the master skill level of the specified skill, if the characte
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x52  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortLittleEndian |  | SkillId |
+| 4 | 2 | ShortLittleEndian |  | SkillId; The client sends the skill id as 32-bit value; the upper 16 bits are 0. |

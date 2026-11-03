@@ -155,3 +155,6 @@ reached. The minimum levels are the ones the game client shows: 40, 131, 181,
 Gladiators, Dark Lords and Rage Fighters. They can be changed in the
 configuration of the plugin *Kalima Ticket Consume Handler* on the **Plugins**
 page. The ticket isn't used up when no gate can be opened.
+
+The optional update *Add kalima ticket* adds the ticket to an existing
+configuration and puts its packages on sale. Deselect it to keep them off sale.
