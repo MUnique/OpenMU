@@ -63,6 +63,30 @@ internal class CashShopJeweleryDataTest
         AssertItemData(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the update doesn't assign the items to the products of a custom in-game shop script,
+    /// because its product sequences may identify other products.
+    /// </summary>
+    [Test]
+    public async Task UpdateDoesNotAssignItemsToCustomScriptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var configuration = gameConfiguration.CashShopConfiguration!;
+        configuration.ScriptYearId++;
+        foreach (var product in configuration.Packages.SelectMany(p => p.Products).Where(p => p.ItemDefinition is { } item && IsJewelery(item)))
+        {
+            product.ItemDefinition = null;
+        }
+
+        gameConfiguration.Items.Where(IsJewelery).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
+
+        await new AddCashShopJeweleryUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Items.Count(IsJewelery), Is.EqualTo(RingNumbers.Length + NecklaceNumbers.Length));
+        Assert.That(configuration.Packages.SelectMany(p => p.Products), Has.None.Matches<CashShopProduct>(p => p.ItemDefinition is { } item && IsJewelery(item)));
+    }
+
     private static bool IsJewelery(ItemDefinition item) => item.Group == 13 && (RingNumbers.Contains(item.Number) || NecklaceNumbers.Contains(item.Number));
 
     private static void AssertItemData(GameConfiguration gameConfiguration)

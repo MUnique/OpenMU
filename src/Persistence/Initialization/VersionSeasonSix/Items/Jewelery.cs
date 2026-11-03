@@ -28,88 +28,6 @@ internal class Jewelery : Version095d.Items.Jewelery
     {
     }
 
-    /// <inheritdoc/>
-    protected override void CreateItems()
-    {
-        base.CreateItems();
-
-        this.CreateRing(21, LocalizedString.FromResource(() => ItemNames.RingOfFire), 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
-        this.CreateRing(22, LocalizedString.FromResource(() => ItemNames.RingOfEarth), 38, 50, Stats.HealthRecoveryMultiplier, Stats.EarthResistance);
-        this.CreateRing(23, LocalizedString.FromResource(() => ItemNames.RingOfWind), 44, 50, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
-        this.CreateRing(24, LocalizedString.FromResource(() => ItemNames.RingOfMagic), 47, 50, Stats.MaximumMana, null);
-
-        this.CreatePendant(25, LocalizedString.FromResource(() => ItemNames.PendantOfIce), 34, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
-        this.CreatePendant(26, LocalizedString.FromResource(() => ItemNames.PendantOfWind), 42, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
-        this.CreatePendant(27, LocalizedString.FromResource(() => ItemNames.PendantOfWater), 46, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.WaterResistance);
-        this.CreatePendant(28, LocalizedString.FromResource(() => ItemNames.PendantOfAbility), 50, 50, DamageType.Physical, Stats.MaximumAbility, null);
-
-        // Requirement for Kanturu Event:
-        var moonStonePendant = this.CreateJewelery(38, 10, false, LocalizedString.FromResource(() => ItemNames.MoonstonePendant), 21, 120, null, null, null);
-        {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.MoonstonePendantEquipped.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = 1;
-            moonStonePendant.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        this.CreateWizardsRing();
-
-        this.CreateCashShopJewelery();
-
-#pragma warning disable SA1117 // Parameters should be on same line or separete lines
-        var eliteSkeletonRing = this.CreateTransformationRing(39, LocalizedString.FromResource(() => ItemNames.EliteSkeletonTransformationRing), 10, 255, 10, CharacterTransformationSkin.EliteSkeleton,
-            (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
-        eliteSkeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition(LocalizedString.FromResource(() => ItemOptionNames.EliteSkeletonTransformationRing), ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
-                (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1))));
-
-        this.CreateTransformationRing(40, LocalizedString.FromResource(() => ItemNames.JackOLanternTransformationRing), 10, 100, 10, CharacterTransformationSkin.JackOlantern);
-        this.CreateTransformationRing(41, LocalizedString.FromResource(() => ItemNames.ChristmasTransformationRing), 1, 100, 0, CharacterTransformationSkin.Christmas,
-            (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
-        this.CreateTransformationRing(42, LocalizedString.FromResource(() => ItemNames.GameMasterTransformationRing), 0, 255, 0, CharacterTransformationSkin.GameMaster,
-            (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.LightningDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.FireDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.EarthDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.WindDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.WaterDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.IceResistance, 255, AggregateType.Maximum),
-            (Stats.PoisonResistance, 255, AggregateType.Maximum),
-            (Stats.LightningResistance, 255, AggregateType.Maximum),
-            (Stats.FireResistance, 255, AggregateType.Maximum),
-            (Stats.EarthResistance, 255, AggregateType.Maximum),
-            (Stats.WindResistance, 255, AggregateType.Maximum),
-            (Stats.WaterResistance, 255, AggregateType.Maximum));
-        this.CreateTransformationRing(68, LocalizedString.FromResource(() => ItemNames.SnowmanTransformationRing), 10, 100, 10, CharacterTransformationSkin.Snowman);
-        this.CreateTransformationRing(76, LocalizedString.FromResource(() => ItemNames.PandaTransformationRing), 28, 255, 0, CharacterTransformationSkin.Panda,
-            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
-            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
-            (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
-            (Stats.FinalDamageBonus, 30, AggregateType.AddRaw));
-
-        var skeletonRing = this.CreateTransformationRing(122, LocalizedString.FromResource(() => ItemNames.SkeletonTransformationRing), 1, 255, 0, CharacterTransformationSkin.Skeleton,
-            (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
-            (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
-        skeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition(LocalizedString.FromResource(() => ItemOptionNames.SkeletonTransformationRing), ItemOptionDefinitionNumbers.SkeletonTransformationRing,
-                (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f))));
-
-        /* Next season xfm rings
-        var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)625,
-            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
-            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
-            (Stats.DefenseFinal, 10, AggregateType.AddRaw));
-        var miniRobotRing = this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)626,
-            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
-            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
-            (Stats.AttackSpeedAny, 7, AggregateType.AddRaw));
-        var greatHeavenlyMageRing = this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)642,
-            (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
-            (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));*/
-#pragma warning restore SA1011
-    }
-
     /// <summary>
     /// Creates the rings and necklaces of the in-game shop, which don't exist yet.
     /// </summary>
@@ -215,6 +133,88 @@ internal class Jewelery : Version095d.Items.Jewelery
             (Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
 
         return createdItems;
+    }
+
+    /// <inheritdoc/>
+    protected override void CreateItems()
+    {
+        base.CreateItems();
+
+        this.CreateRing(21, LocalizedString.FromResource(() => ItemNames.RingOfFire), 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
+        this.CreateRing(22, LocalizedString.FromResource(() => ItemNames.RingOfEarth), 38, 50, Stats.HealthRecoveryMultiplier, Stats.EarthResistance);
+        this.CreateRing(23, LocalizedString.FromResource(() => ItemNames.RingOfWind), 44, 50, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
+        this.CreateRing(24, LocalizedString.FromResource(() => ItemNames.RingOfMagic), 47, 50, Stats.MaximumMana, null);
+
+        this.CreatePendant(25, LocalizedString.FromResource(() => ItemNames.PendantOfIce), 34, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
+        this.CreatePendant(26, LocalizedString.FromResource(() => ItemNames.PendantOfWind), 42, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
+        this.CreatePendant(27, LocalizedString.FromResource(() => ItemNames.PendantOfWater), 46, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.WaterResistance);
+        this.CreatePendant(28, LocalizedString.FromResource(() => ItemNames.PendantOfAbility), 50, 50, DamageType.Physical, Stats.MaximumAbility, null);
+
+        // Requirement for Kanturu Event:
+        var moonStonePendant = this.CreateJewelery(38, 10, false, LocalizedString.FromResource(() => ItemNames.MoonstonePendant), 21, 120, null, null, null);
+        {
+            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+            powerUp.TargetAttribute = Stats.MoonstonePendantEquipped.GetPersistent(this.GameConfiguration);
+            powerUp.BaseValue = 1;
+            moonStonePendant.BasePowerUpAttributes.Add(powerUp);
+        }
+
+        this.CreateWizardsRing();
+
+        this.CreateCashShopJewelery();
+
+#pragma warning disable SA1117 // Parameters should be on same line or separete lines
+        var eliteSkeletonRing = this.CreateTransformationRing(39, LocalizedString.FromResource(() => ItemNames.EliteSkeletonTransformationRing), 10, 255, 10, CharacterTransformationSkin.EliteSkeleton,
+            (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
+        eliteSkeletonRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition(LocalizedString.FromResource(() => ItemOptionNames.EliteSkeletonTransformationRing), ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
+                (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1))));
+
+        this.CreateTransformationRing(40, LocalizedString.FromResource(() => ItemNames.JackOLanternTransformationRing), 10, 100, 10, CharacterTransformationSkin.JackOlantern);
+        this.CreateTransformationRing(41, LocalizedString.FromResource(() => ItemNames.ChristmasTransformationRing), 1, 100, 0, CharacterTransformationSkin.Christmas,
+            (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
+        this.CreateTransformationRing(42, LocalizedString.FromResource(() => ItemNames.GameMasterTransformationRing), 0, 255, 0, CharacterTransformationSkin.GameMaster,
+            (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.LightningDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.FireDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.EarthDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.WindDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.WaterDamageBonus, 255, AggregateType.AddRaw),
+            (Stats.IceResistance, 255, AggregateType.Maximum),
+            (Stats.PoisonResistance, 255, AggregateType.Maximum),
+            (Stats.LightningResistance, 255, AggregateType.Maximum),
+            (Stats.FireResistance, 255, AggregateType.Maximum),
+            (Stats.EarthResistance, 255, AggregateType.Maximum),
+            (Stats.WindResistance, 255, AggregateType.Maximum),
+            (Stats.WaterResistance, 255, AggregateType.Maximum));
+        this.CreateTransformationRing(68, LocalizedString.FromResource(() => ItemNames.SnowmanTransformationRing), 10, 100, 10, CharacterTransformationSkin.Snowman);
+        this.CreateTransformationRing(76, LocalizedString.FromResource(() => ItemNames.PandaTransformationRing), 28, 255, 0, CharacterTransformationSkin.Panda,
+            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
+            (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
+            (Stats.FinalDamageBonus, 30, AggregateType.AddRaw));
+
+        var skeletonRing = this.CreateTransformationRing(122, LocalizedString.FromResource(() => ItemNames.SkeletonTransformationRing), 1, 255, 0, CharacterTransformationSkin.Skeleton,
+            (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
+        skeletonRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition(LocalizedString.FromResource(() => ItemOptionNames.SkeletonTransformationRing), ItemOptionDefinitionNumbers.SkeletonTransformationRing,
+                (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f))));
+
+        /* Next season xfm rings
+        var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)625,
+            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
+            (Stats.DefenseFinal, 10, AggregateType.AddRaw));
+        var miniRobotRing = this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)626,
+            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
+            (Stats.AttackSpeedAny, 7, AggregateType.AddRaw));
+        var greatHeavenlyMageRing = this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)642,
+            (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));*/
+#pragma warning restore SA1011
     }
 
     private ItemOptionDefinition CreateItemOptionDefinition(LocalizedString name, short number, params (AttributeDefinition TargetOption, float Value, AggregateType AggregateType, (AttributeDefinition? SourceAttribute, float Multiplier))[] options)

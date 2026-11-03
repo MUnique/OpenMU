@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -67,10 +68,14 @@ public class AddCashShopJeweleryUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// Assigns the added items to the products of the in-game shop, which were created without them.
     /// The packages stay as they are: their products are time-limited, so they can't be delivered yet.
+    /// The product sequences only identify these products in the script which comes with the game client,
+    /// so a configuration which uses a custom script stays untouched.
     /// </summary>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration, IReadOnlyList<ItemDefinition> addedItems)
     {
-        if (gameConfiguration.CashShopConfiguration is not { } configuration || addedItems.Count == 0)
+        if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration)
+            || addedItems.Count == 0)
         {
             return;
         }
