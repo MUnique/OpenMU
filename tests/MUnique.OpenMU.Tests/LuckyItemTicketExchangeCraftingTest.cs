@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Entities;
@@ -130,6 +131,30 @@ public class LuckyItemTicketExchangeCraftingTest
         var (result, _) = await new LuckyItemTicketExchangeCrafting(this._settings).DoMixAsync(player, 0).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(CraftingResult.IncorrectMixItems));
+    }
+
+    /// <summary>
+    /// Tests that a ticket is not accepted when the lucky armor doesn't fit into the inventory, so it isn't consumed.
+    /// </summary>
+    [Test]
+    public async ValueTask TicketIsNotAcceptedWhenTheArmorDoesNotFitAsync()
+    {
+        var player = await this.CreatePlayerAsync(CharacterClassNumber.DarkKnight).ConfigureAwait(false);
+        var ticket = await this.AddTicketAsync(player, 135).ConfigureAwait(false);
+        var jewelOfBless = this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 13);
+        foreach (var slot in player.Inventory!.FreeSlots.Where(s => s >= InventoryConstants.EquippableSlotsCount).ToList())
+        {
+            var jewel = player.PersistenceContext.CreateNew<Item>();
+            jewel.Definition = jewelOfBless;
+            jewel.Durability = 1;
+            await player.Inventory.AddItemAsync(slot, jewel).ConfigureAwait(false);
+        }
+
+        var (result, item) = await new LuckyItemTicketExchangeCrafting(this._settings).DoMixAsync(player, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.TooManyItems));
+        Assert.That(item, Is.Null);
+        Assert.That(player.TemporaryStorage!.Items, Is.EquivalentTo(new[] { ticket }));
     }
 
     private async ValueTask<Player> CreatePlayerAsync(CharacterClassNumber characterClass)
