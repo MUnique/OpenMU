@@ -288,17 +288,17 @@ reach the inventory: a delivery plugin applies them, or they stay in the storage
 
 Packages with a product that can't be delivered are initialized as not for sale.
 That leaves 24 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
-items and the Talisman of Luck 10% for Goblin Points, and the character cards, the
-Magic Backpack, the Vault Expansion Certificate and the Talisman of Luck for WCoin
-(C) and (P). Most cash shop items, like seals, scrolls and most talismans, aren't
-defined in the item configuration yet.
+items and the Talisman of Luck 10% for Goblin Points, and the character cards,
+the Magic Backpack, the Vault Expansion Certificate and the Talisman of Luck for
+WCoin (C) and (P). Most cash shop items, like seals, scrolls and most talismans,
+aren't defined in the item configuration yet.
 
-The products of the Talisman of Luck have a rate property (1, 5 or 10 %) instead of
-a quantity. The rate is the durability of the delivered talisman, so it's used as
-the quantity of the product. The update *Add crafting talismans* adds the Talisman
-of Luck and the Talisman of Chaos Assembly to an existing configuration and puts
-these packages on sale. The Talisman of Chaos Assembly is in no package of the
-script `512.2012.084`.
+The products of the Talisman of Luck have a rate property (1, 5 or 10 %) instead
+of a quantity. The rate is the durability of the delivered talisman, so it's
+used as the quantity of the product. The update *Add crafting talismans* adds
+the Talisman of Luck and the Talisman of Chaos Assembly to an existing
+configuration and puts these packages on sale. The Talisman of Chaos Assembly is
+in no package of the script `512.2012.084`.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those
