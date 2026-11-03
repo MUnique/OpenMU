@@ -114,8 +114,14 @@ public class ResetFruitConsumeHandlerPlugInTest
     {
         var player = await CreatePlayerAsync(100).ConfigureAwait(false);
         var fruit = await AddFruitAsync(player, 1).ConfigureAwait(false);
-        var helm = new Item { Definition = new ItemDefinition { Group = 7, Width = 2, Height = 2 }, Durability = 1, ItemSlot = InventoryConstants.HelmSlot };
-        await player.Inventory!.AddItemAsync(InventoryConstants.HelmSlot, helm).ConfigureAwait(false);
+        var helm = player.PersistenceContext.CreateNew<Item>();
+        helm.Definition = player.PersistenceContext.CreateNew<ItemDefinition>();
+        helm.Definition.Group = 7;
+        helm.Definition.Width = 2;
+        helm.Definition.Height = 2;
+        helm.Durability = 1;
+        helm.ItemSlot = InventoryConstants.HelmSlot;
+        Assert.That(await player.Inventory!.AddItemAsync(InventoryConstants.HelmSlot, helm).ConfigureAwait(false), Is.True);
 
         var consumed = await new StrengthResetFruitConsumeHandlerPlugIn().ConsumeItemAsync(player, fruit, null, FruitUsage.Undefined).ConfigureAwait(false);
 
