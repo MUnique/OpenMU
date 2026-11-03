@@ -78,6 +78,31 @@ internal class EventTicketItems : InitializerBase
     }
 
     /// <summary>
+    /// Assigns the free tickets as <see cref="MiniGameDefinition.FreeTicketItem"/> to the mini games
+    /// of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which don't have one yet.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    internal static void AssignFreeTicketItems(GameConfiguration gameConfiguration)
+    {
+        foreach (var miniGame in gameConfiguration.MiniGameDefinitions.Where(miniGame => miniGame.FreeTicketItem is null))
+        {
+            short? number = miniGame.Type switch
+            {
+                MiniGameType.DevilSquare => 46,
+                MiniGameType.BloodCastle => 47,
+                MiniGameType.IllusionTemple => 61,
+                MiniGameType.ChaosCastle => 121,
+                _ => null,
+            };
+
+            if (number is { } ticketNumber)
+            {
+                miniGame.FreeTicketItem = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == ticketNumber);
+            }
+        }
+    }
+
+    /// <summary>
     /// Creates the drop item group of the suspicious scrap of paper, of which five transform into a
     /// Gaion's Order, the ticket of the imperial guardian event.
     /// </summary>
@@ -182,31 +207,6 @@ internal class EventTicketItems : InitializerBase
         CreateIfMissing(61, LocalizedString.FromResource(() => ItemNames.IllusionTempleFreeTicket));
         CreateIfMissing(121, LocalizedString.FromResource(() => ItemNames.ChaosCastleFreeTicket));
         return createdItems;
-    }
-
-    /// <summary>
-    /// Assigns the free tickets as <see cref="MiniGameDefinition.FreeTicketItem"/> to the mini games
-    /// of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which don't have one yet.
-    /// </summary>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    internal static void AssignFreeTicketItems(GameConfiguration gameConfiguration)
-    {
-        foreach (var miniGame in gameConfiguration.MiniGameDefinitions.Where(miniGame => miniGame.FreeTicketItem is null))
-        {
-            short? number = miniGame.Type switch
-            {
-                MiniGameType.DevilSquare => 46,
-                MiniGameType.BloodCastle => 47,
-                MiniGameType.IllusionTemple => 61,
-                MiniGameType.ChaosCastle => 121,
-                _ => null,
-            };
-
-            if (number is { } ticketNumber)
-            {
-                miniGame.FreeTicketItem = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == ticketNumber);
-            }
-        }
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)
