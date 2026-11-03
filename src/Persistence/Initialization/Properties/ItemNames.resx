@@ -2079,6 +2079,21 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>Doppelganger Free Ticket</value>
   </data>
+  <data name="ResetFruitStrength" xml:space="preserve">
+    <value>Reset Fruit (Strength)</value>
+  </data>
+  <data name="ResetFruitAgility" xml:space="preserve">
+    <value>Reset Fruit (Agility)</value>
+  </data>
+  <data name="ResetFruitVitality" xml:space="preserve">
+    <value>Reset Fruit (Vitality)</value>
+  </data>
+  <data name="ResetFruitEnergy" xml:space="preserve">
+    <value>Reset Fruit (Energy)</value>
+  </data>
+  <data name="ResetFruitCommand" xml:space="preserve">
+    <value>Reset Fruit (Command)</value>
+  </data>
   <data name="DevilSquareFreeTicket" xml:space="preserve">
     <value>Devil Square Ticket</value>
   </data>
