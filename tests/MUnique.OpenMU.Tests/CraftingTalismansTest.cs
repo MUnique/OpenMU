@@ -82,7 +82,7 @@ public class CraftingTalismansTest
     public async ValueTask TalismanOfLuckRespectsMaximumRateAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        await this.AddItemAsync(player, this.TalismanOfLuck, 0, 10).ConfigureAwait(false);
+        await AddItemAsync(player, this.TalismanOfLuck, 0, 10).ConfigureAwait(false);
         var settings = new Persistence.BasicModel.SimpleCraftingSettings { SuccessPercent = 85, MaximumSuccessPercent = 90 };
         settings.RequiredItems.Add(CreateTalismanRequirement(this.TalismanOfLuck, 10, 1, MixResult.Disappear));
 
@@ -100,8 +100,8 @@ public class CraftingTalismansTest
     public async ValueTask TalismanOfLuckAddsToPriceBasedRateAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        var item = await this.AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
-        await this.AddItemAsync(player, this.TalismanOfLuck, 0, 5).ConfigureAwait(false);
+        var item = await AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
+        await AddItemAsync(player, this.TalismanOfLuck, 0, 5).ConfigureAwait(false);
         var price = new ItemPriceCalculator().CalculateFinalOldBuyingPrice(item);
         var settings = new Persistence.BasicModel.SimpleCraftingSettings { NpcPriceDivisor = (int)Math.Max(1, price / 50) };
         var requiredItem = new Persistence.BasicModel.ItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, MaximumItemLevel = 15 };
@@ -123,8 +123,8 @@ public class CraftingTalismansTest
     public async ValueTask TalismanOfChaosAssemblyProtectsItemAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        var item = await this.AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
-        var talisman = await this.AddItemAsync(player, this.TalismanOfChaosAssembly, 0, 1).ConfigureAwait(false);
+        var item = await AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
+        var talisman = await AddItemAsync(player, this.TalismanOfChaosAssembly, 0, 1).ConfigureAwait(false);
         var settings = CreateFailingUpgradeSettings(item.Definition!);
         settings.RequiredItems.Add(CreateTalismanRequirement(this.TalismanOfChaosAssembly, 1, 0, MixResult.DisappearAndProtectReferencedItems));
 
@@ -143,7 +143,7 @@ public class CraftingTalismansTest
     public async ValueTask ItemDisappearsWithoutTalismanOfChaosAssemblyAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        var item = await this.AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
+        var item = await AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
         var settings = CreateFailingUpgradeSettings(item.Definition!);
         settings.RequiredItems.Add(CreateTalismanRequirement(this.TalismanOfChaosAssembly, 1, 0, MixResult.DisappearAndProtectReferencedItems));
 
@@ -189,6 +189,16 @@ public class CraftingTalismansTest
         return requirement;
     }
 
+    private static async ValueTask<Item> AddItemAsync(Player player, ItemDefinition definition, byte level, byte durability)
+    {
+        var item = player.PersistenceContext.CreateNew<Item>();
+        item.Definition = definition;
+        item.Level = level;
+        item.Durability = durability;
+        Assert.That(await player.TemporaryStorage!.AddItemAsync(item).ConfigureAwait(false), Is.True);
+        return item;
+    }
+
     private SimpleItemCraftingHandler GetUpgradeHandler()
     {
         var crafting = this._gameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine).ItemCraftings.Single(c => c.Number == 3);
@@ -198,25 +208,15 @@ public class CraftingTalismansTest
     private async ValueTask<Player> CreatePlayerWithUpgradeItemsAsync(byte[] talismanDurabilities)
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        await this.AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
-        await this.AddItemAsync(player, this._gameConfiguration.Items.Single(i => i.Group == 12 && i.Number == 15), 0, 1).ConfigureAwait(false);
-        await this.AddItemAsync(player, this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 13), 0, 1).ConfigureAwait(false);
-        await this.AddItemAsync(player, this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 14), 0, 1).ConfigureAwait(false);
+        await AddItemAsync(player, this._gameConfiguration.Items.First(i => i.Group == 0), 9, 20).ConfigureAwait(false);
+        await AddItemAsync(player, this._gameConfiguration.Items.Single(i => i.Group == 12 && i.Number == 15), 0, 1).ConfigureAwait(false);
+        await AddItemAsync(player, this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 13), 0, 1).ConfigureAwait(false);
+        await AddItemAsync(player, this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 14), 0, 1).ConfigureAwait(false);
         foreach (var durability in talismanDurabilities)
         {
-            await this.AddItemAsync(player, this.TalismanOfLuck, 0, durability).ConfigureAwait(false);
+            await AddItemAsync(player, this.TalismanOfLuck, 0, durability).ConfigureAwait(false);
         }
 
         return player;
-    }
-
-    private async ValueTask<Item> AddItemAsync(Player player, ItemDefinition definition, byte level, byte durability)
-    {
-        var item = player.PersistenceContext.CreateNew<Item>();
-        item.Definition = definition;
-        item.Level = level;
-        item.Durability = durability;
-        Assert.That(await player.TemporaryStorage!.AddItemAsync(item).ConfigureAwait(false), Is.True);
-        return item;
     }
 }
