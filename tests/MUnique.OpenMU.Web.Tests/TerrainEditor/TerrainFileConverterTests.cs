@@ -47,7 +47,7 @@ public class TerrainFileConverterTests
     [Test]
     public void ClientFileCanBeRead()
     {
-        var tiles = CreateTiles();
+        var tiles = CreateTiles().Select(t => (byte)(t & 0x7F)).ToArray();
 
         var file = TerrainFileConverter.ToClientFile(tiles, 33);
         var success = TerrainFileConverter.TryReadFile(file, out var result);
@@ -56,6 +56,23 @@ public class TerrainFileConverterTests
         Assert.That(file[4..], Is.Not.EqualTo(tiles), "The client file should be encrypted.");
         Assert.That(success, Is.True);
         Assert.That(result, Is.EqualTo(tiles));
+    }
+
+    /// <summary>
+    /// Tests that the client file leaves out the highest bit of the tiles, because the client refuses a file
+    /// with a tile of 128 or more as corrupted. The terrain data of some maps has such tiles (see MUnique/OpenMU#1361).
+    /// </summary>
+    [Test]
+    public void ClientFileLeavesOutTheHighestBit()
+    {
+        var tiles = CreateTiles();
+
+        var file = TerrainFileConverter.ToClientFile(tiles, 7);
+        var success = TerrainFileConverter.TryReadFile(file, out var result);
+
+        Assert.That(success, Is.True);
+        Assert.That(result, Is.All.LessThan(128));
+        Assert.That(result, Is.EqualTo(tiles.Select(t => (byte)(t & 0x7F)).ToArray()));
     }
 
     /// <summary>

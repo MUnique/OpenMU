@@ -30,7 +30,7 @@ The client shows the score board, the remaining time, and the carrier of the hol
 
 Contains the info about a team mate in the illusion temple, so that the client can show him on its mini map. Only PartyCount entries are sent - there are no unused/zeroed slots.
 
-Length: 5 Bytes
+Length: 6 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|

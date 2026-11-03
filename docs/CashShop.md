@@ -287,11 +287,12 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 24 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
+That leaves 30 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
 items and the Talisman of Luck 10% for Goblin Points, and the character cards,
-the Magic Backpack, the Vault Expansion Certificate and the Talisman of Luck for
-WCoin (C) and (P). Most cash shop items, like seals, scrolls and most talismans,
-aren't defined in the item configuration yet.
+the Magic Backpack, the Vault Expansion Certificate, the free tickets of Devil
+Square, Blood Castle and Illusion Temple and the Talisman of Luck for WCoin (C)
+and (P). Most cash shop items, like seals, scrolls and most talismans, aren't
+defined in the item configuration yet.
 
 The products of the Talisman of Luck have a rate property (1, 5 or 10 %) instead
 of a quantity. The rate is the durability of the delivered talisman, so it's
@@ -299,6 +300,19 @@ used as the quantity of the product. The update *Add crafting talismans* adds
 the Talisman of Luck and the Talisman of Chaos Assembly to an existing
 configuration and puts these packages on sale. The Talisman of Chaos Assembly is
 in no package of the script `512.2012.084`.
+
+The free tickets (13/46 Devil Square, 13/47 Blood Castle, 13/61 Illusion Temple
+and 13/121 Chaos Castle, which isn't in the catalog) are created by
+`EventTicketItems` and set as *Free Ticket Item* of their mini game definitions,
+which can be changed in the admin panel. They allow to enter the event of any
+level, instead of its regular ticket, which is preferred when the player has
+both. Each entry costs one durability, and a ticket holds up to ten entries,
+like in the client. The package with ten tickets delivers one ticket with ten
+entries. The tickets can't be traded, dropped or sold.
+The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing
+configuration, sets them as free tickets of the mini games which have none, and
+puts their packages on sale. It's optional, so a server owner who wants to keep
+these packages off sale can deselect it.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those

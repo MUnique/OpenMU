@@ -97,6 +97,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new IllusionTempleInitializer(this.Context, this.GameConfiguration).Initialize();
         new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
         new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
+        EventTicketItems.AssignFreeTicketItems(this.GameConfiguration);
         new CashShopItems(this.Context, this.GameConfiguration).Initialize();
 
         // After all items exist.
