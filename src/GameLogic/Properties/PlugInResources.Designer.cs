@@ -3825,6 +3825,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the invitation to the santa village, which warps the player to the santa village..
         /// </summary>
         public static string SantaVillageInvitationConsumeHandlerPlugIn_Description {

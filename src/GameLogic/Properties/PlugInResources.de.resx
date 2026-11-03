@@ -402,6 +402,9 @@
   <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das die Einladung ins Dorf des Weihnachtsmanns verarbeitet, die den Spieler ins Dorf des Weihnachtsmanns versetzt.</value>
   </data>
+  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>Kartennummer</value>
+  </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Verbrauch der Stadtportal-Schriftrolle</value>
   </data>

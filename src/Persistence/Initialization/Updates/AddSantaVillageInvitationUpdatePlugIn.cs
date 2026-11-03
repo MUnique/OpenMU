@@ -20,24 +20,14 @@ using MUnique.OpenMU.PlugIns;
 [Guid("0C5DDB62-C6A7-4D54-8E6A-DB6831CB3366")]
 public class AddSantaVillageInvitationUpdatePlugIn : UpdatePlugInBase
 {
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add invitation to santa village";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update adds the invitation to the santa village, which warps the player to the santa village, and a spawn gate to the santa village.";
-
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => PlugInResources.AddSantaVillageInvitationUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => PlugInResources.AddSantaVillageInvitationUpdatePlugIn_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;

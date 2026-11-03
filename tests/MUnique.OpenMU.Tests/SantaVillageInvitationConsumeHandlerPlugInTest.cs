@@ -56,11 +56,53 @@ public class SantaVillageInvitationConsumeHandlerPlugInTest
         Assert.That(player.SelectedCharacter.CurrentMap, Is.SameAs(map));
     }
 
-    private static GameMapDefinition AddSantaVillage(GameConfiguration configuration)
+    /// <summary>
+    /// Tests that the invitation isn't used up when the santa village is deactivated.
+    /// </summary>
+    [Test]
+    public async Task InvitationIsNotConsumedForInactiveSantaVillageAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var santaVillage = AddSantaVillage(gameContext.Configuration);
+        santaVillage.IsActive = false;
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var invitation = await AddInvitationAsync(player).ConfigureAwait(false);
+        var map = player.SelectedCharacter!.CurrentMap;
+
+        var consumed = await new SantaVillageInvitationConsumeHandlerPlugIn().ConsumeItemAsync(player, invitation, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(consumed, Is.False);
+        Assert.That(invitation.Durability, Is.EqualTo(10));
+        Assert.That(player.SelectedCharacter.CurrentMap, Is.SameAs(map));
+    }
+
+    /// <summary>
+    /// Tests that the invitation warps the player to the map which is configured in the plugin.
+    /// </summary>
+    [Test]
+    public async Task InvitationWarpsToConfiguredMapAsync()
+    {
+        const short configuredMapNumber = 63;
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var targetMap = AddSantaVillage(gameContext.Configuration, configuredMapNumber);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var invitation = await AddInvitationAsync(player).ConfigureAwait(false);
+        var plugIn = new SantaVillageInvitationConsumeHandlerPlugIn
+        {
+            Configuration = new SantaVillageInvitationConsumeHandlerConfiguration { MapNumber = configuredMapNumber },
+        };
+
+        var consumed = await plugIn.ConsumeItemAsync(player, invitation, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(consumed, Is.True);
+        Assert.That(player.SelectedCharacter!.CurrentMap, Is.SameAs(targetMap));
+    }
+
+    private static GameMapDefinition AddSantaVillage(GameConfiguration configuration, short mapNumber = 62)
     {
         var santaVillage = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
         {
-            Number = SantaVillageInvitationConsumeHandlerPlugIn.SantaVillageMapNumber,
+            Number = mapNumber,
             TerrainData = new byte[ushort.MaxValue + 3],
         };
         santaVillage.ExitGates.Add(new MUnique.OpenMU.Persistence.BasicModel.ExitGate

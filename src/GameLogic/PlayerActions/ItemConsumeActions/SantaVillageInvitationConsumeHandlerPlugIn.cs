@@ -14,13 +14,12 @@ using MUnique.OpenMU.PlugIns;
 [Guid("92A01DF4-6B50-43A5-9137-6FE0A1F92EEB")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.SantaVillageInvitationConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.SantaVillageInvitationConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
-public class SantaVillageInvitationConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
+public class SantaVillageInvitationConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, ISupportCustomConfiguration<SantaVillageInvitationConsumeHandlerConfiguration>, ISupportDefaultCustomConfiguration
 {
     /// <summary>
-    /// The number of the santa village map. The game client asks the player whether to move to the santa village,
-    /// before it uses the invitation.
+    /// Gets or sets the configuration.
     /// </summary>
-    internal const short SantaVillageMapNumber = 62;
+    public SantaVillageInvitationConsumeHandlerConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.InvitationToSantaVillage;
@@ -28,9 +27,10 @@ public class SantaVillageInvitationConsumeHandlerPlugIn : BaseConsumeHandlerPlug
     /// <inheritdoc />
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
+        var mapNumber = (this.Configuration ??= new SantaVillageInvitationConsumeHandlerConfiguration()).MapNumber;
         if (!this.CheckPreconditions(player, item)
-            || player.CurrentMap?.MapId == SantaVillageMapNumber
-            || await player.GameContext.GetMapAsync((ushort)SantaVillageMapNumber).ConfigureAwait(false) is not { SafeZoneSpawnGate: { } spawnGate })
+            || player.CurrentMap?.MapId == mapNumber
+            || await GetSpawnGateAsync(player, mapNumber).ConfigureAwait(false) is not { } spawnGate)
         {
             return false;
         }
@@ -38,5 +38,28 @@ public class SantaVillageInvitationConsumeHandlerPlugIn : BaseConsumeHandlerPlug
         await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
         await player.WarpToAsync(spawnGate).ConfigureAwait(false);
         return true;
+    }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => new SantaVillageInvitationConsumeHandlerConfiguration();
+
+    /// <summary>
+    /// Gets the spawn gate of the safezone of the target map, if the map is active.
+    /// The map may be hosted by another game server, so the gate is taken from its definition when
+    /// this game server doesn't host it. The warp then moves the player to the hosting game server.
+    /// </summary>
+    private static async ValueTask<ExitGate?> GetSpawnGateAsync(Player player, short mapNumber)
+    {
+        if (player.GameContext.Configuration.Maps.FirstOrDefault(map => map.Number == mapNumber) is not { IsActive: true } mapDefinition)
+        {
+            return null;
+        }
+
+        if (await player.GameContext.GetMapAsync((ushort)mapNumber).ConfigureAwait(false) is { } map)
+        {
+            return map.SafeZoneSpawnGate;
+        }
+
+        return mapDefinition.GetSafezoneGate();
     }
 }
