@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Base class of the consume handlers of the reset fruits of the in-game shop.
@@ -13,14 +14,12 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 /// and returns them as level up points. Unlike the fruits which remove points, it always succeeds and
 /// doesn't count towards the maximum of removed fruit points.
 /// </summary>
-public abstract class ResetFruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
+public abstract class ResetFruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, ISupportCustomConfiguration<ResetFruitConsumeHandlerConfiguration>, ISupportDefaultCustomConfiguration
 {
     /// <summary>
-    /// The number of points which one durability of a reset fruit takes back.
-    /// The game client calculates the same, when it asks the player to confirm the usage of a fruit
-    /// which takes back more points than are invested.
+    /// Gets or sets the configuration.
     /// </summary>
-    internal const int PointsPerDurability = 10;
+    public ResetFruitConsumeHandlerConfiguration? Configuration { get; set; }
 
     /// <summary>
     /// Gets the stat attribute of which the points are taken back.
@@ -58,7 +57,8 @@ public abstract class ResetFruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             return false;
         }
 
-        var points = (ushort)Math.Min(investedPoints, (int)item.Durability * PointsPerDurability);
+        var pointsPerDurability = (this.Configuration ??= new ResetFruitConsumeHandlerConfiguration()).PointsPerDurability;
+        var points = (ushort)Math.Clamp((int)item.Durability * pointsPerDurability, 0, Math.Min(investedPoints, ushort.MaxValue));
         attributes[statAttribute] -= points;
         character.LevelUpPoints += points;
         await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(FruitConsumptionResult.MinusSuccessCashShopFruit, points, statAttribute)).ConfigureAwait(false);
@@ -67,4 +67,7 @@ public abstract class ResetFruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
         item.Durability = 0;
         return true;
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => new ResetFruitConsumeHandlerConfiguration();
 }

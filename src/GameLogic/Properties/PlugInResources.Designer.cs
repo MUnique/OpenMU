@@ -979,6 +979,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Points per durability.
+        /// </summary>
+        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name {
+            get {
+                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of stat points which one durability of a reset fruit takes back..
+        /// </summary>
+        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description {
+            get {
+                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset Fruit of Command Consume Handler.
         /// </summary>
         public static string CommandResetFruitConsumeHandlerPlugIn_Name {

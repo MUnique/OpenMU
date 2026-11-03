@@ -133,7 +133,8 @@ the usual fruits which remove points. The fruits can't be traded, dropped or sol
 
 Existing databases get the fruits with the configuration update *Add reset fruits*.
 Each fruit is handled by its own plugin, for example *Reset Fruit of Strength
-Consume Handler*, which can be deactivated on the **Plugins** page.
+Consume Handler*, which can be deactivated on the **Plugins** page. Its
+configuration there also sets the *Points per durability* (10 by default).
 
 ### Special items
 

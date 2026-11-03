@@ -43,6 +43,23 @@ public class ResetFruitConsumeHandlerPlugInTest
     }
 
     /// <summary>
+    /// Tests that the points per durability are taken from the configuration of the plugin.
+    /// </summary>
+    [Test]
+    public async Task TakesBackConfiguredPointsPerDurabilityAsync()
+    {
+        var player = await CreatePlayerAsync(100).ConfigureAwait(false);
+        var fruit = await AddFruitAsync(player, 2).ConfigureAwait(false);
+        var plugIn = new StrengthResetFruitConsumeHandlerPlugIn { Configuration = new ResetFruitConsumeHandlerConfiguration { PointsPerDurability = 5 } };
+
+        var consumed = await plugIn.ConsumeItemAsync(player, fruit, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(consumed, Is.True);
+        Assert.That(player.Attributes![Stats.BaseStrength], Is.EqualTo(90));
+        Assert.That(player.SelectedCharacter!.LevelUpPoints, Is.EqualTo(10));
+    }
+
+    /// <summary>
     /// Tests that a fruit doesn't take back more points than are invested.
     /// </summary>
     [Test]

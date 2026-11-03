@@ -256,6 +256,12 @@
   <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>处理统率重置果实，收回已分配的统率点数并返还为升级点数。</value>
   </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>每点耐久的点数</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>重置果实每点耐久收回的属性点数。</value>
+  </data>
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>再生宝石使用</value>
   </data>

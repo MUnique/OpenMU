@@ -44,6 +44,7 @@ public class FruitConsumptionResultPlugIn : IFruitConsumptionResponsePlugIn
             FruitConsumptionResult.MinusFailed => FruitConsumptionResponse.FruitConsumptionResult.MinusFailed,
             FruitConsumptionResult.MinusPrevented => FruitConsumptionResponse.FruitConsumptionResult.MinusPrevented,
             FruitConsumptionResult.MinusSuccessCashShopFruit => FruitConsumptionResponse.FruitConsumptionResult.MinusSuccessCashShopFruit,
+            FruitConsumptionResult.PreventedByEquippedItems => FruitConsumptionResponse.FruitConsumptionResult.PreventedByEquippedItems,
             FruitConsumptionResult.PlusPreventedByMaximum => FruitConsumptionResponse.FruitConsumptionResult.PlusPreventedByMaximum,
             FruitConsumptionResult.MinusPreventedByMaximum => FruitConsumptionResponse.FruitConsumptionResult.MinusPreventedByMaximum,
             FruitConsumptionResult.MinusPreventedByDefault => FruitConsumptionResponse.FruitConsumptionResult.MinusPreventedByDefault,

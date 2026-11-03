@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
@@ -66,14 +67,23 @@ public class AddResetFruitsUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var addedItems = new CashShopItems(context, gameConfiguration).CreateResetFruits();
-        ItemRules.Apply(addedItems);
+        new CashShopItems(context, gameConfiguration).CreateResetFruits();
+
+        // The fruits may already exist, e.g. when the cash shop update was applied in the same run
+        // and created them without their rules. So, the final state is applied to all of them.
+        var fruits = gameConfiguration.Items.Where(IsResetFruit).ToList();
+        fruits.ForEach(fruit => fruit.Durability = CashShopInitializer.ResetFruitDurability);
+        ItemRules.Apply(fruits);
+
         AssignCashShopProducts(gameConfiguration);
         return ValueTask.CompletedTask;
     }
 
+    private static bool IsResetFruit(ItemDefinition item) => item.Group == 13 && ProductItemNumbers.Values.Contains(item.Number);
+
     /// <summary>
-    /// Assigns the fruits to the products of the in-game shop, which were created without them.
+    /// Assigns the fruits to the products of the in-game shop, which were created without them,
+    /// and sets the quantity of all fruit products.
     /// Their packages were initialized as not for sale then, so they're put on sale.
     /// </summary>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration)
@@ -86,14 +96,23 @@ public class AddResetFruitsUpdatePlugIn : UpdatePlugInBase
         foreach (var package in configuration.Packages)
         {
             var assigned = false;
-            foreach (var product in package.Products.Where(p => p.ItemDefinition is null))
+            foreach (var product in package.Products)
             {
-                if (ProductItemNumbers.TryGetValue(product.ProductSequence, out var number)
+                if (!ProductItemNumbers.TryGetValue(product.ProductSequence, out var number))
+                {
+                    continue;
+                }
+
+                if (product.ItemDefinition is null
                     && gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == number) is { } item)
                 {
                     product.ItemDefinition = item;
-                    product.Quantity = CashShopInitializer.ResetFruitDurability;
                     assigned = true;
+                }
+
+                if (product.ItemDefinition is { Group: 13 } definition && definition.Number == number)
+                {
+                    product.Quantity = CashShopInitializer.ResetFruitDurability;
                 }
             }
 

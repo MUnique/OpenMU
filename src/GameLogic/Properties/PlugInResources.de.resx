@@ -312,6 +312,12 @@
   <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das die Rücksetzfrucht (Kommando) verarbeitet, die investierte Punkte zurücknimmt und als Level-Up-Punkte zurückgibt.</value>
   </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>Punkte pro Haltbarkeit</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>Die Anzahl der Statuspunkte, die eine Haltbarkeit einer Rücksetzfrucht zurücknimmt.</value>
+  </data>
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Verbrauch des Juwels der Harmonie</value>
   </data>

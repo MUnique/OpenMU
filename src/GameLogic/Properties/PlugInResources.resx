@@ -315,6 +315,12 @@
   <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the reset fruit of command, which takes back invested command points and returns them as level up points.</value>
   </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>Points per durability</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>The number of stat points which one durability of a reset fruit takes back.</value>
+  </data>
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Harmony Jewel Consume Handler</value>
   </data>

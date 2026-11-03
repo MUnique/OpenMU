@@ -60,6 +60,32 @@ internal class ResetFruitsDataTest
         AssertFruitData(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the update applies the durability, the rules and the product quantities to fruits which
+    /// already exist, e.g. because the cash shop update created them without these in the same run.
+    /// </summary>
+    [Test]
+    public async Task UpdateAppliesRulesToExistingFruitsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        foreach (var fruit in gameConfiguration.Items.Where(IsFruit))
+        {
+            (fruit.Durability, fruit.IsTradable, fruit.IsDroppable, fruit.IsSellableToNpc, fruit.IsPersonalStoreSellable) = (1, true, true, true, true);
+        }
+
+        foreach (var package in gameConfiguration.CashShopConfiguration!.Packages.Where(p => FruitPackages.Contains(p.PackageSequence)))
+        {
+            package.IsForSale = false;
+            package.Products.ToList().ForEach(product => (product.ItemDefinition, product.Quantity) = (null, 1));
+        }
+
+        await new AddResetFruitsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        AssertFruitData(gameConfiguration);
+        Assert.That(gameConfiguration.Items.Where(IsFruit), Has.All.Matches<ItemDefinition>(item => !item.IsDroppable && !item.IsPersonalStoreSellable));
+    }
+
     private static bool IsFruit(ItemDefinition item) => item.Group == 13 && FruitNumbers.Contains(item.Number);
 
     private static void AssertFruitData(GameConfiguration gameConfiguration)
