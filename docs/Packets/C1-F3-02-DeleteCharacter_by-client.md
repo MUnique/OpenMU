@@ -13,8 +13,8 @@ The server checks if the player transmitted the correct security code and if the
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   24   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   34   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x02  | Packet header - sub packet type identifier |
 | 4 | 10 | String |  | Name; The name of the character which should be deleted. |
-| 14 |  | String |  | SecurityCode; A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes. |
+| 14 | 20 | String |  | SecurityCode; A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes. The 1.04d client always sends 20 bytes. |

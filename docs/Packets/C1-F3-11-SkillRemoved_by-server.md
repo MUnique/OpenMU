@@ -17,5 +17,6 @@ The skill is added to the skill list on client side.
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x11  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte | 0xFF | Flag |
+| 5 | 1 | Byte | 0 | ListType; 0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added. |
 | 6 | 1 | Byte |  | SkillIndex |
 | 7 | 2 | ShortLittleEndian |  | SkillNumber |
