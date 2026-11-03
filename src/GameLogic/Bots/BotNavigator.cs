@@ -206,7 +206,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private static readonly TimeSpan ChaosMachineCheckInterval = TimeSpan.FromSeconds(30);
 
-    /// <summary>Cooldown after a chaos machine trip which could not be made (no route, no warp there).</summary>
+    /// <summary>Cooldown after a chaos machine trip which came to nothing (no route, no warp there, or a refused mix).</summary>
     private static readonly TimeSpan ChaosMachineCooldown = TimeSpan.FromMinutes(10);
 
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps (a real player does not hop maps every minute either).</summary>
@@ -1347,14 +1347,20 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCheckInterval;
         if (BotChaosMachineHandler.GetChaosMachine(this._player.GameContext.Configuration) is not { } goblin
-            || BotChaosMachineHandler.PlanNextMix(this._player, goblin) is null)
+            || BotChaosMachineHandler.PlanNextMix(this._player, goblin) is not { } plan)
         {
             return false;
         }
 
         if (BotChaosMachineHandler.FindChaosMachinePosition(map) is not { } goblinPosition)
         {
-            if (this.TryGetChaosMachineWarp(out var warp))
+            if (this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
+            {
+                // Just warped (e.g. to its hunting map): wait, rather than bouncing between maps.
+                return false;
+            }
+
+            if (this.TryGetChaosMachineWarp(plan.Price, out var warp))
             {
                 this._travelPath = null;
                 this._hasDestination = false;
@@ -1391,20 +1397,26 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="goblinPosition">The position of the chaos machine NPC.</param>
     private async ValueTask MixAtChaosMachineAsync(GameMap map, Point goblinPosition)
     {
-        await BotChaosMachineHandler.TryMixAsync(this._player, map, goblinPosition).ConfigureAwait(false);
+        if (!await BotChaosMachineHandler.TryMixAsync(this._player, map, goblinPosition).ConfigureAwait(false))
+        {
+            // A refused mix (e.g. the castle tax on top of the price) would fail the same way in 30 s.
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+        }
     }
 
     /// <summary>
-    /// Gets a warp the bot may take and afford to a map where a chaos machine NPC stands.
+    /// Gets a warp the bot may take to a map where a chaos machine NPC stands, and can afford while
+    /// keeping the price of the mix - otherwise it arrives without the Zen to mix.
     /// </summary>
+    /// <param name="mixPrice">The price of the planned mix.</param>
     /// <param name="warp">The warp.</param>
     /// <returns>True, if there is one.</returns>
-    private bool TryGetChaosMachineWarp([MaybeNullWhen(false)] out WarpInfo warp)
+    private bool TryGetChaosMachineWarp(long mixPrice, [MaybeNullWhen(false)] out WarpInfo warp)
     {
         warp = this._player.GameContext.Configuration.Maps
             .Where(m => m.MonsterSpawns.Any(s => s.MonsterDefinition is { } npc && BotChaosMachineHandler.IsChaosMachine(npc)))
             .SelectMany(this.GetLegalWarps)
-            .Where(this.CanAffordWarp)
+            .Where(w => this._player.Money >= w.Costs + mixPrice)
             .OrderBy(w => w.Costs)
             .FirstOrDefault();
         return warp is not null;

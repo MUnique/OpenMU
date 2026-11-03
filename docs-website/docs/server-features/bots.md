@@ -239,8 +239,9 @@ repairs its gear — which is what earns the NPC's discount — and buys potions
 where a shop offers them, jewels.
 
 Only Jewels of Bless, Soul, Life and Chaos are collected, and only up to the
-configured stock: a bot does not trade and uses no other crafting, so any other
-kind would be a backpack slot it never gets back. Bless, Soul and Life are spent
+configured stock — Chaos only by a bot which wears a lucky piece it can still
+mix: a bot does not trade and uses no other crafting, so any other kind would be
+a backpack slot it never gets back. Bless, Soul and Life are spent
 on its own equipment through the regular consume action, with the same success
 rates and failure penalties a player faces, and with the caution a player shows:
 a Soul is only risked where a failure cannot destroy the item's level.
@@ -249,7 +250,9 @@ From +9 on, a bot takes its worn weapon, shield and armor pieces to the Chaos
 Goblin — warping to a map where one stands, Noria in Season 6, and paying the
 fare — and mixes them up to +15, one level at a time, as the goblin's +10 to +15
 combinations configure it, with their jewels, price and success rate. Like most
-players, it only puts pieces with luck into the machine. A failure costs it the
+players, it only puts pieces with luck into the machine, and only when it could
+wear the piece one level up on its base stats and has room in its backpack for
+it. A failure costs it the
 piece, as it costs a player: the bot goes without until it finds another one.
 Wings, pets and jewelry never go in.
 

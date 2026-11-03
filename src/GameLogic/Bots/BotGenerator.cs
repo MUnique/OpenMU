@@ -358,7 +358,7 @@ internal sealed class BotGenerator
             character.Name,
             level,
             equippedItems,
-            points + characterClass.StatAttributes.Where(a => a.IncreasableByPlayer).Select(a => a.Attribute).OfType<AttributeDefinition>().Sum(a => Math.Max(0, InvestedOf(a))));
+            BotProgression.GetTotalPoints(points, characterClass, InvestedOf));
 
         foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf, minimums))
         {

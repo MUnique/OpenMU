@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.Offline;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -13,6 +14,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests for <see cref="BotGearPlanner"/> on the real Season 6 item data, together with the split of
@@ -26,6 +28,8 @@ public class BotGearPlannerTests
 
     private GameConfiguration _configuration = null!;
 
+    private IGameContext _gameContext = null!;
+
     /// <summary>
     /// Creates the Season 6 configuration in memory, once for all tests.
     /// </summary>
@@ -38,6 +42,12 @@ public class BotGearPlannerTests
             .CreateInitialDataAsync(1, false).ConfigureAwait(false);
         using var context = contextProvider.CreateNewContext();
         this._configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+
+        var mapInitializer = new MapInitializer(this._configuration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(this._configuration, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        this._gameContext = gameContext;
     }
 
     /// <summary>
@@ -223,6 +233,38 @@ public class BotGearPlannerTests
         Assert.That(with[Stats.BaseStrength], Is.GreaterThan(0));
     }
 
+    /// <summary>
+    /// Tests that a Jewel of Bless is not spent on a worn piece the bot could not put back on one level up
+    /// (it takes the piece off for the jewel) - and is, once the stats are there.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask BlessIsOnlySpentOnAPieceWhichStaysWearableAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var baseStrength = (long)player.Attributes![Stats.BaseStrength];
+        var armorDefinition = this._configuration.Items
+            .Where(d => d.Group == ArmorGroup && d.DropsFromMonsters)
+            .OrderBy(d => d.DropLevel)
+            .First(d => this.InvestedRequirement(Wear(d, 6), player.SelectedCharacter!.CharacterClass!, Stats.BaseStrength) > 0
+                        && this.StrengthRequirement(Wear(d, 6)) > baseStrength);
+        var armor = player.PersistenceContext.CreateNew<Item>();
+        armor.Definition = armorDefinition;
+        armor.Durability = armorDefinition.Durability;
+        armor.Level = 5;
+        await player.Inventory!.AddItemAsync(InventoryConstants.ArmorSlot, armor).ConfigureAwait(false);
+        var bless = player.PersistenceContext.CreateNew<Item>();
+        bless.Definition = this._configuration.Items.Single(d => d.Name.ValueInNeutralLanguage == "Jewel of Bless");
+        bless.Durability = 1;
+        await player.Inventory.AddItemAsync(bless).ConfigureAwait(false);
+
+        Assert.That(BotJewelHandler.PlanNextUse(player, 1, 0, 0), Is.Null);
+
+        player.Attributes[Stats.BaseStrength] = this.StrengthRequirement(Wear(armorDefinition, 6));
+
+        Assert.That(BotJewelHandler.PlanNextUse(player, 1, 0, 0), Is.EqualTo(((Item, Item)?)(bless, armor)));
+    }
+
     /// <summary>A character name which hits the given build variant (the variant is the parity of the character sum).</summary>
     private static string NameOfVariant(int variant) => variant == 0 ? "Aa" : "Ab";
 
@@ -257,6 +299,9 @@ public class BotGearPlannerTests
             .Max();
         return Math.Max(0, requirement - BaseValue(characterClass, baseStat));
     }
+
+    private int StrengthRequirement(Item item)
+        => item.GetRequirements(this._configuration).Where(r => r.Attr == Stats.TotalStrength).Select(r => r.Value).DefaultIfEmpty(0).Max();
 
     private int LevelRequirement(ItemDefinition definition)
         => Wear(definition, 0).GetRequirements(this._configuration).Where(r => r.Attr == Stats.Level).Select(r => r.Value).DefaultIfEmpty(0).Max();

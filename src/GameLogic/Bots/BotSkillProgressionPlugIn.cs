@@ -132,6 +132,11 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         long CapacityOf(AttributeDefinition stat)
         {
             var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            if (classBase is null)
+            {
+                return 0; // a stat the class doesn't have (e.g. leadership) can't take points.
+            }
+
             var current = (long)(player.Attributes?[stat] ?? 0f);
             var capacity = long.MaxValue;
             if (classBase?.Attribute?.MaximumValue is { } maximumValue)
@@ -156,7 +161,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
             character.Name,
             player.Level,
             equippedItems,
-            points + characterClass.StatAttributes.Where(a => a.IncreasableByPlayer).Select(a => a.Attribute).OfType<AttributeDefinition>().Sum(a => Math.Max(0, InvestedOf(a))));
+            BotProgression.GetTotalPoints(points, characterClass, InvestedOf));
 
         // The invested points make the split aim at the build's proportions over the whole career,
         // so the few points of a single level-up don't round the small-weight stats down to nothing.

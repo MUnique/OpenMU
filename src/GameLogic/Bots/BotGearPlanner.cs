@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -63,6 +65,14 @@ internal static class BotGearPlanner
 
     /// <summary>The item groups of the armor pieces: 7 helm, 8 armor, 9 pants, 10 gloves, 11 boots.</summary>
     private static readonly byte[] ArmorGroups = [7, 8, 9, 10, 11];
+
+    /// <summary>
+    /// The candidates of each class and build variant, computed once per game configuration: what a piece
+    /// requires as dropped doesn't depend on the bot's level, only which pieces it reaches does - so a
+    /// level-up only filters this list instead of scanning every item definition again. Weakly keyed by
+    /// configuration, so a thrown-away configuration takes its cache with it.
+    /// </summary>
+    private static readonly ConditionalWeakTable<GameConfiguration, ConcurrentDictionary<(CharacterClass Class, int Variant), Candidate[]>> CandidatesByConfiguration = new();
 
     /// <summary>
     /// Plans the points the bot keeps per stat for its gear: the invested points (above the class base)
@@ -130,14 +140,8 @@ internal static class BotGearPlanner
         var chosenMinimums = new Dictionary<AttributeDefinition, long>(planned ?? new Dictionary<AttributeDefinition, long>());
         var baseCost = CostOf(chosenMinimums);
         var chosen = new List<Candidate>();
-        var kinds = configuration.Items
-            .Where(d => d.DropsFromMonsters
-                        && d.DropLevel <= characterLevel
-                        && d.QualifiedCharacters.Contains(characterClass)
-                        && IsPlannedGear(d, includeShields: false)
-                        && (d.Group > LastWeaponGroup || BotProgression.IsPreferredWeaponGroup(characterClass, characterName, (byte)d.Group)))
-            .Select(d => ToCandidate(d, configuration, characterClass))
-            .Where(c => c.LevelRequirement <= characterLevel)
+        var kinds = GetCandidates(configuration, characterClass, characterName)
+            .Where(c => c.Definition.DropLevel <= characterLevel && c.LevelRequirement <= characterLevel)
             .GroupBy(c => c.Definition.Group <= LastWeaponGroup ? -1 : c.Definition.Group)
             .OrderBy(kind => kind.Key);
 
@@ -183,13 +187,60 @@ internal static class BotGearPlanner
                    || (includeShields && definition.Group == ShieldGroup));
     }
 
+    /// <summary>
+    /// Whether the player meets the item's stat and level requirements on its base stats alone. The
+    /// bonuses of worn gear don't count - the item's own among them, which come off with it when the bot
+    /// takes it off for a jewel or a mix - so the answer holds whatever the bot takes off.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="item">The item.</param>
+    /// <returns><c>True</c>, if the requirements are met without any bonus.</returns>
+    internal static bool MeetsRequirementsOnBaseStats(Player player, Item item)
+    {
+        if (player.Attributes is not { } attributes)
+        {
+            return false;
+        }
+
+        foreach (var (attribute, value) in item.GetRequirements(player.GameContext.Configuration))
+        {
+            if (attributes[BotProgression.TotalToBaseStat(attribute) ?? attribute] < value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// <summary>A copy of the worn item, one item level higher (as far as the item allows).</summary>
-    private static Item UpgradedCopy(Item item)
+    /// <param name="item">The worn item.</param>
+    /// <returns>The copy.</returns>
+    internal static Item UpgradedCopy(Item item)
     {
         var copy = new TemporaryItem();
         copy.AssignValues(item);
         copy.Level = (byte)Math.Max(item.Level, Math.Min(item.Level + 1, item.Definition!.MaximumItemLevel));
         return copy;
+    }
+
+    /// <summary>
+    /// All the gear a bot of the class and build could ever plan for - monster drops of its weapon style
+    /// and the armor pieces it is qualified for - with their requirements as dropped (cached, see
+    /// <see cref="CandidatesByConfiguration"/>).
+    /// </summary>
+    private static Candidate[] GetCandidates(GameConfiguration configuration, CharacterClass characterClass, string characterName)
+    {
+        var byBuild = CandidatesByConfiguration.GetValue(configuration, _ => new ConcurrentDictionary<(CharacterClass Class, int Variant), Candidate[]>());
+        return byBuild.GetOrAdd(
+            (characterClass, BotBuild.GetVariant(characterName)),
+            _ => configuration.Items
+                .Where(d => d.DropsFromMonsters
+                            && d.QualifiedCharacters.Contains(characterClass)
+                            && IsPlannedGear(d, includeShields: false)
+                            && (d.Group > LastWeaponGroup || BotProgression.IsPreferredWeaponGroup(characterClass, characterName, (byte)d.Group)))
+                .Select(d => ToCandidate(d, configuration, characterClass))
+                .ToArray());
     }
 
     /// <summary>The candidate as it would drop at its lowest: +0, without options.</summary>

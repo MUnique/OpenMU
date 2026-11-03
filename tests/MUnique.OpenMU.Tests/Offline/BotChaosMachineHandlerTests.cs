@@ -144,6 +144,69 @@ public class BotChaosMachineHandlerTests
     }
 
     /// <summary>
+    /// Tests that a mix the machine refuses gives everything back - the piece goes on again, the jewels
+    /// return to the backpack - and is reported as not mixed, so the trips can back off.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask RefusedMixGivesEverythingBackAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var armor = await this.WearLuckyArmorAsync(player, 9).ConfigureAwait(false);
+        await this.AddJewelsAsync(player, 1).ConfigureAwait(false);
+        player.Money = MixPrice;
+
+        var mixed = await BotChaosMachineHandler.MixAtAsync(player, this.CreateGoblin(100, ItemOptionTypes.Excellent)).ConfigureAwait(false);
+
+        Assert.That(mixed, Is.False);
+        Assert.That(player.Inventory!.GetItem(InventoryConstants.ArmorSlot), Is.SameAs(armor));
+        Assert.That(armor.Level, Is.EqualTo(9));
+        Assert.That(player.Inventory.Items.Count(i => i.ItemSlot >= InventoryConstants.EquippableSlotsCount), Is.EqualTo(3), "the jewels are back");
+        Assert.That(player.TemporaryStorage!.Items, Is.Empty);
+        Assert.That(player.Money, Is.EqualTo(MixPrice));
+    }
+
+    /// <summary>
+    /// Tests that the bot doesn't mix without room for the piece in its backpack, where the machine
+    /// returns it - otherwise the upgraded piece would stay stuck in the machine.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask NoRoomForThePieceMeansNoMixAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        await this.WearLuckyArmorAsync(player, 9).ConfigureAwait(false);
+        await this.AddJewelsAsync(player, 1).ConfigureAwait(false);
+        player.Money = MixPrice;
+        var filler = CreateDefinition(14, 100, slot: null);
+        while (await player.Inventory!.AddItemAsync(CreateItem(filler)).ConfigureAwait(false))
+        {
+            // fill every free backpack slot
+        }
+
+        Assert.That(BotChaosMachineHandler.PlanNextMix(player, this.CreateGoblin(100).Definition), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that only a bot with a worn lucky piece it can still mix keeps Jewels of Chaos; for all the
+    /// others they would be blocked backpack slots.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask ChaosIsKeptOnlyWithAMixablePieceAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        await this.WearAsync(player, CreateDefinition(ArmorGroup, 1, InventoryConstants.ArmorSlot, player), 9, luck: false).ConfigureAwait(false);
+
+        Assert.That(BotJewelHandler.GetStockLimit(player, ItemConstants.JewelOfChaos), Is.Zero);
+        Assert.That(BotJewelHandler.GetStockLimit(player, ItemConstants.JewelOfBless), Is.EqualTo(BotJewelHandler.GetStockLimit(player)));
+
+        await this.WearAsync(player, CreateDefinition(ArmorGroup + 1, 1, InventoryConstants.PantsSlot, player), 3, luck: true).ConfigureAwait(false);
+
+        Assert.That(BotJewelHandler.GetStockLimit(player, ItemConstants.JewelOfChaos), Is.EqualTo(BotJewelHandler.GetStockLimit(player)));
+    }
+
+    /// <summary>
     /// Tests that the +10 ... +15 combinations of the Season 6 goblin are found for the levels 9 to 14,
     /// with one Chaos and as many Bless and Soul as levels above +9 - and nothing for +8 or +15.
     /// </summary>
@@ -245,7 +308,7 @@ public class BotChaosMachineHandlerTests
     /// Creates a goblin with one "+10 item combination" shaped like the Season 6 one: the +9 piece,
     /// one Chaos, one Bless and one Soul, adding one level, with a fixed success rate.
     /// </summary>
-    private NonPlayerCharacter CreateGoblin(byte successPercent)
+    private NonPlayerCharacter CreateGoblin(byte successPercent, ItemOptionType? requiredPieceOption = null)
     {
         var settings = new Mock<SimpleCraftingSettings>();
         settings.SetupAllProperties();
@@ -260,6 +323,12 @@ public class BotChaosMachineHandlerTests
         piece.MinimumItemLevel = 9;
         piece.MaximumItemLevel = 9;
         piece.SuccessResult = MixResult.StaysAsIs;
+        if (requiredPieceOption is { } option)
+        {
+            // An option the bot's piece lacks: the plan doesn't look at it, so the machine refuses the mix.
+            piece.RequiredItemOptions.Add(option);
+        }
+
         settings.Object.RequiredItems.Add(piece);
         foreach (var jewel in new[] { this._chaos, this._bless, this._soul })
         {

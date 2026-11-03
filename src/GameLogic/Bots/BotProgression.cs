@@ -593,6 +593,21 @@ internal static class BotProgression
         return itemGroup <= maxMeleeGroup;
     }
 
+    /// <summary>
+    /// The points of a character all told: those invested above the class base into the stats a player
+    /// can raise, plus the ones to split now. The budget of the gear planning is a share of it.
+    /// </summary>
+    /// <param name="points">The points to split now.</param>
+    /// <param name="characterClass">The character class.</param>
+    /// <param name="investedOf">Resolves the invested points of a stat.</param>
+    /// <returns>The total points.</returns>
+    internal static long GetTotalPoints(int points, CharacterClass characterClass, Func<AttributeDefinition, long> investedOf)
+        => points + characterClass.StatAttributes
+            .Where(a => a.IncreasableByPlayer)
+            .Select(a => a.Attribute)
+            .OfType<AttributeDefinition>()
+            .Sum(a => Math.Max(0, investedOf(a)));
+
     private static bool IsConsumableSkillGrant(ItemDefinition item)
         => item.Group == SkillOrbItemGroup || item.Group == SkillScrollItemGroup;
 
@@ -734,6 +749,7 @@ internal static class BotProgression
         return given;
     }
 
+    /// <summary>The index of the stat in the weights, or -1.</summary>
     private static int IndexOf(IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights, AttributeDefinition stat)
     {
         for (var i = 0; i < weights.Count; i++)

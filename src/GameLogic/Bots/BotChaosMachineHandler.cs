@@ -28,9 +28,13 @@ using MUnique.OpenMU.Pathfinding;
 ///   <item><description>Weapons, shields and armor pieces only; wings, pets and jewelry never.</description></item>
 ///   <item><description>A failure is the player's risk too: the piece is gone, and the bot goes without
 ///     until it finds another one.</description></item>
-///   <item><description>The bot must already meet the requirements of the piece one level up, which
-///     <see cref="BotGearPlanner"/> keeps for it - otherwise a success would leave it unable to wear
-///     the result.</description></item>
+///   <item><description>The bot must already meet the requirements of the piece one level up on its
+///     base stats, which <see cref="BotGearPlanner"/> keeps for it - otherwise a success would leave it
+///     unable to wear the result - and have room for the piece in its backpack, where the machine
+///     returns it.</description></item>
+///   <item><description>The price is checked with the most the crafting may charge for its success
+///     rate; a castle tax on top can still make the mix fail for lack of Zen, which the bot then sees
+///     (the jewels come back) and reports, so its trips can back off.</description></item>
 /// </list>
 /// </remarks>
 internal static class BotChaosMachineHandler
@@ -66,16 +70,19 @@ internal static class BotChaosMachineHandler
         }
 
         var backpack = inventory.Items.Where(i => i.ItemSlot >= InventoryConstants.EquippableSlotsCount).ToList();
-        return inventory.Items
-            .Where(i => i.ItemSlot < InventoryConstants.EquippableSlotsCount
-                        && i.Definition is { } definition
-                        && BotGearPlanner.IsPlannedGear(definition, includeShields: true)
-                        && i.Level < definition.MaximumItemLevel
-                        && HasLuck(i))
+        return GetMixablePieces(player)
             .OrderBy(i => i.Level)
-            .Select(i => TryPlan(player, goblin, i, backpack))
+            .Select(i => TryPlan(player, inventory, goblin, i, backpack))
             .FirstOrDefault(p => p is not null);
     }
+
+    /// <summary>
+    /// Whether the bot wears a piece it could take to the chaos machine some day - a lucky weapon, shield
+    /// or armor piece below its maximum level. Only such a bot has a use for Jewels of Chaos.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <returns><c>True</c>, if there is such a piece.</returns>
+    public static bool HasMixablePiece(Player player) => GetMixablePieces(player).Any();
 
     /// <summary>
     /// Gets the chaos machine NPC definition of the configuration, or <c>null</c>, if there is none.
@@ -133,11 +140,14 @@ internal static class BotChaosMachineHandler
         var mixed = false;
         try
         {
-            if (await TryPutIntoMachineAsync(player, item, Storages.Inventory, machine).ConfigureAwait(false)
+            if (await TryPutIntoMachineAsync(player, item, machine).ConfigureAwait(false)
                 && await TryPutIngredientsAsync(player, plan, machine).ConfigureAwait(false))
             {
                 await CraftAction.MixItemsAsync(player, plan.Crafting.Number, 0).ConfigureAwait(false);
-                mixed = true;
+
+                // A mix which happened used up the jewels, successful or not. Jewels still in the machine
+                // mean it was refused - for lack of Zen once the castle tax came on top of the price.
+                mixed = !plan.Ingredients.Any(machine.Items.Contains);
             }
         }
         finally
@@ -161,7 +171,11 @@ internal static class BotChaosMachineHandler
                 player.Name,
                 item.Definition?.Name.ValueInNeutralLanguage,
                 levelBefore,
-                !survived ? "failed, the piece is gone" : item.Level > levelBefore ? $"success, now +{item.Level}" : "no change");
+                survived ? $"success, now +{item.Level}" : "failed, the piece is gone");
+        }
+        else
+        {
+            player.Logger.LogDebug("Bot '{Name}' could not mix '{Item}' at the chaos machine.", player.Name, item.Definition?.Name.ValueInNeutralLanguage);
         }
 
         return mixed;
@@ -184,18 +198,27 @@ internal static class BotChaosMachineHandler
             && settings.ResultItems.Any(r => r.Reference == UpgradedItemReference && r.AddLevel == 1));
     }
 
-    private static MixPlan? TryPlan(Player player, MonsterDefinition goblin, Item item, IReadOnlyList<Item> backpack)
+    /// <summary>
+    /// The worn lucky weapons, shields and armor pieces which are still below their maximum level.
+    /// </summary>
+    private static IEnumerable<Item> GetMixablePieces(Player player)
+        => player.Inventory?.Items.Where(i => i.ItemSlot < InventoryConstants.EquippableSlotsCount
+                                              && i.Definition is { } definition
+                                              && BotGearPlanner.IsPlannedGear(definition, includeShields: true)
+                                              && i.Level < definition.MaximumItemLevel
+                                              && BotJewelHandler.HasLuck(i))
+           ?? [];
+
+    /// <summary>
+    /// Plans the mix of one worn piece, if the goblin has an upgrade crafting for its level and the bot
+    /// meets every condition (see the remarks of the class); picks the jewels it takes from the backpack.
+    /// </summary>
+    private static MixPlan? TryPlan(Player player, IStorage inventory, MonsterDefinition goblin, Item item, IReadOnlyList<Item> backpack)
     {
         if (FindUpgradeCrafting(goblin, item.Level) is not { SimpleCraftingSettings: { } settings } crafting
-            || player.Money < settings.Money)
-        {
-            return null;
-        }
-
-        var upgraded = new TemporaryItem();
-        upgraded.AssignValues(item);
-        upgraded.Level++;
-        if (!player.CompliesRequirements(upgraded))
+            || player.Money < GetHighestPrice(settings)
+            || inventory.CheckInvSpace(item) is null
+            || !BotGearPlanner.MeetsRequirementsOnBaseStats(player, BotGearPlanner.UpgradedCopy(item)))
         {
             return null;
         }
@@ -215,14 +238,23 @@ internal static class BotChaosMachineHandler
             ingredients.AddRange(available);
         }
 
-        return new MixPlan(item, crafting, ingredients);
+        return new MixPlan(item, crafting, ingredients, GetHighestPrice(settings));
     }
 
+    /// <summary>
+    /// The most the crafting may charge before tax: its base price plus the price per success percent
+    /// for a full 100 %.
+    /// </summary>
+    private static long GetHighestPrice(SimpleCraftingSettings settings)
+        => settings.Money + ((long)settings.MoneyPerFinalSuccessPercentage * 100);
+
+    /// <summary>Puts the jewels of the plan into the machine.</summary>
+    /// <returns><c>True</c>, if all of them are in.</returns>
     private static async ValueTask<bool> TryPutIngredientsAsync(Player player, MixPlan plan, IStorage machine)
     {
         foreach (var ingredient in plan.Ingredients)
         {
-            if (!await TryPutIntoMachineAsync(player, ingredient, Storages.Inventory, machine).ConfigureAwait(false))
+            if (!await TryPutIntoMachineAsync(player, ingredient, machine).ConfigureAwait(false))
             {
                 return false;
             }
@@ -231,17 +263,23 @@ internal static class BotChaosMachineHandler
         return true;
     }
 
-    private static async ValueTask<bool> TryPutIntoMachineAsync(Player player, Item item, Storages from, IStorage machine)
+    /// <summary>Moves an item from the inventory into a free slot of the machine.</summary>
+    /// <returns><c>True</c>, if the item is in the machine.</returns>
+    private static async ValueTask<bool> TryPutIntoMachineAsync(Player player, Item item, IStorage machine)
     {
         if (machine.CheckInvSpace(item) is not { } slot)
         {
             return false;
         }
 
-        await MoveAction.MoveItemAsync(player, item.ItemSlot, from, slot, Storages.ChaosMachine).ConfigureAwait(false);
+        await MoveAction.MoveItemAsync(player, item.ItemSlot, Storages.Inventory, slot, Storages.ChaosMachine).ConfigureAwait(false);
         return machine.Items.Contains(item);
     }
 
+    /// <summary>
+    /// Takes everything left in the machine back into the backpack: the upgraded piece after a success,
+    /// the piece and the jewels when the mix didn't happen.
+    /// </summary>
     private static async ValueTask TakeBackAllAsync(Player player, IStorage inventory, IStorage machine)
     {
         foreach (var leftover in machine.Items.ToList())
@@ -257,14 +295,12 @@ internal static class BotChaosMachineHandler
         }
     }
 
-    private static bool HasLuck(Item item)
-        => item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck);
-
     /// <summary>
     /// A planned mix: the worn piece, the crafting which upgrades it, and the jewels from the backpack it takes.
     /// </summary>
     /// <param name="Item">The worn piece.</param>
     /// <param name="Crafting">The upgrade crafting.</param>
     /// <param name="Ingredients">The jewels from the backpack.</param>
-    internal sealed record MixPlan(Item Item, ItemCrafting Crafting, IReadOnlyList<Item> Ingredients);
+    /// <param name="Price">The most the mix may cost before tax.</param>
+    internal sealed record MixPlan(Item Item, ItemCrafting Crafting, IReadOnlyList<Item> Ingredients, long Price);
 }

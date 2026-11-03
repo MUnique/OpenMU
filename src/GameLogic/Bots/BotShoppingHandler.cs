@@ -201,7 +201,6 @@ internal static class BotShoppingHandler
     /// </summary>
     private static List<Item> GetSellableJunk(OfflinePlayer player, IStorage inventory)
     {
-        var stockLimit = BotJewelHandler.GetStockLimit(player);
         var keptJewels = new Dictionary<ItemIdentifier, int>();
         var junk = new List<Item>();
 
@@ -232,7 +231,7 @@ internal static class BotShoppingHandler
                 // backpack: asking "is the stock full?" for each jewel on its own would answer yes for
                 // every one of fifteen Souls at a limit of ten, and the bot would end up with none.
                 var kept = keptJewels.GetValueOrDefault(identifier);
-                if (kept < stockLimit)
+                if (kept < BotJewelHandler.GetStockLimit(player, identifier))
                 {
                     keptJewels[identifier] = kept + 1;
                     continue;
@@ -436,9 +435,9 @@ internal static class BotShoppingHandler
     private static async ValueTask<int> BuyJewelsAsync(OfflinePlayer player, ItemStorage store)
     {
         var bought = 0;
-        var stockLimit = BotJewelHandler.GetStockLimit(player);
         foreach (var identifier in BotJewelHandler.UsableJewels)
         {
+            var stockLimit = BotJewelHandler.GetStockLimit(player, identifier);
             while (bought < MaxJewelPurchasesPerTrip
                    && BotJewelHandler.CountInStock(player, identifier) < stockLimit
                    && FindAffordableOffer(player, store, identifier, JewelPurchaseReserve) is { } offer)
