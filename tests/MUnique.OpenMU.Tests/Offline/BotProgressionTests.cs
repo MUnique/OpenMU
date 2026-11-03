@@ -177,6 +177,83 @@ public class BotProgressionTests
     }
 
     /// <summary>
+    /// Tests that the minimums (gear requirements) are served before the weighted split.
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumsAreServedFirst()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 100 } };
+
+        var result = BotProgression.SplitPoints(200, DarkWizardWeights, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(200));
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(100));
+        Assert.That(result[Stats.BaseEnergy], Is.GreaterThan(result.Where(r => r.Key != Stats.BaseEnergy && r.Key != Stats.BaseStrength).Sum(r => r.Value)));
+    }
+
+    /// <summary>
+    /// Tests that the points are shared out by what is missing when they don't cover all minimums.
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumsBeyondThePoints_AreSharedByWhatIsMissing()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 300 }, { Stats.BaseAgility, 100 } };
+
+        var result = BotProgression.SplitPoints(40, DarkWizardWeights, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(30));
+        Assert.That(result[Stats.BaseAgility], Is.EqualTo(10));
+    }
+
+    /// <summary>
+    /// Tests that already invested points count towards a minimum.
+    /// </summary>
+    [Test]
+    public void SplitPoints_InvestedPointsCountTowardsTheMinimum()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 100 } };
+        var invested = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 90 }, { Stats.BaseEnergy, 2000 } };
+
+        var result = BotProgression.SplitPoints(5, DarkWizardWeights, investedOf: s => invested.GetValueOrDefault(s), minimums: minimums)
+            .ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(5));
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(5));
+    }
+
+    /// <summary>
+    /// Tests that a stat outside the build gets its minimum and nothing beyond it: a Rage Fighter
+    /// invests no agility, yet a Brass Armor requires some.
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumOfStatOutsideTheBuild_GetsOnlyTheMinimum()
+    {
+        var weights = new[] { (Stats.BaseStrength, 45), (Stats.BaseVitality, 35), (Stats.BaseEnergy, 20) };
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseAgility, 50 } };
+
+        var result = BotProgression.SplitPoints(1000, weights, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(1000));
+        Assert.That(result[Stats.BaseAgility], Is.EqualTo(50));
+    }
+
+    /// <summary>
+    /// Tests that a minimum stays within the stat's capacity (a fun server's stat maximum).
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumRespectsCapacity()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 100 } };
+        long CapacityOf(AttributeDefinition stat) => stat == Stats.BaseStrength ? 30 : long.MaxValue;
+
+        var result = BotProgression.SplitPoints(200, DarkWizardWeights, CapacityOf, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(30));
+        Assert.That(result.Values.Sum(), Is.EqualTo(200));
+    }
+
+    /// <summary>
     /// Tests that the vitality target roll stays within 100..500 and is stable for the same name.
     /// </summary>
     [Test]

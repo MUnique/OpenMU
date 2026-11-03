@@ -180,6 +180,18 @@ which is off its build (from before this rule, or from a reset which keeps the
 stats) is evened out over its next level-ups: its stats above their share wait
 until the others caught up.
 
+Before the build gets its points, the gear does. A bot keeps the strength,
+agility, energy or vitality its worn weapon, shield and armor require one item
+level up — it takes a piece off to apply a jewel and has to be able to put it
+back on — and plans for the best weapon and armor it can find at its level:
+monster drops whose drop level and level requirement it reaches. Of those, it
+takes the one which costs its build the least among the nearly best, and none
+which would take more than half of all its points beyond what the build invests
+anyway, or more points than it has. That is why a supporter Elf invests the
+agility of an armor set, and why a top set out of reach (a Titan Armor at level
+150) doesn't swallow a knight's build. Wings, pets and jewelry need only a level
+and play no part in it.
+
 Bots evolve like players do. The second-generation class change happens at level
 200 — the same assignment the class-change quest performs — and the master class
 at the game's maximum level, followed by a relog, because the master attributes

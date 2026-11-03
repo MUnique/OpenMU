@@ -147,9 +147,20 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
             return capacity;
         }
 
+        // The gear requirements come first, so the bot can always put its worn gear back on and wear
+        // what it finds at its level (see BotGearPlanner).
+        var equippedItems = player.Inventory?.Items.Where(i => i.ItemSlot < InventoryConstants.EquippableSlotsCount) ?? [];
+        var minimums = BotGearPlanner.GetStatMinimums(
+            player.GameContext.Configuration,
+            characterClass,
+            character.Name,
+            player.Level,
+            equippedItems,
+            points + characterClass.StatAttributes.Where(a => a.IncreasableByPlayer).Select(a => a.Attribute).OfType<AttributeDefinition>().Sum(a => Math.Max(0, InvestedOf(a))));
+
         // The invested points make the split aim at the build's proportions over the whole career,
         // so the few points of a single level-up don't round the small-weight stats down to nothing.
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf))
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf, minimums))
         {
             if (amount > 0)
             {

@@ -195,20 +195,33 @@ internal static class BotProgression
     /// stats. When every stat is full, the rest of the points stay unassigned, like for a maxed-out
     /// human character. A leftover point which no share covers goes to the stat which lacks the most
     /// of its share; on a tie to the one listed first, so the primary stat wins.
+    /// The optional <paramref name="minimums"/> come before all of that: the points a stat needs to
+    /// reach its minimum (the requirements of the bot's gear, see <see cref="BotGearPlanner"/>) are
+    /// given first - shared out by the size of what is missing when the points don't cover all - and
+    /// only the rest follows the weights. A stat with a minimum need not be part of the build (a Rage
+    /// Fighter's agility for a Brass Armor); it then gets its minimum and nothing beyond.
     /// </remarks>
     /// <param name="points">The number of points to split.</param>
     /// <param name="weights">The stat weights of the class.</param>
     /// <param name="capacityOf">Optionally resolves how many more points a stat can take; null means unlimited.</param>
     /// <param name="investedOf">Optionally resolves how many points are already invested into a stat (its value above the class base); null means nothing.</param>
+    /// <param name="minimums">Optionally the invested points each stat should at least have, served before the weighted split.</param>
     public static IEnumerable<(AttributeDefinition Stat, int Amount)> SplitPoints(
         int points,
         IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights,
         Func<AttributeDefinition, long>? capacityOf = null,
-        Func<AttributeDefinition, long>? investedOf = null)
+        Func<AttributeDefinition, long>? investedOf = null,
+        IReadOnlyDictionary<AttributeDefinition, long>? minimums = null)
     {
-        if (points <= 0 || weights.Count == 0)
+        if (points <= 0 || (weights.Count == 0 && minimums is not { Count: > 0 }))
         {
             yield break;
+        }
+
+        // A stat with a minimum but no weight joins with weight 0: it takes part in the minimums only.
+        if (minimums?.Keys.Where(stat => weights.All(w => w.Stat != stat)).ToList() is { Count: > 0 } extraStats)
+        {
+            weights = weights.Concat(extraStats.Select(stat => (stat, 0))).ToList();
         }
 
         var allocated = new long[weights.Count];
@@ -220,8 +233,13 @@ internal static class BotProgression
             invested[i] = Math.Max(0, investedOf?.Invoke(weights[i].Stat) ?? 0);
         }
 
-        var active = new bool[weights.Count];
         long remaining = points;
+        if (minimums is not null)
+        {
+            remaining -= AllocateMinimums(points, weights, minimums, invested, capacity, allocated);
+        }
+
+        var active = new bool[weights.Count];
         while (remaining > 0)
         {
             for (var i = 0; i < weights.Count; i++)
@@ -670,5 +688,62 @@ internal static class BotProgression
             .OrderByDescending(a => a.BaseValue)
             .Select(a => a.Attribute!)
             .FirstOrDefault() ?? Stats.BaseStrength;
+    }
+
+    /// <summary>
+    /// Gives each stat what it lacks of its minimum, within its capacity; when the points don't cover
+    /// all of it, they are shared out by the size of what is missing (the regular weighted split, with
+    /// the missing points as weights and as capacities).
+    /// </summary>
+    /// <returns>The number of points given.</returns>
+    private static long AllocateMinimums(
+        int points,
+        IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights,
+        IReadOnlyDictionary<AttributeDefinition, long> minimums,
+        long[] invested,
+        long[] capacity,
+        long[] allocated)
+    {
+        var missing = new long[weights.Count];
+        var totalMissing = 0L;
+        for (var i = 0; i < weights.Count; i++)
+        {
+            missing[i] = Math.Clamp(minimums.GetValueOrDefault(weights[i].Stat) - invested[i], 0, capacity[i]);
+            totalMissing += missing[i];
+        }
+
+        if (totalMissing <= points)
+        {
+            for (var i = 0; i < weights.Count; i++)
+            {
+                allocated[i] += missing[i];
+            }
+
+            return totalMissing;
+        }
+
+        // The missing points of one stat are a few thousand at most, so they fit the int weights.
+        var missingWeights = weights.Select((w, i) => (w.Stat, (int)Math.Min(missing[i], int.MaxValue))).ToList();
+        var given = 0L;
+        foreach (var (stat, amount) in SplitPoints(points, missingWeights, stat => missing[IndexOf(weights, stat)]))
+        {
+            allocated[IndexOf(weights, stat)] += amount;
+            given += amount;
+        }
+
+        return given;
+    }
+
+    private static int IndexOf(IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights, AttributeDefinition stat)
+    {
+        for (var i = 0; i < weights.Count; i++)
+        {
+            if (weights[i].Stat == stat)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }
