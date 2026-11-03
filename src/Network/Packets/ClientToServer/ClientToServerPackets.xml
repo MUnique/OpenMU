@@ -24,6 +24,11 @@
           <Type>ShortLittleEndian</Type>
           <Name>AttackSpeed</Name>
         </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MagicSpeed</Name>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -295,7 +300,7 @@
       <SubCode>02</SubCode>
       <Name>PlayerShopOpen</Name>
       <Caption>Player Shop - Open</Caption>
-      <Length>30</Length>
+      <Length>40</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to open his personal item shop.</SentWhen>
       <CausedReaction>The personal item shop is opened and the surrounding players are informed about it, including the own player.</CausedReaction>
@@ -304,7 +309,7 @@
           <Index>4</Index>
           <Type>String</Type>
           <Name>StoreName</Name>
-          <Length>26</Length>
+          <Length>36</Length>
         </Field>
       </Fields>
     </Packet>
@@ -1497,7 +1502,7 @@
       <Code>D2</Code>
       <SubCode>04</SubCode>
       <Name>CashShopItemGiftRequest</Name>
-      <Length>234</Length>
+      <Length>238</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to send a gift to another player.</SentWhen>
       <CausedReaction>The server buys the item with the credits of the player and sends it as gift to the other player.</CausedReaction>
@@ -1518,28 +1523,28 @@
           <Name>ProductMainIndex</Name>
         </Field>
         <Field>
-          <Index>16</Index>
+          <Index>20</Index>
           <Type>ShortLittleEndian</Type>
           <Name>ItemIndex</Name>
         </Field>
         <Field>
-          <Index>18</Index>
+          <Index>22</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>CoinIndex</Name>
         </Field>
         <Field>
-          <Index>22</Index>
+          <Index>26</Index>
           <Type>Byte</Type>
           <Name>MileageFlag</Name>
         </Field>
         <Field>
-          <Index>23</Index>
+          <Index>27</Index>
           <Type>String</Type>
           <Name>GiftReceiverName</Name>
           <Length>11</Length>
         </Field>
         <Field>
-          <Index>34</Index>
+          <Index>38</Index>
           <Type>String</Type>
           <Name>GiftText</Name>
           <Length>200</Length>
@@ -1573,7 +1578,7 @@
       <Code>D2</Code>
       <SubCode>0A</SubCode>
       <Name>CashShopDeleteStorageItemRequest</Name>
-      <Length>234</Length>
+      <Length>13</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to delete an item of the cash shop storage.</SentWhen>
       <CausedReaction>The server removes the item from cash shop storage.</CausedReaction>
@@ -1649,7 +1654,7 @@
       <Code>83</Code>
       <SubCode>00</SubCode>
       <Name>UnlockVault</Name>
-      <Length>7</Length>
+      <Length>26</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to unlock the protected vault with a pin.</SentWhen>
       <CausedReaction>The vault lock state on the server is updated. VaultProtectionInformation is sent as response.</CausedReaction>
@@ -1659,6 +1664,12 @@
           <Type>ShortLittleEndian</Type>
           <Name>Pin</Name>
         </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>Password</Name>
+          <Length>20</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -1666,7 +1677,7 @@
       <Code>83</Code>
       <SubCode>01</SubCode>
       <Name>SetVaultPin</Name>
-      <Length>27</Length>
+      <Length>26</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to set a new pin for the vault when it's in unlocked state.</SentWhen>
       <CausedReaction>The vault pin is set. VaultProtectionInformation is sent as response.</CausedReaction>
@@ -1690,7 +1701,7 @@
       <Code>83</Code>
       <SubCode>02</SubCode>
       <Name>RemoveVaultPin</Name>
-      <Length>27</Length>
+      <Length>26</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to remove the pin for the vault when it's in unlocked state.</SentWhen>
       <CausedReaction>The vault pin is removed. VaultProtectionInformation is sent as response.</CausedReaction>
@@ -2120,7 +2131,7 @@
       <Code>F3</Code>
       <SubCode>02</SubCode>
       <Name>DeleteCharacter</Name>
-      <Length>24</Length>
+      <Length>34</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The game client is at the character selection screen and the player requests to delete an existing character.</SentWhen>
       <CausedReaction>The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.</CausedReaction>
@@ -2136,7 +2147,8 @@
           <Index>14</Index>
           <Type>String</Type>
           <Name>SecurityCode</Name>
-          <Description>A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.</Description>
+          <Description>A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes. The 1.04d client always sends 20 bytes.</Description>
+          <Length>20</Length>
         </Field>
       </Fields>
     </Packet>
@@ -2244,7 +2256,7 @@
       <Code>F3</Code>
       <SubCode>52</SubCode>
       <Name>AddMasterSkillPoint</Name>
-      <Length>6</Length>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player wants to add or increase the level of a specific master skill of the master skill tree.</SentWhen>
       <CausedReaction>Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.</CausedReaction>
@@ -2253,6 +2265,7 @@
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>SkillId</Name>
+          <Description>The client sends the skill id as 32-bit value; the upper 16 bits are 0.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -3184,7 +3197,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>34</Code>
       <Name>ItemRepair</Name>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to repair an item of his inventory, either himself or with the usage of an NPC.</SentWhen>
       <CausedReaction>If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.</CausedReaction>
@@ -3194,6 +3207,11 @@
           <Type>Byte</Type>
           <Name>InventoryItemSlot</Name>
           <Description>The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsSelfRepair</Name>
         </Field>
       </Fields>
     </Packet>
@@ -3399,8 +3417,8 @@
       <HeaderType>C1Header</HeaderType>
       <Code>CB</Code>
       <Name>ChatRoomInvitationRequest</Name>
+      <Length>20</Length>
       <Direction>ClientToServer</Direction>
-      <Length>19</Length>
       <SentWhen>A player wants to invite additional players from his friend list to an existing chat room.</SentWhen>
       <CausedReaction>The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.</CausedReaction>
       <Fields>
@@ -3411,13 +3429,13 @@
           <Length>10</Length>
         </Field>
         <Field>
-          <Index>13</Index>
-          <Type>ShortBigEndian</Type>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
           <Name>RoomId</Name>
         </Field>
         <Field>
-          <Index>15</Index>
-          <Type>IntegerBigEndian</Type>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>RequestId</Name>
         </Field>
       </Fields>
@@ -3537,7 +3555,7 @@
       <Code>BF</Code>
       <SubCode>02</SubCode>
       <Name>IllusionTempleSkillRequest</Name>
-      <Length>8</Length>
+      <Length>9</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player is in the illusion temple event and wants to perform a special skill (210 - 213), Order of Protection, Restraint, Tracking or Weaken.</SentWhen>
       <CausedReaction>The server checks if the player is inside the event etc. and performs the skills accordingly.</CausedReaction>
@@ -3549,11 +3567,11 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Byte</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetObjectIndex</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>8</Index>
           <Type>Byte</Type>
           <Name>Distance</Name>
         </Field>
@@ -4237,7 +4255,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -4282,11 +4300,16 @@
       <Code>AA</Code>
       <SubCode>09</SubCode>
       <Name>DuelChannelQuitRequest</Name>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requested to quit the duel as a spectator.</SentWhen>
       <CausedReaction>The server will remove the player as spectator.</CausedReaction>
       <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ChannelId</Name>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -4336,6 +4359,98 @@
       <SentWhen>The player wants to remove the link of the account to a Discord user.</SentWhen>
       <CausedReaction>The server removes the link and sends an updated DiscordIntegrationInfo message.</CausedReaction>
       <Fields />
+    </Packet>
+  <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>16</SubCode>
+      <Name>CharacterRenameRequest</Name>
+      <Length>24</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to rename a character in the character selection.</SentWhen>
+      <CausedReaction>The server renames the character and answers with CharacterRenameResult (F3 16).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>OldName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>String</Type>
+          <Name>NewName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>20</SubCode>
+      <Name>InventoryItemEquipRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player (un)equips an item which is used inside the inventory.</SentWhen>
+      <CausedReaction>The server answers with InventoryItemEquipResult (BF 20).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Value</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D0</Code>
+      <SubCode>00</SubCode>
+      <Name>RequestD000</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>Sent by the 1.04d client; its purpose is not identified yet.</SentWhen>
+      <CausedReaction>Unknown.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>06</SubCode>
+      <Name>GameServerChannelRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>Sent when the player confirms the game server channel message box.</SentWhen>
+      <CausedReaction>The server answers with GameServerChannelResult (F1 06).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Value</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>73</Code>
+      <SubCode>00</SubCode>
+      <Name>GameGuardAuthResponse</Name>
+      <Length>20</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client answers the GameGuardAuthRequest (C3 73).</SentWhen>
+      <CausedReaction>The server can verify the GameGuard answer.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Data</Name>
+          <Length>16</Length>
+        </Field>
+      </Fields>
     </Packet>
   </Packets>
   <Enums>

@@ -18,6 +18,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// The client file starts with a header of 4 bytes (version, map number, width - 1, height - 1),
 /// is XOR-ed with a 3 byte key and then encrypted with the map file encryption of the client.
 /// Newer clients may also use two bytes per tile, of which only the low byte is relevant.
+/// The client refuses a file as corrupted when the low byte of a tile is 128 or more.
 /// </remarks>
 public static class TerrainFileConverter
 {
@@ -31,6 +32,12 @@ public static class TerrainFileConverter
     private const int ClientHeaderSize = 4;
 
     private const byte MaximumCoordinate = 0xFF;
+
+    /// <summary>
+    /// The attribute bits of a tile which the client accepts. The terrain data of some maps has tiles with the
+    /// highest bit set (e.g. Atlans, Icarus and Valley of Loren), which the client refuses as a corrupted file.
+    /// </summary>
+    private const byte ClientAttributeMask = 0x7F;
 
     private const byte InitialMapKey = 0x5E;
 
@@ -74,6 +81,7 @@ public static class TerrainFileConverter
 
     /// <summary>
     /// Creates the encrypted terrain file which is loaded by the game client (EncTerrain*.att).
+    /// The highest bit of the tiles is left out, because the client refuses a file with it.
     /// </summary>
     /// <param name="tileAttributes">The attributes of all tiles.</param>
     /// <param name="mapNumber">The number of the map.</param>
@@ -85,7 +93,12 @@ public static class TerrainFileConverter
         result[1] = unchecked((byte)mapNumber);
         result[2] = MaximumCoordinate;
         result[3] = MaximumCoordinate;
-        tileAttributes.CopyTo(result.AsSpan(ClientHeaderSize));
+        var tiles = result.AsSpan(ClientHeaderSize);
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            tiles[i] = (byte)(tileAttributes[i] & ClientAttributeMask);
+        }
+
         ApplyBuxKey(result);
         EncryptMapFile(result);
         return result;
