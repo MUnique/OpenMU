@@ -179,19 +179,42 @@ public class ItemRules : InitializerBase
         Rule(13, 40, Blocked.Repair), // Jack Olantern Ring
         Rule(13, 41, Blocked.Repair), // Transfer Christmas Ring
         Rule(13, 42, Blocked.Repair), // Ring of GM
+        Rule(13, 43, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Ascension
+        Rule(13, 44, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Wealth
+        Rule(13, 45, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Sustenance
         Rule(13, 46, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Devil Square Ticket
         Rule(13, 47, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Blood Castle Ticket
+        Rule(13, 48, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Kalima Ticket
         Rule(13, 49, Blocked.Repair), // Old Scroll
         Rule(13, 50, Blocked.Repair), // Illusion Sorcerer Covenant
         Rule(13, 51, Blocked.Repair), // Scroll of Blood
+        Rule(13, 54, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Reset Fruit (Strength)
+        Rule(13, 55, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Reset Fruit (Agility)
+        Rule(13, 56, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Reset Fruit (Vitality)
+        Rule(13, 57, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Reset Fruit (Energy)
+        Rule(13, 58, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Reset Fruit (Command)
         Rule(13, 61, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Illusion Temple Ticket
+        Rule(13, 62, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Healing
+        Rule(13, 63, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Divinity
         Rule(13, 64, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Demon
         Rule(13, 65, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Spirit of Guardian
         Rule(13, 67, Blocked.Repair), // Pet Rudolf
         Rule(13, 68, Blocked.Repair), // Snowman Transformation Ring
         Rule(13, 76, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Panda Ring
         Rule(13, 80, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Panda
+        Rule(13, 93, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Ascension
+        Rule(13, 94, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Wealth
+        Rule(13, 104, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max AG Boost Aura
+        Rule(13, 105, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max SD Boost Aura
         Rule(13, 106, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Pet Unicorn
+        Rule(13, 107, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Lethal Wizard's Ring
+        Rule(13, 109, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Sapphire Ring
+        Rule(13, 110, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Ruby Ring
+        Rule(13, 111, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Topaz Ring
+        Rule(13, 112, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Amethyst Ring
+        Rule(13, 113, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Ruby Necklace
+        Rule(13, 114, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Emerald Necklace
+        Rule(13, 115, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Sapphire Necklace
         Rule(13, 121, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Open Access Ticket to Chaos Castle
         Rule(13, 122, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Skeleton Transformation Ring
         Rule(13, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Skeleton
@@ -253,16 +276,34 @@ public class ItemRules : InitializerBase
         Rule(14, 50, Blocked.Repair), // Jack O'Lantern Drink
         Rule(14, 51, Blocked.Repair), // Chistmas Star
         Rule(14, 52, Blocked.Trade, Blocked.Repair), // GM Gift
+        Rule(14, 53, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Luck
         Rule(14, 63, Blocked.Repair), // Firecracker
         Rule(14, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Death-beam Knight Flame
         Rule(14, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Hell-Miner Horn
         Rule(14, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Dark Phoenix Feather
         Rule(14, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Abyssal Eye
+        Rule(14, 70, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite Healing Potion
+        Rule(14, 71, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite Mana Potion
+        Rule(14, 72, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Quickness
+        Rule(14, 73, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Defense
+        Rule(14, 74, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Wrath
+        Rule(14, 75, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Wizardry
+        Rule(14, 76, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Health
+        Rule(14, 77, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Mana
+        Rule(14, 78, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elixir of Strength
+        Rule(14, 79, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elixir of Agility
+        Rule(14, 80, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elixir of Health
+        Rule(14, 81, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elixir of Energy
+        Rule(14, 82, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elixir of Control
         Rule(14, 84, Blocked.Repair), // Cherry Blossom Play-Box
         Rule(14, 85, Blocked.Repair), // Cherry Blossom Wine
         Rule(14, 86, Blocked.Repair), // Cherry Blossom Rice Cake
         Rule(14, 87, Blocked.Repair), // Cherry Blossom Flower Petal
         Rule(14, 90, Blocked.Repair), // Golden Cherry Blossom Branch
+        Rule(14, 94, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Medium Elite Healing Potion
+        Rule(14, 96, Blocked.Trade, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Chaos Assembly
+        Rule(14, 97, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Battle
+        Rule(14, 98, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Strength
         Rule(14, 99, Blocked.Repair), // Christmas Firecracker
         Rule(14, 101, Blocked.Repair), // Suspicious Scrap of Paper
         Rule(14, 102, Blocked.Repair), // Gaion's Order
@@ -273,6 +314,8 @@ public class ItemRules : InitializerBase
         Rule(14, 107, Blocked.Repair), // Fifth Secromicon Fragment
         Rule(14, 108, Blocked.Repair), // Sixth Secromicon Fragment
         Rule(14, 109, Blocked.Repair), // Complete Secromicon
+        Rule(14, 133, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite SD Potion
+        Rule(14, 140, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Healing
         Rule(14, 160, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Extension
         Rule(14, 161, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Elevation
         Rule(15, 0, Blocked.Repair), // Scroll of Poison

@@ -1698,6 +1698,30 @@
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>Panda-Verwandlungsring</value>
   </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>Ring des tödlichen Zauberers</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>Saphirring</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>Rubinring</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>Topasring</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>Amethystring</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>Rubinhalskette</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>Smaragdhalskette</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>Saphirhalskette</value>
+  </data>
   <data name="PetPanda" xml:space="preserve">
     <value>Haustier Panda</value>
   </data>
@@ -1805,6 +1829,18 @@
   </data>
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>Großer SD-Trank</value>
+  </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>Elite-Heiltrank</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>Elite-Manatrank</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>Mittlerer Elite-Heiltrank</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>Elite-SD-Trank</value>
   </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>Kleiner Komplextrank</value>
@@ -2129,5 +2165,74 @@
   </data>
   <data name="JewelOfElevation" xml:space="preserve">
     <value>Juwel der Erhebung</value>
+  </data>
+  <data name="SealOfAscension" xml:space="preserve">
+    <value>Siegel des Aufstiegs</value>
+  </data>
+  <data name="SealOfWealth" xml:space="preserve">
+    <value>Siegel des Wohlstands</value>
+  </data>
+  <data name="SealOfSustenance" xml:space="preserve">
+    <value>Siegel der Erhaltung</value>
+  </data>
+  <data name="SealOfHealing" xml:space="preserve">
+    <value>Siegel der Heilung</value>
+  </data>
+  <data name="SealOfDivinity" xml:space="preserve">
+    <value>Siegel der Göttlichkeit</value>
+  </data>
+  <data name="MasterSealOfAscension" xml:space="preserve">
+    <value>Meistersiegel des Aufstiegs</value>
+  </data>
+  <data name="MasterSealOfWealth" xml:space="preserve">
+    <value>Meistersiegel des Wohlstands</value>
+  </data>
+  <data name="MaxAgBoostAura" xml:space="preserve">
+    <value>Aura: Max. AG-Erhöhung</value>
+  </data>
+  <data name="MaxSdBoostAura" xml:space="preserve">
+    <value>Aura: Max. SD-Erhöhung</value>
+  </data>
+  <data name="ScrollOfQuickness" xml:space="preserve">
+    <value>Schriftrolle der Schnelligkeit</value>
+  </data>
+  <data name="ScrollOfDefense" xml:space="preserve">
+    <value>Schriftrolle der Verteidigung</value>
+  </data>
+  <data name="ScrollOfWrath" xml:space="preserve">
+    <value>Schriftrolle des Zorns</value>
+  </data>
+  <data name="ScrollOfWizardry" xml:space="preserve">
+    <value>Schriftrolle der Zauberkraft</value>
+  </data>
+  <data name="ScrollOfHealth" xml:space="preserve">
+    <value>Schriftrolle des Lebens</value>
+  </data>
+  <data name="ScrollOfMana" xml:space="preserve">
+    <value>Schriftrolle des Manas</value>
+  </data>
+  <data name="ElixirOfStrength" xml:space="preserve">
+    <value>Elixier der Stärke</value>
+  </data>
+  <data name="ElixirOfAgility" xml:space="preserve">
+    <value>Elixier der Beweglichkeit</value>
+  </data>
+  <data name="ElixirOfHealth" xml:space="preserve">
+    <value>Elixier der Vitalität</value>
+  </data>
+  <data name="ElixirOfEnergy" xml:space="preserve">
+    <value>Elixier der Energie</value>
+  </data>
+  <data name="ElixirOfControl" xml:space="preserve">
+    <value>Elixier der Führung</value>
+  </data>
+  <data name="ScrollOfBattle" xml:space="preserve">
+    <value>Schriftrolle des Kampfes</value>
+  </data>
+  <data name="ScrollOfStrength" xml:space="preserve">
+    <value>Schriftrolle der Stärke</value>
+  </data>
+  <data name="ScrollOfHealing" xml:space="preserve">
+    <value>Schriftrolle der Heilung</value>
   </data>
 </root>
