@@ -64,6 +64,32 @@ internal class GoblinBoxesDataTest
         AssertData(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the update doesn't assign the keys to the products of a custom in-game shop script,
+    /// because its product sequences may identify other products, and doesn't put its packages on sale.
+    /// </summary>
+    [Test]
+    public async Task UpdateDoesNotAssignKeysToCustomScriptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var configuration = gameConfiguration.CashShopConfiguration!;
+        configuration.ScriptYearId++;
+        foreach (var package in configuration.Packages.Where(p => KeyPackages.Contains(p.PackageSequence)))
+        {
+            package.IsForSale = false;
+            package.Products.ToList().ForEach(product => product.ItemDefinition = null);
+        }
+
+        gameConfiguration.Items.Where(IsGoblinBoxItem).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
+
+        await new AddGoblinBoxesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Items.Count(IsGoblinBoxItem), Is.EqualTo(ItemNumbers.Length));
+        Assert.That(configuration.Packages.SelectMany(p => p.Products), Has.None.Matches<CashShopProduct>(p => p.ItemDefinition is { } item && IsGoblinBoxItem(item)));
+        Assert.That(configuration.Packages.Where(p => KeyPackages.Contains(p.PackageSequence)), Has.None.Matches<CashShopPackage>(p => p.IsForSale));
+    }
+
     private static bool IsGoblinBoxItem(ItemDefinition item) => item.Group == 14 && ItemNumbers.Contains(item.Number);
 
     private static MonsterDefinition GetChaosGoblin(GameConfiguration gameConfiguration) => gameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine);
