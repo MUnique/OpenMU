@@ -202,9 +202,9 @@ internal class ItemStatProfilesDataTest
             .Select(group => $"{group.Key}: {group.Count()}");
         Assert.That(counts, Is.EqualTo(new[]
         {
-            "armor: 274",
+            "armor: 327",
             "book: 3",
-            "default: 183",
+            "default: 195",
             "firstTierWing: 4",
             "helper: 27",
             "orb: 12",

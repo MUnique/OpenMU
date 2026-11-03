@@ -126,4 +126,7 @@
   <data name="GemstoneRefinery" xml:space="preserve">
     <value>Edelstein-Veredelung</value>
   </data>
+  <data name="LuckyItemExchange" xml:space="preserve">
+    <value>Glücksgegenstand-Tausch</value>
+  </data>
 </root>

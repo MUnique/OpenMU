@@ -82,6 +82,59 @@ public class ItemRules : InitializerBase
     {
         Rule(4, 7, Blocked.Repair), // Bolt
         Rule(4, 15, Blocked.Repair), // Arrow
+        Rule(7, 62, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Scale Helm
+        Rule(7, 63, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Silk Helm
+        Rule(7, 64, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Sphinx Helm
+        Rule(7, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Violent Wind Helm
+        Rule(7, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Adamantine Mask
+        Rule(7, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Dragon Helm
+        Rule(7, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Guardian Helm
+        Rule(7, 69, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Legendary Helm
+        Rule(7, 70, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Red Wing Helm
+        Rule(7, 72, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Storm Jahad Helm
+        Rule(8, 62, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Scale Armor
+        Rule(8, 63, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Silk Armor
+        Rule(8, 64, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Sphinx Armor
+        Rule(8, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Violent Wind Armor
+        Rule(8, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Adamantine Armor
+        Rule(8, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Dragon Armor
+        Rule(8, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Guardian Armor
+        Rule(8, 69, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Legendary Armor
+        Rule(8, 70, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Red Wing Armor
+        Rule(8, 71, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Atlans Armor
+        Rule(8, 72, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Storm Jahad Armor
+        Rule(9, 62, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Scale Pants
+        Rule(9, 63, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Silk Pants
+        Rule(9, 64, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Sphinx Pants
+        Rule(9, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Violent Wind Pants
+        Rule(9, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Adamantine Pants
+        Rule(9, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Dragon Pants
+        Rule(9, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Guardian Pants
+        Rule(9, 69, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Legendary Pants
+        Rule(9, 70, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Red Wing Pants
+        Rule(9, 71, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Atlans Pants
+        Rule(9, 72, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Storm Jahad Pants
+        Rule(10, 62, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Scale Gloves
+        Rule(10, 63, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Silk Gloves
+        Rule(10, 64, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Sphinx Gloves
+        Rule(10, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Violent Wind Gloves
+        Rule(10, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Adamantine Gloves
+        Rule(10, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Dragon Gloves
+        Rule(10, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Guardian Gloves
+        Rule(10, 69, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Legendary Gloves
+        Rule(10, 70, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Red Wing Gloves
+        Rule(10, 71, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Atlans Gloves
+        Rule(11, 62, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Scale Boots
+        Rule(11, 63, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Silk Boots
+        Rule(11, 64, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Sphinx Boots
+        Rule(11, 65, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Violent Wind Boots
+        Rule(11, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Adamantine Boots
+        Rule(11, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Dragon Boots
+        Rule(11, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Guardian Boots
+        Rule(11, 69, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Legendary Boots
+        Rule(11, 70, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Red Wing Boots
+        Rule(11, 71, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Atlans Boots
+        Rule(11, 72, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Lucky Storm Jahad Boots
         Rule(12, 7, Blocked.Repair), // Orb of Twisting Slash
         Rule(12, 8, Blocked.Repair), // Healing Orb
         Rule(12, 9, Blocked.Repair), // Orb of Greater Fortitude
@@ -147,6 +200,16 @@ public class ItemRules : InitializerBase
         Rule(13, 121, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Open Access Ticket to Chaos Castle
         Rule(13, 122, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Skeleton Transformation Ring
         Rule(13, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Skeleton
+        Rule(13, 135, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 1st Lucky Armor Ticket
+        Rule(13, 136, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 1st Lucky Pants Ticket
+        Rule(13, 137, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 1st Lucky Helm Ticket
+        Rule(13, 138, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 1st Lucky Gloves Ticket
+        Rule(13, 139, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 1st Lucky Boots Ticket
+        Rule(13, 140, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 2nd Lucky Armor Ticket
+        Rule(13, 141, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 2nd Lucky Pants Ticket
+        Rule(13, 142, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 2nd Lucky Helm Ticket
+        Rule(13, 143, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 2nd Lucky Gloves Ticket
+        Rule(13, 144, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // 2nd Lucky Boots Ticket
         Rule(14, 0, Blocked.Repair), // Apple
         Rule(14, 1, Blocked.Repair), // Small Healing Potion
         Rule(14, 2, Blocked.Repair), // Healing Potion
@@ -215,6 +278,8 @@ public class ItemRules : InitializerBase
         Rule(14, 107, Blocked.Repair), // Fifth Secromicon Fragment
         Rule(14, 108, Blocked.Repair), // Sixth Secromicon Fragment
         Rule(14, 109, Blocked.Repair), // Complete Secromicon
+        Rule(14, 160, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Extension
+        Rule(14, 161, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Elevation
         Rule(15, 0, Blocked.Repair), // Scroll of Poison
         Rule(15, 1, Blocked.Repair), // Scroll of Meteorite
         Rule(15, 2, Blocked.Repair), // Scroll of Lighting

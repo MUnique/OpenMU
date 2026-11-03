@@ -2052,4 +2052,82 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Verfluchtes Burgwasser</value>
   </data>
+  <data name="SphinxHelm" xml:space="preserve">
+    <value>Sphinxhelm</value>
+  </data>
+  <data name="ViolentWindHelm" xml:space="preserve">
+    <value>Sturmwindhelm</value>
+  </data>
+  <data name="ViolentWindArmor" xml:space="preserve">
+    <value>Sturmwindrüstung</value>
+  </data>
+  <data name="ViolentWindPants" xml:space="preserve">
+    <value>Sturmwindhose</value>
+  </data>
+  <data name="ViolentWindGloves" xml:space="preserve">
+    <value>Sturmwindhandschuhe</value>
+  </data>
+  <data name="ViolentWindBoots" xml:space="preserve">
+    <value>Sturmwindstiefel</value>
+  </data>
+  <data name="AtlansArmor" xml:space="preserve">
+    <value>Atlans-Rüstung</value>
+  </data>
+  <data name="AtlansPants" xml:space="preserve">
+    <value>Atlans-Hose</value>
+  </data>
+  <data name="AtlansGloves" xml:space="preserve">
+    <value>Atlans-Handschuhe</value>
+  </data>
+  <data name="AtlansBoots" xml:space="preserve">
+    <value>Atlans-Stiefel</value>
+  </data>
+  <data name="StormJahadHelm" xml:space="preserve">
+    <value>Sturm-Jahad-Helm</value>
+  </data>
+  <data name="StormJahadArmor" xml:space="preserve">
+    <value>Sturm-Jahad-Rüstung</value>
+  </data>
+  <data name="StormJahadPants" xml:space="preserve">
+    <value>Sturm-Jahad-Hose</value>
+  </data>
+  <data name="StormJahadBoots" xml:space="preserve">
+    <value>Sturm-Jahad-Stiefel</value>
+  </data>
+  <data name="FirstLuckyArmorTicket" xml:space="preserve">
+    <value>1. Glücksticket: Rüstung</value>
+  </data>
+  <data name="FirstLuckyPantsTicket" xml:space="preserve">
+    <value>1. Glücksticket: Hose</value>
+  </data>
+  <data name="FirstLuckyHelmTicket" xml:space="preserve">
+    <value>1. Glücksticket: Helm</value>
+  </data>
+  <data name="FirstLuckyGlovesTicket" xml:space="preserve">
+    <value>1. Glücksticket: Handschuhe</value>
+  </data>
+  <data name="FirstLuckyBootsTicket" xml:space="preserve">
+    <value>1. Glücksticket: Stiefel</value>
+  </data>
+  <data name="SecondLuckyArmorTicket" xml:space="preserve">
+    <value>2. Glücksticket: Rüstung</value>
+  </data>
+  <data name="SecondLuckyPantsTicket" xml:space="preserve">
+    <value>2. Glücksticket: Hose</value>
+  </data>
+  <data name="SecondLuckyHelmTicket" xml:space="preserve">
+    <value>2. Glücksticket: Helm</value>
+  </data>
+  <data name="SecondLuckyGlovesTicket" xml:space="preserve">
+    <value>2. Glücksticket: Handschuhe</value>
+  </data>
+  <data name="SecondLuckyBootsTicket" xml:space="preserve">
+    <value>2. Glücksticket: Stiefel</value>
+  </data>
+  <data name="JewelOfExtension" xml:space="preserve">
+    <value>Juwel der Erweiterung</value>
+  </data>
+  <data name="JewelOfElevation" xml:space="preserve">
+    <value>Juwel der Erhebung</value>
+  </data>
 </root>

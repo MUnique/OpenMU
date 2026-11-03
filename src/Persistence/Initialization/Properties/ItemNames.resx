@@ -2124,4 +2124,82 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Cursed Castle Water</value>
   </data>
+  <data name="SphinxHelm" xml:space="preserve">
+    <value>Sphinx Helm</value>
+  </data>
+  <data name="ViolentWindHelm" xml:space="preserve">
+    <value>Violent Wind Helm</value>
+  </data>
+  <data name="ViolentWindArmor" xml:space="preserve">
+    <value>Violent Wind Armor</value>
+  </data>
+  <data name="ViolentWindPants" xml:space="preserve">
+    <value>Violent Wind Pants</value>
+  </data>
+  <data name="ViolentWindGloves" xml:space="preserve">
+    <value>Violent Wind Gloves</value>
+  </data>
+  <data name="ViolentWindBoots" xml:space="preserve">
+    <value>Violent Wind Boots</value>
+  </data>
+  <data name="AtlansArmor" xml:space="preserve">
+    <value>Atlans Armor</value>
+  </data>
+  <data name="AtlansPants" xml:space="preserve">
+    <value>Atlans Pants</value>
+  </data>
+  <data name="AtlansGloves" xml:space="preserve">
+    <value>Atlans Gloves</value>
+  </data>
+  <data name="AtlansBoots" xml:space="preserve">
+    <value>Atlans Boots</value>
+  </data>
+  <data name="StormJahadHelm" xml:space="preserve">
+    <value>Storm Jahad Helm</value>
+  </data>
+  <data name="StormJahadArmor" xml:space="preserve">
+    <value>Storm Jahad Armor</value>
+  </data>
+  <data name="StormJahadPants" xml:space="preserve">
+    <value>Storm Jahad Pants</value>
+  </data>
+  <data name="StormJahadBoots" xml:space="preserve">
+    <value>Storm Jahad Boots</value>
+  </data>
+  <data name="FirstLuckyArmorTicket" xml:space="preserve">
+    <value>1st Lucky Armor Ticket</value>
+  </data>
+  <data name="FirstLuckyPantsTicket" xml:space="preserve">
+    <value>1st Lucky Pants Ticket</value>
+  </data>
+  <data name="FirstLuckyHelmTicket" xml:space="preserve">
+    <value>1st Lucky Helm Ticket</value>
+  </data>
+  <data name="FirstLuckyGlovesTicket" xml:space="preserve">
+    <value>1st Lucky Gloves Ticket</value>
+  </data>
+  <data name="FirstLuckyBootsTicket" xml:space="preserve">
+    <value>1st Lucky Boots Ticket</value>
+  </data>
+  <data name="SecondLuckyArmorTicket" xml:space="preserve">
+    <value>2nd Lucky Armor Ticket</value>
+  </data>
+  <data name="SecondLuckyPantsTicket" xml:space="preserve">
+    <value>2nd Lucky Pants Ticket</value>
+  </data>
+  <data name="SecondLuckyHelmTicket" xml:space="preserve">
+    <value>2nd Lucky Helm Ticket</value>
+  </data>
+  <data name="SecondLuckyGlovesTicket" xml:space="preserve">
+    <value>2nd Lucky Gloves Ticket</value>
+  </data>
+  <data name="SecondLuckyBootsTicket" xml:space="preserve">
+    <value>2nd Lucky Boots Ticket</value>
+  </data>
+  <data name="JewelOfExtension" xml:space="preserve">
+    <value>Jewel of Extension</value>
+  </data>
+  <data name="JewelOfElevation" xml:space="preserve">
+    <value>Jewel of Elevation</value>
+  </data>
 </root>

@@ -129,4 +129,7 @@
   <data name="GemstoneRefinery" xml:space="preserve">
     <value>原石提炼</value>
   </data>
+  <data name="LuckyItemExchange" xml:space="preserve">
+    <value>幸运装备兑换</value>
+  </data>
 </root>

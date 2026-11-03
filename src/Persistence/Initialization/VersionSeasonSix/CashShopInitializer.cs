@@ -73,6 +73,19 @@ internal sealed class CashShopInitializer : InitializerBase
         this.AddPackages(configuration);
     }
 
+    /// <summary>
+    /// Determines whether the configuration uses the cash shop script which comes with the game client,
+    /// so that its product sequences identify the products which this initializer creates.
+    /// </summary>
+    /// <param name="configuration">The cash shop configuration.</param>
+    /// <returns><c>true</c>, if the configuration uses the script of the game client.</returns>
+    internal static bool UsesClientScript(CashShopConfiguration configuration)
+    {
+        return configuration.ScriptSaleZone == ScriptSaleZone
+               && configuration.ScriptYear == ScriptYear
+               && configuration.ScriptYearId == ScriptYearId;
+    }
+
     private void AddPackages(CashShopConfiguration configuration)
     {
         this.AddPackage(configuration, 413, LocalizedString.FromResource(() => CashShopPackageNames.GoldChannelTicket), 190, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)

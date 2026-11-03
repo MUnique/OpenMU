@@ -415,4 +415,10 @@
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>补充恶魔广场、血色城堡、幻影寺院和赤色要塞的自由入场券，可进入任意等级的活动。包含这些入场券的游戏商城礼包将开始出售。</value>
   </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加幸运装备</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加幸运套装、幸运装备兑换券以及延长宝石和提升宝石。精灵之地的大卫可将兑换券兑换为适合角色职业的幸运装备。包含兑换券的游戏商城礼包将开始出售。</value>
+  </data>
 </root>
