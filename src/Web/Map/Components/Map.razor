@@ -21,6 +21,7 @@
                     </div>
                 </div>
             </div>
+            <MapMonsterFilter ServerId="@this.Server.Id" MapId="@this.MapId" OnSelectObject="@SelectPlayerAsync"/>
             <div>
                 <MapPlayerList MapController="@this._controller" ServerId="@this.Server.Id" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer" OnSelectPlayer="@SelectPlayerAsync"/>
             </div>

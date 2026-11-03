@@ -110,3 +110,23 @@ function SelectMapObject(serverId, mapId, objectId) {
     }
     return false;
 }
+
+// Shows only the monsters whose name matches the text (mode: 0 = contains, 1 = starts with,
+// 2 = ends with); an empty text shows all monsters again.
+function SetMapMonsterFilter(serverId, mapId, mode, text) {
+    var app = window.mapApps && window.mapApps[serverId] && window.mapApps[serverId][mapId];
+    if (app && app.setMonsterFilter) {
+        app.setMonsterFilter(mode, text);
+        return true;
+    }
+    return false;
+}
+
+// Gets the monsters which match the monster filter, with their name and position.
+function GetMapMonsterFilterMatches(serverId, mapId) {
+    var app = window.mapApps && window.mapApps[serverId] && window.mapApps[serverId][mapId];
+    if (app && app.getMonsterFilterMatches) {
+        return app.getMonsterFilterMatches();
+    }
+    return [];
+}

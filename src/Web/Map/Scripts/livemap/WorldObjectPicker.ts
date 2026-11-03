@@ -81,8 +81,20 @@ export class WorldObjectPicker {
         this.mouse.y = -(offsetY / this.worldCanvas.clientHeight) * 2 + 1;
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
+        // The raycaster also hits hidden objects, e.g. the monsters which the monster filter hides.
         const intersects = this.raycaster.intersectObjects(this.worldMesh.children, true);
-        return intersects.length ? this.extractObjectData(intersects[0]) : null;
+        const visibleIntersection = intersects.find((intersection) => this.isVisible(intersection.object));
+        return visibleIntersection ? this.extractObjectData(visibleIntersection) : null;
+    }
+
+    private isVisible(obj: THREE.Object3D | null): boolean {
+        while (obj) {
+            if (!obj.visible) {
+                return false;
+            }
+            obj = obj.parent;
+        }
+        return true;
     }
 
     private extractObjectData(intersection: THREE.Intersection): ObjectData | null {

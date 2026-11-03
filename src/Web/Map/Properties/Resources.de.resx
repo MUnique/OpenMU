@@ -174,4 +174,28 @@
   <data name="AnalyzeTraffic" xml:space="preserve">
     <value>Netzwerkverkehr analysieren</value>
   </data>
+  <data name="ClearFilter" xml:space="preserve">
+    <value>Filter löschen</value>
+  </data>
+  <data name="FilterContains" xml:space="preserve">
+    <value>enthält</value>
+  </data>
+  <data name="FilterEndsWith" xml:space="preserve">
+    <value>endet mit</value>
+  </data>
+  <data name="FilterMonsters" xml:space="preserve">
+    <value>Monster filtern</value>
+  </data>
+  <data name="FilterMonstersPlaceholder" xml:space="preserve">
+    <value>Name oder Teil davon</value>
+  </data>
+  <data name="FilterStartsWith" xml:space="preserve">
+    <value>beginnt mit</value>
+  </data>
+  <data name="MatchingMonsters" xml:space="preserve">
+    <value>{0} passende Monster</value>
+  </data>
+  <data name="NoMatchingMonsters" xml:space="preserve">
+    <value>Kein passendes Monster auf dieser Karte</value>
+  </data>
 </root>
