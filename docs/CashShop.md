@@ -298,9 +298,9 @@ and 13/121 Chaos Castle, which isn't in the catalog) are created by
 `EventTicketItems` and set as *Free Ticket Item* of their mini game definitions,
 which can be changed in the admin panel. They allow to enter the event of any
 level, instead of its regular ticket, which is preferred when the player has
-both. Each entry costs one durability, and a ticket holds up to ten entries, like
-in the client. The package with ten tickets delivers one ticket with ten entries.
-The tickets can't be traded, dropped or sold.
+both. Each entry costs one durability, and a ticket holds up to ten entries,
+like in the client. The package with ten tickets delivers one ticket with ten
+entries. The tickets can't be traded, dropped or sold.
 The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing
 configuration, sets them as free tickets of the mini games which have none, and
 puts their packages on sale.
