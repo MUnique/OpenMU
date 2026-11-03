@@ -2079,6 +2079,21 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>生魂广场自由入场券</value>
   </data>
+  <data name="ResetFruitStrength" xml:space="preserve">
+    <value>力量重置果实</value>
+  </data>
+  <data name="ResetFruitAgility" xml:space="preserve">
+    <value>敏捷重置果实</value>
+  </data>
+  <data name="ResetFruitVitality" xml:space="preserve">
+    <value>体力重置果实</value>
+  </data>
+  <data name="ResetFruitEnergy" xml:space="preserve">
+    <value>智力重置果实</value>
+  </data>
+  <data name="ResetFruitCommand" xml:space="preserve">
+    <value>统率重置果实</value>
+  </data>
   <data name="DevilSquareFreeTicket" xml:space="preserve">
     <value>恶魔广场自由入场券</value>
   </data>

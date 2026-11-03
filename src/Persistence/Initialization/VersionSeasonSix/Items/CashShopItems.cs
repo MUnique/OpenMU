@@ -32,18 +32,42 @@ internal class CashShopItems : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreateItem(91, LocalizedString.FromResource(() => ItemNames.SummonerCharacterCard));
-        this.CreateItem(162, LocalizedString.FromResource(() => ItemNames.MagicBackpack));
-        this.CreateItem(163, LocalizedString.FromResource(() => ItemNames.VaultExpansionCertificate));
-        this.CreateItem(169, LocalizedString.FromResource(() => ItemNames.RageFighterCharacterCard));
+        this.CreateItem(14, 91, LocalizedString.FromResource(() => ItemNames.SummonerCharacterCard));
+        this.CreateItem(14, 162, LocalizedString.FromResource(() => ItemNames.MagicBackpack));
+        this.CreateItem(14, 163, LocalizedString.FromResource(() => ItemNames.VaultExpansionCertificate));
+        this.CreateItem(14, 169, LocalizedString.FromResource(() => ItemNames.RageFighterCharacterCard));
+        this.CreateResetFruits();
     }
 
-    private void CreateItem(byte number, LocalizedString name)
+    /// <summary>
+    /// Creates the reset fruits, which don't exist yet. A reset fruit takes back invested points of one stat
+    /// and returns them as level up points. Each durability takes back ten points, and like in the client,
+    /// a fruit has a durability of up to 100.
+    /// The rules which block trading and selling them are applied by the <see cref="ItemRules"/>.
+    /// </summary>
+    /// <returns>The created items.</returns>
+    internal IReadOnlyList<ItemDefinition> CreateResetFruits()
     {
-        const byte group = 14;
+        const byte group = 13;
+        var fruits = new[]
+            {
+                this.CreateItem(group, 54, LocalizedString.FromResource(() => ItemNames.ResetFruitStrength)),
+                this.CreateItem(group, 55, LocalizedString.FromResource(() => ItemNames.ResetFruitAgility)),
+                this.CreateItem(group, 56, LocalizedString.FromResource(() => ItemNames.ResetFruitVitality)),
+                this.CreateItem(group, 57, LocalizedString.FromResource(() => ItemNames.ResetFruitEnergy)),
+                this.CreateItem(group, 58, LocalizedString.FromResource(() => ItemNames.ResetFruitCommand)),
+            }
+            .OfType<ItemDefinition>()
+            .ToList();
+        fruits.ForEach(fruit => fruit.Durability = CashShopInitializer.ResetFruitDurability);
+        return fruits;
+    }
+
+    private ItemDefinition? CreateItem(byte group, short number, LocalizedString name)
+    {
         if (this.GameConfiguration.Items.Any(item => item.Group == group && item.Number == number))
         {
-            return;
+            return null;
         }
 
         var item = this.Context.CreateNew<ItemDefinition>();
@@ -55,5 +79,6 @@ internal class CashShopItems : InitializerBase
         item.Durability = 1;
         item.SetGuid(item.Group, item.Number);
         this.GameConfiguration.Items.Add(item);
+        return item;
     }
 }
