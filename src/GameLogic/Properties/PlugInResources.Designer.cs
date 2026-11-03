@@ -826,6 +826,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the elite healing potion consumption. It recovers the health immediately..
+        /// </summary>
+        public static string EliteHealingPotionConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EliteHealingPotionConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite Healing Potion Consume Handler.
+        /// </summary>
+        public static string EliteHealingPotionConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EliteHealingPotionConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the elite mana potion consumption. It recovers the mana immediately..
+        /// </summary>
+        public static string EliteManaPotionConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EliteManaPotionConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite Mana Potion Consume Handler.
+        /// </summary>
+        public static string EliteManaPotionConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EliteManaPotionConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the elite SD potion consumption. It recovers the shield immediately..
+        /// </summary>
+        public static string EliteShieldPotionConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EliteShieldPotionConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite SD Potion Consume Handler.
+        /// </summary>
+        public static string EliteShieldPotionConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EliteShieldPotionConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ends the duel when one of the duelists leaves the duel map. If a spectator leaves the duel map, it&apos;s removed from the spectator list, too..
         /// </summary>
         public static string EndDuelWhenLeavingDuelMapPlugIn_Description {
@@ -1857,6 +1911,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MediumComplexPotionConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("MediumComplexPotionConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately..
+        /// </summary>
+        public static string MediumEliteHealingPotionConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MediumEliteHealingPotionConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium Elite Healing Potion Consume Handler.
+        /// </summary>
+        public static string MediumEliteHealingPotionConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MediumEliteHealingPotionConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4914,6 +4986,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption text.</summary>
         public static string BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption => ResourceManager.GetString("BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerPlugIn_Name text.</summary>
+        public static string KalimaTicketConsumeHandlerPlugIn_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerPlugIn_Description text.</summary>
+        public static string KalimaTicketConsumeHandlerPlugIn_Description => ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name text.</summary>
+        public static string KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name text.</summary>
+        public static string KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name", resourceCulture)!;
 
         /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name text.</summary>
         public static string SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name", resourceCulture)!;

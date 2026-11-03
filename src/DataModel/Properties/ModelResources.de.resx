@@ -1923,6 +1923,12 @@
   <data name="MixResult_ThirdWingsDowngradedRandom_Caption" xml:space="preserve">
     <value>Flügel der 3. Stufe, zufällig herabgestuft</value>
   </data>
+  <data name="MixResult_DisappearAndProtectReferencedItems_Caption" xml:space="preserve">
+    <value>Verschwindet und schützt referenzierte Gegenstände</value>
+  </data>
+  <data name="MixResult_DisappearAndProtectReferencedItems_Description" xml:space="preserve">
+    <value>Der Gegenstand verschwindet. Schlägt die Kombination fehl, bleiben die referenzierten Gegenstände (z.B. der Gegenstand einer Verbesserung) unverändert.</value>
+  </data>
   <data name="ModelResourceProvider_TypeCaption" xml:space="preserve">
     <value>Modell-Ressourcenanbieter</value>
   </data>
