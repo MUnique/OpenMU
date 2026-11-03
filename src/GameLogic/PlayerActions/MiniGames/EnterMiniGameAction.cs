@@ -264,7 +264,7 @@ public class EnterMiniGameAction
         }
 
         // The regular ticket is preferred, because the free ticket is usually bought.
-        ticketItem = FreeTicketItems.Find(player, miniGameDefinition.Type, gameTicketInventoryIndex);
+        ticketItem = FreeTicketItems.Find(player, miniGameDefinition, gameTicketInventoryIndex);
         return ticketItem is not null;
     }
 

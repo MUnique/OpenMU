@@ -65,6 +65,7 @@ public class AddFreeTicketItemsUpdatePlugIn : UpdatePlugInBase
     {
         var addedItems = new EventTicketItems(context, gameConfiguration).CreateFreeTicketItems();
         ItemRules.Apply(addedItems);
+        EventTicketItems.AssignFreeTicketItems(gameConfiguration);
         AssignCashShopProducts(gameConfiguration);
         return ValueTask.CompletedTask;
     }

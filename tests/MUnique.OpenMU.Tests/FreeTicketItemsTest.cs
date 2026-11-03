@@ -18,23 +18,23 @@ public class FreeTicketItemsTest
     private const byte UndefinedTicketSlot = 0xFF;
 
     /// <summary>
-    /// Tests that each mini game accepts its own free ticket, but not the free ticket of another mini game.
+    /// Tests that a mini game accepts its own free ticket, but not the free ticket of another mini game.
     /// </summary>
-    /// <param name="miniGameType">The type of the mini game.</param>
-    /// <param name="ticketNumber">The number of its free ticket.</param>
-    [TestCase(MiniGameType.DevilSquare, 46)]
-    [TestCase(MiniGameType.BloodCastle, 47)]
-    [TestCase(MiniGameType.IllusionTemple, 61)]
-    [TestCase(MiniGameType.ChaosCastle, 121)]
-    public async Task MiniGameAcceptsItsFreeTicketAsync(MiniGameType miniGameType, short ticketNumber)
+    [Test]
+    public async Task MiniGameAcceptsItsFreeTicketAsync()
     {
+        var devilSquareTicket = CreateDefinition(46);
+        var bloodCastleTicket = CreateDefinition(47);
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var ticket = await AddItemAsync(player, 12, 13, ticketNumber, 1).ConfigureAwait(false);
+        var ticket = await AddItemAsync(player, 12, devilSquareTicket, 1).ConfigureAwait(false);
 
-        Assert.That(FreeTicketItems.Find(player, miniGameType, UndefinedTicketSlot), Is.SameAs(ticket));
-        Assert.That(FreeTicketItems.Find(player, miniGameType, 12), Is.SameAs(ticket));
-        var otherType = miniGameType == MiniGameType.DevilSquare ? MiniGameType.BloodCastle : MiniGameType.DevilSquare;
-        Assert.That(FreeTicketItems.Find(player, otherType, UndefinedTicketSlot), Is.Null);
+        var devilSquare = new MiniGameDefinition { FreeTicketItem = devilSquareTicket };
+        Assert.That(FreeTicketItems.Find(player, devilSquare, UndefinedTicketSlot), Is.SameAs(ticket));
+        Assert.That(FreeTicketItems.Find(player, devilSquare, 12), Is.SameAs(ticket));
+
+        var bloodCastle = new MiniGameDefinition { FreeTicketItem = bloodCastleTicket };
+        Assert.That(FreeTicketItems.Find(player, bloodCastle, UndefinedTicketSlot), Is.Null);
+        Assert.That(FreeTicketItems.Find(player, bloodCastle, 12), Is.Null);
     }
 
     /// <summary>
@@ -44,12 +44,14 @@ public class FreeTicketItemsTest
     [Test]
     public async Task UsedUpTicketIsIgnoredAsync()
     {
+        var ticketDefinition = CreateDefinition(46);
+        var devilSquare = new MiniGameDefinition { FreeTicketItem = ticketDefinition };
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        await AddItemAsync(player, 12, 13, 46, 0).ConfigureAwait(false);
-        Assert.That(FreeTicketItems.Find(player, MiniGameType.DevilSquare, 12), Is.Null);
+        await AddItemAsync(player, 12, ticketDefinition, 0).ConfigureAwait(false);
+        Assert.That(FreeTicketItems.Find(player, devilSquare, 12), Is.Null);
 
-        var ticket = await AddItemAsync(player, 13, 13, 46, 3).ConfigureAwait(false);
-        Assert.That(FreeTicketItems.Find(player, MiniGameType.DevilSquare, 12), Is.SameAs(ticket));
+        var ticket = await AddItemAsync(player, 13, ticketDefinition, 3).ConfigureAwait(false);
+        Assert.That(FreeTicketItems.Find(player, devilSquare, 12), Is.SameAs(ticket));
     }
 
     /// <summary>
@@ -59,16 +61,21 @@ public class FreeTicketItemsTest
     public async Task MiniGameWithoutFreeTicketAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        await AddItemAsync(player, 12, 13, 46, 1).ConfigureAwait(false);
+        await AddItemAsync(player, 12, CreateDefinition(46), 1).ConfigureAwait(false);
 
-        Assert.That(FreeTicketItems.Find(player, MiniGameType.ImperialGuardian, UndefinedTicketSlot), Is.Null);
+        Assert.That(FreeTicketItems.Find(player, new MiniGameDefinition(), UndefinedTicketSlot), Is.Null);
     }
 
-    private static async Task<Item> AddItemAsync(GameLogic.Player player, byte slot, byte group, short number, byte durability)
+    private static ItemDefinition CreateDefinition(short number)
+    {
+        return new ItemDefinition { Group = 13, Number = number, Width = 1, Height = 1, Durability = 10 };
+    }
+
+    private static async Task<Item> AddItemAsync(GameLogic.Player player, byte slot, ItemDefinition definition, byte durability)
     {
         var item = new Item
         {
-            Definition = new ItemDefinition { Group = group, Number = number, Width = 1, Height = 1, Durability = 1 },
+            Definition = definition,
             Durability = durability,
             ItemSlot = slot,
         };

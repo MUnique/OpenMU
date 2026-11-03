@@ -2644,6 +2644,7 @@ internal sealed class BasicModelConverter
         target.GameDuration = source.GameDuration;
         target.ExitDuration = source.ExitDuration;
         target.MaximumPlayerCount = source.MaximumPlayerCount;
+        target.MinimumPlayerCount = source.MinimumPlayerCount;
         target.SaveRankingStatistics = source.SaveRankingStatistics;
         target.RequiresMasterClass = source.RequiresMasterClass;
         target.MinimumCharacterLevel = source.MinimumCharacterLevel;
@@ -2656,6 +2657,7 @@ internal sealed class BasicModelConverter
         target.AllowParty = source.AllowParty;
         target.Entrance = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Entrance)!;
         target.TicketItem = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.TicketItem)!;
+        target.FreeTicketItem = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.FreeTicketItem)!;
         if (source.Rewards is { } rewardsItems)
         {
             foreach (var item in rewardsItems)
