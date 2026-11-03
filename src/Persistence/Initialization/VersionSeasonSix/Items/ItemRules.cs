@@ -206,6 +206,14 @@ public class ItemRules : InitializerBase
         Rule(13, 104, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max AG Boost Aura
         Rule(13, 105, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max SD Boost Aura
         Rule(13, 106, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Pet Unicorn
+        Rule(13, 107, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Lethal Wizard's Ring
+        Rule(13, 109, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Sapphire Ring
+        Rule(13, 110, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Ruby Ring
+        Rule(13, 111, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Topaz Ring
+        Rule(13, 112, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Amethyst Ring
+        Rule(13, 113, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Ruby Necklace
+        Rule(13, 114, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Emerald Necklace
+        Rule(13, 115, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Sapphire Necklace
         Rule(13, 121, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Open Access Ticket to Chaos Castle
         Rule(13, 122, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Skeleton Transformation Ring
         Rule(13, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Skeleton

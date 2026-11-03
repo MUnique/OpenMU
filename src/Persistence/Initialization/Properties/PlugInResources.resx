@@ -400,6 +400,12 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds the item stat profiles, which hold the item formulas (how requirements grow, what excellent and ancient items get more) as data, and gives each item the profile of its kind. The values the game computes stay the same; profiles which exist and items which have a profile are kept.</value>
   </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add cash shop rings and necklaces</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Lethal Wizard's Ring, the Sapphire, Ruby, Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces of the in-game shop, with their fixed bonuses. Their packages stay not for sale, because the shop sells them for a limited time, which isn't supported yet.</value>
+  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>Add crafting bonus percentage attribute</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>Adds the attribute which defines the percentage points which are added to the success rate of item craftings.</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Fix maximum item level of seed spheres</value></data>

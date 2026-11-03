@@ -136,6 +136,7 @@ Existing databases get the fruits with the optional configuration update *Add
 reset fruits*, which also puts their packages on sale. Each fruit is handled by its own plugin, for example *Reset Fruit of
 Strength Consume Handler*, which can be deactivated on the **Plugins** page. Its
 configuration there also sets the *Points per durability* (10 by default).
+
 ### Elite potions
 
 The elite potions recover a percentage of the maximum value immediately,
@@ -155,6 +156,29 @@ Potion Consume Handler*, on the **Plugins** page.
 
 Existing databases get the potions with the configuration update *Add elite
 potions*.
+
+### Rings and necklaces
+
+The rings and necklaces of the shop are defined as items with fixed bonuses,
+like the game client shows them. They can't be upgraded, traded, dropped or
+repaired. A player can sell them to an NPC, for example to get rid of one which
+wore out.
+
+| Item | Bonus |
+|---|---|
+| Lethal Wizard's Ring | damage +15%, wizardry damage +15%, attack speed +10 |
+| Sapphire Ring | automatic HP recovery 3%, maximum mana +4% |
+| Ruby Ring | automatic HP recovery 3%, maximum HP +4% |
+| Topaz Ring | automatic HP recovery 3%, zen from monsters +30% |
+| Amethyst Ring | automatic HP recovery 3%, damage decrease 4% |
+| Ruby Necklace | automatic HP recovery 3%, excellent damage rate +10% |
+| Emerald Necklace | automatic HP recovery 3%, attack speed +7 |
+| Sapphire Necklace | automatic HP recovery 3%, mana after hunting monsters +mana/8 |
+
+The shop sells them only for a limited time, so their packages can't be sold yet
+(see [product catalog](#product-catalog)). An administrator can still give them
+to a character. Existing databases get them with the configuration update *Add
+cash shop rings and necklaces*.
 
 ### Special items
 
@@ -199,6 +223,7 @@ repaired or upgraded with jewels. The exchange is configured as the crafting
 and the ticket packages with the configuration update *Add lucky items*. The
 refinery window of David, and the Jewel of Extension and Jewel of Elevation,
 don't have a function yet.
+
 ### Buff items
 
 Seals, scrolls, elixirs and auras are put into the inventory. When a player uses

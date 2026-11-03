@@ -1719,6 +1719,30 @@
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>熊猫变身指环</value>
   </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>巫师致命指环</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>蓝宝石指环</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>红宝石指环</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>黄宝石指环</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>紫水晶指环</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>红宝石项链</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>绿宝石项链</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>蓝宝石项链</value>
+  </data>
   <data name="PetPanda" xml:space="preserve">
     <value>熊猫</value>
   </data>
