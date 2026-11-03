@@ -2079,6 +2079,18 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>生魂广场自由入场券</value>
   </data>
+  <data name="DevilSquareFreeTicket" xml:space="preserve">
+    <value>恶魔广场自由入场券</value>
+  </data>
+  <data name="BloodCastleFreeTicket" xml:space="preserve">
+    <value>血色城堡自由入场券</value>
+  </data>
+  <data name="IllusionTempleFreeTicket" xml:space="preserve">
+    <value>幻影寺院自由入场券</value>
+  </data>
+  <data name="ChaosCastleFreeTicket" xml:space="preserve">
+    <value>赤色要塞自由入场券</value>
+  </data>
   <data name="MirrorOfDimensions" xml:space="preserve">
     <value>次元魔镜</value>
   </data>

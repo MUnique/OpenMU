@@ -28,6 +28,11 @@ public class ObjectsOutOfScopePlugIn : IObjectsOutOfScopePlugIn
     /// <param name="player">The player.</param>
     public ObjectsOutOfScopePlugIn(RemotePlayer player) => this._player = player;
 
+    /// <summary>
+    /// Gets the most objects one packet can carry: its length is a single byte.
+    /// </summary>
+    internal static int MaximumObjectsPerPacket { get; } = (byte.MaxValue - MapObjectOutOfScopeRef.GetRequiredSize(0)) / (MapObjectOutOfScopeRef.GetRequiredSize(1) - MapObjectOutOfScopeRef.GetRequiredSize(0));
+
     /// <inheritdoc/>
     public async ValueTask ObjectsOutOfScopeAsync(IEnumerable<IIdentifiable> objects)
     {
@@ -37,27 +42,31 @@ public class ObjectsOutOfScopePlugIn : IObjectsOutOfScopePlugIn
             return;
         }
 
-        var count = objects.Count();
-        int Write()
+        // The packet's length is a single byte: more objects than fit go in further packets. Otherwise the
+        // length wraps around and the client reads garbage, e.g. when 126 or more monsters leave the view at once.
+        var ids = objects.Select(o => o.GetId(this._player)).ToList();
+        for (var start = 0; start < ids.Count; start += MaximumObjectsPerPacket)
         {
-            var size = MapObjectOutOfScopeRef.GetRequiredSize(count);
-            var span = connection.Output.GetSpan(size)[..size];
-            var packet = new MapObjectOutOfScopeRef(span)
+            var chunk = ids.GetRange(start, Math.Min(MaximumObjectsPerPacket, ids.Count - start));
+            int Write()
             {
-                ObjectCount = (byte)count,
-            };
+                var size = MapObjectOutOfScopeRef.GetRequiredSize(chunk.Count);
+                var span = connection.Output.GetSpan(size)[..size];
+                var packet = new MapObjectOutOfScopeRef(span)
+                {
+                    ObjectCount = (byte)chunk.Count,
+                };
 
-            int i = 0;
-            foreach (var m in objects)
-            {
-                var objectId = packet[i];
-                objectId.Id = m.GetId(this._player);
-                i++;
+                for (var i = 0; i < chunk.Count; i++)
+                {
+                    var objectId = packet[i];
+                    objectId.Id = chunk[i];
+                }
+
+                return size;
             }
 
-            return size;
+            await connection.SendAsync(Write).ConfigureAwait(false);
         }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }
