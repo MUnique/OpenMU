@@ -134,6 +134,23 @@ public class GuildActionTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that a guild with an empty or whitespace-only name isn't created.
+    /// </summary>
+    /// <param name="guildName">The requested guild name.</param>
+    [TestCase("")]
+    [TestCase("   ")]
+    public async ValueTask GuildCreateWithEmptyNameIsRejectedAsync(string guildName)
+    {
+        var action = new GuildCreateAction();
+        await action.CreateGuildAsync(this._player, guildName, []).ConfigureAwait(false);
+        Assert.That(this._player.GuildStatus, Is.Null);
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()!)
+            .Verify(v => v!.ShowGuildCreateResultAsync(GuildCreateErrorDetail.GuildAlreadyExist), Times.Once());
+        var context = this.PersistenceContextProvider.CreateNewGuildContext();
+        Assert.That((await context.GetAsync<DataModel.Entities.Guild>().ConfigureAwait(false)).Any(g => g.Name == guildName), Is.False);
+    }
+
+    /// <summary>
     /// Tests if the guild list request gets answered correctly.
     /// </summary>
     [Test]

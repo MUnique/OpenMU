@@ -13,8 +13,10 @@ The client updates the Golden Archer interface with total registered count and r
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   10   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   14   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x94  | Packet header - packet type identifier |
 | 3 | 1 | Byte |  | Result |
 | 4 | 4 | IntegerLittleEndian |  | RegisteredCount |
-| 8 | 2 | ShortLittleEndian |  | RemainingInventoryCount |
+| 8 | 2 | ShortLittleEndian |  | RemainingInventoryCount; For the Lena event (Result = 1), the client interprets this as the first lottery (muto) number. |
+| 10 | 2 | ShortLittleEndian | 0xFFFF | MutoNumber2; The second lottery (muto) number for the Lena event; -1 if not available. |
+| 12 | 2 | ShortLittleEndian | 0xFFFF | MutoNumber3; The third lottery (muto) number for the Lena event; -1 if not available. |
