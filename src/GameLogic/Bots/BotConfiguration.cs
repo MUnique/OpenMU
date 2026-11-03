@@ -103,7 +103,7 @@ public class BotConfiguration
     public bool BotsPayResetCosts { get; set; }
 
     /// <summary>
-    /// Gets or sets how many Jewels of Bless, Soul and Life a bot keeps of each kind. Bots only pick up
+    /// Gets or sets how many Jewels of Bless, Soul, Life and Chaos a bot keeps of each kind. Bots only pick up
     /// the jewels they can actually spend on their own gear (see <c>BotJewelHandler</c>) and stop
     /// collecting a kind once they hold this many; whatever they carry above it is sold on the next
     /// merchant visit. The sensible value depends entirely on the server's drop rates - on a high rate

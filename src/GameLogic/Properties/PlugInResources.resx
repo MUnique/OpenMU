@@ -1389,7 +1389,7 @@
   <data name="BotConfiguration_BotsPayResetCosts_Name" xml:space="preserve"><value>Bots pay reset costs</value></data>
   <data name="BotConfiguration_BotsPayResetCosts_Description" xml:space="preserve"><value>If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).</value></data>
   <data name="BotConfiguration_JewelStockPerKind_Name" xml:space="preserve"><value>Jewel stock per kind</value></data>
-  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
+  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life/Chaos a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve"><value>Potion stock (charges)</value></data>
   <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve"><value>How many healing and mana potion charges a bot buys up to at a merchant.</value></data>
   <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve"><value>Maps forbidden for bots</value></data>

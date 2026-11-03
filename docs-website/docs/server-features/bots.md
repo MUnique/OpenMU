@@ -79,11 +79,11 @@ The *Bots* feature plugin, in the "Feature Plugins" section of the
   random level and upgraded gear. Only affects bots which are generated from now
   on - an existing population keeps its state until it is regenerated (see
   `Reset bots`).
-- **`Jewel stock per kind`** — how many Jewels of Bless, Soul and Life a bot
-  keeps of each kind. Above it, it stops picking them up and sells what it
-  already carries. Depends on the server's drop rates: on high rates a small
-  stock keeps the backpack free, on low rates a larger one is never reached
-  anyway.
+- **`Jewel stock per kind`** — how many Jewels of Bless, Soul, Life and Chaos a
+  bot keeps of each kind (Chaos only with a lucky piece to mix). Above it, it
+  stops picking them up and sells what it already carries. Depends on the
+  server's drop rates: on high rates a small stock keeps the backpack free, on
+  low rates a larger one is never reached anyway.
 - **`Maps forbidden for bots`** — maps bots never warp to, picked from the
   configured maps: they don't hunt there, don't follow a party leader there and
   don't enter events held there, and a bot which logs in on one leaves it.

@@ -1405,7 +1405,7 @@
     <value>Juwelenvorrat pro Art</value>
   </data>
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
-    <value>Wie viele Juwelen des Segens/der Seele/des Lebens ein Bot von jeder Art behält; darüber hinaus hebt er sie nicht mehr auf und verkauft den Überschuss.</value>
+    <value>Wie viele Juwelen des Segens/der Seele/des Lebens/des Chaos ein Bot von jeder Art behält; darüber hinaus hebt er sie nicht mehr auf und verkauft den Überschuss.</value>
   </data>
   <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
     <value>Für Bots gesperrte Karten</value>

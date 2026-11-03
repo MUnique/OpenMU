@@ -1343,7 +1343,7 @@
     <value>每种宝石储备量</value>
   </data>
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
-    <value>机器人分别保留的祝福、灵魂、生命宝石数量；超过后停止拾取并出售多余部分。</value>
+    <value>机器人分别保留的祝福、灵魂、生命、混沌宝石数量；超过后停止拾取并出售多余部分。</value>
   </data>
   <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
     <value>禁止机器人前往的地图</value>
