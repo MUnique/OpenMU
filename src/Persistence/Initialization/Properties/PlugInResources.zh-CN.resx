@@ -403,6 +403,12 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
+  <data name="AddResetFruitsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加重置果实</value>
+  </data>
+  <data name="AddResetFruitsUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充力量、敏捷、体力、智力和统率重置果实，可收回某项属性已分配的点数并返还为升级点数。包含这些果实的游戏商城礼包将开始出售。</value>
+  </data>
   <data name="AddFreeTicketItemsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加活动自由入场券</value>
   </data>

@@ -285,6 +285,42 @@
   <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the fruit consumption.</value>
   </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Strength Consume Handler</value>
+  </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of strength, which takes back invested strength points and returns them as level up points.</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Agility Consume Handler</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of agility, which takes back invested agility points and returns them as level up points.</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Vitality Consume Handler</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of vitality, which takes back invested vitality points and returns them as level up points.</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Energy Consume Handler</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of energy, which takes back invested energy points and returns them as level up points.</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Command Consume Handler</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of command, which takes back invested command points and returns them as level up points.</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>Points per durability</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>The number of stat points which one durability of a reset fruit takes back.</value>
+  </data>
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Harmony Jewel Consume Handler</value>
   </data>
