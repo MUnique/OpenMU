@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 
@@ -24,7 +26,15 @@ public class CrystalSwordIceChanceTests
         await using var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var gameContext = (GameContext)attacker.GameContext;
         gameContext.Configuration.Maps.Single().BattleZone = new BattleZoneDefinition();
-        var iceSkill = new Skill { Number = 7, DamageType = DamageType.Physical };
+        // The skill needs initialized collections: when the attack roll hits, the damage calculation reads them.
+        var iceSkillMock = new Mock<Skill>();
+        iceSkillMock.SetupAllProperties();
+        iceSkillMock.Setup(s => s.AttributeRelationships).Returns(new List<AttributeRelationship>());
+        iceSkillMock.Setup(s => s.Requirements).Returns(new List<AttributeRequirement>());
+        iceSkillMock.Setup(s => s.ConsumeRequirements).Returns(new List<AttributeRequirement>());
+        var iceSkill = iceSkillMock.Object;
+        iceSkill.Number = 7;
+        iceSkill.DamageType = DamageType.Physical;
         gameContext.Configuration.Skills.Add(iceSkill);
 
         await using var target = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);

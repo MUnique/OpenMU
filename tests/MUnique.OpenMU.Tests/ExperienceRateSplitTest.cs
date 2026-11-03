@@ -159,6 +159,41 @@ public class ExperienceRateSplitTest
     }
 
     /// <summary>
+    /// Verifies that the <see cref="IPlayerGainedExperiencePlugIn"/>s get the experience of each party member, as for
+    /// a solo kill. That's how the trainable pets of the Dark Lord gain their share (see MUnique/OpenMU#1374).
+    /// A member at the maximum level without the master quest gains nothing, so it isn't reported.
+    /// </summary>
+    /// <param name="isMasterClass">Whether the members gain master experience.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async ValueTask PartyDistributionReportsGainedExperiencePerMemberAsync(bool isMasterClass)
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 3,
+            maximumMasterLevel: 200);
+        var gainingMember = await this.CreatePlayerAsync(context, level: isMasterClass ? (short)3 : (short)2, totalLevel: 3, isMasterClass).ConfigureAwait(false);
+        var maxedMember = await this.CreatePlayerAsync(context, level: 3, totalLevel: 3, isMasterClass: false).ConfigureAwait(false);
+        var plugIn = new ExperienceRecordingPlugIn();
+        context.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerGainedExperiencePlugIn>(plugIn);
+
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(gainingMember).ConfigureAwait(false);
+        await party.AddAsync(maxedMember).ConfigureAwait(false);
+        await gainingMember.AddObserverAsync(maxedMember).ConfigureAwait(false);
+
+        var killedObject = CreateKilledObject(level: 5).Object;
+        var shares = await party.DistributeExperienceAfterKillAsync(killedObject, gainingMember).ConfigureAwait(false);
+
+        Assert.That(plugIn.Gains, Has.Count.EqualTo(1));
+        Assert.That(plugIn.Gains[0].Player, Is.SameAs(gainingMember));
+        Assert.That(plugIn.Gains[0].Experience, Is.GreaterThan(0).And.EqualTo(shares.First(s => s.Player == gainingMember).Experience));
+        Assert.That(plugIn.Gains[0].KilledObject, Is.SameAs(killedObject));
+        Assert.That(plugIn.Gains[0].IsMasterExperience, Is.EqualTo(isMasterClass));
+    }
+
+    /// <summary>
     /// Verifies that a party member at the maximum level without the master quest still gets a
     /// money basis. It gains no experience, but the money drop is derived from that value, and a
     /// solo kill returns it too - so returning zero would leave it without any zen in a party.
@@ -376,6 +411,18 @@ public class ExperienceRateSplitTest
         mapInitializer.PlugInManager = gameServerContext.PlugInManager;
         mapInitializer.PathFinderPool = gameServerContext.PathFinderPool;
         return gameServerContext;
+    }
+
+    [Guid("9D3F1B72-5E8A-4C26-A0B4-7F1E3D5C9A68")]
+    private sealed class ExperienceRecordingPlugIn : IPlayerGainedExperiencePlugIn
+    {
+        public List<(Player Player, int Experience, IAttackable KilledObject, bool IsMasterExperience)> Gains { get; } = new();
+
+        public ValueTask PlayerGainedExperienceAsync(Player player, int experience, IAttackable killedObject, bool isMasterExperience)
+        {
+            this.Gains.Add((player, experience, killedObject, isMasterExperience));
+            return ValueTask.CompletedTask;
+        }
     }
 
     [Guid("4E2B9C61-7A3D-4F05-8B1E-2C6D9A0F5E37")]
