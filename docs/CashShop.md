@@ -303,7 +303,8 @@ like in the client. The package with ten tickets delivers one ticket with ten
 entries. The tickets can't be traded, dropped or sold.
 The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing
 configuration, sets them as free tickets of the mini games which have none, and
-puts their packages on sale.
+puts their packages on sale. It's optional, so a server owner who wants to keep
+these packages off sale can deselect it.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those
