@@ -42,7 +42,11 @@ public class AddElitePotionsUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInResources.AddElitePotionsUpdatePlugIn_Description;
 
     /// <inheritdoc />
-    public override bool IsMandatory => true;
+    /// <remarks>
+    /// The update puts packages of the in-game shop on sale, which a server owner may want to keep off sale,
+    /// so it can be deselected.
+    /// </remarks>
+    public override bool IsMandatory => false;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 02, 17, 0, 0, DateTimeKind.Utc);
