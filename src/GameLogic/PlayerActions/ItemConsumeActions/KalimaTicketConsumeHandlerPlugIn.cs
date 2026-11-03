@@ -31,16 +31,20 @@ public class KalimaTicketConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, ISuppo
     {
         if (!this.CheckPreconditions(player, item)
             || player.SelectedCharacter is not { } character
-            || player.CurrentMap is not { } currentMap
-            || KalimaGate.IsKalimaMap(currentMap.MapId))
+            || player.CurrentMap is not { } currentMap)
         {
+            return false;
+        }
+
+        if (KalimaGate.IsKalimaMap(currentMap.MapId))
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NoKalimaGateInKalima)).ConfigureAwait(false);
             return false;
         }
 
         var configuration = this.Configuration ??= new KalimaTicketConsumeHandlerConfiguration();
         var minimumLevels = character.IsSpecialCharacter() ? configuration.SpecialCharacterMinimumLevels : configuration.MinimumLevels;
-        var characterLevel = (int)player.Attributes![Stats.Level];
-        var kalimaLevel = Math.Min(minimumLevels.Count(minimumLevel => characterLevel >= minimumLevel), KalimaGate.MaximumLevel);
+        var kalimaLevel = GetKalimaLevel(minimumLevels, (int)player.Attributes![Stats.Level]);
         if (kalimaLevel == 0)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LevelTooLowToEnterMap)).ConfigureAwait(false);
@@ -58,4 +62,25 @@ public class KalimaTicketConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, ISuppo
 
     /// <inheritdoc />
     public object CreateDefaultConfig() => new KalimaTicketConsumeHandlerConfiguration();
+
+    /// <summary>
+    /// Gets the highest level of Kalima whose minimum character level the character reached.
+    /// The minimum levels don't need to be ordered, so a lower level of Kalima with a higher minimum doesn't count.
+    /// </summary>
+    /// <param name="minimumLevels">The minimum character levels of the levels of Kalima, starting at the first level.</param>
+    /// <param name="characterLevel">The character level.</param>
+    /// <returns>The level of Kalima, or 0 if the character didn't reach any minimum level.</returns>
+    private static int GetKalimaLevel(IList<int> minimumLevels, int characterLevel)
+    {
+        var kalimaLevel = 0;
+        for (var index = 0; index < Math.Min(minimumLevels.Count, KalimaGate.MaximumLevel); index++)
+        {
+            if (characterLevel >= minimumLevels[index])
+            {
+                kalimaLevel = index + 1;
+            }
+        }
+
+        return kalimaLevel;
+    }
 }

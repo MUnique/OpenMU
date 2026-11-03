@@ -219,6 +219,9 @@
   <data name="NoKalimaGateOnEventMap" xml:space="preserve">
     <value>Não é possível criar o portão de Kalima em um mapa de evento.</value>
   </data>
+  <data name="NoKalimaGateInKalima" xml:space="preserve">
+    <value>Não é possível criar o portão de Kalima dentro de Kalima.</value>
+  </data>
   <data name="NoKalimaGateInSafezone" xml:space="preserve">
     <value>Não é possível criar o portão de Kalima na área segura.</value>
   </data>
