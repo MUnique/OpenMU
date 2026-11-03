@@ -1091,7 +1091,7 @@ public static class AttackableExtensions
 
     /// <summary>
     /// Whether the <paramref name="defender"/> (a <see cref="Player"/>) should be "hit-shocked".
-    /// This will cause a pain animation to be displayed on his end, thus stunting his actions.
+    /// This will cause a pain animation to be displayed on the client, interrupting other actions.
     /// </summary>
     /// <param name="defender">The defending player.</param>
     /// <param name="damage">The damage caused.</param>
