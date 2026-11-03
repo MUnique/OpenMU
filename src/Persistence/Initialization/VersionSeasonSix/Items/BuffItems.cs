@@ -33,7 +33,7 @@ internal class BuffItems : InitializerBase
     private const byte ExperienceSealSubType = 24;
 
     /// <summary>
-    /// The sub type of the effects of the seals of healing and divinity.
+    /// The sub type of the effect of the seal of divinity.
     /// </summary>
     private const byte RecoverySealSubType = 13;
 
@@ -46,6 +46,15 @@ internal class BuffItems : InitializerBase
     /// The sub type of the effects of the scrolls of battle and strength.
     /// </summary>
     private const byte DamageRateScrollSubType = 14;
+
+    /// <summary>
+    /// The defense which the game client shows for the scroll of defense.
+    /// </summary>
+    /// <remarks>
+    /// The client adds it to the shown defense, which is the base defense. The final defense is half of the
+    /// base defense, so the final defense increases by half of this value, like for the Jack O'Lantern Cry.
+    /// </remarks>
+    private const float ScrollOfDefenseBaseDefense = 60f;
 
     private static readonly TimeSpan SealDuration = TimeSpan.FromMinutes(30);
 
@@ -80,10 +89,11 @@ internal class BuffItems : InitializerBase
         var items = new List<ItemDefinition?>
         {
             // Seals. Their experience rates only apply to the normal or to the master experience.
+            // The seals which change the experience share a sub type, so they don't stack.
             this.CreateItem(13, 43, 1, 1, () => ItemNames.SealOfAscension, MagicEffectNumber.SealAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 1.5f)),
             this.CreateItem(13, 44, 1, 1, () => ItemNames.SealOfWealth, MagicEffectNumber.SealWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 2f)),
-            this.CreateItem(13, 45, 1, 1, () => ItemNames.SealOfSustenance, MagicEffectNumber.SealSustenance, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 0f), Boost.Multiply(Stats.MasterExperienceRate, 0f)),
-            this.CreateItem(13, 62, 1, 1, () => ItemNames.SealOfHealing, MagicEffectNumber.SealOfHealing, RecoverySealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 1.5f), Boost.Add(Stats.HealthRecoveryMultiplier, 0.05f)),
+            this.CreateItem(13, 45, 1, 1, () => ItemNames.SealOfSustenance, MagicEffectNumber.SealSustenance, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 0f), Boost.Multiply(Stats.MasterExperienceRate, 0f), Boost.Multiply(Stats.BonusExperienceRate, 0f)),
+            this.CreateItem(13, 62, 1, 1, () => ItemNames.SealOfHealing, MagicEffectNumber.SealOfHealing, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 1.5f), Boost.Add(Stats.HealthRecoveryMultiplier, 0.05f)),
             this.CreateItem(13, 63, 1, 1, () => ItemNames.SealOfDivinity, MagicEffectNumber.SealOfDivinity, RecoverySealSubType, SealDuration, false, Boost.Add(Stats.ManaRecoveryMultiplier, 0.05f)),
             this.CreateItem(13, 93, 1, 1, () => ItemNames.MasterSealOfAscension, MagicEffectNumber.MasterSealOfAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 1.5f)),
             this.CreateItem(13, 94, 1, 1, () => ItemNames.MasterSealOfWealth, MagicEffectNumber.MasterSealOfWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 2f)),
@@ -94,8 +104,8 @@ internal class BuffItems : InitializerBase
 
             // Scrolls.
             this.CreateItem(14, 72, 2, 2, () => ItemNames.ScrollOfQuickness, MagicEffectNumber.ScrollOfQuickness, 67, ScrollDuration, true, Boost.Add(Stats.AttackSpeedAny, 15f)),
-            this.CreateItem(14, 73, 2, 2, () => ItemNames.ScrollOfDefense, MagicEffectNumber.ScrollOfDefense, 68, ScrollDuration, true, Boost.AddFinal(Stats.DefenseFinal, 60f / 2)),
-            this.CreateItem(14, 74, 2, 2, () => ItemNames.ScrollOfWrath, MagicEffectNumber.ScrollOfWrath, 69, ScrollDuration, true, Boost.Add(Stats.PhysicalBaseDmg, 30f)),
+            this.CreateItem(14, 73, 2, 2, () => ItemNames.ScrollOfDefense, MagicEffectNumber.ScrollOfDefense, 68, ScrollDuration, true, Boost.AddFinal(Stats.DefenseFinal, ScrollOfDefenseBaseDefense / 2)),
+            this.CreateItem(14, 74, 2, 2, () => ItemNames.ScrollOfWrath, MagicEffectNumber.ScrollOfWrath, 69, ScrollDuration, true, Boost.AddFinal(Stats.PhysicalBaseDmg, 30f)),
             this.CreateItem(14, 75, 2, 2, () => ItemNames.ScrollOfWizardry, MagicEffectNumber.ScrollOfWizardry, 70, ScrollDuration, true, Boost.Add(Stats.WizardryBaseDmg, 30f)),
             this.CreateItem(14, 76, 2, 2, () => ItemNames.ScrollOfHealth, MagicEffectNumber.ScrollOfHealth, 71, ScrollDuration, true, Boost.Add(Stats.MaximumHealth, 200f)),
             this.CreateItem(14, 77, 2, 2, () => ItemNames.ScrollOfMana, MagicEffectNumber.ScrollOfMana, 72, ScrollDuration, true, Boost.Add(Stats.MaximumMana, 300f)),

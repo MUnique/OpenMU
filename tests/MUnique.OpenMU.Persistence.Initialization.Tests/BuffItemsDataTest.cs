@@ -79,6 +79,25 @@ internal class BuffItemsDataTest
         Assert.That(seal.Durability, Is.EqualTo(5));
     }
 
+    /// <summary>
+    /// Tests that the update doesn't assign the items to the products of a custom in-game shop script,
+    /// because its product sequences may identify other products.
+    /// </summary>
+    [Test]
+    public async Task UpdateDoesNotAssignItemsToCustomScriptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        RemoveBuffItems(gameConfiguration);
+        var configuration = gameConfiguration.CashShopConfiguration!;
+        configuration.ScriptYearId++;
+
+        await new AddBuffItemsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Items.Count(IsBuffItem), Is.EqualTo(BuffItems.Length));
+        Assert.That(configuration.Packages.SelectMany(p => p.Products), Has.None.Matches<CashShopProduct>(p => p.ItemDefinition is { } item && IsBuffItem(item)));
+    }
+
     private static void RemoveBuffItems(GameConfiguration gameConfiguration)
     {
         foreach (var item in gameConfiguration.Items.Where(IsBuffItem).ToList())
@@ -99,14 +118,14 @@ internal class BuffItemsDataTest
         {
             AssertEffect(gameConfiguration, 13, 43, "Seal of Ascension", 1, 1, 0x1D, 24, 1800, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 13, 44, "Seal of Wealth", 1, 1, 0x1E, 24, 1800, (Stats.ExperienceRate, 2f, AggregateType.Multiplicate));
-            AssertEffect(gameConfiguration, 13, 45, "Seal of Sustenance", 1, 1, 0x1F, 24, 1800, (Stats.ExperienceRate, 0f, AggregateType.Multiplicate), (Stats.MasterExperienceRate, 0f, AggregateType.Multiplicate));
-            AssertEffect(gameConfiguration, 13, 62, "Seal of Healing", 1, 1, 87, 13, 1800, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.HealthRecoveryMultiplier, 0.05f, AggregateType.AddRaw));
+            AssertEffect(gameConfiguration, 13, 45, "Seal of Sustenance", 1, 1, 0x1F, 24, 1800, (Stats.ExperienceRate, 0f, AggregateType.Multiplicate), (Stats.MasterExperienceRate, 0f, AggregateType.Multiplicate), (Stats.BonusExperienceRate, 0f, AggregateType.Multiplicate));
+            AssertEffect(gameConfiguration, 13, 62, "Seal of Healing", 1, 1, 87, 24, 1800, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.HealthRecoveryMultiplier, 0.05f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 13, 63, "Seal of Divinity", 1, 1, 88, 13, 1800, (Stats.ManaRecoveryMultiplier, 0.05f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 13, 93, "Master Seal of Ascension", 1, 1, 101, 24, 1800, (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 13, 94, "Master Seal of Wealth", 1, 1, 102, 24, 1800, (Stats.MasterExperienceRate, 2f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 14, 72, "Scroll of Quickness", 2, 2, 0x2C, 67, 1800, (Stats.AttackSpeedAny, 15f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 14, 73, "Scroll of Defense", 2, 2, 0x2D, 68, 1800, (Stats.DefenseFinal, 30f, AggregateType.AddFinal));
-            AssertEffect(gameConfiguration, 14, 74, "Scroll of Wrath", 2, 2, 0x2E, 69, 1800, (Stats.PhysicalBaseDmg, 30f, AggregateType.AddRaw));
+            AssertEffect(gameConfiguration, 14, 74, "Scroll of Wrath", 2, 2, 0x2E, 69, 1800, (Stats.PhysicalBaseDmg, 30f, AggregateType.AddFinal));
             AssertEffect(gameConfiguration, 14, 75, "Scroll of Wizardry", 2, 2, 0x2F, 70, 1800, (Stats.WizardryBaseDmg, 30f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 14, 76, "Scroll of Health", 2, 2, 0x30, 71, 1800, (Stats.MaximumHealth, 200f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 14, 77, "Scroll of Mana", 2, 2, 0x31, 72, 1800, (Stats.MaximumMana, 300f, AggregateType.AddRaw));

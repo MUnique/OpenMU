@@ -155,7 +155,7 @@ buff icons are the ones which the game client shows for these items:
 |---|---|---|
 | Seal of Ascension | experience ×1.5 | 30 minutes |
 | Seal of Wealth | experience ×2 | 30 minutes |
-| Seal of Sustenance | no experience (also no master experience) | 30 minutes |
+| Seal of Sustenance | no experience (also no master or bonus experience) | 30 minutes |
 | Seal of Healing | experience ×1.5, automatic life recovery +5% | 30 minutes |
 | Seal of Divinity | automatic mana recovery +5% | 30 minutes |
 | Master Seal of Ascension | master experience ×1.5 | 30 minutes |
@@ -173,11 +173,12 @@ buff icons are the ones which the game client shows for these items:
 | Scroll of Healing | automatic life recovery +3%, maximum life +100 | 30 minutes |
 | Elixir of Strength, Agility, Health, Energy, Control | the stat +50 | 10 days |
 
-Only one seal of experience (Ascension, Wealth, Sustenance and the master seals)
-and one elixir is active at the same time; using another one replaces it. The
-same applies to the Seals of Healing and Divinity, and to the Scrolls of Battle
-and Strength. The buffs of seals, elixirs and auras stay when the character
-dies, the buffs of scrolls end.
+Only one seal of experience (Ascension, Wealth, Sustenance, Healing and the
+master seals) and one elixir is active at the same time; using another one
+replaces it. The same applies to the Scrolls of Battle and Strength. The Seal of
+Sustenance also blocks the bonus experience of pets and rings. The buffs of
+seals, elixirs and auras stay when the character dies, the buffs of scrolls end.
+All of these buffs end when the character leaves the game.
 
 :::note
 Not implemented yet: the higher item drop rate of the Seals of Wealth and

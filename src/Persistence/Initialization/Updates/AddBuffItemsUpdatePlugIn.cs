@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CashShop;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -122,10 +123,13 @@ public class AddBuffItemsUpdatePlugIn : UpdatePlugInBase
     /// <remarks>
     /// These products are limited in time, which the in-game shop can't deliver yet. So their packages stay
     /// not for sale, unless all of their products can be delivered.
+    /// The product sequences only identify these products in the script which comes with the game client,
+    /// so a configuration which uses a custom script stays untouched.
     /// </remarks>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration)
     {
-        if (gameConfiguration.CashShopConfiguration is not { } configuration)
+        if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration))
         {
             return;
         }

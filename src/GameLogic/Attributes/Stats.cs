@@ -269,7 +269,7 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     Double wield halving (averaging).
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Excellent lvl/20 option (pendant); wings damage option; harmony damage (min and max) option; gold fenrir damage bonus; <see cref="BaseDamageBonus"/>.
+    ///     Excellent lvl/20 option (pendant); wings damage option; harmony damage (min and max) option; gold fenrir damage bonus; <see cref="BaseDamageBonus"/>; Scroll of Wrath.
     /// </remarks>
     public static AttributeDefinition PhysicalBaseDmg { get; } = new(new Guid("DD1E13E4-BFFD-45B5-9B91-9080710324B2"), "Physical Base Damage (min and max)", string.Empty);
 
