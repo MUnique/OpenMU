@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -56,7 +57,7 @@ public class AddLuckyItemsUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override bool IsMandatory => true;
+    public override bool IsMandatory => false;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 02, 14, 0, 0, DateTimeKind.Utc);
@@ -91,10 +92,13 @@ public class AddLuckyItemsUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// Assigns the tickets to the products of the in-game shop, which were created without them.
     /// Their packages were initialized as not for sale then, so they're put on sale.
+    /// The product sequences only identify these products in the script which comes with the game client,
+    /// so a configuration which uses a custom script stays untouched.
     /// </summary>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration)
     {
-        if (gameConfiguration.CashShopConfiguration is not { } configuration)
+        if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration))
         {
             return;
         }

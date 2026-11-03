@@ -32,7 +32,7 @@ internal class LuckyItemsDataTest
     /// Tests that a new season 6 database contains the lucky items, David's exchange and the ticket packages on sale.
     /// </summary>
     [Test]
-    public async Task NewDatabaseContainsLuckyItemsAsync()
+    public async ValueTask NewDatabaseContainsLuckyItemsAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
@@ -45,7 +45,7 @@ internal class LuckyItemsDataTest
     /// created before they existed. Applying it twice doesn't add anything twice.
     /// </summary>
     [Test]
-    public async Task UpdateAddsLuckyItemsToExistingDatabaseAsync()
+    public async ValueTask UpdateAddsLuckyItemsToExistingDatabaseAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
@@ -63,7 +63,7 @@ internal class LuckyItemsDataTest
     /// window but no exchange yet.
     /// </summary>
     [Test]
-    public async Task UpdateRepairsPartialDataAsync()
+    public async ValueTask UpdateRepairsPartialDataAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
@@ -77,6 +77,27 @@ internal class LuckyItemsDataTest
 
         AssertLuckyItemData(gameConfiguration);
         Assert.That(gameConfiguration.Items.Where(item => item.Group == 13 && LuckyItems.IsLuckyItem(item)), Is.EquivalentTo(ticketsOnly));
+    }
+
+    /// <summary>
+    /// Tests that the update doesn't assign the tickets to the products of a custom in-game shop script,
+    /// because its product sequences may identify other products. The items and David's exchange are still added.
+    /// </summary>
+    [Test]
+    public async ValueTask UpdateDoesNotAssignTicketsToCustomScriptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        RemoveLuckyItems(gameConfiguration);
+        gameConfiguration.CashShopConfiguration!.ScriptYearId++;
+
+        await new AddLuckyItemsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Items.Count(LuckyItems.IsLuckyItem), Is.EqualTo(65));
+        Assert.That(gameConfiguration.Monsters.Single(m => m.Number == DavidNumber).ItemCraftings.Any(c => c.Number == TicketExchangeNumber), Is.True);
+        var packages = gameConfiguration.CashShopConfiguration.Packages.Where(p => TicketPackages.Contains(p.PackageSequence)).ToList();
+        Assert.That(packages.SelectMany(p => p.Products), Has.All.Matches<CashShopProduct>(p => p.ItemDefinition is null));
+        Assert.That(packages, Has.None.Matches<CashShopPackage>(p => p.IsForSale));
     }
 
     private static void RemoveLuckyItems(GameConfiguration gameConfiguration)
@@ -131,7 +152,7 @@ internal class LuckyItemsDataTest
         });
     }
 
-    private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()
+    private static async ValueTask<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());

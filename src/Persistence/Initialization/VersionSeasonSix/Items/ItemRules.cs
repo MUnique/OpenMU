@@ -273,6 +273,8 @@ public class ItemRules : InitializerBase
         Rule(14, 107, Blocked.Repair), // Fifth Secromicon Fragment
         Rule(14, 108, Blocked.Repair), // Sixth Secromicon Fragment
         Rule(14, 109, Blocked.Repair), // Complete Secromicon
+        Rule(14, 160, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Extension
+        Rule(14, 161, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Elevation
         Rule(15, 0, Blocked.Repair), // Scroll of Poison
         Rule(15, 1, Blocked.Repair), // Scroll of Meteorite
         Rule(15, 2, Blocked.Repair), // Scroll of Lighting
@@ -309,8 +311,6 @@ public class ItemRules : InitializerBase
         Rule(15, 34, Blocked.Repair), // Ignore Defense Parchment
         Rule(15, 35, Blocked.Repair), // Increase Health Parchment
         Rule(15, 36, Blocked.Repair), // Increase Block Parchment
-        Rule(14, 160, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Extension
-        Rule(14, 161, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Elevation
     };
 
     /// <inheritdoc />
