@@ -296,13 +296,14 @@ seals, scrolls and talismans, aren't defined in the item configuration yet.
 The free tickets (13/46 Devil Square, 13/47 Blood Castle, 13/61 Illusion Temple
 and 13/121 Chaos Castle, which isn't in the catalog) are created by
 `EventTicketItems` and set as *Free Ticket Item* of their mini game definitions,
-which can be changed in the admin panel. They allow to enter the event of any level, instead of its
-regular ticket, which is preferred when the player has both. Each entry costs one
-durability, and a ticket holds up to ten entries, like in the client. The package
-with ten tickets delivers one ticket with ten entries. The tickets can't be traded,
-dropped or sold.
-The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing configuration,
-sets them as free tickets of the mini games which have none, and puts their packages on sale.
+which can be changed in the admin panel. They allow to enter the event of any
+level, instead of its regular ticket, which is preferred when the player has
+both. Each entry costs one durability, and a ticket holds up to ten entries, like
+in the client. The package with ten tickets delivers one ticket with ten entries.
+The tickets can't be traded, dropped or sold.
+The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing
+configuration, sets them as free tickets of the mini games which have none, and
+puts their packages on sale.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those
