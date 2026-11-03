@@ -989,5 +989,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddItemPriceDefinitionsPlugIn_Description text.</summary>
         public static string AddItemPriceDefinitionsPlugIn_Description => ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddResetFruitsUpdatePlugIn_Name text.</summary>
+        public static string AddResetFruitsUpdatePlugIn_Name => ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddResetFruitsUpdatePlugIn_Description text.</summary>
+        public static string AddResetFruitsUpdatePlugIn_Description => ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Description", resourceCulture)!;
     }
 }

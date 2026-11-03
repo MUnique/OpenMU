@@ -226,6 +226,42 @@
   <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>处理果实的使用和消耗。</value>
   </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>力量重置果实使用</value>
+  </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理力量重置果实，收回已分配的力量点数并返还为升级点数。</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>敏捷重置果实使用</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理敏捷重置果实，收回已分配的敏捷点数并返还为升级点数。</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>体力重置果实使用</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理体力重置果实，收回已分配的体力点数并返还为升级点数。</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>智力重置果实使用</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理智力重置果实，收回已分配的智力点数并返还为升级点数。</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>统率重置果实使用</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理统率重置果实，收回已分配的统率点数并返还为升级点数。</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>每点耐久的点数</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>重置果实每点耐久收回的属性点数。</value>
+  </data>
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>再生宝石使用</value>
   </data>
