@@ -408,4 +408,6 @@
   <data name="AddItemPriceDefinitionsPlugIn_Description" xml:space="preserve"><value>This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment.</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve"><value>Add Crystal Sword Ice Chance</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve"><value>Adds the Crystal Sword ice chance, which turns an attack into an ice skill instead.</value></data>
+  <data name="AddFreeTicketItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add free event tickets</value></data>
+  <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the free tickets of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which allow to enter the event of any level. The packages of the in-game shop which contain them are put on sale.</value></data>
 </root>

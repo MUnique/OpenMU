@@ -850,4 +850,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>Fügt die Eis-Chance des Kristallschwerts hinzu, durch die ein Angriff stattdessen zu einer Eis-Fähigkeit wird.</value>
   </data>
+  <data name="AddFreeTicketItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Freie Event-Tickets hinzufügen</value>
+  </data>
+  <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt die freien Tickets für Devil Square, Blood Castle, Illusion Temple und Chaos Castle hinzu, mit denen man das Event jeder Stufe betreten kann. Die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
 </root>

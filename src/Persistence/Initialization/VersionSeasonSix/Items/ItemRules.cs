@@ -126,9 +126,12 @@ public class ItemRules : InitializerBase
         Rule(13, 40, Blocked.Repair), // Jack Olantern Ring
         Rule(13, 41, Blocked.Repair), // Transfer Christmas Ring
         Rule(13, 42, Blocked.Repair), // Ring of GM
+        Rule(13, 46, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Devil Square Ticket
+        Rule(13, 47, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Blood Castle Ticket
         Rule(13, 49, Blocked.Repair), // Old Scroll
         Rule(13, 50, Blocked.Repair), // Illusion Sorcerer Covenant
         Rule(13, 51, Blocked.Repair), // Scroll of Blood
+        Rule(13, 61, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Illusion Temple Ticket
         Rule(13, 64, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Demon
         Rule(13, 65, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Spirit of Guardian
         Rule(13, 67, Blocked.Repair), // Pet Rudolf
@@ -136,6 +139,7 @@ public class ItemRules : InitializerBase
         Rule(13, 76, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Panda Ring
         Rule(13, 80, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Panda
         Rule(13, 106, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Pet Unicorn
+        Rule(13, 121, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Open Access Ticket to Chaos Castle
         Rule(13, 122, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Skeleton Transformation Ring
         Rule(13, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Skeleton
         Rule(14, 0, Blocked.Repair), // Apple

@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("d0cd420d-3762-4348-9c86-9b56b26661de"), entityTypeCount: 129)
+            : base(skipDetectChanges: false, modelId: new Guid("f7f8b383-ff32-43f8-baec-11c76e079c81"), entityTypeCount: 129)
         {
         }
 
@@ -345,8 +345,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             MiniGameChangeEventEntityType.CreateForeignKey2(miniGameChangeEvent, monsterSpawnArea);
             MiniGameChangeEventEntityType.CreateForeignKey3(miniGameChangeEvent, monsterDefinition);
             MiniGameDefinitionEntityType.CreateForeignKey1(miniGameDefinition, exitGate);
-            MiniGameDefinitionEntityType.CreateForeignKey2(miniGameDefinition, gameConfiguration);
-            MiniGameDefinitionEntityType.CreateForeignKey3(miniGameDefinition, itemDefinition);
+            MiniGameDefinitionEntityType.CreateForeignKey2(miniGameDefinition, itemDefinition);
+            MiniGameDefinitionEntityType.CreateForeignKey3(miniGameDefinition, gameConfiguration);
+            MiniGameDefinitionEntityType.CreateForeignKey4(miniGameDefinition, itemDefinition);
             MiniGameRankingEntryEntityType.CreateForeignKey1(miniGameRankingEntry, character);
             MiniGameRankingEntryEntityType.CreateForeignKey2(miniGameRankingEntry, miniGameDefinition);
             MiniGameRewardEntityType.CreateForeignKey1(miniGameReward, dropItemGroup);

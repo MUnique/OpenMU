@@ -403,4 +403,10 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
+  <data name="AddFreeTicketItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加活动自由入场券</value>
+  </data>
+  <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充恶魔广场、血色城堡、幻影寺院和赤色要塞的自由入场券，可进入任意等级的活动。包含这些入场券的游戏商城礼包将开始出售。</value>
+  </data>
 </root>

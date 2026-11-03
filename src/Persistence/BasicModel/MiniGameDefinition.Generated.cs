@@ -124,6 +124,24 @@ public partial class MiniGameDefinition : MUnique.OpenMU.DataModel.Configuration
         set => base.TicketItem = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="FreeTicketItem" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("freeTicketItem")]
+    public ItemDefinition RawFreeTicketItem
+    {
+        get => base.FreeTicketItem as ItemDefinition;
+        set => base.FreeTicketItem = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition FreeTicketItem
+    {
+        get => base.FreeTicketItem;
+        set => base.FreeTicketItem = value;
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
