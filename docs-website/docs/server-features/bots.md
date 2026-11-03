@@ -84,6 +84,11 @@ The *Bots* feature plugin, in the "Feature Plugins" section of the
   already carries. Depends on the server's drop rates: on high rates a small
   stock keeps the backpack free, on low rates a larger one is never reached
   anyway.
+- **`Maps forbidden for bots`** — maps bots never warp to, picked from the
+  configured maps: they don't hunt there, don't follow a party leader there and
+  don't enter events held there, and a bot which logs in on one leaves it.
+  Players are not affected. Empty by default; servers use it for maps where bots
+  get in the players' way, like the Arena or Crywolf.
 - **`Potion stock charges`** — how many charges of healing and of mana potions a
   bot restocks to at a merchant. Depends on what the shops sell: a server whose
   potions come in stacks of 255 fills the target in a single purchase.

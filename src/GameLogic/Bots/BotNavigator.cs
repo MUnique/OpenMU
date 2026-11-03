@@ -2205,8 +2205,11 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {
-        if (this._player.SelectedCharacter is not { } character)
+        if (this._player.SelectedCharacter is not { } character
+            || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(mapDefinition) == true)
         {
+            // A map forbidden for bots has no legal warp at all: no hunting ground, no leader to follow
+            // there, no errand - and a bot which logged in on it treats it as illegal and leaves.
             return [];
         }
 
@@ -2277,6 +2280,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var homeMap = this._player.SelectedCharacter?.CharacterClass?.HomeMap;
         if (homeMap is null
             || homeMap.Number == this._player.CurrentMap?.Definition.Number
+            || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(homeMap) == true
             || homeMap.GetSafezoneGate() is not { } safezoneGate)
         {
             return false;

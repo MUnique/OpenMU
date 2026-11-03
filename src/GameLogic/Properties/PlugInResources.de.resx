@@ -1407,6 +1407,12 @@
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
     <value>Wie viele Juwelen des Segens/der Seele/des Lebens ein Bot von jeder Art behält; darüber hinaus hebt er sie nicht mehr auf und verkauft den Überschuss.</value>
   </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
+    <value>Für Bots gesperrte Karten</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
+    <value>Karten, auf die sich Bots nie teleportieren: dort jagen sie nicht, folgen keinem Gruppenleiter und nehmen an keinen Events teil; ein Bot, der sich dort anmeldet, verlässt sie. Spieler sind nicht betroffen.</value>
+  </data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve">
     <value>Trankvorrat (Ladungen)</value>
   </data>

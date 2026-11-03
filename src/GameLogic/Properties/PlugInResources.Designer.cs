@@ -4585,6 +4585,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotConfiguration_BotsPayResetCosts_Description text.</summary>
         public static string BotConfiguration_BotsPayResetCosts_Description => ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotConfiguration_MapsForbiddenForBots_Name text.</summary>
+        public static string BotConfiguration_MapsForbiddenForBots_Name => ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConfiguration_MapsForbiddenForBots_Description text.</summary>
+        public static string BotConfiguration_MapsForbiddenForBots_Description => ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotConfiguration_JewelStockPerKind_Name text.</summary>
         public static string BotConfiguration_JewelStockPerKind_Name => ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Name", resourceCulture)!;
 

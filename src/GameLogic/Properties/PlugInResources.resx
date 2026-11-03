@@ -1392,6 +1392,8 @@
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve"><value>Potion stock (charges)</value></data>
   <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve"><value>How many healing and mana potion charges a bot buys up to at a merchant.</value></data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve"><value>Maps forbidden for bots</value></data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve"><value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value></data>
   <data name="BotConfiguration_ProofOfConceptAccounts_Name" xml:space="preserve"><value>Extra accounts to animate</value></data>
   <data name="BotConfiguration_ProofOfConceptAccounts_Description" xml:space="preserve"><value>Comma separated login names of existing accounts to animate as bots, in addition to the generated population.</value></data>
   <data name="BotSelfDefensePlugIn_Name" xml:space="preserve"><value>Bot self defense</value></data>
