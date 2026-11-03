@@ -1,4 +1,4 @@
-// <copyright file="MiniGameRewardServiceTests.cs" company="MUnique">
+﻿// <copyright file="MiniGameRewardServiceTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -337,7 +337,7 @@ public class MiniGameRewardServiceTests
             var generator = new DefaultDropGenerator(player.GameContext.Configuration, Rand.GetRandomizer());
             var sample = (TemporaryItem)generator.GenerateItemDrop(group)!;
             Assert.That(sample.ItemOptions, Has.Count.EqualTo(1), "The real generator must exercise option conversion.");
-            var service = new MiniGameRewardService(miniGame, player.GameContext, player.CurrentMap!, () => generator, () => TimeSpan.Zero, () => null, NullLogger.Instance, miniGame);
+            var service = new MiniGameRewardService(miniGame, player.GameContext, player.CurrentMap!, () => generator, () => TimeSpan.Zero, () => null, _ => false, _ => false, NullLogger.Instance, miniGame);
             return new RewardWorld(player, storage, definition, option, reward, service, sample, createdItems);
         }
 

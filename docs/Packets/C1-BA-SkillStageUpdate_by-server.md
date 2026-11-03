@@ -15,6 +15,6 @@ The client may show the loading intensity.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xBA  | Packet header - packet type identifier |
-| 3 | 2 | ShortLittleEndian |  | ObjectId |
+| 3 | 2 | ShortBigEndian |  | ObjectId |
 | 5 | 1 | Byte | 0x28 | SkillNumber |
 | 6 | 1 | Byte |  | Stage |

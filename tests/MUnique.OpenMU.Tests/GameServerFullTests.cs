@@ -1,0 +1,696 @@
+// <copyright file="GameServerFullTests.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Tests;
+
+using System.Collections.Concurrent;
+using System.Net;
+using System.Threading;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Login;
+using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Tests that only logged in players take a place on a game server: a full server refuses the
+/// login, while connections which stay at the login screen don't count.
+/// </summary>
+[TestFixture]
+public class GameServerFullTests
+{
+    private const string Password = "pw";
+
+    private readonly List<GameServerContext> _contexts = new();
+
+    private Mock<ILoginServer> _loginServer = null!;
+
+    private Mock<IPlayerContext> _playerContext = null!;
+
+    /// <summary>
+    /// Sets up the mocks of a fresh game server.
+    /// </summary>
+    [SetUp]
+    public void SetUp()
+    {
+        this._loginServer = new Mock<ILoginServer>();
+        this._loginServer.Setup(l => l.TryLoginAsync(It.IsAny<string>(), It.IsAny<byte>())).ReturnsAsync(true);
+        this._playerContext = new Mock<IPlayerContext> { DefaultValue = DefaultValue.Mock };
+        this._playerContext
+            .Setup(c => c.AuthenticateAsync(It.IsAny<string>(), Password, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(AccountState.Normal);
+        this._playerContext
+            .Setup(c => c.GetAccountByLoginNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string loginName, CancellationToken _) => new Persistence.BasicModel.Account { LoginName = loginName });
+    }
+
+    /// <summary>
+    /// Disposes the game server contexts of the test, which stops their timers.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        foreach (var context in this._contexts)
+        {
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        this._contexts.Clear();
+    }
+
+    /// <summary>
+    /// Which states count as logged in: everything after the login screen, until the player disconnects.
+    /// </summary>
+    [Test]
+    public void LoggedInStates()
+    {
+        var notLoggedIn = new[] { PlayerState.Initial, PlayerState.LoginScreen, PlayerState.Disconnected, PlayerState.Finished };
+        var loggedIn = new[]
+        {
+            PlayerState.Authenticated, PlayerState.CharacterSelection, PlayerState.EnteredWorld, PlayerState.ChangingMap,
+            PlayerState.Dead, PlayerState.NpcDialogOpened, PlayerState.PartyRequest, PlayerState.GuildRequest,
+            PlayerState.TradeRequested, PlayerState.TradeOpened, PlayerState.TradeButtonPressed,
+        };
+
+        Assert.That(notLoggedIn.Where(s => s.IsLoggedIn()), Is.Empty);
+        Assert.That(loggedIn.Where(s => !s.IsLoggedIn()), Is.Empty);
+    }
+
+    /// <summary>
+    /// A connection which stays at the login screen doesn't take the last place.
+    /// </summary>
+    [Test]
+    public async ValueTask ConnectionsAtTheLoginScreenDoNotTakeAPlaceAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(player, LoginResult.Ok);
+        Assert.That(gameContext.PlayerCount, Is.EqualTo(2));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// When all places are taken by logged in players, the login is refused with
+    /// <see cref="LoginResult.ServerIsFull"/>, and the account is released at the login server.
+    /// The connection stays at the login screen.
+    /// </summary>
+    [Test]
+    public async ValueTask RefusesTheLoginWhenTheServerIsFullAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var first = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var second = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(first, "a", Password).ConfigureAwait(false);
+
+        await new LoginAction().LoginAsync(second, "b", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(second, LoginResult.ServerIsFull);
+        Assert.That(second.Account, Is.Null);
+        Assert.That(second.PlayerState.CurrentState, Is.EqualTo(PlayerState.LoginScreen));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+        this._loginServer.Verify(l => l.LogOffAsync("b", It.IsAny<byte>()), Times.Once);
+        this._loginServer.Verify(l => l.LogOffAsync("a", It.IsAny<byte>()), Times.Never);
+        this._playerContext.Verify(c => c.GetAccountByLoginNameAsync("b", It.IsAny<CancellationToken>()), Times.Never, "A full server refuses before the account is loaded.");
+    }
+
+    /// <summary>
+    /// An account which is logged in somewhere else is still reported as such on a full server.
+    /// </summary>
+    [Test]
+    public async ValueTask ReportsAnAccountWhichIsLoggedInElsewhereOnAFullServerAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var first = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var second = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(first, "a", Password).ConfigureAwait(false);
+        this._loginServer.Setup(l => l.TryLoginAsync("b", It.IsAny<byte>())).ReturnsAsync(false);
+
+        await new LoginAction().LoginAsync(second, "b", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(second, LoginResult.AccountAlreadyConnected);
+    }
+
+    /// <summary>
+    /// A player frees its place as soon as it disconnects, before it's removed from the game.
+    /// </summary>
+    [Test]
+    public async ValueTask DisconnectedPlayerFreesItsPlaceAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var first = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var second = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(first, "a", Password).ConfigureAwait(false);
+
+        await first.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(second, "b", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(second, LoginResult.Ok);
+        Assert.That(gameContext.PlayerCount, Is.EqualTo(2));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// The place which another login in progress reserved counts like a logged in player, so two logins
+    /// can't take the last place at the same time. When the reservation is released, the place is free.
+    /// </summary>
+    [Test]
+    public async ValueTask ReservedPlaceOfALoginInProgressCountsAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+
+        var otherLogin = gameContext.TryReserveLoginPlace(1, null).Reservation;
+        Assert.That(otherLogin, Is.Not.Null);
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        VerifyLoginResult(player, LoginResult.ServerIsFull);
+
+        otherLogin!.Dispose();
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        VerifyLoginResult(player, LoginResult.Ok);
+    }
+
+    /// <summary>
+    /// A login releases its reservation when it's done, whether it succeeded or failed.
+    /// </summary>
+    [Test]
+    public async ValueTask LoginReleasesItsReservedPlaceAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var first = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var second = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(first, "a", Password).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(second, "b", Password).ConfigureAwait(false);
+
+        await first.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+
+        var result = gameContext.TryReserveLoginPlace(1, null);
+        using var reservation = result.Reservation;
+        Assert.That(reservation, Is.Not.Null);
+        Assert.That(result.OccupiedPlaces, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// A player which takes over the place of a logged in player, like the one which takes over its
+    /// offline session, doesn't need a free place - but it does when that player isn't logged in anymore.
+    /// </summary>
+    [Test]
+    public async ValueTask TakesOverThePlaceOfTheReplacedPlayerAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var replaced = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        var other = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        using (var takeover = gameContext.TryReserveLoginPlace(1, replaced).Reservation)
+        {
+            Assert.That(takeover, Is.Not.Null);
+            Assert.That(gameContext.TryReserveLoginPlace(1, null).Reservation, Is.Null, "The place of the replaced player is reserved.");
+        }
+
+        // The replaced player left, and another player took the place in the meantime.
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        await other.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        Assert.That(gameContext.TryReserveLoginPlace(1, replaced).Reservation, Is.Null);
+    }
+
+    /// <summary>
+    /// While the replaced player is still logged in, e.g. during the stop of an offline session, a takeover
+    /// doesn't take another place; when that player leaves, the takeover takes its place right away.
+    /// </summary>
+    [Test]
+    public async ValueTask TakeoverTakesOnlyOnePlaceAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 2);
+        var replaced = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        using var takeover = gameContext.TryReserveLoginPlace(2, replaced).Reservation;
+        var otherLogin = gameContext.TryReserveLoginPlace(2, null);
+        using var otherLoginPlace = otherLogin.Reservation;
+        Assert.That(otherLoginPlace, Is.Not.Null, "The second place is free.");
+        Assert.That(otherLogin.OccupiedPlaces, Is.EqualTo(1));
+
+        // The offline session is stopped: the takeover takes the place of its own now.
+        await replaced.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        var whileTakenOver = gameContext.TryReserveLoginPlace(2, null);
+        Assert.That(whileTakenOver.Reservation, Is.Null);
+        Assert.That(whileTakenOver.OccupiedPlaces, Is.EqualTo(2));
+
+        takeover!.Dispose();
+        var afterTakeover = gameContext.TryReserveLoginPlace(2, null);
+        using var afterTakeoverPlace = afterTakeover.Reservation;
+        Assert.That(afterTakeoverPlace, Is.Not.Null);
+        Assert.That(afterTakeover.OccupiedPlaces, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// The owner of an offline session logs in on a full server: it takes over the place of its offline
+    /// player, whose session is stopped.
+    /// </summary>
+    [Test]
+    public async ValueTask LoginTakesOverThePlaceOfItsOfflineSessionAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        await AddOfflineSessionAsync(gameContext, "a", loggedIn: true).ConfigureAwait(false);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(player, LoginResult.Ok);
+        Assert.That(gameContext.OfflinePlayerManager.IsActive("a"), Is.False);
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// When the offline player isn't logged in anymore, the login needs a free place; on a full server,
+    /// it's refused before the offline session is stopped.
+    /// </summary>
+    [Test]
+    public async ValueTask LoginNeedsAFreePlaceWhenItsOfflinePlayerIsGoneAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var other = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(other, "b", Password).ConfigureAwait(false);
+        await AddOfflineSessionAsync(gameContext, "a", loggedIn: false).ConfigureAwait(false);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        VerifyLoginResult(player, LoginResult.ServerIsFull);
+        Assert.That(gameContext.OfflinePlayerManager.IsActive("a"), Is.True);
+        this._loginServer.Verify(l => l.TryLoginAsync("a", It.IsAny<byte>()), Times.Never, "The full server refuses before the account is reserved.");
+    }
+
+    /// <summary>
+    /// A player which is already logged in when it's added, like an offline player, counts as well,
+    /// until it's removed.
+    /// </summary>
+    [Test]
+    public async ValueTask PlayerWhichIsAddedLoggedInCountsAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = new LoginTestPlayer(gameContext);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1));
+
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// A subscriber of the changed number of logged in players which throws doesn't break the
+    /// disconnect of a player: it's still removed from the game.
+    /// </summary>
+    [Test]
+    public async ValueTask FailingCountSubscriberDoesNotBreakTheDisconnectAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        gameContext.LoggedInPlayerCountChanged += (_, _) => throw new InvalidOperationException("The subscriber failed.");
+
+        await player.DisconnectAsync().ConfigureAwait(false);
+
+        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.Finished));
+        Assert.That(gameContext.PlayerCount, Is.EqualTo(0));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// The game context follows the state of its players, and a state change still waits for the
+    /// subscribers which were there before, like the one which runs the state changed plugins.
+    /// </summary>
+    [Test]
+    public async ValueTask StateChangeWaitsForEarlierSubscribersAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = new LoginTestPlayer(gameContext);
+        var earlierSubscriberCompleted = false;
+        player.PlayerState.StateChanged += async _ =>
+        {
+            await Task.Delay(50).ConfigureAwait(false);
+            earlierSubscriberCompleted = true;
+        };
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+
+        Assert.That(earlierSubscriberCompleted, Is.True);
+    }
+
+    /// <summary>
+    /// The game context counts a player before the other subscribers of its state change run, like the
+    /// state changed plugins, so they already see the new number.
+    /// </summary>
+    [Test]
+    public async ValueTask CountIsUpdatedBeforeOtherStateSubscribersRunAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = new LoginTestPlayer(gameContext);
+        int? countSeenBySubscriber = null;
+        player.PlayerState.StateChanged += args =>
+        {
+            if (args.CurrentStateState == PlayerState.Authenticated)
+            {
+                countSeenBySubscriber = gameContext.LoggedInPlayerCount;
+            }
+
+            return ValueTask.CompletedTask;
+        };
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        Assert.That(countSeenBySubscriber, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Only connections at the login screen wait for their login; logged in and disconnecting players don't.
+    /// </summary>
+    [Test]
+    public async ValueTask WaitingForLoginCountsTheConnectionsAtTheLoginScreenAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 2);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(1));
+
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(0));
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(0));
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+        Assert.That(gameContext.PlayerCount, Is.EqualTo(1), "The player isn't removed yet.");
+
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+        await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// State changes within the game keep the player counted once, until it disconnects.
+    /// </summary>
+    [Test]
+    public async ValueTask StateChangesWithinTheGameKeepTheCountAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 2);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+
+        foreach (var state in new[] { PlayerState.CharacterSelection, PlayerState.EnteredWorld, PlayerState.NpcDialogOpened, PlayerState.EnteredWorld, PlayerState.Dead, PlayerState.EnteredWorld })
+        {
+            Assert.That(await player.PlayerState.TryAdvanceToAsync(state).ConfigureAwait(false), Is.True, state.Name);
+            Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(1), state.Name);
+            Assert.That(gameContext.WaitingForLoginCount, Is.EqualTo(0), state.Name);
+        }
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// A player which was removed from the game isn't counted when its state changes afterwards.
+    /// </summary>
+    [Test]
+    public async ValueTask RemovedPlayerIsNotCountedAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+
+        Assert.That(gameContext.LoggedInPlayerCount, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// The listener reports the logged in players to the connect server: not the connections at the
+    /// login screen, and a disconnected player right away instead of after it saved its progress.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerReportsTheLoggedInPlayersAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 5);
+        var reports = new List<int>();
+        var observer = new Mock<IGameServerStateObserver>();
+        observer
+            .Setup(o => o.CurrentConnectionsChanged(It.IsAny<ushort>(), It.IsAny<int>()))
+            .Callback((ushort _, int count) => reports.Add(count));
+        var listener = CreateListener(gameContext, 0, observer.Object);
+
+        await listener.StartAsync().ConfigureAwait(false);
+        try
+        {
+            var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+
+            Assert.That(gameContext.PlayerCount, Is.EqualTo(1), "The disconnected player wasn't removed yet.");
+        }
+        finally
+        {
+            listener.Stop();
+        }
+
+        Assert.That(reports, Is.EqualTo(new[] { 0, 1, 0 }));
+    }
+
+    /// <summary>
+    /// Connections which didn't log in yet are limited by the maximum players as well, while the
+    /// logged in players don't count against this limit.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerLimitsTheConnectionsWhichWaitForTheirLoginAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var (listener, port) = await StartListenerOnFreePortAsync(gameContext).ConfigureAwait(false);
+        try
+        {
+            var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.True, "One connection waits for its login already.");
+
+            await new LoginAction().LoginAsync(waiting, "a", Password).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False, "The logged in player doesn't count against this limit.");
+
+            // It disconnects, and saves its progress before it's removed.
+            await waiting.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False, "A disconnecting player doesn't wait for its login.");
+        }
+        finally
+        {
+            listener.Stop();
+        }
+    }
+
+    /// <summary>
+    /// Only the first of several refused connections is logged at the Information level; when a
+    /// connection is accepted again, the number of refused ones is logged.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerLogsTheFirstRefusalOnlyAtInformationLevelAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 1);
+        var entries = new ConcurrentQueue<(LogLevel Level, string Message)>();
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(invocation => entries.Enqueue(((LogLevel)invocation.Arguments[0], invocation.Arguments[2].ToString()!))));
+        var loggerFactory = new Mock<ILoggerFactory>();
+        loggerFactory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var (listener, port) = await StartListenerOnFreePortAsync(gameContext, loggerFactory.Object).ConfigureAwait(false);
+        try
+        {
+            var waiting = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            for (var i = 0; i < 3; i++)
+            {
+                Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.True);
+            }
+
+            await new LoginAction().LoginAsync(waiting, "a", Password).ConfigureAwait(false);
+            Assert.That(await IsRefusedAsync(port).ConfigureAwait(false), Is.False);
+        }
+        finally
+        {
+            listener.Stop();
+        }
+
+        var information = entries.Where(e => e.Level == LogLevel.Information).Select(e => e.Message).ToList();
+        Assert.That(information.Count(m => m.StartsWith("Connection of", StringComparison.Ordinal)), Is.EqualTo(1));
+        Assert.That(information.Count(m => m.StartsWith("Connections are accepted again, after 3 were refused", StringComparison.Ordinal)), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// A start of the listener which failed, e.g. because the port is in use, doesn't leave its
+    /// subscription behind: after the next start, every change is reported once.
+    /// </summary>
+    [Test]
+    public async ValueTask ListenerReportsOnceAfterAFailedStartAsync()
+    {
+        var gameContext = this.CreateGameServerContext(maximumPlayers: 5);
+        var reports = new List<int>();
+        var observer = new Mock<IGameServerStateObserver>();
+        observer
+            .Setup(o => o.CurrentConnectionsChanged(It.IsAny<ushort>(), It.IsAny<int>()))
+            .Callback((ushort _, int count) => reports.Add(count));
+        // The port is taken by another listener first, so nobody else can take it in between.
+        var portUser = new System.Net.Sockets.TcpListener(IPAddress.Any, 0);
+        portUser.Start();
+        var port = ((IPEndPoint)portUser.LocalEndpoint).Port;
+        var listener = CreateListener(gameContext, port, observer.Object);
+        try
+        {
+            Assert.CatchAsync(() => listener.StartAsync().AsTask(), "The port is in use.");
+        }
+        finally
+        {
+            portUser.Stop();
+        }
+
+        await listener.StartAsync().ConfigureAwait(false);
+        try
+        {
+            var player = await this.CreatePlayerAtLoginScreenAsync(gameContext).ConfigureAwait(false);
+            await new LoginAction().LoginAsync(player, "a", Password).ConfigureAwait(false);
+        }
+        finally
+        {
+            listener.Stop();
+        }
+
+        Assert.That(reports, Is.EqualTo(new[] { 0, 1 }));
+    }
+
+    /// <summary>
+    /// Adds an offline session of the account to the offline player manager.
+    /// </summary>
+    /// <remarks>
+    /// Starting a real offline session needs a player in the game with its account and character
+    /// loaded, so it's added to the sessions of the manager directly.
+    /// </remarks>
+    private static async ValueTask<OfflinePlayer> AddOfflineSessionAsync(GameServerContext gameContext, string loginName, bool loggedIn)
+    {
+        var offlinePlayer = new OfflinePlayer(gameContext);
+        if (loggedIn)
+        {
+            await gameContext.AddPlayerAsync(offlinePlayer).ConfigureAwait(false);
+            await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+            await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        }
+
+        Assert.That(gameContext.OfflinePlayerManager.TryAdd(loginName, offlinePlayer), Is.True);
+        return offlinePlayer;
+    }
+
+    private static DefaultTcpGameServerListener CreateListener(GameServerContext gameContext, int port, IGameServerStateObserver? observer = null, ILoggerFactory? loggerFactory = null)
+    {
+        var resolver = new Mock<IIpAddressResolver>();
+        resolver.Setup(r => r.ResolveIPv4Async()).ReturnsAsync(IPAddress.Loopback);
+        var endpoint = new Persistence.BasicModel.GameServerEndpoint
+        {
+            NetworkPort = port,
+            Client = new Persistence.BasicModel.GameClientDefinition { Season = 6, Episode = 3, Language = ClientLanguage.English },
+        };
+        var serverInfo = new ServerInfo(0, "test", 0, gameContext.ServerConfiguration.MaximumPlayers);
+        return new DefaultTcpGameServerListener(endpoint, serverInfo, gameContext, observer ?? new Mock<IGameServerStateObserver>().Object, resolver.Object, loggerFactory ?? new NullLoggerFactory());
+    }
+
+    /// <summary>
+    /// Starts a listener on a free port. When another process takes the port before the listener
+    /// is bound to it, it tries again with another one.
+    /// </summary>
+    private static async ValueTask<(DefaultTcpGameServerListener Listener, int Port)> StartListenerOnFreePortAsync(GameServerContext gameContext, ILoggerFactory? loggerFactory = null)
+    {
+        const int attempts = 5;
+        for (var attempt = 1; attempt <= attempts; attempt++)
+        {
+            var port = GetFreePort();
+            var listener = CreateListener(gameContext, port, loggerFactory: loggerFactory);
+            try
+            {
+                await listener.StartAsync().ConfigureAwait(false);
+                return (listener, port);
+            }
+            catch (System.Net.Sockets.SocketException ex) when (ex.SocketErrorCode == System.Net.Sockets.SocketError.AddressAlreadyInUse)
+            {
+                listener.Stop();
+            }
+        }
+
+        throw new InvalidOperationException($"Another process took the free port in each of {attempts} attempts.");
+    }
+
+    private static int GetFreePort()
+    {
+        var probe = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
+        probe.Start();
+        var port = ((IPEndPoint)probe.LocalEndpoint).Port;
+        probe.Stop();
+        return port;
+    }
+
+    /// <summary>
+    /// Connects to the listener and determines whether it closes the connection right away.
+    /// </summary>
+    private static async ValueTask<bool> IsRefusedAsync(int port)
+    {
+        using var client = new System.Net.Sockets.TcpClient();
+        await client.ConnectAsync(IPAddress.Loopback, port).ConfigureAwait(false);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        try
+        {
+            var read = await client.GetStream().ReadAsync(new byte[16], timeout.Token).ConfigureAwait(false);
+            return read == 0;
+        }
+        catch (OperationCanceledException)
+        {
+            // Still connected; without a game server, nobody sends the greeting.
+            return false;
+        }
+        catch (System.IO.IOException)
+        {
+            return true;
+        }
+    }
+
+    private static void VerifyLoginResult(Player player, LoginResult result)
+    {
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()!)
+            .Verify(p => p.ShowLoginResultAsync(result), Times.Once);
+    }
+
+    private async ValueTask<Player> CreatePlayerAtLoginScreenAsync(IGameContext gameContext)
+    {
+        var player = new LoginTestPlayer(gameContext);
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        return player;
+    }
+
+    private GameServerContext CreateGameServerContext(short maximumPlayers)
+    {
+        var context = LoginTestSetup.CreateGameServerContext(LoginTestSetup.CreatePersistence(this._playerContext.Object), this._loginServer.Object, maximumPlayers: maximumPlayers);
+        this._contexts.Add(context);
+        return context;
+    }
+}

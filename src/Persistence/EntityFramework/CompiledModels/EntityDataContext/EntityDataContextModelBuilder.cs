@@ -12,13 +12,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("5577b320-884d-448b-a346-3a37f266931a"), entityTypeCount: 128)
+            : base(skipDetectChanges: false, modelId: new Guid("f7f8b383-ff32-43f8-baec-11c76e079c81"), entityTypeCount: 129)
         {
         }
 
         partial void Initialize()
         {
             var account = AccountEntityType.Create(this);
+            var accountAttributeGrant = AccountAttributeGrantEntityType.Create(this);
             var accountCharacterClass = AccountCharacterClassEntityType.Create(this);
             var accountExternalLink = AccountExternalLinkEntityType.Create(this);
             var appearanceData = AppearanceDataEntityType.Create(this);
@@ -148,6 +149,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var warpInfo = WarpInfoEntityType.Create(this);
 
             AccountEntityType.CreateForeignKey1(account, itemStorage);
+            AccountAttributeGrantEntityType.CreateForeignKey1(accountAttributeGrant, account);
+            AccountAttributeGrantEntityType.CreateForeignKey2(accountAttributeGrant, attributeDefinition);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
             AccountCharacterClassEntityType.CreateForeignKey2(accountCharacterClass, characterClass);
             AccountExternalLinkEntityType.CreateForeignKey1(accountExternalLink, account);
@@ -162,9 +165,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AttributeRelationshipEntityType.CreateForeignKey7(attributeRelationship, attributeDefinition);
             AttributeRequirementEntityType.CreateForeignKey1(attributeRequirement, attributeDefinition);
             AttributeRequirementEntityType.CreateForeignKey2(attributeRequirement, gameMapDefinition);
-            AttributeRequirementEntityType.CreateForeignKey3(attributeRequirement, itemDefinition);
-            AttributeRequirementEntityType.CreateForeignKey4(attributeRequirement, skill);
+            AttributeRequirementEntityType.CreateForeignKey3(attributeRequirement, gameServerDefinition);
+            AttributeRequirementEntityType.CreateForeignKey4(attributeRequirement, itemDefinition);
             AttributeRequirementEntityType.CreateForeignKey5(attributeRequirement, skill);
+            AttributeRequirementEntityType.CreateForeignKey6(attributeRequirement, skill);
             BattleZoneDefinitionEntityType.CreateForeignKey1(battleZoneDefinition, rectangle);
             BattleZoneDefinitionEntityType.CreateForeignKey2(battleZoneDefinition, rectangle);
             BattleZoneDefinitionEntityType.CreateForeignKey3(battleZoneDefinition, rectangle);
@@ -341,8 +345,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             MiniGameChangeEventEntityType.CreateForeignKey2(miniGameChangeEvent, monsterSpawnArea);
             MiniGameChangeEventEntityType.CreateForeignKey3(miniGameChangeEvent, monsterDefinition);
             MiniGameDefinitionEntityType.CreateForeignKey1(miniGameDefinition, exitGate);
-            MiniGameDefinitionEntityType.CreateForeignKey2(miniGameDefinition, gameConfiguration);
-            MiniGameDefinitionEntityType.CreateForeignKey3(miniGameDefinition, itemDefinition);
+            MiniGameDefinitionEntityType.CreateForeignKey2(miniGameDefinition, itemDefinition);
+            MiniGameDefinitionEntityType.CreateForeignKey3(miniGameDefinition, gameConfiguration);
+            MiniGameDefinitionEntityType.CreateForeignKey4(miniGameDefinition, itemDefinition);
             MiniGameRankingEntryEntityType.CreateForeignKey1(miniGameRankingEntry, character);
             MiniGameRankingEntryEntityType.CreateForeignKey2(miniGameRankingEntry, miniGameDefinition);
             MiniGameRewardEntityType.CreateForeignKey1(miniGameReward, dropItemGroup);
@@ -400,6 +405,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             WarpInfoEntityType.CreateForeignKey2(warpInfo, exitGate);
 
             AccountEntityType.CreateAnnotations(account);
+            AccountAttributeGrantEntityType.CreateAnnotations(accountAttributeGrant);
             AccountCharacterClassEntityType.CreateAnnotations(accountCharacterClass);
             AccountExternalLinkEntityType.CreateAnnotations(accountExternalLink);
             AppearanceDataEntityType.CreateAnnotations(appearanceData);

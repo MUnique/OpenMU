@@ -43,8 +43,12 @@ public class MiniGameOpeningStateRequestAction
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EventMapCreatedOnEntranceWithoutTimetable)).ConfigureAwait(false);
                 break;
             case MiniGameType.Doppelganger:
-            case MiniGameType.IllusionTemple:
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EventNotImplementedYet)).ConfigureAwait(false);
+                break;
+            case MiniGameType.IllusionTemple:
+                // We only get here when no start plug-in is registered, or when no temple matches the
+                // player's level - so there is nothing this player could be shown a timetable for.
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameNotConfigured)).ConfigureAwait(false);
                 break;
             default:
                 throw new ArgumentOutOfRangeException($"Unhandled event type {miniGameType}.");

@@ -41,8 +41,7 @@ public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISuppor
         var sameIpCount = players.Count(p =>
             (p as IHasIpAddress)?.IpAddress == ipAddress
             && p != player
-            && p.PlayerState.CurrentState != PlayerState.Initial
-            && p.PlayerState.CurrentState != PlayerState.LoginScreen);
+            && p.PlayerState.CurrentState.IsLoggedIn());
 
         if (sameIpCount >= config.MaximumConnectionsPerIp)
         {

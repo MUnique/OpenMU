@@ -81,6 +81,12 @@ public partial class MiniGameDefinition
     public int MaximumPlayerCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum player count which is required for the game to start, and below which
+    /// a running game is aborted early. A value of <c>0</c> means the game type's built-in default applies.
+    /// </summary>
+    public int MinimumPlayerCount { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether to save the score as <see cref="MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry"/>.
     /// </summary>
     public bool SaveRankingStatistics { get; set; }
@@ -145,6 +151,12 @@ public partial class MiniGameDefinition
     /// Gets or sets the ticket item which is required to enter the mini game.
     /// </summary>
     public virtual ItemDefinition? TicketItem { get; set; }
+
+    /// <summary>
+    /// Gets or sets the free ticket item, which allows to enter the mini game of any level, instead of the <see cref="TicketItem"/>.
+    /// Its durability is the number of entries. It's usually sold in the in-game shop.
+    /// </summary>
+    public virtual ItemDefinition? FreeTicketItem { get; set; }
 
     /// <summary>
     /// Gets or sets the rewards which are given to the player when the game has been finished successfully.

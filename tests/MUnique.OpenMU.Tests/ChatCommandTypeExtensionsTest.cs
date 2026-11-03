@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
 using MUnique.OpenMU.DataModel.Entities;
@@ -79,6 +80,53 @@ public class ChatCommandTypeExtensionsTest
         var skill = info.Parameters.FirstOrDefault(parameter => parameter.Name == nameof(ItemChatCommandArgs.Skill));
         Assert.That(skill, Is.Not.Null);
         Assert.That(skill!.ValidValues, Is.EquivalentTo(new[] { "0", "1" }));
+    }
+
+    /// <summary>
+    /// Tests that the item group and number are described as a composite item reference,
+    /// so that a user interface can offer one item picker for both of them.
+    /// </summary>
+    [Test]
+    public void CommandInfoDescribesItemReference()
+    {
+        var info = ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(ItemChatCommandPlugIn), CultureInfo.InvariantCulture);
+
+        var group = info!.Parameters.Single(parameter => parameter.Name == nameof(ItemChatCommandArgs.Group));
+        var number = info.Parameters.Single(parameter => parameter.Name == nameof(ItemChatCommandArgs.Number));
+        var level = info.Parameters.Single(parameter => parameter.Name == nameof(ItemChatCommandArgs.Level));
+
+        Assert.That(group.ValueReference, Is.EqualTo(ChatCommandValueReference.ItemGroup));
+        Assert.That(number.ValueReference, Is.EqualTo(ChatCommandValueReference.ItemNumber));
+        Assert.That(number.ValueReferenceGroupWith, Is.EqualTo(nameof(ItemChatCommandArgs.Group)));
+        Assert.That(level.ValueReference, Is.EqualTo(ChatCommandValueReference.None));
+        Assert.That(level.ValueReferenceGroupWith, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that numeric parameters are described with the range of their type,
+    /// and that a <see cref="RangeAttribute"/> narrows it down.
+    /// </summary>
+    [Test]
+    public void ParameterInfoDescribesRanges()
+    {
+        var parameters = CommandExtensions.GetParameterInfos(typeof(RangeTestArguments)).ToDictionary(parameter => parameter.Name);
+
+        Assert.That((parameters[nameof(RangeTestArguments.Plain)].Minimum, parameters[nameof(RangeTestArguments.Plain)].Maximum), Is.EqualTo(((long?)byte.MinValue, (long?)byte.MaxValue)));
+        Assert.That((parameters[nameof(RangeTestArguments.Narrowed)].Minimum, parameters[nameof(RangeTestArguments.Narrowed)].Maximum), Is.EqualTo(((long?)1, (long?)5)));
+        Assert.That((parameters[nameof(RangeTestArguments.Clamped)].Minimum, parameters[nameof(RangeTestArguments.Clamped)].Maximum), Is.EqualTo(((long?)0, (long?)ushort.MaxValue)));
+        Assert.That((parameters[nameof(RangeTestArguments.Text)].Minimum, parameters[nameof(RangeTestArguments.Text)].Maximum), Is.EqualTo(((long?)null, (long?)null)));
+        Assert.That((parameters[nameof(RangeTestArguments.Flag)].Minimum, parameters[nameof(RangeTestArguments.Flag)].Maximum), Is.EqualTo(((long?)null, (long?)null)));
+    }
+
+    /// <summary>
+    /// Tests that the usage shows references and limited ranges instead of the plain types.
+    /// </summary>
+    [Test]
+    public void UsageShowsReferencesAndRanges()
+    {
+        Assert.That(CommandExtensions.CreateUsage(typeof(CreateMonsterChatCommandArgs), "/createmonster"), Does.StartWith("/createmonster {MonsterNumber} {IsIntelligent:0|1}"));
+        Assert.That(CommandExtensions.CreateUsage(typeof(ItemChatCommandArgs), "/item"), Does.StartWith("/item {Group:ItemGroup} {Number:ItemNumber} {Level:Byte}"));
+        Assert.That(CommandExtensions.CreateUsage(typeof(RangeTestArguments), "/test"), Does.StartWith("/test {Plain:Byte} {Narrowed:1-5} {Clamped:UInt16}"));
     }
 
     /// <summary>
@@ -216,5 +264,43 @@ public class ChatCommandTypeExtensionsTest
         player.SelectedCharacter!.CharacterStatus = CharacterStatus.GameMaster;
 
         return player;
+    }
+
+    /// <summary>
+    /// Arguments to test the description of ranges.
+    /// </summary>
+    public class RangeTestArguments : ArgumentsBase
+    {
+        /// <summary>
+        /// Gets or sets a value without a range attribute.
+        /// </summary>
+        [Argument("plain")]
+        public byte Plain { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value with a range which is narrower than its type.
+        /// </summary>
+        [Argument("narrowed")]
+        [Range(1, 5)]
+        public byte Narrowed { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value with a range which is wider than its type.
+        /// </summary>
+        [Argument("clamped")]
+        [Range(-10, int.MaxValue)]
+        public ushort Clamped { get; set; }
+
+        /// <summary>
+        /// Gets or sets a text value.
+        /// </summary>
+        [Argument("text", false)]
+        public string? Text { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean value.
+        /// </summary>
+        [Argument("flag", false)]
+        public bool Flag { get; set; }
     }
 }

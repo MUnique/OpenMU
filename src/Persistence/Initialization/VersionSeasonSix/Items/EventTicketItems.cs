@@ -37,8 +37,11 @@ internal class EventTicketItems : InitializerBase
 
         // Illusion Temple:
         this.CreateEventItem(49, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.OldScroll), false, 6, 66, 72, 78, 84, 90, 96);
-        this.CreateEventItem(50, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
-        this.CreateEventItem(51, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
+        this.CreateEventItem(51, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
+        this.CreateEventItem(50, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
+
+        // The sacred relic, which the client knows as ITEM_CURSED_CASTLE_WATER.
+        this.CreateEventItem(64, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.CursedCastleWater), false);
 
         // Doppelganger:
         if (this.CreateDoppelgangerItems() is { } signOfDimensionsDropGroup)
@@ -50,6 +53,9 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(17, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSEye), false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(18, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSKey), false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(19, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSInvitation), false, 7);
+
+        // Free tickets of the in-game shop, which allow to enter an event of any level:
+        this.CreateFreeTicketItems();
 
         // Imperial Guardian
         var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SuspiciousScrapOfPaper), false, 0, 32);
@@ -127,6 +133,60 @@ internal class EventTicketItems : InitializerBase
         dropItemGroup.PossibleItems.Add(signOfDimensions);
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
         return dropItemGroup;
+    }
+
+    /// <summary>
+    /// Creates the free tickets of the in-game shop, which don't exist yet. They allow to enter
+    /// Devil Square, Blood Castle, Illusion Temple and Chaos Castle of any level, instead of their
+    /// regular tickets. Their durability is the number of entries.
+    /// The rules which block trading and selling them are applied by the <see cref="ItemRules"/>.
+    /// </summary>
+    /// <returns>The created items.</returns>
+    internal IReadOnlyList<ItemDefinition> CreateFreeTicketItems()
+    {
+        var createdItems = new List<ItemDefinition>();
+        void CreateIfMissing(byte number, LocalizedString name)
+        {
+            if (!this.GameConfiguration.Items.Any(item => item.Group == 13 && item.Number == number))
+            {
+                // Like in the client, a ticket holds up to ten entries. The in-game shop delivers
+                // the package of ten tickets as one ticket with ten entries.
+                var ticket = this.CreateEventItem(number, 13, 1, 1, name, false);
+                ticket.Durability = 10;
+                createdItems.Add(ticket);
+            }
+        }
+
+        CreateIfMissing(46, LocalizedString.FromResource(() => ItemNames.DevilSquareFreeTicket));
+        CreateIfMissing(47, LocalizedString.FromResource(() => ItemNames.BloodCastleFreeTicket));
+        CreateIfMissing(61, LocalizedString.FromResource(() => ItemNames.IllusionTempleFreeTicket));
+        CreateIfMissing(121, LocalizedString.FromResource(() => ItemNames.ChaosCastleFreeTicket));
+        return createdItems;
+    }
+
+    /// <summary>
+    /// Assigns the free tickets as <see cref="MiniGameDefinition.FreeTicketItem"/> to the mini games
+    /// of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which don't have one yet.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    internal static void AssignFreeTicketItems(GameConfiguration gameConfiguration)
+    {
+        foreach (var miniGame in gameConfiguration.MiniGameDefinitions.Where(miniGame => miniGame.FreeTicketItem is null))
+        {
+            short? number = miniGame.Type switch
+            {
+                MiniGameType.DevilSquare => 46,
+                MiniGameType.BloodCastle => 47,
+                MiniGameType.IllusionTemple => 61,
+                MiniGameType.ChaosCastle => 121,
+                _ => null,
+            };
+
+            if (number is { } ticketNumber)
+            {
+                miniGame.FreeTicketItem = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == ticketNumber);
+            }
+        }
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)

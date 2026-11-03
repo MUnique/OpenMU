@@ -62,6 +62,7 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
         /// <summary>
         /// Gets or sets the character name to get stat for.
         /// </summary>
+        [ValueReference(ChatCommandValueReference.CharacterName)]
         public string? CharacterName { get; set; }
     }
 }

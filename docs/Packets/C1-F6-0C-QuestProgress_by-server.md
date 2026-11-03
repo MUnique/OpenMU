@@ -20,6 +20,7 @@ The client shows the quest progress accordingly.
 | 6 | 2 | ShortLittleEndian |  | QuestGroup |
 | 8 | 1 | Byte |  | ConditionCount |
 | 9 | 1 | Byte |  | RewardCount |
+| 10 | 1 | Byte |  | RandomRewardCount |
 | 11 | QuestCondition.Length * ConditionCount | Array of QuestCondition |  | Conditions |
 | 141 | QuestReward.Length * RewardCount | Array of QuestReward |  | Rewards |
 

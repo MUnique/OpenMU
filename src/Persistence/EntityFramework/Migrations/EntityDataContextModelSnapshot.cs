@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
-    [DbContext(typeof(EntityDataContext))]
+    [DbContext(typeof(MUnique.OpenMU.Persistence.EntityFramework.EntityDataContext))]
     partial class EntityDataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -101,6 +101,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsUnique();
 
                     b.ToTable("Account", "data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountAttributeGrant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AttributeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ValidUntil")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("AttributeId");
+
+                    b.ToTable("AccountAttributeGrant", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountCharacterClass", b =>
@@ -338,6 +365,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameMapDefinitionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("GameServerDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
 
@@ -358,6 +388,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("AttributeId");
 
                     b.HasIndex("GameMapDefinitionId");
+
+                    b.HasIndex("GameServerDefinitionId");
 
                     b.HasIndex("ItemDefinitionId");
 
@@ -3579,6 +3611,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<TimeSpan>("ExitDuration")
                         .HasColumnType("interval");
 
+                    b.Property<Guid?>("FreeTicketItemId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
@@ -3609,6 +3644,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("MinimumCharacterLevel")
                         .HasColumnType("integer");
 
+                    b.Property<int>("MinimumPlayerCount")
+                        .HasColumnType("integer");
+
                     b.Property<int>("MinimumSpecialCharacterLevel")
                         .HasColumnType("integer");
 
@@ -3634,6 +3672,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EntranceId");
+
+                    b.HasIndex("FreeTicketItemId");
 
                     b.HasIndex("GameConfigurationId");
 
@@ -4596,6 +4636,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawVault");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountAttributeGrant", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
+                        .WithMany("RawAttributeGrants")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
+                    b.Navigation("RawAttribute");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AccountCharacterClass", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", "Account")
@@ -4691,6 +4745,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", null)
                         .WithMany("RawMapRequirements")
                         .HasForeignKey("GameMapDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", null)
+                        .WithMany("RawJoinRequirements")
+                        .HasForeignKey("GameServerDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", null)
@@ -6062,6 +6121,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("EntranceId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawFreeTicketItem")
+                        .WithMany()
+                        .HasForeignKey("FreeTicketItemId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMiniGameDefinitions")
                         .HasForeignKey("GameConfigurationId")
@@ -6072,6 +6135,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("TicketItemId");
 
                     b.Navigation("RawEntrance");
+
+                    b.Navigation("RawFreeTicketItem");
 
                     b.Navigation("RawTicketItem");
                 });
@@ -6471,6 +6536,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     b.Navigation("JoinedUnlockedCharacterClasses");
 
+                    b.Navigation("RawAttributeGrants");
+
                     b.Navigation("RawAttributes");
 
                     b.Navigation("RawCharacters");
@@ -6635,6 +6702,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", b =>
                 {
                     b.Navigation("RawEndpoints");
+
+                    b.Navigation("RawJoinRequirements");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>

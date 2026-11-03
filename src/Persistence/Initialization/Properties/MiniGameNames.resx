@@ -114,4 +114,22 @@
   <data name="DevilSquare5" xml:space="preserve">
     <value>Devil Square 5</value>
   </data>
+  <data name="IllusionTemple1" xml:space="preserve">
+    <value>Illusion Temple 1</value>
+  </data>
+  <data name="IllusionTemple2" xml:space="preserve">
+    <value>Illusion Temple 2</value>
+  </data>
+  <data name="IllusionTemple3" xml:space="preserve">
+    <value>Illusion Temple 3</value>
+  </data>
+  <data name="IllusionTemple4" xml:space="preserve">
+    <value>Illusion Temple 4</value>
+  </data>
+  <data name="IllusionTemple5" xml:space="preserve">
+    <value>Illusion Temple 5</value>
+  </data>
+  <data name="IllusionTemple6" xml:space="preserve">
+    <value>Illusion Temple 6</value>
+  </data>
 </root>

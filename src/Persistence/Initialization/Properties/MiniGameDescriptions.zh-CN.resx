@@ -114,4 +114,22 @@
   <data name="EventDefinitionForDevilSquareEventLevel5" xml:space="preserve">
     <value>恶魔广场5的活动配置。</value>
   </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel1" xml:space="preserve">
+    <value>幻影寺院1的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel2" xml:space="preserve">
+    <value>幻影寺院2的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel3" xml:space="preserve">
+    <value>幻影寺院3的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel4" xml:space="preserve">
+    <value>幻影寺院4的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel5" xml:space="preserve">
+    <value>幻影寺院5的活动配置。</value>
+  </data>
+  <data name="EventDefinitionForIllusionTempleEventLevel6" xml:space="preserve">
+    <value>幻影寺院6的活动配置。</value>
+  </data>
 </root>

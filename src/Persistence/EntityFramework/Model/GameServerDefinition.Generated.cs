@@ -38,6 +38,15 @@ internal partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configura
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint> Endpoints => base.Endpoints ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint, GameServerEndpoint>(this.RawEndpoints);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="JoinRequirements" />.
+    /// </summary>
+    public ICollection<AttributeRequirement> RawJoinRequirements { get; } = new EntityFramework.List<AttributeRequirement>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> JoinRequirements => base.JoinRequirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawJoinRequirements);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="ServerConfiguration"/>.
     /// </summary>
     public Guid? ServerConfigurationId { get; set; }

@@ -258,4 +258,28 @@ public static class PlayerState
     {
         return state == Disconnected || state == Finished;
     }
+
+    /// <summary>
+    /// Determines whether a player in this state is logged in: it passed the login screen and is not disconnected.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <returns>
+    ///   <c>true</c> if a player in this state is logged in; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsLoggedIn(this State state)
+    {
+        return !state.IsWaitingForLogin() && !state.IsDisconnectedOrFinished();
+    }
+
+    /// <summary>
+    /// Determines whether a player in this state waits for its login: it's connected, but didn't log in yet.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <returns>
+    ///   <c>true</c> if a player in this state waits for its login; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsWaitingForLogin(this State state)
+    {
+        return state == Initial || state == LoginScreen;
+    }
 }

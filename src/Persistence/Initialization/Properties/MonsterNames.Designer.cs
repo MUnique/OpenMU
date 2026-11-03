@@ -3310,5 +3310,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Balgass", resourceCulture);
             }
         }
+
+        /// <summary>Gets IllusionSorcererSpirit from the configuration name resources.</summary>
+        public static string IllusionSorcererSpirit {
+            get {
+                return ResourceManager.GetString("IllusionSorcererSpirit", resourceCulture);
+            }
+        }
     }
 }

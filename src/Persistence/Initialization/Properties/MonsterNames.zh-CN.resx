@@ -848,4 +848,7 @@
   <data name="Balgass" xml:space="preserve">
     <value>巴尔盖斯</value>
   </data>
+  <data name="IllusionSorcererSpirit" xml:space="preserve">
+    <value>幻影术士之灵</value>
+  </data>
 </root>

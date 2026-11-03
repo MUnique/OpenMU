@@ -286,5 +286,47 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("DevilSquare5", resourceCulture);
             }
         }
+
+        /// <summary>Gets IllusionTemple1 from the configuration name resources.</summary>
+        public static string IllusionTemple1 {
+            get {
+                return ResourceManager.GetString("IllusionTemple1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTemple2 from the configuration name resources.</summary>
+        public static string IllusionTemple2 {
+            get {
+                return ResourceManager.GetString("IllusionTemple2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTemple3 from the configuration name resources.</summary>
+        public static string IllusionTemple3 {
+            get {
+                return ResourceManager.GetString("IllusionTemple3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTemple4 from the configuration name resources.</summary>
+        public static string IllusionTemple4 {
+            get {
+                return ResourceManager.GetString("IllusionTemple4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTemple5 from the configuration name resources.</summary>
+        public static string IllusionTemple5 {
+            get {
+                return ResourceManager.GetString("IllusionTemple5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTemple6 from the configuration name resources.</summary>
+        public static string IllusionTemple6 {
+            get {
+                return ResourceManager.GetString("IllusionTemple6", resourceCulture);
+            }
+        }
     }
 }

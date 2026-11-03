@@ -52,6 +52,15 @@ internal partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIde
     public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.StatAttribute, StatAttribute>(this.RawAttributes);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="AttributeGrants" />.
+    /// </summary>
+    public ICollection<AccountAttributeGrant> RawAttributeGrants { get; } = new EntityFramework.List<AccountAttributeGrant>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.AccountAttributeGrant> AttributeGrants => base.AttributeGrants ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.AccountAttributeGrant, AccountAttributeGrant>(this.RawAttributeGrants);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Vault"/>.
     /// </summary>
     public Guid? VaultId { get; set; }

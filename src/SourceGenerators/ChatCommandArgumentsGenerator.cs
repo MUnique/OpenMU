@@ -28,6 +28,10 @@ public class ChatCommandArgumentsGenerator : IIncrementalGenerator
 
     private const string ValidValuesAttributeFullName = "MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.ValidValuesAttribute";
 
+    private const string RangeAttributeFullName = "System.ComponentModel.DataAnnotations.RangeAttribute";
+
+    private const string ValueReferenceAttributeFullName = "MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.ValueReferenceAttribute";
+
     private static readonly SymbolDisplayFormat TypeFormat = SymbolDisplayFormat.FullyQualifiedFormat;
 
     /// <inheritdoc />
@@ -48,7 +52,9 @@ public class ChatCommandArgumentsGenerator : IIncrementalGenerator
     {
         if (compilation.GetTypeByMetadataName(ArgumentsBaseFullName) is not { } argumentsBase
             || compilation.GetTypeByMetadataName(ArgumentAttributeFullName) is not { } argumentAttribute
-            || compilation.GetTypeByMetadataName(ValidValuesAttributeFullName) is not { } validValuesAttribute)
+            || compilation.GetTypeByMetadataName(ValidValuesAttributeFullName) is not { } validValuesAttribute
+            || compilation.GetTypeByMetadataName(RangeAttributeFullName) is not { } rangeAttribute
+            || compilation.GetTypeByMetadataName(ValueReferenceAttributeFullName) is not { } valueReferenceAttribute)
         {
             return null;
         }
@@ -86,7 +92,9 @@ public class ChatCommandArgumentsGenerator : IIncrementalGenerator
                     property.Name,
                     property.Type.ToDisplayString(TypeFormat),
                     GetAttributeCreation(property, argumentAttribute),
-                    GetAttributeCreation(property, validValuesAttribute)));
+                    GetAttributeCreation(property, validValuesAttribute),
+                    GetAttributeCreation(property, rangeAttribute),
+                    GetAttributeCreation(property, valueReferenceAttribute)));
             }
 
             if (isSupported)
@@ -234,6 +242,8 @@ public class ChatCommandArgumentsGenerator : IIncrementalGenerator
                 builder.Append("            new(\"").Append(property.Name).Append("\", typeof(").Append(property.TypeName).Append("), ")
                     .Append(property.Argument ?? "null").Append(", ")
                     .Append(property.ValidValues ?? "null").Append(", ")
+                    .Append(property.Range ?? "null").Append(", ")
+                    .Append(property.ValueReference ?? "null").Append(", ")
                     .Append("static (instance, value) => ((").Append(argumentsClass.TypeName).Append(")instance).").Append(property.Name)
                     .Append(" = (").Append(property.TypeName).AppendLine(")value!),");
             }
@@ -267,5 +277,7 @@ public class ChatCommandArgumentsGenerator : IIncrementalGenerator
     /// <param name="TypeName">The fully qualified name of the type of the property.</param>
     /// <param name="Argument">The expression which creates the argument attribute.</param>
     /// <param name="ValidValues">The expression which creates the valid values attribute.</param>
-    private sealed record PropertyModel(string Name, string TypeName, string? Argument, string? ValidValues);
+    /// <param name="Range">The expression which creates the range attribute.</param>
+    /// <param name="ValueReference">The expression which creates the value reference attribute.</param>
+    private sealed record PropertyModel(string Name, string TypeName, string? Argument, string? ValidValues, string? Range, string? ValueReference);
 }

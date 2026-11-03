@@ -122,6 +122,29 @@ player is online. That's why the balances can't be edited directly: the game
 server keeps the account of an online player in memory and would overwrite such a
 change.
 
+### Granting attributes for a limited time (e.g. VIP)
+
+The **Attribute Grants** of an account add a value to an attribute, optionally
+until a point in time (**Valid Until**, in UTC; empty means forever). Use them
+for things like a VIP status which a player bought for 30 days:
+
+* While a grant is valid, its value is added to the attribute of every character
+  of the account. If the attribute is used by the
+  [game configuration](game-configuration.md), e.g. as an experience or drop
+  bonus, the bonus applies. Several grants of the same attribute add up.
+* Grants count for the
+  [join requirements](servers.md#restricting-who-can-join-a-game-server) of game
+  servers, e.g. of a VIP server.
+* When a grant expires while the character is in the game, its value is removed
+  at that moment.
+
+To extend a VIP status, set a later **Valid Until**. Change the grants while the
+player is offline: the game server keeps the account of an online player in
+memory and would overwrite the change when it saves the account.
+
+The **Attributes** of the account, in contrast, are permanent values and
+can't expire.
+
 ### Changing a password
 
 Passwords are stored as a hash, so they cannot be read back. To give a player a

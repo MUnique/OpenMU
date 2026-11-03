@@ -12,6 +12,8 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
+using PacketValueReference = MUnique.OpenMU.Network.Packets.ServerToClient.ChatCommandValueReference;
+using ValueReference = MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.ChatCommandValueReference;
 
 /// <summary>
 /// The default implementation of the <see cref="IChatCommandListViewPlugIn"/> which sends
@@ -77,12 +79,41 @@ public class ChatCommandListViewPlugIn : IChatCommandListViewPlugIn
                 target.Name = parameter.Name;
                 target.ShortName = parameter.ShortName ?? string.Empty;
                 target.ValidValues = string.Join('|', parameter.ValidValues);
+                target.ValueReference = ConvertValueReference(parameter.ValueReference);
+                target.ValueReferenceGroupWith = parameter.ValueReferenceGroupWith ?? string.Empty;
+                if (parameter is { Minimum: { } minimum, Maximum: { } maximum })
+                {
+                    // The packet transports them as signed values in the bits of unsigned fields.
+                    target.HasRange = true;
+                    target.Minimum = unchecked((ulong)minimum);
+                    target.Maximum = unchecked((ulong)maximum);
+                }
             }
 
             return size;
         }
 
         return connection.SendAsync(Write);
+    }
+
+    private static PacketValueReference ConvertValueReference(ValueReference valueReference)
+    {
+        return valueReference switch
+        {
+            ValueReference.CharacterName => PacketValueReference.CharacterName,
+            ValueReference.AccountName => PacketValueReference.AccountName,
+            ValueReference.GuildName => PacketValueReference.GuildName,
+            ValueReference.Map => PacketValueReference.Map,
+            ValueReference.MapCoordinateX => PacketValueReference.MapCoordinateX,
+            ValueReference.MapCoordinateY => PacketValueReference.MapCoordinateY,
+            ValueReference.ItemGroup => PacketValueReference.ItemGroup,
+            ValueReference.ItemNumber => PacketValueReference.ItemNumber,
+            ValueReference.MonsterNumber => PacketValueReference.MonsterNumber,
+            ValueReference.ObjectId => PacketValueReference.ObjectId,
+            ValueReference.SkillNumber => PacketValueReference.SkillNumber,
+            ValueReference.LanguageIsoCode => PacketValueReference.LanguageIsoCode,
+            _ => PacketValueReference.None,
+        };
     }
 
     private static ChatCommandParameterType GetParameterType(string typeName)

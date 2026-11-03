@@ -80,19 +80,32 @@ public static class CommandExtensions
         var stringBuilder = new StringBuilder();
 
         stringBuilder.Append($"{commandName} ");
-        foreach (var parameter in GetParameters(argumentsType).ToList())
+        var properties = ChatCommandArguments.GetProperties(argumentsType);
+        var parameters = GetParameterInfos(argumentsType).ToList();
+        for (var i = 0; i < parameters.Count; i++)
         {
-            if (!string.IsNullOrWhiteSpace(parameter.ValidValues))
+            var parameter = parameters[i];
+            if (parameter.ValidValues.Count > 0)
             {
-                stringBuilder.Append($"{{{parameter.Name}:{parameter.ValidValues}}}");
+                stringBuilder.Append($"{{{parameter.Name}:{string.Join('|', parameter.ValidValues)}}}");
             }
-            else if (parameter.Type == nameof(String))
+            else if (parameter.ValueReference != ChatCommandValueReference.None)
+            {
+                var reference = parameter.ValueReference.ToString();
+                stringBuilder.Append(reference == parameter.Name ? $"{{{parameter.Name}}}" : $"{{{parameter.Name}:{reference}}}");
+            }
+            else if (properties[i].Range is { } && parameter is { Minimum: { } minimum, Maximum: { } maximum } && maximum < GetRange(properties[i] with { Range = null }).Maximum)
+            {
+                // Only a range with an upper bound is worth to be shown, e.g. not "1-2147483647".
+                stringBuilder.Append($"{{{parameter.Name}:{minimum}-{maximum}}}");
+            }
+            else if (parameter.TypeName == nameof(String))
             {
                 stringBuilder.Append($"{{{parameter.Name}}}");
             }
             else
             {
-                stringBuilder.Append($"{{{parameter.Name}:{parameter.Type}}}");
+                stringBuilder.Append($"{{{parameter.Name}:{parameter.TypeName}}}");
             }
 
             stringBuilder.Append(" ");
@@ -133,10 +146,8 @@ public static class CommandExtensions
             {
                 validValues = ["0", "1"];
             }
-            else if (property.PropertyType == typeof(byte) || property.PropertyType == typeof(ushort) || property.PropertyType == typeof(uint))
-            {
-                // todo: ranges in ParameterAttribute
-            }
+
+            var (minimum, maximum) = GetRange(property);
 
             // A parameter without an ArgumentAttribute can't be required - the parser
             // only counts the required arguments of the attributed properties.
@@ -147,7 +158,71 @@ public static class CommandExtensions
                 argumentAttribute?.ShortName,
                 property.PropertyType.Name,
                 argumentAttribute?.IsRequired ?? false,
-                validValues);
+                validValues,
+                minimum,
+                maximum,
+                property.ValueReference?.Kind ?? ChatCommandValueReference.None,
+                property.ValueReference?.GroupWith);
+        }
+    }
+
+    /// <summary>
+    /// Gets the range of accepted values of a numeric property. It's the range of its type,
+    /// narrowed down by its <see cref="RangeAttribute"/>, if it has one.
+    /// </summary>
+    /// <param name="property">The property.</param>
+    /// <returns>The range; or <see langword="null"/> values, if the property isn't numeric.</returns>
+    private static (long? Minimum, long? Maximum) GetRange(ChatCommandArgumentProperty property)
+    {
+        (long Minimum, long Maximum)? typeRange = Type.GetTypeCode(property.PropertyType) switch
+        {
+            TypeCode.Byte => (byte.MinValue, byte.MaxValue),
+            TypeCode.SByte => (sbyte.MinValue, sbyte.MaxValue),
+            TypeCode.Int16 => (short.MinValue, short.MaxValue),
+            TypeCode.UInt16 => (ushort.MinValue, ushort.MaxValue),
+            TypeCode.Int32 => (int.MinValue, int.MaxValue),
+            TypeCode.UInt32 => (uint.MinValue, uint.MaxValue),
+            TypeCode.Int64 => (long.MinValue, long.MaxValue),
+            TypeCode.UInt64 => (0, long.MaxValue),
+            _ => null,
+        };
+
+        if (typeRange is not { } validRange)
+        {
+            return (null, null);
+        }
+
+        var (minimum, maximum) = validRange;
+        if (property.Range is { } range)
+        {
+            if (TryConvert(range.Minimum, Math.Ceiling) is { } rangeMinimum)
+            {
+                minimum = Math.Max(minimum, rangeMinimum);
+            }
+
+            if (TryConvert(range.Maximum, Math.Floor) is { } rangeMaximum)
+            {
+                maximum = Math.Min(maximum, rangeMaximum);
+            }
+        }
+
+        return (minimum, maximum);
+
+        static long? TryConvert(object? value, Func<double, double> round)
+        {
+            if (value is not IConvertible convertible
+                || !double.TryParse(convertible.ToString(CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture, out var number))
+            {
+                return null;
+            }
+
+            number = round(number);
+            return number switch
+            {
+                <= long.MinValue => long.MinValue,
+                >= long.MaxValue => long.MaxValue,
+                _ => (long)number,
+            };
         }
     }
 

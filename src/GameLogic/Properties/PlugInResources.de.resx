@@ -1410,6 +1410,12 @@
   <data name="MaximumConnectionsPerIpPlugIn_Description" xml:space="preserve">
     <value>Begrenzt die maximale Anzahl paralleler Verbindungen von derselben IP-Adresse.</value>
   </data>
+  <data name="LoginTimeoutPlugIn_Name" xml:space="preserve">
+    <value>Anmelde-Zeitlimit</value>
+  </data>
+  <data name="LoginTimeoutPlugIn_Description" xml:space="preserve">
+    <value>Trennt Clients, die sich nicht innerhalb der eingestellten Zeit nach dem Verbinden anmelden.</value>
+  </data>
   <data name="SpeedHackDetectPlugIn_Name" xml:space="preserve">
     <value>Speedhack-Anti-Cheat</value>
   </data>
@@ -1595,6 +1601,9 @@
   </data>
   <data name="MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption" xml:space="preserve">
     <value>Maximale Verbindungen pro IP</value>
+  </data>
+  <data name="LoginTimeoutPlugInConfiguration_Timeout_Caption" xml:space="preserve">
+    <value>Zeitlimit</value>
   </data>
   <data name="SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption" xml:space="preserve">
     <value>Minimales Angriffsintervall (ms)</value>
