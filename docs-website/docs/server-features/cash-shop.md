@@ -123,16 +123,18 @@ storage.
 
 ### Gold and Silver Keys
 
-The Gold Key and the Silver Key open a Sealed Golden Box and a Sealed Silver Box.
-Put a key together with its sealed box into the chaos machine of the chaos goblin;
-the combination always succeeds, costs no money and creates a Golden Box or a
-Silver Box. Like a *Box of Luck*, an opened box is used by dropping it: it gives
-an excellent item, a jewel, or money otherwise. The Golden Box has the better
-contents. Their drop groups can be changed on the **Item drops** page (*Item box drops*).
+The Gold Key and the Silver Key open a Sealed Golden Box and a Sealed Silver
+Box. Put a key together with its sealed box into the chaos machine of the
+chaos goblin; the combination always succeeds, costs no money and creates a
+Golden Box or a Silver Box. Like a *Box of Luck*, an opened box is used by
+dropping it: it gives an excellent item, a jewel, or money otherwise. The
+Golden Box has the better contents. Their drop groups can be changed on the
+**Item drops** page (*Item box drops*).
 
 The sealed boxes don't drop from monsters by default, because their original
-source and chances aren't known. Add them to a drop group to make the keys useful.
-Existing databases get the keys and boxes with the configuration update *Add golden and silver boxes*.
+source and chances aren't known. Add them to a drop group to make the keys
+useful. Existing databases get the keys and boxes with the configuration update
+*Add golden and silver boxes*.
 
 ### Special items
 
