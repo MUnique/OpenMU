@@ -40,7 +40,8 @@ internal class Jewelery : Version095d.Items.Jewelery
     /// Like the other jewelery, they wear out slowly while they're equipped outside of the safezone.
     /// In the shop, they're sold for a limited time, which isn't supported yet, so the packages which
     /// contain them stay not for sale.
-    /// The rules which block trading and selling them are applied by the <see cref="ItemRules"/>.
+    /// The rules which block trading them are applied by the <see cref="ItemRules"/>. They can still be sold to
+    /// an NPC, so a player can get rid of one which wore out, because they can't be repaired.
     /// </remarks>
     internal IReadOnlyList<ItemDefinition> CreateCashShopJewelery()
     {

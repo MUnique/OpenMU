@@ -124,8 +124,9 @@ storage.
 ### Rings and necklaces
 
 The rings and necklaces of the shop are defined as items with fixed bonuses,
-like the game client shows them. They can't be upgraded, traded, dropped, sold
-or repaired.
+like the game client shows them. They can't be upgraded, traded, dropped or
+repaired. A player can sell them to an NPC, for example to get rid of one which
+wore out.
 
 | Item | Bonus |
 |---|---|

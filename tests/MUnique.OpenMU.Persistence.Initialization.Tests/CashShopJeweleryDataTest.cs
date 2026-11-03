@@ -98,7 +98,7 @@ internal class CashShopJeweleryDataTest
             && item.MaximumItemLevel == 0
             && !item.DropsFromMonsters
             && !item.IsTradable
-            && !item.IsSellableToNpc
+            && item.IsSellableToNpc
             && !item.IsRepairable
             && item.StatProfile is not null
             && item.PossibleItemOptions.Count == 0
