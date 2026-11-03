@@ -416,4 +416,6 @@
   <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class. The packages of the in-game shop which contain the tickets are put on sale.</value></data>
   <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add buff items</value></data>
   <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the seals, scrolls, elixirs and auras of the in-game shop, which apply a timed effect when they are used. Existing items with the same numbers are left unchanged.</value></data>
+  <data name="AddElitePotionsUpdatePlugIn_Name" xml:space="preserve"><value>Add elite potions</value></data>
+  <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the elite healing, mana and SD potions of the in-game shop, which recover health, mana or shield immediately. The packages of the in-game shop which contain them are put on sale.</value></data>
 </root>

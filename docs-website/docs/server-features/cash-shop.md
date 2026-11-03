@@ -136,6 +136,25 @@ Existing databases get the fruits with the optional configuration update *Add
 reset fruits*, which also puts their packages on sale. Each fruit is handled by its own plugin, for example *Reset Fruit of
 Strength Consume Handler*, which can be deactivated on the **Plugins** page. Its
 configuration there also sets the *Points per durability* (10 by default).
+### Elite potions
+
+The elite potions recover a percentage of the maximum value immediately,
+independent of the character level, as the game client describes them:
+
+| Potion | Recovers |
+|---|---|
+| Elite Healing Potion | 100% health |
+| Elite Mana Potion | 100% mana |
+| Medium Elite Healing Potion | 65% health |
+| Elite SD Potion | 65% shield |
+
+They share the cooldown of the usual potions, stack up to 50 pieces, and can't
+be traded, dropped or sold. The percentage and the cooldown can be changed in
+the configuration of their consume handler plugins, for example *Elite Healing
+Potion Consume Handler*, on the **Plugins** page.
+
+Existing databases get the potions with the configuration update *Add elite
+potions*.
 
 ### Special items
 

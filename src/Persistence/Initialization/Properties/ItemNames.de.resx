@@ -1806,6 +1806,18 @@
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>Großer SD-Trank</value>
   </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>Elite-Heiltrank</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>Elite-Manatrank</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>Mittlerer Elite-Heiltrank</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>Elite-SD-Trank</value>
+  </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>Kleiner Komplextrank</value>
   </data>

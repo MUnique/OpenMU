@@ -1830,6 +1830,18 @@
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>Large Shield Potion</value>
   </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>Elite Healing Potion</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>Elite Mana Potion</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>Medium Elite Healing Potion</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>Elite SD Potion</value>
+  </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>Small Complex Potion</value>
   </data>

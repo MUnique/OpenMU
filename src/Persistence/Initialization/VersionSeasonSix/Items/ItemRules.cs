@@ -272,6 +272,8 @@ public class ItemRules : InitializerBase
         Rule(14, 66, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Hell-Miner Horn
         Rule(14, 67, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Dark Phoenix Feather
         Rule(14, 68, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.PersonalStore, Blocked.Repair), // Abyssal Eye
+        Rule(14, 70, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite Healing Potion
+        Rule(14, 71, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite Mana Potion
         Rule(14, 72, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Quickness
         Rule(14, 73, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Defense
         Rule(14, 74, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Wrath
@@ -288,6 +290,7 @@ public class ItemRules : InitializerBase
         Rule(14, 86, Blocked.Repair), // Cherry Blossom Rice Cake
         Rule(14, 87, Blocked.Repair), // Cherry Blossom Flower Petal
         Rule(14, 90, Blocked.Repair), // Golden Cherry Blossom Branch
+        Rule(14, 94, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Medium Elite Healing Potion
         Rule(14, 97, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Battle
         Rule(14, 98, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Strength
         Rule(14, 99, Blocked.Repair), // Christmas Firecracker
@@ -300,6 +303,7 @@ public class ItemRules : InitializerBase
         Rule(14, 107, Blocked.Repair), // Fifth Secromicon Fragment
         Rule(14, 108, Blocked.Repair), // Sixth Secromicon Fragment
         Rule(14, 109, Blocked.Repair), // Complete Secromicon
+        Rule(14, 133, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite SD Potion
         Rule(14, 140, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Healing
         Rule(14, 160, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Extension
         Rule(14, 161, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Elevation

@@ -1742,4 +1742,28 @@
   <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
     <value>发布战盟、联盟和世界聊天</value>
   </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>精华治疗药水使用</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理精华治疗药水的使用和消耗，立即恢复生命值。</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>精华魔力药水使用</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理精华魔力药水的使用和消耗，立即恢复魔力值。</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>精华SD药水使用</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理精华SD药水的使用和消耗，立即恢复SD值。</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>中瓶精华治疗药水使用</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理中瓶精华治疗药水的使用和消耗，立即恢复部分生命值。</value>
+  </data>
 </root>

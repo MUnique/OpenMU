@@ -1804,4 +1804,28 @@
   <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
     <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
   </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite healing potion consumption. It recovers the health immediately.</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Mana Potion Consume Handler</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite mana potion consumption. It recovers the mana immediately.</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite SD Potion Consume Handler</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite SD potion consumption. It recovers the shield immediately.</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+  </data>
 </root>
