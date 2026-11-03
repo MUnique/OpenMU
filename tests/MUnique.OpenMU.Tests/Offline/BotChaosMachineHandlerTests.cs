@@ -14,6 +14,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
@@ -232,6 +233,64 @@ public class BotChaosMachineHandlerTests
             Assert.That(AmountOf("Jewel of Bless"), Is.EqualTo(level - 8), $"+{level}");
             Assert.That(AmountOf("Jewel of Soul"), Is.EqualTo(level - 8), $"+{level}");
         }
+    }
+
+    /// <summary>
+    /// Tests that the bot finds a way to the goblin of Noria: the goblin stands on a blocked tile, so no
+    /// route from the town gate ends on it, but one ends on the standing point within talk range.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task RouteToTheNoriaGoblinEndsNextToItAsync()
+    {
+        const int talkRange = 3;
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        await new Persistence.Initialization.VersionSeasonSix.DataInitialization(contextProvider, NullLoggerFactory.Instance)
+            .CreateInitialDataAsync(1, false).ConfigureAwait(false);
+        using var context = contextProvider.CreateNewContext();
+        var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+        var noria = configuration.Maps.Single(m => m.Number == 3);
+        var spawn = noria.MonsterSpawns.Single(s => s.MonsterDefinition is { } monster && BotChaosMachineHandler.IsChaosMachine(monster));
+        var goblin = new Point(spawn.X1, spawn.Y1);
+        var terrain = new GameMapTerrain(noria);
+        var start = terrain.GetWalkableCoordinate(noria.ExitGates.First(g => g.IsSpawnGate))!.Value;
+        var finder = new PathFinder(new FullGridNetwork(true));
+
+        var standingPoint = BotChaosMachineHandler.FindStandingPoint(terrain, goblin, talkRange);
+
+        Assert.That(terrain.WalkMap[goblin.X, goblin.Y], Is.False, "the goblin's own tile is blocked");
+        Assert.That(finder.FindPath(start, goblin, terrain.AIgrid, true), Is.Null.Or.Empty);
+        Assert.That(standingPoint, Is.Not.Null);
+        Assert.That(goblin.EuclideanDistanceTo(standingPoint!.Value), Is.LessThanOrEqualTo(talkRange));
+        finder.ResetPathFinder();
+        Assert.That(finder.FindPath(start, standingPoint.Value, terrain.AIgrid, true), Is.Not.Null.And.Not.Empty);
+    }
+
+    /// <summary>
+    /// Tests that the standing point is the NPC's own tile when it is walkable, the closest walkable tile
+    /// otherwise, and none when everything within the talk range is blocked.
+    /// </summary>
+    [Test]
+    public void StandingPointIsTheClosestWalkableTile()
+    {
+        var npc = new Point(100, 100);
+        var terrain = new GameMapTerrain((byte[]?)null);
+        Assert.That(BotChaosMachineHandler.FindStandingPoint(terrain, npc, 3), Is.EqualTo(npc));
+
+        for (var x = 97; x <= 103; x++)
+        {
+            for (var y = 97; y <= 103; y++)
+            {
+                if (x != 102 || y != 100)
+                {
+                    terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, true);
+                }
+            }
+        }
+
+        Assert.That(BotChaosMachineHandler.FindStandingPoint(terrain, npc, 3), Is.EqualTo(new Point(102, 100)));
+        terrain.ApplyTerrainAttribute(102, 100, TerrainAttributeType.Blocked, true);
+        Assert.That(BotChaosMachineHandler.FindStandingPoint(terrain, npc, 3), Is.Null);
     }
 
     private static ItemDefinition CreateDefinition(byte group, short number, int? slot, Player? qualified = null)

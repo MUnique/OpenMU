@@ -295,6 +295,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Target position of the current chaos machine trip, or null, if there is none.</summary>
     private Point? _chaosMachineTarget;
 
+    /// <summary>The walkable tile next to the goblin the current chaos machine trip walks to.</summary>
+    private Point _chaosMachineStandingPoint;
+
     /// <summary>
     /// When the bot considers a chaos machine trip again; the first one is spread over the cooldown, so
     /// a population does not crowd the goblin at once after a restart.
@@ -1321,7 +1324,7 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             if (this._player.GetDistanceTo(target) > MerchantTalkRange)
             {
-                if (!await this.TravelTowardAsync(map, target, cancellationToken).ConfigureAwait(false))
+                if (!await this.TravelTowardAsync(map, this._chaosMachineStandingPoint, cancellationToken).ConfigureAwait(false))
                 {
                     this._player.Logger.LogDebug("Bot '{Name}' gives up its chaos machine trip: no route to the goblin at {Target}.", this._player.Name, target);
                     this._chaosMachineTarget = null;
@@ -1375,6 +1378,12 @@ internal sealed class BotNavigator : AsyncDisposable
             return false;
         }
 
+        if (BotChaosMachineHandler.FindStandingPoint(map.Terrain, goblinPosition, MerchantTalkRange) is not { } standingPoint)
+        {
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+            return false;
+        }
+
         // The goblin stands in town: when out in the field, warp to the map's safezone first.
         if (!inSafezone
             && map.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } townGate)
@@ -1385,6 +1394,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         this._chaosMachineTarget = goblinPosition;
+        this._chaosMachineStandingPoint = standingPoint;
         this._player.IsOnChaosMachineTrip = true;
         this._player.Logger.LogDebug("Bot '{Name}' heads to the chaos machine.", this._player.Name);
         return true;

@@ -101,6 +101,38 @@ internal static class BotChaosMachineHandler
         => map.GetNpcsInRange(new Point(128, 128), 256).FirstOrDefault(n => IsChaosMachine(n.Definition))?.Position;
 
     /// <summary>
+    /// Finds the walkable tile closest to an NPC from which the bot can talk to it - the end of the route
+    /// to the NPC.
+    /// </summary>
+    /// <remarks>
+    /// The goblin of Noria stands on a blocked tile, and a route can't end on one.
+    /// </remarks>
+    /// <param name="terrain">The terrain of the map.</param>
+    /// <param name="npcPosition">The position of the NPC.</param>
+    /// <param name="talkRange">The distance up to which the bot can talk to the NPC.</param>
+    /// <returns>The tile, or <c>null</c>, if there is no walkable one within the range.</returns>
+    public static Point? FindStandingPoint(GameMapTerrain terrain, Point npcPosition, int talkRange)
+    {
+        Point? best = null;
+        var bestDistance = double.MaxValue;
+        for (var x = Math.Max(0, npcPosition.X - talkRange); x <= Math.Min(byte.MaxValue, npcPosition.X + talkRange); x++)
+        {
+            for (var y = Math.Max(0, npcPosition.Y - talkRange); y <= Math.Min(byte.MaxValue, npcPosition.Y + talkRange); y++)
+            {
+                var candidate = new Point((byte)x, (byte)y);
+                var distance = npcPosition.EuclideanDistanceTo(candidate);
+                if (distance <= talkRange && distance < bestDistance && terrain.WalkMap[x, y])
+                {
+                    best = candidate;
+                    bestDistance = distance;
+                }
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
     /// Mixes the next planned piece at the chaos machine standing near the given position, and puts the
     /// result back on.
     /// </summary>
