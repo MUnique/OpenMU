@@ -132,8 +132,8 @@ fruit is used up, even if fewer points were invested. All items have to be
 unequipped, and the points don't count towards the maximum of the usual fruits
 which remove points. The fruits can't be traded, dropped or sold.
 
-Existing databases get the fruits with the configuration update *Add reset
-fruits*. Each fruit is handled by its own plugin, for example *Reset Fruit of
+Existing databases get the fruits with the optional configuration update *Add
+reset fruits*, which also puts their packages on sale. Each fruit is handled by its own plugin, for example *Reset Fruit of
 Strength Consume Handler*, which can be deactivated on the **Plugins** page. Its
 configuration there also sets the *Points per durability* (10 by default).
 
