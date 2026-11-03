@@ -50,6 +50,31 @@ public class ItemConstants
     public static ItemIdentifier Fruits => new(15, 13);
 
     /// <summary>
+    /// Gets the identifier for the reset fruit of strength, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier StrengthResetFruit => new(54, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of agility, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier AgilityResetFruit => new(55, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of vitality, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier VitalityResetFruit => new(56, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of energy, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier EnergyResetFruit => new(57, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of command, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier CommandResetFruit => new(58, 13);
+
+    /// <summary>
     /// Gets the identifier for the fenrir.
     /// </summary>
     public static ItemIdentifier Fenrir => new(37, 13);

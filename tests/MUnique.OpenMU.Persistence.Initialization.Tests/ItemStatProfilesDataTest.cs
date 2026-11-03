@@ -204,7 +204,7 @@ internal class ItemStatProfilesDataTest
         {
             "armor: 274",
             "book: 3",
-            "default: 179",
+            "default: 184",
             "firstTierWing: 4",
             "helper: 27",
             "orb: 12",
