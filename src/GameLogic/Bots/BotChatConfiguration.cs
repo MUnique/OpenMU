@@ -264,6 +264,18 @@ public class BotChatConfiguration
     public ICollection<BotChatReply> WhisperReplies { get; set; } = new List<BotChatReply>();
 
     /// <summary>
+    /// Gets or sets the typical words and letters by which a bot recognizes the language of a
+    /// player's message (whisper, mention, party chat, meeting place): it answers in that language,
+    /// even when the player's account language is another one. A message which doesn't tell is
+    /// answered in the player's own language.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MessageLanguages_Name), Description = nameof(PlugInResources.BotChatConfiguration_MessageLanguages_Description))]
+    public ICollection<BotChatLanguageHint> MessageLanguages { get; set; } = new List<BotChatLanguageHint>();
+
+    /// <summary>
     /// Gets or sets the lines the nearest bot greets a player with who entered the game.
     /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
@@ -601,6 +613,17 @@ public class BotChatConfiguration
             ("{map} is too much for me", "{map} to dla mnie za dużo"),
             ("my level is too low for {map}", "za niski lvl na {map}"),
             ("{map}? no way, not yet", "{map}? jeszcze nie dam rady"));
+        configuration.MessageLanguages.Add(new BotChatLanguageHint
+        {
+            Language = "pl",
+            Words = "jak, się, sie, masz, cześć, czesc, siema, siemka, gdzie, jesteś, jestes, dzięki, dzieki, dziękuję, dziekuje, nara, poziom, grupa, grupę, grupe, muszę, musze, kończyć, konczyc, spadam, co, tam, słychać, slychac, jaki, jaka, który, ktory, czy, nie, tak, dobra, pomoc, pomożesz, pomozesz, kupię, kupie, sprzedam, idę, ide, jestem, mam, tutaj, chodź, chodz, witam, dobranoc, dzień, dzien, dobry, czym, grasz, expisz, gdzie, potrzebuję, potrzebuje",
+            Letters = "ąćęłńóśźż",
+        });
+        configuration.MessageLanguages.Add(new BotChatLanguageHint
+        {
+            Language = "en",
+            Words = "how, are, you, hello, hi, where, what, level, thanks, thank, bye, the, is, need, help, your, which, can, come, here, see, good, have, going, sell, buy",
+        });
         BotConversationDefaults.AddTo(configuration.Conversations);
         AddClass("dk, bk, bm, knight, dark knight, blade knight, blade master, rycerz", BotClassNumbers.DarkKnightNumber);
         AddClass("dw, sm, gm, wizard, dark wizard, soul master, grand master, mag", BotClassNumbers.DarkWizardNumber);

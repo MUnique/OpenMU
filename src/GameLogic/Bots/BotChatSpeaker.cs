@@ -28,7 +28,8 @@ internal static class BotChatSpeaker
     /// <param name="bot">The speaking bot.</param>
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static ValueTask SayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    /// <param name="language">The language to say it in, for every receiver; <c>null</c> for each receiver's own.</param>
+    internal static ValueTask SayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
@@ -36,7 +37,7 @@ internal static class BotChatSpeaker
         }
 
         return bot.ForEachObservingAsync<Player>(
-            receiver => SendAsync(receiver, BotChatComposer.Render(text, receiver.Culture, values), name, ChatMessageType.Normal),
+            receiver => SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Normal),
             false);
     }
 
@@ -47,14 +48,15 @@ internal static class BotChatSpeaker
     /// <param name="receiver">The receiving player.</param>
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static ValueTask WhisperAsync(Player bot, Player receiver, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    /// <param name="language">The language to whisper in; <c>null</c> for the receiver's own.</param>
+    internal static ValueTask WhisperAsync(Player bot, Player receiver, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
             return ValueTask.CompletedTask;
         }
 
-        return SendAsync(receiver, BotChatComposer.Render(text, receiver.Culture, values), name, ChatMessageType.Whisper);
+        return SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Whisper);
     }
 
     /// <summary>
@@ -63,7 +65,8 @@ internal static class BotChatSpeaker
     /// <param name="bot">The speaking bot.</param>
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static async ValueTask PartySayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    /// <param name="language">The language to say it in, for every receiver; <c>null</c> for each receiver's own.</param>
+    internal static async ValueTask PartySayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
     {
         if (bot.SelectedCharacter?.Name is not { } name || bot.Party is not { } party)
         {
@@ -72,7 +75,7 @@ internal static class BotChatSpeaker
 
         foreach (var receiver in party.PartyList.OfType<Player>())
         {
-            await SendAsync(receiver, BotChatComposer.Render(text, receiver.Culture, values), name, ChatMessageType.Party).ConfigureAwait(false);
+            await SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Party).ConfigureAwait(false);
         }
     }
 
