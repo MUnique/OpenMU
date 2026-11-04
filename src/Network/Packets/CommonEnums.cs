@@ -92,6 +92,16 @@ using static System.Buffers.Binary.BinaryPrimitives;    /// <summary>
         /// The storage of the seed sphere unmount dialog.
         /// </summary>
             SeedUnmountCrafting = 14,
+
+        /// <summary>
+        /// The storage of the lucky item exchange dialog of the david npc.
+        /// </summary>
+            LuckyItemTrade = 15,
+
+        /// <summary>
+        /// The storage of the lucky item refinery dialog of the david npc.
+        /// </summary>
+            LuckyItemRefinery = 16,
     }
 
     /// <summary>

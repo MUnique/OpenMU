@@ -205,6 +205,31 @@ internal enum MagicEffectNumber : short
     ScrollOfMana = 0x31,
 
     /// <summary>
+    /// The elixir of strength effect.
+    /// </summary>
+    ElixirOfStrength = 0x32,
+
+    /// <summary>
+    /// The elixir of agility effect.
+    /// </summary>
+    ElixirOfAgility = 0x33,
+
+    /// <summary>
+    /// The elixir of vitality effect.
+    /// </summary>
+    ElixirOfVitality = 0x34,
+
+    /// <summary>
+    /// The elixir of energy effect.
+    /// </summary>
+    ElixirOfEnergy = 0x35,
+
+    /// <summary>
+    /// The elixir of leadership effect.
+    /// </summary>
+    ElixirOfLeadership = 0x36,
+
+    /// <summary>
     /// The poisoned effect.
     /// </summary>
     Poisoned = 0x37,
@@ -299,6 +324,51 @@ internal enum MagicEffectNumber : short
     /// Like <see cref="Iced"/>, it slows down movement, but more so.
     /// </summary>
     Cold = 0x56,
+
+    /// <summary>
+    /// The seal of healing effect.
+    /// </summary>
+    SealOfHealing = 0x57,
+
+    /// <summary>
+    /// The seal of divinity effect.
+    /// </summary>
+    SealOfDivinity = 0x58,
+
+    /// <summary>
+    /// The scroll of battle effect.
+    /// </summary>
+    ScrollOfBattle = 0x59,
+
+    /// <summary>
+    /// The scroll of strength effect.
+    /// </summary>
+    ScrollOfStrength = 0x5A,
+
+    /// <summary>
+    /// The master seal of ascension effect.
+    /// </summary>
+    MasterSealOfAscension = 0x65,
+
+    /// <summary>
+    /// The master seal of wealth effect.
+    /// </summary>
+    MasterSealOfWealth = 0x66,
+
+    /// <summary>
+    /// The max AG boost aura effect.
+    /// </summary>
+    MaxAbilityBoostAura = 0x71,
+
+    /// <summary>
+    /// The max SD boost aura effect.
+    /// </summary>
+    MaxShieldBoostAura = 0x72,
+
+    /// <summary>
+    /// The scroll of healing effect.
+    /// </summary>
+    ScrollOfHealing = 0x79,
 
     /// <summary>
     /// The ignore defense effect of the rage fighter.

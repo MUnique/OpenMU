@@ -79,11 +79,65 @@ namespace MUnique.OpenMU.Web.Map.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear filter.
+        /// </summary>
+        public static string ClearFilter {
+            get {
+                return ResourceManager.GetString("ClearFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disconnect.
         /// </summary>
         public static string Disconnect {
             get {
                 return ResourceManager.GetString("Disconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to contains.
+        /// </summary>
+        public static string FilterContains {
+            get {
+                return ResourceManager.GetString("FilterContains", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ends with.
+        /// </summary>
+        public static string FilterEndsWith {
+            get {
+                return ResourceManager.GetString("FilterEndsWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter monsters.
+        /// </summary>
+        public static string FilterMonsters {
+            get {
+                return ResourceManager.GetString("FilterMonsters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name or part of it.
+        /// </summary>
+        public static string FilterMonstersPlaceholder {
+            get {
+                return ResourceManager.GetString("FilterMonstersPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to starts with.
+        /// </summary>
+        public static string FilterStartsWith {
+            get {
+                return ResourceManager.GetString("FilterStartsWith", resourceCulture);
             }
         }
         
@@ -133,6 +187,15 @@ namespace MUnique.OpenMU.Web.Map.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} matching monsters.
+        /// </summary>
+        public static string MatchingMonsters {
+            get {
+                return ResourceManager.GetString("MatchingMonsters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
@@ -147,6 +210,15 @@ namespace MUnique.OpenMU.Web.Map.Properties {
         public static string NoGameMapsHosted {
             get {
                 return ResourceManager.GetString("NoGameMapsHosted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No matching monster on this map.
+        /// </summary>
+        public static string NoMatchingMonsters {
+            get {
+                return ResourceManager.GetString("NoMatchingMonsters", resourceCulture);
             }
         }
         

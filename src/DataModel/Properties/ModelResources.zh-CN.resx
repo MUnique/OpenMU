@@ -4051,6 +4051,12 @@
   <data name="MixResult_ThirdWingsDowngradedRandom_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MixResult_DisappearAndProtectReferencedItems_Caption" xml:space="preserve">
+    <value>消失并保护引用的物品</value>
+  </data>
+  <data name="MixResult_DisappearAndProtectReferencedItems_Description" xml:space="preserve">
+    <value>该物品消失。合成失败时，引用的物品（例如强化的物品）保持不变。</value>
+  </data>
   <data name="ModelResourceProvider_TypeCaption" xml:space="preserve">
     <value>模型资源提供器</value>
   </data>

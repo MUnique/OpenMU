@@ -1946,6 +1946,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Moves the character to the safezone of a mini game map, if it was saved on one and doesn't
+    /// rejoin a running game. E.g. the winners of the Illusion Temple stay on its map until they close the
+    /// result dialog; a character which left the game there would otherwise log in on the empty event map.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void MoveOutOfMiniGameMap(Character character)
+    {
+        if (character.CurrentMap is not { } map
+            || this.GameContext.Configuration.MiniGameDefinitions?.Any(definition => Equals(definition.Entrance?.Map, map)) is not true)
+        {
+            return;
+        }
+
+        var targetMap = this.GameContext.Configuration.GetActiveSpawnMap(map.SafezoneMap, character.CharacterClass?.HomeMap);
+        if (targetMap?.GetSafezoneGate() is not { } spawnGate)
+        {
+            this.Logger.LogWarning("Character {character} is on the mini game map {map}, but there is no safezone to move it to.", character, map);
+            return;
+        }
+
+        this.Logger.LogInformation("Character {character} is on the mini game map {map} without a running game, moving it to {targetMap}.", character, map, targetMap);
+        character.CurrentMap = targetMap;
+        character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2 + 1);
+        character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2 + 1);
+    }
+
+    /// <summary>
     /// Releases the attribute system of the character which was in the game.
     /// </summary>
     /// <remarks>
@@ -2079,7 +2106,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
         this.MoveOutOfInactiveMap(selectedCharacter);
-        await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
+        if (!await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false))
+        {
+            this.MoveOutOfMiniGameMap(selectedCharacter);
+        }
+
         this.AddMissingStatAttributes();
 
         // The previous character of this connection may still hold its attribute system.

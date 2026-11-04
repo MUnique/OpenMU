@@ -353,6 +353,12 @@
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
     <value>添加狼魂要塞活动的怪物及其刷新点，使要塞的神狼雕像和护台始终位于地图上，并添加要塞的传送条目和各占领状态的地形。</value>
   </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加卡利玛门票</value>
+  </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加卡利玛门票，可打开通往与角色等级相符的卡利玛层级的传送门。包含它的游戏商城礼包将开始出售。</value>
+  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加小翅膀和小披风</value>
   </data>
@@ -393,6 +399,12 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>添加以数据形式保存物品公式（需求如何增长、卓越和远古物品额外获得的值）的物品属性配置，并为每个物品指定其类型的配置。游戏计算的数值保持不变；已有的配置和已有配置的物品保持不变。</value>
   </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加游戏商城的指环和项链</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充游戏商城的巫师致命指环、蓝宝石指环、红宝石指环、黄宝石指环、紫水晶指环，以及红宝石项链、绿宝石项链和蓝宝石项链，并带有其固定加成。由于商城限时出售这些物品，而限时物品尚不受支持，其礼包仍不出售。</value>
+  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>添加合成成功率加成属性</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>添加用于定义物品合成成功率额外增加的百分点的属性。</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>
@@ -403,10 +415,40 @@
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Description" xml:space="preserve">
     <value>添加玄冰剑的冰冻概率，使攻击转变为冰系技能。</value>
   </data>
+  <data name="AddResetFruitsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加重置果实</value>
+  </data>
+  <data name="AddResetFruitsUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充力量、敏捷、体力、智力和统率重置果实，可收回某项属性已分配的点数并返还为升级点数。包含这些果实的游戏商城礼包将开始出售。</value>
+  </data>
   <data name="AddFreeTicketItemsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加活动自由入场券</value>
   </data>
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>补充恶魔广场、血色城堡、幻影寺院和赤色要塞的自由入场券，可进入任意等级的活动。包含这些入场券的游戏商城礼包将开始出售。</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加幸运装备</value>
+  </data>
+  <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加幸运套装、幸运装备兑换券以及延长宝石和提升宝石。精灵之地的大卫可将兑换券兑换为适合角色职业的幸运装备。包含兑换券的游戏商城礼包将开始出售。</value>
+  </data>
+  <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加增益道具</value>
+  </data>
+  <data name="AddBuffItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加游戏商城中的印章、卷轴、秘药和光环，使用后会获得限时效果。已存在的相同编号的道具保持不变。</value>
+  </data>
+  <data name="AddElitePotionsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加精华药水</value>
+  </data>
+  <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充游戏商城的精华治疗、魔力和SD药水，可立即恢复生命值、魔力值或SD值。包含这些药水的游戏商城礼包将开始出售。</value>
+  </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加合成符咒</value>
+  </data>
+  <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>添加幸运符咒（按其耐久度的百分比提高合成成功率）和混沌合成符咒（+10 至 +15 物品强化失败时保留物品）。它们会被加入可使用它们的合成中，包含它们的游戏商城礼包将开始出售。</value>
   </data>
 </root>

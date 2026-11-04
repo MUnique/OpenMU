@@ -1689,6 +1689,9 @@
   <data name="GameMasterTransformationRing" xml:space="preserve">
     <value>Game Master Transformation Ring</value>
   </data>
+  <data name="KalimaTicket" xml:space="preserve">
+    <value>Kalima Ticket</value>
+  </data>
   <data name="OldScroll" xml:space="preserve">
     <value>Old Scroll</value>
   </data>
@@ -1718,6 +1721,30 @@
   </data>
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>Panda Transformation Ring</value>
+  </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>Lethal Wizard's Ring</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>Sapphire Ring</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>Ruby Ring</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>Topaz Ring</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>Amethyst Ring</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>Ruby Necklace</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>Emerald Necklace</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>Sapphire Necklace</value>
   </data>
   <data name="PetPanda" xml:space="preserve">
     <value>Pet Panda</value>
@@ -1829,6 +1856,18 @@
   </data>
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>Large Shield Potion</value>
+  </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>Elite Healing Potion</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>Elite Mana Potion</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>Medium Elite Healing Potion</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>Elite SD Potion</value>
   </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>Small Complex Potion</value>
@@ -2079,6 +2118,21 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>Doppelganger Free Ticket</value>
   </data>
+  <data name="ResetFruitStrength" xml:space="preserve">
+    <value>Reset Fruit (Strength)</value>
+  </data>
+  <data name="ResetFruitAgility" xml:space="preserve">
+    <value>Reset Fruit (Agility)</value>
+  </data>
+  <data name="ResetFruitVitality" xml:space="preserve">
+    <value>Reset Fruit (Vitality)</value>
+  </data>
+  <data name="ResetFruitEnergy" xml:space="preserve">
+    <value>Reset Fruit (Energy)</value>
+  </data>
+  <data name="ResetFruitCommand" xml:space="preserve">
+    <value>Reset Fruit (Command)</value>
+  </data>
   <data name="DevilSquareFreeTicket" xml:space="preserve">
     <value>Devil Square Ticket</value>
   </data>
@@ -2108,5 +2162,158 @@
   </data>
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Cursed Castle Water</value>
+  </data>
+  <data name="SphinxHelm" xml:space="preserve">
+    <value>Sphinx Helm</value>
+  </data>
+  <data name="ViolentWindHelm" xml:space="preserve">
+    <value>Violent Wind Helm</value>
+  </data>
+  <data name="ViolentWindArmor" xml:space="preserve">
+    <value>Violent Wind Armor</value>
+  </data>
+  <data name="ViolentWindPants" xml:space="preserve">
+    <value>Violent Wind Pants</value>
+  </data>
+  <data name="ViolentWindGloves" xml:space="preserve">
+    <value>Violent Wind Gloves</value>
+  </data>
+  <data name="ViolentWindBoots" xml:space="preserve">
+    <value>Violent Wind Boots</value>
+  </data>
+  <data name="AtlansArmor" xml:space="preserve">
+    <value>Atlans Armor</value>
+  </data>
+  <data name="AtlansPants" xml:space="preserve">
+    <value>Atlans Pants</value>
+  </data>
+  <data name="AtlansGloves" xml:space="preserve">
+    <value>Atlans Gloves</value>
+  </data>
+  <data name="AtlansBoots" xml:space="preserve">
+    <value>Atlans Boots</value>
+  </data>
+  <data name="StormJahadHelm" xml:space="preserve">
+    <value>Storm Jahad Helm</value>
+  </data>
+  <data name="StormJahadArmor" xml:space="preserve">
+    <value>Storm Jahad Armor</value>
+  </data>
+  <data name="StormJahadPants" xml:space="preserve">
+    <value>Storm Jahad Pants</value>
+  </data>
+  <data name="StormJahadBoots" xml:space="preserve">
+    <value>Storm Jahad Boots</value>
+  </data>
+  <data name="FirstLuckyArmorTicket" xml:space="preserve">
+    <value>1st Lucky Armor Ticket</value>
+  </data>
+  <data name="FirstLuckyPantsTicket" xml:space="preserve">
+    <value>1st Lucky Pants Ticket</value>
+  </data>
+  <data name="FirstLuckyHelmTicket" xml:space="preserve">
+    <value>1st Lucky Helm Ticket</value>
+  </data>
+  <data name="FirstLuckyGlovesTicket" xml:space="preserve">
+    <value>1st Lucky Gloves Ticket</value>
+  </data>
+  <data name="FirstLuckyBootsTicket" xml:space="preserve">
+    <value>1st Lucky Boots Ticket</value>
+  </data>
+  <data name="SecondLuckyArmorTicket" xml:space="preserve">
+    <value>2nd Lucky Armor Ticket</value>
+  </data>
+  <data name="SecondLuckyPantsTicket" xml:space="preserve">
+    <value>2nd Lucky Pants Ticket</value>
+  </data>
+  <data name="SecondLuckyHelmTicket" xml:space="preserve">
+    <value>2nd Lucky Helm Ticket</value>
+  </data>
+  <data name="SecondLuckyGlovesTicket" xml:space="preserve">
+    <value>2nd Lucky Gloves Ticket</value>
+  </data>
+  <data name="SecondLuckyBootsTicket" xml:space="preserve">
+    <value>2nd Lucky Boots Ticket</value>
+  </data>
+  <data name="JewelOfExtension" xml:space="preserve">
+    <value>Jewel of Extension</value>
+  </data>
+  <data name="JewelOfElevation" xml:space="preserve">
+    <value>Jewel of Elevation</value>
+  </data>
+  <data name="SealOfAscension" xml:space="preserve">
+    <value>Seal of Ascension</value>
+  </data>
+  <data name="SealOfWealth" xml:space="preserve">
+    <value>Seal of Wealth</value>
+  </data>
+  <data name="SealOfSustenance" xml:space="preserve">
+    <value>Seal of Sustenance</value>
+  </data>
+  <data name="SealOfHealing" xml:space="preserve">
+    <value>Seal of Healing</value>
+  </data>
+  <data name="SealOfDivinity" xml:space="preserve">
+    <value>Seal of Divinity</value>
+  </data>
+  <data name="MasterSealOfAscension" xml:space="preserve">
+    <value>Master Seal of Ascension</value>
+  </data>
+  <data name="MasterSealOfWealth" xml:space="preserve">
+    <value>Master Seal of Wealth</value>
+  </data>
+  <data name="MaxAgBoostAura" xml:space="preserve">
+    <value>Max AG Boost Aura</value>
+  </data>
+  <data name="MaxSdBoostAura" xml:space="preserve">
+    <value>Max SD Boost Aura</value>
+  </data>
+  <data name="ScrollOfQuickness" xml:space="preserve">
+    <value>Scroll of Quickness</value>
+  </data>
+  <data name="ScrollOfDefense" xml:space="preserve">
+    <value>Scroll of Defense</value>
+  </data>
+  <data name="ScrollOfWrath" xml:space="preserve">
+    <value>Scroll of Wrath</value>
+  </data>
+  <data name="ScrollOfWizardry" xml:space="preserve">
+    <value>Scroll of Wizardry</value>
+  </data>
+  <data name="ScrollOfHealth" xml:space="preserve">
+    <value>Scroll of Health</value>
+  </data>
+  <data name="ScrollOfMana" xml:space="preserve">
+    <value>Scroll of Mana</value>
+  </data>
+  <data name="ElixirOfStrength" xml:space="preserve">
+    <value>Elixir of Strength</value>
+  </data>
+  <data name="ElixirOfAgility" xml:space="preserve">
+    <value>Elixir of Agility</value>
+  </data>
+  <data name="ElixirOfHealth" xml:space="preserve">
+    <value>Elixir of Health</value>
+  </data>
+  <data name="ElixirOfEnergy" xml:space="preserve">
+    <value>Elixir of Energy</value>
+  </data>
+  <data name="ElixirOfControl" xml:space="preserve">
+    <value>Elixir of Control</value>
+  </data>
+  <data name="ScrollOfBattle" xml:space="preserve">
+    <value>Scroll of Battle</value>
+  </data>
+  <data name="ScrollOfStrength" xml:space="preserve">
+    <value>Scroll of Strength</value>
+  </data>
+  <data name="ScrollOfHealing" xml:space="preserve">
+    <value>Scroll of Healing</value>
+  </data>
+  <data name="TalismanOfLuck" xml:space="preserve">
+    <value>Talisman of Luck</value>
+  </data>
+  <data name="TalismanOfChaosAssembly" xml:space="preserve">
+    <value>Talisman of Chaos Assembly</value>
   </data>
 </root>

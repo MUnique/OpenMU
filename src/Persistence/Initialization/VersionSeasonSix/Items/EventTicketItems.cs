@@ -40,6 +40,9 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(51, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
         this.CreateEventItem(50, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
 
+        // Kalima:
+        this.CreateKalimaTicket();
+
         // The sacred relic, which the client knows as ITEM_CURSED_CASTLE_WATER.
         this.CreateEventItem(64, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.CursedCastleWater), false);
 
@@ -71,6 +74,31 @@ internal class EventTicketItems : InitializerBase
         if (this.CreateSuspiciousScrapOfPaperDropGroup() is { } scrapOfPaperDropGroup)
         {
             BaseMapInitializer.RegisterDefaultDropItemGroup(scrapOfPaperDropGroup);
+        }
+    }
+
+    /// <summary>
+    /// Assigns the free tickets as <see cref="MiniGameDefinition.FreeTicketItem"/> to the mini games
+    /// of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which don't have one yet.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    internal static void AssignFreeTicketItems(GameConfiguration gameConfiguration)
+    {
+        foreach (var miniGame in gameConfiguration.MiniGameDefinitions.Where(miniGame => miniGame.FreeTicketItem is null))
+        {
+            short? number = miniGame.Type switch
+            {
+                MiniGameType.DevilSquare => 46,
+                MiniGameType.BloodCastle => 47,
+                MiniGameType.IllusionTemple => 61,
+                MiniGameType.ChaosCastle => 121,
+                _ => null,
+            };
+
+            if (number is { } ticketNumber)
+            {
+                miniGame.FreeTicketItem = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == ticketNumber);
+            }
         }
     }
 
@@ -136,6 +164,23 @@ internal class EventTicketItems : InitializerBase
     }
 
     /// <summary>
+    /// Creates the kalima ticket, which opens a gate to Kalima, if it doesn't exist yet.
+    /// Like in the client, it can be used ten times, which is its durability.
+    /// </summary>
+    /// <returns>The created kalima ticket, or <c>null</c> if it already existed.</returns>
+    internal ItemDefinition? CreateKalimaTicket()
+    {
+        if (this.GameConfiguration.Items.Any(item => item is { Group: 13, Number: 48 }))
+        {
+            return null;
+        }
+
+        var ticket = this.CreateEventItem(48, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.KalimaTicket), false);
+        ticket.Durability = 10;
+        return ticket;
+    }
+
+    /// <summary>
     /// Creates the free tickets of the in-game shop, which don't exist yet. They allow to enter
     /// Devil Square, Blood Castle, Illusion Temple and Chaos Castle of any level, instead of their
     /// regular tickets. Their durability is the number of entries.
@@ -162,31 +207,6 @@ internal class EventTicketItems : InitializerBase
         CreateIfMissing(61, LocalizedString.FromResource(() => ItemNames.IllusionTempleFreeTicket));
         CreateIfMissing(121, LocalizedString.FromResource(() => ItemNames.ChaosCastleFreeTicket));
         return createdItems;
-    }
-
-    /// <summary>
-    /// Assigns the free tickets as <see cref="MiniGameDefinition.FreeTicketItem"/> to the mini games
-    /// of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which don't have one yet.
-    /// </summary>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    internal static void AssignFreeTicketItems(GameConfiguration gameConfiguration)
-    {
-        foreach (var miniGame in gameConfiguration.MiniGameDefinitions.Where(miniGame => miniGame.FreeTicketItem is null))
-        {
-            short? number = miniGame.Type switch
-            {
-                MiniGameType.DevilSquare => 46,
-                MiniGameType.BloodCastle => 47,
-                MiniGameType.IllusionTemple => 61,
-                MiniGameType.ChaosCastle => 121,
-                _ => null,
-            };
-
-            if (number is { } ticketNumber)
-            {
-                miniGame.FreeTicketItem = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == ticketNumber);
-            }
-        }
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)
