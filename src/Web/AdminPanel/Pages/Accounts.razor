@@ -13,7 +13,7 @@
 <Breadcrumb IsFirstFromRoot="true" Caption="@title" />
 <h1>@title</h1>
 
-<div>
+<div class="table-responsive">
     <DataTable TItem=@Account>
         <TableHeader>
             <th class="col-1">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
