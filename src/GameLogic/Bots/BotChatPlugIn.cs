@@ -1,0 +1,303 @@
+// <copyright file="BotChatPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.Bots;
+
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Lets the server-side bots talk: they announce opened events and started invasions with
+/// <c>/post</c>, comment on their level milestones and answer whispers - with lines from the
+/// configuration, no language model.
+/// </summary>
+/// <remarks>
+/// A bot only talks about what it could actually do: it posts about a Blood Castle only when it
+/// meets that event's entry requirements (the same check that decides whether a bot may follow its
+/// leader in, see <see cref="BotMiniGameHandler.IsEligible"/>), and about an invasion only when it may
+/// warp to the invaded map. The limits of the <see cref="BotChatConfiguration"/> keep a large
+/// population from flooding the chat; they are tracked per game server.
+/// It's a feature plugin of the bots, listed in the admin panel next to them.
+/// </remarks>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.BotChatPlugIn_Name), Description = nameof(PlugInResources.BotChatPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("B3234CC4-1365-463A-B0DE-603F9D7D86A2")]
+public class BotChatPlugIn
+    : IFeaturePlugIn,
+    IMiniGameEntranceOpenedPlugIn,
+    IInvasionStartedPlugIn,
+    ICharacterLevelUpPlugIn,
+    IWhisperMessageReceivedPlugIn,
+    ISupportCustomConfiguration<BotChatConfiguration>,
+    ISupportDefaultCustomConfiguration,
+    IDisabledByDefault
+{
+    /// <summary>
+    /// How long an invasion counts as announced. Long enough that a second invasion of the same kind
+    /// started by the same schedule run doesn't get its own post.
+    /// </summary>
+    private static readonly TimeSpan InvasionAnnouncementWindow = TimeSpan.FromMinutes(10);
+
+    /// <summary>
+    /// The delay range of a level milestone comment: a moment after the level-up effect.
+    /// </summary>
+    private static readonly (int Min, int Max) LevelMilestoneDelaySeconds = (1, 4);
+
+    /// <summary>
+    /// The delay range of a whisper reply - the time a player needs to read and type.
+    /// </summary>
+    private static readonly (int Min, int Max) WhisperReplyDelaySeconds = (2, 7);
+
+    private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
+
+    /// <inheritdoc />
+    public BotChatConfiguration? Configuration { get; set; }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => BotChatConfiguration.CreateDefault();
+
+    /// <inheritdoc />
+    public ValueTask MiniGameEntranceOpenedAsync(MiniGameContext miniGame)
+    {
+        if (this.Configuration is not { EventPostChancePercent: > 0 } configuration
+            || miniGame.Definition.Type is not (MiniGameType.BloodCastle or MiniGameType.DevilSquare or MiniGameType.ChaosCastle)
+            || !IsPostCommandActive(miniGame.GameContext))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // Every level of an event (Blood Castle 1..8) reports its own opening. Each one waits a random
+        // time; the first one which finds a qualified bot takes the announcement of the whole event type.
+        RunLater(
+            miniGame.GameContext,
+            RandomDelay(TimeSpan.Zero, configuration.MaxPostDelay),
+            () => this.PostAboutEventAsync(miniGame, configuration));
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask InvasionStartedAsync(IGameContext gameContext, IPeriodicTaskPlugIn invasion, IReadOnlyCollection<GameMapDefinition> maps)
+    {
+        if (this.Configuration is not { InvasionPostChancePercent: > 0 } configuration
+            || maps.Count == 0
+            || !IsPostCommandActive(gameContext))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        RunLater(
+            gameContext,
+            RandomDelay(TimeSpan.Zero, configuration.MaxPostDelay),
+            () => this.PostAboutInvasionAsync(gameContext, invasion, maps, configuration));
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public void CharacterLeveledUp(Player player)
+    {
+        if (this.Configuration is not { LevelMilestoneStep: > 0, LevelMilestoneChancePercent: > 0 } configuration
+            || !IsBot(player))
+        {
+            return;
+        }
+
+        var level = GetLevel(player);
+        if (level < configuration.LevelMilestoneStep
+            || level % configuration.LevelMilestoneStep != 0
+            || !Rand.NextRandomBool(configuration.LevelMilestoneChancePercent)
+            || PickLine(configuration, BotChatSituation.LevelMilestone) is not { } line
+            || !this.GetThrottle(player.GameContext).TryReserveChat(player, DateTime.UtcNow, configuration.BotChatCooldown))
+        {
+            return;
+        }
+
+        RunLater(
+            player.GameContext,
+            RandomDelay(LevelMilestoneDelaySeconds),
+            () => IsAvailable(player)
+                ? BotChatSpeaker.SayAsync(player, line, CreateBotValues(player))
+                : ValueTask.CompletedTask);
+    }
+
+    /// <inheritdoc />
+    public void WhisperMessageReceived(Player sender, Player receiver, string message, CancelEventArgs cancelEventArgs)
+    {
+        if (this.Configuration is not { WhisperReplyChancePercent: > 0 } configuration
+            || !IsBot(receiver)
+            || sender is OfflinePlayer
+            || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
+            || PickLine(configuration, BotChatSituation.WhisperReply) is not { } line
+            || !this.GetThrottle(receiver.GameContext).TryReserveWhisperReply(receiver, DateTime.UtcNow, configuration.WhisperReplyCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(receiver);
+        var senderName = sender.SelectedCharacter?.Name ?? string.Empty;
+        values["player"] = _ => senderName;
+        RunLater(
+            receiver.GameContext,
+            RandomDelay(WhisperReplyDelaySeconds),
+            () => IsAvailable(receiver) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
+                ? BotChatSpeaker.WhisperAsync(receiver, sender, line, values)
+                : ValueTask.CompletedTask);
+    }
+
+    /// <summary>
+    /// Determines whether the bot may warp to the map according to the warp list - the same rule the
+    /// bots' navigation follows (the plain level against the class-reduced warp requirement) - and the
+    /// map isn't forbidden for bots.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="map">The map.</param>
+    /// <returns><c>true</c>, if the bot may warp to the map.</returns>
+    internal static bool MayWarpTo(Player bot, GameMapDefinition map)
+    {
+        if (bot.SelectedCharacter is not { } character)
+        {
+            return false;
+        }
+
+        if (BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(map) == true)
+        {
+            return false;
+        }
+
+        var level = GetLevel(bot);
+        return bot.GameContext.Configuration.WarpList.Any(warp =>
+            warp.Gate?.Map?.Number == map.Number
+            && character.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) <= level);
+    }
+
+    private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
+
+    /// <summary>
+    /// Determines whether the bot is in the world and free to talk: alive and not inside an event.
+    /// </summary>
+    private static bool IsAvailable(Player bot)
+        => bot.PlayerState.CurrentState == PlayerState.EnteredWorld
+           && bot.IsAlive
+           && bot.CurrentMiniGame is null;
+
+    private static int GetLevel(Player player) => (int)(player.Attributes?[Stats.Level] ?? 0);
+
+    private static bool IsPostCommandActive(IGameContext gameContext)
+        => gameContext.PlugInManager.IsPlugInActive(typeof(PostChatCommandPlugIn));
+
+    private static BotChatLine? PickLine(BotChatConfiguration configuration, BotChatSituation situation)
+        => BotChatComposer.PickLine(configuration.Lines, situation, count => Rand.NextInt(0, count));
+
+    private static TimeSpan RandomDelay(TimeSpan min, TimeSpan max)
+        => max <= min ? min : min + TimeSpan.FromMilliseconds(Rand.NextDouble() * (max - min).TotalMilliseconds);
+
+    private static TimeSpan RandomDelay((int Min, int Max) seconds)
+        => RandomDelay(TimeSpan.FromSeconds(seconds.Min), TimeSpan.FromSeconds(seconds.Max));
+
+    private static Dictionary<string, Func<CultureInfo, string>> CreateBotValues(Player bot)
+    {
+        var level = GetLevel(bot).ToString(CultureInfo.InvariantCulture);
+        var map = bot.CurrentMap?.Definition.Name;
+        return new Dictionary<string, Func<CultureInfo, string>>
+        {
+            ["level"] = _ => level,
+            ["map"] = culture => map?.GetTranslation(culture) ?? string.Empty,
+        };
+    }
+
+    /// <summary>
+    /// Runs the action after the delay, without holding up the caller - the plugin points are called
+    /// from the game logic, which must not wait for a bot's "typing time".
+    /// </summary>
+    private static void RunLater(IGameContext gameContext, TimeSpan delay, Func<ValueTask> action)
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(delay).ConfigureAwait(false);
+                await action().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                gameContext.LoggerFactory.CreateLogger<BotChatPlugIn>().LogError(ex, "Bot chat failed.");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Gets the display name of an invasion in the receiver's language, from the name of its plugin.
+    /// </summary>
+    private static string GetInvasionName(IPeriodicTaskPlugIn invasion, CultureInfo culture)
+    {
+        var displayName = (Attribute.GetCustomAttribute(invasion.GetType(), typeof(DisplayAttribute)) as DisplayAttribute)?.Name;
+        return displayName is null
+            ? invasion.GetType().Name
+            : PlugInResources.ResourceManager.GetString(displayName, culture) ?? displayName;
+    }
+
+    private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
+
+    private async ValueTask PostAboutEventAsync(MiniGameContext miniGame, BotChatConfiguration configuration)
+    {
+        var now = DateTime.UtcNow;
+        if (now >= miniGame.EnterEndsAtUtc)
+        {
+            return;
+        }
+
+        var definition = miniGame.Definition;
+        var players = await miniGame.GameContext.GetPlayersAsync().ConfigureAwait(false);
+        var candidates = players
+            .Where(p => IsBot(p) && IsAvailable(p) && BotMiniGameHandler.IsEligible(p, definition, out _))
+            .ToList();
+        var throttle = this.GetThrottle(miniGame.GameContext);
+        if (candidates.Count == 0
+            || !throttle.TryReserveOccasion($"mini game {definition.Type}", now, miniGame.EnterEndsAtUtc - now)
+            || !Rand.NextRandomBool(configuration.EventPostChancePercent)
+            || PickLine(configuration, BotChatSituation.EventEntranceOpened) is not { } line
+            || !throttle.TryReservePost(now, configuration.MinTimeBetweenPosts))
+        {
+            return;
+        }
+
+        var bot = candidates[Rand.NextInt(0, candidates.Count)];
+        var values = CreateBotValues(bot);
+        values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
+        await BotChatSpeaker.PostAsync(bot, line, values).ConfigureAwait(false);
+    }
+
+    private async ValueTask PostAboutInvasionAsync(IGameContext gameContext, IPeriodicTaskPlugIn invasion, IReadOnlyCollection<GameMapDefinition> maps, BotChatConfiguration configuration)
+    {
+        var now = DateTime.UtcNow;
+        var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var candidates = players
+            .Where(p => IsBot(p) && IsAvailable(p))
+            .SelectMany(p => maps.Where(map => MayWarpTo(p, map)).Select(map => (Bot: p, Map: map)))
+            .ToList();
+        var throttle = this.GetThrottle(gameContext);
+        if (candidates.Count == 0
+            || !throttle.TryReserveOccasion($"invasion {invasion.GetType().Name}", now, InvasionAnnouncementWindow)
+            || !Rand.NextRandomBool(configuration.InvasionPostChancePercent)
+            || PickLine(configuration, BotChatSituation.InvasionStarted) is not { } line
+            || !throttle.TryReservePost(now, configuration.MinTimeBetweenPosts))
+        {
+            return;
+        }
+
+        var (bot, map) = candidates[Rand.NextInt(0, candidates.Count)];
+        var values = CreateBotValues(bot);
+        values["event"] = culture => GetInvasionName(invasion, culture);
+        values["map"] = culture => map.Name.GetTranslation(culture) ?? string.Empty;
+        await BotChatSpeaker.PostAsync(bot, line, values).ConfigureAwait(false);
+    }
+}

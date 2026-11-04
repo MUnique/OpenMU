@@ -331,6 +331,32 @@ Over the day, the presence rotation logs bots in and out: fewest in the early
 morning, most in the evening, and never more than one at a time, so the
 population ebbs and flows instead of appearing and vanishing in blocks.
 
+### Talking
+
+With the separate *Bot chat* plugin (off by default), bots say a line now and
+then. The lines come from the plugin's configuration; there is no language
+model. A bot only talks about what it could actually do:
+
+| Situation | Where | Who says it |
+|---|---|---|
+| A Blood Castle, Devil Square or Chaos Castle entrance opened | `/post` | a bot which meets that event's entry requirements — the same check that lets it follow a leader in |
+| An invasion (White Wizard, Golden, Red Dragon) started | `/post` | a bot which may warp to the invaded map |
+| A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
+| A player whispered to the bot | whisper back, after a few seconds | the bot |
+
+Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
+`{level}`, and `{player}` (whisper replies). Each line is a localized text, so
+every player sees the translation of their own language, or the English text
+when it has none.
+
+The limits keep a large population from flooding the chat. All bots of a game
+server share one gap between two posts (`Minimum time between posts`, 3 minutes),
+each opened event type or started invasion is announced at most once, and each
+bot has its own cooldown for the normal chat and for whisper replies. The two
+post chances are 30 % by default, so not every opened event or invasion gets a
+post. Bots post only while the `/post` command is enabled on the server, and
+their messages look exactly like a player's post.
+
 ### Keeping itself alive
 
 The engine's attribute system is not thread-safe, and a lost race can corrupt a

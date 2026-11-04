@@ -4615,6 +4615,84 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotRevengePlugIn_Description text.</summary>
         public static string BotRevengePlugIn_Description => ResourceManager.GetString("BotRevengePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatPlugIn_Name text.</summary>
+        public static string BotChatPlugIn_Name => ResourceManager.GetString("BotChatPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatPlugIn_Description text.</summary>
+        public static string BotChatPlugIn_Description => ResourceManager.GetString("BotChatPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLine_Situation_Name text.</summary>
+        public static string BotChatLine_Situation_Name => ResourceManager.GetString("BotChatLine_Situation_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLine_Situation_Description text.</summary>
+        public static string BotChatLine_Situation_Description => ResourceManager.GetString("BotChatLine_Situation_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLine_Text_Name text.</summary>
+        public static string BotChatLine_Text_Name => ResourceManager.GetString("BotChatLine_Text_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLine_Text_Description text.</summary>
+        public static string BotChatLine_Text_Description => ResourceManager.GetString("BotChatLine_Text_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_EventPostChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_EventPostChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_EventPostChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_EventPostChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_EventPostChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_EventPostChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_InvasionPostChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_InvasionPostChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_InvasionPostChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_InvasionPostChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_InvasionPostChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_InvasionPostChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MinTimeBetweenPosts_Name text.</summary>
+        public static string BotChatConfiguration_MinTimeBetweenPosts_Name => ResourceManager.GetString("BotChatConfiguration_MinTimeBetweenPosts_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MinTimeBetweenPosts_Description text.</summary>
+        public static string BotChatConfiguration_MinTimeBetweenPosts_Description => ResourceManager.GetString("BotChatConfiguration_MinTimeBetweenPosts_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MaxPostDelay_Name text.</summary>
+        public static string BotChatConfiguration_MaxPostDelay_Name => ResourceManager.GetString("BotChatConfiguration_MaxPostDelay_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MaxPostDelay_Description text.</summary>
+        public static string BotChatConfiguration_MaxPostDelay_Description => ResourceManager.GetString("BotChatConfiguration_MaxPostDelay_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_LevelMilestoneStep_Name text.</summary>
+        public static string BotChatConfiguration_LevelMilestoneStep_Name => ResourceManager.GetString("BotChatConfiguration_LevelMilestoneStep_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_LevelMilestoneStep_Description text.</summary>
+        public static string BotChatConfiguration_LevelMilestoneStep_Description => ResourceManager.GetString("BotChatConfiguration_LevelMilestoneStep_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_LevelMilestoneChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_LevelMilestoneChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_LevelMilestoneChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_LevelMilestoneChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_LevelMilestoneChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_LevelMilestoneChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_BotChatCooldown_Name text.</summary>
+        public static string BotChatConfiguration_BotChatCooldown_Name => ResourceManager.GetString("BotChatConfiguration_BotChatCooldown_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_BotChatCooldown_Description text.</summary>
+        public static string BotChatConfiguration_BotChatCooldown_Description => ResourceManager.GetString("BotChatConfiguration_BotChatCooldown_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WhisperReplyChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_WhisperReplyChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_WhisperReplyChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WhisperReplyChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_WhisperReplyChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_WhisperReplyChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WhisperReplyCooldown_Name text.</summary>
+        public static string BotChatConfiguration_WhisperReplyCooldown_Name => ResourceManager.GetString("BotChatConfiguration_WhisperReplyCooldown_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WhisperReplyCooldown_Description text.</summary>
+        public static string BotChatConfiguration_WhisperReplyCooldown_Description => ResourceManager.GetString("BotChatConfiguration_WhisperReplyCooldown_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_Lines_Name text.</summary>
+        public static string BotChatConfiguration_Lines_Name => ResourceManager.GetString("BotChatConfiguration_Lines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_Lines_Description text.</summary>
+        public static string BotChatConfiguration_Lines_Description => ResourceManager.GetString("BotChatConfiguration_Lines_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotSkillProgressionPlugIn_Name text.</summary>
         public static string BotSkillProgressionPlugIn_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture)!;
 
