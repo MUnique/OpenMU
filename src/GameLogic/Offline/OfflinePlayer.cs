@@ -167,6 +167,14 @@ public class OfflinePlayer : Player
     internal bool IsOnChaosMachineTrip { get; set; }
 
     /// <summary>
+    /// Gets or sets the meeting point at which the bot waits for players after announcing an opened
+    /// event, set by <see cref="Bots.BotChatPlugIn"/> and carried out by <see cref="Bots.BotNavigator"/>.
+    /// Unlike an errand, it does not make the bot decline party invitations - being invited is what
+    /// it waits for.
+    /// </summary>
+    internal Bots.BotEventMeeting? EventMeeting { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the
     /// bot has unfinished business and is in no mood to group up.
     /// </summary>

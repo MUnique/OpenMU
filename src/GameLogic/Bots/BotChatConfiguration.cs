@@ -103,10 +103,10 @@ public class BotChatConfiguration
         var configuration = new BotChatConfiguration();
         Add(
             BotChatSituation.EventEntranceOpened,
-            "{event} open, anyone going?",
-            "lf party {event}",
-            "{event} now, who wants to join?",
-            "going {event}, party anyone?");
+            "{event} open, anyone going? im in {map}",
+            "lf party {event}, waiting in {map}",
+            "{event} now, who wants to join? {map}",
+            "going {event}, party anyone? at {map}");
         Add(
             BotChatSituation.InvasionStarted,
             "{event} in {map}!",

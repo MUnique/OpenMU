@@ -12,8 +12,9 @@ public enum BotChatSituation
 {
     /// <summary>
     /// The entrance of a Blood Castle, Devil Square or Chaos Castle opened. A bot which meets the
-    /// event's entry requirements posts about it with <c>/post</c>.
-    /// Placeholders: <c>{event}</c>, <c>{level}</c>.
+    /// event's entry requirements posts about it with <c>/post</c> and then waits for players at the
+    /// meeting point (see <see cref="BotEventMeeting"/>) until the entrance closes.
+    /// Placeholders: <c>{event}</c>, <c>{map}</c> (the map of the meeting point), <c>{level}</c>.
     /// </summary>
     EventEntranceOpened,
 
