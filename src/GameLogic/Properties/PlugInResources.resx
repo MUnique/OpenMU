@@ -435,6 +435,15 @@
   <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the summoning orb consumption.</value>
   </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Invitation to Santa Village Consume Handler</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the invitation to the santa village, which warps the player to the santa village.</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>Map number</value>
+  </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Town Portal Scroll Consume Handler</value>
   </data>
@@ -1389,9 +1398,11 @@
   <data name="BotConfiguration_BotsPayResetCosts_Name" xml:space="preserve"><value>Bots pay reset costs</value></data>
   <data name="BotConfiguration_BotsPayResetCosts_Description" xml:space="preserve"><value>If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).</value></data>
   <data name="BotConfiguration_JewelStockPerKind_Name" xml:space="preserve"><value>Jewel stock per kind</value></data>
-  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
+  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life/Chaos a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve"><value>Potion stock (charges)</value></data>
   <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve"><value>How many healing and mana potion charges a bot buys up to at a merchant.</value></data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve"><value>Maps forbidden for bots</value></data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve"><value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value></data>
   <data name="BotConfiguration_ProofOfConceptAccounts_Name" xml:space="preserve"><value>Extra accounts to animate</value></data>
   <data name="BotConfiguration_ProofOfConceptAccounts_Description" xml:space="preserve"><value>Comma separated login names of existing accounts to animate as bots, in addition to the generated population.</value></data>
   <data name="BotSelfDefensePlugIn_Name" xml:space="preserve"><value>Bot self defense</value></data>
@@ -1572,6 +1583,18 @@
   </data>
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Kalima Ticket Consume Handler</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Opens a gate to the level of Kalima which fits the level of the character. Each use takes one of the ticket's usages.</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>Minimum levels of the Kalima levels</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>Minimum levels of the Kalima levels for special characters</value>
   </data>
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>Potion of Bless effect number</value>
@@ -1803,5 +1826,29 @@
   </data>
   <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
     <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite healing potion consumption. It recovers the health immediately.</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Mana Potion Consume Handler</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite mana potion consumption. It recovers the mana immediately.</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite SD Potion Consume Handler</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite SD potion consumption. It recovers the shield immediately.</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
   </data>
 </root>

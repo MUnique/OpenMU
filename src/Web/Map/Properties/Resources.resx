@@ -183,4 +183,28 @@
   <data name="AnalyzeTraffic" xml:space="preserve">
     <value>Analyze the network traffic</value>
   </data>
+  <data name="ClearFilter" xml:space="preserve">
+    <value>Clear filter</value>
+  </data>
+  <data name="FilterContains" xml:space="preserve">
+    <value>contains</value>
+  </data>
+  <data name="FilterEndsWith" xml:space="preserve">
+    <value>ends with</value>
+  </data>
+  <data name="FilterMonsters" xml:space="preserve">
+    <value>Filter monsters</value>
+  </data>
+  <data name="FilterMonstersPlaceholder" xml:space="preserve">
+    <value>Name or part of it</value>
+  </data>
+  <data name="FilterStartsWith" xml:space="preserve">
+    <value>starts with</value>
+  </data>
+  <data name="MatchingMonsters" xml:space="preserve">
+    <value>{0} matching monsters</value>
+  </data>
+  <data name="NoMatchingMonsters" xml:space="preserve">
+    <value>No matching monster on this map</value>
+  </data>
 </root>

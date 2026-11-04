@@ -432,6 +432,15 @@
   <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch der Beschwörungskugel verarbeitet.</value>
   </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch der Einladung ins Dorf des Weihnachtsmanns</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das die Einladung ins Dorf des Weihnachtsmanns verarbeitet, die den Spieler ins Dorf des Weihnachtsmanns versetzt.</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>Kartennummer</value>
+  </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Verbrauch der Stadtportal-Schriftrolle</value>
   </data>
@@ -1405,7 +1414,13 @@
     <value>Juwelenvorrat pro Art</value>
   </data>
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
-    <value>Wie viele Juwelen des Segens/der Seele/des Lebens ein Bot von jeder Art behält; darüber hinaus hebt er sie nicht mehr auf und verkauft den Überschuss.</value>
+    <value>Wie viele Juwelen des Segens/der Seele/des Lebens/des Chaos ein Bot von jeder Art behält; darüber hinaus hebt er sie nicht mehr auf und verkauft den Überschuss.</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
+    <value>Für Bots gesperrte Karten</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
+    <value>Karten, auf die sich Bots nie teleportieren: dort jagen sie nicht, folgen keinem Gruppenleiter und nehmen an keinen Events teil; ein Bot, der sich dort anmeldet, verlässt sie. Spieler sind nicht betroffen.</value>
   </data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve">
     <value>Trankvorrat (Ladungen)</value>
@@ -1746,6 +1761,18 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>Die Regeln der Gens für Partys, Gilden und Allianzen: keine Party zwischen verschiedenen Gens und in der Kampfzone, Gilden und Allianzen nur innerhalb einer Gens.</value>
   </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauchs-Handler für Kalima-Tickets</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Öffnet ein Tor zu der Kalima-Stufe, die zum Level des Charakters passt. Jede Benutzung verbraucht eine der Benutzungen des Tickets.</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>Mindestlevel der Kalima-Stufen</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>Mindestlevel der Kalima-Stufen für Spezialcharaktere</value>
+  </data>
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>Effektnummer von Potion of Bless</value>
   </data>
@@ -1958,5 +1985,29 @@
   </data>
   <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
     <value>Teilt Game-Clients, die danach fragen, mit, wie der Server mit Discord verbunden ist (Einladungslink, Rich-Presence-Anwendung, Kontoverknüpfung, gespiegelte Chats), lässt Spieler ihr Konto im Client verknüpfen und schickt ihnen in Discord geschriebene Nachrichten als solche.</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Elite-Heiltranks</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Elite-Heiltranks verarbeitet. Er stellt die Lebenspunkte sofort wieder her.</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Elite-Manatranks</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Elite-Manatranks verarbeitet. Er stellt das Mana sofort wieder her.</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Elite-SD-Tranks</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des Elite-SD-Tranks verarbeitet. Er stellt den Schild sofort wieder her.</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des mittleren Elite-Heiltranks</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Verbrauch des mittleren Elite-Heiltranks verarbeitet. Er stellt einen Teil der Lebenspunkte sofort wieder her.</value>
   </data>
 </root>

@@ -287,12 +287,13 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 37 packages for sale: jewel bundles, Kundun boxes and Cherry Blossom
-items for Goblin Points, and the character cards, the Magic Backpack, the Vault
-Expansion Certificate, the free tickets of Devil Square, Blood Castle and
-Illusion Temple and the reset fruits for WCoin (C) and (P). Most cash shop
-items, like seals, scrolls and talismans, aren't defined in the item
-configuration yet.
+That leaves 56 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
+items and the Talisman of Luck 10% for Goblin Points, and the character cards,
+the Magic Backpack, the Vault Expansion Certificate, the free tickets of Devil
+Square, Blood Castle and Illusion Temple, the reset fruits, the elite potions and
+the Talisman of Luck for WCoin (C) and (P), and the ten lucky item tickets for
+WCoin (P). Most cash shop items, like seals, scrolls and most talismans, aren't
+defined in the item configuration yet.
 
 The free tickets (13/46 Devil Square, 13/47 Blood Castle, 13/61 Illusion Temple
 and 13/121 Chaos Castle, which isn't in the catalog) are created by
@@ -306,6 +307,13 @@ The update `AddFreeTicketItemsUpdatePlugIn` adds them to an existing
 configuration, sets them as free tickets of the mini games which have none, and
 puts their packages on sale. It's optional, so a server owner who wants to keep
 these packages off sale can deselect it.
+
+The products of the Talisman of Luck have a rate property (1, 5 or 10 %) instead
+of a quantity. The rate is the durability of the delivered talisman, so it's
+used as the quantity of the product. The update *Add crafting talismans* adds
+the Talisman of Luck and the Talisman of Chaos Assembly to an existing
+configuration and puts these packages on sale. The Talisman of Chaos Assembly is
+in no package of the script `512.2012.084`.
 
 The update also adds the items of the delivery plugins to an existing
 configuration, assigns them to its products which have no item, and puts those

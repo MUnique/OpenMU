@@ -139,6 +139,13 @@ public class OfflinePlayer : Player
     internal Bots.PendingPartyInvite? PendingPartyInvite { get; set; }
 
     /// <summary>
+    /// Gets or sets the hunting ground or target this bot has claimed, or <c>null</c> if it has none.
+    /// Maintained by <see cref="Bots.BotNavigator"/>; independent bots use it to avoid farming each
+    /// other's spot. The claim survives short errands such as shopping, so the bot can return to it.
+    /// </summary>
+    internal Bots.HuntingSpot? HuntingSpot { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the bot is currently on a shopping trip (walking to
     /// or trading with a merchant), maintained by <see cref="Bots.BotNavigator"/>. While on an errand
     /// the bot declines party invitations, like a busy player would.
@@ -151,6 +158,13 @@ public class OfflinePlayer : Player
     /// While on an errand the bot declines party invitations, like a busy player would.
     /// </summary>
     internal bool IsOnBuffTrip { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the bot is currently on its way to the chaos machine to
+    /// upgrade a piece of its gear, maintained by <see cref="Bots.BotNavigator"/>. Like the other
+    /// errands, it makes the bot decline party invitations meanwhile.
+    /// </summary>
+    internal bool IsOnChaosMachineTrip { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the

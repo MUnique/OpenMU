@@ -40,7 +40,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int BandWidth = 3;
 
     /// <summary>Range (tiles) around the origin that counts as "at the hunting ground".</summary>
-    private const int HuntingRange = 6;
+    private const int HuntingRange = BotMuHelperSettings.DefaultHuntingRange;
 
     /// <summary>
     /// Distance (tiles) at which a hunting ground counts as half as attractive as one the bot is standing on.
@@ -200,6 +200,15 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private static readonly TimeSpan BuffCooldown = TimeSpan.FromMinutes(10);
 
+    /// <summary>
+    /// How often the bot considers a visit to the chaos machine (see <see cref="BotChaosMachineHandler"/>).
+    /// Short, so a bot standing at the goblin mixes its next piece right away; planning is cheap.
+    /// </summary>
+    private static readonly TimeSpan ChaosMachineCheckInterval = TimeSpan.FromSeconds(30);
+
+    /// <summary>Cooldown after a chaos machine trip which came to nothing (no route, no warp there, or a refused mix).</summary>
+    private static readonly TimeSpan ChaosMachineCooldown = TimeSpan.FromMinutes(10);
+
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps (a real player does not hop maps every minute either).</summary>
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromMinutes(3);
 
@@ -282,6 +291,18 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>Target position of the current buff trip, or null, if there is none.</summary>
     private Point? _buffTarget;
+
+    /// <summary>Target position of the current chaos machine trip, or null, if there is none.</summary>
+    private Point? _chaosMachineTarget;
+
+    /// <summary>The walkable tile next to the goblin the current chaos machine trip walks to.</summary>
+    private Point _chaosMachineStandingPoint;
+
+    /// <summary>
+    /// When the bot considers a chaos machine trip again; the first one is spread over the cooldown, so
+    /// a population does not crowd the goblin at once after a restart.
+    /// </summary>
+    private DateTime _nextChaosMachineCheckUtc = DateTime.UtcNow + (ChaosMachineCooldown * Rand.NextDouble());
 
     /// <summary>
     /// When the bot considers a buff trip again. Like the shopping check, the first one is spread over the
@@ -562,6 +583,110 @@ internal sealed class BotNavigator : AsyncDisposable
         return this._timeProvider.GetUtcNow() - this._leaderOnMapSinceUtc >= LeaderSettleTime;
     }
 
+    /// <summary>
+    /// Picks a hunting ground and starts walking to it. If the chosen ground turns out to be unreachable, the
+    /// destination and its claim are dropped, so the next call (next tick) simply picks another one.
+    /// </summary>
+    /// <param name="map">The map to pick a hunting ground on.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    internal async ValueTask PickGroundAndTravelAsync(GameMap map, CancellationToken cancellationToken)
+    {
+        if (!this.TryPickHuntingGround(map, out var ground, out var groundLevel))
+        {
+            this._hasDestination = false;
+            this._player.HuntingSpot = null;
+            this._player.Logger.LogDebug("Bot {Character}: no hunting ground found on map {Map}.", this._player.Name, map.Definition.Name);
+            return;
+        }
+
+        this._player.HuntingSpot = new HuntingSpot(ground, map.Definition.Number);
+        this._destination = ground;
+        this._hasDestination = true;
+        this._player.Logger.LogDebug(
+            "Bot {Character} (level {Level}) heading to hunting ground {Ground} (monster level ~{MonsterLevel}).",
+            this._player.Name,
+            this.GetBotLevel(),
+            ground,
+            groundLevel);
+
+        if (!await this.TravelTowardAsync(map, ground, cancellationToken).ConfigureAwait(false))
+        {
+            this._hasDestination = false;
+            this._player.HuntingSpot = null;
+        }
+    }
+
+    /// <summary>
+    /// Finds the position of the nearest live, attackable monster within <see cref="MonsterSeekRadius"/> that
+    /// the bot can safely fight, so the bot heads straight for a real monster instead of a random tile in a
+    /// huge spawn area. Returns false when none are loaded nearby (or all are above the safe level cap), in
+    /// which case the caller falls back to coarse spawn-area travel / warping to relocate.
+    /// </summary>
+    /// <param name="map">The map to search on.</param>
+    /// <param name="ground">The position of the chosen monster.</param>
+    /// <returns>True, if a safe monster was found.</returns>
+    internal bool TryFindNearestMonsterGround(GameMap map, out Point ground)
+    {
+        ground = default;
+        var position = this._player.Position;
+        var attackables = map.GetAttackablesInRange(position, MonsterSeekRadius);
+        var candidates = new List<(Monster Monster, double Distance)>();
+        foreach (var attackable in attackables)
+        {
+            if (attackable is not Monster { SummonedBy: null } monster
+                || !monster.IsAlive
+                || monster.IsAtSafezone())
+            {
+                continue;
+            }
+
+            if (!CombatHandler.IsSafeTarget(this._player, monster.Definition))
+            {
+                // Too dangerous (judged by its real damage, not its level) - leave it and let the warp /
+                // area logic relocate the bot to a map whose monsters it can handle.
+                continue;
+            }
+
+            candidates.Add((monster, monster.GetDistanceTo(position)));
+        }
+
+        if (candidates.Count == 0)
+        {
+            return false;
+        }
+
+        // Prefer monsters no other bot outside the party is already hunting. If every nearby monster is
+        // contested, the ground is saturated - sharing it beats standing around, so the bot still picks one.
+        var competitorSpots = HuntingSpotOccupancy.GetCompetitorSpots(this._player, attackables.OfType<Player>(), map.Definition.Number);
+        var unclaimed = candidates
+            .Where(c => !HuntingSpotOccupancy.IsMonsterClaimed(c.Monster.Position, competitorSpots, HuntingRange))
+            .ToList();
+        if (unclaimed.Count == 0)
+        {
+            unclaimed = candidates;
+        }
+
+        // Head for one of the few nearest monsters, chosen randomly, instead of strictly the nearest:
+        // with many bots on one ground, deterministic nearest-first would send them all to the same
+        // monster, and they would roam the map as one pack - a very bot-like look.
+        var chosen = unclaimed
+            .OrderBy(c => c.Distance)
+            .Take(3)
+            .Select(c => c.Monster)
+            .SelectRandom();
+        if (chosen is null)
+        {
+            return false;
+        }
+
+        // The monster stands on a walkable tile, so head straight for it; TravelTowardAsync walks a few steps
+        // per tick and re-homes as the monster roams, closing the gap until combat range is reached. Claiming
+        // the target keeps other bots from converging on the same monster while this one is still on its way.
+        this._player.HuntingSpot = new HuntingSpot(chosen.Position, map.Definition.Number);
+        ground = chosen.Position;
+        return true;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -637,10 +762,12 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private static int GroundDistance(MonsterSpawnArea area, Point from)
     {
-        var centerX = (area.X1 + area.X2) / 2;
-        var centerY = (area.Y1 + area.Y2) / 2;
-        return Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
+        var center = GroundCenter(area);
+        return Math.Abs(from.X - center.X) + Math.Abs(from.Y - center.Y);
     }
+
+    private static Point GroundCenter(MonsterSpawnArea area)
+        => new((byte)((area.X1 + area.X2) / 2), (byte)((area.Y1 + area.Y2) / 2));
 
     private static int GateDistance(Gate gate, Point target)
     {
@@ -763,6 +890,13 @@ internal sealed class BotNavigator : AsyncDisposable
             && ReferenceEquals(leaderToFollow.CurrentMap, map)
             && !inSafezone;
 
+        // Followers hunt around their leader and never pick an independent ground. Dropping a claim
+        // from before the bot joined the party also keeps it from blocking other bots.
+        if (leaderToFollow is not null)
+        {
+            this._player.HuntingSpot = null;
+        }
+
         // Combat centre: normally the bot's own position (self-defence while travelling and at the hunting
         // ground). A follower on the leader's map hunts tethered to the leader instead, so the combat
         // handler only ever picks targets near him - this holds continuously, not just on idle ticks.
@@ -847,6 +981,13 @@ internal sealed class BotNavigator : AsyncDisposable
         // is an errand like shopping - it also completes even for party members, and does not mix with
         // the follow logic below pulling the bot back to the leader mid-visit.
         if (await this.TryBuffTripAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        // A chaos machine trip (upgrading a lucky +9..+14 piece at the goblin) is an errand like the
+        // others: it completes even for party members.
+        if (await this.TryChaosMachineTripAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
         {
             return;
         }
@@ -1164,6 +1305,134 @@ internal sealed class BotNavigator : AsyncDisposable
     private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition)
     {
         await BotBuffHandler.TryRequestBuffAsync(this._player, map, buffNpcPosition).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drives a chaos machine trip: when the bot carries what an upgrade of a worn lucky piece needs (see
+    /// <see cref="BotChaosMachineHandler.PlanNextMix"/>), it heads to the goblin - warping to a map with
+    /// one first, through the regular warp action with its fare, when its own map has none (in Season Six
+    /// only Noria does) - walks up to it and mixes. The mix itself runs in the MU Helper tick, like the
+    /// trades and buffs (see <see cref="OfflinePlayer.PendingBotActions"/>).
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the trip consumed this tick.</returns>
+    private async ValueTask<bool> TryChaosMachineTripAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    {
+        if (this._chaosMachineTarget is { } target)
+        {
+            if (this._player.GetDistanceTo(target) > MerchantTalkRange)
+            {
+                if (!await this.TravelTowardAsync(map, this._chaosMachineStandingPoint, cancellationToken).ConfigureAwait(false))
+                {
+                    this._player.Logger.LogDebug("Bot '{Name}' gives up its chaos machine trip: no route to the goblin at {Target}.", this._player.Name, target);
+                    this._chaosMachineTarget = null;
+                    this._player.IsOnChaosMachineTrip = false;
+                    this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+                }
+
+                return true;
+            }
+
+            this._player.PendingBotActions.Enqueue(() => this.MixAtChaosMachineAsync(map, target));
+            this._chaosMachineTarget = null;
+            this._player.IsOnChaosMachineTrip = false;
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCheckInterval;
+            this._lastMoveUtc = DateTime.UtcNow; // standing at the goblin is not "stuck"
+            return true;
+        }
+
+        if (DateTime.UtcNow < this._nextChaosMachineCheckUtc)
+        {
+            return false;
+        }
+
+        this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCheckInterval;
+        if (BotChaosMachineHandler.GetChaosMachine(this._player.GameContext.Configuration) is not { } goblin
+            || BotChaosMachineHandler.PlanNextMix(this._player, goblin) is not { } plan)
+        {
+            return false;
+        }
+
+        if (BotChaosMachineHandler.FindChaosMachinePosition(map) is not { } goblinPosition)
+        {
+            if (this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
+            {
+                // Just warped (e.g. to its hunting map): wait, rather than bouncing between maps.
+                return false;
+            }
+
+            if (this.TryGetChaosMachineWarp(plan.Price, out var warp))
+            {
+                this._travelPath = null;
+                this._hasDestination = false;
+                this._player.HuntingSpot = null;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
+                this._nextChaosMachineCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
+                this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} for the chaos machine.", this._player.Name, warp.Gate?.Map?.Name);
+                await WarpAction.WarpToAsync(this._player, warp).ConfigureAwait(false);
+                return true;
+            }
+
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+            return false;
+        }
+
+        if (BotChaosMachineHandler.FindStandingPoint(map.Terrain, goblinPosition, MerchantTalkRange) is not { } standingPoint)
+        {
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+            return false;
+        }
+
+        // The goblin stands in town: when out in the field, warp to the map's safezone first.
+        if (!inSafezone
+            && map.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } townGate)
+        {
+            this._travelPath = null;
+            this._hasDestination = false;
+            await this._player.WarpToAsync(townGate).ConfigureAwait(false);
+        }
+
+        // The bot leaves its hunting ground for the trip; its claim would keep other bots off it meanwhile.
+        this._player.HuntingSpot = null;
+        this._chaosMachineTarget = goblinPosition;
+        this._chaosMachineStandingPoint = standingPoint;
+        this._player.IsOnChaosMachineTrip = true;
+        this._player.Logger.LogDebug("Bot '{Name}' heads to the chaos machine.", this._player.Name);
+        return true;
+    }
+
+    /// <summary>
+    /// Mixes at the chaos machine, as it runs inside the MU Helper tick (see <see cref="BotChaosMachineHandler.TryMixAsync"/>).
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="goblinPosition">The position of the chaos machine NPC.</param>
+    private async ValueTask MixAtChaosMachineAsync(GameMap map, Point goblinPosition)
+    {
+        if (!await BotChaosMachineHandler.TryMixAsync(this._player, map, goblinPosition).ConfigureAwait(false))
+        {
+            // A refused mix (e.g. the castle tax on top of the price) would fail the same way in 30 s.
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+        }
+    }
+
+    /// <summary>
+    /// Gets a warp the bot may take to a map where a chaos machine NPC stands, and can afford while
+    /// keeping the price of the mix - otherwise it arrives without the Zen to mix.
+    /// </summary>
+    /// <param name="mixPrice">The price of the planned mix.</param>
+    /// <param name="warp">The warp.</param>
+    /// <returns>True, if there is one.</returns>
+    private bool TryGetChaosMachineWarp(long mixPrice, [MaybeNullWhen(false)] out WarpInfo warp)
+    {
+        warp = this._player.GameContext.Configuration.Maps
+            .Where(m => m.MonsterSpawns.Any(s => s.MonsterDefinition is { } npc && BotChaosMachineHandler.IsChaosMachine(npc)))
+            .SelectMany(this.GetLegalWarps)
+            .Where(w => this._player.Money >= w.Costs + mixPrice)
+            .OrderBy(w => w.Costs)
+            .FirstOrDefault();
+        return warp is not null;
     }
 
     /// <summary>
@@ -1508,6 +1777,7 @@ internal sealed class BotNavigator : AsyncDisposable
         this._lastWarpUtc = this._timeProvider.GetUtcNow();
         this._hasDestination = false;
         this._travelPath = null;
+        this._player.HuntingSpot = null;
         this._player.Logger.LogDebug(
             "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}, fare {Fare} zen).",
             this._player.Name,
@@ -1627,34 +1897,6 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Picks a hunting ground and starts walking to it. If the chosen ground turns out to be unreachable, the
-    /// destination is dropped, so the next call (next tick) simply picks another one.
-    /// </summary>
-    private async ValueTask PickGroundAndTravelAsync(GameMap map, CancellationToken cancellationToken)
-    {
-        if (!this.TryPickHuntingGround(map, out var ground, out var groundLevel))
-        {
-            this._hasDestination = false;
-            this._player.Logger.LogDebug("Bot {Character}: no hunting ground found on map {Map}.", this._player.Name, map.Definition.Name);
-            return;
-        }
-
-        this._destination = ground;
-        this._hasDestination = true;
-        this._player.Logger.LogDebug(
-            "Bot {Character} (level {Level}) heading to hunting ground {Ground} (monster level ~{MonsterLevel}).",
-            this._player.Name,
-            this.GetBotLevel(),
-            ground,
-            groundLevel);
-
-        if (!await this.TravelTowardAsync(map, ground, cancellationToken).ConfigureAwait(false))
-        {
-            this._hasDestination = false;
-        }
-    }
-
-    /// <summary>
     /// Ensures the bot keeps a stack of healing and a stack of mana potions in its inventory. Creates the
     /// stacks the first time (covering bots generated before they were granted) and refills them once they
     /// run low, so the bot never goes without a way to heal or to keep casting.
@@ -1762,60 +2004,6 @@ internal sealed class BotNavigator : AsyncDisposable
 
             charges += stackSize;
         }
-    }
-
-    /// <summary>
-    /// Finds the position of the nearest live, attackable monster within <see cref="MonsterSeekRadius"/> that
-    /// the bot can safely fight, so the bot heads straight for a real monster instead of a random tile in a
-    /// huge spawn area. Returns false when none are loaded nearby (or all are above the safe level cap), in
-    /// which case the caller falls back to coarse spawn-area travel / warping to relocate.
-    /// </summary>
-    private bool TryFindNearestMonsterGround(GameMap map, out Point ground)
-    {
-        ground = default;
-        var position = this._player.Position;
-        var candidates = new List<(Monster Monster, double Distance)>();
-        foreach (var attackable in map.GetAttackablesInRange(position, MonsterSeekRadius))
-        {
-            if (attackable is not Monster { SummonedBy: null } monster
-                || !monster.IsAlive
-                || monster.IsAtSafezone())
-            {
-                continue;
-            }
-
-            if (!CombatHandler.IsSafeTarget(this._player, monster.Definition))
-            {
-                // Too dangerous (judged by its real damage, not its level) - leave it and let the warp /
-                // area logic relocate the bot to a map whose monsters it can handle.
-                continue;
-            }
-
-            candidates.Add((monster, monster.GetDistanceTo(position)));
-        }
-
-        if (candidates.Count == 0)
-        {
-            return false;
-        }
-
-        // Head for one of the few nearest monsters, chosen randomly, instead of strictly the nearest:
-        // with many bots on one ground, deterministic nearest-first would send them all to the same
-        // monster, and they would roam the map as one pack - a very bot-like look.
-        var chosen = candidates
-            .OrderBy(c => c.Distance)
-            .Take(3)
-            .Select(c => c.Monster)
-            .SelectRandom();
-        if (chosen is null)
-        {
-            return false;
-        }
-
-        // The monster stands on a walkable tile, so head straight for it; TravelTowardAsync walks a few steps
-        // per tick and re-homes as the monster roams, closing the gap until combat range is reached.
-        ground = chosen.Position;
-        return true;
     }
 
     /// <summary>
@@ -2030,8 +2218,11 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {
-        if (this._player.SelectedCharacter is not { } character)
+        if (this._player.SelectedCharacter is not { } character
+            || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(mapDefinition) == true)
         {
+            // A map forbidden for bots has no legal warp at all: no hunting ground, no leader to follow
+            // there, no errand - and a bot which logged in on it treats it as illegal and leaves.
             return [];
         }
 
@@ -2102,6 +2293,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var homeMap = this._player.SelectedCharacter?.CharacterClass?.HomeMap;
         if (homeMap is null
             || homeMap.Number == this._player.CurrentMap?.Definition.Number
+            || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(homeMap) == true
             || homeMap.GetSafezoneGate() is not { } safezoneGate)
         {
             return false;
@@ -2365,7 +2557,15 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Weight the choice by spawn quantity and proximity, so the bot prefers nearby, dense grounds
-        // (shorter, safer travel) while keeping some variety.
+        // (shorter, safer travel) while keeping some variety. Grounds another bot outside the party
+        // already works are dropped first, so two independent bots do not farm the same monsters.
+        var competitorSpots = HuntingSpotOccupancy.GetCompetitorSpots(this._player, map.GetPlayers(), map.Definition.Number);
+        var freeBand = band.Where(x => !HuntingSpotOccupancy.IsSpotOccupied(GroundCenter(x.Area), competitorSpots)).ToList();
+        if (freeBand.Count > 0)
+        {
+            band = freeBand;
+        }
+
         var position = this._player.Position;
         var chosen = band.SelectWeightedRandom(band.Select(x => GroundWeight(x.Area, position)));
         if (chosen.Area is null)
@@ -2374,10 +2574,10 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         groundLevel = chosen.Level;
-        return this.TryPickWalkablePoint(map, chosen.Area, siteToAvoid, out ground);
+        return this.TryPickWalkablePoint(map, chosen.Area, siteToAvoid, competitorSpots, out ground);
     }
 
-    private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, out Point point)
+    private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, IReadOnlyList<HuntingSpot> competitorSpots, out Point point)
     {
         int minX = Math.Min(area.X1, area.X2);
         int maxX = Math.Max(area.X1, area.X2);
@@ -2391,6 +2591,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var isSingleSpot = (maxX - minX) < GroundScatterSpan && (maxY - minY) < GroundScatterSpan;
         var center = new Point((byte)((minX + maxX) / 2), (byte)((minY + maxY) / 2));
 
+        Point? occupiedFallback = null;
         for (var attempt = 0; attempt < MaxPointPickAttempts; attempt++)
         {
             // GetRandomCoordinate already keeps to the map, retries unwalkable picks and falls back to the
@@ -2415,7 +2616,22 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            point = new Point((byte)x, (byte)y);
+            var pointCandidate = new Point((byte)x, (byte)y);
+            if (HuntingSpotOccupancy.IsSpotOccupied(pointCandidate, competitorSpots))
+            {
+                // Remember the point as a last resort: if this whole area is taken, sharing it is still
+                // better than leaving the bot without a destination.
+                occupiedFallback ??= pointCandidate;
+                continue;
+            }
+
+            point = pointCandidate;
+            return true;
+        }
+
+        if (occupiedFallback is { } fallback)
+        {
+            point = fallback;
             return true;
         }
 

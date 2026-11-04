@@ -376,6 +376,15 @@
   <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>处理召唤石的使用和消耗。</value>
   </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>圣诞村邀请函使用</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理圣诞村邀请函，将玩家传送到圣诞村。</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>地图编号</value>
+  </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>回城卷轴使用</value>
   </data>
@@ -1343,7 +1352,13 @@
     <value>每种宝石储备量</value>
   </data>
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
-    <value>机器人分别保留的祝福、灵魂、生命宝石数量；超过后停止拾取并出售多余部分。</value>
+    <value>机器人分别保留的祝福、灵魂、生命、混沌宝石数量；超过后停止拾取并出售多余部分。</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
+    <value>禁止机器人前往的地图</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
+    <value>机器人从不传送到这些地图：不在那里狩猎、不跟随队长前往、不参加在那里举行的活动；在这些地图上登录的机器人会离开。玩家不受影响。</value>
   </data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve">
     <value>药水储备量（使用次数）</value>
@@ -1658,6 +1673,18 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>规定家族对组队、战盟和同盟的限制：不同家族之间以及纷争区域内禁止组队；战盟和同盟成员必须属于同一家族。</value>
   </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>卡利玛门票使用处理器</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>打开通往与角色等级相符的卡利玛层级的传送门。每次使用消耗门票的一次使用次数。</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>卡利玛各层级的最低等级</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>特殊角色的卡利玛各层级最低等级</value>
+  </data>
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>祝福药水效果编号</value>
   </data>
@@ -1741,5 +1768,29 @@
   </data>
   <data name="GameEventPublisherConfiguration_PublishChatMessages_Name" xml:space="preserve">
     <value>发布战盟、联盟和世界聊天</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>精华治疗药水使用</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理精华治疗药水的使用和消耗，立即恢复生命值。</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>精华魔力药水使用</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理精华魔力药水的使用和消耗，立即恢复魔力值。</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>精华SD药水使用</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理精华SD药水的使用和消耗，立即恢复SD值。</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>中瓶精华治疗药水使用</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理中瓶精华治疗药水的使用和消耗，立即恢复部分生命值。</value>
   </data>
 </root>

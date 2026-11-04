@@ -49,4 +49,12 @@ export class NonPlayerCharacter extends Attackable<NpcData> {
             new THREE.MeshBasicMaterial({ color, alphaMap: attackableAlphaMapTexture, transparent: true }),
         );
     }
+
+    /**
+     * Gets whether this NPC is a monster, the only kind the monster filter applies to.
+     * @returns True if it's a monster; false for merchants, guards, gates and the like.
+     */
+    public isMonster(): boolean {
+        return this.data.npcObjectKind === NpcObjectKind.Monster;
+    }
 };
