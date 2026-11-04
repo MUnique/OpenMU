@@ -110,6 +110,7 @@ public class SpawnGateSelectionTests
     {
         var monsterDefinition = new MonsterDefinition
         {
+            Id = Guid.NewGuid(),
             ObjectKind = NpcObjectKind.Monster,
         };
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1000 });

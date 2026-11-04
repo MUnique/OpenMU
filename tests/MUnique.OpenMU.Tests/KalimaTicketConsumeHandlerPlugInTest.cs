@@ -63,6 +63,30 @@ public class KalimaTicketConsumeHandlerPlugInTest
         Assert.That(player.CurrentMap!.GetNpcsInRange(player.Position, 1).OfType<GateNpc>(), Is.Empty);
     }
 
+    /// <summary>
+    /// Tests that the ticket opens the gate to the highest level of Kalima whose minimum level the character reached,
+    /// even when the configured minimum levels aren't ordered.
+    /// </summary>
+    [Test]
+    public async Task TicketOpensHighestQualifyingKalimaLevelForUnorderedLevelsAsync()
+    {
+        var player = await CreatePlayerAsync(400).ConfigureAwait(false);
+        var ticket = await AddTicketAsync(player).ConfigureAwait(false);
+        var plugIn = new KalimaTicketConsumeHandlerPlugIn
+        {
+            Configuration = new KalimaTicketConsumeHandlerConfiguration
+            {
+                MinimumLevels = [40, 131, 181, 231, 281, 500, 350],
+            },
+        };
+
+        var consumed = await plugIn.ConsumeItemAsync(player, ticket, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(consumed, Is.True);
+        var gate = player.CurrentMap!.GetNpcsInRange(player.Position, 1).OfType<GateNpc>().Single();
+        Assert.That(gate.Definition.Number, Is.EqualTo(FirstGateNpcNumber + 6));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync(int characterLevel)
     {
         var gameContext = GameContextTestHelper.CreateGameContext();

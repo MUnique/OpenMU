@@ -46,3 +46,23 @@ export interface Step {
     readonly y: number;
     readonly direction: Direction;
 }
+
+/*
+ * How the monster filter of the live map compares a name with its text
+ * (matching the C# enum MonsterFilterMode).
+ */
+export const enum MonsterFilterMode {
+    Contains = 0,
+    StartsWith = 1,
+    EndsWith = 2,
+}
+
+/*
+ * A monster which matches the monster filter, as it's listed next to the map.
+ */
+export interface MonsterFilterMatch {
+    readonly id: number;
+    readonly name: string;
+    readonly x: number;
+    readonly y: number;
+}

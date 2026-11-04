@@ -118,7 +118,7 @@ System.register("Queue", [], function (exports_1, context_1) {
 });
 System.register("Types", [], function (exports_2, context_2) {
     "use strict";
-    var Direction;
+    var Direction, MonsterFilterMode;
     var __moduleName = context_2 && context_2.id;
     return {
         setters: [],
@@ -134,6 +134,11 @@ System.register("Types", [], function (exports_2, context_2) {
                 Direction[Direction["North"] = 7] = "North";
                 Direction[Direction["NorthWest"] = 8] = "NorthWest";
             })(Direction || (exports_2("Direction", Direction = {})));
+            (function (MonsterFilterMode) {
+                MonsterFilterMode[MonsterFilterMode["Contains"] = 0] = "Contains";
+                MonsterFilterMode[MonsterFilterMode["StartsWith"] = 1] = "StartsWith";
+                MonsterFilterMode[MonsterFilterMode["EndsWith"] = 2] = "EndsWith";
+            })(MonsterFilterMode || (exports_2("MonsterFilterMode", MonsterFilterMode = {})));
         }
     };
 });
@@ -366,7 +371,7 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
 });
 System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
     "use strict";
-    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, Attackable, attackableAlphaMapTexture;
+    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, getDisplayName, Attackable, attackableAlphaMapTexture;
     var __moduleName = context_6 && context_6.id;
     return {
         setters: [
@@ -383,6 +388,8 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
         execute: function () {
             NAME_LABEL_Z_POSITION = 200;
             NAME_INDEX = 0;
+            NAME_SEPARATOR = " - Id:";
+            exports_6("getDisplayName", getDisplayName = function (data) { return data.name.split(NAME_SEPARATOR)[NAME_INDEX]; });
             Attackable = (function (_super) {
                 __extends(Attackable, _super);
                 function Attackable(data, geometry, material) {
@@ -398,7 +405,7 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                     return _this;
                 }
                 Attackable.prototype.showLabel = function () {
-                    this.nameLabel.show(this.data.name.split(" - Id:")[NAME_INDEX]);
+                    this.nameLabel.show(getDisplayName(this.data));
                 };
                 Attackable.prototype.hideLabel = function () {
                     this.nameLabel.hide();
@@ -696,6 +703,9 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                             return 13158480;
                     }
                 };
+                NonPlayerCharacter.prototype.isMonster = function () {
+                    return this.data.npcObjectKind === NpcObjectKind.Monster;
+                };
                 NonPlayerCharacter.size = 4;
                 NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
                 return NonPlayerCharacter;
@@ -741,6 +751,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     _this.terrainTexture = null;
                     _this.lastLabelObjectId = null;
                     _this.isDisposed = false;
+                    _this.monsterFilterMode = 0;
+                    _this.monsterFilterText = "";
                     _this.objects = {};
                     var attacksZ = 100;
                     _this.attacks = new Attack_1.Attacks();
@@ -797,6 +809,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                                 case 4:
                                     Debug_1.logDebug("Updating npc", npcData);
                                     obj.respawn(npcData);
+                                    this.applyMonsterFilter(obj);
                                     _a.label = 5;
                                 case 5: return [2];
                             }
@@ -891,6 +904,30 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     (_a = this.terrainTexture) === null || _a === void 0 ? void 0 : _a.dispose();
                     this.terrainTexture = null;
                 };
+                World.prototype.setMonsterFilter = function (mode, text) {
+                    this.monsterFilterMode = mode;
+                    this.monsterFilterText = (text !== null && text !== void 0 ? text : "").trim().toLowerCase();
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            this.applyMonsterFilter(this.objects[id]);
+                        }
+                    }
+                };
+                World.prototype.getMonsterFilterMatches = function () {
+                    var matches = [];
+                    if (this.monsterFilterText === "") {
+                        return matches;
+                    }
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            var obj = this.objects[id];
+                            if (obj instanceof NonPlayerCharacter_1.NonPlayerCharacter && obj.isMonster() && obj.visible) {
+                                matches.push({ id: obj.data.id, name: Attackable_3.getDisplayName(obj.data), x: obj.data.x, y: obj.data.y });
+                            }
+                        }
+                    }
+                    return matches.sort(function (a, b) { return a.name.localeCompare(b.name) || a.id - b.id; });
+                };
                 World.prototype.highlightPlayerByName = function (playerName) {
                     for (var id in this.objects) {
                         if (this.objects.hasOwnProperty(id)) {
@@ -940,6 +977,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var npc = new NonPlayerCharacter_1.NonPlayerCharacter(data);
                     this.addObjectMesh(npc);
                     npc.respawn(data);
+                    this.applyMonsterFilter(npc);
                 };
                 World.prototype.addPlayer = function (data) {
                     if (this.isDisposed) {
@@ -971,6 +1009,26 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 };
                 World.prototype.getObjectById = function (objectId) {
                     return this.objects[objectId];
+                };
+                World.prototype.applyMonsterFilter = function (obj) {
+                    if (!(obj instanceof NonPlayerCharacter_1.NonPlayerCharacter) || !obj.isMonster()) {
+                        return;
+                    }
+                    obj.visible = this.monsterFilterText === "" || this.matchesMonsterFilter(Attackable_3.getDisplayName(obj.data));
+                    if (!obj.visible && this.lastLabelObjectId === obj.data.id) {
+                        this.hideLastLabel();
+                    }
+                };
+                World.prototype.matchesMonsterFilter = function (name) {
+                    var lowerName = name.toLowerCase();
+                    switch (this.monsterFilterMode) {
+                        case 1:
+                            return lowerName.startsWith(this.monsterFilterText);
+                        case 2:
+                            return lowerName.endsWith(this.monsterFilterText);
+                        default:
+                            return lowerName.includes(this.monsterFilterText);
+                    }
                 };
                 World.prototype.addObjectMesh = function (mesh) {
                     this.add(mesh);
@@ -1047,11 +1105,23 @@ System.register("WorldObjectPicker", ["three"], function (exports_12, context_12
                     }
                 };
                 WorldObjectPicker.prototype.pickAt = function (offsetX, offsetY) {
+                    var _this = this;
                     this.mouse.x = (offsetX / this.worldCanvas.clientWidth) * 2 - 1;
                     this.mouse.y = -(offsetY / this.worldCanvas.clientHeight) * 2 + 1;
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     var intersects = this.raycaster.intersectObjects(this.worldMesh.children, true);
-                    return intersects.length ? this.extractObjectData(intersects[0]) : null;
+                    var visibleIntersection = intersects.find(function (intersection) { return _this.isVisible(intersection.object); });
+                    return visibleIntersection ? this.extractObjectData(visibleIntersection) : null;
+                };
+                WorldObjectPicker.prototype.isVisible = function (obj) {
+                    var current = obj;
+                    while (current) {
+                        if (!current.visible) {
+                            return false;
+                        }
+                        current = current.parent;
+                    }
+                    return true;
                 };
                 WorldObjectPicker.prototype.extractObjectData = function (intersection) {
                     var obj = intersection.object;
@@ -1129,6 +1199,12 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 }
                 MapApp.prototype.highlightByName = function (playerName) {
                     return this.world.highlightPlayerByName(playerName);
+                };
+                MapApp.prototype.setMonsterFilter = function (mode, text) {
+                    this.world.setMonsterFilter(mode, text);
+                };
+                MapApp.prototype.getMonsterFilterMatches = function () {
+                    return this.world.getMonsterFilterMatches();
                 };
                 MapApp.prototype.selectObject = function (objectId) {
                     var _a;

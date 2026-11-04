@@ -2,7 +2,7 @@ import * as THREE from "three";
 import TWEEN from "tween";
 import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
-import { ObjectData } from "./Types";
+import { MonsterFilterMatch, MonsterFilterMode, ObjectData } from "./Types";
 
 /**
  * Class for a Map application which is shown on the whole browser page.
@@ -69,6 +69,23 @@ export class MapApp {
 
     public highlightByName(playerName: string): boolean {
         return this.world.highlightPlayerByName(playerName);
+    }
+
+    /**
+     * Sets the monster filter, see World.setMonsterFilter.
+     * @param mode - How the name is compared with the text.
+     * @param text - The text; an empty one shows all monsters again.
+     */
+    public setMonsterFilter(mode: MonsterFilterMode, text: string): void {
+        this.world.setMonsterFilter(mode, text);
+    }
+
+    /**
+     * Gets the monsters which match the monster filter, see World.getMonsterFilterMatches.
+     * @returns The matching monsters; empty when no filter is set.
+     */
+    public getMonsterFilterMatches(): MonsterFilterMatch[] {
+        return this.world.getMonsterFilterMatches();
     }
 
     /**

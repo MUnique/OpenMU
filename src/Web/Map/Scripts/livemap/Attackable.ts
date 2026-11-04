@@ -6,6 +6,14 @@ import { NameLabel } from "./NameLabel";
 
 const NAME_LABEL_Z_POSITION = 200;
 const NAME_INDEX = 0;
+const NAME_SEPARATOR = " - Id:";
+
+/**
+ * Gets the name of an object as it's shown: the server appends the id and the position to it.
+ * @param data - The data of the object.
+ * @returns The name without the appended id and position.
+ */
+export const getDisplayName = (data: ObjectData): string => data.name.split(NAME_SEPARATOR)[NAME_INDEX];
 
 export class Attackable<TData extends ObjectData> extends THREE.Mesh implements GameObject {
     public data: TData;
@@ -31,7 +39,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
     }
 
     public showLabel(): void {
-        this.nameLabel.show(this.data.name.split(" - Id:")[NAME_INDEX]);
+        this.nameLabel.show(getDisplayName(this.data));
     }
 
     public hideLabel(): void {
