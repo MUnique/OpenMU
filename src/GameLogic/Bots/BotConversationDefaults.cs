@@ -193,6 +193,50 @@ internal static class BotConversationDefaults
             ("let's do a quest together sometime", "sure, just ask", "zróbmy kiedyś razem questa", "jasne, daj znać"),
             ("have you seen the new players?", "everyone was new once", "widziałeś nowych graczy?", "każdy kiedyś był nowy"),
             ("i heard someone got a jewel of creation", "lucky one", "podobno ktoś wydropił jewel of creation", "szczęściarz"));
+        AddWithRiposte(
+            conversations,
+            BotConversationPlace.Town,
+            ("i finally got my wings", "nice! what level?", "level 2, the expensive ones", "w końcu mam skrzydła", "nieźle! jaki level?", "dwójki, te drogie"),
+            ("guess who failed +10 again", "you?", "me. again.", "zgadnij, kto znowu spalił +10", "ty?", "ja. znowu."),
+            ("lend me 10k zen?", "what for?", "potions. and maybe a pet", "pożyczysz 10k zenu?", "na co?", "na potki. i może peta"),
+            ("{partner}, nice armor", "thanks, crafted it myself", "with a little help from the chaos goblin", "{partner}, fajna zbroja", "dzięki, sam zrobiłem", "z małą pomocą chaos goblina"),
+            ("the guards here never move", "maybe they're bots", "haha, no way", "strażnicy tu w ogóle się nie ruszają", "może to boty", "haha, niemożliwe"),
+            ("i'm going to devias", "the snow is lovely this time of year", "and the yetis are hungry", "idę do devias", "śnieg o tej porze jest piękny", "a yeti głodne"),
+            ("ever been to the land of trials?", "once, by accident", "how do you get there by accident?", "byłeś kiedyś w land of trials?", "raz, przez przypadek", "jak tam się trafia przez przypadek?"),
+            ("i need a party for bc", "i'm in", "great, one more and we go", "potrzebuję grupy na bc", "wchodzę", "super, jeszcze jeden i idziemy"));
+        AddWithRiposte(
+            conversations,
+            BotConversationPlace.Hunting,
+            ("i'll pull, you hit", "deal", "here they come!", "ja ściągam, ty bijesz", "stoi", "o, już idą!"),
+            ("how's your hp?", "half", "drink, i'll hold them", "jak tam hp?", "połowa", "pij, ja je trzymam"),
+            ("that was a jewel, right?", "no, a rock", "a very shiny rock", "to był jewel, nie?", "nie, kamień", "bardzo błyszczący kamień"),
+            ("we're fast today", "it's the new weapon", "or the coffee", "szybko dziś idzie", "to ta nowa broń", "albo kawa"),
+            ("careful, the big one", "i see him", "then why are you running?", "uważaj, ten duży", "widzę go", "to czemu uciekasz?"),
+            ("one more level and i'm done", "you said that an hour ago", "and i meant it", "jeszcze jeden level i kończę", "mówiłeś to godzinę temu", "i wtedy też tak myślałem"));
+        AddWithRiposte(
+            conversations,
+            BotConversationPlace.Anywhere,
+            ("what are you doing tonight?", "the same as every night", "exp?", "co robisz wieczorem?", "to co co wieczór", "expisz?"),
+            ("have you seen my old guild master?", "he quit last week", "again?", "widziałeś mojego starego mistrza gildii?", "odszedł w zeszłym tygodniu", "znowu?"),
+            ("i think i'll try a new class", "which one?", "the one with the biggest sword", "chyba spróbuję nowej klasy", "której?", "tej z największym mieczem"),
+            ("do you believe in lucky days?", "only when something drops", "then today isn't one", "wierzysz w szczęśliwe dni?", "tylko jak coś wypadnie", "to dziś nie jest taki dzień"),
+            ("guess what dropped yesterday", "a jewel?", "an apple. a really nice one", "zgadnij, co mi wczoraj wypadło", "jewel?", "jabłko. bardzo ładne"),
+            ("the server is busy today", "event soon?", "maybe, let's ask a gm", "dużo dziś ludzi na serwerze", "niedługo event?", "może, zapytajmy gma"));
+
+        // A small easter egg: the bots know the open source projects this server and the client come from.
+        AddWithRiposte(
+            conversations,
+            BotConversationPlace.Anywhere,
+            ("openmu and mumain are doing a great job", "and how!", "open source, baby", "openmu i mumain robią robotę", "i to jaką!", "open source, ziomek"),
+            ("you know the server and client of this game are open source?", "openmu on the server, mumain in the client", "and we're the bots in between", "wiesz, że serwer i klient tej gry to open source?", "openmu na serwerze, mumain w kliencie", "a my, boty, pomiędzy"),
+            ("who made this server?", "openmu, written in c#", "so we're made of c# too?", "kto zrobił ten serwer?", "openmu, napisany w c#", "czyli my też jesteśmy z c#?"),
+            ("my client runs on mumain now", "smooth?", "smoother than my combos", "mój klient chodzi teraz na mumain", "płynnie?", "płynniej niż moje combosy"));
+        Add(
+            conversations,
+            BotConversationPlace.Anywhere,
+            ("found a bug today", "report it to openmu, they fix them fast", "znalazłem dziś buga", "zgłoś do openmu, szybko łatają"),
+            ("who do we thank for this world?", "the openmu and mumain folks", "komu dziękujemy za ten świat?", "ekipie openmu i mumain"),
+            ("i'd like to help with openmu and mumain", "pull requests are welcome", "chciałbym pomóc przy openmu i mumain", "pull requesty mile widziane"));
         AddAt(
             conversations,
             BotConversationPlace.Anywhere,
@@ -231,6 +275,21 @@ internal static class BotConversationDefaults
 
     private static void Add(ICollection<BotConversation> conversations, BotConversationPlace place, params (string Opener, string Reply, string PolishOpener, string PolishReply)[] texts)
         => AddAt(conversations, place, BotChatTimeOfDay.Anytime, texts);
+
+    private static void AddWithRiposte(ICollection<BotConversation> conversations, BotConversationPlace place, params (string Opener, string Reply, string Riposte, string PolishOpener, string PolishReply, string PolishRiposte)[] texts)
+    {
+        var polish = CultureInfo.GetCultureInfo("pl");
+        foreach (var text in texts)
+        {
+            conversations.Add(new BotConversation
+            {
+                Opener = new LocalizedString(text.Opener).WithTranslation(polish, text.PolishOpener),
+                Reply = new LocalizedString(text.Reply).WithTranslation(polish, text.PolishReply),
+                Riposte = new LocalizedString(text.Riposte).WithTranslation(polish, text.PolishRiposte),
+                Where = place,
+            });
+        }
+    }
 
     private static void AddAt(ICollection<BotConversation> conversations, BotConversationPlace place, BotChatTimeOfDay when, params (string Opener, string Reply, string PolishOpener, string PolishReply)[] texts)
     {

@@ -380,7 +380,11 @@ together do they talk — nobody else would hear it. Each conversation has a
 place: `Town` (both bots in a safezone), `Hunting` (both outside of it, usually
 fighting) or `Anywhere`. They are drawn without repetition until all of a place
 were used, and each player hears about one every five minutes. The default
-configuration comes with some 170 of them.
+configuration comes with some 190 of them. A conversation may have a third
+line - the first bot's riposte. A player who writes in the normal chat within
+30 seconds after a conversation next to them gets an answer from one of the two
+bots: a whisper reply when the message matches a keyword, otherwise "right?",
+"haha, exactly" and the like.
 
 A whisper reply can carry `Keywords`, a comma-separated list of words or
 phrases it answers (`how are you, how r u`). The bot picks among the replies

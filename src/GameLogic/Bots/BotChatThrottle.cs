@@ -61,6 +61,8 @@ internal sealed class BotChatThrottle
 
     private readonly List<(GameMap Map, Point Position, DateTime Time)> _humanChat = [];
 
+    private readonly List<(Player First, Player Second, DateTime Until)> _recentConversations = [];
+
     private long _nextPlayerScanTicks;
 
     private long _nextPostTicks;
@@ -372,6 +374,44 @@ internal sealed class BotChatThrottle
                 ReferenceEquals(message.Map, map)
                 && now - message.Time <= window
                 && message.Position.EuclideanDistanceTo(position) <= range) >= count;
+        }
+    }
+
+    /// <summary>
+    /// Remembers that two bots just had a conversation, so a player who chimes in gets an answer.
+    /// </summary>
+    /// <param name="first">The bot which opened the conversation.</param>
+    /// <param name="second">The bot which replied.</param>
+    /// <param name="until">Until when a player's message counts as chiming in.</param>
+    public void RememberConversation(Player first, Player second, DateTime until)
+    {
+        lock (this._recentConversations)
+        {
+            this._recentConversations.Add((first, second, until));
+        }
+    }
+
+    /// <summary>
+    /// Takes the recent conversation a player chimes in with a message: one which is still open and
+    /// of which one bot stands near the player. Each conversation is answered once.
+    /// </summary>
+    /// <param name="isNear">Determines whether a bot stands near the player.</param>
+    /// <param name="now">The current time.</param>
+    /// <returns>The two bots, or <c>null</c> without such a conversation.</returns>
+    public (Player First, Player Second)? TakeRecentConversation(Func<Player, bool> isNear, DateTime now)
+    {
+        lock (this._recentConversations)
+        {
+            this._recentConversations.RemoveAll(c => c.Until < now);
+            var index = this._recentConversations.FindIndex(c => isNear(c.First) || isNear(c.Second));
+            if (index < 0)
+            {
+                return null;
+            }
+
+            var conversation = this._recentConversations[index];
+            this._recentConversations.RemoveAt(index);
+            return (conversation.First, conversation.Second);
         }
     }
 

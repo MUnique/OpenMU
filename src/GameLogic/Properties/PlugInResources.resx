@@ -1973,4 +1973,8 @@
   <data name="BotChatLanguageHint_Letters_Description" xml:space="preserve"><value>Letters only this language uses, e.g. ąćęłńóśźż. One of them in a message counts like a typical word.</value></data>
   <data name="BotChatLine_Gesture_Name" xml:space="preserve"><value>Gesture</value></data>
   <data name="BotChatLine_Gesture_Description" xml:space="preserve"><value>A gesture the bot makes with it, like a player typing /hello: Greeting, Goodbye, Clap, Cheer, Win, Smile, Respect, Salute, Cry, Awkward or Provocation. The bot turns to the player it talks to.</value></data>
+  <data name="BotConversation_Riposte_Name" xml:space="preserve"><value>Riposte</value></data>
+  <data name="BotConversation_Riposte_Description" xml:space="preserve"><value>What the first bot says back to the reply, a few seconds later. Empty for a conversation of two lines.</value></data>
+  <data name="BotChatConfiguration_ConversationJoinLines_Name" xml:space="preserve"><value>Conversations: player chimes in</value></data>
+  <data name="BotChatConfiguration_ConversationJoinLines_Description" xml:space="preserve"><value>Said by one of two bots when a player near them writes in the normal chat right after their conversation - unless the message matches a whisper reply keyword. Placeholders: {player}, {map}, {level}, {class}.</value></data>
 </root>

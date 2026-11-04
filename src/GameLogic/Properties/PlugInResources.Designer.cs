@@ -5454,5 +5454,17 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatLine_Gesture_Description text.</summary>
         public static string BotChatLine_Gesture_Description => ResourceManager.GetString("BotChatLine_Gesture_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotConversation_Riposte_Name text.</summary>
+        public static string BotConversation_Riposte_Name => ResourceManager.GetString("BotConversation_Riposte_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Riposte_Description text.</summary>
+        public static string BotConversation_Riposte_Description => ResourceManager.GetString("BotConversation_Riposte_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ConversationJoinLines_Name text.</summary>
+        public static string BotChatConfiguration_ConversationJoinLines_Name => ResourceManager.GetString("BotChatConfiguration_ConversationJoinLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ConversationJoinLines_Description text.</summary>
+        public static string BotChatConfiguration_ConversationJoinLines_Description => ResourceManager.GetString("BotChatConfiguration_ConversationJoinLines_Description", resourceCulture)!;
+
     }
 }
