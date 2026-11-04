@@ -20,12 +20,13 @@ internal static class BotChatComposer
     /// </summary>
     /// <param name="lines">The lines of one list, e.g. the greetings.</param>
     /// <param name="pickIndex">Returns a random index below the given count.</param>
+    /// <param name="previous">The line said last time to the same player, which is left out when there are others.</param>
     /// <returns>The picked line, or <c>null</c> when the list has no usable line.</returns>
-    internal static BotChatLine? PickLine(IEnumerable<BotChatLine> lines, Func<int, int> pickIndex)
+    internal static BotChatLine? PickLine(IEnumerable<BotChatLine> lines, Func<int, int> pickIndex, object? previous = null)
     {
-        var candidates = lines
-            .Where(line => !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage))
-            .ToList();
+        var candidates = WithoutPrevious(
+            lines.Where(line => !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage)).ToList(),
+            previous);
         return candidates.Count == 0 ? null : candidates[pickIndex(candidates.Count)];
     }
 
@@ -36,12 +37,13 @@ internal static class BotChatComposer
     /// <param name="replies">The configured replies.</param>
     /// <param name="message">The player's message.</param>
     /// <param name="pickIndex">Returns a random index below the given count.</param>
+    /// <param name="previous">The reply given last time to the same player, which is left out when there are others.</param>
     /// <returns>The picked reply, or <c>null</c> when there is no usable reply.</returns>
     /// <remarks>
     /// The best match is the longest matching keyword, so "hi, how are you?" is answered by the
     /// "how are you" replies rather than by the greetings matching "hi".
     /// </remarks>
-    internal static BotChatReply? PickWhisperReply(IEnumerable<BotChatReply> replies, string message, Func<int, int> pickIndex)
+    internal static BotChatReply? PickWhisperReply(IEnumerable<BotChatReply> replies, string message, Func<int, int> pickIndex, object? previous = null)
     {
         var usable = replies
             .Where(reply => !string.IsNullOrWhiteSpace(reply.Text.ValueInNeutralLanguage))
@@ -51,9 +53,11 @@ internal static class BotChatComposer
             .Select(reply => (Reply: reply, Score: GetKeywords(reply.Keywords).Where(k => normalizedMessage.Contains($" {k} ", StringComparison.Ordinal)).Select(k => k.Length).DefaultIfEmpty(0).Max()))
             .ToList();
         var bestScore = scored.Count == 0 ? 0 : scored.Max(s => s.Score);
-        var candidates = bestScore > 0
-            ? scored.Where(s => s.Score == bestScore).Select(s => s.Reply).ToList()
-            : usable.Where(reply => !GetKeywords(reply.Keywords).Any()).ToList();
+        var candidates = WithoutPrevious(
+            bestScore > 0
+                ? scored.Where(s => s.Score == bestScore).Select(s => s.Reply).ToList()
+                : usable.Where(reply => !GetKeywords(reply.Keywords).Any()).ToList(),
+            previous);
         return candidates.Count == 0 ? null : candidates[pickIndex(candidates.Count)];
     }
 
@@ -167,6 +171,22 @@ internal static class BotChatComposer
                 .Select(Normalize)
                 .Where(name => name.Length > 0)
                 .Distinct();
+    }
+
+    /// <summary>
+    /// Leaves out the previous pick, unless it's the only candidate - a player who asks twice must
+    /// not get the very same answer twice, but an answer is better than none.
+    /// </summary>
+    private static List<T> WithoutPrevious<T>(List<T> candidates, object? previous)
+        where T : class
+    {
+        if (previous is null || candidates.Count < 2)
+        {
+            return candidates;
+        }
+
+        candidates.RemoveAll(candidate => ReferenceEquals(candidate, previous));
+        return candidates;
     }
 
     private static IEnumerable<string> GetKeywords(string? keywords)
