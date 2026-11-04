@@ -334,6 +334,7 @@ only talks about what it could actually do:
 | Situation | Where | Who says it |
 |---|---|---|
 | A Blood Castle, Devil Square or Chaos Castle entrance opened | `/post`, then it waits for players | a bot which meets that event's entry requirements — the same check that lets it follow a leader in |
+| A Blood Castle, Devil Square or Chaos Castle entrance opened | normal chat in town, no `/post` ("bc open, anyone going?") | the nearest bot which meets the entry requirements, once per town where a player stands - 50 % chance |
 | An invasion (White Wizard, Golden, Red Dragon) started | `/post` | a bot which may warp to the invaded map |
 | A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
 | A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
