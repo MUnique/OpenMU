@@ -910,4 +910,10 @@
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve">
+    <value>Treffer-Schock-Einstellungen hinzufügen</value>
+  </data>
+  <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
+    <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
+  </data>
 </root>

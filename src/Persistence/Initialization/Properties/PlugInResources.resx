@@ -432,4 +432,6 @@
   <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the elite healing, mana and SD potions of the in-game shop, which recover health, mana or shield immediately. The packages of the in-game shop which contain them are put on sale.</value></data>
   <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve"><value>Add crafting talismans</value></data>
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Luck, which increases the success rate of a crafting by its durability in percent, and the Talisman of Chaos Assembly, which keeps the item of a failed +10 to +15 item upgrade. They are added to the craftings which accept them, and the packages of the in-game shop which contain them are put on sale.</value></data>
+  <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve"><value>Add hit-shock settings</value></data>
+  <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>Adds the global hit-shock chance and damage threshold settings, and the Uniria marker so Uniria-equipped players are excluded from hit shock.</value></data>
 </root>
