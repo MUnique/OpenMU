@@ -1959,4 +1959,8 @@
   <data name="BotChatConfiguration_TradeDeclineLines_Description" xml:space="preserve"><value>Whispered when a player asks the bot for a trade. Placeholders: {player}, {level}, {map}, {location}.</value></data>
   <data name="BotChatConfiguration_DuelDeclineLines_Name" xml:space="preserve"><value>Duel refused</value></data>
   <data name="BotChatConfiguration_DuelDeclineLines_Description" xml:space="preserve"><value>Whispered when a player challenges the bot to a duel. Placeholders: {player}, {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_BusyChatMessageCount_Name" xml:space="preserve"><value>Quiet when players talk: messages</value></data>
+  <data name="BotChatConfiguration_BusyChatMessageCount_Description" xml:space="preserve"><value>From how many normal chat messages of players near a bot (within the time below) the bot says nothing unasked - no conversations, greetings, congratulations or comments. Answers to a player stay. 0 = off.</value></data>
+  <data name="BotChatConfiguration_BusyChatWindow_Name" xml:space="preserve"><value>Quiet when players talk: time</value></data>
+  <data name="BotChatConfiguration_BusyChatWindow_Description" xml:space="preserve"><value>How long a message of a player counts for the setting above.</value></data>
 </root>

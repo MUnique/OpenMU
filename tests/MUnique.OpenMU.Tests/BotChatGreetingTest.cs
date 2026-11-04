@@ -73,4 +73,29 @@ public class BotChatGreetingTest
         bot.Position = position;
         return bot;
     }
+
+    /// <summary>
+    /// The bots keep quiet near players who are busy talking: from the configured number of their
+    /// messages within the window and the range - not for older or distant messages, nor on another map.
+    /// </summary>
+    [Test]
+    public void NoticesPlayersBusyTalking()
+    {
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromMinutes(1), 8);
+        var otherMap = new GameMap(new GameMapDefinition(), TimeSpan.FromMinutes(1), 8);
+        var throttle = new BotChatThrottle();
+        var start = new DateTime(2026, 11, 4, 20, 0, 0, DateTimeKind.Utc);
+        var window = TimeSpan.FromSeconds(30);
+        var here = new Point(100, 100);
+
+        throttle.RecordHumanChat(map, here, start, window);
+        throttle.RecordHumanChat(map, new Point(103, 100), start.AddSeconds(5), window);
+        throttle.RecordHumanChat(otherMap, here, start.AddSeconds(6), window);
+        throttle.RecordHumanChat(map, new Point(150, 150), start.AddSeconds(7), window);
+
+        Assert.That(throttle.IsHumanChatBusy(map, here, 12, start.AddSeconds(10), window, 2), Is.True);
+        Assert.That(throttle.IsHumanChatBusy(map, here, 12, start.AddSeconds(10), window, 3), Is.False);
+        Assert.That(throttle.IsHumanChatBusy(map, here, 12, start.AddSeconds(32), window, 2), Is.False);
+        Assert.That(throttle.IsHumanChatBusy(map, here, 12, start.AddSeconds(10), window, 0), Is.False);
+    }
 }

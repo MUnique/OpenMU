@@ -210,7 +210,7 @@ public class BotChatPlugIn
         RunLater(
             player.GameContext,
             RandomDelay(LevelMilestoneDelaySeconds),
-            () => IsAvailable(player)
+            () => IsAvailable(player) && this.MayTalkUnasked(player, configuration)
                 ? BotChatSpeaker.SayAsync(player, line.Text, CreateBotValues(player))
                 : ValueTask.CompletedTask);
     }
@@ -339,7 +339,8 @@ public class BotChatPlugIn
         {
             // Read after the delay: the revenge plugin registers the death in the same notification.
             var lines = bot.GetRecentDeathCount(killerPlayer) >= OfflinePlayer.RepeatedKillThreshold ? configuration.KilledAgainLines : configuration.KilledLines;
-            if (this.PickLineFor(killerPlayer, lines) is not { } line)
+            if (!this.MayTalkUnasked(bot, configuration)
+                || this.PickLineFor(killerPlayer, lines) is not { } line)
             {
                 return ValueTask.CompletedTask;
             }
@@ -355,6 +356,14 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public async ValueTask ChatMessageSentAsync(Player sender, string message, ChatMessageType messageType, Player? receiver)
     {
+        if (this.Configuration is { BusyChatMessageCount: > 0 } busyConfiguration
+            && messageType == ChatMessageType.Normal
+            && sender is not OfflinePlayer
+            && sender.CurrentMap is { } senderMap)
+        {
+            this.GetThrottle(sender.GameContext).RecordHumanChat(senderMap, sender.Position, DateTime.UtcNow, busyConfiguration.BusyChatWindow);
+        }
+
         if (this.Configuration is not { WhisperReplyChancePercent: > 0 } configuration
             || messageType != ChatMessageType.Normal
             || sender is OfflinePlayer
@@ -752,6 +761,14 @@ public class BotChatPlugIn
     private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
 
     /// <summary>
+    /// Determines whether the bot may say something nobody asked for in the normal chat: not while
+    /// the human players around it are busy talking - the bots shouldn't drown them out.
+    /// </summary>
+    private bool MayTalkUnasked(Player bot, BotChatConfiguration configuration)
+        => bot.CurrentMap is not { } map
+           || !this.GetThrottle(bot.GameContext).IsHumanChatBusy(map, bot.Position, HearingRange, DateTime.UtcNow, configuration.BusyChatWindow, configuration.BusyChatMessageCount);
+
+    /// <summary>
     /// Picks a line said to the player, other than the one of this list the player got last time.
     /// </summary>
     private BotChatLine? PickLineFor(Player listener, ICollection<BotChatLine> lines)
@@ -903,7 +920,8 @@ public class BotChatPlugIn
         }
 
         var speaker = candidates[Rand.NextInt(0, candidates.Count)];
-        if (this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
+        if (this.MayTalkUnasked(speaker, configuration)
+            && this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
         {
             await BotChatSpeaker.SayAsync(speaker, line.Text, CreateBotValues(speaker)).ConfigureAwait(false);
         }
@@ -948,6 +966,7 @@ public class BotChatPlugIn
                             && !string.IsNullOrWhiteSpace(c.Reply.ValueInNeutralLanguage))
                 .ToList();
             if (!Rand.NextRandomBool(configuration.ConversationChancePercent)
+                || !this.MayTalkUnasked(pair.First, configuration)
                 || !throttle.TryReserveChat(pair.First, now, configuration.BotChatCooldown)
                 || !throttle.TryReserveChat(pair.Second, now, configuration.BotChatCooldown)
                 || throttle.DrawConversation(candidates, count => Rand.NextInt(0, count)) is not { } conversation)
@@ -1020,6 +1039,7 @@ public class BotChatPlugIn
             var throttle = this.GetThrottle(player.GameContext);
             var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
             if (FindGreeter(players, player, map) is not { } bot
+                || !this.MayTalkUnasked(bot, configuration)
                 || this.PickLineFor(player, lines) is not { } line
                 || !throttle.TryReserveOccasion(occasionKey, now, configuration.CongratulationCooldown)
                 || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
@@ -1049,6 +1069,7 @@ public class BotChatPlugIn
         var now = DateTime.UtcNow;
         var throttle = this.GetThrottle(player.GameContext);
         if (bot is null
+            || !this.MayTalkUnasked(bot, configuration)
             || this.PickLineFor(player, configuration.GreetingLines) is not { } line
             || !throttle.TryReserveOccasion($"greeting {playerName}", now, configuration.GreetingCooldown)
             || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
