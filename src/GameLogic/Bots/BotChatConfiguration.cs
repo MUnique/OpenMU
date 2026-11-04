@@ -228,6 +228,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventLines_Description))]
     public ICollection<BotChatLine> EventLines { get; set; } = new List<BotChatLine>();
 
@@ -237,6 +238,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_InvasionLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_InvasionLines_Description))]
     public ICollection<BotChatLine> InvasionLines { get; set; } = new List<BotChatLine>();
 
@@ -246,6 +248,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_LevelMilestoneLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_LevelMilestoneLines_Description))]
     public ICollection<BotChatLine> LevelMilestoneLines { get; set; } = new List<BotChatLine>();
 
@@ -256,6 +259,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_WhisperReplies_Name), Description = nameof(PlugInResources.BotChatConfiguration_WhisperReplies_Description))]
     public ICollection<BotChatReply> WhisperReplies { get; set; } = new List<BotChatReply>();
 
@@ -265,6 +269,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_GreetingLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_GreetingLines_Description))]
     public ICollection<BotChatLine> GreetingLines { get; set; } = new List<BotChatLine>();
 
@@ -274,6 +279,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyJoinedLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyJoinedLines_Description))]
     public ICollection<BotChatLine> PartyJoinedLines { get; set; } = new List<BotChatLine>();
 
@@ -283,6 +289,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventFinishedLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventFinishedLines_Description))]
     public ICollection<BotChatLine> EventFinishedLines { get; set; } = new List<BotChatLine>();
 
@@ -292,6 +299,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_CongratulationLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_CongratulationLines_Description))]
     public ICollection<BotChatLine> CongratulationLines { get; set; } = new List<BotChatLine>();
 
@@ -301,6 +309,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Description))]
     public ICollection<BotChatLine> ResetCongratulationLines { get; set; } = new List<BotChatLine>();
 
@@ -310,6 +319,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_TradeDeclineLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_TradeDeclineLines_Description))]
     public ICollection<BotChatLine> TradeDeclineLines { get; set; } = new List<BotChatLine>();
 
@@ -319,6 +329,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_DuelDeclineLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_DuelDeclineLines_Description))]
     public ICollection<BotChatLine> DuelDeclineLines { get; set; } = new List<BotChatLine>();
 
@@ -328,6 +339,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyVolunteerLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyVolunteerLines_Description))]
     public ICollection<BotChatLine> PartyVolunteerLines { get; set; } = new List<BotChatLine>();
 
@@ -337,6 +349,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyAskWhereLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyAskWhereLines_Description))]
     public ICollection<BotChatLine> PartyAskWhereLines { get; set; } = new List<BotChatLine>();
 
@@ -346,6 +359,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyOnTheWayLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyOnTheWayLines_Description))]
     public ICollection<BotChatLine> PartyOnTheWayLines { get; set; } = new List<BotChatLine>();
 
@@ -356,6 +370,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyCantGoLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyCantGoLines_Description))]
     public ICollection<BotChatLine> PartyCantGoLines { get; set; } = new List<BotChatLine>();
 
@@ -364,6 +379,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyClassAliases_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyClassAliases_Description))]
     public ICollection<BotClassAlias> PartyClassAliases { get; set; } = new List<BotClassAlias>();
 
@@ -373,6 +389,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_KilledLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_KilledLines_Description))]
     public ICollection<BotChatLine> KilledLines { get; set; } = new List<BotChatLine>();
 
@@ -383,6 +400,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_KilledAgainLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_KilledAgainLines_Description))]
     public ICollection<BotChatLine> KilledAgainLines { get; set; } = new List<BotChatLine>();
 
@@ -393,6 +411,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantLines_Description))]
     public ICollection<BotChatLine> MerchantLines { get; set; } = new List<BotChatLine>();
 
@@ -404,6 +423,7 @@ public class BotChatConfiguration
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_Conversations_Name), Description = nameof(PlugInResources.BotChatConfiguration_Conversations_Description))]
     public ICollection<BotConversation> Conversations { get; set; } = new List<BotConversation>();
 
