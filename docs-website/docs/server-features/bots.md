@@ -355,6 +355,20 @@ invites it, it goes back to hunting when the entrance closes. A bot does not
 announce an event whose entrance closes in less than two minutes, and a bot
 already in a party with a player does not look for company.
 
+A player can also search party members among the bots with a post:
+`/post party 300-350 bk dw`. A post with one of the party words (`party`, `pt`,
+`grupa`, …) and a level — `300-350`, `300+`, `min 300` or just `300` — calls up
+to five free bots of the game server whose level fits; class words (`dk`, `bk`,
+`bm`, `dw`, `elf`, `mg`, `dl`, `sum`, `rf`, … — each meaning its whole class
+line) narrow it down. Each of them whispers to the player, a few seconds apart.
+The same search posted again calls five others. The player whispers back to a
+bot where to meet — `devias 215 40`, a map name alone, or `here` for where the
+player stands — and the bot warps there, walks up and waits five minutes for
+the invitation. A map it may not go to (its level is too low, no warp leads
+there) it declines; a whisper without a place gets asked again. Map names are
+recognized in every translation of the map. The words, the number of bots and
+the times are part of the configuration.
+
 A whisper reply can carry `Keywords`, a comma-separated list of words or
 phrases it answers (`how are you, how r u`). The bot picks among the replies
 whose keyword matches the whisper — whole words, ignoring case and punctuation,
@@ -364,7 +378,7 @@ The default lines cover greetings, "how are you", the level, where the bot is,
 party, thanks and goodbye.
 
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
-`{level}`, `{player}` (whisper replies), and `{location}` — the map with the
+`{level}`, `{class}`, `{player}` (whisper replies), and `{location}` — the map with the
 bot's coordinates the way players write them, e.g. "Devias 215, 40", so a player
 can find it with the mini map. The default "where are you?" replies use it. In
 an event post, `{location}` is the meeting point; in an invasion post, just the

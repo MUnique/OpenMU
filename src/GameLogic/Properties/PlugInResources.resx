@@ -1907,4 +1907,28 @@
   <data name="BotChatConfiguration_KilledAgainLines_Description" xml:space="preserve"><value>Said instead of the "Killed by a player" lines when the same player killed the bot again within a short time. Placeholders: {player}, {level}, {map}, {location}.</value></data>
   <data name="BotChatConfiguration_SmallTalkLines_Name" xml:space="preserve"><value>Small talk</value></data>
   <data name="BotChatConfiguration_SmallTalkLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot standing in a safezone which a player sees. Placeholders: {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerCount_Name" xml:space="preserve"><value>Party search: answering bots</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerCount_Description" xml:space="preserve"><value>How many bots whisper to a player who searches party members with /post, e.g. "/post party 300-350 bk dw". The same search posted again is answered by other bots. 0 = off.</value></data>
+  <data name="BotChatConfiguration_PartyRequestKeywords_Name" xml:space="preserve"><value>Party search: keywords</value></data>
+  <data name="BotChatConfiguration_PartyRequestKeywords_Description" xml:space="preserve"><value>Comma-separated words which mark a /post as a party search. The post also needs a level: "300-350", "300+", "min 300" or "300".</value></data>
+  <data name="BotChatConfiguration_PartyHereKeywords_Name" xml:space="preserve"><value>Party search: "here" words</value></data>
+  <data name="BotChatConfiguration_PartyHereKeywords_Description" xml:space="preserve"><value>Comma-separated words with which the player tells an answering bot to come to where the player stands, instead of naming a map and coordinates.</value></data>
+  <data name="BotChatConfiguration_PartyOfferTimeout_Name" xml:space="preserve"><value>Party search: answer timeout</value></data>
+  <data name="BotChatConfiguration_PartyOfferTimeout_Description" xml:space="preserve"><value>How long a bot which answered a party search waits for the player to whisper back where to meet, e.g. "devias 215 40".</value></data>
+  <data name="BotChatConfiguration_PartyMeetingWaitTime_Name" xml:space="preserve"><value>Party search: waiting time</value></data>
+  <data name="BotChatConfiguration_PartyMeetingWaitTime_Description" xml:space="preserve"><value>How long a bot waits at the meeting place for the party invitation before it goes back to hunting.</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerLines_Name" xml:space="preserve"><value>Party search: answers</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerLines_Description" xml:space="preserve"><value>Whispered to a player whose party search the bot answers. Placeholders: {player}, {level}, {class}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_PartyAskWhereLines_Name" xml:space="preserve"><value>Party search: where?</value></data>
+  <data name="BotChatConfiguration_PartyAskWhereLines_Description" xml:space="preserve"><value>Whispered when the bot didn't understand where to meet. Placeholders: {player}, {level}, {class}.</value></data>
+  <data name="BotChatConfiguration_PartyOnTheWayLines_Name" xml:space="preserve"><value>Party search: on the way</value></data>
+  <data name="BotChatConfiguration_PartyOnTheWayLines_Description" xml:space="preserve"><value>Whispered when the bot sets off to the meeting place. Placeholders: {player}, {map} and {location} (the meeting place).</value></data>
+  <data name="BotChatConfiguration_PartyCantGoLines_Name" xml:space="preserve"><value>Party search: can't go</value></data>
+  <data name="BotChatConfiguration_PartyCantGoLines_Description" xml:space="preserve"><value>Whispered when the bot may not go to the named map: its level is too low, or the map can't be reached by warp. Placeholders: {player}, {map} (the named map), {level}.</value></data>
+  <data name="BotChatConfiguration_PartyClassAliases_Name" xml:space="preserve"><value>Party search: class words</value></data>
+  <data name="BotChatConfiguration_PartyClassAliases_Description" xml:space="preserve"><value>The words players use for the character classes in a party search, e.g. "dk, bk, bm". The class number stands for its whole line of classes.</value></data>
+  <data name="BotClassAlias_Keywords_Name" xml:space="preserve"><value>Words</value></data>
+  <data name="BotClassAlias_Keywords_Description" xml:space="preserve"><value>Comma-separated words for the class line, e.g. "dk, bk, bm, knight". Whole words, case and punctuation are ignored.</value></data>
+  <data name="BotClassAlias_ClassNumber_Name" xml:space="preserve"><value>Class number</value></data>
+  <data name="BotClassAlias_ClassNumber_Description" xml:space="preserve"><value>The number of a character class of the line, e.g. 4 for the Dark Knight - the whole line (Dark Knight, Blade Knight, Blade Master) is meant.</value></data>
 </root>

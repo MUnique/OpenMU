@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 
 /// <summary>
-/// The chat limits of the bots of one game server: the server-wide gap between two <c>/post</c>
-/// messages, the once-per-occasion announcement of an event, and the per-bot cooldowns of the
-/// normal chat and of whisper replies.
+/// The chat limits and the short-term memory of the bots of one game server: the server-wide gap
+/// between two <c>/post</c> messages, the once-per-occasion announcement of an event, the per-bot
+/// cooldowns of the normal chat and of whisper replies, and the bots' answers to party searches.
 /// </summary>
 /// <remarks>
 /// Every check reserves its slot atomically, so two bots reacting to the same event at the same
@@ -25,11 +25,21 @@ internal sealed class BotChatThrottle
     /// </summary>
     private static readonly TimeSpan MinimumSmallTalkInterval = TimeSpan.FromSeconds(10);
 
+    /// <summary>
+    /// How long the bots remember whom they answered a party search of: the same search posted again
+    /// within this time is answered by other bots.
+    /// </summary>
+    private static readonly TimeSpan PartySearchMemory = TimeSpan.FromMinutes(30);
+
     private readonly ConcurrentDictionary<string, DateTime> _occasions = new();
 
     private readonly ConditionalWeakTable<Player, BotCooldowns> _bots = new();
 
     private readonly Lock _smallTalkLock = new();
+
+    private readonly ConditionalWeakTable<Player, BotPartyOffer> _partyOffers = new();
+
+    private readonly ConditionalWeakTable<Player, PartySearchVolunteers> _partySearches = new();
 
     private long _nextPostTicks;
 
@@ -125,6 +135,63 @@ internal sealed class BotChatThrottle
         }
     }
 
+    /// <summary>
+    /// Picks the bots which answer a player's party search: up to the given number of the candidates,
+    /// at random, leaving out the bots which already answered this player's earlier searches.
+    /// </summary>
+    /// <param name="requester">The searching player.</param>
+    /// <param name="candidates">The bots which could answer.</param>
+    /// <param name="count">The maximum number of answering bots.</param>
+    /// <param name="now">The current time.</param>
+    /// <param name="pickIndex">Returns a random index below the given count.</param>
+    /// <returns>The answering bots.</returns>
+    public IReadOnlyList<Player> TakeNewVolunteers(Player requester, IEnumerable<Player> candidates, int count, DateTime now, Func<int, int> pickIndex)
+    {
+        var memory = this._partySearches.GetOrCreateValue(requester);
+        lock (memory)
+        {
+            if (now - memory.LastSearchUtc > PartySearchMemory)
+            {
+                memory.Bots.Clear();
+            }
+
+            memory.LastSearchUtc = now;
+            var remaining = candidates.Where(bot => !memory.Bots.Contains(bot)).ToList();
+            var volunteers = new List<Player>();
+            while (volunteers.Count < count && remaining.Count > 0)
+            {
+                var index = pickIndex(remaining.Count);
+                volunteers.Add(remaining[index]);
+                remaining.RemoveAt(index);
+            }
+
+            memory.Bots.UnionWith(volunteers);
+            return volunteers;
+        }
+    }
+
+    /// <summary>
+    /// Remembers that the bot answered a player's party search and waits for the meeting place.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="offer">The offer.</param>
+    public void SetPartyOffer(Player bot, BotPartyOffer offer) => this._partyOffers.AddOrUpdate(bot, offer);
+
+    /// <summary>
+    /// Gets the bot's open offer to a player's party search, if it has one which didn't expire yet.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="now">The current time.</param>
+    /// <returns>The open offer, or <c>null</c>.</returns>
+    public BotPartyOffer? GetOpenPartyOffer(Player bot, DateTime now)
+        => this._partyOffers.TryGetValue(bot, out var offer) && offer.ExpiresUtc > now ? offer : null;
+
+    /// <summary>
+    /// Forgets the bot's offer to a player's party search.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    public void RemovePartyOffer(Player bot) => this._partyOffers.Remove(bot);
+
     private static bool TryReserve(ref long nextAllowedTicks, DateTime now, TimeSpan gap)
     {
         while (true)
@@ -140,6 +207,22 @@ internal sealed class BotChatThrottle
                 return true;
             }
         }
+    }
+
+    /// <summary>
+    /// The bots which answered the party searches of one player.
+    /// </summary>
+    private sealed class PartySearchVolunteers
+    {
+        /// <summary>
+        /// Gets the bots which answered.
+        /// </summary>
+        public HashSet<Player> Bots { get; } = [];
+
+        /// <summary>
+        /// Gets or sets the time of the player's last search.
+        /// </summary>
+        public DateTime LastSearchUtc { get; set; }
     }
 
     /// <summary>

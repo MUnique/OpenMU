@@ -112,6 +112,63 @@ internal static class BotChatComposer
         => Normalize(name) is { Length: > 0 } normalizedName
            && $" {Normalize(message)} ".Contains($" {normalizedName} ", StringComparison.Ordinal);
 
+    /// <summary>
+    /// Determines whether the message contains one of the comma-separated keywords as whole words,
+    /// ignoring case and punctuation.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <param name="keywords">The comma-separated keywords, e.g. <c>party, pt</c>.</param>
+    /// <returns><c>true</c>, if a keyword is in the message.</returns>
+    internal static bool ContainsAnyKeyword(string message, string? keywords)
+    {
+        var normalizedMessage = $" {Normalize(message)} ";
+        return GetKeywords(keywords).Any(keyword => normalizedMessage.Contains($" {keyword} ", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// Reads a meeting place from a player's message like "devias 215 40": the map whose name
+    /// (in any of its translations) is in the message, and the first two numbers after removing the
+    /// name as the coordinates.
+    /// </summary>
+    /// <param name="message">The player's message.</param>
+    /// <param name="maps">The maps of the game.</param>
+    /// <returns>The map and, if the message names them, the coordinates; <c>null</c> when no map is named.</returns>
+    /// <remarks>
+    /// The longest matching name wins, so "lost tower" is not taken for a map called "tower". The
+    /// name is removed before the numbers are read, so a map like "Kalima 1" keeps its digit.
+    /// </remarks>
+    internal static (GameMapDefinition Map, Point? Position)? FindPlace(string message, IEnumerable<GameMapDefinition> maps)
+    {
+        var normalizedMessage = $" {Normalize(message)} ";
+        var best = maps
+            .SelectMany(map => GetNames(map).Select(name => (Map: map, Name: name)))
+            .Where(candidate => normalizedMessage.Contains($" {candidate.Name} ", StringComparison.Ordinal))
+            .OrderByDescending(candidate => candidate.Name.Length)
+            .FirstOrDefault();
+        if (best.Map is null)
+        {
+            return null;
+        }
+
+        var rest = normalizedMessage.Replace($" {best.Name} ", " ", StringComparison.Ordinal);
+        var numbers = rest
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => byte.TryParse(word, NumberStyles.None, CultureInfo.InvariantCulture, out var number) ? (byte?)number : null)
+            .Where(number => number is not null)
+            .Take(2)
+            .ToList();
+        Point? position = numbers.Count == 2 ? new Point(numbers[0]!.Value, numbers[1]!.Value) : null;
+        return (best.Map, position);
+
+        static IEnumerable<string> GetNames(GameMapDefinition map)
+            => map.Name.GetTranslations()
+                .Select(translation => translation.Value)
+                .Append(map.Name.ValueInNeutralLanguage)
+                .Select(Normalize)
+                .Where(name => name.Length > 0)
+                .Distinct();
+    }
+
     private static IEnumerable<string> GetKeywords(string? keywords)
         => (keywords ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
