@@ -210,6 +210,20 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
+    /// Tests that an edit which starts while the file is written from the configuration which the
+    /// admin panel has loaded isn't part of the file: the stored configuration is written instead.
+    /// </summary>
+    [Test]
+    public async Task EditDuringTheExportIsLeftOutAsync()
+    {
+        var (stored, configurations) = await CreateEditedConfigurationAsync(hasChanges: false, changesAfterLoad: true).ConfigureAwait(false);
+
+        var file = await new ItemExchangeOperations(stored, configurations, NullLogger<ItemExchangeOperations>.Instance).ExportAsync(default).ConfigureAwait(false);
+
+        Assert.That(GetItemKeys(file), Is.EqualTo(new[] { (0, 1) }));
+    }
+
+    /// <summary>
     /// Tests that items outside the client's groups and numbers are left out, because the client refuses
     /// the whole file because of them, and that the others are sorted.
     /// </summary>
@@ -369,7 +383,9 @@ public sealed class ItemExchangeExportTests
     /// Creates a stored configuration with the item 0/1, and the admin panel's copy of it, which
     /// has the item 0/2 as well.
     /// </summary>
-    private static async Task<(IPersistenceContextProvider Stored, IDataSource<GameConfiguration> Configurations)> CreateEditedConfigurationAsync(bool hasChanges)
+    /// <param name="hasChanges">Whether the admin panel has changes when the export asks first.</param>
+    /// <param name="changesAfterLoad">Whether the admin panel has changes when the export asks again.</param>
+    private static async Task<(IPersistenceContextProvider Stored, IDataSource<GameConfiguration> Configurations)> CreateEditedConfigurationAsync(bool hasChanges, bool changesAfterLoad = false)
     {
         var stored = new InMemoryPersistenceContextProvider();
         Guid id;
@@ -389,7 +405,8 @@ public sealed class ItemExchangeExportTests
         AddItem(editContext, edited, 0, 2);
 
         var adminPanelContext = new Mock<IContext>();
-        adminPanelContext.Setup(context => context.HasChanges).Returns(hasChanges);
+        var questions = 0;
+        adminPanelContext.Setup(context => context.HasChanges).Returns(() => questions++ == 0 ? hasChanges : hasChanges || changesAfterLoad);
         var configurations = new Mock<IDataSource<GameConfiguration>>();
         configurations
             .Setup(source => source.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
