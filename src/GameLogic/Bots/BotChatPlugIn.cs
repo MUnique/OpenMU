@@ -476,10 +476,12 @@ public class BotChatPlugIn
     {
         var level = GetLevel(bot).ToString(CultureInfo.InvariantCulture);
         var map = bot.CurrentMap?.Definition.Name;
+        var position = bot.Position;
         return new Dictionary<string, Func<CultureInfo, string>>
         {
             ["level"] = _ => level,
             ["map"] = culture => map?.GetTranslation(culture) ?? string.Empty,
+            ["location"] = culture => BotChatComposer.FormatLocation(map?.GetTranslation(culture), position),
         };
     }
 
@@ -579,6 +581,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(chosen);
         values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
         values["map"] = culture => meeting!.Map.Name.GetTranslation(culture) ?? string.Empty;
+        values["location"] = culture => BotChatComposer.FormatLocation(meeting!.Map.Name.GetTranslation(culture), meeting.NpcPosition);
         await BotChatSpeaker.PostAsync(chosen, line.Text, values).ConfigureAwait(false);
     }
 
@@ -604,6 +607,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         values["event"] = culture => GetInvasionName(invasion, culture);
         values["map"] = culture => map.Name.GetTranslation(culture) ?? string.Empty;
+        values["location"] = values["map"];
         await BotChatSpeaker.PostAsync(bot, line.Text, values).ConfigureAwait(false);
     }
 }

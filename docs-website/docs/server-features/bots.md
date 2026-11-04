@@ -364,7 +364,11 @@ The default lines cover greetings, "how are you", the level, where the bot is,
 party, thanks and goodbye.
 
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
-`{level}`, and `{player}` (whisper replies). Each line is a localized text, so
+`{level}`, `{player}` (whisper replies), and `{location}` — the map with the
+bot's coordinates the way players write them, e.g. "Devias 215, 40", so a player
+can find it with the mini map. The default "where are you?" replies use it. In
+an event post, `{location}` is the meeting point; in an invasion post, just the
+invaded map. Each line is a localized text, so
 every player sees the translation of their own language, or the English text
 when it has none. The default lines come with a Polish translation, and the default
 keywords understand Polish whispers too.

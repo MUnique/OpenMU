@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 using System.Globalization;
 using System.Text;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Chooses the line a bot says and renders it for one receiver: the translation of the receiver's
@@ -87,6 +88,18 @@ internal static class BotChatComposer
 
         return result.ToString();
     }
+
+    /// <summary>
+    /// Formats a place the way players write it in the chat, e.g. "Devias 215, 40", so a player can
+    /// find it with the coordinates of the mini map.
+    /// </summary>
+    /// <param name="mapName">The (translated) name of the map.</param>
+    /// <param name="position">The coordinates on the map; <c>null</c> for the map alone.</param>
+    /// <returns>The formatted place.</returns>
+    internal static string FormatLocation(string? mapName, Point? position)
+        => position is { } point
+            ? string.Create(CultureInfo.InvariantCulture, $"{mapName} {point.X}, {point.Y}")
+            : mapName ?? string.Empty;
 
     /// <summary>
     /// Determines whether the message mentions the name as a whole word, ignoring case and
