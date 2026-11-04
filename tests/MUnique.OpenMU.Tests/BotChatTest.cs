@@ -156,6 +156,22 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A bot feels addressed when its name is in a chat message as a whole word - not when it is only
+    /// a part of a longer word.
+    /// </summary>
+    /// <param name="message">The chat message.</param>
+    /// <param name="expected">Whether the message mentions the bot.</param>
+    [TestCase("hi Serael!", true)]
+    [TestCase("SERAEL how are you", true)]
+    [TestCase("serael,where r u", true)]
+    [TestCase("Seraelion is strong", false)]
+    [TestCase("hello all", false)]
+    public void RecognizesTheBotsName(string message, bool expected)
+    {
+        Assert.That(BotChatComposer.MentionsName(message, "Serael"), Is.EqualTo(expected));
+    }
+
+    /// <summary>
     /// The default configuration knows the basic small talk: a "how are you" gets a fitting answer.
     /// </summary>
     [Test]

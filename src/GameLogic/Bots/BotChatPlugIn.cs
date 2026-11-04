@@ -15,6 +15,7 @@ using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -45,6 +46,7 @@ public class BotChatPlugIn
     IBotPartyJoinedPlugIn,
     IMiniGameEndedPlugIn,
     IAttackableGotKilledPlugIn,
+    IChatMessageSentPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -287,6 +289,47 @@ public class BotChatPlugIn
             return BotChatSpeaker.SayAsync(bot, line, values);
         });
         return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ChatMessageSentAsync(Player sender, string message, ChatMessageType messageType, Player? receiver)
+    {
+        if (this.Configuration is not { WhisperReplyChancePercent: > 0 } configuration
+            || messageType != ChatMessageType.Normal
+            || sender is OfflinePlayer
+            || sender.SelectedCharacter?.Name is not { } senderName)
+        {
+            return;
+        }
+
+        // Only a bot which sees the speaker (and so got the message) may feel addressed.
+        var mentionedBots = new List<Player>();
+        await sender.ForEachObservingAsync<Player>(
+            observer =>
+            {
+                if (IsBot(observer) && observer.SelectedCharacter?.Name is { } botName && BotChatComposer.MentionsName(message, botName))
+                {
+                    mentionedBots.Add(observer);
+                }
+
+                return ValueTask.CompletedTask;
+            },
+            false).ConfigureAwait(false);
+
+        if (mentionedBots.FirstOrDefault(IsAvailable) is not { } bot
+            || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
+            || BotChatComposer.PickWhisperReply(configuration.Lines, message, count => Rand.NextInt(0, count)) is not { } line
+            || !this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(bot);
+        values["player"] = _ => senderName;
+        RunLater(
+            bot.GameContext,
+            RandomDelay(WhisperReplyDelaySeconds),
+            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line, values) : ValueTask.CompletedTask);
     }
 
     /// <summary>

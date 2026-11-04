@@ -88,6 +88,17 @@ internal static class BotChatComposer
         return result.ToString();
     }
 
+    /// <summary>
+    /// Determines whether the message mentions the name as a whole word, ignoring case and
+    /// punctuation - "hi Serael!" mentions Serael, "Seraelion" does not.
+    /// </summary>
+    /// <param name="message">The chat message.</param>
+    /// <param name="name">The character name.</param>
+    /// <returns><c>true</c>, if the message mentions the name.</returns>
+    internal static bool MentionsName(string message, string name)
+        => Normalize(name) is { Length: > 0 } normalizedName
+           && $" {Normalize(message)} ".Contains($" {normalizedName} ", StringComparison.Ordinal);
+
     private static IEnumerable<string> GetKeywords(BotChatLine line)
         => (line.Keywords ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
