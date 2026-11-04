@@ -1816,7 +1816,6 @@
   <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
     <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
   </data>
-<<<<<<< HEAD
   <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Elite Healing Potion Consume Handler</value>
   </data>
@@ -1840,6 +1839,7 @@
   </data>
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+  </data>
   <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Elite Healing Potion Consume Handler</value>
   </data>
