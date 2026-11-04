@@ -440,6 +440,17 @@ public class BotChatConfiguration
     public ICollection<BotConversation> Conversations { get; set; } = new List<BotConversation>();
 
     /// <summary>
+    /// Gets or sets the lines with which a bot answers a player who chimes in right after a
+    /// conversation of two bots near them - unless the player's message matches a whisper reply's
+    /// keyword. Placeholders: <c>{player}</c>, <c>{map}</c>, <c>{level}</c>, <c>{class}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ConversationJoinLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_ConversationJoinLines_Description))]
+    public ICollection<BotChatLine> ConversationJoinLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
     /// Creates the configuration a server starts with: a set of English lines, each with a Polish
     /// translation.
     /// </summary>
@@ -624,6 +635,14 @@ public class BotChatConfiguration
             Language = "en",
             Words = "how, are, you, hello, hi, where, what, level, thanks, thank, bye, the, is, need, help, your, which, can, come, here, see, good, have, going, sell, buy",
         });
+        Add(
+            configuration.ConversationJoinLines,
+            ("right, {player}?", "no nie, {player}?"),
+            ("haha, exactly", "haha, dokładnie"),
+            ("you think so too?", "też tak myślisz?"),
+            ("agreed", "zgadzam się"),
+            ("see, {player} gets it", "widzisz, {player} rozumie"),
+            ("hehe", "hehe"));
         BotConversationDefaults.AddTo(configuration.Conversations);
         AddClass("dk, bk, bm, knight, dark knight, blade knight, blade master, rycerz", BotClassNumbers.DarkKnightNumber);
         AddClass("dw, sm, gm, wizard, dark wizard, soul master, grand master, mag", BotClassNumbers.DarkWizardNumber);
@@ -702,6 +721,7 @@ public class BotChatConfiguration
         SetGesture(configuration.KilledLines, BotChatGesture.Provocation);
         SetGesture(configuration.KilledAgainLines, BotChatGesture.Cry);
         SetGesture(configuration.DuelDeclineLines, BotChatGesture.Awkward);
+        SetGesture(configuration.ConversationJoinLines, BotChatGesture.Smile);
         foreach (var reply in configuration.WhisperReplies)
         {
             reply.Gesture = reply.Keywords.StartsWith("hi,", StringComparison.Ordinal) ? BotChatGesture.Greeting

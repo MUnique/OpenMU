@@ -8,7 +8,8 @@ using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A short exchange of two server-side bots, like the chatter of the townsfolk in a role-playing
-/// game: one bot says the <see cref="Opener"/>, the other one answers with the <see cref="Reply"/>.
+/// game: one bot says the <see cref="Opener"/>, the other one answers with the <see cref="Reply"/>,
+/// and the first one may have the last word with a <see cref="Riposte"/>.
 /// </summary>
 /// <remarks>
 /// Both texts are <see cref="LocalizedString"/>s; every listening player sees the translation of
@@ -28,6 +29,13 @@ public class BotConversation
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotConversation_Reply_Name), Description = nameof(PlugInResources.BotConversation_Reply_Description))]
     public LocalizedString Reply { get; set; }
+
+    /// <summary>
+    /// Gets or sets what the first bot says back to the reply, a few seconds later; empty for a
+    /// conversation of two lines.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotConversation_Riposte_Name), Description = nameof(PlugInResources.BotConversation_Riposte_Description))]
+    public LocalizedString Riposte { get; set; }
 
     /// <summary>
     /// Gets or sets where the two bots may have this conversation.

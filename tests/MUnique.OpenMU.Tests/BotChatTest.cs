@@ -154,6 +154,28 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A player who chimes in right after a conversation of two bots near them is answered once; a
+    /// message after the window, or far from the bots, is not taken for chiming in.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask APlayerCanChimeInOnceAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var first = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var second = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var throttle = new BotChatThrottle();
+        throttle.RememberConversation(first, second, Start.AddSeconds(30));
+
+        Assert.That(throttle.TakeRecentConversation(_ => false, Start.AddSeconds(10)), Is.Null);
+        Assert.That(throttle.TakeRecentConversation(bot => bot == second, Start.AddSeconds(10)), Is.Not.Null);
+        Assert.That(throttle.TakeRecentConversation(_ => true, Start.AddSeconds(11)), Is.Null);
+
+        throttle.RememberConversation(first, second, Start.AddSeconds(30));
+        Assert.That(throttle.TakeRecentConversation(_ => true, Start.AddSeconds(31)), Is.Null);
+    }
+
+    /// <summary>
     /// The chat and whisper reply cooldowns belong to one bot; another bot may still talk, and the
     /// two cooldowns don't block each other.
     /// </summary>

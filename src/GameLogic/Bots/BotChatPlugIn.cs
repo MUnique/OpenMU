@@ -121,6 +121,12 @@ public class BotChatPlugIn
     private static readonly TimeSpan MaximumTypingTime = TimeSpan.FromSeconds(12);
 
     /// <summary>
+    /// How long after the last line of a bots' conversation a player's message near them counts as
+    /// chiming in - the time to read it and type an answer.
+    /// </summary>
+    private static readonly TimeSpan ConversationChimeInWindow = TimeSpan.FromSeconds(30);
+
+    /// <summary>
     /// The gap between the whispers of two bots answering the same party search, so the answers
     /// trickle in like those of players who read the post at different moments.
     /// </summary>
@@ -391,6 +397,12 @@ public class BotChatPlugIn
                 return ValueTask.CompletedTask;
             },
             false).ConfigureAwait(false);
+
+        if (mentionedBots.Count == 0)
+        {
+            this.AnswerChimingIn(sender, senderName, message, configuration);
+            return;
+        }
 
         if (mentionedBots.FirstOrDefault(IsAvailable) is not { } bot
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
@@ -921,6 +933,36 @@ public class BotChatPlugIn
     }
 
     /// <summary>
+    /// Answers a player who chimes in right after two bots near them had a conversation: one of the
+    /// two answers - by a keyword reply if the message has one, otherwise with one of the
+    /// <see cref="BotChatConfiguration.ConversationJoinLines"/> ("right?", "haha, exactly").
+    /// </summary>
+    private void AnswerChimingIn(Player sender, string senderName, string message, BotChatConfiguration configuration)
+    {
+        if (this.GetThrottle(sender.GameContext).TakeRecentConversation(bot => IsInHearingRange(bot, sender), DateTime.UtcNow) is not { } conversation
+            || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent))
+        {
+            return;
+        }
+
+        var bot = new[] { conversation.First, conversation.Second }.Where(b => IsAvailable(b) && IsInHearingRange(b, sender)).OrderBy(_ => Rand.NextInt(0, 2)).FirstOrDefault();
+        LocalizedString? text = this.PickReplyFor(sender, configuration.WhisperReplies, message, requireKeyword: true) is { } reply
+            ? reply.Text
+            : this.PickLineFor(sender, configuration.ConversationJoinLines)?.Text;
+        if (bot is null
+            || text is not { } answer
+            || !this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(bot);
+        values["player"] = _ => senderName;
+        var language = GetMessageLanguage(message, configuration);
+        RunLater(bot.GameContext, TypingDelay(answer), () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, answer, values, language, toward: sender) : ValueTask.CompletedTask);
+    }
+
+    /// <summary>
     /// Declines a player's request after a human-like moment: runs the refusal, if any, and whispers
     /// one of the lines - by chance, and not more often than the whisper reply cooldown allows.
     /// </summary>
@@ -1045,10 +1087,22 @@ public class BotChatPlugIn
             secondValues["partner"] = _ => firstName;
 
             await BotChatSpeaker.SayAsync(first, conversation.Opener, firstValues).ConfigureAwait(false);
+            var replyDelay = TypingDelay(conversation.Reply);
+            var hasRiposte = !string.IsNullOrWhiteSpace(conversation.Riposte.ValueInNeutralLanguage);
+            var riposteDelay = hasRiposte ? replyDelay + TypingDelay(conversation.Riposte) : replyDelay;
             RunLater(
                 gameContext,
-                TypingDelay(conversation.Reply),
+                replyDelay,
                 () => IsAvailable(second) ? BotChatSpeaker.SayAsync(second, conversation.Reply, secondValues) : ValueTask.CompletedTask);
+            if (hasRiposte)
+            {
+                RunLater(
+                    gameContext,
+                    riposteDelay,
+                    () => IsAvailable(first) ? BotChatSpeaker.SayAsync(first, conversation.Riposte, firstValues) : ValueTask.CompletedTask);
+            }
+
+            throttle.RememberConversation(first, second, now + riposteDelay + ConversationChimeInWindow);
         }
     }
 
