@@ -27,28 +27,24 @@ public class EditConfigGridTests
 {
     private BunitContext _context = null!;
 
-    private BasicModel.GameConfiguration _gameConfiguration = null!;
-
-    private List<BasicModel.MonsterDefinition> _monsters = null!;
-
     /// <summary>
     /// Sets up the test context with three monsters which are not in the order of their numbers.
     /// </summary>
     [SetUp]
     public void Setup()
     {
-        this._monsters =
+        List<BasicModel.MonsterDefinition> monsters =
         [
             new BasicModel.MonsterDefinition { Id = Guid.NewGuid(), Number = 3, Designation = "Zeta" },
             new BasicModel.MonsterDefinition { Id = Guid.NewGuid(), Number = 1, Designation = "Alpha" },
             new BasicModel.MonsterDefinition { Id = Guid.NewGuid(), Number = 2, Designation = "Beta" },
         ];
-        this._gameConfiguration = new BasicModel.GameConfiguration();
+        var gameConfiguration = new BasicModel.GameConfiguration();
 
         var dataSource = new Mock<IDataSource<GameConfiguration>>();
-        dataSource.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(this._gameConfiguration);
+        dataSource.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(gameConfiguration);
         dataSource.Setup(s => s.IsSupporting(It.IsAny<Type>())).Returns(true);
-        dataSource.Setup(s => s.GetAll(It.IsAny<Type>())).Returns(this._monsters);
+        dataSource.Setup(s => s.GetAll(It.IsAny<Type>())).Returns(monsters);
 
         var modalService = Mock.Of<IModalService>();
         this._context = new BunitContext();
