@@ -5394,5 +5394,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatLine_When_Description text.</summary>
         public static string BotChatLine_When_Description => ResourceManager.GetString("BotChatLine_When_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_DeclineReplyChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_DeclineReplyChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_DeclineReplyChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_DeclineReplyChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_DeclineReplyChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_DeclineReplyChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_TradeDeclineLines_Name text.</summary>
+        public static string BotChatConfiguration_TradeDeclineLines_Name => ResourceManager.GetString("BotChatConfiguration_TradeDeclineLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_TradeDeclineLines_Description text.</summary>
+        public static string BotChatConfiguration_TradeDeclineLines_Description => ResourceManager.GetString("BotChatConfiguration_TradeDeclineLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_DuelDeclineLines_Name text.</summary>
+        public static string BotChatConfiguration_DuelDeclineLines_Name => ResourceManager.GetString("BotChatConfiguration_DuelDeclineLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_DuelDeclineLines_Description text.</summary>
+        public static string BotChatConfiguration_DuelDeclineLines_Description => ResourceManager.GetString("BotChatConfiguration_DuelDeclineLines_Description", resourceCulture)!;
+
     }
 }

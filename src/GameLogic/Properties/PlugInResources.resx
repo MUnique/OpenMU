@@ -1953,4 +1953,10 @@
   <data name="BotChatConfiguration_ResetCongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player made a reset. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
   <data name="BotChatLine_When_Name" xml:space="preserve"><value>When</value></data>
   <data name="BotChatLine_When_Description" xml:space="preserve"><value>When it may be said, by the local time of the server: Anytime, Morning (5-11), Day (11-18), Evening (18-23) or Night (23-5).</value></data>
+  <data name="BotChatConfiguration_DeclineReplyChancePercent_Name" xml:space="preserve"><value>Trade/duel refusal: whisper chance (%)</value></data>
+  <data name="BotChatConfiguration_DeclineReplyChancePercent_Description" xml:space="preserve"><value>Chance that a bot says why it turns down a trade or duel request, by whisper. It turns them down in any case: a bot has no trade window and doesn't duel.</value></data>
+  <data name="BotChatConfiguration_TradeDeclineLines_Name" xml:space="preserve"><value>Trade refused</value></data>
+  <data name="BotChatConfiguration_TradeDeclineLines_Description" xml:space="preserve"><value>Whispered when a player asks the bot for a trade. Placeholders: {player}, {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_DuelDeclineLines_Name" xml:space="preserve"><value>Duel refused</value></data>
+  <data name="BotChatConfiguration_DuelDeclineLines_Description" xml:space="preserve"><value>Whispered when a player challenges the bot to a duel. Placeholders: {player}, {level}, {map}, {location}.</value></data>
 </root>

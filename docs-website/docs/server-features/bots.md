@@ -344,6 +344,7 @@ only talks about what it could actually do:
 | A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
 | Now and then, like a merchant advertising (off by default — meant for a future merchant bot) | normal chat, `{location}` | a bot standing in a safezone which a player sees |
 | A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
+| A player asked the bot for a trade or challenged it to a duel | whisper, 70 % chance, `{player}` — the bot turns it down in any case (no trade window, no duels) | the bot |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
 
 A bot which posts about an event does not stay out hunting where nobody
