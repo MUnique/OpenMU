@@ -21,7 +21,7 @@
     }
     <div class="container editor-container" id="@this.FieldIdentifier.FieldName">
         <div class="row editor-row">
-            <div class="col-4 left-column">
+            <div class="col-4 left-column" @ref="this._scrollContainer">
                 @if (this._storageType == StorageType.Inventory)
                 {
                     <div class="equipped-box">
@@ -124,7 +124,13 @@
 
 @code {
 
+    private static readonly string AutoScrollModulePath = $"./_content/{typeof(ItemStorageField).Assembly.GetName().Name}/Components/Form/{nameof(ItemStorageField)}.razor.js";
+
     private InventoryPlacementService? _placementService;
+
+    private ElementReference _scrollContainer;
+
+    private IJSObjectReference? _autoScrollModule;
 
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
@@ -197,20 +203,47 @@
         this.StateHasChanged();
     }
 
-    private void OnItemDragStarted((Item Item, byte ColumnOffset, byte RowOffset) drag)
+    private async Task OnItemDragStarted((Item Item, byte ColumnOffset, byte RowOffset) drag)
     {
         this._draggedItem = drag;
         this.StateHasChanged();
+
+        try
+        {
+            this._autoScrollModule ??= await this.JsRuntime
+                .InvokeAsync<IJSObjectReference>("import", AutoScrollModulePath)
+                .ConfigureAwait(true);
+            await this._autoScrollModule.InvokeVoidAsync("start", this._scrollContainer).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is already gone, so there is nothing to scroll anymore.
+        }
     }
 
-    private void OnItemDragEnded()
+    private async Task OnItemDragEnded()
     {
+        if (this._autoScrollModule is { } module)
+        {
+            try
+            {
+                await module.InvokeVoidAsync("stop").ConfigureAwait(true);
+            }
+            catch (JSDisconnectedException)
+            {
+                // The circuit is already gone, so there is nothing to stop.
+            }
+        }
+
         if (this._draggedItem is not null)
         {
             this._draggedItem = null;
             this.StateHasChanged();
         }
     }
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
 
     private void OnItemDroppedAsync((byte Slot, int StartIndex, int Rows, bool IsEquipmentSlot) target)
     {
@@ -226,18 +259,12 @@
         }
         else if (target.Rows > 0)
         {
-            var destination = InventoryPlacementService.GetDropPosition(
-                target.Slot,
-                target.StartIndex,
-                drag.ColumnOffset,
-                drag.RowOffset);
-            moved = this._placementService!.TryMoveItem(
-                drag.Item,
-                destination.Column,
-                destination.Row,
-                storage.Items,
-                target.StartIndex,
-                target.Rows);
+            var destinationSlot = target.Slot - (drag.RowOffset * InventoryConstants.RowSize) - drag.ColumnOffset;
+            var sectionEnd = target.StartIndex + (target.Rows * InventoryConstants.RowSize);
+            if (destinationSlot >= target.StartIndex && destinationSlot < sectionEnd)
+            {
+                moved = this._placementService!.TryMoveItem(drag.Item, (byte)destinationSlot, storage.Items, target.StartIndex, target.Rows);
+            }
         }
 
         if (moved)
