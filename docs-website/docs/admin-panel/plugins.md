@@ -137,6 +137,20 @@ The announcements are shown in their order; after the last one, it starts over
 with the first one. Each game server has its own rotation. The text can be translated:
 players see the translation for their language, if there is one.
 
+## Jewel of Life
+
+The *Jewel of Life* handler has a configuration, so its behaviour can be changed
+without a rebuild. It contains:
+
+* the *Success chance* between 0 and 1 (default `0.5`); the same chance applies
+  to adding an option and to increasing it,
+* the *Behaviour on failure*: `None` keeps the option level as it is,
+  `SetOptionToBaseLevel` resets it to its lowest level, and `RemoveOption`
+  removes the option — the behaviour of the original game.
+
+The value is not limited by the game client: it doesn't display a success chance
+for this jewel, so a server owner can use any value between 0 and 1.
+
 ## Writing your own plugin
 
 Implementing a plugin is documented next to the code, in the

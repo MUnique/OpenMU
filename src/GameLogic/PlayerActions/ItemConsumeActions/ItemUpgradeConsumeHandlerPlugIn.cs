@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ItemUpgradeConsumeHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -21,7 +21,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     /// <param name="configuration">The configuration.</param>
     internal ItemUpgradeConsumeHandlerPlugIn(ItemUpgradeConfiguration configuration)
     {
-        this.Configuration = configuration;
+        this.UpgradeConfiguration = configuration;
     }
 
     /// <summary>
@@ -48,7 +48,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     /// <summary>
     /// Gets the upgrade configuration.
     /// </summary>
-    internal ItemUpgradeConfiguration Configuration { get; }
+    /// <remarks>
+    /// The members <see cref="ItemUpgradeConfiguration.SuccessChance"/> and
+    /// <see cref="ItemUpgradeConfiguration.FailResult"/> are settable, so that a derived handler
+    /// can apply a custom configuration to them.
+    /// </remarks>
+    internal ItemUpgradeConfiguration UpgradeConfiguration { get; }
 
     /// <inheritdoc/>
     protected override bool ModifyItem(Item item, IContext persistenceContext)
@@ -87,12 +92,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     /// <returns>Flag indicating whether the item option was upgraded.</returns>
     protected virtual bool TryUpgradeItemOption(Item item)
     {
-        if (!this.Configuration.IncreasesOption)
+        if (!this.UpgradeConfiguration.IncreasesOption)
         {
             return false;
         }
 
-        var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
+        var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.UpgradeConfiguration.OptionType);
         var increasableOption = itemOption.ItemOption;
         var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level && o.RequiredItemLevel <= item.Level) ?? false;
         if (!higherOptionPossible)
@@ -100,7 +105,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             return false;
         }
 
-        if (Rand.NextRandomBool(this.Configuration.SuccessChance))
+        if (Rand.NextRandomBool(this.UpgradeConfiguration.SuccessChance))
         {
             itemOption.Level++;
         }
@@ -114,7 +119,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
     private void HandleFailedUpgrade(Item item, ItemOptionLink itemOption)
     {
-        switch (this.Configuration.FailResult)
+        switch (this.UpgradeConfiguration.FailResult)
         {
             case ItemFailResult.RemoveOption:
                 item.ItemOptions.Remove(itemOption);
@@ -130,12 +135,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
     private bool TryAddItemOption(Item item, IContext persistenceContext)
     {
-        if (!this.Configuration.AddsOption || item.Definition is null)
+        if (!this.UpgradeConfiguration.AddsOption || item.Definition is null)
         {
             return false;
         }
 
-        if (Rand.NextRandomBool(this.Configuration.SuccessChance))
+        if (Rand.NextRandomBool(this.UpgradeConfiguration.SuccessChance))
         {
             var possibleOptions = item.Definition.PossibleItemOptions.
                 SelectMany(o => o.PossibleOptions).
@@ -147,7 +152,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             }
 
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            if (this.Configuration.OptionType == ItemOptionTypes.HarmonyOption)
+            if (this.UpgradeConfiguration.OptionType == ItemOptionTypes.HarmonyOption)
             {
                 // Str and agi reduction options are not always applicable, and so should be removed from the pool
                 if (!item.Definition.Requirements.Any(r => r.Attribute == Stats.TotalStrengthRequirementValue)
@@ -182,12 +187,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
     private bool IsUpgradableOption(IncreasableItemOption option)
     {
-        return option.OptionType == this.Configuration.OptionType && option.LevelDependentOptions.Any();
+        return option.OptionType == this.UpgradeConfiguration.OptionType && option.LevelDependentOptions.Any();
     }
 
     private bool ItemHasOptionAlready(Item item)
     {
-        return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
+        return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.UpgradeConfiguration.OptionType);
     }
 
     /// <summary>

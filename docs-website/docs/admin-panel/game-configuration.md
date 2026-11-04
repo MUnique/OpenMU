@@ -55,7 +55,8 @@ Route `edit-config/…GameConfiguration/{id}/hide-collections`
 The settings of the game configuration itself, without its (huge) collections.
 This is where the values live which most server operators want to change:
 
-* **Rates** — experience rate, master experience rate
+* **Rates** — experience rate, master experience rate, and the money rate
+  (see [Money rate](#money-rate))
 * **Levels** — maximum level, maximum master level, minimum monster level for
   master experience
 * **Money and items** — maximum inventory/vault money, whether monsters drop
@@ -68,6 +69,22 @@ This is where the values live which most server operators want to change:
   [item formulas](#item-stat-profiles)
 * **Misc** — info range, recovery interval, letter settings, durability
   consumption
+
+### Money rate
+
+The money which a monster drops is derived from its experience reward: the
+experience the killing player gains, plus a base amount of 7 — that is the
+amount which lies on the ground. When a player picks it up, it is multiplied by
+the **money rate** at the top of the page (`1` is 100 %) and by the money rate
+bonuses of the player, for example the *Money Drop Amount Rate* option of an
+excellent item. A rate of 2 with a 40 % bonus therefore pays 2.8 times the base
+amount.
+
+The rate is stored as the global base attribute value of *Money Drop Amount Rate*
+in the configuration, which is why the same value also appears in the
+*Global base attribute values* list of the full configuration. It applies to all
+game servers which use this configuration — unlike the experience rate, there is
+no per-server money rate.
 
 ## Monsters
 

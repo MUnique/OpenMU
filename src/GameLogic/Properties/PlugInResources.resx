@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1816,6 +1816,7 @@
   <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
     <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
   </data>
+<<<<<<< HEAD
   <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Elite Healing Potion Consume Handler</value>
   </data>
@@ -1839,5 +1840,40 @@
   </data>
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite healing potion consumption. It recovers the health immediately.</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Mana Potion Consume Handler</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite mana potion consumption. It recovers the mana immediately.</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite SD Potion Consume Handler</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite SD potion consumption. It recovers the shield immediately.</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugInConfiguration_SuccessChance_Name" xml:space="preserve">
+    <value>Success chance</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugInConfiguration_SuccessChance_Description" xml:space="preserve">
+    <value>The chance between 0 and 1 that an attempt adds or increases the option. The original value is 0.5.</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugInConfiguration_FailResult_Name" xml:space="preserve">
+    <value>Behaviour on failure</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugInConfiguration_FailResult_Description" xml:space="preserve">
+    <value>What happens to the option when the random check fails: nothing, the option is set back to its base level, or the option is removed. The original behaviour removes the option.</value>
   </data>
 </root>
