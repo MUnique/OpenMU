@@ -122,6 +122,30 @@ internal static class BotChatComposer
             : mapName ?? string.Empty;
 
     /// <summary>
+    /// Recognizes the language of a player's message by its typical words and letters: the language
+    /// with the most hits wins, a tie or no hit at all leaves it open.
+    /// </summary>
+    /// <param name="message">The player's message.</param>
+    /// <param name="hints">The words and letters of the languages.</param>
+    /// <returns>The language code, or <c>null</c> when the message doesn't tell.</returns>
+    internal static string? DetectLanguage(string message, IEnumerable<BotChatLanguageHint> hints)
+    {
+        var normalizedMessage = $" {Normalize(message)} ";
+        var lowerMessage = message.ToLowerInvariant();
+        var scores = hints
+            .Where(hint => !string.IsNullOrWhiteSpace(hint.Language))
+            .Select(hint => (hint.Language, Score:
+                GetKeywords(hint.Words).Count(word => normalizedMessage.Contains($" {word} ", StringComparison.Ordinal))
+                + (lowerMessage.Any(c => (hint.Letters ?? string.Empty).Contains(c, StringComparison.Ordinal)) ? 1 : 0)))
+            .Where(s => s.Score > 0)
+            .OrderByDescending(s => s.Score)
+            .ToList();
+        return scores.Count == 0 || (scores.Count > 1 && scores[0].Score == scores[1].Score)
+            ? null
+            : scores[0].Language.Trim();
+    }
+
+    /// <summary>
     /// Determines whether the message mentions the name as a whole word, ignoring case and
     /// punctuation - "hi Serael!" mentions Serael, "Seraelion" does not.
     /// </summary>

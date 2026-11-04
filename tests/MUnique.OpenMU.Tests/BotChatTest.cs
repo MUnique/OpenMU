@@ -335,6 +335,24 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// The language of a player's message is recognized by its typical words and letters, so the bot
+    /// answers in it; a message which doesn't tell leaves it open.
+    /// </summary>
+    /// <param name="message">The player's message.</param>
+    /// <param name="expected">The expected language, or <c>null</c>.</param>
+    [TestCase("jak sie masz?", "pl")]
+    [TestCase("cześć!", "pl")]
+    [TestCase("hi, jak się masz", "pl")]
+    [TestCase("how are you?", "en")]
+    [TestCase("lol", null)]
+    public void RecognizesTheLanguageOfAMessage(string message, string? expected)
+    {
+        var languages = BotChatConfiguration.CreateDefault().MessageLanguages;
+
+        Assert.That(BotChatComposer.DetectLanguage(message, languages), Is.EqualTo(expected));
+    }
+
+    /// <summary>
     /// A bot feels addressed when its name is in a chat message as a whole word - not when it is only
     /// a part of a longer word.
     /// </summary>

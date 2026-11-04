@@ -1963,4 +1963,12 @@
   <data name="BotChatConfiguration_BusyChatMessageCount_Description" xml:space="preserve"><value>From how many normal chat messages of players near a bot (within the time below) the bot says nothing unasked - no conversations, greetings, congratulations or comments. Answers to a player stay. 0 = off.</value></data>
   <data name="BotChatConfiguration_BusyChatWindow_Name" xml:space="preserve"><value>Quiet when players talk: time</value></data>
   <data name="BotChatConfiguration_BusyChatWindow_Description" xml:space="preserve"><value>How long a message of a player counts for the setting above.</value></data>
+  <data name="BotChatConfiguration_MessageLanguages_Name" xml:space="preserve"><value>Message languages</value></data>
+  <data name="BotChatConfiguration_MessageLanguages_Description" xml:space="preserve"><value>Typical words and letters by which a bot recognizes the language of a player's message: it answers in that language, even when the player's account language is another one. A message which doesn't tell is answered in the player's own language.</value></data>
+  <data name="BotChatLanguageHint_Language_Name" xml:space="preserve"><value>Language</value></data>
+  <data name="BotChatLanguageHint_Language_Description" xml:space="preserve"><value>The language code, e.g. pl.</value></data>
+  <data name="BotChatLanguageHint_Words_Name" xml:space="preserve"><value>Typical words</value></data>
+  <data name="BotChatLanguageHint_Words_Description" xml:space="preserve"><value>Comma-separated typical words of the language. The language with the most hits in a message wins; a tie leaves it open.</value></data>
+  <data name="BotChatLanguageHint_Letters_Name" xml:space="preserve"><value>Letters</value></data>
+  <data name="BotChatLanguageHint_Letters_Description" xml:space="preserve"><value>Letters only this language uses, e.g. ąćęłńóśźż. One of them in a message counts like a typical word.</value></data>
 </root>

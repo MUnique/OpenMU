@@ -5424,5 +5424,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_BusyChatWindow_Description text.</summary>
         public static string BotChatConfiguration_BusyChatWindow_Description => ResourceManager.GetString("BotChatConfiguration_BusyChatWindow_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_MessageLanguages_Name text.</summary>
+        public static string BotChatConfiguration_MessageLanguages_Name => ResourceManager.GetString("BotChatConfiguration_MessageLanguages_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MessageLanguages_Description text.</summary>
+        public static string BotChatConfiguration_MessageLanguages_Description => ResourceManager.GetString("BotChatConfiguration_MessageLanguages_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLanguageHint_Language_Name text.</summary>
+        public static string BotChatLanguageHint_Language_Name => ResourceManager.GetString("BotChatLanguageHint_Language_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLanguageHint_Language_Description text.</summary>
+        public static string BotChatLanguageHint_Language_Description => ResourceManager.GetString("BotChatLanguageHint_Language_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLanguageHint_Words_Name text.</summary>
+        public static string BotChatLanguageHint_Words_Name => ResourceManager.GetString("BotChatLanguageHint_Words_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLanguageHint_Words_Description text.</summary>
+        public static string BotChatLanguageHint_Words_Description => ResourceManager.GetString("BotChatLanguageHint_Words_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLanguageHint_Letters_Name text.</summary>
+        public static string BotChatLanguageHint_Letters_Name => ResourceManager.GetString("BotChatLanguageHint_Letters_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLanguageHint_Letters_Description text.</summary>
+        public static string BotChatLanguageHint_Letters_Description => ResourceManager.GetString("BotChatLanguageHint_Letters_Description", resourceCulture)!;
+
     }
 }

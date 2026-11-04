@@ -244,11 +244,12 @@ public class BotChatPlugIn
         var values = CreateBotValues(receiver);
         var senderName = sender.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => senderName;
+        var language = GetMessageLanguage(message, configuration);
         RunLater(
             receiver.GameContext,
             TypingDelay(line.Text),
             () => IsAvailable(receiver) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
-                ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values)
+                ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values, language)
                 : ValueTask.CompletedTask);
     }
 
@@ -402,10 +403,11 @@ public class BotChatPlugIn
 
         var values = CreateBotValues(bot);
         values["player"] = _ => senderName;
+        var language = GetMessageLanguage(message, configuration);
         RunLater(
             bot.GameContext,
             TypingDelay(line.Text),
-            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values) : ValueTask.CompletedTask);
+            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values, language) : ValueTask.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -687,6 +689,27 @@ public class BotChatPlugIn
 
     private static int GetLevel(Player player) => (int)(player.Attributes?[Stats.Level] ?? 0);
 
+    /// <summary>
+    /// Gets the language a player's message is written in, to answer in it - or <c>null</c> to answer
+    /// in the player's own language.
+    /// </summary>
+    private static CultureInfo? GetMessageLanguage(string message, BotChatConfiguration configuration)
+    {
+        if (BotChatComposer.DetectLanguage(message, configuration.MessageLanguages) is not { } code)
+        {
+            return null;
+        }
+
+        try
+        {
+            return CultureInfo.GetCultureInfo(code);
+        }
+        catch (CultureNotFoundException)
+        {
+            return null;
+        }
+    }
+
     private static bool IsPostCommandActive(IGameContext gameContext)
         => gameContext.PlugInManager.IsPlugInActive(typeof(PostChatCommandPlugIn));
 
@@ -816,6 +839,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         var requesterName = requester.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => requesterName;
+        var language = GetMessageLanguage(message, configuration);
 
         // A named map wins over "here": "i'm here, devias 215 40" names the place.
         var place = BotChatComposer.FindPlace(message, bot.GameContext.Configuration.Maps);
@@ -831,7 +855,7 @@ public class BotChatPlugIn
             if (throttle.TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown)
                 && this.PickLineFor(requester, configuration.PartyAskWhereLines) is { } askLine)
             {
-                this.WhisperLater(bot, requester, askLine, values);
+                this.WhisperLater(bot, requester, askLine, values, language);
             }
 
             return;
@@ -851,7 +875,7 @@ public class BotChatPlugIn
         {
             if (PickLine(configuration.PartyCantGoLines) is { } cantGoLine)
             {
-                this.WhisperLater(bot, requester, cantGoLine, values);
+                this.WhisperLater(bot, requester, cantGoLine, values, language);
             }
 
             return;
@@ -860,7 +884,7 @@ public class BotChatPlugIn
         bot.EventMeeting = new BotEventMeeting(map, position, DateTime.UtcNow + configuration.PartyMeetingWaitTime);
         if (PickLine(configuration.PartyOnTheWayLines) is { } onTheWayLine)
         {
-            this.WhisperLater(bot, requester, onTheWayLine, values);
+            this.WhisperLater(bot, requester, onTheWayLine, values, language);
         }
     }
 
@@ -893,7 +917,8 @@ public class BotChatPlugIn
 
         var values = CreateBotValues(speaker);
         values["player"] = _ => senderName;
-        RunLater(speaker.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(speaker, line.Text, values));
+        var language = GetMessageLanguage(message, configuration);
+        RunLater(speaker.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(speaker, line.Text, values, language));
     }
 
     /// <summary>
@@ -923,12 +948,12 @@ public class BotChatPlugIn
         });
     }
 
-    private void WhisperLater(Player bot, Player receiver, BotChatLine line, Dictionary<string, Func<CultureInfo, string>> values)
+    private void WhisperLater(Player bot, Player receiver, BotChatLine line, Dictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
         => RunLater(
             bot.GameContext,
             TypingDelay(line.Text),
             () => receiver.PlayerState.CurrentState == PlayerState.EnteredWorld
-                ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values)
+                ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values, language)
                 : ValueTask.CompletedTask);
 
     private async ValueTask MakeMerchantTalkAsync(GameContext gameContext, BotChatConfiguration configuration)

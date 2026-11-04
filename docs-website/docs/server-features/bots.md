@@ -401,6 +401,13 @@ every player sees the translation of their own language, or the English text
 when it has none. The default lines come with a Polish translation, and the default
 keywords understand Polish whispers too.
 
+A bot answers a message in the language it is written in: a Polish whisper
+gets a Polish answer, an English one an English answer, whatever the player's
+account language. The *Message languages* list holds the typical words and
+letters by which it tells them apart; a message which doesn't tell ("lol") is
+answered in the player's own language. Everything else a bot says - greetings,
+posts, conversations - follows the account language:
+
 For the Polish lines to reach a Polish player, three things are needed:
 
 1. **The player's language is set to `pl`** — the *Language Iso Code* of the
