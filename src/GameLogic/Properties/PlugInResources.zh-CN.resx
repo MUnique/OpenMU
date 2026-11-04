@@ -376,6 +376,15 @@
   <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>处理召唤石的使用和消耗。</value>
   </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>圣诞村邀请函使用</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理圣诞村邀请函，将玩家传送到圣诞村。</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>地图编号</value>
+  </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>回城卷轴使用</value>
   </data>
