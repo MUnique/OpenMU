@@ -1367,6 +1367,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
+                this._player.HuntingSpot = null;
                 this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._nextChaosMachineCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} for the chaos machine.", this._player.Name, warp.Gate?.Map?.Name);
@@ -1393,6 +1394,8 @@ internal sealed class BotNavigator : AsyncDisposable
             await this._player.WarpToAsync(townGate).ConfigureAwait(false);
         }
 
+        // The bot leaves its hunting ground for the trip; its claim would keep other bots off it meanwhile.
+        this._player.HuntingSpot = null;
         this._chaosMachineTarget = goblinPosition;
         this._chaosMachineStandingPoint = standingPoint;
         this._player.IsOnChaosMachineTrip = true;
