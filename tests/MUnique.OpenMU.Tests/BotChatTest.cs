@@ -52,6 +52,23 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// Small talk happens once per interval - a freshly started server waits one interval first,
+    /// while the bots log in - and a forced start from the admin panel makes it due at once.
+    /// </summary>
+    [Test]
+    public void SmallTalkFollowsTheIntervalOrAForcedStart()
+    {
+        var throttle = new BotChatThrottle();
+        var interval = TimeSpan.FromMinutes(10);
+
+        Assert.That(throttle.TryStartSmallTalk(Start, interval, 0), Is.False);
+        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(10), interval, 0), Is.True);
+        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(11), interval, 0), Is.False);
+        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(11), interval, 1), Is.True);
+        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(12), interval, 1), Is.False);
+    }
+
+    /// <summary>
     /// The chat and whisper reply cooldowns belong to one bot; another bot may still talk, and the
     /// two cooldowns don't block each other.
     /// </summary>

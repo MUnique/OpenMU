@@ -4723,6 +4723,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_KilledByPlayerChancePercent_Description text.</summary>
         public static string BotChatConfiguration_KilledByPlayerChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_KilledByPlayerChancePercent_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_SmallTalkInterval_Name text.</summary>
+        public static string BotChatConfiguration_SmallTalkInterval_Name => ResourceManager.GetString("BotChatConfiguration_SmallTalkInterval_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_SmallTalkInterval_Description text.</summary>
+        public static string BotChatConfiguration_SmallTalkInterval_Description => ResourceManager.GetString("BotChatConfiguration_SmallTalkInterval_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_SmallTalkChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_SmallTalkChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_SmallTalkChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_SmallTalkChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_SmallTalkChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_SmallTalkChancePercent_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotSkillProgressionPlugIn_Name text.</summary>
         public static string BotSkillProgressionPlugIn_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture)!;
 

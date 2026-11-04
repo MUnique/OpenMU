@@ -72,4 +72,11 @@ public enum BotChatSituation
     /// (see <see cref="BotRevengePlugIn"/>). Placeholders as for <see cref="KilledByPlayer"/>.
     /// </summary>
     KilledAgainByPlayer,
+
+    /// <summary>
+    /// Now and then (see <see cref="BotChatConfiguration.SmallTalkInterval"/>) a bot standing in a
+    /// safezone says something in the normal chat - only when a player sees it.
+    /// Placeholders: <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    SmallTalk,
 }
