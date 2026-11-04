@@ -8,6 +8,7 @@ using System.Globalization;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -29,16 +30,19 @@ internal static class BotChatSpeaker
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
     /// <param name="language">The language to say it in, for every receiver; <c>null</c> for each receiver's own.</param>
-    internal static ValueTask SayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
+    /// <param name="gesture">The gesture the bot makes with it.</param>
+    /// <param name="toward">The player the bot talks to, to turn to for the gesture.</param>
+    internal static async ValueTask SayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null, BotChatGesture gesture = BotChatGesture.None, Player? toward = null)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
-            return ValueTask.CompletedTask;
+            return;
         }
 
-        return bot.ForEachObservingAsync<Player>(
+        await bot.ForEachObservingAsync<Player>(
             receiver => SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Normal),
-            false);
+            false).ConfigureAwait(false);
+        await GestureAsync(bot, gesture, toward).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -49,14 +53,16 @@ internal static class BotChatSpeaker
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
     /// <param name="language">The language to whisper in; <c>null</c> for the receiver's own.</param>
-    internal static ValueTask WhisperAsync(Player bot, Player receiver, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
+    /// <param name="gesture">The gesture the bot makes with it, seen when the receiver stands near.</param>
+    internal static async ValueTask WhisperAsync(Player bot, Player receiver, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null, BotChatGesture gesture = BotChatGesture.None)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
-            return ValueTask.CompletedTask;
+            return;
         }
 
-        return SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Whisper);
+        await SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Whisper).ConfigureAwait(false);
+        await GestureAsync(bot, gesture, receiver).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -66,7 +72,9 @@ internal static class BotChatSpeaker
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
     /// <param name="language">The language to say it in, for every receiver; <c>null</c> for each receiver's own.</param>
-    internal static async ValueTask PartySayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null)
+    /// <param name="gesture">The gesture the bot makes with it.</param>
+    /// <param name="toward">The player the bot talks to, to turn to for the gesture.</param>
+    internal static async ValueTask PartySayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null, BotChatGesture gesture = BotChatGesture.None, Player? toward = null)
     {
         if (bot.SelectedCharacter?.Name is not { } name || bot.Party is not { } party)
         {
@@ -77,6 +85,8 @@ internal static class BotChatSpeaker
         {
             await SendAsync(receiver, BotChatComposer.Render(text, language ?? receiver.Culture, values), name, ChatMessageType.Party).ConfigureAwait(false);
         }
+
+        await GestureAsync(bot, gesture, toward).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -99,6 +109,29 @@ internal static class BotChatSpeaker
                 PostChatCommandPlugIn.PostSender,
                 ChatMessageType.Gens).AsTask())
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Makes the bot perform a gesture for the players who see it, turned towards the player it talks
+    /// to - like a player typing /hello.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="gesture">The gesture.</param>
+    /// <param name="toward">The player the bot talks to, if it's near.</param>
+    internal static ValueTask GestureAsync(Player bot, BotChatGesture gesture, Player? toward)
+    {
+        if (gesture == BotChatGesture.None || bot.CurrentMap is not { } map)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        if (toward is not null && ReferenceEquals(toward.CurrentMap, map))
+        {
+            bot.Rotation = bot.GetDirectionTo(toward);
+        }
+
+        var rotation = bot.Rotation;
+        return bot.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(bot, (byte)gesture, null, rotation), false);
     }
 
     private static ValueTask SendAsync(Player receiver, string text, string sender, ChatMessageType type)

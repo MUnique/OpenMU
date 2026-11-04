@@ -693,7 +693,32 @@ public class BotChatConfiguration
             ("cya", "na razie"),
             ("ok, see you later", "ok, do później"),
             ("take care", "trzymaj się"));
+        SetGesture(configuration.GreetingLines, BotChatGesture.Greeting);
+        SetGesture(configuration.PartyJoinedLines, BotChatGesture.Salute);
+        SetGesture(configuration.LevelMilestoneLines, BotChatGesture.Win);
+        SetGesture(configuration.EventFinishedLines, BotChatGesture.Cheer);
+        SetGesture(configuration.CongratulationLines, BotChatGesture.Clap);
+        SetGesture(configuration.ResetCongratulationLines, BotChatGesture.Respect);
+        SetGesture(configuration.KilledLines, BotChatGesture.Provocation);
+        SetGesture(configuration.KilledAgainLines, BotChatGesture.Cry);
+        SetGesture(configuration.DuelDeclineLines, BotChatGesture.Awkward);
+        foreach (var reply in configuration.WhisperReplies)
+        {
+            reply.Gesture = reply.Keywords.StartsWith("hi,", StringComparison.Ordinal) ? BotChatGesture.Greeting
+                : reply.Keywords.StartsWith("bye,", StringComparison.Ordinal) ? BotChatGesture.Goodbye
+                : reply.Keywords.StartsWith("thanks,", StringComparison.Ordinal) ? BotChatGesture.Smile
+                : BotChatGesture.None;
+        }
+
         return configuration;
+
+        static void SetGesture(IEnumerable<BotChatLine> lines, BotChatGesture gesture)
+        {
+            foreach (var line in lines)
+            {
+                line.Gesture = gesture;
+            }
+        }
 
         void Add(ICollection<BotChatLine> lines, params (string English, string Polish)[] texts)
         {

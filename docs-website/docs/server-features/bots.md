@@ -430,6 +430,11 @@ Every line and conversation has a `When`: `Anytime` (the default), `Morning`
 time of the server. A greeting may be "good morning" in the morning and "late
 night grind?" at night.
 
+A line can come with a `Gesture` - the emotes of the game client, like a player
+typing `/hello`: the bot turns to the player and waves with a greeting or a
+goodbye, claps with a "gz", cheers after an event, raises its fist when a
+player killed it. The default lines have fitting gestures.
+
 A bot answers like a typing player: it takes a moment to read, then a little
 time per character, so a quick "np" comes at once and a whole sentence takes a
 few seconds (at most twelve).

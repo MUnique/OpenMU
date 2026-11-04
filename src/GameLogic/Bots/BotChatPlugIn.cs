@@ -211,7 +211,7 @@ public class BotChatPlugIn
             player.GameContext,
             RandomDelay(LevelMilestoneDelaySeconds),
             () => IsAvailable(player) && this.MayTalkUnasked(player, configuration)
-                ? BotChatSpeaker.SayAsync(player, line.Text, CreateBotValues(player))
+                ? BotChatSpeaker.SayAsync(player, line.Text, CreateBotValues(player), gesture: line.Gesture)
                 : ValueTask.CompletedTask);
     }
 
@@ -249,7 +249,7 @@ public class BotChatPlugIn
             receiver.GameContext,
             TypingDelay(line.Text),
             () => IsAvailable(receiver) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
-                ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values, language)
+                ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values, language, line.Gesture)
                 : ValueTask.CompletedTask);
     }
 
@@ -284,7 +284,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         var inviterName = inviter.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => inviterName;
-        RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
+        RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values, gesture: line.Gesture, toward: inviter));
     }
 
     /// <inheritdoc />
@@ -313,7 +313,7 @@ public class BotChatPlugIn
 
             var values = CreateBotValues(bot);
             values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
-            RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
+            RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values, gesture: line.Gesture));
         }
 
         return ValueTask.CompletedTask;
@@ -349,7 +349,7 @@ public class BotChatPlugIn
             var values = CreateBotValues(bot);
             var killerName = killerPlayer.SelectedCharacter?.Name ?? string.Empty;
             values["player"] = _ => killerName;
-            return BotChatSpeaker.SayAsync(bot, line.Text, values);
+            return BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture, toward: killerPlayer);
         });
         return ValueTask.CompletedTask;
     }
@@ -407,7 +407,7 @@ public class BotChatPlugIn
         RunLater(
             bot.GameContext,
             TypingDelay(line.Text),
-            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values, language) : ValueTask.CompletedTask);
+            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values, language, line.Gesture, sender) : ValueTask.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -500,7 +500,7 @@ public class BotChatPlugIn
                 bot.GameContext,
                 whisperDelay,
                 () => IsAvailable(bot) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
-                    ? BotChatSpeaker.WhisperAsync(bot, sender, line.Text, values)
+                    ? BotChatSpeaker.WhisperAsync(bot, sender, line.Text, values, gesture: line.Gesture)
                     : ValueTask.CompletedTask);
         }
     }
@@ -918,7 +918,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(speaker);
         values["player"] = _ => senderName;
         var language = GetMessageLanguage(message, configuration);
-        RunLater(speaker.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(speaker, line.Text, values, language));
+        RunLater(speaker.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(speaker, line.Text, values, language, line.Gesture, sender));
     }
 
     /// <summary>
@@ -943,7 +943,7 @@ public class BotChatPlugIn
 
             if (line is not null && requester.PlayerState.CurrentState == PlayerState.EnteredWorld)
             {
-                await BotChatSpeaker.WhisperAsync(bot, requester, line.Text, values).ConfigureAwait(false);
+                await BotChatSpeaker.WhisperAsync(bot, requester, line.Text, values, gesture: line.Gesture).ConfigureAwait(false);
             }
         });
     }
@@ -953,7 +953,7 @@ public class BotChatPlugIn
             bot.GameContext,
             TypingDelay(line.Text),
             () => receiver.PlayerState.CurrentState == PlayerState.EnteredWorld
-                ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values, language)
+                ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values, language, line.Gesture)
                 : ValueTask.CompletedTask);
 
     private async ValueTask MakeMerchantTalkAsync(GameContext gameContext, BotChatConfiguration configuration)
@@ -986,7 +986,7 @@ public class BotChatPlugIn
         if (this.MayTalkUnasked(speaker, configuration)
             && this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
         {
-            await BotChatSpeaker.SayAsync(speaker, line.Text, CreateBotValues(speaker)).ConfigureAwait(false);
+            await BotChatSpeaker.SayAsync(speaker, line.Text, CreateBotValues(speaker), gesture: line.Gesture).ConfigureAwait(false);
         }
     }
 
@@ -1114,7 +1114,7 @@ public class BotChatPlugIn
             values["player"] = _ => playerName;
             values["level"] = _ => playerLevel;
             values["resets"] = _ => playerResets;
-            await BotChatSpeaker.SayAsync(bot, line.Text, values).ConfigureAwait(false);
+            await BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture, toward: player).ConfigureAwait(false);
         });
     }
 
@@ -1142,7 +1142,7 @@ public class BotChatPlugIn
 
         var values = CreateBotValues(bot);
         values["player"] = _ => playerName;
-        await BotChatSpeaker.SayAsync(bot, line.Text, values).ConfigureAwait(false);
+        await BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture, toward: player).ConfigureAwait(false);
     }
 
     private async ValueTask PostAboutEventAsync(MiniGameContext miniGame, BotChatConfiguration configuration)

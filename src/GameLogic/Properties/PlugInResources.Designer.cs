@@ -5448,5 +5448,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatLanguageHint_Letters_Description text.</summary>
         public static string BotChatLanguageHint_Letters_Description => ResourceManager.GetString("BotChatLanguageHint_Letters_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatLine_Gesture_Name text.</summary>
+        public static string BotChatLine_Gesture_Name => ResourceManager.GetString("BotChatLine_Gesture_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLine_Gesture_Description text.</summary>
+        public static string BotChatLine_Gesture_Description => ResourceManager.GetString("BotChatLine_Gesture_Description", resourceCulture)!;
+
     }
 }
