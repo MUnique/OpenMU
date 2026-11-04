@@ -1951,4 +1951,6 @@
   <data name="BotChatConfiguration_CongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player leveled up. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
   <data name="BotChatConfiguration_ResetCongratulationLines_Name" xml:space="preserve"><value>Congratulations: reset</value></data>
   <data name="BotChatConfiguration_ResetCongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player made a reset. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
+  <data name="BotChatLine_When_Name" xml:space="preserve"><value>When</value></data>
+  <data name="BotChatLine_When_Description" xml:space="preserve"><value>When it may be said, by the local time of the server: Anytime, Morning (5-11), Day (11-18), Evening (18-23) or Night (23-5).</value></data>
 </root>

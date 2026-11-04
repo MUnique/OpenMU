@@ -483,6 +483,19 @@ public class BotChatPlugIn
     }
 
     /// <summary>
+    /// Gets the time of day of an hour of the server's local time (see <see cref="BotChatTimeOfDay"/>).
+    /// </summary>
+    /// <param name="hour">The hour, 0 to 23.</param>
+    /// <returns>The time of day.</returns>
+    internal static BotChatTimeOfDay GetTimeOfDay(int hour) => hour switch
+    {
+        >= 5 and < 11 => BotChatTimeOfDay.Morning,
+        >= 11 and < 18 => BotChatTimeOfDay.Day,
+        >= 18 and < 23 => BotChatTimeOfDay.Evening,
+        _ => BotChatTimeOfDay.Night,
+    };
+
+    /// <summary>
     /// Finds the bot which talks to a player - greets the entering player, congratulates them: the
     /// nearest available bot on the player's map, within the range in which the player sees it.
     /// </summary>
@@ -631,7 +644,7 @@ public class BotChatPlugIn
         => gameContext.PlugInManager.IsPlugInActive(typeof(PostChatCommandPlugIn));
 
     private static BotChatLine? PickLine(IEnumerable<BotChatLine> lines)
-        => BotChatComposer.PickLine(lines, count => Rand.NextInt(0, count));
+        => BotChatComposer.PickLine(lines, GetTimeOfDay(DateTime.Now.Hour), count => Rand.NextInt(0, count));
 
     /// <summary>
     /// Gets a random, human-like time to answer with the text (see <see cref="GetTypingTime"/>). The
@@ -703,7 +716,7 @@ public class BotChatPlugIn
     private BotChatLine? PickLineFor(Player listener, ICollection<BotChatLine> lines)
     {
         var throttle = this.GetThrottle(listener.GameContext);
-        var line = BotChatComposer.PickLine(lines, count => Rand.NextInt(0, count), throttle.GetLastLine(listener, lines));
+        var line = BotChatComposer.PickLine(lines, GetTimeOfDay(DateTime.Now.Hour), count => Rand.NextInt(0, count), throttle.GetLastLine(listener, lines));
         if (line is not null)
         {
             throttle.SetLastLine(listener, lines, line);
@@ -859,8 +872,10 @@ public class BotChatPlugIn
                 throttle.PostponeConversation(listener, now + configuration.ConversationInterval);
             }
 
+            var timeOfDay = GetTimeOfDay(DateTime.Now.Hour);
             var candidates = configuration.Conversations
                 .Where(c => (c.Where == BotConversationPlace.Anywhere || c.Where == pair.Place)
+                            && BotChatComposer.FitsTimeOfDay(c.When, timeOfDay)
                             && !string.IsNullOrWhiteSpace(c.Opener.ValueInNeutralLanguage)
                             && !string.IsNullOrWhiteSpace(c.Reply.ValueInNeutralLanguage))
                 .ToList();

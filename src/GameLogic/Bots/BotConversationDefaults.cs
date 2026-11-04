@@ -20,7 +20,8 @@ using MUnique.OpenMU.Interfaces;
 internal static class BotConversationDefaults
 {
     /// <summary>
-    /// Adds the default conversations.
+    /// Adds the default conversations; most fit any time of day, a few only the morning, the evening
+    /// or the night.
     /// </summary>
     /// <param name="conversations">The list of the configuration.</param>
     internal static void AddTo(ICollection<BotConversation> conversations)
@@ -107,9 +108,30 @@ internal static class BotConversationDefaults
             ("have you seen a dark lord around?", "he was looking for his horse", "widziałeś gdzieś dark lorda?", "szukał swojego konia"),
             ("what's the best class?", "the one you enjoy", "jaka klasa jest najlepsza?", "ta, którą lubisz"),
             ("need a party for exp", "same here, let's wait for someone", "potrzebna grupa na expa", "też, poczekajmy na kogoś"));
+        AddAt(
+            conversations,
+            BotConversationPlace.Anywhere,
+            BotChatTimeOfDay.Morning,
+            ("morning! coffee first", "potions first, coffee later", "dzień dobry! najpierw kawa", "najpierw potki, kawa później"),
+            ("up early today?", "the early elf catches the drop", "wcześnie dziś wstałeś?", "kto rano wstaje, temu drop wypada"));
+        AddAt(
+            conversations,
+            BotConversationPlace.Anywhere,
+            BotChatTimeOfDay.Evening,
+            ("long day at work", "this is the best part of it", "długi dzień w pracy", "to jego najlepsza część"),
+            ("dinner time soon", "one more spot first", "zaraz kolacja", "najpierw jeszcze jeden spot"));
+        AddAt(
+            conversations,
+            BotConversationPlace.Anywhere,
+            BotChatTimeOfDay.Night,
+            ("still up?", "the monsters don't sleep, neither do i", "jeszcze nie śpisz?", "potwory nie śpią, ja też nie"),
+            ("late night grind?", "can't sleep anyway", "nocny exp?", "i tak nie mogę spać"));
     }
 
     private static void Add(ICollection<BotConversation> conversations, BotConversationPlace place, params (string Opener, string Reply, string PolishOpener, string PolishReply)[] texts)
+        => AddAt(conversations, place, BotChatTimeOfDay.Anytime, texts);
+
+    private static void AddAt(ICollection<BotConversation> conversations, BotConversationPlace place, BotChatTimeOfDay when, params (string Opener, string Reply, string PolishOpener, string PolishReply)[] texts)
     {
         var polish = CultureInfo.GetCultureInfo("pl");
         foreach (var text in texts)
@@ -119,6 +141,7 @@ internal static class BotConversationDefaults
                 Opener = new LocalizedString(text.Opener).WithTranslation(polish, text.PolishOpener),
                 Reply = new LocalizedString(text.Reply).WithTranslation(polish, text.PolishReply),
                 Where = place,
+                When = when,
             });
         }
     }

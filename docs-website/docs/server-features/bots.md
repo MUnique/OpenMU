@@ -399,6 +399,11 @@ every player sees the translation of their own language, or the English text
 when it has none. The default lines come with a Polish translation, and the default
 keywords understand Polish whispers too.
 
+Every line and conversation has a `When`: `Anytime` (the default), `Morning`
+(5–11 o'clock), `Day` (11–18), `Evening` (18–23) or `Night` (23–5), by the local
+time of the server. A greeting may be "good morning" in the morning and "late
+night grind?" at night.
+
 A bot answers like a typing player: it takes a moment to read, then a little
 time per character, so a quick "np" comes at once and a whole sentence takes a
 few seconds (at most twelve).

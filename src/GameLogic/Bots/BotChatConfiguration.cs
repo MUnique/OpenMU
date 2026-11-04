@@ -409,6 +409,9 @@ public class BotChatConfiguration
             ("welcome back {player}", "witaj z powrotem {player}"),
             ("yo {player} :)", "yo {player} :)"),
             ("hey {player}", "hej {player}"));
+        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Morning, ("good morning {player}", "dzień dobry {player}"), ("morning {player}, coffee first?", "cześć {player}, najpierw kawa?"));
+        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Evening, ("good evening {player}", "dobry wieczór {player}"));
+        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Night, ("late night grind, {player}?", "nocny exp, {player}?"));
         Add(
             configuration.PartyJoinedLines,
             ("thx for invite", "dzięki za zaproszenie"),
@@ -516,6 +519,14 @@ public class BotChatConfiguration
             foreach (var text in texts)
             {
                 lines.Add(new BotChatLine { Text = Translated(text) });
+            }
+        }
+
+        void AddAt(ICollection<BotChatLine> lines, BotChatTimeOfDay when, params (string English, string Polish)[] texts)
+        {
+            foreach (var text in texts)
+            {
+                lines.Add(new BotChatLine { Text = Translated(text), When = when });
             }
         }
 

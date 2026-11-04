@@ -19,16 +19,26 @@ internal static class BotChatComposer
     /// Picks a random usable line of the list.
     /// </summary>
     /// <param name="lines">The lines of one list, e.g. the greetings.</param>
+    /// <param name="timeOfDay">The current time of day; lines of another time of day are left out.</param>
     /// <param name="pickIndex">Returns a random index below the given count.</param>
     /// <param name="previous">The line said last time to the same player, which is left out when there are others.</param>
     /// <returns>The picked line, or <c>null</c> when the list has no usable line.</returns>
-    internal static BotChatLine? PickLine(IEnumerable<BotChatLine> lines, Func<int, int> pickIndex, object? previous = null)
+    internal static BotChatLine? PickLine(IEnumerable<BotChatLine> lines, BotChatTimeOfDay timeOfDay, Func<int, int> pickIndex, object? previous = null)
     {
         var candidates = WithoutPrevious(
-            lines.Where(line => !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage)).ToList(),
+            lines.Where(line => !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage) && FitsTimeOfDay(line.When, timeOfDay)).ToList(),
             previous);
         return candidates.Count == 0 ? null : candidates[pickIndex(candidates.Count)];
     }
+
+    /// <summary>
+    /// Determines whether a line or conversation of the given time of day may be said now.
+    /// </summary>
+    /// <param name="when">The time of day of the line.</param>
+    /// <param name="now">The current time of day.</param>
+    /// <returns><c>true</c>, if it may be said now.</returns>
+    internal static bool FitsTimeOfDay(BotChatTimeOfDay when, BotChatTimeOfDay now)
+        => when == BotChatTimeOfDay.Anytime || when == now;
 
     /// <summary>
     /// Picks the reply to a player's message: a random one of the replies whose keywords match the
