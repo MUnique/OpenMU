@@ -170,11 +170,19 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Gets the <see cref="Item.Durability"/> as byte value, rounded off.
+    /// Gets the <see cref="Item.Durability"/> as byte value, as the client sees it.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <returns>The durability.</returns>
-    public static byte Durability(this Item item) => (byte)Math.Floor(item.Durability);
+    /// <returns>The durability, rounded up.</returns>
+    /// <remarks>
+    /// The durability is stored with a fraction, so wear can accumulate in small steps, but the client only knows
+    /// whole points. Rounded up, an item loses a point only after a full point of wear, and it shows its last point
+    /// until it's worn out completely, at a durability of 0. The original game behaved the same way: it counted the
+    /// wear separately and took off a whole point when it was full.
+    /// Rounding down would cost a whole point on the first fraction of wear instead: a repaired item would look
+    /// damaged again after a single tick of <c>DurabilityDecayPlugIn</c>, and could be repaired and paid for endlessly.
+    /// </remarks>
+    public static byte Durability(this Item item) => (byte)Math.Min(byte.MaxValue, Math.Ceiling(item.Durability));
 
     /// <summary>
     /// Decreases the durability of an item, and returns <see langword="true"/>, if the integral number changed.
@@ -184,14 +192,8 @@ public static class ItemExtensions
     /// <returns><see langword="true"/>, if the integral number changed.</returns>
     public static bool DecreaseDurability(this Item item, double decrement)
     {
-        var previous = item.Durability;
-        item.Durability = Math.Max(previous - decrement, 0.0);
-        if (item.Durability < 1.0)
-        {
-            // From the client's integral point of view, the item is already exhausted and treated as such.
-            item.Durability = 0.0;
-        }
-
-        return (byte)Math.Floor(item.Durability) != (byte)Math.Floor(previous);
+        var previousWholeDurability = item.Durability();
+        item.Durability = Math.Max(item.Durability - decrement, 0.0);
+        return item.Durability() != previousWholeDurability;
     }
 }
