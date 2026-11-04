@@ -2039,4 +2039,6 @@
   <data name="BotChatConfiguration_NotableMonsterLines_Description" xml:space="preserve"><value>Said by a bot when a notable monster appeared near it. Placeholders: {monster}, {map}, {location}.</value></data>
   <data name="BotChatConfiguration_FriendLines_Name" xml:space="preserve"><value>Old party companions</value></data>
   <data name="BotChatConfiguration_FriendLines_Description" xml:space="preserve"><value>Said to a player the bot was in a party with before - instead of a greeting when the player enters the game, and instead of the party lines when the player invites it again. Remembered until the server restarts. Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="BotSayChatCommandPlugIn_Name" xml:space="preserve"><value>Chat command: /botsay</value></data>
+  <data name="BotSayChatCommandPlugIn_Description" xml:space="preserve"><value>Handles the chat command '/botsay &lt;bot&gt; &lt;text&gt;'. A game master makes a server-side bot say the text in the normal chat, to the players who see it - e.g. for staged scenes of an event. Only bots, never a player's character.</value></data>
 </root>
