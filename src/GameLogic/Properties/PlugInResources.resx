@@ -1925,4 +1925,8 @@
   <data name="BotChatConfiguration_Lines_Description" xml:space="preserve"><value>The lines the bots choose from, per situation. A situation without lines stays silent.</value></data>
   <data name="BotChatLine_Keywords_Name" xml:space="preserve"><value>Keywords</value></data>
   <data name="BotChatLine_Keywords_Description" xml:space="preserve"><value>Whisper replies only: comma-separated words or phrases of a player's whisper which this line answers, e.g. "how are you, how r u". Whole words, case and punctuation are ignored. Replies without keywords are used when nothing matches.</value></data>
+  <data name="BotChatConfiguration_GreetingChancePercent_Name" xml:space="preserve"><value>Greeting chance (%)</value></data>
+  <data name="BotChatConfiguration_GreetingChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot greets a player who enters the game, in the normal chat. 0 = never.</value></data>
+  <data name="BotChatConfiguration_GreetingCooldown_Name" xml:space="preserve"><value>Greeting cooldown per player</value></data>
+  <data name="BotChatConfiguration_GreetingCooldown_Description" xml:space="preserve"><value>Minimum time between two greetings of the same player, so logging out and in again doesn't start a round of greetings.</value></data>
 </root>

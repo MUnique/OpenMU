@@ -37,4 +37,12 @@ public enum BotChatSituation
     /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
     /// </summary>
     WhisperReply,
+
+    /// <summary>
+    /// A player entered the game (from the character selection, not after a warp). The nearest bot
+    /// which sees the player greets them in the normal chat.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    /// <remarks>New situations are appended: the configuration stores the situation as a number.</remarks>
+    PlayerLogin,
 }

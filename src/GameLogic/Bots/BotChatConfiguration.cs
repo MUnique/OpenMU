@@ -83,6 +83,20 @@ public class BotChatConfiguration
     public TimeSpan WhisperReplyCooldown { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that the nearest bot greets a player who enters the game.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_GreetingChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_GreetingChancePercent_Description))]
+    public int GreetingChancePercent { get; set; } = 50;
+
+    /// <summary>
+    /// Gets or sets the minimum time between two greetings of the same player, so logging out and in
+    /// again doesn't start a round of greetings.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_GreetingCooldown_Name), Description = nameof(PlugInResources.BotChatConfiguration_GreetingCooldown_Description))]
+    public TimeSpan GreetingCooldown { get; set; } = TimeSpan.FromMinutes(30);
+
+    /// <summary>
     /// Gets or sets the lines the bots choose from. A situation without lines stays silent.
     /// </summary>
     [MemberOfAggregate]
@@ -123,6 +137,12 @@ public class BotChatConfiguration
             "hi, cant talk now",
             "hi, what's up?",
             "afk a bit");
+        Add(
+            BotChatSituation.PlayerLogin,
+            "hi {player}, have a nice game",
+            "welcome back {player}",
+            "yo {player} :)",
+            "hey {player}");
         AddReplies("how are you, how r u, how are u, hru, how's it going, how is it going", "fine, thanks for asking", "good, you?", "all good, just grinding");
         AddReplies("hi, hello, hey, yo, hiho, sup", "hi, what's up?", "hey :)", "hello");
         AddReplies("level, lvl, what level", "{level} now", "lvl {level}");
