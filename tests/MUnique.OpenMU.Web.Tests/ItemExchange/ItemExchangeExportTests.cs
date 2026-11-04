@@ -329,7 +329,8 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
-    /// Tests that a size of 0, the client's default, is left out as the client's files leave it out.
+    /// Tests that a width or a height of 0, the client's default, is left out as the client's files
+    /// leave it out, each on its own.
     /// </summary>
     [Test]
     public void SizeOfZeroIsLeftOut()
@@ -338,12 +339,22 @@ public sealed class ItemExchangeExportTests
         using var context = provider.CreateNewContext();
         var configuration = context.CreateNew<GameConfiguration>();
         AddItem(context, configuration, 14, 3);
+        var wide = CreateItem(context, 14, 4);
+        wide.Width = 2;
+        configuration.Items.Add(wide);
+        var high = CreateItem(context, 14, 5);
+        high.Height = 3;
+        configuration.Items.Add(high);
 
         using var file = Parse(ItemExchangeExport.Write(configuration, ItemExchangeExport.ClientGameVersion));
-        var item = file.RootElement.GetProperty("items")[0];
+        var items = file.RootElement.GetProperty("items");
 
-        Assert.That(item.TryGetProperty("width", out _), Is.False);
-        Assert.That(item.TryGetProperty("height", out _), Is.False);
+        Assert.That(items[0].TryGetProperty("width", out _), Is.False);
+        Assert.That(items[0].TryGetProperty("height", out _), Is.False);
+        Assert.That(items[1].GetProperty("width").GetInt32(), Is.EqualTo(2));
+        Assert.That(items[1].TryGetProperty("height", out _), Is.False);
+        Assert.That(items[2].TryGetProperty("width", out _), Is.False);
+        Assert.That(items[2].GetProperty("height").GetInt32(), Is.EqualTo(3));
     }
 
     private static JsonDocument Parse(byte[] file) => JsonDocument.Parse(file);
