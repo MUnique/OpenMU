@@ -380,15 +380,15 @@ together do they talk — nobody else would hear it. Each conversation has a
 place: `Town` (both bots in a safezone), `Hunting` (both outside of it, usually
 fighting) or `Anywhere`. They are drawn without repetition until all of a place
 were used, and each player hears about one every five minutes. The default
-configuration comes with some seventy of them.
+configuration comes with some 170 of them.
 
 A whisper reply can carry `Keywords`, a comma-separated list of words or
 phrases it answers (`how are you, how r u`). The bot picks among the replies
 whose keyword matches the whisper — whole words, ignoring case and punctuation,
 the longest match winning, so "hi, how are you?" gets an answer to the question
 rather than a greeting. When nothing matches, it uses a reply without keywords.
-The default lines cover greetings, "how are you", the level, where the bot is,
-party, thanks and goodbye.
+The default lines cover greetings, "how are you", the level and class, where the
+bot is, where to hunt, party, help, trade, thanks and goodbye.
 
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
 `{level}`, `{class}`, `{player}` (whisper replies), `{partner}` (the other bot of

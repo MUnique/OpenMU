@@ -446,58 +446,96 @@ public class BotChatConfiguration
         Add(
             configuration.EventLines,
             ("{event} open, anyone going? im in {map}", "{event} otwarte, ktoś idzie? jestem w {map}"),
-            ("lf party {event}, waiting in {map}", "szukam grupy na {event}, czekam w {map}"),
-            ("{event} now, who wants to join? {map}", "{event} teraz, kto chętny? {map}"),
-            ("going {event}, party anyone? at {map}", "idę na {event}, ktoś do grupy? {map}"));
+            ("lf party {event}, waiting in {map}", "szukam pt na {event}, czekam w {map}"),
+            ("{event} now, who's in? {location}", "{event} startuje, kto chętny? {location}"),
+            ("going {event}, need two more, {map}", "idę na {event}, brakuje dwóch, {map}"),
+            ("{event} soon, meet me at {location}", "zaraz {event}, zbiórka {location}"),
+            ("anyone for {event}? waiting in {map}", "ktoś na {event}? czekam w {map}"),
+            ("{event}! last call, {location}", "{event}! ostatnie wołanie, {location}"));
         Add(
             configuration.InvasionLines,
             ("{event} in {map}!", "{event} w {map}!"),
-            ("{event} on {map}, go go", "{event} na {map}, lecimy"),
-            ("{map} - {event} started", "{map} - start: {event}"));
+            ("{event} on {map}, go go", "{event} na {map}, lecimy!"),
+            ("{map} - {event} started", "{map} - {event} ruszyło"),
+            ("{event}! everyone to {map}", "{event}! wszyscy na {map}"),
+            ("{event} at {map}, the loot is waiting!", "{event} w {map}, drop czeka!"));
         Add(
             configuration.LevelMilestoneLines,
             ("{level} finally :)", "{level} w końcu :)"),
-            ("lvl {level}, nice", "lvl {level}, nieźle"),
-            ("{level} done", "{level} wbite"));
+            ("lvl {level}, nice", "lvl {level}, jest moc"),
+            ("{level} done", "{level} wbite"),
+            ("ding! {level}", "ding! {level}"),
+            ("{level}, slowly but surely", "{level}, powoli do przodu"),
+            ("yes! {level}", "jest! {level}"));
         AddReplies(
             string.Empty,
-            ("sry busy hunting", "sry, poluję"),
-            ("hi, cant talk now", "hej, nie mogę teraz gadać"),
+            ("sry, busy hunting", "sorki, poluję"),
+            ("hi, can't talk now", "hej, nie mogę teraz gadać"),
             ("hi, what's up?", "hej, co tam?"),
-            ("afk a bit", "chwilę afk"));
+            ("afk a bit", "chwilę afk"),
+            ("hm?", "hm?"),
+            ("sorry, didn't get that", "sorki, nie załapałem"),
+            ("brb, monsters", "zaraz, potwory"));
         Add(
             configuration.GreetingLines,
             ("hi {player}, have a nice game", "siema {player}, miłej gry"),
-            ("welcome back {player}", "witaj z powrotem {player}"),
-            ("yo {player} :)", "yo {player} :)"),
-            ("hey {player}", "hej {player}"));
-        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Morning, ("good morning {player}", "dzień dobry {player}"), ("morning {player}, coffee first?", "cześć {player}, najpierw kawa?"));
-        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Evening, ("good evening {player}", "dobry wieczór {player}"));
-        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Night, ("late night grind, {player}?", "nocny exp, {player}?"));
+            ("welcome back {player}", "witaj z powrotem, {player}"),
+            ("yo {player} :)", "elo {player} :)"),
+            ("hey {player}", "hej {player}"),
+            ("{player}! long time no see", "{player}! kopę lat"),
+            ("look who's here, {player}", "o proszę, {player} jest"));
+        AddAt(
+            configuration.GreetingLines,
+            BotChatTimeOfDay.Morning,
+            ("good morning {player}", "dzień dobry, {player}"),
+            ("morning {player}, coffee first?", "hej {player}, kawa już była?"),
+            ("early bird, {player}", "ranny ptaszek z ciebie, {player}"));
+        AddAt(configuration.GreetingLines, BotChatTimeOfDay.Day, ("hey {player}, nice day for exp", "hej {player}, dobry dzień na expa"));
+        AddAt(
+            configuration.GreetingLines,
+            BotChatTimeOfDay.Evening,
+            ("good evening {player}", "dobry wieczór, {player}"),
+            ("evening {player}, done with work?", "siema {player}, już po robocie?"));
+        AddAt(
+            configuration.GreetingLines,
+            BotChatTimeOfDay.Night,
+            ("late night grind, {player}?", "nocny exp, {player}?"),
+            ("{player}, can't sleep either?", "{player}, też nie możesz spać?"));
         Add(
             configuration.PartyJoinedLines,
             ("thx for invite", "dzięki za zaproszenie"),
-            ("hi all", "hej wszystkim"),
-            ("ty {player}", "dzięki {player}"),
-            ("hey, lets go", "hej, lecimy"));
+            ("hi all", "siema wszystkim"),
+            ("ty {player}", "dzięki, {player}"),
+            ("hey, let's go", "hej, lecimy"),
+            ("where are we going?", "gdzie idziemy?"),
+            ("ready when you are", "gotowy, jak tylko powiesz"),
+            ("nice, a party at last", "o, nareszcie grupa"));
         Add(
             configuration.EventFinishedLines,
             ("gg", "gg"),
             ("gg wp", "gg wp"),
-            ("gg, thx for party", "gg, dzięki za grupę"),
-            ("nice run", "niezły run"));
+            ("gg, thx for the party", "gg, dzięki za grupę"),
+            ("nice run", "niezły run"),
+            ("again next time?", "powtórka następnym razem?"),
+            ("that was close", "było blisko"),
+            ("gg, easy", "gg, łatwizna"));
         Add(
             configuration.KilledLines,
             ("why??", "czemu??"),
             ("wtf {player}", "wtf {player}"),
             ("really?", "serio?"),
-            ("ok {player}, remember that", "ok {player}, zapamiętam"));
+            ("ok {player}, i'll remember that", "ok {player}, zapamiętam"),
+            ("i was just hunting...", "ja tu tylko expiłem..."),
+            ("not cool, {player}", "słabo, {player}"),
+            ("pk? seriously?", "pk? no serio?"));
         Add(
             configuration.KilledAgainLines,
             ("you again...", "znowu ty..."),
-            ("ok ok, i leave", "dobra dobra, idę stąd"),
-            ("{player} pls stop", "{player} weź przestań"),
-            ("enough, im out", "dość, spadam"));
+            ("ok ok, i'm leaving", "dobra, dobra, idę stąd"),
+            ("{player} pls stop", "{player}, weź przestań"),
+            ("enough, i'm out", "dość, spadam"),
+            ("fine, the spot is yours", "dobra, spot twój"),
+            ("you must be bored", "chyba się nudzisz"));
         Add(
             configuration.MerchantLines,
             ("selling potions, cheap! {location}", "sprzedam potki, tanio! {location}"),
@@ -505,47 +543,64 @@ public class BotChatConfiguration
             ("selling +9 weapons, good price, {location}", "sprzedam bronie +9, dobra cena, {location}"),
             ("trade? whisper me, i'm at {location}", "handel? pisz pw, stoję w {location}"),
             ("buying wings, paying well", "kupię skrzydła, dobrze płacę"),
-            ("jewels for sale, come to {location}", "jewele na sprzedaż, zapraszam do {location}"));
+            ("jewels for sale, come to {location}", "jewele na sprzedaż, zapraszam do {location}"),
+            ("fresh apples and potions, {location}", "świeże jabłka i potki, {location}"),
+            ("selling chaos, bless and soul, cheap", "sprzedam chaos, bless i soul, tanio"));
         Add(
             configuration.CongratulationLines,
             ("gz", "gz"),
-            ("gz {player}", "gratki {player}"),
+            ("gz {player}", "gratki, {player}"),
             ("nice, {level}!", "nieźle, {level}!"),
-            ("grats :)", "gratulacje :)"));
+            ("grats :)", "gratulacje :)"),
+            ("gz! keep going", "gz! dawaj dalej"),
+            ("wow, {level} already?", "wow, już {level}?"));
         Add(
             configuration.ResetCongratulationLines,
             ("gz on the reset!", "gratki resetu!"),
             ("reset {resets}, nice {player}", "reset {resets}, nieźle {player}"),
-            ("another reset? gz", "kolejny reset? gz"));
+            ("another reset? gz", "kolejny reset? gz"),
+            ("{resets} resets? respect", "{resets} resetów? szacun"),
+            ("gz {player}, back to the start :)", "gz {player}, i od nowa :)"));
         Add(
             configuration.TradeDeclineLines,
-            ("sry, no trade", "sorry, nie handluję"),
+            ("sry, no trade", "sorki, nie handluję"),
             ("not trading now, busy", "teraz nie handluję, jestem zajęty"),
-            ("nothing to sell, sry", "nie mam nic na sprzedaż, sry"));
+            ("nothing to sell, sry", "nie mam nic na sprzedaż, sorki"),
+            ("my bag is full, sry", "plecak pełny, sorki"),
+            ("only exp today", "dziś tylko exp"));
         Add(
             configuration.DuelDeclineLines,
             ("not now, maybe later", "nie teraz, może później"),
-            ("no duels today, sry", "dziś bez duelów, sry"),
-            ("haha no, i'm here for exp", "haha nie, jestem tu dla expa"));
+            ("no duels today, sry", "dziś bez duelów, sorki"),
+            ("haha no, i'm here for the exp", "haha nie, jestem tu dla expa"),
+            ("maybe after this spot", "może po tym spocie"),
+            ("you'd win anyway :)", "i tak byś wygrał :)"));
         Add(
             configuration.PartyVolunteerLines,
             ("me? {level} {class}", "ja? {level} {class}"),
             ("i can come, {class} {level}", "mogę przyjść, {class} {level}"),
             ("{class} {level} here, where are you?", "{class} {level}, gdzie jesteś?"),
-            ("count me in, lvl {level}. where?", "wchodzę, lvl {level}. gdzie?"));
+            ("count me in, lvl {level}. where?", "wchodzę, lvl {level}. gdzie?"),
+            ("i'm free, {class} {level}", "jestem wolny, {class} {level}"),
+            ("{level} {class}, where to?", "{level} {class}, dokąd?"));
         Add(
             configuration.PartyAskWhereLines,
             ("where? write map and coords, e.g. devias 215 40", "gdzie? napisz mapę i koordy, np. devias 215 40"),
-            ("which map? like lorencia 130 120", "jaka mapa? np. lorencia 130 120"));
+            ("which map? like lorencia 130 120", "jaka mapa? np. lorencia 130 120"),
+            ("i'm in, but where? map and coords pls", "wchodzę, ale gdzie? mapa i koordy pls"));
         Add(
             configuration.PartyOnTheWayLines,
             ("omw to {location}", "idę, {location}"),
             ("ok, coming to {location}", "ok, już idę do {location}"),
-            ("on my way", "już lecę"));
+            ("on my way", "już lecę"),
+            ("be there in a minute", "zaraz będę"),
+            ("coming, wait for me at {location}", "idę, czekaj na mnie w {location}"));
         Add(
             configuration.PartyCantGoLines,
-            ("cant go to {map}, sry", "nie mogę iść do {map}, sry"),
-            ("{map} is too much for me", "{map} to za dużo dla mnie"));
+            ("can't go to {map}, sry", "nie mogę iść do {map}, sorki"),
+            ("{map} is too much for me", "{map} to dla mnie za dużo"),
+            ("my level is too low for {map}", "za niski lvl na {map}"),
+            ("{map}? no way, not yet", "{map}? jeszcze nie dam rady"));
         BotConversationDefaults.AddTo(configuration.Conversations);
         AddClass("dk, bk, bm, knight, dark knight, blade knight, blade master, rycerz", BotClassNumbers.DarkKnightNumber);
         AddClass("dw, sm, gm, wizard, dark wizard, soul master, grand master, mag", BotClassNumbers.DarkWizardNumber);
@@ -555,31 +610,60 @@ public class BotChatConfiguration
         AddClass("sum, summoner, bs, dim, bloody summoner, dimension master", BotClassNumbers.SummonerNumber);
         AddClass("rf, fm, fighter, rage fighter, fist master", BotClassNumbers.RageFighterNumber);
         AddReplies(
-            "how are you, how r u, how are u, hru, how's it going, how is it going, jak sie masz, jak się masz, co slychac, co słychać, co tam",
+            "how are you, how r u, how are u, hru, how's it going, how is it going, jak sie masz, jak się masz, co slychac, co słychać, co tam, jak leci",
             ("fine, thanks for asking", "dobrze, dzięki że pytasz"),
             ("good, you?", "spoko, a ty?"),
-            ("all good, just grinding", "wszystko ok, expię"));
+            ("all good, just grinding", "wszystko ok, expię"),
+            ("tired but ok", "zmęczony, ale ok"),
+            ("never better", "lepiej być nie może"));
         AddReplies(
-            "hi, hello, hey, yo, hiho, sup, siema, czesc, cześć, hej, elo, witam",
+            "hi, hello, hey, yo, hiho, sup, siema, siemka, czesc, cześć, hej, elo, witam, dzien dobry, dzień dobry",
             ("hi, what's up?", "hej, co tam?"),
             ("hey :)", "hej :)"),
-            ("hello", "siema"));
+            ("hello", "siema"),
+            ("yo", "elo"),
+            ("hey {player}", "hej {player}"));
         AddReplies(
-            "level, lvl, what level, poziom, jaki lvl, jaki poziom",
+            "level, lvl, what level, poziom, jaki lvl, jaki poziom, ktory lvl, który lvl",
             ("{level} now", "{level} teraz"),
-            ("lvl {level}", "lvl {level}"));
+            ("lvl {level}", "lvl {level}"),
+            ("{level}, and you?", "{level}, a ty?"));
+        AddReplies(
+            "class, what class, jaka klasa, jaka postac, jaka postać, czym grasz",
+            ("{class}", "{class}"),
+            ("{class}, lvl {level}", "{class}, lvl {level}"));
         AddReplies(
             "where are you, where r u, where, gdzie jestes, gdzie jesteś, gdzie",
             ("{location}", "{location}"),
-            ("in {location}", "w {location}"));
+            ("in {location}", "w {location}"),
+            ("{location}, come by", "{location}, wpadaj"));
+        AddReplies(
+            "where to exp, good spot, exp spot, gdzie expic, gdzie expić, gdzie na expa, dobry spot, gdzie expisz",
+            ("depends on your level, try lost tower", "zależy od lvla, spróbuj lost tower"),
+            ("atlans is good if you have a party", "atlans jest spoko, jak masz grupę"),
+            ("i like {map} at my level", "na moim lvlu lubię {map}"));
         AddReplies(
             "party, pt, grupa, grupe, grupę, do grupy",
             ("sure, invite me", "jasne, zaproś mnie"),
-            ("ok, send invite", "ok, wysyłaj zaproszenie"));
+            ("ok, send invite", "ok, wysyłaj zaproszenie"),
+            ("sure, where are you?", "jasne, gdzie jesteś?"));
         AddReplies(
-            "thanks, thank you, thx, ty, dzieki, dzięki, dziekuje, dziękuję",
+            "help, can you help, pomoc, pomocy, pomozesz, pomożesz",
+            ("what do you need?", "czego potrzebujesz?"),
+            ("sure, what's up?", "jasne, o co chodzi?"));
+        AddReplies(
+            "sell, buy, wtb, wts, trade, sprzedasz, kupisz, sprzedam, kupie, kupię, handel",
+            ("nothing to sell, sry", "nie mam nic na sprzedaż, sorki"),
+            ("ask at the market in town", "popytaj na rynku w mieście"));
+        AddReplies(
+            "bot, are you a bot, r u bot, u bot, jestes botem, jesteś botem",
+            ("what do you think? :)", "a jak myślisz? :)"),
+            ("beep boop", "bip bup"));
+        AddReplies(
+            "thanks, thank you, thx, ty, dzieki, dzięki, dziekuje, dziękuję, dzieks, thx bro",
             ("np", "np"),
-            ("no problem", "nie ma sprawy"));
+            ("no problem", "nie ma sprawy"),
+            ("anytime", "spoko, zawsze"));
         AddReplies(
             "bye, cya, see you, see ya, gn, gtg, g2g, got to go, gotta go, have to go, must go, i'm off, im off, logging off, nara, pa, papa, do zobaczenia, dobranoc, na razie, musze konczyc, muszę kończyć, koncze, kończę, musze isc, muszę iść, spadam, zmykam, lece, lecę, do jutra",
             ("bye", "nara"),
