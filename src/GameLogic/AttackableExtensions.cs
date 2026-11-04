@@ -22,9 +22,6 @@ public static class AttackableExtensions
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
     private const short StunnedMagicEffectNumber = 61;     // 0x3D
 
-    private const double HitShockChance = 0.25;
-    private const int HitShockDamageThreshold = 5;
-
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
@@ -1105,6 +1102,7 @@ public static class AttackableExtensions
             return false;
         }
 
-        return damage >= HitShockDamageThreshold && Rand.NextRandomBool(HitShockChance);
+        return damage >= defender.Attributes[Stats.HitShockDamageThreshold]
+            && Rand.NextRandomBool(defender.Attributes[Stats.HitShockChance]);
     }
 }

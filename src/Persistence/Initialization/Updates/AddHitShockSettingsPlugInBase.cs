@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
-/// Adds the <see cref="Stats.IsUniriaEquipped"/> to the game configuration so Uniria-equipped players are excluded from hit shock.
+/// Adds the hit-shock settings and the <see cref="Stats.IsUniriaEquipped"/> attribute to the game configuration.
 /// </summary>
 public abstract class AddHitShockSettingsPlugInBase : UpdatePlugInBase
 {
@@ -25,12 +25,18 @@ public abstract class AddHitShockSettingsPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 11, 3, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 11, 4, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.HitShockChance);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.HitShockDamageThreshold);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsUniriaEquipped);
+
+        this.AddGlobalBaseAttributeValueIfNotExists(context, gameConfiguration, Stats.HitShockChance, 0.25f);
+        this.AddGlobalBaseAttributeValueIfNotExists(context, gameConfiguration, Stats.HitShockDamageThreshold, 5f);
+
         var uniriaAttribute = Stats.IsUniriaEquipped.GetPersistent(gameConfiguration);
 
         foreach (var uniria in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 2))
@@ -48,5 +54,17 @@ public abstract class AddHitShockSettingsPlugInBase : UpdatePlugInBase
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    private void AddGlobalBaseAttributeValueIfNotExists(IContext context, GameConfiguration gameConfiguration, AttributeDefinition attribute, float value)
+    {
+        var persistentAttribute = attribute.GetPersistent(gameConfiguration);
+        if (gameConfiguration.GlobalBaseAttributeValues.Any(existingValue => existingValue.Definition?.Id == persistentAttribute.Id))
+        {
+            return;
+        }
+
+        var globalValue = context.CreateNew<ConstValueAttribute>(value, persistentAttribute, AggregateType.AddRaw);
+        gameConfiguration.GlobalBaseAttributeValues.Add(globalValue);
     }
 }

@@ -47,7 +47,39 @@ public class HitShockTests
     {
         var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var defender = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        AddHitShockSettings(defender, 1, 5);
+
         var hitInfo = defender.GetHitInfo(4, DamageAttributes.Undefined, attacker);
+
+        Assert.That(hitInfo.TriggersHitShock, Is.False);
+    }
+
+    /// <summary>
+    /// A hit at the configured damage threshold triggers hit shock when the chance is guaranteed.
+    /// </summary>
+    [Test]
+    public async Task HitAtDamageThresholdTriggersWhenChanceIsGuaranteedAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var defender = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        AddHitShockSettings(defender, 1, 5);
+
+        var hitInfo = defender.GetHitInfo(5, DamageAttributes.Undefined, attacker);
+
+        Assert.That(hitInfo.TriggersHitShock, Is.True);
+    }
+
+    /// <summary>
+    /// A zero configured chance never triggers hit shock.
+    /// </summary>
+    [Test]
+    public async Task ZeroHitShockChanceDoesNotTriggerHitShockAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var defender = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        AddHitShockSettings(defender, 0, 5);
+
+        var hitInfo = defender.GetHitInfo(100, DamageAttributes.Undefined, attacker);
 
         Assert.That(hitInfo.TriggersHitShock, Is.False);
     }
@@ -61,10 +93,17 @@ public class HitShockTests
     {
         var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var defender = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        AddHitShockSettings(defender, 1, 5);
         defender.Attributes!.AddElement(new SimpleElement(1, AggregateType.AddRaw), mountAttribute);
 
         var hitInfo = defender.GetHitInfo(100, DamageAttributes.Undefined, attacker);
 
         Assert.That(hitInfo.TriggersHitShock, Is.False);
+    }
+
+    private static void AddHitShockSettings(Player player, float chance, float damageThreshold)
+    {
+        player.Attributes!.AddElement(new SimpleElement(chance, AggregateType.AddRaw), Stats.HitShockChance);
+        player.Attributes.AddElement(new SimpleElement(damageThreshold, AggregateType.AddRaw), Stats.HitShockDamageThreshold);
     }
 }
