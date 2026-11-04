@@ -2023,4 +2023,8 @@
   <data name="BotConversation_Riposte_Description" xml:space="preserve"><value>What the first bot says back to the reply, a few seconds later. Empty for a conversation of two lines.</value></data>
   <data name="BotChatConfiguration_ConversationJoinLines_Name" xml:space="preserve"><value>Conversations: player chimes in</value></data>
   <data name="BotChatConfiguration_ConversationJoinLines_Description" xml:space="preserve"><value>Said by one of two bots when a player near them writes in the normal chat right after their conversation - unless the message matches a whisper reply keyword. Placeholders: {player}, {map}, {level}, {class}.</value></data>
+  <data name="BotChatConfiguration_EventReminderChancePercent_Name" xml:space="preserve"><value>Event reminder in town chance (%)</value></data>
+  <data name="BotChatConfiguration_EventReminderChancePercent_Description" xml:space="preserve"><value>Chance that a bot in a town where a player stands reminds of an opened Blood Castle, Devil Square or Chaos Castle in the normal chat - once per town and opening, only a bot which meets the entry requirements. Independent of the /post chances. 0 = never.</value></data>
+  <data name="BotChatConfiguration_EventReminderLines_Name" xml:space="preserve"><value>Event reminders in town</value></data>
+  <data name="BotChatConfiguration_EventReminderLines_Description" xml:space="preserve"><value>Said in the normal chat by a bot in a town when an event entrance opened. Placeholders: {event}, {map}, {location}, {level}.</value></data>
 </root>

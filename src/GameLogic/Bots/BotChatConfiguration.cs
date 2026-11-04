@@ -30,6 +30,15 @@ public class BotChatConfiguration
     public int EventPostChancePercent { get; set; } = 30;
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that a bot in a town where a player stands reminds of an
+    /// opened Blood Castle, Devil Square or Chaos Castle in the normal chat - once per town and
+    /// opening, and only a bot which meets the entry requirements.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventReminderChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventReminderChancePercent_Description))]
+    public int EventReminderChancePercent { get; set; } = 50;
+
+    /// <summary>
     /// Gets or sets the chance, in percent, that a bot announces a started invasion with <c>/post</c>.
     /// </summary>
     [Range(0, 100)]
@@ -231,6 +240,17 @@ public class BotChatConfiguration
     [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventLines_Description))]
     public ICollection<BotChatLine> EventLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot in a town says in the normal chat when the entrance of a Blood
+    /// Castle, Devil Square or Chaos Castle opened. Placeholders: <c>{event}</c>, <c>{map}</c>,
+    /// <c>{location}</c>, <c>{level}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventReminderLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventReminderLines_Description))]
+    public ICollection<BotChatLine> EventReminderLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Gets or sets the lines a bot posts with <c>/post</c> when an invasion (White Wizard, Golden, Red Dragon)
@@ -475,6 +495,13 @@ public class BotChatConfiguration
             ("{event} soon, meet me at {location}", "zaraz {event}, zbiórka {location}"),
             ("anyone for {event}? waiting in {map}", "ktoś na {event}? czekam w {map}"),
             ("{event}! last call, {location}", "{event}! ostatnie wołanie, {location}"));
+        Add(
+            configuration.EventReminderLines,
+            ("{event} is open, anyone going?", "{event} otwarte, ktoś idzie?"),
+            ("{event} now, who's coming?", "{event} teraz, kto idzie?"),
+            ("guys, {event} is open", "ludzie, {event} otwarte"),
+            ("{event}! got a ticket, anyone?", "{event}! mam bilet, ktoś chętny?"),
+            ("{event} time :)", "czas na {event} :)"));
         Add(
             configuration.InvasionLines,
             ("{event} in {map}!", "{event} w {map}!"),

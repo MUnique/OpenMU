@@ -5490,5 +5490,17 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_ConversationJoinLines_Description text.</summary>
         public static string BotChatConfiguration_ConversationJoinLines_Description => ResourceManager.GetString("BotChatConfiguration_ConversationJoinLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_EventReminderChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_EventReminderChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_EventReminderChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_EventReminderChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_EventReminderChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_EventReminderChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_EventReminderLines_Name text.</summary>
+        public static string BotChatConfiguration_EventReminderLines_Name => ResourceManager.GetString("BotChatConfiguration_EventReminderLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_EventReminderLines_Description text.</summary>
+        public static string BotChatConfiguration_EventReminderLines_Description => ResourceManager.GetString("BotChatConfiguration_EventReminderLines_Description", resourceCulture)!;
+
     }
 }

@@ -101,6 +101,12 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) KilledDelaySeconds = (1, 2);
 
     /// <summary>
+    /// The delay range of an event reminder in town: the players read the server's own announcement
+    /// first.
+    /// </summary>
+    private static readonly (int Min, int Max) EventReminderDelaySeconds = (10, 40);
+
+    /// <summary>
     /// The delay range of a congratulation: the level-up or reset effect first, then the "gz".
     /// </summary>
     private static readonly (int Min, int Max) CongratulationDelaySeconds = (2, 5);
@@ -149,8 +155,18 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public ValueTask MiniGameEntranceOpenedAsync(MiniGameContext miniGame)
     {
+        if (this.Configuration is not { } reminderConfiguration
+            || miniGame.Definition.Type is not (MiniGameType.BloodCastle or MiniGameType.DevilSquare or MiniGameType.ChaosCastle))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        if (reminderConfiguration.EventReminderChancePercent > 0)
+        {
+            RunLater(miniGame.GameContext, RandomDelay(EventReminderDelaySeconds), () => this.RemindOfEventAsync(miniGame, reminderConfiguration));
+        }
+
         if (this.Configuration is not { EventPostChancePercent: > 0 } configuration
-            || miniGame.Definition.Type is not (MiniGameType.BloodCastle or MiniGameType.DevilSquare or MiniGameType.ChaosCastle)
             || !IsPostCommandActive(miniGame.GameContext))
         {
             return ValueTask.CompletedTask;
@@ -1196,6 +1212,42 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         values["player"] = _ => playerName;
         await BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture, toward: player).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Lets a bot in each town where a player stands remind of the opened event in the normal chat -
+    /// "bc open, anyone going?" - without a server-wide post. Like the post, only a bot which meets the
+    /// event's entry requirements says it, and only once per town and opening.
+    /// </summary>
+    private async ValueTask RemindOfEventAsync(MiniGameContext miniGame, BotChatConfiguration configuration)
+    {
+        var now = DateTime.UtcNow;
+        if (now >= miniGame.EnterEndsAtUtc)
+        {
+            return;
+        }
+
+        var definition = miniGame.Definition;
+        var throttle = this.GetThrottle(miniGame.GameContext);
+        var players = await miniGame.GameContext.GetPlayersAsync().ConfigureAwait(false);
+        var humansInTown = players.Where(p => p is not OfflinePlayer && p.PlayerState.CurrentState == PlayerState.EnteredWorld && IsInSafezone(p)).ToList();
+        foreach (var human in humansInTown)
+        {
+            if (human.CurrentMap is not { } map
+                || FindGreeter(players.Where(p => p is OfflinePlayer candidate && BotMiniGameHandler.IsEligible(candidate, definition, out _)), human, map) is not { } bot
+                || !this.MayTalkUnasked(bot, configuration)
+                || !throttle.TryReserveOccasion($"event reminder {definition.Type} {map.MapId}", now, miniGame.EnterEndsAtUtc - now)
+                || !Rand.NextRandomBool(configuration.EventReminderChancePercent)
+                || PickLine(configuration.EventReminderLines) is not { } line
+                || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
+            {
+                continue;
+            }
+
+            var values = CreateBotValues(bot);
+            values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
+            await BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture).ConfigureAwait(false);
+        }
     }
 
     private async ValueTask PostAboutEventAsync(MiniGameContext miniGame, BotChatConfiguration configuration)
