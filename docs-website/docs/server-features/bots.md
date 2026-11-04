@@ -372,7 +372,8 @@ party, thanks and goodbye.
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
 `{level}`, and `{player}` (whisper replies). Each line is a localized text, so
 every player sees the translation of their own language, or the English text
-when it has none.
+when it has none. The default lines come with a Polish translation, and the default
+keywords understand Polish whispers too.
 
 The limits keep a large population from flooding the chat. All bots of a game
 server share one gap between two posts (`Minimum time between posts`, 3 minutes),

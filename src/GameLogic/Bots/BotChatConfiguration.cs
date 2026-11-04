@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Globalization;
 using MUnique.OpenMU.DataModel.Composition;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Configuration of the <see cref="BotChatPlugIn"/>: what the server-side bots say, and how often.
@@ -133,99 +135,128 @@ public class BotChatConfiguration
     public ICollection<BotChatLine> Lines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
-    /// Creates the configuration a server starts with, including a small set of English lines.
+    /// Creates the configuration a server starts with: a set of English lines, each with a Polish
+    /// translation.
     /// </summary>
     /// <returns>The default configuration.</returns>
     /// <remarks>
     /// The lines are configuration data like the names of the seeded items, not texts of the game
-    /// logic: a server owner is expected to rewrite them and to add translations.
+    /// logic: a server owner is expected to rewrite them and to add translations. Event, map and item
+    /// names stay English in the Polish lines - the game data names them that way. The keywords hold
+    /// the Polish phrases with and without diacritics, since players often type without them.
     /// </remarks>
     public static BotChatConfiguration CreateDefault()
     {
         var configuration = new BotChatConfiguration();
         Add(
             BotChatSituation.EventEntranceOpened,
-            "{event} open, anyone going? im in {map}",
-            "lf party {event}, waiting in {map}",
-            "{event} now, who wants to join? {map}",
-            "going {event}, party anyone? at {map}");
+            ("{event} open, anyone going? im in {map}", "{event} otwarte, ktoś idzie? jestem w {map}"),
+            ("lf party {event}, waiting in {map}", "szukam grupy na {event}, czekam w {map}"),
+            ("{event} now, who wants to join? {map}", "{event} teraz, kto chętny? {map}"),
+            ("going {event}, party anyone? at {map}", "idę na {event}, ktoś do grupy? {map}"));
         Add(
             BotChatSituation.InvasionStarted,
-            "{event} in {map}!",
-            "{event} on {map}, go go",
-            "{map} - {event} started");
+            ("{event} in {map}!", "{event} w {map}!"),
+            ("{event} on {map}, go go", "{event} na {map}, lecimy"),
+            ("{map} - {event} started", "{map} - start: {event}"));
         Add(
             BotChatSituation.LevelMilestone,
-            "{level} finally :)",
-            "lvl {level}, nice",
-            "{level} done");
+            ("{level} finally :)", "{level} w końcu :)"),
+            ("lvl {level}, nice", "lvl {level}, nieźle"),
+            ("{level} done", "{level} wbite"));
         Add(
             BotChatSituation.WhisperReply,
-            "sry busy hunting",
-            "hi, cant talk now",
-            "hi, what's up?",
-            "afk a bit");
+            ("sry busy hunting", "sry, poluję"),
+            ("hi, cant talk now", "hej, nie mogę teraz gadać"),
+            ("hi, what's up?", "hej, co tam?"),
+            ("afk a bit", "chwilę afk"));
         Add(
             BotChatSituation.PlayerLogin,
-            "hi {player}, have a nice game",
-            "welcome back {player}",
-            "yo {player} :)",
-            "hey {player}");
+            ("hi {player}, have a nice game", "siema {player}, miłej gry"),
+            ("welcome back {player}", "witaj z powrotem {player}"),
+            ("yo {player} :)", "yo {player} :)"),
+            ("hey {player}", "hej {player}"));
         Add(
             BotChatSituation.PartyJoined,
-            "thx for invite",
-            "hi all",
-            "ty {player}",
-            "hey, lets go");
+            ("thx for invite", "dzięki za zaproszenie"),
+            ("hi all", "hej wszystkim"),
+            ("ty {player}", "dzięki {player}"),
+            ("hey, lets go", "hej, lecimy"));
         Add(
             BotChatSituation.EventFinished,
-            "gg",
-            "gg wp",
-            "gg, thx for party",
-            "nice run");
+            ("gg", "gg"),
+            ("gg wp", "gg wp"),
+            ("gg, thx for party", "gg, dzięki za grupę"),
+            ("nice run", "niezły run"));
         Add(
             BotChatSituation.KilledByPlayer,
-            "why??",
-            "wtf {player}",
-            "really?",
-            "ok {player}, remember that");
+            ("why??", "czemu??"),
+            ("wtf {player}", "wtf {player}"),
+            ("really?", "serio?"),
+            ("ok {player}, remember that", "ok {player}, zapamiętam"));
         Add(
             BotChatSituation.KilledAgainByPlayer,
-            "you again...",
-            "ok ok, i leave",
-            "{player} pls stop",
-            "enough, im out");
+            ("you again...", "znowu ty..."),
+            ("ok ok, i leave", "dobra dobra, idę stąd"),
+            ("{player} pls stop", "{player} weź przestań"),
+            ("enough, im out", "dość, spadam"));
         Add(
             BotChatSituation.SmallTalk,
-            "lf party {map}",
-            "lag?",
-            "need a party for exp",
-            "anyone up for bc later?",
-            "so many people today",
-            "gm online?");
-        AddReplies("how are you, how r u, how are u, hru, how's it going, how is it going", "fine, thanks for asking", "good, you?", "all good, just grinding");
-        AddReplies("hi, hello, hey, yo, hiho, sup", "hi, what's up?", "hey :)", "hello");
-        AddReplies("level, lvl, what level", "{level} now", "lvl {level}");
-        AddReplies("where are you, where r u, where", "{map}", "in {map}");
-        AddReplies("party, pt", "sure, invite me", "ok, send invite");
-        AddReplies("thanks, thank you, thx, ty", "np", "no problem");
-        AddReplies("bye, cya, see you, gn", "bye", "cya");
+            ("lf party {map}", "szukam grupy {map}"),
+            ("lag?", "lag?"),
+            ("need a party for exp", "potrzebna grupa na expa"),
+            ("anyone up for bc later?", "ktoś na bc później?"),
+            ("so many people today", "dużo ludzi dzisiaj"),
+            ("gm online?", "jest gm?"));
+        AddReplies(
+            "how are you, how r u, how are u, hru, how's it going, how is it going, jak sie masz, jak się masz, co slychac, co słychać, co tam",
+            ("fine, thanks for asking", "dobrze, dzięki że pytasz"),
+            ("good, you?", "spoko, a ty?"),
+            ("all good, just grinding", "wszystko ok, expię"));
+        AddReplies(
+            "hi, hello, hey, yo, hiho, sup, siema, czesc, cześć, hej, elo, witam",
+            ("hi, what's up?", "hej, co tam?"),
+            ("hey :)", "hej :)"),
+            ("hello", "siema"));
+        AddReplies(
+            "level, lvl, what level, poziom, jaki lvl, jaki poziom",
+            ("{level} now", "{level} teraz"),
+            ("lvl {level}", "lvl {level}"));
+        AddReplies(
+            "where are you, where r u, where, gdzie jestes, gdzie jesteś, gdzie",
+            ("{map}", "{map}"),
+            ("in {map}", "w {map}"));
+        AddReplies(
+            "party, pt, grupa, grupe, grupę, do grupy",
+            ("sure, invite me", "jasne, zaproś mnie"),
+            ("ok, send invite", "ok, wysyłaj zaproszenie"));
+        AddReplies(
+            "thanks, thank you, thx, ty, dzieki, dzięki, dziekuje, dziękuję",
+            ("np", "np"),
+            ("no problem", "nie ma sprawy"));
+        AddReplies(
+            "bye, cya, see you, gn, nara, pa, do zobaczenia, dobranoc",
+            ("bye", "nara"),
+            ("cya", "na razie"));
         return configuration;
 
-        void Add(BotChatSituation situation, params string[] texts)
+        void Add(BotChatSituation situation, params (string English, string Polish)[] texts)
         {
             foreach (var text in texts)
             {
-                configuration.Lines.Add(new BotChatLine { Situation = situation, Text = text });
+                configuration.Lines.Add(new BotChatLine { Situation = situation, Text = Translated(text) });
             }
         }
 
-        void AddReplies(string keywords, params string[] texts)
+        void AddReplies(string keywords, params (string English, string Polish)[] texts)
         {
             foreach (var text in texts)
             {
-                configuration.Lines.Add(new BotChatLine { Situation = BotChatSituation.WhisperReply, Text = text, Keywords = keywords });
+                configuration.Lines.Add(new BotChatLine { Situation = BotChatSituation.WhisperReply, Text = Translated(text), Keywords = keywords });
             }
         }
+
+        static LocalizedString Translated((string English, string Polish) text)
+            => new LocalizedString(text.English).WithTranslation(CultureInfo.GetCultureInfo("pl"), text.Polish);
     }
 }
