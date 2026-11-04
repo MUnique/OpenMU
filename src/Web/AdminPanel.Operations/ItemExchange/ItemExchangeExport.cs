@@ -56,8 +56,8 @@ public static class ItemExchangeExport
     /// </summary>
     internal static IReadOnlyList<ItemExchangeField> Fields { get; } =
     [
-        new("width", (writer, item) => WriteUnlessZero(writer, "width", item.Width)),
-        new("height", (writer, item) => WriteUnlessZero(writer, "height", item.Height)),
+        NumberField("width", item => item.Width),
+        NumberField("height", item => item.Height),
     ];
 
     /// <summary>
@@ -158,16 +158,21 @@ public static class ItemExchangeExport
     }
 
     /// <summary>
-    /// Writes a number field, unless it's 0, the client's default, which its files leave out.
+    /// Creates a number field, which is left out when it's 0, the client's default, as the
+    /// client's files leave it out.
     /// </summary>
-    /// <param name="writer">The writer of the item.</param>
-    /// <param name="key">The client's key of the field.</param>
-    /// <param name="value">The value.</param>
-    private static void WriteUnlessZero(Utf8JsonWriter writer, string key, int value)
+    /// <param name="key">The client's key of the field, which the file lists and the items carry.</param>
+    /// <param name="value">Gets the field's value of an item.</param>
+    /// <returns>The field.</returns>
+    private static ItemExchangeField NumberField(string key, Func<ItemDefinition, int> value)
     {
-        if (value != 0)
+        return new(key, (writer, item) =>
         {
-            writer.WriteNumber(key, value);
-        }
+            var number = value(item);
+            if (number != 0)
+            {
+                writer.WriteNumber(key, number);
+            }
+        });
     }
 }
