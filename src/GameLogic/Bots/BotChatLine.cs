@@ -29,6 +29,19 @@ public class BotChatLine
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_Text_Name), Description = nameof(PlugInResources.BotChatLine_Text_Description))]
     public LocalizedString Text { get; set; }
 
+    /// <summary>
+    /// Gets or sets the comma-separated words or phrases of a player's whisper this line answers,
+    /// e.g. <c>how are you, how r u</c>. Only used for <see cref="BotChatSituation.WhisperReply"/>;
+    /// a reply without keywords is the fallback when no keyword matches.
+    /// </summary>
+    /// <remarks>
+    /// The keywords are compared as whole words, ignoring case and punctuation, so <c>hi</c> doesn't
+    /// match "this". They may be written in several languages at once - the whisper's language is
+    /// not known.
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_Keywords_Name), Description = nameof(PlugInResources.BotChatLine_Keywords_Description))]
+    public string Keywords { get; set; } = string.Empty;
+
     /// <inheritdoc />
     public override string ToString() => $"{this.Situation}: {this.Text.ValueInNeutralLanguage}";
 }

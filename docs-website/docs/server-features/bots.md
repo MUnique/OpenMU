@@ -335,7 +335,7 @@ model. A bot only talks about what it could actually do:
 | A Blood Castle, Devil Square or Chaos Castle entrance opened | `/post`, then it waits for players | a bot which meets that event's entry requirements — the same check that lets it follow a leader in |
 | An invasion (White Wizard, Golden, Red Dragon) started | `/post` | a bot which may warp to the invaded map |
 | A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
-| A player whispered to the bot | whisper back, after a few seconds | the bot |
+| A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
 
 A bot which posts about an event does not stay out hunting where nobody
 could find it. It goes to the meeting point and waits there until the entrance
@@ -347,6 +347,14 @@ invites it and enters the event takes it along like any party bot. If nobody
 invites it, it goes back to hunting when the entrance closes. A bot does not
 announce an event whose entrance closes in less than two minutes, and a bot
 already in a party with a player does not look for company.
+
+A whisper reply can carry `Keywords`, a comma-separated list of words or
+phrases it answers (`how are you, how r u`). The bot picks among the replies
+whose keyword matches the whisper — whole words, ignoring case and punctuation,
+the longest match winning, so "hi, how are you?" gets an answer to the question
+rather than a greeting. When nothing matches, it uses a reply without keywords.
+The default lines cover greetings, "how are you", the level, where the bot is,
+party, thanks and goodbye.
 
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
 `{level}`, and `{player}` (whisper replies). Each line is a localized text, so
