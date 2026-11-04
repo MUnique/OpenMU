@@ -176,6 +176,23 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A bot remembers the players it was in a party with - and only those.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask RemembersPartyCompanionsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var throttle = new BotChatThrottle();
+
+        throttle.RememberFriends(bot, ["Hero", "Mage"]);
+
+        Assert.That(throttle.IsFriend(bot, "Hero"), Is.True);
+        Assert.That(throttle.IsFriend(bot, "Stranger"), Is.False);
+    }
+
+    /// <summary>
     /// The chat and whisper reply cooldowns belong to one bot; another bot may still talk, and the
     /// two cooldowns don't block each other.
     /// </summary>

@@ -2037,4 +2037,6 @@
   <data name="BotChatConfiguration_RareDropLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player's kill dropped an excellent or ancient item. Placeholders: {player}, {item}, {map}.</value></data>
   <data name="BotChatConfiguration_NotableMonsterLines_Name" xml:space="preserve"><value>Notable monster call-outs</value></data>
   <data name="BotChatConfiguration_NotableMonsterLines_Description" xml:space="preserve"><value>Said by a bot when a notable monster appeared near it. Placeholders: {monster}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_FriendLines_Name" xml:space="preserve"><value>Old party companions</value></data>
+  <data name="BotChatConfiguration_FriendLines_Description" xml:space="preserve"><value>Said to a player the bot was in a party with before - instead of a greeting when the player enters the game, and instead of the party lines when the player invites it again. Remembered until the server restarts. Placeholders: {player}, {level}, {map}.</value></data>
 </root>

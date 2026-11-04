@@ -348,6 +348,7 @@ only talks about what it could actually do:
 | A player leveled up or made a reset | normal chat, "gz", `{player}`, `{level}`, `{resets}` | the nearest bot which sees the player — 30 % chance, once per player in 10 minutes |
 | A player's kill dropped an excellent or ancient item | normal chat ("nice drop!"), `{item}` | the nearest bot - 50 % chance |
 | A golden monster, the Red Dragon or the White Wizard appeared near a bot | normal chat ("Golden Goblin here!"), `{monster}` | the nearest bot, while a player sees it - once per map and monster in two minutes |
+| A player the bot was in a party with before enters the game or invites it again | normal / party chat ("good to see you again"), `{player}` | the bot - it remembers its party companions until the server restarts, and a companion nearby greets first |
 | The bot accepted a player's party invitation | party chat, `{player}` | the bot |
 | An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |

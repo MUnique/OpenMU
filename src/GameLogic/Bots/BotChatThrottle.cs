@@ -63,6 +63,8 @@ internal sealed class BotChatThrottle
 
     private readonly List<(Player First, Player Second, DateTime Until)> _recentConversations = [];
 
+    private readonly ConditionalWeakTable<Player, HashSet<string>> _friends = new();
+
     private long _nextPlayerScanTicks;
 
     private long _nextPostTicks;
@@ -412,6 +414,39 @@ internal sealed class BotChatThrottle
             var conversation = this._recentConversations[index];
             this._recentConversations.RemoveAt(index);
             return (conversation.First, conversation.Second);
+        }
+    }
+
+    /// <summary>
+    /// Remembers that the bot was in a party with the players - until the server restarts.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="characterNames">The names of the players' characters.</param>
+    public void RememberFriends(Player bot, IEnumerable<string> characterNames)
+    {
+        var friends = this._friends.GetOrCreateValue(bot);
+        lock (friends)
+        {
+            friends.UnionWith(characterNames);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the bot was in a party with the player before.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="characterName">The name of the player's character.</param>
+    /// <returns><c>true</c>, if the bot knows the player.</returns>
+    public bool IsFriend(Player bot, string characterName)
+    {
+        if (!this._friends.TryGetValue(bot, out var friends))
+        {
+            return false;
+        }
+
+        lock (friends)
+        {
+            return friends.Contains(characterName);
         }
     }
 
