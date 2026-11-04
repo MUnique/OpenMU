@@ -22,7 +22,6 @@ public static class AttackableExtensions
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
     private const short StunnedMagicEffectNumber = 61;     // 0x3D
 
-    private const double ShieldRatio = 0.90;
     private const double HitShockChance = 0.25;
     private const int HitShockDamageThreshold = 5;
 
@@ -342,7 +341,7 @@ public static class AttackableExtensions
             return new HitInfo(damage, 0, attributes, manaToll, petDamage, skill, triggersHitShock);
         }
 
-        var shieldRatio = ShieldRatio;
+        var shieldRatio = 0.90;
         shieldRatio -= attacker.Attributes[Stats.ShieldDecreaseRateIncrease];
         shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
