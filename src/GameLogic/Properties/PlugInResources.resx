@@ -1851,4 +1851,30 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
   </data>
+  <data name="BotChatPlugIn_Name" xml:space="preserve"><value>Bot chat</value></data>
+  <data name="BotChatPlugIn_Description" xml:space="preserve"><value>Lets server-side bots talk: they announce events and invasions with /post, comment on level milestones and answer whispers, using configurable lines.</value></data>
+  <data name="BotChatLine_Situation_Name" xml:space="preserve"><value>Situation</value></data>
+  <data name="BotChatLine_Situation_Description" xml:space="preserve"><value>When the line may be said.</value></data>
+  <data name="BotChatLine_Text_Name" xml:space="preserve"><value>Text</value></data>
+  <data name="BotChatLine_Text_Description" xml:space="preserve"><value>What the bot says. Placeholders: {event}, {map}, {level}, {player} - the documentation lists which situation offers which.</value></data>
+  <data name="BotChatConfiguration_EventPostChancePercent_Name" xml:space="preserve"><value>Event post chance (%)</value></data>
+  <data name="BotChatConfiguration_EventPostChancePercent_Description" xml:space="preserve"><value>Chance that a bot which meets the entry requirements announces an opened Blood Castle, Devil Square or Chaos Castle with /post. Rolled once per event type and opening. 0 = never.</value></data>
+  <data name="BotChatConfiguration_InvasionPostChancePercent_Name" xml:space="preserve"><value>Invasion post chance (%)</value></data>
+  <data name="BotChatConfiguration_InvasionPostChancePercent_Description" xml:space="preserve"><value>Chance that a bot which may warp to the invaded map announces a started invasion with /post. 0 = never.</value></data>
+  <data name="BotChatConfiguration_MinTimeBetweenPosts_Name" xml:space="preserve"><value>Minimum time between posts</value></data>
+  <data name="BotChatConfiguration_MinTimeBetweenPosts_Description" xml:space="preserve"><value>Minimum time between two /post messages of bots on one game server.</value></data>
+  <data name="BotChatConfiguration_MaxPostDelay_Name" xml:space="preserve"><value>Maximum post delay</value></data>
+  <data name="BotChatConfiguration_MaxPostDelay_Description" xml:space="preserve"><value>A bot waits a random time up to this value before it posts about an event.</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneStep_Name" xml:space="preserve"><value>Level milestone step</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneStep_Description" xml:space="preserve"><value>Every how many levels a bot may comment on its level-up. 0 = never.</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneChancePercent_Name" xml:space="preserve"><value>Level milestone chance (%)</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneChancePercent_Description" xml:space="preserve"><value>Chance that a bot comments on reaching a level milestone, in the normal chat.</value></data>
+  <data name="BotChatConfiguration_BotChatCooldown_Name" xml:space="preserve"><value>Chat cooldown per bot</value></data>
+  <data name="BotChatConfiguration_BotChatCooldown_Description" xml:space="preserve"><value>Minimum time between two normal chat lines of the same bot.</value></data>
+  <data name="BotChatConfiguration_WhisperReplyChancePercent_Name" xml:space="preserve"><value>Whisper reply chance (%)</value></data>
+  <data name="BotChatConfiguration_WhisperReplyChancePercent_Description" xml:space="preserve"><value>Chance that a bot answers a whisper of a player. 0 = never.</value></data>
+  <data name="BotChatConfiguration_WhisperReplyCooldown_Name" xml:space="preserve"><value>Whisper reply cooldown</value></data>
+  <data name="BotChatConfiguration_WhisperReplyCooldown_Description" xml:space="preserve"><value>Minimum time between two whisper replies of the same bot.</value></data>
+  <data name="BotChatConfiguration_Lines_Name" xml:space="preserve"><value>Lines</value></data>
+  <data name="BotChatConfiguration_Lines_Description" xml:space="preserve"><value>The lines the bots choose from, per situation. A situation without lines stays silent.</value></data>
 </root>
