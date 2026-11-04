@@ -2740,6 +2740,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Custom Craftings.
+        /// </summary>
+        public static string CustomCraftings {
+            get {
+                return ResourceManager.GetString("CustomCraftings", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Dashboard.
         /// </summary>
         public static string Dashboard {

@@ -2,6 +2,7 @@
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Configuration.Items
 @using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Pages
 
 <li class="nav-item px-3 dropdown@(this._expandGameConfig ? " expanded" : "")">
     <a class="nav-link dropdown-toggle" href="" role="button" aria-haspopup="true" aria-expanded="@(this._expandGameConfig)" @onclick="ToggleGameConfig" @onclick:preventDefault="true">
@@ -27,7 +28,7 @@
         <NavLink class="dropdown-item" href="edit-item-drops" @onclick="() => NavigationHistory.Clear()">@Resources.ItemDrops</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.MiniGames</NavLink>
-        <NavLink class="dropdown-item" href="edit-config/custom-craftings" @onclick="() => NavigationHistory.Clear()">@Resources.ResourceManager.GetString("CustomCraftings")</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(CustomCraftingsDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.CustomCraftings</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
         <hr class="dropdown-divider"/>
