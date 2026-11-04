@@ -339,6 +339,8 @@ only talks about what it could actually do:
 | A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
 | A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
 | A player leveled up or made a reset | normal chat, "gz", `{player}`, `{level}`, `{resets}` | the nearest bot which sees the player — 30 % chance, once per player in 10 minutes |
+| A player's kill dropped an excellent or ancient item | normal chat ("nice drop!"), `{item}` | the nearest bot - 50 % chance |
+| A golden monster, the Red Dragon or the White Wizard appeared near a bot | normal chat ("Golden Goblin here!"), `{monster}` | the nearest bot, while a player sees it - once per map and monster in two minutes |
 | The bot accepted a player's party invitation | party chat, `{player}` | the bot |
 | An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
