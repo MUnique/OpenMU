@@ -581,9 +581,11 @@ public class BotChatConfiguration
             ("np", "np"),
             ("no problem", "nie ma sprawy"));
         AddReplies(
-            "bye, cya, see you, gn, nara, pa, do zobaczenia, dobranoc",
+            "bye, cya, see you, see ya, gn, gtg, g2g, got to go, gotta go, have to go, must go, i'm off, im off, logging off, nara, pa, papa, do zobaczenia, dobranoc, na razie, musze konczyc, muszę kończyć, koncze, kończę, musze isc, muszę iść, spadam, zmykam, lece, lecę, do jutra",
             ("bye", "nara"),
-            ("cya", "na razie"));
+            ("cya", "na razie"),
+            ("ok, see you later", "ok, do później"),
+            ("take care", "trzymaj się"));
         return configuration;
 
         void Add(ICollection<BotChatLine> lines, params (string English, string Polish)[] texts)

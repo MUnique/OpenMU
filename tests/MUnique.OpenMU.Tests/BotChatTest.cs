@@ -381,6 +381,24 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// The default replies understand a player saying goodbye in Polish and English, with and
+    /// without diacritics - "muszę kończyć" is not answered with "busy hunting".
+    /// </summary>
+    /// <param name="message">The whispered message.</param>
+    [TestCase("musze konczyc")]
+    [TestCase("Muszę kończyć, nara")]
+    [TestCase("gtg, cya")]
+    [TestCase("ok spadam")]
+    public void DefaultRepliesUnderstandGoodbyes(string message)
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+
+        var reply = BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, _ => 0);
+
+        Assert.That(reply?.Keywords, Does.Contain("musze konczyc"));
+    }
+
+    /// <summary>
     /// A server which switches the plugin on has something to say in every situation: each list of
     /// the default configuration has lines.
     /// </summary>
