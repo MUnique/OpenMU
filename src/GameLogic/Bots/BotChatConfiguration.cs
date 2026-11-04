@@ -151,17 +151,20 @@ public class BotChatConfiguration
     public int KilledByPlayerChancePercent { get; set; } = 70;
 
     /// <summary>
-    /// Gets or sets how often a bot in a safezone may make small talk, per game server.
+    /// Gets or sets how often a bot standing in a safezone may advertise like a merchant (see
+    /// <see cref="MerchantLines"/>), per game server.
     /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_SmallTalkInterval_Name), Description = nameof(PlugInResources.BotChatConfiguration_SmallTalkInterval_Description))]
-    public TimeSpan SmallTalkInterval { get; set; } = TimeSpan.FromMinutes(10);
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantTalkInterval_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantTalkInterval_Description))]
+    public TimeSpan MerchantTalkInterval { get; set; } = TimeSpan.FromMinutes(10);
 
     /// <summary>
-    /// Gets or sets the chance, in percent, that a bot makes small talk when the interval is over.
+    /// Gets or sets the chance, in percent, that a bot advertises when the interval is over. 0 by
+    /// default: the lines are meant for a merchant bot which doesn't exist yet - the conversations
+    /// (see <see cref="Conversations"/>) took the place of the lone small talk.
     /// </summary>
     [Range(0, 100)]
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_SmallTalkChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_SmallTalkChancePercent_Description))]
-    public int SmallTalkChancePercent { get; set; } = 50;
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantTalkChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantTalkChancePercent_Description))]
+    public int MerchantTalkChancePercent { get; set; }
 
     /// <summary>
     /// Gets or sets how often a human player may overhear a conversation of two bots near them (see
@@ -309,13 +312,14 @@ public class BotChatConfiguration
     public ICollection<BotChatLine> KilledAgainLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
-    /// Gets or sets the lines a bot standing in a safezone says now and then in the normal chat (see
-    /// <see cref="SmallTalkInterval"/>) - only when a player sees it. Placeholders: <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// Gets or sets the lines a bot standing in a safezone advertises like a merchant, now and then
+    /// (see <see cref="MerchantTalkInterval"/>) - only when a player sees it.
+    /// Placeholders: <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_SmallTalkLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_SmallTalkLines_Description))]
-    public ICollection<BotChatLine> SmallTalkLines { get; set; } = new List<BotChatLine>();
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantLines_Description))]
+    public ICollection<BotChatLine> MerchantLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Gets or sets the conversations two bots near a player have now and then: one bot says the
@@ -397,13 +401,13 @@ public class BotChatConfiguration
             ("{player} pls stop", "{player} weź przestań"),
             ("enough, im out", "dość, spadam"));
         Add(
-            configuration.SmallTalkLines,
-            ("lf party {map}", "szukam grupy {map}"),
-            ("lag?", "lag?"),
-            ("need a party for exp", "potrzebna grupa na expa"),
-            ("anyone up for bc later?", "ktoś na bc później?"),
-            ("so many people today", "dużo ludzi dzisiaj"),
-            ("gm online?", "jest gm?"));
+            configuration.MerchantLines,
+            ("selling potions, cheap! {location}", "sprzedam potki, tanio! {location}"),
+            ("buying jewels of bless, whisper me", "kupię jewele bless, pisz pw"),
+            ("selling +9 weapons, good price, {location}", "sprzedam bronie +9, dobra cena, {location}"),
+            ("trade? whisper me, i'm at {location}", "handel? pisz pw, stoję w {location}"),
+            ("buying wings, paying well", "kupię skrzydła, dobrze płacę"),
+            ("jewels for sale, come to {location}", "jewele na sprzedaż, zapraszam do {location}"));
         Add(
             configuration.PartyVolunteerLines,
             ("me? {level} {class}", "ja? {level} {class}"),

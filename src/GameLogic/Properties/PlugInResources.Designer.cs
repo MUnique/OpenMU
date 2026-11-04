@@ -4705,18 +4705,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_KilledByPlayerChancePercent_Description text.</summary>
         public static string BotChatConfiguration_KilledByPlayerChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_KilledByPlayerChancePercent_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotChatConfiguration_SmallTalkInterval_Name text.</summary>
-        public static string BotChatConfiguration_SmallTalkInterval_Name => ResourceManager.GetString("BotChatConfiguration_SmallTalkInterval_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotChatConfiguration_SmallTalkInterval_Description text.</summary>
-        public static string BotChatConfiguration_SmallTalkInterval_Description => ResourceManager.GetString("BotChatConfiguration_SmallTalkInterval_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotChatConfiguration_SmallTalkChancePercent_Name text.</summary>
-        public static string BotChatConfiguration_SmallTalkChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_SmallTalkChancePercent_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotChatConfiguration_SmallTalkChancePercent_Description text.</summary>
-        public static string BotChatConfiguration_SmallTalkChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_SmallTalkChancePercent_Description", resourceCulture)!;
-
         /// <summary>Gets the localized BotSkillProgressionPlugIn_Name text.</summary>
         public static string BotSkillProgressionPlugIn_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture)!;
 
@@ -5274,12 +5262,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_KilledAgainLines_Description text.</summary>
         public static string BotChatConfiguration_KilledAgainLines_Description => ResourceManager.GetString("BotChatConfiguration_KilledAgainLines_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotChatConfiguration_SmallTalkLines_Name text.</summary>
-        public static string BotChatConfiguration_SmallTalkLines_Name => ResourceManager.GetString("BotChatConfiguration_SmallTalkLines_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotChatConfiguration_SmallTalkLines_Description text.</summary>
-        public static string BotChatConfiguration_SmallTalkLines_Description => ResourceManager.GetString("BotChatConfiguration_SmallTalkLines_Description", resourceCulture)!;
-
         /// <summary>Gets the localized BotChatConfiguration_PartyVolunteerCount_Name text.</summary>
         public static string BotChatConfiguration_PartyVolunteerCount_Name => ResourceManager.GetString("BotChatConfiguration_PartyVolunteerCount_Name", resourceCulture)!;
 
@@ -5387,6 +5369,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized BotConversation_Where_Description text.</summary>
         public static string BotConversation_Where_Description => ResourceManager.GetString("BotConversation_Where_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantTalkInterval_Name text.</summary>
+        public static string BotChatConfiguration_MerchantTalkInterval_Name => ResourceManager.GetString("BotChatConfiguration_MerchantTalkInterval_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantTalkInterval_Description text.</summary>
+        public static string BotChatConfiguration_MerchantTalkInterval_Description => ResourceManager.GetString("BotChatConfiguration_MerchantTalkInterval_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantTalkChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_MerchantTalkChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_MerchantTalkChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantTalkChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_MerchantTalkChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_MerchantTalkChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantLines_Name text.</summary>
+        public static string BotChatConfiguration_MerchantLines_Name => ResourceManager.GetString("BotChatConfiguration_MerchantLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantLines_Description text.</summary>
+        public static string BotChatConfiguration_MerchantLines_Description => ResourceManager.GetString("BotChatConfiguration_MerchantLines_Description", resourceCulture)!;
 
     }
 }

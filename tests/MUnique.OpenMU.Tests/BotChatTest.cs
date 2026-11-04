@@ -57,16 +57,16 @@ public class BotChatTest
     /// while the bots log in - and a forced start from the admin panel makes it due at once.
     /// </summary>
     [Test]
-    public void SmallTalkFollowsTheIntervalOrAForcedStart()
+    public void MerchantTalkFollowsTheIntervalOrAForcedStart()
     {
         var throttle = new BotChatThrottle();
         var interval = TimeSpan.FromMinutes(10);
 
-        Assert.That(throttle.TryStartSmallTalk(Start, interval, 0), Is.False);
-        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(10), interval, 0), Is.True);
-        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(11), interval, 0), Is.False);
-        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(11), interval, 1), Is.True);
-        Assert.That(throttle.TryStartSmallTalk(Start.AddMinutes(12), interval, 1), Is.False);
+        Assert.That(throttle.TryStartMerchantTalk(Start, interval, 0), Is.False);
+        Assert.That(throttle.TryStartMerchantTalk(Start.AddMinutes(10), interval, 0), Is.True);
+        Assert.That(throttle.TryStartMerchantTalk(Start.AddMinutes(11), interval, 0), Is.False);
+        Assert.That(throttle.TryStartMerchantTalk(Start.AddMinutes(11), interval, 1), Is.True);
+        Assert.That(throttle.TryStartMerchantTalk(Start.AddMinutes(12), interval, 1), Is.False);
     }
 
     /// <summary>

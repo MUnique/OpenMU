@@ -1927,10 +1927,6 @@
   <data name="BotChatConfiguration_PartyChatChancePercent_Description" xml:space="preserve"><value>Chance that a bot says something in the party chat of a player: thanks for the invitation, "gg" after an event. 0 = never.</value></data>
   <data name="BotChatConfiguration_KilledByPlayerChancePercent_Name" xml:space="preserve"><value>Killed by a player chance (%)</value></data>
   <data name="BotChatConfiguration_KilledByPlayerChancePercent_Description" xml:space="preserve"><value>Chance that a bot killed by a player (outside of an event) says something about it in the normal chat, before it respawns. 0 = never.</value></data>
-  <data name="BotChatConfiguration_SmallTalkInterval_Name" xml:space="preserve"><value>Small talk interval</value></data>
-  <data name="BotChatConfiguration_SmallTalkInterval_Description" xml:space="preserve"><value>How often a bot standing in a safezone may say something in the normal chat, per game server. Only a bot which a player sees talks.</value></data>
-  <data name="BotChatConfiguration_SmallTalkChancePercent_Name" xml:space="preserve"><value>Small talk chance (%)</value></data>
-  <data name="BotChatConfiguration_SmallTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot makes small talk when the interval is over. 0 = never.</value></data>
   <data name="BotChatReply_Keywords_Name" xml:space="preserve"><value>Keywords</value></data>
   <data name="BotChatReply_Keywords_Description" xml:space="preserve"><value>Comma-separated words or phrases of a player's message which this reply answers, e.g. "how are you, how r u". Whole words, case and punctuation are ignored. Replies without keywords are used when nothing matches.</value></data>
   <data name="BotChatConfiguration_EventLines_Name" xml:space="preserve"><value>Event lines</value></data>
@@ -1951,8 +1947,6 @@
   <data name="BotChatConfiguration_KilledLines_Description" xml:space="preserve"><value>Said in the normal chat when a player killed the bot outside of an event. Placeholders: {player} (the killer), {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
   <data name="BotChatConfiguration_KilledAgainLines_Name" xml:space="preserve"><value>Killed again</value></data>
   <data name="BotChatConfiguration_KilledAgainLines_Description" xml:space="preserve"><value>Said instead of the "Killed by a player" lines when the same player killed the bot again within a short time. Placeholders: {player}, {level}, {map}, {location}.</value></data>
-  <data name="BotChatConfiguration_SmallTalkLines_Name" xml:space="preserve"><value>Small talk</value></data>
-  <data name="BotChatConfiguration_SmallTalkLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot standing in a safezone which a player sees. Placeholders: {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
   <data name="BotChatConfiguration_PartyVolunteerCount_Name" xml:space="preserve"><value>Party search: answering bots</value></data>
   <data name="BotChatConfiguration_PartyVolunteerCount_Description" xml:space="preserve"><value>How many bots whisper to a player who searches party members with /post, e.g. "/post party 300-350 bk dw". The same search posted again is answered by other bots. 0 = off.</value></data>
   <data name="BotChatConfiguration_PartyRequestKeywords_Name" xml:space="preserve"><value>Party search: keywords</value></data>
@@ -1989,4 +1983,10 @@
   <data name="BotConversation_Reply_Description" xml:space="preserve"><value>What the second bot answers, a few seconds later.</value></data>
   <data name="BotConversation_Where_Name" xml:space="preserve"><value>Where</value></data>
   <data name="BotConversation_Where_Description" xml:space="preserve"><value>Where the bots may have this conversation: Town (both in a safezone), Hunting (both outside of it) or Anywhere.</value></data>
+  <data name="BotChatConfiguration_MerchantTalkInterval_Name" xml:space="preserve"><value>Merchant adverts: interval</value></data>
+  <data name="BotChatConfiguration_MerchantTalkInterval_Description" xml:space="preserve"><value>How often a bot standing in a safezone may advertise like a merchant, per game server. Only when a player sees it.</value></data>
+  <data name="BotChatConfiguration_MerchantTalkChancePercent_Name" xml:space="preserve"><value>Merchant adverts: chance (%)</value></data>
+  <data name="BotChatConfiguration_MerchantTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot advertises when the interval is over. 0 (default) = never: the lines are meant for a future merchant bot.</value></data>
+  <data name="BotChatConfiguration_MerchantLines_Name" xml:space="preserve"><value>Merchant adverts</value></data>
+  <data name="BotChatConfiguration_MerchantLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot standing in a safezone, like a merchant advertising. Off by default. Placeholders: {level}, {map}, {location}.</value></data>
 </root>

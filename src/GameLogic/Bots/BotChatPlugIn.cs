@@ -121,7 +121,7 @@ public class BotChatPlugIn
 
     /// <summary>
     /// The number of calls of <see cref="ForceStart"/>; a server which didn't see the current number
-    /// yet makes its small talk without waiting for the interval.
+    /// yet lets a bot advertise like a merchant without waiting for the interval.
     /// </summary>
     private int _forceStartCount;
 
@@ -380,7 +380,7 @@ public class BotChatPlugIn
             return;
         }
 
-        await this.MakeSmallTalkAsync(gameContext, configuration).ConfigureAwait(false);
+        await this.MakeMerchantTalkAsync(gameContext, configuration).ConfigureAwait(false);
         await this.HoldConversationsAsync(gameContext, configuration).ConfigureAwait(false);
     }
 
@@ -717,11 +717,11 @@ public class BotChatPlugIn
                 ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values)
                 : ValueTask.CompletedTask);
 
-    private async ValueTask MakeSmallTalkAsync(GameContext gameContext, BotChatConfiguration configuration)
+    private async ValueTask MakeMerchantTalkAsync(GameContext gameContext, BotChatConfiguration configuration)
     {
-        if (configuration.SmallTalkChancePercent <= 0
-            || !this.GetThrottle(gameContext).TryStartSmallTalk(DateTime.UtcNow, configuration.SmallTalkInterval, Volatile.Read(ref this._forceStartCount))
-            || !Rand.NextRandomBool(configuration.SmallTalkChancePercent))
+        if (configuration.MerchantTalkChancePercent <= 0
+            || !this.GetThrottle(gameContext).TryStartMerchantTalk(DateTime.UtcNow, configuration.MerchantTalkInterval, Volatile.Read(ref this._forceStartCount))
+            || !Rand.NextRandomBool(configuration.MerchantTalkChancePercent))
         {
             return;
         }
@@ -738,7 +738,7 @@ public class BotChatPlugIn
         }
 
         if (candidates.Count == 0
-            || PickLine(configuration.SmallTalkLines) is not { } line)
+            || PickLine(configuration.MerchantLines) is not { } line)
         {
             return;
         }

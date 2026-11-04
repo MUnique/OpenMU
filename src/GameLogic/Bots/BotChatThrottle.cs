@@ -20,10 +20,10 @@ using System.Threading;
 internal sealed class BotChatThrottle
 {
     /// <summary>
-    /// The shortest gap between two small talks, so an interval of zero doesn't make the bots talk
+    /// The shortest gap between two merchant adverts, so an interval of zero doesn't make the bots talk
     /// every second.
     /// </summary>
-    private static readonly TimeSpan MinimumSmallTalkInterval = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan MinimumMerchantTalkInterval = TimeSpan.FromSeconds(10);
 
     /// <summary>
     /// How long the bots remember whom they answered a party search of: the same search posted again
@@ -41,7 +41,7 @@ internal sealed class BotChatThrottle
 
     private readonly ConditionalWeakTable<Player, BotCooldowns> _bots = new();
 
-    private readonly Lock _smallTalkLock = new();
+    private readonly Lock _merchantTalkLock = new();
 
     private readonly ConditionalWeakTable<Player, BotPartyOffer> _partyOffers = new();
 
@@ -57,7 +57,7 @@ internal sealed class BotChatThrottle
 
     private long _nextPostTicks;
 
-    private DateTime _nextSmallTalkUtc;
+    private DateTime _nextMerchantTalkUtc;
 
     private int _handledForceStartCount;
 
@@ -121,30 +121,30 @@ internal sealed class BotChatThrottle
         => TryReserve(ref this._bots.GetOrCreateValue(bot).NextWhisperReplyTicks, now, cooldown);
 
     /// <summary>
-    /// Determines whether the next small talk of this server is due, and if so, schedules the one
+    /// Determines whether the next merchant advert of this server is due, and if so, schedules the one
     /// after it. A forced start (from the admin panel) makes it due at once.
     /// </summary>
     /// <param name="now">The current time.</param>
-    /// <param name="interval">The configured interval between two small talks.</param>
+    /// <param name="interval">The configured interval between two merchant adverts.</param>
     /// <param name="forceStartCount">The current number of forced starts of the plugin.</param>
-    /// <returns><c>true</c>, if a bot may make small talk now.</returns>
-    public bool TryStartSmallTalk(DateTime now, TimeSpan interval, int forceStartCount)
+    /// <returns><c>true</c>, if a bot may advertise now.</returns>
+    public bool TryStartMerchantTalk(DateTime now, TimeSpan interval, int forceStartCount)
     {
-        lock (this._smallTalkLock)
+        lock (this._merchantTalkLock)
         {
-            if (this._nextSmallTalkUtc == default)
+            if (this._nextMerchantTalkUtc == default)
             {
                 // A freshly started server waits one interval first - the bots are just logging in.
-                this._nextSmallTalkUtc = now + interval;
+                this._nextMerchantTalkUtc = now + interval;
             }
 
-            if (now < this._nextSmallTalkUtc && forceStartCount == this._handledForceStartCount)
+            if (now < this._nextMerchantTalkUtc && forceStartCount == this._handledForceStartCount)
             {
                 return false;
             }
 
             this._handledForceStartCount = forceStartCount;
-            this._nextSmallTalkUtc = now + (interval > MinimumSmallTalkInterval ? interval : MinimumSmallTalkInterval);
+            this._nextMerchantTalkUtc = now + (interval > MinimumMerchantTalkInterval ? interval : MinimumMerchantTalkInterval);
             return true;
         }
     }
