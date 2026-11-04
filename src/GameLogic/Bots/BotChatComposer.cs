@@ -48,12 +48,13 @@ internal static class BotChatComposer
     /// <param name="message">The player's message.</param>
     /// <param name="pickIndex">Returns a random index below the given count.</param>
     /// <param name="previous">The reply given last time to the same player, which is left out when there are others.</param>
+    /// <param name="requireKeyword">If set, a message without a matching keyword gets no reply, not even a fallback.</param>
     /// <returns>The picked reply, or <c>null</c> when there is no usable reply.</returns>
     /// <remarks>
     /// The best match is the longest matching keyword, so "hi, how are you?" is answered by the
     /// "how are you" replies rather than by the greetings matching "hi".
     /// </remarks>
-    internal static BotChatReply? PickWhisperReply(IEnumerable<BotChatReply> replies, string message, Func<int, int> pickIndex, object? previous = null)
+    internal static BotChatReply? PickWhisperReply(IEnumerable<BotChatReply> replies, string message, Func<int, int> pickIndex, object? previous = null, bool requireKeyword = false)
     {
         var usable = replies
             .Where(reply => !string.IsNullOrWhiteSpace(reply.Text.ValueInNeutralLanguage))
@@ -63,6 +64,11 @@ internal static class BotChatComposer
             .Select(reply => (Reply: reply, Score: GetKeywords(reply.Keywords).Where(k => normalizedMessage.Contains($" {k} ", StringComparison.Ordinal)).Select(k => k.Length).DefaultIfEmpty(0).Max()))
             .ToList();
         var bestScore = scored.Count == 0 ? 0 : scored.Max(s => s.Score);
+        if (bestScore == 0 && requireKeyword)
+        {
+            return null;
+        }
+
         var candidates = WithoutPrevious(
             bestScore > 0
                 ? scored.Where(s => s.Score == bestScore).Select(s => s.Reply).ToList()

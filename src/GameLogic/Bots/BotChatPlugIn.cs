@@ -365,10 +365,16 @@ public class BotChatPlugIn
         }
 
         if (this.Configuration is not { WhisperReplyChancePercent: > 0 } configuration
-            || messageType != ChatMessageType.Normal
+            || messageType is not (ChatMessageType.Normal or ChatMessageType.Party)
             || sender is OfflinePlayer
             || sender.SelectedCharacter?.Name is not { } senderName)
         {
+            return;
+        }
+
+        if (messageType == ChatMessageType.Party)
+        {
+            this.AnswerInParty(sender, senderName, message, configuration);
             return;
         }
 
@@ -786,10 +792,10 @@ public class BotChatPlugIn
     /// <summary>
     /// Picks the reply to the player's message, other than the reply the player got last time.
     /// </summary>
-    private BotChatReply? PickReplyFor(Player listener, ICollection<BotChatReply> replies, string message)
+    private BotChatReply? PickReplyFor(Player listener, ICollection<BotChatReply> replies, string message, bool requireKeyword = false)
     {
         var throttle = this.GetThrottle(listener.GameContext);
-        var reply = BotChatComposer.PickWhisperReply(replies, message, count => Rand.NextInt(0, count), throttle.GetLastLine(listener, replies));
+        var reply = BotChatComposer.PickWhisperReply(replies, message, count => Rand.NextInt(0, count), throttle.GetLastLine(listener, replies), requireKeyword);
         if (reply is not null)
         {
             throttle.SetLastLine(listener, replies, reply);
@@ -856,6 +862,38 @@ public class BotChatPlugIn
         {
             this.WhisperLater(bot, requester, onTheWayLine, values);
         }
+    }
+
+    /// <summary>
+    /// Answers a player's message in the party chat: the bot of the party whose name the message
+    /// mentions answers like to a whisper; without a name, one bot of the party answers only a
+    /// message which matches a keyword ("what level are you?") - not every "ok" or "let's go".
+    /// </summary>
+    private void AnswerInParty(Player sender, string senderName, string message, BotChatConfiguration configuration)
+    {
+        if (sender.Party is not { } party)
+        {
+            return;
+        }
+
+        // Also a bot inside an event with the party may answer - the party chat reaches it there.
+        var bots = party.PartyList
+            .OfType<Player>()
+            .Where(p => IsBot(p) && p.PlayerState.CurrentState == PlayerState.EnteredWorld)
+            .ToList();
+        var mentioned = bots.FirstOrDefault(bot => bot.SelectedCharacter?.Name is { } botName && BotChatComposer.MentionsName(message, botName));
+        var speaker = mentioned ?? (bots.Count > 0 ? bots[Rand.NextInt(0, bots.Count)] : null);
+        if (speaker is null
+            || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
+            || this.PickReplyFor(sender, configuration.WhisperReplies, message, requireKeyword: mentioned is null) is not { } line
+            || !this.GetThrottle(speaker.GameContext).TryReserveWhisperReply(speaker, DateTime.UtcNow, configuration.WhisperReplyCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(speaker);
+        values["player"] = _ => senderName;
+        RunLater(speaker.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(speaker, line.Text, values));
     }
 
     /// <summary>
