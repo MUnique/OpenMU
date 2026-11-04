@@ -335,6 +335,7 @@ model. A bot only talks about what it could actually do:
 | A Blood Castle, Devil Square or Chaos Castle entrance opened | `/post`, then it waits for players | a bot which meets that event's entry requirements — the same check that lets it follow a leader in |
 | An invasion (White Wizard, Golden, Red Dragon) started | `/post` | a bot which may warp to the invaded map |
 | A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
+| A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
 
 A bot which posts about an event does not stay out hunting where nobody

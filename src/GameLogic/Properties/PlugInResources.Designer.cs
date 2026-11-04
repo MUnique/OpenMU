@@ -4732,6 +4732,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_Lines_Description text.</summary>
         public static string BotChatConfiguration_Lines_Description => ResourceManager.GetString("BotChatConfiguration_Lines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_GreetingChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_GreetingChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_GreetingChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_GreetingChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_GreetingChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_GreetingChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_GreetingCooldown_Name text.</summary>
+        public static string BotChatConfiguration_GreetingCooldown_Name => ResourceManager.GetString("BotChatConfiguration_GreetingCooldown_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_GreetingCooldown_Description text.</summary>
+        public static string BotChatConfiguration_GreetingCooldown_Description => ResourceManager.GetString("BotChatConfiguration_GreetingCooldown_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotSkillProgressionPlugIn_Name text.</summary>
         public static string BotSkillProgressionPlugIn_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture)!;
 

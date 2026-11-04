@@ -41,10 +41,17 @@ public class BotChatPlugIn
     IInvasionStartedPlugIn,
     ICharacterLevelUpPlugIn,
     IWhisperMessageReceivedPlugIn,
+    IPlayerStateChangedPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
 {
+    /// <summary>
+    /// How close a bot must stand to greet an entering player - roughly the range in which the
+    /// player sees it, so the greeting comes from a character on the screen.
+    /// </summary>
+    private const double GreetingRange = 12;
+
     /// <summary>
     /// How long an invasion counts as announced. Long enough that a second invasion of the same kind
     /// started by the same schedule run doesn't get its own post.
@@ -67,6 +74,11 @@ public class BotChatPlugIn
     /// The delay range of a whisper reply - the time a player needs to read and type.
     /// </summary>
     private static readonly (int Min, int Max) WhisperReplyDelaySeconds = (2, 7);
+
+    /// <summary>
+    /// The delay range of a greeting: the entering player's client needs a moment to load the world.
+    /// </summary>
+    private static readonly (int Min, int Max) GreetingDelaySeconds = (3, 8);
 
     private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
 
@@ -163,6 +175,23 @@ public class BotChatPlugIn
                 : ValueTask.CompletedTask);
     }
 
+    /// <inheritdoc />
+    public ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
+    {
+        // Only entering the game counts - a warp or a map change keeps the player in the world.
+        if (this.Configuration is not { GreetingChancePercent: > 0 } configuration
+            || player is OfflinePlayer
+            || currentState != PlayerState.EnteredWorld
+            || previousState != PlayerState.CharacterSelection
+            || !Rand.NextRandomBool(configuration.GreetingChancePercent))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        RunLater(player.GameContext, RandomDelay(GreetingDelaySeconds), () => this.GreetAsync(player, configuration));
+        return ValueTask.CompletedTask;
+    }
+
     /// <summary>
     /// Determines whether the bot may warp to the map according to the warp list - the same rule the
     /// bots' navigation follows (the plain level against the class-reduced warp requirement) - and the
@@ -188,6 +217,23 @@ public class BotChatPlugIn
             warp.Gate?.Map?.Number == map.Number
             && character.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) <= level);
     }
+
+    /// <summary>
+    /// Finds the bot which greets an entering player: the nearest available bot on the player's map,
+    /// within the range in which the player sees it.
+    /// </summary>
+    /// <param name="players">The players of the game server.</param>
+    /// <param name="player">The entering player.</param>
+    /// <param name="map">The player's map.</param>
+    /// <returns>The greeting bot, or <c>null</c> when none is close enough.</returns>
+    internal static Player? FindGreeter(IEnumerable<Player> players, Player player, GameMap map)
+        => players
+            .Where(p => IsBot(p) && IsAvailable(p) && ReferenceEquals(p.CurrentMap, map))
+            .Select(p => (Bot: p, Distance: p.GetDistanceTo(player)))
+            .Where(candidate => candidate.Distance <= GreetingRange)
+            .OrderBy(candidate => candidate.Distance)
+            .Select(candidate => candidate.Bot)
+            .FirstOrDefault();
 
     private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
 
@@ -268,6 +314,32 @@ public class BotChatPlugIn
     }
 
     private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
+
+    private async ValueTask GreetAsync(Player player, BotChatConfiguration configuration)
+    {
+        if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
+            || player.CurrentMap is not { } map
+            || player.SelectedCharacter?.Name is not { } playerName)
+        {
+            return;
+        }
+
+        var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
+        var bot = FindGreeter(players, player, map);
+        var now = DateTime.UtcNow;
+        var throttle = this.GetThrottle(player.GameContext);
+        if (bot is null
+            || PickLine(configuration, BotChatSituation.PlayerLogin) is not { } line
+            || !throttle.TryReserveOccasion($"greeting {playerName}", now, configuration.GreetingCooldown)
+            || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(bot);
+        values["player"] = _ => playerName;
+        await BotChatSpeaker.SayAsync(bot, line, values).ConfigureAwait(false);
+    }
 
     private async ValueTask PostAboutEventAsync(MiniGameContext miniGame, BotChatConfiguration configuration)
     {
